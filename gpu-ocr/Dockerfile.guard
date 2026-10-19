@@ -1,0 +1,2 @@
+FROM quay.io/cybercafe-gpu-ocr:0.2
+COPY server.py ocr_protocol.py direction_guard.py /app/

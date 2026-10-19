@@ -12,6 +12,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from ocr_protocol import completion_events
+from direction_guard import GuardClassifier, GuardRecognizer
 from PIL import Image
 from rapidocr_onnxruntime import RapidOCR
 import uvicorn
@@ -33,12 +34,16 @@ for name in ('text_det', 'text_cls', 'text_rec'):
     providers[name] = session.get_providers()
 if any('CUDAExecutionProvider' not in p for p in providers.values()):
     raise RuntimeError(f'GPU OCR cannot silently fall back to CPU: {providers}')
+guard_classifier = GuardClassifier(engine.text_cls)
+guard_recognizer = GuardRecognizer(engine.text_rec, guard_classifier)
+engine.text_cls = guard_classifier
+engine.text_rec = guard_recognizer
 app = FastAPI()
 lock = threading.Lock()
 
 @app.get('/health')
 def health():
-    return {'ok': True, 'node': node_name, 'providers': providers}
+    return {'ok': True, 'node': node_name, 'providers': providers, 'direction_policy': 'guarded', 'version': '0.3'}
 
 @app.get('/v1/models')
 def models():
@@ -57,6 +62,8 @@ def recognize(encoded):
         raise HTTPException(400, str(exc))
     start = time.perf_counter()
     with lock:
+        guard_classifier.angles = []
+        guard_recognizer.stats = {}
         result, _ = engine(array)
     lines = [{'box': box, 'text': text, 'score': float(score)} for box, text, score in (result or [])]
     return {'text': '\n'.join(x['text'] for x in lines), 'lines': lines,

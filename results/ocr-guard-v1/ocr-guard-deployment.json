@@ -1,0 +1,55 @@
+{
+  "backend_version": "0.3",
+  "replicas": 2,
+  "health": [
+    {
+      "worker": "XZ-31-002",
+      "instance_id": 14,
+      "health": {
+        "ok": true,
+        "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+        "providers": {
+          "text_det": [
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider"
+          ],
+          "text_cls": [
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider"
+          ],
+          "text_rec": [
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider"
+          ]
+        },
+        "direction_policy": "guarded",
+        "version": "0.3"
+      }
+    },
+    {
+      "worker": "XZ-31-001",
+      "instance_id": 15,
+      "health": {
+        "ok": true,
+        "node": "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c",
+        "providers": {
+          "text_det": [
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider"
+          ],
+          "text_cls": [
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider"
+          ],
+          "text_rec": [
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider"
+          ]
+        },
+        "direction_policy": "guarded",
+        "version": "0.3"
+      }
+    }
+  ],
+  "rollback_command": "python3 /root/wtaobj/upgrade_ocr_guard.py --rollback"
+}

@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "per_worker_upright_and_180": [
+    {
+      "worker": "XZ-31-002",
+      "angle": 0,
+      "lines": 46,
+      "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+    },
+    {
+      "worker": "XZ-31-002",
+      "angle": 180,
+      "lines": 44,
+      "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+    },
+    {
+      "worker": "XZ-31-001",
+      "angle": 0,
+      "lines": 46,
+      "node": "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c"
+    },
+    {
+      "worker": "XZ-31-001",
+      "angle": 180,
+      "lines": 44,
+      "node": "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c"
+    }
+  ],
+  "backend_version": "0.3"
+}

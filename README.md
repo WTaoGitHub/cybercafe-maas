@@ -123,3 +123,18 @@ CPU 原服务未调优，CPU/GPU 两环境依赖和线程设置不完全相同�
 - [逐图对照](results/ocr-model-v3/comparison.html)
 
 发现旧v4存在文字行方向误判；当前线上配置未更改，暂缓第4项。
+
+## 方向保护升级（0.3，2026-10-19）
+
+现有 `rapidocr-gpu` 两副本已升级到 `0.3`，默认启用方向保护。
+`gpu-ocr/direction_guard.py` 复用已验证逻辑：保留原文字行，先识别原方向，
+对低分或分类器判为倒置的行再识别180°版本；仅在分数提高超过0.02时采用。
+状态在服务锁内重置；API、模型名、JSON字段及Playground SSE协议保持兼容。
+此升级没有新增90°/270°自动识别或手动旋转参数。
+
+两节点预加载镜像后，在控制端执行 `python3 /root/wtaobj/upgrade_ocr_guard.py`。
+增量构建：在 `gpu-ocr` 目录执行
+`docker build -f Dockerfile.guard -t quay.io/cybercafe-gpu-ocr:0.3 .`，要求已有0.2本地镜像。
+脚本保存旧版本配置、逐个替换实例并检查健康状态；旧镜像和0.2后端配置保留。
+回退命令：`python3 /root/wtaobj/upgrade_ocr_guard.py --rollback`。
+部署及验证记录见 `results/ocr-guard-v1/`；该升级保留原有总计两个副本，未采用压测中的四副本。

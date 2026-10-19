@@ -5,5 +5,5 @@ RUN pip3 install --no-cache-dir 'numpy<2' opencv-python==4.11.0.86 rapidocr-onnx
 ENV LD_LIBRARY_PATH=/usr/local/lib/python3.10/dist-packages/nvidia/cudnn/lib:/usr/local/cuda/lib64
 WORKDIR /app
 COPY server.py /app/server.py
-COPY ocr_protocol.py /app/ocr_protocol.py
+COPY ocr_protocol.py direction_guard.py /app/
 ENTRYPOINT ["python3", "/app/server.py"]
