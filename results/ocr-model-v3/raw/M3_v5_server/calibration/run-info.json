@@ -1,0 +1,75 @@
+{
+  "variant": "M3_v5_server",
+  "models": [
+    "PP-OCRv5_server_det",
+    "PP-OCRv5_server_rec"
+  ],
+  "parameters": {
+    "max_side_len": 2000,
+    "text_det_limit_side_len": 736,
+    "text_det_limit_type": "min",
+    "text_det_thresh": 0.3,
+    "text_det_box_thresh": 0.5,
+    "text_det_unclip_ratio": 1.6,
+    "text_rec_score_thresh": 0.5,
+    "text_recognition_batch_size": 6,
+    "use_textline_orientation": false,
+    "use_doc_orientation_classify": false,
+    "use_doc_unwarping": false
+  },
+  "providers": [
+    {
+      "providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "input_shape": [
+        "DynamicDimension.0",
+        3,
+        "DynamicDimension.1",
+        "DynamicDimension.2"
+      ],
+      "output_shapes": [
+        [
+          "ConvTranspose_570_o0__d0",
+          1,
+          "ConvTranspose_570_o0__d2",
+          "ConvTranspose_570_o0__d3"
+        ]
+      ]
+    },
+    {
+      "providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "input_shape": [
+        "DynamicDimension.0",
+        3,
+        48,
+        "DynamicDimension.1"
+      ],
+      "output_shapes": [
+        [
+          "DynamicDimension.0",
+          "Reshape_485_o0__d2",
+          18385
+        ]
+      ]
+    }
+  ],
+  "versions": {
+    "paddleocr": "3.7.0",
+    "paddlex": "3.7.2",
+    "rapidocr-onnxruntime": "1.4.4",
+    "onnxruntime-gpu": "1.20.2",
+    "numpy": "1.26.4",
+    "opencv-python": "4.11.0.86"
+  },
+  "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+  "initialization_seconds": 1.0909002550179139,
+  "started_at": "2026-10-19T08:09:50Z",
+  "prewarm_images": 1,
+  "concurrency": 1,
+  "retries": 0
+}

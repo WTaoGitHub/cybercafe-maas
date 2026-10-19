@@ -1,0 +1,194 @@
+{
+  "id": "doclaynet_f883ede7c6b73f5f905f8ba1df4a0cc57a5055e2d6e00ee1c1149618aeede719",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "EMARKS OF THEIR RESPECTIVE OWNERS\nESTATE\nALEXANDRIA REAL ESTATE EQUITIES,ARE,LABSPACE\nS.ARE,LABSPACE\n'0507YI\n0501\nPRINTING COLORGRAPHICS DESIGN OPTO CONSULTING DESIGNERS KELLY\n2005 ALEXANDRIA REAL ESTATE EQUITIES, INC.ALL RIGHTS RESERV",
+    "lines": [
+      {
+        "box": [
+          [
+            72.0,
+            283.0
+          ],
+          [
+            88.0,
+            283.0
+          ],
+          [
+            88.0,
+            450.0
+          ],
+          [
+            72.0,
+            450.0
+          ]
+        ],
+        "text": "EMARKS OF THEIR RESPECTIVE OWNERS",
+        "score": 0.9635869950959177
+      },
+      {
+        "box": [
+          [
+            57.0,
+            286.0
+          ],
+          [
+            72.0,
+            286.0
+          ],
+          [
+            72.0,
+            316.0
+          ],
+          [
+            57.0,
+            316.0
+          ]
+        ],
+        "text": "ESTATE",
+        "score": 0.9930642545223236
+      },
+      {
+        "box": [
+          [
+            41.0,
+            312.0
+          ],
+          [
+            57.0,
+            312.0
+          ],
+          [
+            57.0,
+            535.0
+          ],
+          [
+            41.0,
+            535.0
+          ]
+        ],
+        "text": "ALEXANDRIA REAL ESTATE EQUITIES,ARE,LABSPACE",
+        "score": 0.9437983212145892
+      },
+      {
+        "box": [
+          [
+            39.0,
+            314.0
+          ],
+          [
+            56.0,
+            314.0
+          ],
+          [
+            58.0,
+            386.0
+          ],
+          [
+            41.0,
+            386.0
+          ]
+        ],
+        "text": "S.ARE,LABSPACE",
+        "score": 0.8964049432958875
+      },
+      {
+        "box": [
+          [
+            45.0,
+            533.0
+          ],
+          [
+            55.0,
+            533.0
+          ],
+          [
+            55.0,
+            572.0
+          ],
+          [
+            45.0,
+            572.0
+          ]
+        ],
+        "text": "'0507YI",
+        "score": 0.6217456247125354
+      },
+      {
+        "box": [
+          [
+            45.0,
+            534.0
+          ],
+          [
+            55.0,
+            534.0
+          ],
+          [
+            55.0,
+            562.0
+          ],
+          [
+            45.0,
+            562.0
+          ]
+        ],
+        "text": "0501",
+        "score": 0.6409487724304199
+      },
+      {
+        "box": [
+          [
+            85.0,
+            688.0
+          ],
+          [
+            102.0,
+            688.0
+          ],
+          [
+            102.0,
+            993.0
+          ],
+          [
+            85.0,
+            993.0
+          ]
+        ],
+        "text": "PRINTING COLORGRAPHICS DESIGN OPTO CONSULTING DESIGNERS KELLY",
+        "score": 0.966238010125082
+      },
+      {
+        "box": [
+          [
+            41.0,
+            703.0
+          ],
+          [
+            57.0,
+            703.0
+          ],
+          [
+            57.0,
+            990.0
+          ],
+          [
+            41.0,
+            990.0
+          ]
+        ],
+        "text": "2005 ALEXANDRIA REAL ESTATE EQUITIES, INC.ALL RIGHTS RESERV",
+        "score": 0.9733518402455217
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 15,
+    "deduplicated": 7,
+    "elapsed_ms": 256.6,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 265.75
+}

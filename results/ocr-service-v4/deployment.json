@@ -1,0 +1,14 @@
+{
+  "original": {
+    "id": 1,
+    "name": "rapidocr-gpu",
+    "replicas": 2,
+    "backend": "RapidOCR-custom",
+    "backend_version": "0.2",
+    "worker_selector": {}
+  },
+  "backend_id": 13,
+  "model_id": 2,
+  "route_id": 2,
+  "key_id": 7
+}

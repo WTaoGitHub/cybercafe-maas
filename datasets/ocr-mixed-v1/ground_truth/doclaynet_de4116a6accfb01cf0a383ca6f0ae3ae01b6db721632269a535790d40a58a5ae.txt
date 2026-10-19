@@ -1,0 +1,34 @@
+that the market maker is not expected to lose money, regardless of the outcome.
+Finally, the market aggregates liquidity across different markets into the common pool (Baron
+and Lange, 2007). For example, consider the horse race example above but with a slight modifica-
+tion. Suppose that people trade securities with fixed payoffs: Claim A and Claim B. Let ”Claim
+A” refer to the contingent claim that pays $1 if and only if Horse A wins. Define the term ”Claim
+B” similarly. The potential payout to the holders of Claim A is financed by the premiums collected
+from the holders of Claim B and vice versa. Therefore, it is as if the holders of Claim A and those
+of Claim B were transacting with one another via a common pari-mutuel auctioneer.
+Compare
+this case with an alternative situation in which potential buyers of Claim A (or Claim B) only
+trade with potential sellers of Claim A (or Claim B). The effective number of people trading with
+one another is larger in the former case. It is as if the common auctioneer pooled liquidity from
+individual markets - the market for Claim A and the market for Claim B - into the common pool.
+As a result, market participants can enjoy a more liquid market.
+In the 2000s, researchers (Lange and Economide, 2005; Baron and Lange, 2007) noted that the
+pari-mutuel principle can be used to better organize a certain type of financial derivatives market.
+For example, note that the pari-mutuel auctioneer is well protected from financial loss at the
+time the claims mature. This property of the pari-mutuel market allows the auctioneer to be less
+concerned with fluctuations in the value of the inventory. Therefore, the pari-mutuel principle can
+be used to design a market if the market maker has difficulty hedging against inventory risk (Lange
+and Economide, 2005; Baron and Lange, 2007). For example, Lange and Economide (2005) designed
+the Pari-mutuel Digital Call Auction (PDCA) to trade options written on economic indices, for
+which delta hedging using the underlying asset is not feasible.
+Longitude, a financial technology company, developed software to implement the PDCA. In
+collaboration with investment banks (e.g., Goldman Sachs) and financial exchanges (e.g., the In-
+ternational Securities Exchange (ISE)) new PDCA-based derivatives markets were launched. Due
+to lack of active market participation, the ISE shut down the auction in June 2007. However, the
+ISE has shown consistent interest in utilizing this technology in the near future (Burne, 2013).
+Despite their use in the financial industry, many pari-mutuel auctions have design features
+that are different from the modeling assumptions that economists use. A potential reason for this
+is that pari-mutuel auctions have primarily been studied by scholars in operations research. For
+example, many pari-mutuel auctions optimally clear the market while placing a lower bound on
+the auctioneer’s maximum possible loss (Hanson, 2003; Pennock, 2004; Peters et al., 2005; Lange
+2

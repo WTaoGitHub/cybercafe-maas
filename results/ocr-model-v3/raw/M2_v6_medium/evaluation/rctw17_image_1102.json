@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_1102",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "d4710064b7a1da41414157b8768b51f3d2bbe86707c2b4645dc038417f753f2f",
+  "ok": true,
+  "result": {
+    "text": "通天玉石\n中宣书画馆\n中宣书画网",
+    "lines": [
+      {
+        "box": [
+          [
+            609.0,
+            50.0
+          ],
+          [
+            699.0,
+            47.0
+          ],
+          [
+            710.0,
+            394.0
+          ],
+          [
+            620.0,
+            394.0
+          ]
+        ],
+        "text": "通天玉石",
+        "score": 0.9941191673278809
+      },
+      {
+        "box": [
+          [
+            303.0,
+            274.0
+          ],
+          [
+            559.0,
+            284.0
+          ],
+          [
+            557.0,
+            348.0
+          ],
+          [
+            300.0,
+            338.0
+          ]
+        ],
+        "text": "中宣书画馆",
+        "score": 0.9999691247940063
+      },
+      {
+        "box": [
+          [
+            304.0,
+            330.0
+          ],
+          [
+            559.0,
+            337.0
+          ],
+          [
+            557.0,
+            394.0
+          ],
+          [
+            302.0,
+            391.0
+          ]
+        ],
+        "text": "中宣书画网",
+        "score": 0.9999839663505554
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      394,
+      904,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 85.21
+  }
+}

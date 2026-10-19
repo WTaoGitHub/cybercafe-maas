@@ -1,0 +1,91 @@
+{
+  "id": "doclaynet_eed7b6e7d723c7d8a2ca1637310550c0574cf85abb17147e378897ae4b8b900f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "c069f129d51344576da02f94bff84d26a483f4efef87b5200ec62eed0194fb13",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "Figure 1: Snapshot of a freely diffusing chucker (left), and a chucker close to a hard-planar surface\n(right).\n21",
+    "lines": [
+      {
+        "box": [
+          [
+            122.0,
+            345.0
+          ],
+          [
+            930.0,
+            345.0
+          ],
+          [
+            930.0,
+            364.0
+          ],
+          [
+            122.0,
+            364.0
+          ]
+        ],
+        "text": "Figure 1: Snapshot of a freely diffusing chucker (left), and a chucker close to a hard-planar surface",
+        "score": 0.9888798399726944
+      },
+      {
+        "box": [
+          [
+            122.0,
+            372.0
+          ],
+          [
+            184.0,
+            372.0
+          ],
+          [
+            184.0,
+            392.0
+          ],
+          [
+            122.0,
+            392.0
+          ]
+        ],
+        "text": "(right).",
+        "score": 0.9855945631861687
+      },
+      {
+        "box": [
+          [
+            504.0,
+            919.0
+          ],
+          [
+            525.0,
+            919.0
+          ],
+          [
+            525.0,
+            935.0
+          ],
+          [
+            504.0,
+            935.0
+          ]
+        ],
+        "text": "21",
+        "score": 0.9881146252155304
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 46.03,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 3
+    },
+    "elapsed_ms": 46.04
+  }
+}

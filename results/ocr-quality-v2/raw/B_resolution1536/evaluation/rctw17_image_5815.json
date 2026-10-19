@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_5815",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "请允许我\n笑一会",
+    "lines": [
+      {
+        "box": [
+          [
+            38.0,
+            99.0
+          ],
+          [
+            173.0,
+            100.0
+          ],
+          [
+            173.0,
+            143.0
+          ],
+          [
+            38.0,
+            143.0
+          ]
+        ],
+        "text": "请允许我",
+        "score": 0.9909477233886719
+      },
+      {
+        "box": [
+          [
+            39.0,
+            138.0
+          ],
+          [
+            140.0,
+            140.0
+          ],
+          [
+            139.0,
+            180.0
+          ],
+          [
+            38.0,
+            179.0
+          ]
+        ],
+        "text": "笑一会",
+        "score": 0.9943219025929769
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 2,
+    "deduplicated": 0,
+    "elapsed_ms": 107.35,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 107.94
+}

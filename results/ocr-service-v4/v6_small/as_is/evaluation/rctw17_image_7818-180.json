@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_7818",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "422b563d7aba03a690dfe93e4abc0c3b29e0a1da9e8f5b3df93742884043f59b",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "电添块",
+    "lines": [
+      {
+        "box": [
+          [
+            2670.967741935484,
+            1831.9148936170213
+          ],
+          [
+            480.6451612903229,
+            1820.744680851064
+          ],
+          [
+            482.25806451612925,
+            1533.5106382978724
+          ],
+          [
+            2672.5806451612902,
+            1544.6808510638298
+          ]
+        ],
+        "text": "电添块",
+        "score": 0.5770598649978638
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 66.41,
+    "direction_stats": {},
+    "elapsed_ms": 66.42
+  }
+}

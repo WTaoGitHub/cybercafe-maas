@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_6665",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "ee492db6859bef7bafec50108978bb5c39ee762a12d022a3ffc1fa33737791c1",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "福利彩票\n韩式汗蒸",
+    "lines": [
+      {
+        "box": [
+          [
+            994.4515991210938,
+            641.9285278320312
+          ],
+          [
+            1337.225830078125,
+            632.4285278320312
+          ],
+          [
+            1341.290283203125,
+            788.5
+          ],
+          [
+            998.51611328125,
+            798.0
+          ]
+        ],
+        "text": "福利彩票",
+        "score": 0.9973257333040237
+      },
+      {
+        "box": [
+          [
+            890.1290283203125,
+            871.2857055664062
+          ],
+          [
+            957.8709716796875,
+            871.2857055664062
+          ],
+          [
+            957.8709716796875,
+            1016.4999389648438
+          ],
+          [
+            890.1290283203125,
+            1016.4999389648438
+          ]
+        ],
+        "text": "韩式汗蒸",
+        "score": 0.9584037959575653
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 100.02,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 2
+    },
+    "elapsed_ms": 100.02
+  }
+}

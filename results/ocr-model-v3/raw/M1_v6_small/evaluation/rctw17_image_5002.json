@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_5002",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "e9f8cca67ef126cc0b7707a387e4fccb4105e765801a8f381d9a4571a1582c0c",
+  "ok": true,
+  "result": {
+    "text": "ristmas\n欢迎光临\n小白",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            593.9032258064517
+          ],
+          [
+            343.43617021276594,
+            584.0322580645162
+          ],
+          [
+            346.6914893617021,
+            715.6451612903227
+          ],
+          [
+            0.0,
+            725.516129032258
+          ]
+        ],
+        "text": "ristmas",
+        "score": 0.9998889565467834
+      },
+      {
+        "box": [
+          [
+            229.5,
+            1480.6451612903227
+          ],
+          [
+            1909.2446808510638,
+            1434.5806451612905
+          ],
+          [
+            1922.2659574468084,
+            1931.4193548387098
+          ],
+          [
+            242.52127659574467,
+            1977.483870967742
+          ]
+        ],
+        "text": "欢迎光临",
+        "score": 0.9999987483024597
+      },
+      {
+        "box": [
+          [
+            0.0,
+            1778.4193548387098
+          ],
+          [
+            224.61702127659575,
+            1771.8387096774195
+          ],
+          [
+            227.87234042553192,
+            1875.483870967742
+          ],
+          [
+            0.0,
+            1882.0645161290324
+          ]
+        ],
+        "text": "小白",
+        "score": 0.9993808269500732
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 4,
+    "elapsed_ms": 85.9
+  }
+}

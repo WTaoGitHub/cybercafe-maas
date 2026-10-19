@@ -1,0 +1,2081 @@
+{
+  "id": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "M3_v5_server",
+  "image_sha256": "33956618d62caa83b73199dc05c91bcddbac162b1b7b39799491751135c93b4b",
+  "ok": true,
+  "result": {
+    "text": "Lateral Navigation(LNAV).Azimuth navigation without\nMilitaryAirspaceManagementSystem(MAMS).A\npositive vertical guidance. This type of navigation is\nDepartment of Defense system to collect and disseminate\nassociated with nonprecision approach procedures or en\ninformation on the current status of special use airspace.\nroute.\nThis information is provided to the Special Use Airspace\nManagement System (SAMS). The electronic interface\nLocal Area Augmentation System (LAAS). LAAS further\nalso provides SUA schedules and historical activation and\nincreases the accuracy of GPS and improves signal integrity\nutilization data.\nwarnings.\nMinimum Crossing Altitude (MCA). An MCA is the lowest\nLocalizer Performance with Vertical Guidance (LPV).LPV is\naltitude at certain fixes at which the aircraft must cross\none of the four lines of approach minimums found on an\nwhen proceeding in the direction of a higher minimum en\nRNAV (GPS) approach chart. Lateral guidance accuracy is\nroute IFR altitude. MCAs are established in all cases where\nequivalent to a localizer. The HAT is published as a DA since\nobstacles intervene to prevent pilots from maintaining\nit uses an electronic qlide path that is not dependent on\nobstacle clearance during a normal climb to a higher MEA\nany ground equipment or barometric aiding and may be\nafter passing a point beyond which the higher MEA applies.\nas low as 20o feet and V SM visibility depending on the\nairport terrain and infrastructure,WAAS avionics approved\nMinimum Descent Altitude (MDA). The lowest altitude,\nfor LPV is required. Baro-VNAV is not authorized to fly the\nexpressed in feet above mean sea level, to which descent\nLPV line of minimums on a RNAV (GPS) procedure since it\nis authorized on final approach or during circle-to-land\nuses an internally generated descent path that is subject to\nmaneuvering in execution of a standard instrument\ncold temperature effects and incorrect altimeter settings.\napproach procedure where no electronic glide slope is\nprovided.\nLoss of Separation. An occurrence or operation that results\nin less than prescribed separation between aircraft, or\nMinimum En Route Altitude (MEA).The MEA is the lowest\nbetween an aircraft and a vehicle, pedestrian, or object.\npublished altitude between radio fixes that assures\nacceptable navigational signal coverage and meets\nLPV. See Localizer Performance with Vertical Guidance.\nobstacle clearance requirements between those fixes. The\nMEA prescribed for a Federal Airway or segment, RNAV low\nMagnetic Variation. The difference in degrees between\nor high route, or other direct route applies to the entire\nthe measured values of true north and magnetic north at\nwidth of the airway, segment, or route between the radio\nthat location.\nfixes defining the airway, segment, or route.\nMaximum Authorized Altitude (MAA). An MAA is a\nMinimumIFR Altitude(MlA).Minimum altitudes forIFR\npublished altitude representing the maximum usable\noperations are prescribed in 14 CFR Part 91. These MIAs are\naltitude or flight level for an airspace structure or route\npublished on IFR charts and prescribed in 14 CFR Part 95\nsegment. It is the highest altitude on a Federal airway, jet\nfor airways and routes, and in 14 CFR Part 97 for standard\nroute, RNAV low or high route, or other direct route for\ninstrument approach procedures.\nwhich an MEA is designated at which adequate reception\nof navigation signals is assured.\nMinimum Navigation Performance Specifications (MNPS).\nA set of standards that require aircraft to have a minimum\nMetering Fix. A fix along an established route over which\nnavigation performance capability in order to operate in\naircraft are metered prior to entering terminal airspace.\nMNPS designated airspace. In addition,aircraft must be\nNormally, this fix should be established at a distance from\ncertified by their State of Registry for MNPS operation.\nthe airport which facilitates a profile descent 10,0 feet\nUnder certain conditions, non-MNPS aircraft can operate\nabove airport elevation (AAE) or above.\nin MNPS airspace, however, standard oceanic separation\nminima is provided between the non-MNPS aircraft and\nMid-RVR. The RVR readout values obtained from sensors\nother traffi c.\nlocated midfield of the runway.\nMinimum Obstruction Clearance Altitude (MoCA).The\nMileage Break. A point on a route where the leg segment\nMOCA is the lowest published altitude in effect between\nmileage ends, and a new leg segment mileage begins, often\nradio fixes on VOR airways, off-airway routes, or route\nat a route turning point.\nsegments that meets obstacle clearance requirements\nfor the entire route segment. This altitude also assures\nacceptable navigational signal coverage only within 22\nNM of a VOR.\nG-6",
+    "lines": [
+      {
+        "box": [
+          [
+            60.0,
+            57.0
+          ],
+          [
+            472.0,
+            57.0
+          ],
+          [
+            472.0,
+            70.0
+          ],
+          [
+            60.0,
+            70.0
+          ]
+        ],
+        "text": "Lateral Navigation(LNAV).Azimuth navigation without",
+        "score": 0.9586976170539856
+      },
+      {
+        "box": [
+          [
+            489.0,
+            57.0
+          ],
+          [
+            901.0,
+            57.0
+          ],
+          [
+            901.0,
+            70.0
+          ],
+          [
+            489.0,
+            70.0
+          ]
+        ],
+        "text": "MilitaryAirspaceManagementSystem(MAMS).A",
+        "score": 0.96217280626297
+      },
+      {
+        "box": [
+          [
+            59.0,
+            72.0
+          ],
+          [
+            471.0,
+            72.0
+          ],
+          [
+            471.0,
+            88.0
+          ],
+          [
+            59.0,
+            88.0
+          ]
+        ],
+        "text": "positive vertical guidance. This type of navigation is",
+        "score": 0.9806931018829346
+      },
+      {
+        "box": [
+          [
+            490.0,
+            74.0
+          ],
+          [
+            901.0,
+            74.0
+          ],
+          [
+            901.0,
+            87.0
+          ],
+          [
+            490.0,
+            87.0
+          ]
+        ],
+        "text": "Department of Defense system to collect and disseminate",
+        "score": 0.9769619107246399
+      },
+      {
+        "box": [
+          [
+            60.0,
+            91.0
+          ],
+          [
+            470.0,
+            91.0
+          ],
+          [
+            470.0,
+            104.0
+          ],
+          [
+            60.0,
+            104.0
+          ]
+        ],
+        "text": "associated with nonprecision approach procedures or en",
+        "score": 0.9680097103118896
+      },
+      {
+        "box": [
+          [
+            487.0,
+            88.0
+          ],
+          [
+            902.0,
+            89.0
+          ],
+          [
+            902.0,
+            105.0
+          ],
+          [
+            487.0,
+            104.0
+          ]
+        ],
+        "text": "information on the current status of special use airspace.",
+        "score": 0.971442461013794
+      },
+      {
+        "box": [
+          [
+            59.0,
+            107.0
+          ],
+          [
+            105.0,
+            107.0
+          ],
+          [
+            105.0,
+            121.0
+          ],
+          [
+            59.0,
+            121.0
+          ]
+        ],
+        "text": "route.",
+        "score": 0.998127281665802
+      },
+      {
+        "box": [
+          [
+            489.0,
+            105.0
+          ],
+          [
+            901.0,
+            106.0
+          ],
+          [
+            901.0,
+            122.0
+          ],
+          [
+            488.0,
+            121.0
+          ]
+        ],
+        "text": "This information is provided to the Special Use Airspace",
+        "score": 0.969923198223114
+      },
+      {
+        "box": [
+          [
+            490.0,
+            124.0
+          ],
+          [
+            901.0,
+            124.0
+          ],
+          [
+            901.0,
+            137.0
+          ],
+          [
+            490.0,
+            137.0
+          ]
+        ],
+        "text": "Management System (SAMS). The electronic interface",
+        "score": 0.9585983157157898
+      },
+      {
+        "box": [
+          [
+            59.0,
+            138.0
+          ],
+          [
+            472.0,
+            138.0
+          ],
+          [
+            472.0,
+            154.0
+          ],
+          [
+            59.0,
+            154.0
+          ]
+        ],
+        "text": "Local Area Augmentation System (LAAS). LAAS further",
+        "score": 0.9603791832923889
+      },
+      {
+        "box": [
+          [
+            490.0,
+            140.0
+          ],
+          [
+            901.0,
+            140.0
+          ],
+          [
+            901.0,
+            153.0
+          ],
+          [
+            490.0,
+            153.0
+          ]
+        ],
+        "text": "also provides SUA schedules and historical activation and",
+        "score": 0.977383017539978
+      },
+      {
+        "box": [
+          [
+            58.0,
+            155.0
+          ],
+          [
+            471.0,
+            156.0
+          ],
+          [
+            471.0,
+            172.0
+          ],
+          [
+            58.0,
+            171.0
+          ]
+        ],
+        "text": "increases the accuracy of GPS and improves signal integrity",
+        "score": 0.9532709121704102
+      },
+      {
+        "box": [
+          [
+            490.0,
+            157.0
+          ],
+          [
+            604.0,
+            157.0
+          ],
+          [
+            604.0,
+            170.0
+          ],
+          [
+            490.0,
+            170.0
+          ]
+        ],
+        "text": "utilization data.",
+        "score": 0.9902821779251099
+      },
+      {
+        "box": [
+          [
+            57.0,
+            170.0
+          ],
+          [
+            132.0,
+            172.0
+          ],
+          [
+            132.0,
+            189.0
+          ],
+          [
+            57.0,
+            187.0
+          ]
+        ],
+        "text": "warnings.",
+        "score": 0.9973317384719849
+      },
+      {
+        "box": [
+          [
+            489.0,
+            186.0
+          ],
+          [
+            903.0,
+            187.0
+          ],
+          [
+            903.0,
+            203.0
+          ],
+          [
+            488.0,
+            202.0
+          ]
+        ],
+        "text": "Minimum Crossing Altitude (MCA). An MCA is the lowest",
+        "score": 0.9372840523719788
+      },
+      {
+        "box": [
+          [
+            60.0,
+            206.0
+          ],
+          [
+            471.0,
+            206.0
+          ],
+          [
+            471.0,
+            219.0
+          ],
+          [
+            60.0,
+            219.0
+          ]
+        ],
+        "text": "Localizer Performance with Vertical Guidance (LPV).LPV is",
+        "score": 0.9413699507713318
+      },
+      {
+        "box": [
+          [
+            488.0,
+            204.0
+          ],
+          [
+            902.0,
+            205.0
+          ],
+          [
+            902.0,
+            221.0
+          ],
+          [
+            488.0,
+            220.0
+          ]
+        ],
+        "text": "altitude at certain fixes at which the aircraft must cross",
+        "score": 0.9808393716812134
+      },
+      {
+        "box": [
+          [
+            59.0,
+            221.0
+          ],
+          [
+            472.0,
+            221.0
+          ],
+          [
+            472.0,
+            237.0
+          ],
+          [
+            59.0,
+            237.0
+          ]
+        ],
+        "text": "one of the four lines of approach minimums found on an",
+        "score": 0.958442211151123
+      },
+      {
+        "box": [
+          [
+            490.0,
+            223.0
+          ],
+          [
+            901.0,
+            223.0
+          ],
+          [
+            901.0,
+            236.0
+          ],
+          [
+            490.0,
+            236.0
+          ]
+        ],
+        "text": "when proceeding in the direction of a higher minimum en",
+        "score": 0.9719995260238647
+      },
+      {
+        "box": [
+          [
+            60.0,
+            239.0
+          ],
+          [
+            471.0,
+            239.0
+          ],
+          [
+            471.0,
+            252.0
+          ],
+          [
+            60.0,
+            252.0
+          ]
+        ],
+        "text": "RNAV (GPS) approach chart. Lateral guidance accuracy is",
+        "score": 0.9595103859901428
+      },
+      {
+        "box": [
+          [
+            489.0,
+            237.0
+          ],
+          [
+            903.0,
+            237.0
+          ],
+          [
+            903.0,
+            253.0
+          ],
+          [
+            489.0,
+            253.0
+          ]
+        ],
+        "text": "route IFR altitude. MCAs are established in all cases where",
+        "score": 0.9630922675132751
+      },
+      {
+        "box": [
+          [
+            60.0,
+            256.0
+          ],
+          [
+            471.0,
+            256.0
+          ],
+          [
+            471.0,
+            269.0
+          ],
+          [
+            60.0,
+            269.0
+          ]
+        ],
+        "text": "equivalent to a localizer. The HAT is published as a DA since",
+        "score": 0.959294319152832
+      },
+      {
+        "box": [
+          [
+            489.0,
+            255.0
+          ],
+          [
+            902.0,
+            255.0
+          ],
+          [
+            902.0,
+            271.0
+          ],
+          [
+            489.0,
+            271.0
+          ]
+        ],
+        "text": "obstacles intervene to prevent pilots from maintaining",
+        "score": 0.9767502546310425
+      },
+      {
+        "box": [
+          [
+            60.0,
+            272.0
+          ],
+          [
+            471.0,
+            272.0
+          ],
+          [
+            471.0,
+            285.0
+          ],
+          [
+            60.0,
+            285.0
+          ]
+        ],
+        "text": "it uses an electronic qlide path that is not dependent on",
+        "score": 0.9514815211296082
+      },
+      {
+        "box": [
+          [
+            490.0,
+            272.0
+          ],
+          [
+            901.0,
+            272.0
+          ],
+          [
+            901.0,
+            285.0
+          ],
+          [
+            490.0,
+            285.0
+          ]
+        ],
+        "text": "obstacle clearance during a normal climb to a higher MEA",
+        "score": 0.9577097296714783
+      },
+      {
+        "box": [
+          [
+            59.0,
+            287.0
+          ],
+          [
+            472.0,
+            287.0
+          ],
+          [
+            472.0,
+            303.0
+          ],
+          [
+            59.0,
+            303.0
+          ]
+        ],
+        "text": "any ground equipment or barometric aiding and may be",
+        "score": 0.9721477031707764
+      },
+      {
+        "box": [
+          [
+            490.0,
+            289.0
+          ],
+          [
+            901.0,
+            289.0
+          ],
+          [
+            901.0,
+            302.0
+          ],
+          [
+            490.0,
+            302.0
+          ]
+        ],
+        "text": "after passing a point beyond which the higher MEA applies.",
+        "score": 0.9641649127006531
+      },
+      {
+        "box": [
+          [
+            59.0,
+            304.0
+          ],
+          [
+            472.0,
+            304.0
+          ],
+          [
+            472.0,
+            320.0
+          ],
+          [
+            59.0,
+            320.0
+          ]
+        ],
+        "text": "as low as 20o feet and V SM visibility depending on the",
+        "score": 0.937961995601654
+      },
+      {
+        "box": [
+          [
+            60.0,
+            321.0
+          ],
+          [
+            470.0,
+            321.0
+          ],
+          [
+            470.0,
+            334.0
+          ],
+          [
+            60.0,
+            334.0
+          ]
+        ],
+        "text": "airport terrain and infrastructure,WAAS avionics approved",
+        "score": 0.9473035335540771
+      },
+      {
+        "box": [
+          [
+            489.0,
+            320.0
+          ],
+          [
+            902.0,
+            320.0
+          ],
+          [
+            902.0,
+            336.0
+          ],
+          [
+            489.0,
+            336.0
+          ]
+        ],
+        "text": "Minimum Descent Altitude (MDA). The lowest altitude,",
+        "score": 0.9602695107460022
+      },
+      {
+        "box": [
+          [
+            60.0,
+            339.0
+          ],
+          [
+            471.0,
+            339.0
+          ],
+          [
+            471.0,
+            352.0
+          ],
+          [
+            60.0,
+            352.0
+          ]
+        ],
+        "text": "for LPV is required. Baro-VNAV is not authorized to fly the",
+        "score": 0.9378411769866943
+      },
+      {
+        "box": [
+          [
+            490.0,
+            339.0
+          ],
+          [
+            902.0,
+            339.0
+          ],
+          [
+            902.0,
+            352.0
+          ],
+          [
+            490.0,
+            352.0
+          ]
+        ],
+        "text": "expressed in feet above mean sea level, to which descent",
+        "score": 0.9490110278129578
+      },
+      {
+        "box": [
+          [
+            60.0,
+            355.0
+          ],
+          [
+            472.0,
+            355.0
+          ],
+          [
+            472.0,
+            368.0
+          ],
+          [
+            60.0,
+            368.0
+          ]
+        ],
+        "text": "LPV line of minimums on a RNAV (GPS) procedure since it",
+        "score": 0.9499189853668213
+      },
+      {
+        "box": [
+          [
+            489.0,
+            355.0
+          ],
+          [
+            901.0,
+            355.0
+          ],
+          [
+            901.0,
+            368.0
+          ],
+          [
+            489.0,
+            368.0
+          ]
+        ],
+        "text": "is authorized on final approach or during circle-to-land",
+        "score": 0.9705954790115356
+      },
+      {
+        "box": [
+          [
+            59.0,
+            370.0
+          ],
+          [
+            472.0,
+            370.0
+          ],
+          [
+            472.0,
+            386.0
+          ],
+          [
+            59.0,
+            386.0
+          ]
+        ],
+        "text": "uses an internally generated descent path that is subject to",
+        "score": 0.9675388336181641
+      },
+      {
+        "box": [
+          [
+            488.0,
+            370.0
+          ],
+          [
+            903.0,
+            369.0
+          ],
+          [
+            903.0,
+            385.0
+          ],
+          [
+            489.0,
+            386.0
+          ]
+        ],
+        "text": "maneuvering in execution of a standard instrument",
+        "score": 0.9890711307525635
+      },
+      {
+        "box": [
+          [
+            60.0,
+            388.0
+          ],
+          [
+            471.0,
+            388.0
+          ],
+          [
+            471.0,
+            404.0
+          ],
+          [
+            60.0,
+            404.0
+          ]
+        ],
+        "text": "cold temperature effects and incorrect altimeter settings.",
+        "score": 0.9647346138954163
+      },
+      {
+        "box": [
+          [
+            489.0,
+            388.0
+          ],
+          [
+            902.0,
+            388.0
+          ],
+          [
+            902.0,
+            404.0
+          ],
+          [
+            489.0,
+            404.0
+          ]
+        ],
+        "text": "approach procedure where no electronic glide slope is",
+        "score": 0.9808263778686523
+      },
+      {
+        "box": [
+          [
+            487.0,
+            403.0
+          ],
+          [
+            562.0,
+            401.0
+          ],
+          [
+            563.0,
+            419.0
+          ],
+          [
+            488.0,
+            422.0
+          ]
+        ],
+        "text": "provided.",
+        "score": 0.9990065097808838
+      },
+      {
+        "box": [
+          [
+            60.0,
+            419.0
+          ],
+          [
+            472.0,
+            419.0
+          ],
+          [
+            472.0,
+            435.0
+          ],
+          [
+            60.0,
+            435.0
+          ]
+        ],
+        "text": "Loss of Separation. An occurrence or operation that results",
+        "score": 0.9361229538917542
+      },
+      {
+        "box": [
+          [
+            58.0,
+            435.0
+          ],
+          [
+            472.0,
+            436.0
+          ],
+          [
+            472.0,
+            452.0
+          ],
+          [
+            58.0,
+            451.0
+          ]
+        ],
+        "text": "in less than prescribed separation between aircraft, or",
+        "score": 0.9761618375778198
+      },
+      {
+        "box": [
+          [
+            489.0,
+            436.0
+          ],
+          [
+            902.0,
+            437.0
+          ],
+          [
+            902.0,
+            451.0
+          ],
+          [
+            489.0,
+            450.0
+          ]
+        ],
+        "text": "Minimum En Route Altitude (MEA).The MEA is the lowest",
+        "score": 0.9430256485939026
+      },
+      {
+        "box": [
+          [
+            60.0,
+            453.0
+          ],
+          [
+            459.0,
+            453.0
+          ],
+          [
+            459.0,
+            469.0
+          ],
+          [
+            60.0,
+            469.0
+          ]
+        ],
+        "text": "between an aircraft and a vehicle, pedestrian, or object.",
+        "score": 0.9746869206428528
+      },
+      {
+        "box": [
+          [
+            489.0,
+            453.0
+          ],
+          [
+            903.0,
+            453.0
+          ],
+          [
+            903.0,
+            469.0
+          ],
+          [
+            489.0,
+            469.0
+          ]
+        ],
+        "text": "published altitude between radio fixes that assures",
+        "score": 0.9861438870429993
+      },
+      {
+        "box": [
+          [
+            490.0,
+            471.0
+          ],
+          [
+            902.0,
+            471.0
+          ],
+          [
+            902.0,
+            484.0
+          ],
+          [
+            490.0,
+            484.0
+          ]
+        ],
+        "text": "acceptable navigational signal coverage and meets",
+        "score": 0.9650495648384094
+      },
+      {
+        "box": [
+          [
+            60.0,
+            486.0
+          ],
+          [
+            452.0,
+            486.0
+          ],
+          [
+            452.0,
+            502.0
+          ],
+          [
+            60.0,
+            502.0
+          ]
+        ],
+        "text": "LPV. See Localizer Performance with Vertical Guidance.",
+        "score": 0.9676900506019592
+      },
+      {
+        "box": [
+          [
+            489.0,
+            486.0
+          ],
+          [
+            903.0,
+            486.0
+          ],
+          [
+            903.0,
+            502.0
+          ],
+          [
+            489.0,
+            502.0
+          ]
+        ],
+        "text": "obstacle clearance requirements between those fixes. The",
+        "score": 0.954278290271759
+      },
+      {
+        "box": [
+          [
+            489.0,
+            502.0
+          ],
+          [
+            902.0,
+            502.0
+          ],
+          [
+            902.0,
+            519.0
+          ],
+          [
+            489.0,
+            519.0
+          ]
+        ],
+        "text": "MEA prescribed for a Federal Airway or segment, RNAV low",
+        "score": 0.9167033433914185
+      },
+      {
+        "box": [
+          [
+            60.0,
+            520.0
+          ],
+          [
+            471.0,
+            520.0
+          ],
+          [
+            471.0,
+            536.0
+          ],
+          [
+            60.0,
+            536.0
+          ]
+        ],
+        "text": "Magnetic Variation. The difference in degrees between",
+        "score": 0.9776931405067444
+      },
+      {
+        "box": [
+          [
+            489.0,
+            520.0
+          ],
+          [
+            902.0,
+            520.0
+          ],
+          [
+            902.0,
+            536.0
+          ],
+          [
+            489.0,
+            536.0
+          ]
+        ],
+        "text": "or high route, or other direct route applies to the entire",
+        "score": 0.9795500040054321
+      },
+      {
+        "box": [
+          [
+            60.0,
+            538.0
+          ],
+          [
+            471.0,
+            538.0
+          ],
+          [
+            471.0,
+            551.0
+          ],
+          [
+            60.0,
+            551.0
+          ]
+        ],
+        "text": "the measured values of true north and magnetic north at",
+        "score": 0.969687819480896
+      },
+      {
+        "box": [
+          [
+            488.0,
+            537.0
+          ],
+          [
+            902.0,
+            537.0
+          ],
+          [
+            902.0,
+            553.0
+          ],
+          [
+            488.0,
+            553.0
+          ]
+        ],
+        "text": "width of the airway, segment, or route between the radio",
+        "score": 0.9629204869270325
+      },
+      {
+        "box": [
+          [
+            60.0,
+            554.0
+          ],
+          [
+            157.0,
+            554.0
+          ],
+          [
+            157.0,
+            568.0
+          ],
+          [
+            60.0,
+            568.0
+          ]
+        ],
+        "text": "that location.",
+        "score": 0.9834503531455994
+      },
+      {
+        "box": [
+          [
+            489.0,
+            552.0
+          ],
+          [
+            806.0,
+            553.0
+          ],
+          [
+            806.0,
+            569.0
+          ],
+          [
+            488.0,
+            568.0
+          ]
+        ],
+        "text": "fixes defining the airway, segment, or route.",
+        "score": 0.9609130024909973
+      },
+      {
+        "box": [
+          [
+            60.0,
+            586.0
+          ],
+          [
+            473.0,
+            586.0
+          ],
+          [
+            473.0,
+            602.0
+          ],
+          [
+            60.0,
+            602.0
+          ]
+        ],
+        "text": "Maximum Authorized Altitude (MAA). An MAA is a",
+        "score": 0.93101966381073
+      },
+      {
+        "box": [
+          [
+            489.0,
+            587.0
+          ],
+          [
+            901.0,
+            587.0
+          ],
+          [
+            901.0,
+            600.0
+          ],
+          [
+            489.0,
+            600.0
+          ]
+        ],
+        "text": "MinimumIFR Altitude(MlA).Minimum altitudes forIFR",
+        "score": 0.9427477121353149
+      },
+      {
+        "box": [
+          [
+            61.0,
+            604.0
+          ],
+          [
+            471.0,
+            604.0
+          ],
+          [
+            471.0,
+            617.0
+          ],
+          [
+            61.0,
+            617.0
+          ]
+        ],
+        "text": "published altitude representing the maximum usable",
+        "score": 0.9866182804107666
+      },
+      {
+        "box": [
+          [
+            489.0,
+            603.0
+          ],
+          [
+            903.0,
+            603.0
+          ],
+          [
+            903.0,
+            619.0
+          ],
+          [
+            489.0,
+            619.0
+          ]
+        ],
+        "text": "operations are prescribed in 14 CFR Part 91. These MIAs are",
+        "score": 0.9289633631706238
+      },
+      {
+        "box": [
+          [
+            61.0,
+            621.0
+          ],
+          [
+            471.0,
+            621.0
+          ],
+          [
+            471.0,
+            634.0
+          ],
+          [
+            61.0,
+            634.0
+          ]
+        ],
+        "text": "altitude or flight level for an airspace structure or route",
+        "score": 0.9577407240867615
+      },
+      {
+        "box": [
+          [
+            490.0,
+            621.0
+          ],
+          [
+            901.0,
+            621.0
+          ],
+          [
+            901.0,
+            634.0
+          ],
+          [
+            490.0,
+            634.0
+          ]
+        ],
+        "text": "published on IFR charts and prescribed in 14 CFR Part 95",
+        "score": 0.9634341597557068
+      },
+      {
+        "box": [
+          [
+            60.0,
+            636.0
+          ],
+          [
+            472.0,
+            636.0
+          ],
+          [
+            472.0,
+            652.0
+          ],
+          [
+            60.0,
+            652.0
+          ]
+        ],
+        "text": "segment. It is the highest altitude on a Federal airway, jet",
+        "score": 0.9427509307861328
+      },
+      {
+        "box": [
+          [
+            490.0,
+            637.0
+          ],
+          [
+            901.0,
+            637.0
+          ],
+          [
+            901.0,
+            650.0
+          ],
+          [
+            490.0,
+            650.0
+          ]
+        ],
+        "text": "for airways and routes, and in 14 CFR Part 97 for standard",
+        "score": 0.9568753242492676
+      },
+      {
+        "box": [
+          [
+            59.0,
+            652.0
+          ],
+          [
+            472.0,
+            651.0
+          ],
+          [
+            472.0,
+            667.0
+          ],
+          [
+            59.0,
+            668.0
+          ]
+        ],
+        "text": "route, RNAV low or high route, or other direct route for",
+        "score": 0.9525753855705261
+      },
+      {
+        "box": [
+          [
+            489.0,
+            651.0
+          ],
+          [
+            733.0,
+            652.0
+          ],
+          [
+            733.0,
+            668.0
+          ],
+          [
+            488.0,
+            667.0
+          ]
+        ],
+        "text": "instrument approach procedures.",
+        "score": 0.9708719849586487
+      },
+      {
+        "box": [
+          [
+            60.0,
+            669.0
+          ],
+          [
+            470.0,
+            670.0
+          ],
+          [
+            470.0,
+            684.0
+          ],
+          [
+            60.0,
+            683.0
+          ]
+        ],
+        "text": "which an MEA is designated at which adequate reception",
+        "score": 0.9559853076934814
+      },
+      {
+        "box": [
+          [
+            61.0,
+            687.0
+          ],
+          [
+            286.0,
+            687.0
+          ],
+          [
+            286.0,
+            700.0
+          ],
+          [
+            61.0,
+            700.0
+          ]
+        ],
+        "text": "of navigation signals is assured.",
+        "score": 0.9546663165092468
+      },
+      {
+        "box": [
+          [
+            489.0,
+            685.0
+          ],
+          [
+            903.0,
+            685.0
+          ],
+          [
+            903.0,
+            701.0
+          ],
+          [
+            489.0,
+            701.0
+          ]
+        ],
+        "text": "Minimum Navigation Performance Specifications (MNPS).",
+        "score": 0.9758727550506592
+      },
+      {
+        "box": [
+          [
+            489.0,
+            702.0
+          ],
+          [
+            902.0,
+            702.0
+          ],
+          [
+            902.0,
+            718.0
+          ],
+          [
+            489.0,
+            718.0
+          ]
+        ],
+        "text": "A set of standards that require aircraft to have a minimum",
+        "score": 0.9586414694786072
+      },
+      {
+        "box": [
+          [
+            61.0,
+            720.0
+          ],
+          [
+            471.0,
+            720.0
+          ],
+          [
+            471.0,
+            733.0
+          ],
+          [
+            61.0,
+            733.0
+          ]
+        ],
+        "text": "Metering Fix. A fix along an established route over which",
+        "score": 0.9483790397644043
+      },
+      {
+        "box": [
+          [
+            490.0,
+            720.0
+          ],
+          [
+            901.0,
+            720.0
+          ],
+          [
+            901.0,
+            733.0
+          ],
+          [
+            490.0,
+            733.0
+          ]
+        ],
+        "text": "navigation performance capability in order to operate in",
+        "score": 0.9812545776367188
+      },
+      {
+        "box": [
+          [
+            60.0,
+            735.0
+          ],
+          [
+            472.0,
+            735.0
+          ],
+          [
+            472.0,
+            751.0
+          ],
+          [
+            60.0,
+            751.0
+          ]
+        ],
+        "text": "aircraft are metered prior to entering terminal airspace.",
+        "score": 0.9931291341781616
+      },
+      {
+        "box": [
+          [
+            489.0,
+            736.0
+          ],
+          [
+            901.0,
+            736.0
+          ],
+          [
+            901.0,
+            749.0
+          ],
+          [
+            489.0,
+            749.0
+          ]
+        ],
+        "text": "MNPS designated airspace. In addition,aircraft must be",
+        "score": 0.9483376741409302
+      },
+      {
+        "box": [
+          [
+            61.0,
+            753.0
+          ],
+          [
+            471.0,
+            753.0
+          ],
+          [
+            471.0,
+            766.0
+          ],
+          [
+            61.0,
+            766.0
+          ]
+        ],
+        "text": "Normally, this fix should be established at a distance from",
+        "score": 0.9489222764968872
+      },
+      {
+        "box": [
+          [
+            488.0,
+            752.0
+          ],
+          [
+            903.0,
+            752.0
+          ],
+          [
+            903.0,
+            768.0
+          ],
+          [
+            488.0,
+            768.0
+          ]
+        ],
+        "text": "certified by their State of Registry for MNPS operation.",
+        "score": 0.9608336091041565
+      },
+      {
+        "box": [
+          [
+            60.0,
+            768.0
+          ],
+          [
+            472.0,
+            768.0
+          ],
+          [
+            472.0,
+            784.0
+          ],
+          [
+            60.0,
+            784.0
+          ]
+        ],
+        "text": "the airport which facilitates a profile descent 10,0 feet",
+        "score": 0.9455167055130005
+      },
+      {
+        "box": [
+          [
+            487.0,
+            767.0
+          ],
+          [
+            903.0,
+            768.0
+          ],
+          [
+            903.0,
+            784.0
+          ],
+          [
+            487.0,
+            783.0
+          ]
+        ],
+        "text": "Under certain conditions, non-MNPS aircraft can operate",
+        "score": 0.9735221266746521
+      },
+      {
+        "box": [
+          [
+            61.0,
+            786.0
+          ],
+          [
+            342.0,
+            786.0
+          ],
+          [
+            342.0,
+            799.0
+          ],
+          [
+            61.0,
+            799.0
+          ]
+        ],
+        "text": "above airport elevation (AAE) or above.",
+        "score": 0.9613380432128906
+      },
+      {
+        "box": [
+          [
+            489.0,
+            784.0
+          ],
+          [
+            902.0,
+            784.0
+          ],
+          [
+            902.0,
+            800.0
+          ],
+          [
+            489.0,
+            800.0
+          ]
+        ],
+        "text": "in MNPS airspace, however, standard oceanic separation",
+        "score": 0.9668829441070557
+      },
+      {
+        "box": [
+          [
+            490.0,
+            803.0
+          ],
+          [
+            901.0,
+            803.0
+          ],
+          [
+            901.0,
+            816.0
+          ],
+          [
+            490.0,
+            816.0
+          ]
+        ],
+        "text": "minima is provided between the non-MNPS aircraft and",
+        "score": 0.951759397983551
+      },
+      {
+        "box": [
+          [
+            61.0,
+            819.0
+          ],
+          [
+            471.0,
+            819.0
+          ],
+          [
+            471.0,
+            832.0
+          ],
+          [
+            61.0,
+            832.0
+          ]
+        ],
+        "text": "Mid-RVR. The RVR readout values obtained from sensors",
+        "score": 0.9539955854415894
+      },
+      {
+        "box": [
+          [
+            489.0,
+            819.0
+          ],
+          [
+            581.0,
+            819.0
+          ],
+          [
+            581.0,
+            832.0
+          ],
+          [
+            489.0,
+            832.0
+          ]
+        ],
+        "text": "other traffi c.",
+        "score": 0.8997112512588501
+      },
+      {
+        "box": [
+          [
+            58.0,
+            832.0
+          ],
+          [
+            285.0,
+            834.0
+          ],
+          [
+            285.0,
+            851.0
+          ],
+          [
+            58.0,
+            849.0
+          ]
+        ],
+        "text": "located midfield of the runway.",
+        "score": 0.9719333052635193
+      },
+      {
+        "box": [
+          [
+            490.0,
+            852.0
+          ],
+          [
+            901.0,
+            852.0
+          ],
+          [
+            901.0,
+            865.0
+          ],
+          [
+            490.0,
+            865.0
+          ]
+        ],
+        "text": "Minimum Obstruction Clearance Altitude (MoCA).The",
+        "score": 0.9419471025466919
+      },
+      {
+        "box": [
+          [
+            59.0,
+            866.0
+          ],
+          [
+            472.0,
+            867.0
+          ],
+          [
+            472.0,
+            883.0
+          ],
+          [
+            59.0,
+            882.0
+          ]
+        ],
+        "text": "Mileage Break. A point on a route where the leg segment",
+        "score": 0.9638923406600952
+      },
+      {
+        "box": [
+          [
+            488.0,
+            867.0
+          ],
+          [
+            902.0,
+            867.0
+          ],
+          [
+            902.0,
+            883.0
+          ],
+          [
+            488.0,
+            883.0
+          ]
+        ],
+        "text": "MOCA is the lowest published altitude in effect between",
+        "score": 0.9496535658836365
+      },
+      {
+        "box": [
+          [
+            61.0,
+            885.0
+          ],
+          [
+            469.0,
+            885.0
+          ],
+          [
+            469.0,
+            898.0
+          ],
+          [
+            61.0,
+            898.0
+          ]
+        ],
+        "text": "mileage ends, and a new leg segment mileage begins, often",
+        "score": 0.918587863445282
+      },
+      {
+        "box": [
+          [
+            488.0,
+            883.0
+          ],
+          [
+            903.0,
+            883.0
+          ],
+          [
+            903.0,
+            899.0
+          ],
+          [
+            488.0,
+            899.0
+          ]
+        ],
+        "text": "radio fixes on VOR airways, off-airway routes, or route",
+        "score": 0.954666256904602
+      },
+      {
+        "box": [
+          [
+            61.0,
+            902.0
+          ],
+          [
+            233.0,
+            902.0
+          ],
+          [
+            233.0,
+            915.0
+          ],
+          [
+            61.0,
+            915.0
+          ]
+        ],
+        "text": "at a route turning point.",
+        "score": 0.9778614640235901
+      },
+      {
+        "box": [
+          [
+            490.0,
+            902.0
+          ],
+          [
+            901.0,
+            902.0
+          ],
+          [
+            901.0,
+            915.0
+          ],
+          [
+            490.0,
+            915.0
+          ]
+        ],
+        "text": "segments that meets obstacle clearance requirements",
+        "score": 0.971641480922699
+      },
+      {
+        "box": [
+          [
+            488.0,
+            916.0
+          ],
+          [
+            902.0,
+            917.0
+          ],
+          [
+            902.0,
+            933.0
+          ],
+          [
+            488.0,
+            932.0
+          ]
+        ],
+        "text": "for the entire route segment. This altitude also assures",
+        "score": 0.9760857820510864
+      },
+      {
+        "box": [
+          [
+            490.0,
+            933.0
+          ],
+          [
+            902.0,
+            934.0
+          ],
+          [
+            902.0,
+            950.0
+          ],
+          [
+            489.0,
+            949.0
+          ]
+        ],
+        "text": "acceptable navigational signal coverage only within 22",
+        "score": 0.9716323018074036
+      },
+      {
+        "box": [
+          [
+            490.0,
+            950.0
+          ],
+          [
+            585.0,
+            950.0
+          ],
+          [
+            585.0,
+            964.0
+          ],
+          [
+            490.0,
+            964.0
+          ]
+        ],
+        "text": "NM of a VOR.",
+        "score": 0.9659488797187805
+      },
+      {
+        "box": [
+          [
+            58.0,
+            962.0
+          ],
+          [
+            90.0,
+            962.0
+          ],
+          [
+            90.0,
+            980.0
+          ],
+          [
+            58.0,
+            980.0
+          ]
+        ],
+        "text": "G-6",
+        "score": 0.998332679271698
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 93,
+    "elapsed_ms": 815.34
+  }
+}

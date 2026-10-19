@@ -1,0 +1,47 @@
+{
+  "id": "rctw17_image_6180",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "0adbd1bd01de4e8d18990d46935d0524b5847dd53fd2f65473691938f42d41c5",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "暂停售票敬请谅解",
+    "lines": [
+      {
+        "box": [
+          [
+            124.46808624267578,
+            1553.225830078125
+          ],
+          [
+            820.2127685546875,
+            1525.8065185546875
+          ],
+          [
+            825.0,
+            1661.290283203125
+          ],
+          [
+            129.2553253173828,
+            1688.709716796875
+          ]
+        ],
+        "text": "暂停售票敬请谅解",
+        "score": 0.988238163292408
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 95.24,
+    "direction_stats": {
+      "lines_tested_180": 2,
+      "lines_chosen_180": 0,
+      "recognized_lines": 3
+    },
+    "elapsed_ms": 95.24
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_2655",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "9799bd056f896c6261af1bcb521fbd7890582e4e8b94f2ae3ae2d903ba29faec",
+  "ok": true,
+  "result": {
+    "text": "华友源\n内衣专卖店",
+    "lines": [
+      {
+        "box": [
+          [
+            933.5106382978723,
+            1508.0645161290322
+          ],
+          [
+            2160.6382978723404,
+            1600.0
+          ],
+          [
+            2123.936170212766,
+            2082.258064516129
+          ],
+          [
+            898.4042553191489,
+            1990.3225806451612
+          ]
+        ],
+        "text": "华友源",
+        "score": 0.9984986186027527
+      },
+      {
+        "box": [
+          [
+            987.7659574468084,
+            1945.1612903225805
+          ],
+          [
+            2122.3404255319147,
+            2008.0645161290322
+          ],
+          [
+            2112.7659574468084,
+            2183.870967741935
+          ],
+          [
+            978.1914893617021,
+            2120.967741935484
+          ]
+        ],
+        "text": "内衣专卖店",
+        "score": 0.9999440908432007
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 103.86
+  }
+}

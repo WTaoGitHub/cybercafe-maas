@@ -1,0 +1,1316 @@
+{
+  "id": "doclaynet_481a5738351ec20ae055fcc68e28978b774b1eb8e6be8e926e785cc057c433a3",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "1.1Storagevirtualizationterminology\nStoragevirtualizationisatermthatisusedextensivelythroughoutthestorageindustry.Itcan\ns\ntechnicallycanclaimtobevirtualizedinoneformoranother.Therefore,thischapterstartsby\ndefining theconceptofstoragevirtualizationasitisused inthisbook.\nIBMdescribesstoragevirtualizationinthefollowingway:\nsetofresources,preferablywithmoredesirablecharacteristics.\nhidespartofthecomplexityofthoseresources.Italsoaddsorintegratesnewfunctions\nwithexistingservices,andcanbenestedorappliedtomultiplelayersofasystem.\nsharedstoragemodelversion2,showninFigure1-1.\nSNlA shared storage model,v2\nApplication\nManagement\napplication\nvirtualization\nDiscovery\nFile/recordsubsystem\nMonitoring\nSMI-S,SNMP.etc\nConfiguration\nStorage domain\nHigh availability\nScaleoutclustering\nDatabase\nFile system\nFrameworls\nSecurity\nAudiding\nBlock\nHost\nBilling\nNetwork\nRedundancy\nDevice\nVirtualization\nBackup\nCapacity\nBlock subsystem\nRetention\nStorage devicos (disks, etc.)\nCompliance\nData\nManagement\nFigure1-1SNiAsharedstoragemodel,version2\nThemodelconsistsofthefollowinglayers:\nApplication:theuserofthestoragedomain\nStorage domain,whichis split into:\nFile/record/namespacevirtualizationandFile/recordsubsystem\nBlockVirtualization\n一\nBlocksubsystem\nApplicationstypicallyreadandwritedataasvectorsofbytesorrecords.Alternatively,storage\npresentsdataasvectorsofblocksofaconstantsize(512bytesor,innewerdevices,4096\nbytesperblock).TheFile/record/namespacevirtualizationandFile/recordsubsystemlayers\noftheBlockVirtualizationlayer.TheBlockVirtualizationlayerinturnmapsrequestsofthe\nhigher layerstophysical storageblocks,provided byStoragedevicesin theBlocksubsystem.\n1Source:Storage Networking Industry Association.\n2\nImplementing theIBMSystemStorageSANVolumeControllerwithIBMSpectrumVirtualizeV8.2.1",
+    "lines": [
+      {
+        "box": [
+          [
+            106.0,
+            91.0
+          ],
+          [
+            595.0,
+            95.0
+          ],
+          [
+            594.0,
+            119.0
+          ],
+          [
+            106.0,
+            115.0
+          ]
+        ],
+        "text": "1.1Storagevirtualizationterminology",
+        "score": 0.9984001125608172
+      },
+      {
+        "box": [
+          [
+            229.0,
+            136.0
+          ],
+          [
+            914.0,
+            136.0
+          ],
+          [
+            914.0,
+            151.0
+          ],
+          [
+            229.0,
+            151.0
+          ]
+        ],
+        "text": "Storagevirtualizationisatermthatisusedextensivelythroughoutthestorageindustry.Itcan",
+        "score": 0.992310152714511
+      },
+      {
+        "box": [
+          [
+            229.0,
+            151.0
+          ],
+          [
+            914.0,
+            151.0
+          ],
+          [
+            914.0,
+            167.0
+          ],
+          [
+            229.0,
+            167.0
+          ]
+        ],
+        "text": "s",
+        "score": 0.6144968867301941
+      },
+      {
+        "box": [
+          [
+            228.0,
+            165.0
+          ],
+          [
+            913.0,
+            167.0
+          ],
+          [
+            913.0,
+            184.0
+          ],
+          [
+            228.0,
+            183.0
+          ]
+        ],
+        "text": "technicallycanclaimtobevirtualizedinoneformoranother.Therefore,thischapterstartsby",
+        "score": 0.9917993218433566
+      },
+      {
+        "box": [
+          [
+            229.0,
+            182.0
+          ],
+          [
+            743.0,
+            182.0
+          ],
+          [
+            743.0,
+            198.0
+          ],
+          [
+            229.0,
+            198.0
+          ]
+        ],
+        "text": "defining theconceptofstoragevirtualizationasitisused inthisbook.",
+        "score": 0.9831046937033534
+      },
+      {
+        "box": [
+          [
+            228.0,
+            210.0
+          ],
+          [
+            649.0,
+            212.0
+          ],
+          [
+            649.0,
+            227.0
+          ],
+          [
+            228.0,
+            226.0
+          ]
+        ],
+        "text": "IBMdescribesstoragevirtualizationinthefollowingway:",
+        "score": 0.9942323553795908
+      },
+      {
+        "box": [
+          [
+            253.0,
+            248.0
+          ],
+          [
+            723.0,
+            248.0
+          ],
+          [
+            723.0,
+            264.0
+          ],
+          [
+            253.0,
+            264.0
+          ]
+        ],
+        "text": "setofresources,preferablywithmoredesirablecharacteristics.",
+        "score": 0.9863498436993566
+      },
+      {
+        "box": [
+          [
+            253.0,
+            287.0
+          ],
+          [
+            900.0,
+            287.0
+          ],
+          [
+            900.0,
+            302.0
+          ],
+          [
+            253.0,
+            302.0
+          ]
+        ],
+        "text": "hidespartofthecomplexityofthoseresources.Italsoaddsorintegratesnewfunctions",
+        "score": 0.9953508631388346
+      },
+      {
+        "box": [
+          [
+            254.0,
+            303.0
+          ],
+          [
+            860.0,
+            303.0
+          ],
+          [
+            860.0,
+            316.0
+          ],
+          [
+            254.0,
+            316.0
+          ]
+        ],
+        "text": "withexistingservices,andcanbenestedorappliedtomultiplelayersofasystem.",
+        "score": 0.9898871549538204
+      },
+      {
+        "box": [
+          [
+            230.0,
+            346.0
+          ],
+          [
+            625.0,
+            346.0
+          ],
+          [
+            625.0,
+            360.0
+          ],
+          [
+            230.0,
+            360.0
+          ]
+        ],
+        "text": "sharedstoragemodelversion2,showninFigure1-1.",
+        "score": 0.9894508136944338
+      },
+      {
+        "box": [
+          [
+            372.0,
+            381.0
+          ],
+          [
+            602.0,
+            382.0
+          ],
+          [
+            602.0,
+            398.0
+          ],
+          [
+            372.0,
+            396.0
+          ]
+        ],
+        "text": "SNlA shared storage model,v2",
+        "score": 0.9526385090180806
+      },
+      {
+        "box": [
+          [
+            394.0,
+            424.0
+          ],
+          [
+            468.0,
+            424.0
+          ],
+          [
+            468.0,
+            439.0
+          ],
+          [
+            394.0,
+            439.0
+          ]
+        ],
+        "text": "Application",
+        "score": 0.9958021532405507
+      },
+      {
+        "box": [
+          [
+            629.0,
+            416.0
+          ],
+          [
+            716.0,
+            418.0
+          ],
+          [
+            716.0,
+            433.0
+          ],
+          [
+            629.0,
+            432.0
+          ]
+        ],
+        "text": "Management",
+        "score": 0.9954979121685028
+      },
+      {
+        "box": [
+          [
+            636.0,
+            431.0
+          ],
+          [
+            708.0,
+            430.0
+          ],
+          [
+            709.0,
+            445.0
+          ],
+          [
+            636.0,
+            447.0
+          ]
+        ],
+        "text": "application",
+        "score": 0.9952059821649031
+      },
+      {
+        "box": [
+          [
+            396.0,
+            480.0
+          ],
+          [
+            465.0,
+            480.0
+          ],
+          [
+            465.0,
+            491.0
+          ],
+          [
+            396.0,
+            491.0
+          ]
+        ],
+        "text": "virtualization",
+        "score": 0.9727122400488172
+      },
+      {
+        "box": [
+          [
+            660.0,
+            478.0
+          ],
+          [
+            707.0,
+            480.0
+          ],
+          [
+            707.0,
+            492.0
+          ],
+          [
+            659.0,
+            490.0
+          ]
+        ],
+        "text": "Discovery",
+        "score": 0.9942691855960422
+      },
+      {
+        "box": [
+          [
+            374.0,
+            497.0
+          ],
+          [
+            505.0,
+            499.0
+          ],
+          [
+            505.0,
+            512.0
+          ],
+          [
+            374.0,
+            510.0
+          ]
+        ],
+        "text": "File/recordsubsystem",
+        "score": 0.9863138198852539
+      },
+      {
+        "box": [
+          [
+            658.0,
+            492.0
+          ],
+          [
+            713.0,
+            494.0
+          ],
+          [
+            712.0,
+            507.0
+          ],
+          [
+            657.0,
+            505.0
+          ]
+        ],
+        "text": "Monitoring",
+        "score": 0.9872189462184906
+      },
+      {
+        "box": [
+          [
+            589.0,
+            508.0
+          ],
+          [
+            601.0,
+            508.0
+          ],
+          [
+            601.0,
+            570.0
+          ],
+          [
+            589.0,
+            570.0
+          ]
+        ],
+        "text": "SMI-S,SNMP.etc",
+        "score": 0.7887615412473679
+      },
+      {
+        "box": [
+          [
+            652.0,
+            506.0
+          ],
+          [
+            717.0,
+            508.0
+          ],
+          [
+            716.0,
+            522.0
+          ],
+          [
+            652.0,
+            520.0
+          ]
+        ],
+        "text": "Configuration",
+        "score": 0.990501357958867
+      },
+      {
+        "box": [
+          [
+            236.0,
+            519.0
+          ],
+          [
+            252.0,
+            519.0
+          ],
+          [
+            252.0,
+            599.0
+          ],
+          [
+            236.0,
+            599.0
+          ]
+        ],
+        "text": "Storage domain",
+        "score": 0.9970826038292476
+      },
+      {
+        "box": [
+          [
+            264.0,
+            524.0
+          ],
+          [
+            280.0,
+            524.0
+          ],
+          [
+            280.0,
+            595.0
+          ],
+          [
+            264.0,
+            595.0
+          ]
+        ],
+        "text": "High availability",
+        "score": 0.9133707214804256
+      },
+      {
+        "box": [
+          [
+            288.0,
+            516.0
+          ],
+          [
+            304.0,
+            517.0
+          ],
+          [
+            301.0,
+            601.0
+          ],
+          [
+            285.0,
+            600.0
+          ]
+        ],
+        "text": "Scaleoutclustering",
+        "score": 0.9798778163062202
+      },
+      {
+        "box": [
+          [
+            347.0,
+            517.0
+          ],
+          [
+            405.0,
+            519.0
+          ],
+          [
+            404.0,
+            532.0
+          ],
+          [
+            346.0,
+            530.0
+          ]
+        ],
+        "text": "Database",
+        "score": 0.9961431324481964
+      },
+      {
+        "box": [
+          [
+            450.0,
+            518.0
+          ],
+          [
+            515.0,
+            521.0
+          ],
+          [
+            514.0,
+            533.0
+          ],
+          [
+            450.0,
+            530.0
+          ]
+        ],
+        "text": "File system",
+        "score": 0.978601564060558
+      },
+      {
+        "box": [
+          [
+            621.0,
+            530.0
+          ],
+          [
+            634.0,
+            531.0
+          ],
+          [
+            632.0,
+            585.0
+          ],
+          [
+            619.0,
+            585.0
+          ]
+        ],
+        "text": "Frameworls",
+        "score": 0.9590187847614289
+      },
+      {
+        "box": [
+          [
+            664.0,
+            521.0
+          ],
+          [
+            704.0,
+            523.0
+          ],
+          [
+            704.0,
+            537.0
+          ],
+          [
+            663.0,
+            535.0
+          ]
+        ],
+        "text": "Security",
+        "score": 0.9905310720205307
+      },
+      {
+        "box": [
+          [
+            663.0,
+            535.0
+          ],
+          [
+            706.0,
+            537.0
+          ],
+          [
+            705.0,
+            551.0
+          ],
+          [
+            662.0,
+            548.0
+          ]
+        ],
+        "text": "Audiding",
+        "score": 0.8965568840503693
+      },
+      {
+        "box": [
+          [
+            338.0,
+            557.0
+          ],
+          [
+            375.0,
+            557.0
+          ],
+          [
+            375.0,
+            571.0
+          ],
+          [
+            338.0,
+            571.0
+          ]
+        ],
+        "text": "Block",
+        "score": 0.9923206686973571
+      },
+      {
+        "box": [
+          [
+            502.0,
+            552.0
+          ],
+          [
+            528.0,
+            554.0
+          ],
+          [
+            527.0,
+            566.0
+          ],
+          [
+            501.0,
+            564.0
+          ]
+        ],
+        "text": "Host",
+        "score": 0.9958603829145432
+      },
+      {
+        "box": [
+          [
+            669.0,
+            549.0
+          ],
+          [
+            700.0,
+            552.0
+          ],
+          [
+            699.0,
+            566.0
+          ],
+          [
+            668.0,
+            563.0
+          ]
+        ],
+        "text": "Billing",
+        "score": 0.9098193900925773
+      },
+      {
+        "box": [
+          [
+            413.0,
+            566.0
+          ],
+          [
+            459.0,
+            568.0
+          ],
+          [
+            459.0,
+            582.0
+          ],
+          [
+            413.0,
+            580.0
+          ]
+        ],
+        "text": "Network",
+        "score": 0.9102660204683032
+      },
+      {
+        "box": [
+          [
+            654.0,
+            563.0
+          ],
+          [
+            713.0,
+            565.0
+          ],
+          [
+            712.0,
+            579.0
+          ],
+          [
+            653.0,
+            577.0
+          ]
+        ],
+        "text": "Redundancy",
+        "score": 0.9936748743057251
+      },
+      {
+        "box": [
+          [
+            336.0,
+            581.0
+          ],
+          [
+            371.0,
+            583.0
+          ],
+          [
+            370.0,
+            595.0
+          ],
+          [
+            335.0,
+            593.0
+          ]
+        ],
+        "text": "Device",
+        "score": 0.988625556230545
+      },
+      {
+        "box": [
+          [
+            442.0,
+            582.0
+          ],
+          [
+            527.0,
+            583.0
+          ],
+          [
+            526.0,
+            596.0
+          ],
+          [
+            442.0,
+            595.0
+          ]
+        ],
+        "text": "Virtualization",
+        "score": 0.9917257002421788
+      },
+      {
+        "box": [
+          [
+            666.0,
+            577.0
+          ],
+          [
+            702.0,
+            580.0
+          ],
+          [
+            701.0,
+            594.0
+          ],
+          [
+            665.0,
+            591.0
+          ]
+        ],
+        "text": "Backup",
+        "score": 0.9903289377689362
+      },
+      {
+        "box": [
+          [
+            663.0,
+            593.0
+          ],
+          [
+            705.0,
+            595.0
+          ],
+          [
+            704.0,
+            609.0
+          ],
+          [
+            662.0,
+            607.0
+          ]
+        ],
+        "text": "Capacity",
+        "score": 0.984285518527031
+      },
+      {
+        "box": [
+          [
+            392.0,
+            611.0
+          ],
+          [
+            493.0,
+            611.0
+          ],
+          [
+            493.0,
+            624.0
+          ],
+          [
+            392.0,
+            624.0
+          ]
+        ],
+        "text": "Block subsystem",
+        "score": 0.9763709425926208
+      },
+      {
+        "box": [
+          [
+            660.0,
+            609.0
+          ],
+          [
+            708.0,
+            609.0
+          ],
+          [
+            708.0,
+            621.0
+          ],
+          [
+            660.0,
+            621.0
+          ]
+        ],
+        "text": "Retention",
+        "score": 0.9941699107487997
+      },
+      {
+        "box": [
+          [
+            358.0,
+            628.0
+          ],
+          [
+            502.0,
+            627.0
+          ],
+          [
+            503.0,
+            643.0
+          ],
+          [
+            358.0,
+            643.0
+          ]
+        ],
+        "text": "Storage devicos (disks, etc.)",
+        "score": 0.9661256670951843
+      },
+      {
+        "box": [
+          [
+            656.0,
+            621.0
+          ],
+          [
+            713.0,
+            623.0
+          ],
+          [
+            712.0,
+            636.0
+          ],
+          [
+            655.0,
+            635.0
+          ]
+        ],
+        "text": "Compliance",
+        "score": 0.9291573882102966
+      },
+      {
+        "box": [
+          [
+            422.0,
+            651.0
+          ],
+          [
+            454.0,
+            653.0
+          ],
+          [
+            453.0,
+            668.0
+          ],
+          [
+            421.0,
+            666.0
+          ]
+        ],
+        "text": "Data",
+        "score": 0.9954839199781418
+      },
+      {
+        "box": [
+          [
+            632.0,
+            653.0
+          ],
+          [
+            712.0,
+            654.0
+          ],
+          [
+            712.0,
+            667.0
+          ],
+          [
+            632.0,
+            666.0
+          ]
+        ],
+        "text": "Management",
+        "score": 0.9982791662216186
+      },
+      {
+        "box": [
+          [
+            228.0,
+            675.0
+          ],
+          [
+            573.0,
+            673.0
+          ],
+          [
+            573.0,
+            690.0
+          ],
+          [
+            228.0,
+            692.0
+          ]
+        ],
+        "text": "Figure1-1SNiAsharedstoragemodel,version2",
+        "score": 0.9683527864515782
+      },
+      {
+        "box": [
+          [
+            229.0,
+            709.0
+          ],
+          [
+            545.0,
+            710.0
+          ],
+          [
+            545.0,
+            725.0
+          ],
+          [
+            229.0,
+            725.0
+          ]
+        ],
+        "text": "Themodelconsistsofthefollowinglayers:",
+        "score": 0.9842392560598012
+      },
+      {
+        "box": [
+          [
+            229.0,
+            732.0
+          ],
+          [
+            576.0,
+            732.0
+          ],
+          [
+            576.0,
+            747.0
+          ],
+          [
+            229.0,
+            747.0
+          ]
+        ],
+        "text": "Application:theuserofthestoragedomain",
+        "score": 0.9951430333627237
+      },
+      {
+        "box": [
+          [
+            252.0,
+            753.0
+          ],
+          [
+            511.0,
+            755.0
+          ],
+          [
+            510.0,
+            770.0
+          ],
+          [
+            252.0,
+            769.0
+          ]
+        ],
+        "text": "Storage domain,whichis split into:",
+        "score": 0.9428598021759707
+      },
+      {
+        "box": [
+          [
+            274.0,
+            775.0
+          ],
+          [
+            750.0,
+            775.0
+          ],
+          [
+            750.0,
+            792.0
+          ],
+          [
+            274.0,
+            792.0
+          ]
+        ],
+        "text": "File/record/namespacevirtualizationandFile/recordsubsystem",
+        "score": 0.9979522135751001
+      },
+      {
+        "box": [
+          [
+            276.0,
+            791.0
+          ],
+          [
+            426.0,
+            791.0
+          ],
+          [
+            426.0,
+            807.0
+          ],
+          [
+            276.0,
+            806.0
+          ]
+        ],
+        "text": "BlockVirtualization",
+        "score": 0.9944890517937509
+      },
+      {
+        "box": [
+          [
+            255.0,
+            813.0
+          ],
+          [
+            265.0,
+            813.0
+          ],
+          [
+            265.0,
+            821.0
+          ],
+          [
+            255.0,
+            821.0
+          ]
+        ],
+        "text": "一",
+        "score": 0.8120672106742859
+      },
+      {
+        "box": [
+          [
+            272.0,
+            804.0
+          ],
+          [
+            400.0,
+            806.0
+          ],
+          [
+            400.0,
+            824.0
+          ],
+          [
+            272.0,
+            822.0
+          ]
+        ],
+        "text": "Blocksubsystem",
+        "score": 0.9984435481684548
+      },
+      {
+        "box": [
+          [
+            230.0,
+            835.0
+          ],
+          [
+            912.0,
+            835.0
+          ],
+          [
+            912.0,
+            850.0
+          ],
+          [
+            230.0,
+            850.0
+          ]
+        ],
+        "text": "Applicationstypicallyreadandwritedataasvectorsofbytesorrecords.Alternatively,storage",
+        "score": 0.986779667082287
+      },
+      {
+        "box": [
+          [
+            229.0,
+            852.0
+          ],
+          [
+            901.0,
+            850.0
+          ],
+          [
+            901.0,
+            866.0
+          ],
+          [
+            229.0,
+            867.0
+          ]
+        ],
+        "text": "presentsdataasvectorsofblocksofaconstantsize(512bytesor,innewerdevices,4096",
+        "score": 0.9806414794921875
+      },
+      {
+        "box": [
+          [
+            228.0,
+            865.0
+          ],
+          [
+            912.0,
+            867.0
+          ],
+          [
+            912.0,
+            884.0
+          ],
+          [
+            228.0,
+            882.0
+          ]
+        ],
+        "text": "bytesperblock).TheFile/record/namespacevirtualizationandFile/recordsubsystemlayers",
+        "score": 0.9942211486944338
+      },
+      {
+        "box": [
+          [
+            228.0,
+            897.0
+          ],
+          [
+            908.0,
+            898.0
+          ],
+          [
+            908.0,
+            914.0
+          ],
+          [
+            228.0,
+            913.0
+          ]
+        ],
+        "text": "oftheBlockVirtualizationlayer.TheBlockVirtualizationlayerinturnmapsrequestsofthe",
+        "score": 0.9876598432660103
+      },
+      {
+        "box": [
+          [
+            228.0,
+            912.0
+          ],
+          [
+            914.0,
+            912.0
+          ],
+          [
+            914.0,
+            930.0
+          ],
+          [
+            228.0,
+            929.0
+          ]
+        ],
+        "text": "higher layerstophysical storageblocks,provided byStoragedevicesin theBlocksubsystem.",
+        "score": 0.9761979083220164
+      },
+      {
+        "box": [
+          [
+            226.0,
+            933.0
+          ],
+          [
+            538.0,
+            938.0
+          ],
+          [
+            538.0,
+            958.0
+          ],
+          [
+            225.0,
+            954.0
+          ]
+        ],
+        "text": "1Source:Storage Networking Industry Association.",
+        "score": 0.9755588310460249
+      },
+      {
+        "box": [
+          [
+            107.0,
+            976.0
+          ],
+          [
+            119.0,
+            976.0
+          ],
+          [
+            119.0,
+            989.0
+          ],
+          [
+            107.0,
+            989.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9992048144340515
+      },
+      {
+        "box": [
+          [
+            146.0,
+            975.0
+          ],
+          [
+            837.0,
+            975.0
+          ],
+          [
+            837.0,
+            990.0
+          ],
+          [
+            146.0,
+            990.0
+          ]
+        ],
+        "text": "Implementing theIBMSystemStorageSANVolumeControllerwithIBMSpectrumVirtualizeV8.2.1",
+        "score": 0.9864263505470462
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 59,
+    "deduplicated": 0,
+    "elapsed_ms": 277.52,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 288.68
+}

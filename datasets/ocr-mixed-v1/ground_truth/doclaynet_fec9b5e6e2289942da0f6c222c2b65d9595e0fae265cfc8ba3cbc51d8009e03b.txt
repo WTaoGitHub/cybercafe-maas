@@ -1,0 +1,151 @@
+Piezoresistive heat engine and refrigerator
+P.G. Steeneken, K. Le Phan, M.J. Goossens, G.E.J. Koops, G.J.A.M. Brom, C. van der Avoort and J.T.M. van Beek
+NXP-TSMC Research Center, NXP Semiconductors, HTC 4, 5656 AE Eindhoven, the Netherlands.
+Heat engines provide most of our mechanical power and are essential for transportation on macro-
+scopic scale. However, although significant progress has been made in the miniaturization of elec-
+trostatic engines, it has proven difficult to reduce the size of liquid or gas driven heat engines below
+10
+$^{7}$µ
+m
+$^{3}$.
+Here we demonstrate that a crystalline silicon structure operates as a cyclic piezoresistive heat
+arXiv:1001.3170v2 [cond-mat.mes-hall] 6 Nov 2011
+3
+engine when it is driven by a sufficiently high DC current. A 0.34
+µ
+m
+engine beam draws heat from
+the DC current using the piezoresistive effect and converts it into mechanical work by expansion
+and contraction at different temperatures.
+This mechanical power drives a silicon resonator of
+3
+3
+1.1
+10
+µ
+m
+into sustained oscillation.
+Even below the oscillation threshold the engine beam
+×
+continues to amplify the resonator’s Brownian motion. When its thermodynamic cycle is inverted,
+the structure is shown to reduce these thermal fluctuations, therefore operating as a refrigerator.
+cyclic motion. In the first part of this article the opera-
+Most heat engines operate by the cyclic expansion and
+tion of the piezoresistive heat engine above this threshold
+contraction of a gas at different temperatures. Much ef-
+power
+P$_{t}$
+is demonstrated by driving a resonator into sus-
+fort has gone into miniaturizing these conventional heat
+tained oscillation. In the second part the motion of the
+engine concepts
+$^{1–3}$.
+However this downscaling is diffi-
+device at driving powers below
+P$_{t}$
+is investigated. Mea-
+cult, because the efficiency and power density of these
+surements show that the engine beam continues to in-
+engines reduce strongly with its size
+$^{4}$. A promising route
+crease the thermal energy stored in the resonance mode
+for the miniaturization of heat engines is the use of an
+like a heat pump.
+When the thermodynamic cycle of
+electrically heated solid as a working substance, because
+the engine is reversed, it is shown to reduce the stored
+the large heat capacitance of solids allows much higher
+thermal energy in the resonant mode, similar to recently
+power densities and electrical interconnect facilitates en-
+developed optical and RF refrigerators
+$^{11–18}$. In contrast
+ergy transport and localized heat generation at the mi-
+to conventional refrigerators, which simultaneously re-
+croscale.
+This concept has often been applied in elec-
+move thermal energy from many degrees of freedom of
+trothermal actuators for microscopic devices
+$^{5–10}$, how-
+a substance, this type of refrigerators cools by removing
+ever the similarity between thermal expansion actuators
+thermal energy from only a single mechanical resonance
+and heat engines has received little attention.
+mode. This piezoresistive refrigerator provides an alter-
+In order to operate as a cyclic heat engine, a thermal
+native way to reduce undesirable Brownian fluctuations
+actuator needs to be supplemented with a mechanism
+in micromechanical sensors and mirrors.
+that regulates the thermodynamic cycle of heating, ex-
+pansion, cooling and compression. This cycle can be reg-
+7
+ulated by an external AC frequency synthesizer
+or by
+Piezoresistive heat engine
+a feedback loop, where a sustained reciprocating motion
+is generated from a DC power
+$^{5,9,10}$. In previous reports
+of electrothermal engines, the thermodynamic cycle was
+Experiments are performed on the homogeneous crys-
+always regulated by external electronic transistor circuits
+talline silicon structure shown in Fig.
+1a.
+The struc-
+and amplifiers.
+ture consists of a mass measuring 12.5
+×
+60.0
+×
+1.5
+µ
+m
+$^{3}$,
+Here it is shown that a well-dimensioned silicon crystal
+which is suspended by a 3
+µ
+m wide spring beam and a
+of uniform composition operates as a cyclic heat engine
+280 nm narrow engine beam. Both beams have a length
+when driven by a DC current. It is demonstrated that
+of 800 nm. Before discussing the stand-alone operation
+a silicon engine beam can drive a silicon resonator into
+of the heat engine, its in-plane mechanical resonance at
+sustained oscillation. In contrast to earlier work
+$^{5,9,10}$, no
+1.26
+MHz (Fig. 2a) is characterized by actuating it via
+external transistors or amplifiers are needed to regulate
+terminal T3 with an AC electrostatic force and detect-
+the heat engine, because a mechanism based on the in-
+ing the strain variations in the engine beam using the
+trinsic piezoresistive heating and thermal expansion of
+piezoresistive effect (see Methods).
+To operate the de-
+silicon provides the required feedback.
+The engine dis-
+vice as a piezoresistive heat engine, the external AC ac-
+placement volume of the heat engine, which similar to car
+tuation voltage is disconnected from terminal T3. Thus,
+engines is defined by the space occupied by the working
+as shown in Fig. 1b the device is only connected at ter-
+substance, is 0.34
+µ
+m
+$^{3}$. Despite its low efficiency, the en-
+minal T1 to a DC current source
+I$_{dc}$
+and to a capacitively
+gine’s power density is almost a factor 1000 higher than
+coupled oscilloscope. All other terminals are grounded.
+that of modern car engines.
+At low values of
+I$_{dc}$
+only noise is observed on the oscil-
+loscope. However, if the DC current is increased above
+Like any other reciprocating heat engine, this piezore-
+a threshold
+I$_{t}$
+=1.19 mA a remarkable effect occurs: the
+sistive heat engine requires a minimum threshold power
+device spontaneously starts to oscillate and generates a
+P$_{t}$
+to compensate its internal dissipation and sustain its

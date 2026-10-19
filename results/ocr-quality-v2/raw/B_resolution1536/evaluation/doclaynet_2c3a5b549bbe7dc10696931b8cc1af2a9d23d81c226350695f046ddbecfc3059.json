@@ -1,0 +1,766 @@
+{
+  "id": "doclaynet_2c3a5b549bbe7dc10696931b8cc1af2a9d23d81c226350695f046ddbecfc3059",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "DraftDocumentforReviewFebruary7,20203:15pm\n8464ch09_0per.fm\nLogicalWORM\nWhetherLWORMissetfor theDC.LWORMis thevirtualequivalentofWORM tape\nmedia,whichis achieved throughsoftwareemulation.Thissettingis availableonlywhen\nallclustersinagridoperateatR1.6andlater.Thefollowingvaluesarevalid:\n-Yes:LWORM is setfor theDC.Volumesbelonging to theDC aredefined as LWORM.\nNo: LWORM is not set.Volumes belonging to the DC are not defined as LWORM. This\nvalueisthedefaultvalueforanewDC.\nUse themenu in theDCs table toadd a DC,or modify or delete anexistingDC.\nTip:Theusercancreateupto256DCsperTS7700grid.\n9.3.9TheAccessicon\nThe topicsin thissectionpresentinformation thatisrelated tomanaginguseraccessina\nTS77o0subsystem.\nThe user can access the following options through the UserAccess (blue man icon) link,as\nshowninFigure9-71.\nAccess\nSecurity Settings\nRoles&Permisslons\nSSL Certifieafes\nInfoCenterSettings\nFigure9-71TheAccessIconandoptions\nTheTS77oomanagementinterface(Ml)pagesthatarecollectedunder theAccessiconhelp\ntheusertovieworchangesecuritysettings,rolesandpermissions,passwords,and\nmenu.Thefollowingwindowsareavailable:\nSecuritySettings:Use thiswindow toviewsecuritysettingsforaTS77o0grid.From this\nwindow,theusercanalsoaccessotherpagestoadd,modify,assign,test,anddelete\nsecuritysettings.\nRolesandPermissions:Use thiswindowtosetandcontroluserrolesandpermissionsfor\na TS7700 grid.\nSSLCertificates:Use this window toview,import,ordeleteSecureSocketsLayer(SSL)\nTS7700 cluster.\nChapter 9. Configuring and operating theIBM TS7700\n463",
+    "lines": [
+      {
+        "box": [
+          [
+            108.0,
+            43.0
+          ],
+          [
+            466.0,
+            44.0
+          ],
+          [
+            466.0,
+            59.0
+          ],
+          [
+            108.0,
+            58.0
+          ]
+        ],
+        "text": "DraftDocumentforReviewFebruary7,20203:15pm",
+        "score": 0.9897453231470925
+      },
+      {
+        "box": [
+          [
+            767.0,
+            43.0
+          ],
+          [
+            916.0,
+            43.0
+          ],
+          [
+            916.0,
+            60.0
+          ],
+          [
+            767.0,
+            60.0
+          ]
+        ],
+        "text": "8464ch09_0per.fm",
+        "score": 0.9864879734814167
+      },
+      {
+        "box": [
+          [
+            230.0,
+            91.0
+          ],
+          [
+            366.0,
+            91.0
+          ],
+          [
+            366.0,
+            107.0
+          ],
+          [
+            230.0,
+            107.0
+          ]
+        ],
+        "text": "LogicalWORM",
+        "score": 0.9823500568216498
+      },
+      {
+        "box": [
+          [
+            252.0,
+            111.0
+          ],
+          [
+            874.0,
+            111.0
+          ],
+          [
+            874.0,
+            129.0
+          ],
+          [
+            252.0,
+            128.0
+          ]
+        ],
+        "text": "WhetherLWORMissetfor theDC.LWORMis thevirtualequivalentofWORM tape",
+        "score": 0.9717953286387704
+      },
+      {
+        "box": [
+          [
+            252.0,
+            127.0
+          ],
+          [
+            909.0,
+            127.0
+          ],
+          [
+            909.0,
+            145.0
+          ],
+          [
+            252.0,
+            144.0
+          ]
+        ],
+        "text": "media,whichis achieved throughsoftwareemulation.Thissettingis availableonlywhen",
+        "score": 0.973778148240681
+      },
+      {
+        "box": [
+          [
+            254.0,
+            145.0
+          ],
+          [
+            821.0,
+            145.0
+          ],
+          [
+            821.0,
+            160.0
+          ],
+          [
+            254.0,
+            160.0
+          ]
+        ],
+        "text": "allclustersinagridoperateatR1.6andlater.Thefollowingvaluesarevalid:",
+        "score": 0.9873819457950876
+      },
+      {
+        "box": [
+          [
+            253.0,
+            165.0
+          ],
+          [
+            916.0,
+            165.0
+          ],
+          [
+            916.0,
+            182.0
+          ],
+          [
+            253.0,
+            182.0
+          ]
+        ],
+        "text": "-Yes:LWORM is setfor theDC.Volumesbelonging to theDC aredefined as LWORM.",
+        "score": 0.9490591655038807
+      },
+      {
+        "box": [
+          [
+            275.0,
+            188.0
+          ],
+          [
+            913.0,
+            188.0
+          ],
+          [
+            913.0,
+            204.0
+          ],
+          [
+            275.0,
+            204.0
+          ]
+        ],
+        "text": "No: LWORM is not set.Volumes belonging to the DC are not defined as LWORM. This",
+        "score": 0.9581879731975024
+      },
+      {
+        "box": [
+          [
+            278.0,
+            205.0
+          ],
+          [
+            568.0,
+            205.0
+          ],
+          [
+            568.0,
+            218.0
+          ],
+          [
+            278.0,
+            218.0
+          ]
+        ],
+        "text": "valueisthedefaultvalueforanewDC.",
+        "score": 0.9929786063730717
+      },
+      {
+        "box": [
+          [
+            228.0,
+            231.0
+          ],
+          [
+            817.0,
+            232.0
+          ],
+          [
+            817.0,
+            248.0
+          ],
+          [
+            228.0,
+            246.0
+          ]
+        ],
+        "text": "Use themenu in theDCs table toadd a DC,or modify or delete anexistingDC.",
+        "score": 0.932445609735118
+      },
+      {
+        "box": [
+          [
+            239.0,
+            266.0
+          ],
+          [
+            663.0,
+            267.0
+          ],
+          [
+            663.0,
+            284.0
+          ],
+          [
+            239.0,
+            284.0
+          ]
+        ],
+        "text": "Tip:Theusercancreateupto256DCsperTS7700grid.",
+        "score": 0.9714935313571583
+      },
+      {
+        "box": [
+          [
+            108.0,
+            313.0
+          ],
+          [
+            341.0,
+            313.0
+          ],
+          [
+            341.0,
+            330.0
+          ],
+          [
+            108.0,
+            330.0
+          ]
+        ],
+        "text": "9.3.9TheAccessicon",
+        "score": 0.9962652623653412
+      },
+      {
+        "box": [
+          [
+            229.0,
+            346.0
+          ],
+          [
+            889.0,
+            347.0
+          ],
+          [
+            889.0,
+            363.0
+          ],
+          [
+            229.0,
+            362.0
+          ]
+        ],
+        "text": "The topicsin thissectionpresentinformation thatisrelated tomanaginguseraccessina",
+        "score": 0.9780812367796898
+      },
+      {
+        "box": [
+          [
+            228.0,
+            361.0
+          ],
+          [
+            376.0,
+            362.0
+          ],
+          [
+            376.0,
+            378.0
+          ],
+          [
+            228.0,
+            377.0
+          ]
+        ],
+        "text": "TS77o0subsystem.",
+        "score": 0.9705325290560722
+      },
+      {
+        "box": [
+          [
+            228.0,
+            389.0
+          ],
+          [
+            906.0,
+            390.0
+          ],
+          [
+            906.0,
+            408.0
+          ],
+          [
+            228.0,
+            407.0
+          ]
+        ],
+        "text": "The user can access the following options through the UserAccess (blue man icon) link,as",
+        "score": 0.9591176597909494
+      },
+      {
+        "box": [
+          [
+            230.0,
+            407.0
+          ],
+          [
+            391.0,
+            407.0
+          ],
+          [
+            391.0,
+            422.0
+          ],
+          [
+            230.0,
+            422.0
+          ]
+        ],
+        "text": "showninFigure9-71.",
+        "score": 0.9960782527923584
+      },
+      {
+        "box": [
+          [
+            435.0,
+            517.0
+          ],
+          [
+            473.0,
+            517.0
+          ],
+          [
+            473.0,
+            529.0
+          ],
+          [
+            435.0,
+            529.0
+          ]
+        ],
+        "text": "Access",
+        "score": 0.9477239549160004
+      },
+      {
+        "box": [
+          [
+            370.0,
+            536.0
+          ],
+          [
+            453.0,
+            536.0
+          ],
+          [
+            453.0,
+            549.0
+          ],
+          [
+            370.0,
+            549.0
+          ]
+        ],
+        "text": "Security Settings",
+        "score": 0.9649703677962808
+      },
+      {
+        "box": [
+          [
+            371.0,
+            552.0
+          ],
+          [
+            470.0,
+            552.0
+          ],
+          [
+            470.0,
+            563.0
+          ],
+          [
+            371.0,
+            563.0
+          ]
+        ],
+        "text": "Roles&Permisslons",
+        "score": 0.9459879328222836
+      },
+      {
+        "box": [
+          [
+            371.0,
+            569.0
+          ],
+          [
+            449.0,
+            569.0
+          ],
+          [
+            449.0,
+            579.0
+          ],
+          [
+            371.0,
+            579.0
+          ]
+        ],
+        "text": "SSL Certifieafes",
+        "score": 0.8394312895834446
+      },
+      {
+        "box": [
+          [
+            370.0,
+            583.0
+          ],
+          [
+            465.0,
+            585.0
+          ],
+          [
+            464.0,
+            596.0
+          ],
+          [
+            370.0,
+            595.0
+          ]
+        ],
+        "text": "InfoCenterSettings",
+        "score": 0.952966484758589
+      },
+      {
+        "box": [
+          [
+            229.0,
+            693.0
+          ],
+          [
+            514.0,
+            694.0
+          ],
+          [
+            514.0,
+            709.0
+          ],
+          [
+            229.0,
+            709.0
+          ]
+        ],
+        "text": "Figure9-71TheAccessIconandoptions",
+        "score": 0.9848603678472114
+      },
+      {
+        "box": [
+          [
+            229.0,
+            727.0
+          ],
+          [
+            913.0,
+            727.0
+          ],
+          [
+            913.0,
+            744.0
+          ],
+          [
+            229.0,
+            744.0
+          ]
+        ],
+        "text": "TheTS77oomanagementinterface(Ml)pagesthatarecollectedunder theAccessiconhelp",
+        "score": 0.9801879423229318
+      },
+      {
+        "box": [
+          [
+            228.0,
+            743.0
+          ],
+          [
+            851.0,
+            742.0
+          ],
+          [
+            852.0,
+            759.0
+          ],
+          [
+            228.0,
+            760.0
+          ]
+        ],
+        "text": "theusertovieworchangesecuritysettings,rolesandpermissions,passwords,and",
+        "score": 0.9764651949976532
+      },
+      {
+        "box": [
+          [
+            229.0,
+            774.0
+          ],
+          [
+            553.0,
+            774.0
+          ],
+          [
+            553.0,
+            789.0
+          ],
+          [
+            229.0,
+            789.0
+          ]
+        ],
+        "text": "menu.Thefollowingwindowsareavailable:",
+        "score": 0.9926518556233999
+      },
+      {
+        "box": [
+          [
+            252.0,
+            795.0
+          ],
+          [
+            904.0,
+            795.0
+          ],
+          [
+            904.0,
+            813.0
+          ],
+          [
+            252.0,
+            812.0
+          ]
+        ],
+        "text": "SecuritySettings:Use thiswindow toviewsecuritysettingsforaTS77o0grid.From this",
+        "score": 0.9662138246572934
+      },
+      {
+        "box": [
+          [
+            253.0,
+            811.0
+          ],
+          [
+            887.0,
+            811.0
+          ],
+          [
+            887.0,
+            827.0
+          ],
+          [
+            253.0,
+            826.0
+          ]
+        ],
+        "text": "window,theusercanalsoaccessotherpagestoadd,modify,assign,test,anddelete",
+        "score": 0.9660323396534987
+      },
+      {
+        "box": [
+          [
+            254.0,
+            828.0
+          ],
+          [
+            378.0,
+            828.0
+          ],
+          [
+            378.0,
+            843.0
+          ],
+          [
+            254.0,
+            843.0
+          ]
+        ],
+        "text": "securitysettings.",
+        "score": 0.9973390628309811
+      },
+      {
+        "box": [
+          [
+            253.0,
+            849.0
+          ],
+          [
+            912.0,
+            849.0
+          ],
+          [
+            912.0,
+            864.0
+          ],
+          [
+            253.0,
+            864.0
+          ]
+        ],
+        "text": "RolesandPermissions:Use thiswindowtosetandcontroluserrolesandpermissionsfor",
+        "score": 0.9922270075480143
+      },
+      {
+        "box": [
+          [
+            253.0,
+            865.0
+          ],
+          [
+            364.0,
+            865.0
+          ],
+          [
+            364.0,
+            880.0
+          ],
+          [
+            253.0,
+            880.0
+          ]
+        ],
+        "text": "a TS7700 grid.",
+        "score": 0.9501690694264003
+      },
+      {
+        "box": [
+          [
+            253.0,
+            887.0
+          ],
+          [
+            906.0,
+            887.0
+          ],
+          [
+            906.0,
+            902.0
+          ],
+          [
+            253.0,
+            902.0
+          ]
+        ],
+        "text": "SSLCertificates:Use this window toview,import,ordeleteSecureSocketsLayer(SSL)",
+        "score": 0.9685752678227115
+      },
+      {
+        "box": [
+          [
+            252.0,
+            917.0
+          ],
+          [
+            372.0,
+            918.0
+          ],
+          [
+            372.0,
+            934.0
+          ],
+          [
+            252.0,
+            932.0
+          ]
+        ],
+        "text": "TS7700 cluster.",
+        "score": 0.9742794712384542
+      },
+      {
+        "box": [
+          [
+            503.0,
+            974.0
+          ],
+          [
+            866.0,
+            975.0
+          ],
+          [
+            866.0,
+            992.0
+          ],
+          [
+            503.0,
+            992.0
+          ]
+        ],
+        "text": "Chapter 9. Configuring and operating theIBM TS7700",
+        "score": 0.9699042856693267
+      },
+      {
+        "box": [
+          [
+            870.0,
+            976.0
+          ],
+          [
+            917.0,
+            976.0
+          ],
+          [
+            917.0,
+            990.0
+          ],
+          [
+            870.0,
+            990.0
+          ]
+        ],
+        "text": "463",
+        "score": 0.9996545910835266
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 34,
+    "deduplicated": 0,
+    "elapsed_ms": 250.55,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 260.88
+}

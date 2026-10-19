@@ -1,0 +1,89 @@
+92.3.
+MODULES AND PRAGMATA
+CHAPTER 92. PERL56DELTA
+DB_File
+DB_File can now be built with Berkeley DB versions 1, 2 or 3. See
+.
+ext/DB_File/Changes
+Devel::DProf
+Devel::DProf, a Perl source code profiler has been added. See
+Devel::DProf
+and
+dprofpp
+.
+Devel::Peek
+The Devel::Peek module provides access to the internal representation of Perl variables and data. It is a data
+debugging tool for the XS programmer.
+Dumpvalue
+The Dumpvalue module provides screen dumps of Perl data.
+DynaLoader
+DynaLoader now supports a dl_unload_file() function on platforms that support unloading shared objects using
+dlclose().
+Perl can also optionally arrange to unload all extension shared objects loaded by Perl. To enable this, build Perl
+with the Configure option
+. (This maybe useful if you are using Apache
+-Accflags=-DDL_UNLOAD_ALL_AT_EXIT
+with mod_perl.)
+English
+$PERL_VERSION now stands for
+(a string value) rather than for
+(a numeric value).
+$ˆV
+$]
+Env
+Env now supports accessing environment variables like PATH as array variables.
+Fcntl
+More Fcntl constants added: F_SETLK64, F_SETLKW64, O_LARGEFILE for large file (more than 4GB) access
+(NOTE: the O_LARGEFILE is automatically added to sysopen() flags if large file support has been configured, as
+is the default), Free
+/
+Net
+/
+OpenBSD locking behaviour flags F_FLOCK, F_POSIX, Linux F_SHLCK, and
+O_ACCMODE: the combined mask of O_RDONLY, O_WRONLY, and O_RDWR. The seek()
+/
+sysseek() constants
+SEEK_SET, SEEK_CUR, and SEEK_END are available via the
+tag. The chmod()
+/
+stat() S_IF* constants
+:seek
+and S_IS* functions are available via the
+tag.
+:mode
+File::Compare
+A compare_text() function has been added, which allows custom comparison functions. See
+File::Compare
+.
+File::Find
+File::Find now works correctly when the wanted() function is either autoloaded or is a symbolic reference.
+A bug that caused File::Find to lose track of the working directory when pruning top-level directories has been
+fixed.
+File::Find now also supports several other options to control its behavior. It can follow symbolic links if the
+option is specified. Enabling the
+option will make File::Find skip changing the current
+follow
+no_chdir
+directory when walking directories. The
+flag can be useful when running with taint checks enabled.
+untaint
+See
+File::Find
+.
+File::Glob
+This extension implements BSD-style file globbing. By default, it will also be used for the internal implementation
+of the glob() operator. See
+File::Glob
+.
+File::Spec
+New methods have been added to the File::Spec module: devnull() returns the name of the null device (
+/
+dev
+/
+null
+on Unix) and tmpdir() the name of the temp directory (normally
+/
+tmp on Unix). There are now also methods to
+convert between absolute and relative filenames: abs2rel() and rel2abs(). For compatibility with operating systems
+that specify volume names in file paths, the splitpath(), splitdir(), and catdir() methods have been added.
+1431

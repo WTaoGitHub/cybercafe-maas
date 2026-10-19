@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_4191",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "cb6aa27c0cf669b1348bdba5c1e4c8cf7865b9190acc1d76fcb9edcb5adc53d9",
+  "ok": true,
+  "result": {
+    "text": "建\n招生热线：027-59205337",
+    "lines": [
+      {
+        "box": [
+          [
+            304.3723404255319,
+            1117.0645161290324
+          ],
+          [
+            1254.9255319148936,
+            1117.0645161290324
+          ],
+          [
+            1254.9255319148936,
+            2143.645161290323
+          ],
+          [
+            304.3723404255319,
+            2143.645161290323
+          ]
+        ],
+        "text": "建",
+        "score": 0.9819952249526978
+      },
+      {
+        "box": [
+          [
+            122.07446808510637,
+            2081.129032258065
+          ],
+          [
+            2015.0425531914893,
+            2207.8064516129034
+          ],
+          [
+            1997.1382978723404,
+            2477.612903225807
+          ],
+          [
+            104.17021276595744,
+            2350.935483870968
+          ]
+        ],
+        "text": "招生热线：027-59205337",
+        "score": 0.9999708533287048
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 75.77
+  }
+}

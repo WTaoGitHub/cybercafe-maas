@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_1971",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "ca9673b5b3b572052ac6e2fa16591e8283c1a3384a9a339c79b825abaaff0306",
+  "ok": true,
+  "result": {
+    "text": "I·FREE爱无季\nnoutenooanino",
+    "lines": [
+      {
+        "box": [
+          [
+            326.6290322580645,
+            1256.9021739130435
+          ],
+          [
+            3370.217741935484,
+            1102.1739130434783
+          ],
+          [
+            3397.7903225806454,
+            1657.5
+          ],
+          [
+            354.20161290322585,
+            1812.228260869565
+          ]
+        ],
+        "text": "I·FREE爱无季",
+        "score": 0.963598906993866
+      },
+      {
+        "box": [
+          [
+            3393.5483870967746,
+            3064.891304347826
+          ],
+          [
+            3707.451612903226,
+            3024.619565217391
+          ],
+          [
+            3713.8145161290327,
+            3075.4891304347825
+          ],
+          [
+            3399.911290322581,
+            3115.760869565217
+          ]
+        ],
+        "text": "noutenooanino",
+        "score": 0.7276244759559631
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1472,
+      1984,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 152.41
+  }
+}

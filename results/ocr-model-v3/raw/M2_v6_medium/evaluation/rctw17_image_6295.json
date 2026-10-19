@@ -1,0 +1,123 @@
+{
+  "id": "rctw17_image_6295",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "2068aa6a91abc2a882529d5314faac8ff0641085175fbee1610bf6dcaff4e641",
+  "ok": true,
+  "result": {
+    "text": "下堂\n扫一扫便\n去哪玩？10F\n塔卡密室逃脱，开启一小时奇幻之旅！",
+    "lines": [
+      {
+        "box": [
+          [
+            222.0,
+            0.0
+          ],
+          [
+            902.0,
+            0.0
+          ],
+          [
+            894.0,
+            579.0
+          ],
+          [
+            214.0,
+            570.0
+          ]
+        ],
+        "text": "下堂",
+        "score": 0.6157718896865845
+      },
+      {
+        "box": [
+          [
+            1026.0,
+            236.0
+          ],
+          [
+            1136.0,
+            236.0
+          ],
+          [
+            1136.0,
+            269.0
+          ],
+          [
+            1026.0,
+            269.0
+          ]
+        ],
+        "text": "扫一扫便",
+        "score": 0.9999191761016846
+      },
+      {
+        "box": [
+          [
+            134.0,
+            511.0
+          ],
+          [
+            1016.0,
+            494.0
+          ],
+          [
+            1020.0,
+            697.0
+          ],
+          [
+            138.0,
+            714.0
+          ]
+        ],
+        "text": "去哪玩？10F",
+        "score": 0.9916278123855591
+      },
+      {
+        "box": [
+          [
+            141.0,
+            741.0
+          ],
+          [
+            982.0,
+            730.0
+          ],
+          [
+            982.0,
+            789.0
+          ],
+          [
+            141.0,
+            799.0
+          ]
+        ],
+        "text": "塔卡密室逃脱，开启一小时奇幻之旅！",
+        "score": 0.9995699524879456
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      852,
+      1136,
+      3
+    ],
+    "detected_boxes": 4,
+    "elapsed_ms": 89.34
+  }
+}

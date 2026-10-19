@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_3925",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "梦幻指压",
+    "lines": [
+      {
+        "box": [
+          [
+            1605.48388671875,
+            1359.8570556640625
+          ],
+          [
+            2113.54833984375,
+            1350.3570556640625
+          ],
+          [
+            2116.258056640625,
+            1482.0
+          ],
+          [
+            1608.193603515625,
+            1491.5
+          ]
+        ],
+        "text": "梦幻指压",
+        "score": 0.9971103817224503
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 142.67,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 170.88
+}

@@ -1,0 +1,7 @@
+[mcp_servers.cybercafe_ssh]
+command = "/Users/4paradigm/.codex/ssh/cybercafe-launcher.sh"
+args = ["-y", "@fangjunjie/ssh-mcp-server@1.10.0", "--config-file", "/Users/4paradigm/.codex/ssh/cybercafe.json"]
+startup_timeout_sec = 60
+
+[mcp_servers.cybercafe_ssh.env]
+PATH = "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"

@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_6211",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "00534cb3dfd8f52a94bb479ba716ac726354b31039bda1ef208242a08949df13",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "钟家庄派出所\n东谢匠社区警务室",
+    "lines": [
+      {
+        "box": [
+          [
+            78.0,
+            127.0
+          ],
+          [
+            271.0,
+            136.0
+          ],
+          [
+            269.0,
+            172.0
+          ],
+          [
+            77.0,
+            164.0
+          ]
+        ],
+        "text": "钟家庄派出所",
+        "score": 0.9887952705224355
+      },
+      {
+        "box": [
+          [
+            354.0,
+            141.0
+          ],
+          [
+            540.0,
+            150.0
+          ],
+          [
+            539.0,
+            183.0
+          ],
+          [
+            353.0,
+            174.0
+          ]
+        ],
+        "text": "东谢匠社区警务室",
+        "score": 0.9791988357901573
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 34.23,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 2
+    },
+    "elapsed_ms": 34.24
+  }
+}

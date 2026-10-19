@@ -1,0 +1,593 @@
+{
+  "id": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+  "source": "doclaynet",
+  "split": "calibration",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_legacy",
+  "image_sha256": "0caaf3bba6f4b66663319060b18d9e2df8735764c32abbd643e84d773f1b0899",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "OpenShift\nIn theabove configuration,wehave definedamulti-containerpodwithtwoimages of\nPodcanbedefinedasacollectionofcontainer anditsstorageinsideanodeofOpenShift\n(Kubernetes)cluster.Ingeneral,wehave two types ofpod starting from a single container\nSingleContainerPod:ThesecanbeeasilycreatedwithOCcommandorbyabasic\n25\nOnce the abovefileis created,it willgenerate apodwith the following command.\nCreateitwithasimpleyamlfileasfollows.\ncontainerPort:7500\nTomcatandMongoDBinsideit.\nimage: apache:8.0\n$occreate-f apache.yml\npod tomulti-containerpod.\n-name:apache\nimagePullPolicy:Always\nPodsandServices\nconfiguration yml file.\nname:apache\ncontainers:\napiVersion: v1\nports:\nkind: Pod\nmetadata:\nB\nPods\nspec:",
+    "lines": [
+      {
+        "box": [
+          [
+            903.0,
+            41.0
+          ],
+          [
+            903.0,
+            61.0
+          ],
+          [
+            821.0,
+            63.0
+          ],
+          [
+            821.0,
+            43.0
+          ]
+        ],
+        "text": "OpenShift",
+        "score": 0.9671521186828613
+      },
+      {
+        "box": [
+          [
+            904.0,
+            74.0
+          ],
+          [
+            904.0,
+            97.0
+          ],
+          [
+            122.0,
+            97.0
+          ],
+          [
+            122.0,
+            74.0
+          ]
+        ],
+        "text": "In theabove configuration,wehave definedamulti-containerpodwithtwoimages of",
+        "score": 0.9571765414873759
+      },
+      {
+        "box": [
+          [
+            905.0,
+            195.0
+          ],
+          [
+            905.0,
+            218.0
+          ],
+          [
+            120.0,
+            219.0
+          ],
+          [
+            120.0,
+            196.0
+          ]
+        ],
+        "text": "Podcanbedefinedasacollectionofcontainer anditsstorageinsideanodeofOpenShift",
+        "score": 0.9843462975819905
+      },
+      {
+        "box": [
+          [
+            901.0,
+            214.0
+          ],
+          [
+            901.0,
+            234.0
+          ],
+          [
+            123.0,
+            234.0
+          ],
+          [
+            123.0,
+            214.0
+          ]
+        ],
+        "text": "(Kubernetes)cluster.Ingeneral,wehave two types ofpod starting from a single container",
+        "score": 0.9536934487959918
+      },
+      {
+        "box": [
+          [
+            904.0,
+            254.0
+          ],
+          [
+            904.0,
+            277.0
+          ],
+          [
+            121.0,
+            275.0
+          ],
+          [
+            121.0,
+            252.0
+          ]
+        ],
+        "text": "SingleContainerPod:ThesecanbeeasilycreatedwithOCcommandorbyabasic",
+        "score": 0.9905219490711505
+      },
+      {
+        "box": [
+          [
+            902.0,
+            896.0
+          ],
+          [
+            902.0,
+            911.0
+          ],
+          [
+            880.0,
+            911.0
+          ],
+          [
+            880.0,
+            896.0
+          ]
+        ],
+        "text": "25",
+        "score": 0.5449900031089783
+      },
+      {
+        "box": [
+          [
+            835.0,
+            668.0
+          ],
+          [
+            835.0,
+            688.0
+          ],
+          [
+            121.0,
+            688.0
+          ],
+          [
+            121.0,
+            668.0
+          ]
+        ],
+        "text": "Once the abovefileis created,it willgenerate apodwith the following command.",
+        "score": 0.9416593289689014
+      },
+      {
+        "box": [
+          [
+            498.0,
+            350.0
+          ],
+          [
+            498.0,
+            370.0
+          ],
+          [
+            122.0,
+            370.0
+          ],
+          [
+            122.0,
+            350.0
+          ]
+        ],
+        "text": "Createitwithasimpleyamlfileasfollows.",
+        "score": 0.997258368376139
+      },
+      {
+        "box": [
+          [
+            462.0,
+            587.0
+          ],
+          [
+            462.0,
+            607.0
+          ],
+          [
+            266.0,
+            607.0
+          ],
+          [
+            266.0,
+            587.0
+          ]
+        ],
+        "text": "containerPort:7500",
+        "score": 0.9896776345041063
+      },
+      {
+        "box": [
+          [
+            399.0,
+            90.0
+          ],
+          [
+            399.0,
+            113.0
+          ],
+          [
+            124.0,
+            113.0
+          ],
+          [
+            124.0,
+            90.0
+          ]
+        ],
+        "text": "TomcatandMongoDBinsideit.",
+        "score": 0.9977995538711548
+      },
+      {
+        "box": [
+          [
+            387.0,
+            543.0
+          ],
+          [
+            387.0,
+            563.0
+          ],
+          [
+            208.0,
+            563.0
+          ],
+          [
+            208.0,
+            543.0
+          ]
+        ],
+        "text": "image: apache:8.0",
+        "score": 0.9667670270975899
+      },
+      {
+        "box": [
+          [
+            375.0,
+            701.0
+          ],
+          [
+            375.0,
+            721.0
+          ],
+          [
+            129.0,
+            719.0
+          ],
+          [
+            129.0,
+            699.0
+          ]
+        ],
+        "text": "$occreate-f apache.yml",
+        "score": 0.9655498726801439
+      },
+      {
+        "box": [
+          [
+            365.0,
+            231.0
+          ],
+          [
+            365.0,
+            248.0
+          ],
+          [
+            123.0,
+            248.0
+          ],
+          [
+            123.0,
+            231.0
+          ]
+        ],
+        "text": "pod tomulti-containerpod.",
+        "score": 0.9781352019309998
+      },
+      {
+        "box": [
+          [
+            349.0,
+            519.0
+          ],
+          [
+            349.0,
+            539.0
+          ],
+          [
+            211.0,
+            542.0
+          ],
+          [
+            211.0,
+            522.0
+          ]
+        ],
+        "text": "-name:apache",
+        "score": 0.987756073474884
+      },
+      {
+        "box": [
+          [
+            358.0,
+            611.0
+          ],
+          [
+            358.0,
+            631.0
+          ],
+          [
+            133.0,
+            631.0
+          ],
+          [
+            133.0,
+            611.0
+          ]
+        ],
+        "text": "imagePullPolicy:Always",
+        "score": 0.9570986357602206
+      },
+      {
+        "box": [
+          [
+            337.0,
+            131.0
+          ],
+          [
+            337.0,
+            154.0
+          ],
+          [
+            124.0,
+            154.0
+          ],
+          [
+            124.0,
+            131.0
+          ]
+        ],
+        "text": "PodsandServices",
+        "score": 0.9975762605667114
+      },
+      {
+        "box": [
+          [
+            316.0,
+            269.0
+          ],
+          [
+            316.0,
+            292.0
+          ],
+          [
+            122.0,
+            293.0
+          ],
+          [
+            122.0,
+            270.0
+          ]
+        ],
+        "text": "configuration yml file.",
+        "score": 0.9511123895645142
+      },
+      {
+        "box": [
+          [
+            311.0,
+            450.0
+          ],
+          [
+            311.0,
+            470.0
+          ],
+          [
+            184.0,
+            474.0
+          ],
+          [
+            183.0,
+            454.0
+          ]
+        ],
+        "text": "name:apache",
+        "score": 0.9945922764864835
+      },
+      {
+        "box": [
+          [
+            299.0,
+            499.0
+          ],
+          [
+            299.0,
+            517.0
+          ],
+          [
+            189.0,
+            517.0
+          ],
+          [
+            189.0,
+            499.0
+          ]
+        ],
+        "text": "containers:",
+        "score": 0.9930104667490179
+      },
+      {
+        "box": [
+          [
+            273.0,
+            381.0
+          ],
+          [
+            273.0,
+            401.0
+          ],
+          [
+            133.0,
+            404.0
+          ],
+          [
+            133.0,
+            383.0
+          ]
+        ],
+        "text": "apiVersion: v1",
+        "score": 0.9517673339162555
+      },
+      {
+        "box": [
+          [
+            269.0,
+            567.0
+          ],
+          [
+            269.0,
+            584.0
+          ],
+          [
+            208.0,
+            584.0
+          ],
+          [
+            208.0,
+            567.0
+          ]
+        ],
+        "text": "ports:",
+        "score": 0.9904575347900391
+      },
+      {
+        "box": [
+          [
+            225.0,
+            407.0
+          ],
+          [
+            225.0,
+            424.0
+          ],
+          [
+            134.0,
+            424.0
+          ],
+          [
+            134.0,
+            407.0
+          ]
+        ],
+        "text": "kind: Pod",
+        "score": 0.9910708665847778
+      },
+      {
+        "box": [
+          [
+            224.0,
+            431.0
+          ],
+          [
+            224.0,
+            449.0
+          ],
+          [
+            134.0,
+            446.0
+          ],
+          [
+            134.0,
+            428.0
+          ]
+        ],
+        "text": "metadata:",
+        "score": 0.9912567403581407
+      },
+      {
+        "box": [
+          [
+            202.0,
+            928.0
+          ],
+          [
+            202.0,
+            967.0
+          ],
+          [
+            149.0,
+            967.0
+          ],
+          [
+            149.0,
+            928.0
+          ]
+        ],
+        "text": "B",
+        "score": 0.6948754191398621
+      },
+      {
+        "box": [
+          [
+            186.0,
+            175.0
+          ],
+          [
+            186.0,
+            193.0
+          ],
+          [
+            123.0,
+            191.0
+          ],
+          [
+            124.0,
+            173.0
+          ]
+        ],
+        "text": "Pods",
+        "score": 0.9994367957115173
+      },
+      {
+        "box": [
+          [
+            185.0,
+            476.0
+          ],
+          [
+            185.0,
+            493.0
+          ],
+          [
+            133.0,
+            493.0
+          ],
+          [
+            133.0,
+            476.0
+          ]
+        ],
+        "text": "spec:",
+        "score": 0.9406247854232788
+      }
+    ],
+    "variant": "v4_legacy",
+    "rotation_cw": 0,
+    "processing_ms": 157.21,
+    "direction_stats": {},
+    "elapsed_ms": 157.23
+  }
+}

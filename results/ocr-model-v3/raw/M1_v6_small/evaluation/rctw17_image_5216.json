@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_5216",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "7501aa808a36318bef19150e00913c668c32e634b279a78e0cf7d5671d6f2b94",
+  "ok": true,
+  "result": {
+    "text": "国地质大学出版社有限责任公司\nXX",
+    "lines": [
+      {
+        "box": [
+          [
+            1303.7553191489362,
+            865.3548387096774
+          ],
+          [
+            1530.0,
+            867.0
+          ],
+          [
+            1510.468085106383,
+            2783.612903225807
+          ],
+          [
+            1284.223404255319,
+            2781.967741935484
+          ]
+        ],
+        "text": "国地质大学出版社有限责任公司",
+        "score": 0.9293823838233948
+      },
+      {
+        "box": [
+          [
+            185.5531914893617,
+            2095.935483870968
+          ],
+          [
+            1035.191489361702,
+            2074.548387096774
+          ],
+          [
+            1036.8191489361702,
+            2168.3225806451615
+          ],
+          [
+            187.18085106382978,
+            2189.709677419355
+          ]
+        ],
+        "text": "XX",
+        "score": 0.5027304291725159
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 83.8
+  }
+}

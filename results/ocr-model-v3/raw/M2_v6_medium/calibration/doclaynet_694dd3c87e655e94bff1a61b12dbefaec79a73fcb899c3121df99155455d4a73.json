@@ -1,0 +1,959 @@
+{
+  "id": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "M2_v6_medium",
+  "image_sha256": "664d90eab16e757350f7410b2cbbe785ab209f26a404b3f94e08ed21f7641dfb",
+  "ok": true,
+  "result": {
+    "text": "by d-electrons alone. Even their crystal structure is correctly predicted on the basis of (1)\nalone.\nTaking the second derivative of E(R)\nM < Ω2 >≈ (1 ± S)E0/r2 ≈ N(0) < I2 > .\n(57)\nConsider the second term in (54). If Uk,k+q is the residual electron-electron interaction\nbetween two tight-binding orbitals,\nχ(k, k + q) = χ0(k.k + q)/(1 + Uk,k+qχ0(k, k + q))\n(58)\nwhere χ0(k, k + q) is the zero order electronic polarizability at zero frequency,\nW/2\nW/2\n, f(ε) − f(∈′)\nχ0(k, k′) = −(1/π2)\nde\nde'\nImG(k, ε)ImG(k′, e′)\n(59)\n-W/2\n-W/2\n∈ − e′\nUsing (1/π)ImG(k, e) = δ(e− ek) and ignoring logarithmic corrections, this for typical k, k'is\njust N(0)2W. Therefore using Eq. (4950) for g(k, k′) gives\n2∑ Mωq|gk,k+q|2χ0(k, k + q) ≈ −N2(0)W < I2 >\n(60)\nk,q\nFor most interesting cases N(0)W ≥ 1, so that we must consider the change of phonon\nfrequencies due to the electronic polarizability and local field corrections. For large values\nof k, k + q, which alone are of interest, we may take the effective interaction Uk,k+q ≈ W, as\none finds in the t-matrix approximation. This estimate in Eqs.(5254 gives\nN(0) < I2 > /M < ω2 > ≈ (1 + N(0)W)\n(61)\nThis derivation is necessarily crude. It works qualitatively (and semi-quantitiatively with an\noverall correction factor of about 1/4) because we are calculating average of a quantity over\nthe entire zone. These results are discussed in relation to Fig.(6) earlier. The basic physical\npoints used, that local field corrections or modulation of bonds due to lattice vibrations are\nessential in understanding the details of e-ph interactions and phonon dispersion and that\nthe parameters determining Tc are inter-related, is well borne out in detailed calculations of\nphonon frequencies and electron-phonon couplings and their comparison with experiments\n[17].\n[1] J. Bardeen, L. N. Cooper, and J. R. Schrieffer. Phys. Rev., 108:1175, 1957.\n58",
+    "lines": [
+      {
+        "box": [
+          [
+            119.0,
+            92.0
+          ],
+          [
+            900.0,
+            92.0
+          ],
+          [
+            900.0,
+            108.0
+          ],
+          [
+            119.0,
+            108.0
+          ]
+        ],
+        "text": "by d-electrons alone. Even their crystal structure is correctly predicted on the basis of (1)",
+        "score": 0.9967169165611267
+      },
+      {
+        "box": [
+          [
+            118.0,
+            118.0
+          ],
+          [
+            171.0,
+            118.0
+          ],
+          [
+            171.0,
+            135.0
+          ],
+          [
+            118.0,
+            135.0
+          ]
+        ],
+        "text": "alone.",
+        "score": 0.9999945163726807
+      },
+      {
+        "box": [
+          [
+            144.0,
+            145.0
+          ],
+          [
+            463.0,
+            145.0
+          ],
+          [
+            463.0,
+            161.0
+          ],
+          [
+            144.0,
+            161.0
+          ]
+        ],
+        "text": "Taking the second derivative of E(R)",
+        "score": 0.9991336464881897
+      },
+      {
+        "box": [
+          [
+            325.0,
+            182.0
+          ],
+          [
+            695.0,
+            182.0
+          ],
+          [
+            695.0,
+            199.0
+          ],
+          [
+            325.0,
+            199.0
+          ]
+        ],
+        "text": "M < Ω2 >≈ (1 ± S)E0/r2 ≈ N(0) < I2 > .",
+        "score": 0.9921798706054688
+      },
+      {
+        "box": [
+          [
+            863.0,
+            180.0
+          ],
+          [
+            904.0,
+            180.0
+          ],
+          [
+            904.0,
+            203.0
+          ],
+          [
+            863.0,
+            203.0
+          ]
+        ],
+        "text": "(57)",
+        "score": 0.9999879002571106
+      },
+      {
+        "box": [
+          [
+            119.0,
+            218.0
+          ],
+          [
+            903.0,
+            218.0
+          ],
+          [
+            903.0,
+            238.0
+          ],
+          [
+            119.0,
+            238.0
+          ]
+        ],
+        "text": "Consider the second term in (54). If Uk,k+q is the residual electron-electron interaction",
+        "score": 0.996240496635437
+      },
+      {
+        "box": [
+          [
+            118.0,
+            245.0
+          ],
+          [
+            420.0,
+            246.0
+          ],
+          [
+            420.0,
+            263.0
+          ],
+          [
+            118.0,
+            262.0
+          ]
+        ],
+        "text": "between two tight-binding orbitals,",
+        "score": 0.9999701380729675
+      },
+      {
+        "box": [
+          [
+            295.0,
+            282.0
+          ],
+          [
+            722.0,
+            281.0
+          ],
+          [
+            722.0,
+            301.0
+          ],
+          [
+            295.0,
+            302.0
+          ]
+        ],
+        "text": "χ(k, k + q) = χ0(k.k + q)/(1 + Uk,k+qχ0(k, k + q))",
+        "score": 0.9898539185523987
+      },
+      {
+        "box": [
+          [
+            862.0,
+            279.0
+          ],
+          [
+            905.0,
+            279.0
+          ],
+          [
+            905.0,
+            305.0
+          ],
+          [
+            862.0,
+            305.0
+          ]
+        ],
+        "text": "(58)",
+        "score": 0.9999887943267822
+      },
+      {
+        "box": [
+          [
+            118.0,
+            317.0
+          ],
+          [
+            788.0,
+            318.0
+          ],
+          [
+            788.0,
+            338.0
+          ],
+          [
+            118.0,
+            337.0
+          ]
+        ],
+        "text": "where χ0(k, k + q) is the zero order electronic polarizability at zero frequency,",
+        "score": 0.9901602268218994
+      },
+      {
+        "box": [
+          [
+            391.0,
+            343.0
+          ],
+          [
+            428.0,
+            343.0
+          ],
+          [
+            428.0,
+            361.0
+          ],
+          [
+            391.0,
+            361.0
+          ]
+        ],
+        "text": "W/2",
+        "score": 0.9997555613517761
+      },
+      {
+        "box": [
+          [
+            467.0,
+            343.0
+          ],
+          [
+            504.0,
+            343.0
+          ],
+          [
+            504.0,
+            361.0
+          ],
+          [
+            467.0,
+            361.0
+          ]
+        ],
+        "text": "W/2",
+        "score": 0.9997876286506653
+      },
+      {
+        "box": [
+          [
+            527.0,
+            346.0
+          ],
+          [
+            634.0,
+            344.0
+          ],
+          [
+            635.0,
+            368.0
+          ],
+          [
+            528.0,
+            371.0
+          ]
+        ],
+        "text": ", f(ε) − f(∈′)",
+        "score": 0.8449186086654663
+      },
+      {
+        "box": [
+          [
+            205.0,
+            357.0
+          ],
+          [
+            378.0,
+            357.0
+          ],
+          [
+            378.0,
+            380.0
+          ],
+          [
+            205.0,
+            380.0
+          ]
+        ],
+        "text": "χ0(k, k′) = −(1/π2)",
+        "score": 0.9641258120536804
+      },
+      {
+        "box": [
+          [
+            428.0,
+            358.0
+          ],
+          [
+            453.0,
+            358.0
+          ],
+          [
+            453.0,
+            378.0
+          ],
+          [
+            428.0,
+            378.0
+          ]
+        ],
+        "text": "de",
+        "score": 0.991763710975647
+      },
+      {
+        "box": [
+          [
+            503.0,
+            358.0
+          ],
+          [
+            531.0,
+            355.0
+          ],
+          [
+            533.0,
+            375.0
+          ],
+          [
+            505.0,
+            378.0
+          ]
+        ],
+        "text": "de'",
+        "score": 0.9304516911506653
+      },
+      {
+        "box": [
+          [
+            631.0,
+            359.0
+          ],
+          [
+            814.0,
+            359.0
+          ],
+          [
+            814.0,
+            376.0
+          ],
+          [
+            631.0,
+            376.0
+          ]
+        ],
+        "text": "ImG(k, ε)ImG(k′, e′)",
+        "score": 0.8805343508720398
+      },
+      {
+        "box": [
+          [
+            863.0,
+            357.0
+          ],
+          [
+            903.0,
+            357.0
+          ],
+          [
+            903.0,
+            380.0
+          ],
+          [
+            863.0,
+            380.0
+          ]
+        ],
+        "text": "(59)",
+        "score": 0.9999885559082031
+      },
+      {
+        "box": [
+          [
+            390.0,
+            374.0
+          ],
+          [
+            430.0,
+            374.0
+          ],
+          [
+            430.0,
+            391.0
+          ],
+          [
+            390.0,
+            391.0
+          ]
+        ],
+        "text": "-W/2",
+        "score": 0.8860635757446289
+      },
+      {
+        "box": [
+          [
+            465.0,
+            372.0
+          ],
+          [
+            506.0,
+            375.0
+          ],
+          [
+            505.0,
+            393.0
+          ],
+          [
+            464.0,
+            390.0
+          ]
+        ],
+        "text": "-W/2",
+        "score": 0.9476416110992432
+      },
+      {
+        "box": [
+          [
+            553.0,
+            370.0
+          ],
+          [
+            608.0,
+            367.0
+          ],
+          [
+            609.0,
+            388.0
+          ],
+          [
+            554.0,
+            391.0
+          ]
+        ],
+        "text": "∈ − e′",
+        "score": 0.7964978814125061
+      },
+      {
+        "box": [
+          [
+            119.0,
+            398.0
+          ],
+          [
+            902.0,
+            398.0
+          ],
+          [
+            902.0,
+            417.0
+          ],
+          [
+            119.0,
+            417.0
+          ]
+        ],
+        "text": "Using (1/π)ImG(k, e) = δ(e− ek) and ignoring logarithmic corrections, this for typical k, k'is",
+        "score": 0.9769760966300964
+      },
+      {
+        "box": [
+          [
+            118.0,
+            425.0
+          ],
+          [
+            643.0,
+            425.0
+          ],
+          [
+            643.0,
+            444.0
+          ],
+          [
+            118.0,
+            444.0
+          ]
+        ],
+        "text": "just N(0)2W. Therefore using Eq. (4950) for g(k, k′) gives",
+        "score": 0.9712666869163513
+      },
+      {
+        "box": [
+          [
+            288.0,
+            457.0
+          ],
+          [
+            731.0,
+            457.0
+          ],
+          [
+            731.0,
+            483.0
+          ],
+          [
+            288.0,
+            483.0
+          ]
+        ],
+        "text": "2∑ Mωq|gk,k+q|2χ0(k, k + q) ≈ −N2(0)W < I2 >",
+        "score": 0.9716482162475586
+      },
+      {
+        "box": [
+          [
+            862.0,
+            458.0
+          ],
+          [
+            905.0,
+            458.0
+          ],
+          [
+            905.0,
+            484.0
+          ],
+          [
+            862.0,
+            484.0
+          ]
+        ],
+        "text": "(60)",
+        "score": 0.9999915361404419
+      },
+      {
+        "box": [
+          [
+            304.0,
+            481.0
+          ],
+          [
+            333.0,
+            484.0
+          ],
+          [
+            331.0,
+            500.0
+          ],
+          [
+            303.0,
+            497.0
+          ]
+        ],
+        "text": "k,q",
+        "score": 0.980635404586792
+      },
+      {
+        "box": [
+          [
+            118.0,
+            506.0
+          ],
+          [
+            902.0,
+            506.0
+          ],
+          [
+            902.0,
+            526.0
+          ],
+          [
+            118.0,
+            526.0
+          ]
+        ],
+        "text": "For most interesting cases N(0)W ≥ 1, so that we must consider the change of phonon",
+        "score": 0.9947360157966614
+      },
+      {
+        "box": [
+          [
+            119.0,
+            535.0
+          ],
+          [
+            901.0,
+            535.0
+          ],
+          [
+            901.0,
+            551.0
+          ],
+          [
+            119.0,
+            551.0
+          ]
+        ],
+        "text": "frequencies due to the electronic polarizability and local field corrections. For large values",
+        "score": 0.9981803894042969
+      },
+      {
+        "box": [
+          [
+            119.0,
+            561.0
+          ],
+          [
+            902.0,
+            561.0
+          ],
+          [
+            902.0,
+            580.0
+          ],
+          [
+            119.0,
+            580.0
+          ]
+        ],
+        "text": "of k, k + q, which alone are of interest, we may take the effective interaction Uk,k+q ≈ W, as",
+        "score": 0.9900522232055664
+      },
+      {
+        "box": [
+          [
+            118.0,
+            587.0
+          ],
+          [
+            774.0,
+            587.0
+          ],
+          [
+            774.0,
+            607.0
+          ],
+          [
+            118.0,
+            607.0
+          ]
+        ],
+        "text": "one finds in the t-matrix approximation. This estimate in Eqs.(5254 gives",
+        "score": 0.9860740303993225
+      },
+      {
+        "box": [
+          [
+            328.0,
+            622.0
+          ],
+          [
+            691.0,
+            623.0
+          ],
+          [
+            691.0,
+            643.0
+          ],
+          [
+            328.0,
+            642.0
+          ]
+        ],
+        "text": "N(0) < I2 > /M < ω2 > ≈ (1 + N(0)W)",
+        "score": 0.9736892580986023
+      },
+      {
+        "box": [
+          [
+            862.0,
+            621.0
+          ],
+          [
+            905.0,
+            621.0
+          ],
+          [
+            905.0,
+            647.0
+          ],
+          [
+            862.0,
+            647.0
+          ]
+        ],
+        "text": "(61)",
+        "score": 0.9999899864196777
+      },
+      {
+        "box": [
+          [
+            119.0,
+            663.0
+          ],
+          [
+            901.0,
+            663.0
+          ],
+          [
+            901.0,
+            679.0
+          ],
+          [
+            119.0,
+            679.0
+          ]
+        ],
+        "text": "This derivation is necessarily crude. It works qualitatively (and semi-quantitiatively with an",
+        "score": 0.9999806880950928
+      },
+      {
+        "box": [
+          [
+            119.0,
+            690.0
+          ],
+          [
+            901.0,
+            690.0
+          ],
+          [
+            901.0,
+            706.0
+          ],
+          [
+            119.0,
+            706.0
+          ]
+        ],
+        "text": "overall correction factor of about 1/4) because we are calculating average of a quantity over",
+        "score": 0.9948302507400513
+      },
+      {
+        "box": [
+          [
+            119.0,
+            717.0
+          ],
+          [
+            902.0,
+            717.0
+          ],
+          [
+            902.0,
+            733.0
+          ],
+          [
+            119.0,
+            733.0
+          ]
+        ],
+        "text": "the entire zone. These results are discussed in relation to Fig.(6) earlier. The basic physical",
+        "score": 0.993405282497406
+      },
+      {
+        "box": [
+          [
+            119.0,
+            744.0
+          ],
+          [
+            902.0,
+            744.0
+          ],
+          [
+            902.0,
+            760.0
+          ],
+          [
+            119.0,
+            760.0
+          ]
+        ],
+        "text": "points used, that local field corrections or modulation of bonds due to lattice vibrations are",
+        "score": 0.9959907531738281
+      },
+      {
+        "box": [
+          [
+            119.0,
+            771.0
+          ],
+          [
+            902.0,
+            771.0
+          ],
+          [
+            902.0,
+            787.0
+          ],
+          [
+            119.0,
+            787.0
+          ]
+        ],
+        "text": "essential in understanding the details of e-ph interactions and phonon dispersion and that",
+        "score": 0.9999629259109497
+      },
+      {
+        "box": [
+          [
+            119.0,
+            798.0
+          ],
+          [
+            902.0,
+            798.0
+          ],
+          [
+            902.0,
+            814.0
+          ],
+          [
+            119.0,
+            814.0
+          ]
+        ],
+        "text": "the parameters determining Tc are inter-related, is well borne out in detailed calculations of",
+        "score": 0.9979326725006104
+      },
+      {
+        "box": [
+          [
+            119.0,
+            825.0
+          ],
+          [
+            902.0,
+            825.0
+          ],
+          [
+            902.0,
+            841.0
+          ],
+          [
+            119.0,
+            841.0
+          ]
+        ],
+        "text": "phonon frequencies and electron-phonon couplings and their comparison with experiments",
+        "score": 0.999933123588562
+      },
+      {
+        "box": [
+          [
+            120.0,
+            851.0
+          ],
+          [
+            157.0,
+            851.0
+          ],
+          [
+            157.0,
+            870.0
+          ],
+          [
+            120.0,
+            870.0
+          ]
+        ],
+        "text": "[17].",
+        "score": 0.8049150705337524
+      },
+      {
+        "box": [
+          [
+            138.0,
+            938.0
+          ],
+          [
+            768.0,
+            938.0
+          ],
+          [
+            768.0,
+            954.0
+          ],
+          [
+            138.0,
+            954.0
+          ]
+        ],
+        "text": "[1] J. Bardeen, L. N. Cooper, and J. R. Schrieffer. Phys. Rev., 108:1175, 1957.",
+        "score": 0.9957739114761353
+      },
+      {
+        "box": [
+          [
+            487.0,
+            974.0
+          ],
+          [
+            515.0,
+            974.0
+          ],
+          [
+            515.0,
+            994.0
+          ],
+          [
+            487.0,
+            994.0
+          ]
+        ],
+        "text": "58",
+        "score": 0.999997079372406
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 42,
+    "elapsed_ms": 316.94
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_5228",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "d766c3e208dba5feee712538e00cdcb29de0a1a97c1d28a0a829850af02e95b8",
+  "ok": true,
+  "result": {
+    "text": "idea例外造型\n到外",
+    "lines": [
+      {
+        "box": [
+          [
+            830.1063829787233,
+            932.8064516129033
+          ],
+          [
+            2345.4574468085107,
+            1156.5483870967741
+          ],
+          [
+            2288.4893617021276,
+            1549.741935483871
+          ],
+          [
+            773.1382978723404,
+            1326.0
+          ]
+        ],
+        "text": "idea例外造型",
+        "score": 0.9994015693664551
+      },
+      {
+        "box": [
+          [
+            13.02127659574468,
+            1054.5483870967741
+          ],
+          [
+            485.04255319148933,
+            1038.0967741935485
+          ],
+          [
+            496.43617021276594,
+            1365.483870967742
+          ],
+          [
+            24.414893617021278,
+            1381.9354838709678
+          ]
+        ],
+        "text": "到外",
+        "score": 0.6876457929611206
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 65.53
+  }
+}

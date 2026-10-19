@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_2539",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "路\nQiushi Road No.2",
+    "lines": [
+      {
+        "box": [
+          [
+            1373.0,
+            1847.0
+          ],
+          [
+            1439.0,
+            1847.0
+          ],
+          [
+            1439.0,
+            1915.0
+          ],
+          [
+            1373.0,
+            1915.0
+          ]
+        ],
+        "text": "路",
+        "score": 0.9998306035995483
+      },
+      {
+        "box": [
+          [
+            1167.0,
+            1932.0
+          ],
+          [
+            1414.0,
+            1925.0
+          ],
+          [
+            1415.0,
+            1955.0
+          ],
+          [
+            1168.0,
+            1962.0
+          ]
+        ],
+        "text": "Qiushi Road No.2",
+        "score": 0.984169602394104
+      }
+    ],
+    "engine_calls": 15,
+    "raw_line_count": 4,
+    "deduplicated": 2,
+    "elapsed_ms": 490.2,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 557.39
+}

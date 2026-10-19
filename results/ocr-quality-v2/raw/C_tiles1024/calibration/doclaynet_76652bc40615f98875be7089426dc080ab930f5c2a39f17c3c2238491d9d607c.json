@@ -1,0 +1,2416 @@
+{
+  "id": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "3\n=90.0°\n=82.3°\nbulk\n =74.6°\n300\nP\nP\nθ =66.6°\ncapillarity\napprox.\nθ =58.2°\n200\nFIG. 3: Chemical potential as a function of density. The den-\nsity of the sphere-cap shaped droplet at overall density p is\n100\ngiven by p, the density of the environment by Pe.F is ob-\nθ =49.1°\ntained by integrating the chemical potential over the density\n + *\nfrom p' to p.\n15\nR\nof the Widom test particle insertion\n16.17\nadaptation\n合\n0.\nmethod22.In the flat region of the isotherm depicted\n30\n4lab\nin Fig. a single droplet is present in the simulation box,\nwhich will be used for the determination of the surface\n0.15\nfree energy. At small densities the ascending branch of μ\n8x/\nrepresents pure vapor (with no single large droplet being\npresent), and the subsequent rapid decrease signifies the\nZ'0-\n0.2\nsystem size dependent transition towards a single droplet\n2326.\nphase\nAt larger densities, the droplet region is\nD\ndelimited by a transition towards a cylindrical droplet\n0.25\nwhich is stabilized by the boundary conditions.\nNote\nthat for each system size, only a certain range of droplet\nsizes can be stabilized and we have to simulate a whole\nFIG. 4: a) Plot of Fs(R,0)/kgT vs. R for kBT/J = 3.0 and\nrange of box sizes to cover all radii.\na broad range of values for 0.Dotted lines are results for\nAs indicated in Fig. B for each droplet state at den-\nL =D =30,dashes lines for D=L=40,dash-dotted lines\nsity p, there exists one vapor state at p and one liquid\nfor L = 60, D = 20. For the systems (bulk,H/J=0 and\nstate at p which have the same chemical potential.Equi-\nH/J = 0.4 (0 = 58°)) the classical predictions 4πR²vt and\nlibrium conditions require that the chemical potential is\n4πR²vef(0) are included (full curves). b) Plot of r vs.\nconstant throughout the box. Therefore, the droplet has\nfor kgT/J = 3.0. Crosses are data for D = L = 30, circles\nfor D = L = 40, diamonds D = 10, L = 60, and squares for\ndensity p and is surrounded by an environment with den-\nD =10, R = 80.\nsity P. The surface free energy of the droplet is simply\ngiven by the difference in free energy between the droplet\nand the vapor state and can be determined by thermo-\ndynamic integration:\nFc,bulk(R)=4πR²vt\n16.26\n(ve being the interfacial\ntension for a flat interface.) For R = 5 the difference be-\ntween the theoretical estimate and our simulation results\nFs(p)\n(7)\nμ(o')dp'\nis already less than 5% (at kgT/J = 3.0) and quickly\nvanishes with increasing droplet radius. The validity of\nThe number of particles in the box is conserved:\nthe capillarity approximation for the bulk agrees with\nconclusions drawn from surface force measurements on\nliquid bridges 29],but contrasts a large body of other\np(V - Varop) + pVarop = pV.\n(8)\nwork (see 26for a discussion).\nWe have also determined the surface free energy for a\nIf we further require that the (average) droplet is spher-\nsphere-cap shaped droplet attached to the wall for sev-\nical in the bulk and sphere-cap shaped for the hetero-\ngeneous case,Vdrop becomes 4/3R or 4/3πRf(0),re-\neral contact angles as a function of the radius of cur-\nspectively, and we obtain R(o) and finally Fs(R) and\nIt is important to note that within statistical\nvature.\nF(R,0).\nerrors different choices of L and D yield identical re-\nFig.a highlights the main results of our study.\nFor 0=90° and0=58.2°we have also in-\nFor θ=90°and0=\nsults.\ncluded the theoretical estimate from the capillarity ap-\nFor the bulk we can directly test the classical theory\nproximation FehetFe.bulk·f(0).When we consider\nof homogeneous nucleation by comparing our simula-\ntion results for F(R) with the capillary approximation\nFe,het(R,0)-Fs(R,0), we find that the difference in-",
+    "lines": [
+      {
+        "box": [
+          [
+            933.0,
+            38.0
+          ],
+          [
+            943.0,
+            38.0
+          ],
+          [
+            943.0,
+            48.0
+          ],
+          [
+            933.0,
+            48.0
+          ]
+        ],
+        "text": "3",
+        "score": 0.9997559189796448
+      },
+      {
+        "box": [
+          [
+            745.0,
+            77.0
+          ],
+          [
+            783.0,
+            77.0
+          ],
+          [
+            783.0,
+            88.0
+          ],
+          [
+            745.0,
+            88.0
+          ]
+        ],
+        "text": "=90.0°",
+        "score": 0.938303659359614
+      },
+      {
+        "box": [
+          [
+            805.0,
+            86.0
+          ],
+          [
+            855.0,
+            83.0
+          ],
+          [
+            856.0,
+            100.0
+          ],
+          [
+            806.0,
+            103.0
+          ]
+        ],
+        "text": "=82.3°",
+        "score": 0.9109260688225428
+      },
+      {
+        "box": [
+          [
+            659.0,
+            105.0
+          ],
+          [
+            681.0,
+            105.0
+          ],
+          [
+            681.0,
+            115.0
+          ],
+          [
+            659.0,
+            115.0
+          ]
+        ],
+        "text": "bulk",
+        "score": 0.9979391992092133
+      },
+      {
+        "box": [
+          [
+            828.0,
+            109.0
+          ],
+          [
+            876.0,
+            109.0
+          ],
+          [
+            876.0,
+            123.0
+          ],
+          [
+            828.0,
+            123.0
+          ]
+        ],
+        "text": " =74.6°",
+        "score": 0.9660435489245823
+      },
+      {
+        "box": [
+          [
+            569.0,
+            121.0
+          ],
+          [
+            589.0,
+            121.0
+          ],
+          [
+            589.0,
+            133.0
+          ],
+          [
+            569.0,
+            133.0
+          ]
+        ],
+        "text": "300",
+        "score": 0.9965650836626688
+      },
+      {
+        "box": [
+          [
+            155.0,
+            131.0
+          ],
+          [
+            164.0,
+            131.0
+          ],
+          [
+            164.0,
+            139.0
+          ],
+          [
+            155.0,
+            139.0
+          ]
+        ],
+        "text": "P",
+        "score": 0.6920304298400879
+      },
+      {
+        "box": [
+          [
+            208.0,
+            131.0
+          ],
+          [
+            217.0,
+            131.0
+          ],
+          [
+            217.0,
+            140.0
+          ],
+          [
+            208.0,
+            140.0
+          ]
+        ],
+        "text": "P",
+        "score": 0.5393550992012024
+      },
+      {
+        "box": [
+          [
+            850.0,
+            137.0
+          ],
+          [
+            899.0,
+            137.0
+          ],
+          [
+            899.0,
+            151.0
+          ],
+          [
+            850.0,
+            151.0
+          ]
+        ],
+        "text": "θ =66.6°",
+        "score": 0.9127049669623375
+      },
+      {
+        "box": [
+          [
+            603.0,
+            144.0
+          ],
+          [
+            656.0,
+            144.0
+          ],
+          [
+            656.0,
+            158.0
+          ],
+          [
+            603.0,
+            158.0
+          ]
+        ],
+        "text": "capillarity",
+        "score": 0.9801918539133939
+      },
+      {
+        "box": [
+          [
+            609.0,
+            156.0
+          ],
+          [
+            651.0,
+            156.0
+          ],
+          [
+            651.0,
+            170.0
+          ],
+          [
+            609.0,
+            170.0
+          ]
+        ],
+        "text": "approx.",
+        "score": 0.9982089740889413
+      },
+      {
+        "box": [
+          [
+            867.0,
+            161.0
+          ],
+          [
+            916.0,
+            161.0
+          ],
+          [
+            916.0,
+            175.0
+          ],
+          [
+            867.0,
+            175.0
+          ]
+        ],
+        "text": "θ =58.2°",
+        "score": 0.9063628017902374
+      },
+      {
+        "box": [
+          [
+            564.0,
+            169.0
+          ],
+          [
+            589.0,
+            169.0
+          ],
+          [
+            589.0,
+            183.0
+          ],
+          [
+            564.0,
+            183.0
+          ]
+        ],
+        "text": "200",
+        "score": 0.9971976478894552
+      },
+      {
+        "box": [
+          [
+            88.0,
+            203.0
+          ],
+          [
+            503.0,
+            203.0
+          ],
+          [
+            503.0,
+            222.0
+          ],
+          [
+            88.0,
+            222.0
+          ]
+        ],
+        "text": "FIG. 3: Chemical potential as a function of density. The den-",
+        "score": 0.9832350963451824
+      },
+      {
+        "box": [
+          [
+            87.0,
+            217.0
+          ],
+          [
+            505.0,
+            217.0
+          ],
+          [
+            505.0,
+            236.0
+          ],
+          [
+            87.0,
+            236.0
+          ]
+        ],
+        "text": "sity of the sphere-cap shaped droplet at overall density p is",
+        "score": 0.9812722880332196
+      },
+      {
+        "box": [
+          [
+            569.0,
+            220.0
+          ],
+          [
+            590.0,
+            220.0
+          ],
+          [
+            590.0,
+            232.0
+          ],
+          [
+            569.0,
+            232.0
+          ]
+        ],
+        "text": "100",
+        "score": 0.9986561139424642
+      },
+      {
+        "box": [
+          [
+            87.0,
+            230.0
+          ],
+          [
+            502.0,
+            230.0
+          ],
+          [
+            502.0,
+            250.0
+          ],
+          [
+            87.0,
+            250.0
+          ]
+        ],
+        "text": "given by p, the density of the environment by Pe.F is ob-",
+        "score": 0.9306787074657908
+      },
+      {
+        "box": [
+          [
+            866.0,
+            239.0
+          ],
+          [
+            918.0,
+            239.0
+          ],
+          [
+            918.0,
+            253.0
+          ],
+          [
+            866.0,
+            253.0
+          ]
+        ],
+        "text": "θ =49.1°",
+        "score": 0.9013287872076035
+      },
+      {
+        "box": [
+          [
+            87.0,
+            244.0
+          ],
+          [
+            504.0,
+            244.0
+          ],
+          [
+            504.0,
+            263.0
+          ],
+          [
+            87.0,
+            263.0
+          ]
+        ],
+        "text": "tained by integrating the chemical potential over the density",
+        "score": 0.9812034671423865
+      },
+      {
+        "box": [
+          [
+            790.0,
+            247.0
+          ],
+          [
+            803.0,
+            247.0
+          ],
+          [
+            803.0,
+            255.0
+          ],
+          [
+            790.0,
+            255.0
+          ]
+        ],
+        "text": " + *",
+        "score": 0.6596597507596016
+      },
+      {
+        "box": [
+          [
+            87.0,
+            257.0
+          ],
+          [
+            182.0,
+            259.0
+          ],
+          [
+            182.0,
+            276.0
+          ],
+          [
+            87.0,
+            274.0
+          ]
+        ],
+        "text": "from p' to p.",
+        "score": 0.8999541676961459
+      },
+      {
+        "box": [
+          [
+            857.0,
+            263.0
+          ],
+          [
+            874.0,
+            263.0
+          ],
+          [
+            874.0,
+            280.0
+          ],
+          [
+            857.0,
+            280.0
+          ]
+        ],
+        "text": "15",
+        "score": 0.8598608672618866
+      },
+      {
+        "box": [
+          [
+            747.0,
+            276.0
+          ],
+          [
+            761.0,
+            276.0
+          ],
+          [
+            761.0,
+            289.0
+          ],
+          [
+            747.0,
+            289.0
+          ]
+        ],
+        "text": "R",
+        "score": 0.9974547028541565
+      },
+      {
+        "box": [
+          [
+            223.0,
+            295.0
+          ],
+          [
+            505.0,
+            296.0
+          ],
+          [
+            505.0,
+            316.0
+          ],
+          [
+            223.0,
+            315.0
+          ]
+        ],
+        "text": "of the Widom test particle insertion",
+        "score": 0.9841499858432345
+      },
+      {
+        "box": [
+          [
+            177.0,
+            296.0
+          ],
+          [
+            232.0,
+            296.0
+          ],
+          [
+            232.0,
+            313.0
+          ],
+          [
+            177.0,
+            313.0
+          ]
+        ],
+        "text": "16.17",
+        "score": 0.8310399651527405
+      },
+      {
+        "box": [
+          [
+            88.0,
+            298.0
+          ],
+          [
+            176.0,
+            298.0
+          ],
+          [
+            176.0,
+            315.0
+          ],
+          [
+            88.0,
+            315.0
+          ]
+        ],
+        "text": "adaptation",
+        "score": 0.9998240411281586
+      },
+      {
+        "box": [
+          [
+            616.0,
+            300.0
+          ],
+          [
+            628.0,
+            300.0
+          ],
+          [
+            628.0,
+            313.0
+          ],
+          [
+            616.0,
+            313.0
+          ]
+        ],
+        "text": "合",
+        "score": 0.8780282139778137
+      },
+      {
+        "box": [
+          [
+            574.0,
+            303.0
+          ],
+          [
+            586.0,
+            303.0
+          ],
+          [
+            586.0,
+            311.0
+          ],
+          [
+            574.0,
+            311.0
+          ]
+        ],
+        "text": "0.",
+        "score": 0.9382272362709045
+      },
+      {
+        "box": [
+          [
+            86.0,
+            310.0
+          ],
+          [
+            506.0,
+            310.0
+          ],
+          [
+            506.0,
+            333.0
+          ],
+          [
+            86.0,
+            333.0
+          ]
+        ],
+        "text": "method22.In the flat region of the isotherm depicted",
+        "score": 0.9660895581428821
+      },
+      {
+        "box": [
+          [
+            885.0,
+            311.0
+          ],
+          [
+            905.0,
+            311.0
+          ],
+          [
+            905.0,
+            322.0
+          ],
+          [
+            885.0,
+            322.0
+          ]
+        ],
+        "text": "30",
+        "score": 0.998807430267334
+      },
+      {
+        "box": [
+          [
+            884.0,
+            319.0
+          ],
+          [
+            911.0,
+            319.0
+          ],
+          [
+            911.0,
+            339.0
+          ],
+          [
+            884.0,
+            339.0
+          ]
+        ],
+        "text": "4lab",
+        "score": 0.8314467519521713
+      },
+      {
+        "box": [
+          [
+            87.0,
+            328.0
+          ],
+          [
+            504.0,
+            328.0
+          ],
+          [
+            504.0,
+            348.0
+          ],
+          [
+            87.0,
+            348.0
+          ]
+        ],
+        "text": "in Fig. a single droplet is present in the simulation box,",
+        "score": 0.9720624222837645
+      },
+      {
+        "box": [
+          [
+            87.0,
+            343.0
+          ],
+          [
+            505.0,
+            343.0
+          ],
+          [
+            505.0,
+            362.0
+          ],
+          [
+            87.0,
+            362.0
+          ]
+        ],
+        "text": "which will be used for the determination of the surface",
+        "score": 0.9894695086912675
+      },
+      {
+        "box": [
+          [
+            568.0,
+            346.0
+          ],
+          [
+            588.0,
+            346.0
+          ],
+          [
+            588.0,
+            357.0
+          ],
+          [
+            568.0,
+            357.0
+          ]
+        ],
+        "text": "0.15",
+        "score": 0.9967530816793442
+      },
+      {
+        "box": [
+          [
+            87.0,
+            359.0
+          ],
+          [
+            505.0,
+            359.0
+          ],
+          [
+            505.0,
+            379.0
+          ],
+          [
+            87.0,
+            379.0
+          ]
+        ],
+        "text": "free energy. At small densities the ascending branch of μ",
+        "score": 0.9960576023971826
+      },
+      {
+        "box": [
+          [
+            552.0,
+            369.0
+          ],
+          [
+            564.0,
+            369.0
+          ],
+          [
+            564.0,
+            389.0
+          ],
+          [
+            552.0,
+            389.0
+          ]
+        ],
+        "text": "8x/",
+        "score": 0.590333620707194
+      },
+      {
+        "box": [
+          [
+            87.0,
+            375.0
+          ],
+          [
+            505.0,
+            375.0
+          ],
+          [
+            505.0,
+            395.0
+          ],
+          [
+            87.0,
+            395.0
+          ]
+        ],
+        "text": "represents pure vapor (with no single large droplet being",
+        "score": 0.9962178374591627
+      },
+      {
+        "box": [
+          [
+            87.0,
+            390.0
+          ],
+          [
+            505.0,
+            390.0
+          ],
+          [
+            505.0,
+            410.0
+          ],
+          [
+            87.0,
+            410.0
+          ]
+        ],
+        "text": "present), and the subsequent rapid decrease signifies the",
+        "score": 0.9852430768180311
+      },
+      {
+        "box": [
+          [
+            572.0,
+            392.0
+          ],
+          [
+            591.0,
+            392.0
+          ],
+          [
+            591.0,
+            403.0
+          ],
+          [
+            572.0,
+            403.0
+          ]
+        ],
+        "text": "Z'0-",
+        "score": 0.5397112816572189
+      },
+      {
+        "box": [
+          [
+            574.0,
+            394.0
+          ],
+          [
+            589.0,
+            394.0
+          ],
+          [
+            589.0,
+            402.0
+          ],
+          [
+            574.0,
+            402.0
+          ]
+        ],
+        "text": "0.2",
+        "score": 0.975483238697052
+      },
+      {
+        "box": [
+          [
+            87.0,
+            406.0
+          ],
+          [
+            505.0,
+            406.0
+          ],
+          [
+            505.0,
+            425.0
+          ],
+          [
+            87.0,
+            425.0
+          ]
+        ],
+        "text": "system size dependent transition towards a single droplet",
+        "score": 0.9925618150777984
+      },
+      {
+        "box": [
+          [
+            138.0,
+            421.0
+          ],
+          [
+            196.0,
+            421.0
+          ],
+          [
+            196.0,
+            438.0
+          ],
+          [
+            138.0,
+            438.0
+          ]
+        ],
+        "text": "2326.",
+        "score": 0.9241257667541504
+      },
+      {
+        "box": [
+          [
+            88.0,
+            422.0
+          ],
+          [
+            144.0,
+            422.0
+          ],
+          [
+            144.0,
+            439.0
+          ],
+          [
+            88.0,
+            439.0
+          ]
+        ],
+        "text": "phase",
+        "score": 0.9997676372528076
+      },
+      {
+        "box": [
+          [
+            198.0,
+            422.0
+          ],
+          [
+            505.0,
+            422.0
+          ],
+          [
+            505.0,
+            439.0
+          ],
+          [
+            198.0,
+            439.0
+          ]
+        ],
+        "text": "At larger densities, the droplet region is",
+        "score": 0.9970301347119468
+      },
+      {
+        "box": [
+          [
+            911.0,
+            431.0
+          ],
+          [
+            918.0,
+            431.0
+          ],
+          [
+            918.0,
+            441.0
+          ],
+          [
+            911.0,
+            441.0
+          ]
+        ],
+        "text": "D",
+        "score": 0.6086359024047852
+      },
+      {
+        "box": [
+          [
+            87.0,
+            436.0
+          ],
+          [
+            505.0,
+            436.0
+          ],
+          [
+            505.0,
+            456.0
+          ],
+          [
+            87.0,
+            456.0
+          ]
+        ],
+        "text": "delimited by a transition towards a cylindrical droplet",
+        "score": 0.9866159764203158
+      },
+      {
+        "box": [
+          [
+            567.0,
+            437.0
+          ],
+          [
+            588.0,
+            437.0
+          ],
+          [
+            588.0,
+            448.0
+          ],
+          [
+            567.0,
+            448.0
+          ]
+        ],
+        "text": "0.25",
+        "score": 0.9905932694673538
+      },
+      {
+        "box": [
+          [
+            88.0,
+            452.0
+          ],
+          [
+            455.0,
+            452.0
+          ],
+          [
+            455.0,
+            472.0
+          ],
+          [
+            88.0,
+            472.0
+          ]
+        ],
+        "text": "which is stabilized by the boundary conditions.",
+        "score": 0.9848800047915033
+      },
+      {
+        "box": [
+          [
+            463.0,
+            453.0
+          ],
+          [
+            504.0,
+            453.0
+          ],
+          [
+            504.0,
+            470.0
+          ],
+          [
+            463.0,
+            470.0
+          ]
+        ],
+        "text": "Note",
+        "score": 0.9971088767051697
+      },
+      {
+        "box": [
+          [
+            86.0,
+            466.0
+          ],
+          [
+            505.0,
+            467.0
+          ],
+          [
+            505.0,
+            487.0
+          ],
+          [
+            86.0,
+            486.0
+          ]
+        ],
+        "text": "that for each system size, only a certain range of droplet",
+        "score": 0.9956479350040699
+      },
+      {
+        "box": [
+          [
+            87.0,
+            483.0
+          ],
+          [
+            505.0,
+            483.0
+          ],
+          [
+            505.0,
+            502.0
+          ],
+          [
+            87.0,
+            502.0
+          ]
+        ],
+        "text": "sizes can be stabilized and we have to simulate a whole",
+        "score": 0.9885344505310059
+      },
+      {
+        "box": [
+          [
+            528.0,
+            495.0
+          ],
+          [
+            945.0,
+            495.0
+          ],
+          [
+            945.0,
+            514.0
+          ],
+          [
+            528.0,
+            514.0
+          ]
+        ],
+        "text": "FIG. 4: a) Plot of Fs(R,0)/kgT vs. R for kBT/J = 3.0 and",
+        "score": 0.9470483820353236
+      },
+      {
+        "box": [
+          [
+            88.0,
+            499.0
+          ],
+          [
+            350.0,
+            499.0
+          ],
+          [
+            350.0,
+            516.0
+          ],
+          [
+            88.0,
+            516.0
+          ]
+        ],
+        "text": "range of box sizes to cover all radii.",
+        "score": 0.9944222287127846
+      },
+      {
+        "box": [
+          [
+            527.0,
+            509.0
+          ],
+          [
+            944.0,
+            509.0
+          ],
+          [
+            944.0,
+            528.0
+          ],
+          [
+            527.0,
+            528.0
+          ]
+        ],
+        "text": "a broad range of values for 0.Dotted lines are results for",
+        "score": 0.9800280610035206
+      },
+      {
+        "box": [
+          [
+            105.0,
+            514.0
+          ],
+          [
+            503.0,
+            514.0
+          ],
+          [
+            503.0,
+            533.0
+          ],
+          [
+            105.0,
+            533.0
+          ]
+        ],
+        "text": "As indicated in Fig. B for each droplet state at den-",
+        "score": 0.9704971201014969
+      },
+      {
+        "box": [
+          [
+            527.0,
+            521.0
+          ],
+          [
+            944.0,
+            521.0
+          ],
+          [
+            944.0,
+            540.0
+          ],
+          [
+            527.0,
+            540.0
+          ]
+        ],
+        "text": "L =D =30,dashes lines for D=L=40,dash-dotted lines",
+        "score": 0.9612840616703033
+      },
+      {
+        "box": [
+          [
+            87.0,
+            530.0
+          ],
+          [
+            505.0,
+            530.0
+          ],
+          [
+            505.0,
+            550.0
+          ],
+          [
+            87.0,
+            550.0
+          ]
+        ],
+        "text": "sity p, there exists one vapor state at p and one liquid",
+        "score": 0.9853886153016772
+      },
+      {
+        "box": [
+          [
+            528.0,
+            536.0
+          ],
+          [
+            945.0,
+            536.0
+          ],
+          [
+            945.0,
+            555.0
+          ],
+          [
+            528.0,
+            555.0
+          ]
+        ],
+        "text": "for L = 60, D = 20. For the systems (bulk,H/J=0 and",
+        "score": 0.9548534867810268
+      },
+      {
+        "box": [
+          [
+            87.0,
+            544.0
+          ],
+          [
+            504.0,
+            544.0
+          ],
+          [
+            504.0,
+            564.0
+          ],
+          [
+            87.0,
+            564.0
+          ]
+        ],
+        "text": "state at p which have the same chemical potential.Equi-",
+        "score": 0.984212519905784
+      },
+      {
+        "box": [
+          [
+            528.0,
+            548.0
+          ],
+          [
+            945.0,
+            549.0
+          ],
+          [
+            945.0,
+            569.0
+          ],
+          [
+            528.0,
+            568.0
+          ]
+        ],
+        "text": "H/J = 0.4 (0 = 58°)) the classical predictions 4πR²vt and",
+        "score": 0.9366892984038905
+      },
+      {
+        "box": [
+          [
+            88.0,
+            560.0
+          ],
+          [
+            505.0,
+            560.0
+          ],
+          [
+            505.0,
+            580.0
+          ],
+          [
+            88.0,
+            580.0
+          ]
+        ],
+        "text": "librium conditions require that the chemical potential is",
+        "score": 0.9893667875674733
+      },
+      {
+        "box": [
+          [
+            528.0,
+            563.0
+          ],
+          [
+            930.0,
+            563.0
+          ],
+          [
+            930.0,
+            582.0
+          ],
+          [
+            528.0,
+            582.0
+          ]
+        ],
+        "text": "4πR²vef(0) are included (full curves). b) Plot of r vs.",
+        "score": 0.952065377885645
+      },
+      {
+        "box": [
+          [
+            88.0,
+            575.0
+          ],
+          [
+            505.0,
+            575.0
+          ],
+          [
+            505.0,
+            594.0
+          ],
+          [
+            88.0,
+            594.0
+          ]
+        ],
+        "text": "constant throughout the box. Therefore, the droplet has",
+        "score": 0.9936480500481345
+      },
+      {
+        "box": [
+          [
+            529.0,
+            578.0
+          ],
+          [
+            945.0,
+            578.0
+          ],
+          [
+            945.0,
+            594.0
+          ],
+          [
+            529.0,
+            594.0
+          ]
+        ],
+        "text": "for kgT/J = 3.0. Crosses are data for D = L = 30, circles",
+        "score": 0.9579608095319647
+      },
+      {
+        "box": [
+          [
+            528.0,
+            590.0
+          ],
+          [
+            945.0,
+            591.0
+          ],
+          [
+            945.0,
+            608.0
+          ],
+          [
+            528.0,
+            607.0
+          ]
+        ],
+        "text": "for D = L = 40, diamonds D = 10, L = 60, and squares for",
+        "score": 0.9681963649179254
+      },
+      {
+        "box": [
+          [
+            88.0,
+            591.0
+          ],
+          [
+            504.0,
+            591.0
+          ],
+          [
+            504.0,
+            611.0
+          ],
+          [
+            88.0,
+            611.0
+          ]
+        ],
+        "text": "density p and is surrounded by an environment with den-",
+        "score": 0.9863551139831543
+      },
+      {
+        "box": [
+          [
+            530.0,
+            605.0
+          ],
+          [
+            642.0,
+            605.0
+          ],
+          [
+            642.0,
+            621.0
+          ],
+          [
+            530.0,
+            621.0
+          ]
+        ],
+        "text": "D =10, R = 80.",
+        "score": 0.9546137579849788
+      },
+      {
+        "box": [
+          [
+            87.0,
+            607.0
+          ],
+          [
+            504.0,
+            607.0
+          ],
+          [
+            504.0,
+            627.0
+          ],
+          [
+            87.0,
+            627.0
+          ]
+        ],
+        "text": "sity P. The surface free energy of the droplet is simply",
+        "score": 0.9743149621146066
+      },
+      {
+        "box": [
+          [
+            88.0,
+            621.0
+          ],
+          [
+            504.0,
+            621.0
+          ],
+          [
+            504.0,
+            641.0
+          ],
+          [
+            88.0,
+            641.0
+          ]
+        ],
+        "text": "given by the difference in free energy between the droplet",
+        "score": 0.9879887443164299
+      },
+      {
+        "box": [
+          [
+            88.0,
+            638.0
+          ],
+          [
+            503.0,
+            638.0
+          ],
+          [
+            503.0,
+            658.0
+          ],
+          [
+            88.0,
+            658.0
+          ]
+        ],
+        "text": "and the vapor state and can be determined by thermo-",
+        "score": 0.9922284644383651
+      },
+      {
+        "box": [
+          [
+            88.0,
+            653.0
+          ],
+          [
+            245.0,
+            655.0
+          ],
+          [
+            245.0,
+            672.0
+          ],
+          [
+            88.0,
+            670.0
+          ]
+        ],
+        "text": "dynamic integration:",
+        "score": 0.9935393422842026
+      },
+      {
+        "box": [
+          [
+            530.0,
+            653.0
+          ],
+          [
+            696.0,
+            653.0
+          ],
+          [
+            696.0,
+            673.0
+          ],
+          [
+            530.0,
+            673.0
+          ]
+        ],
+        "text": "Fc,bulk(R)=4πR²vt",
+        "score": 0.8758254857624278
+      },
+      {
+        "box": [
+          [
+            699.0,
+            653.0
+          ],
+          [
+            752.0,
+            653.0
+          ],
+          [
+            752.0,
+            670.0
+          ],
+          [
+            699.0,
+            670.0
+          ]
+        ],
+        "text": "16.26",
+        "score": 0.9920471906661987
+      },
+      {
+        "box": [
+          [
+            751.0,
+            655.0
+          ],
+          [
+            944.0,
+            655.0
+          ],
+          [
+            944.0,
+            672.0
+          ],
+          [
+            751.0,
+            672.0
+          ]
+        ],
+        "text": "(ve being the interfacial",
+        "score": 0.9455314564704895
+      },
+      {
+        "box": [
+          [
+            528.0,
+            670.0
+          ],
+          [
+            944.0,
+            670.0
+          ],
+          [
+            944.0,
+            689.0
+          ],
+          [
+            528.0,
+            689.0
+          ]
+        ],
+        "text": "tension for a flat interface.) For R = 5 the difference be-",
+        "score": 0.970015935978647
+      },
+      {
+        "box": [
+          [
+            529.0,
+            687.0
+          ],
+          [
+            945.0,
+            687.0
+          ],
+          [
+            945.0,
+            703.0
+          ],
+          [
+            529.0,
+            703.0
+          ]
+        ],
+        "text": "tween the theoretical estimate and our simulation results",
+        "score": 0.9942312658878795
+      },
+      {
+        "box": [
+          [
+            221.0,
+            699.0
+          ],
+          [
+            262.0,
+            699.0
+          ],
+          [
+            262.0,
+            716.0
+          ],
+          [
+            221.0,
+            716.0
+          ]
+        ],
+        "text": "Fs(p)",
+        "score": 0.8254477381706238
+      },
+      {
+        "box": [
+          [
+            479.0,
+            699.0
+          ],
+          [
+            502.0,
+            699.0
+          ],
+          [
+            502.0,
+            715.0
+          ],
+          [
+            479.0,
+            715.0
+          ]
+        ],
+        "text": "(7)",
+        "score": 0.9707218209902445
+      },
+      {
+        "box": [
+          [
+            308.0,
+            700.0
+          ],
+          [
+            368.0,
+            700.0
+          ],
+          [
+            368.0,
+            714.0
+          ],
+          [
+            308.0,
+            714.0
+          ]
+        ],
+        "text": "μ(o')dp'",
+        "score": 0.7035524733364582
+      },
+      {
+        "box": [
+          [
+            527.0,
+            700.0
+          ],
+          [
+            944.0,
+            700.0
+          ],
+          [
+            944.0,
+            720.0
+          ],
+          [
+            527.0,
+            720.0
+          ]
+        ],
+        "text": "is already less than 5% (at kgT/J = 3.0) and quickly",
+        "score": 0.9711739317728922
+      },
+      {
+        "box": [
+          [
+            529.0,
+            716.0
+          ],
+          [
+            946.0,
+            716.0
+          ],
+          [
+            946.0,
+            736.0
+          ],
+          [
+            529.0,
+            736.0
+          ]
+        ],
+        "text": "vanishes with increasing droplet radius. The validity of",
+        "score": 0.9913905092648098
+      },
+      {
+        "box": [
+          [
+            87.0,
+            730.0
+          ],
+          [
+            447.0,
+            731.0
+          ],
+          [
+            447.0,
+            751.0
+          ],
+          [
+            87.0,
+            750.0
+          ]
+        ],
+        "text": "The number of particles in the box is conserved:",
+        "score": 0.9902865588665009
+      },
+      {
+        "box": [
+          [
+            528.0,
+            732.0
+          ],
+          [
+            945.0,
+            732.0
+          ],
+          [
+            945.0,
+            752.0
+          ],
+          [
+            528.0,
+            752.0
+          ]
+        ],
+        "text": "the capillarity approximation for the bulk agrees with",
+        "score": 0.9765337860142743
+      },
+      {
+        "box": [
+          [
+            528.0,
+            747.0
+          ],
+          [
+            945.0,
+            747.0
+          ],
+          [
+            945.0,
+            766.0
+          ],
+          [
+            528.0,
+            766.0
+          ]
+        ],
+        "text": "conclusions drawn from surface force measurements on",
+        "score": 0.9942658577974026
+      },
+      {
+        "box": [
+          [
+            527.0,
+            760.0
+          ],
+          [
+            946.0,
+            760.0
+          ],
+          [
+            946.0,
+            783.0
+          ],
+          [
+            527.0,
+            783.0
+          ]
+        ],
+        "text": "liquid bridges 29],but contrasts a large body of other",
+        "score": 0.9744770173673276
+      },
+      {
+        "box": [
+          [
+            184.0,
+            769.0
+          ],
+          [
+            408.0,
+            770.0
+          ],
+          [
+            408.0,
+            793.0
+          ],
+          [
+            184.0,
+            792.0
+          ]
+        ],
+        "text": "p(V - Varop) + pVarop = pV.",
+        "score": 0.9295100724255597
+      },
+      {
+        "box": [
+          [
+            478.0,
+            772.0
+          ],
+          [
+            504.0,
+            772.0
+          ],
+          [
+            504.0,
+            791.0
+          ],
+          [
+            478.0,
+            791.0
+          ]
+        ],
+        "text": "(8)",
+        "score": 0.9868022203445435
+      },
+      {
+        "box": [
+          [
+            528.0,
+            777.0
+          ],
+          [
+            762.0,
+            777.0
+          ],
+          [
+            762.0,
+            797.0
+          ],
+          [
+            528.0,
+            797.0
+          ]
+        ],
+        "text": "work (see 26for a discussion).",
+        "score": 0.9923797309398651
+      },
+      {
+        "box": [
+          [
+            545.0,
+            796.0
+          ],
+          [
+            946.0,
+            797.0
+          ],
+          [
+            946.0,
+            817.0
+          ],
+          [
+            545.0,
+            816.0
+          ]
+        ],
+        "text": "We have also determined the surface free energy for a",
+        "score": 0.9726016049115163
+      },
+      {
+        "box": [
+          [
+            88.0,
+            797.0
+          ],
+          [
+            503.0,
+            797.0
+          ],
+          [
+            503.0,
+            817.0
+          ],
+          [
+            88.0,
+            817.0
+          ]
+        ],
+        "text": "If we further require that the (average) droplet is spher-",
+        "score": 0.9818639960782282
+      },
+      {
+        "box": [
+          [
+            528.0,
+            812.0
+          ],
+          [
+            945.0,
+            812.0
+          ],
+          [
+            945.0,
+            832.0
+          ],
+          [
+            528.0,
+            832.0
+          ]
+        ],
+        "text": "sphere-cap shaped droplet attached to the wall for sev-",
+        "score": 0.9928513407707215
+      },
+      {
+        "box": [
+          [
+            88.0,
+            813.0
+          ],
+          [
+            503.0,
+            813.0
+          ],
+          [
+            503.0,
+            833.0
+          ],
+          [
+            88.0,
+            833.0
+          ]
+        ],
+        "text": "ical in the bulk and sphere-cap shaped for the hetero-",
+        "score": 0.985864539941152
+      },
+      {
+        "box": [
+          [
+            86.0,
+            827.0
+          ],
+          [
+            503.0,
+            825.0
+          ],
+          [
+            503.0,
+            848.0
+          ],
+          [
+            86.0,
+            850.0
+          ]
+        ],
+        "text": "geneous case,Vdrop becomes 4/3R or 4/3πRf(0),re-",
+        "score": 0.9467624525229136
+      },
+      {
+        "box": [
+          [
+            528.0,
+            828.0
+          ],
+          [
+            944.0,
+            828.0
+          ],
+          [
+            944.0,
+            847.0
+          ],
+          [
+            528.0,
+            847.0
+          ]
+        ],
+        "text": "eral contact angles as a function of the radius of cur-",
+        "score": 0.9836021824316545
+      },
+      {
+        "box": [
+          [
+            87.0,
+            844.0
+          ],
+          [
+            504.0,
+            843.0
+          ],
+          [
+            504.0,
+            863.0
+          ],
+          [
+            87.0,
+            864.0
+          ]
+        ],
+        "text": "spectively, and we obtain R(o) and finally Fs(R) and",
+        "score": 0.9572585752377143
+      },
+      {
+        "box": [
+          [
+            590.0,
+            845.0
+          ],
+          [
+            943.0,
+            845.0
+          ],
+          [
+            943.0,
+            862.0
+          ],
+          [
+            590.0,
+            862.0
+          ]
+        ],
+        "text": "It is important to note that within statistical",
+        "score": 0.9735343684541419
+      },
+      {
+        "box": [
+          [
+            530.0,
+            847.0
+          ],
+          [
+            585.0,
+            847.0
+          ],
+          [
+            585.0,
+            861.0
+          ],
+          [
+            530.0,
+            861.0
+          ]
+        ],
+        "text": "vature.",
+        "score": 0.9945049796785627
+      },
+      {
+        "box": [
+          [
+            89.0,
+            859.0
+          ],
+          [
+            157.0,
+            859.0
+          ],
+          [
+            157.0,
+            876.0
+          ],
+          [
+            89.0,
+            876.0
+          ]
+        ],
+        "text": "F(R,0).",
+        "score": 0.9413289087159293
+      },
+      {
+        "box": [
+          [
+            528.0,
+            859.0
+          ],
+          [
+            945.0,
+            859.0
+          ],
+          [
+            945.0,
+            878.0
+          ],
+          [
+            528.0,
+            878.0
+          ]
+        ],
+        "text": "errors different choices of L and D yield identical re-",
+        "score": 0.9615476586601951
+      },
+      {
+        "box": [
+          [
+            104.0,
+            874.0
+          ],
+          [
+            502.0,
+            874.0
+          ],
+          [
+            502.0,
+            894.0
+          ],
+          [
+            104.0,
+            894.0
+          ]
+        ],
+        "text": "Fig.a highlights the main results of our study.",
+        "score": 0.9677606199650054
+      },
+      {
+        "box": [
+          [
+            582.0,
+            875.0
+          ],
+          [
+            943.0,
+            875.0
+          ],
+          [
+            943.0,
+            892.0
+          ],
+          [
+            582.0,
+            892.0
+          ]
+        ],
+        "text": "For 0=90° and0=58.2°we have also in-",
+        "score": 0.9298943181832632
+      },
+      {
+        "box": [
+          [
+            582.0,
+            875.0
+          ],
+          [
+            764.0,
+            875.0
+          ],
+          [
+            764.0,
+            892.0
+          ],
+          [
+            582.0,
+            892.0
+          ]
+        ],
+        "text": "For θ=90°and0=",
+        "score": 0.9127104026930672
+      },
+      {
+        "box": [
+          [
+            528.0,
+            876.0
+          ],
+          [
+            573.0,
+            876.0
+          ],
+          [
+            573.0,
+            893.0
+          ],
+          [
+            528.0,
+            893.0
+          ]
+        ],
+        "text": "sults.",
+        "score": 0.9974626104036967
+      },
+      {
+        "box": [
+          [
+            527.0,
+            888.0
+          ],
+          [
+            943.0,
+            890.0
+          ],
+          [
+            943.0,
+            911.0
+          ],
+          [
+            527.0,
+            909.0
+          ]
+        ],
+        "text": "cluded the theoretical estimate from the capillarity ap-",
+        "score": 0.9812705804194722
+      },
+      {
+        "box": [
+          [
+            86.0,
+            889.0
+          ],
+          [
+            504.0,
+            890.0
+          ],
+          [
+            504.0,
+            910.0
+          ],
+          [
+            86.0,
+            909.0
+          ]
+        ],
+        "text": "For the bulk we can directly test the classical theory",
+        "score": 0.9806801433916446
+      },
+      {
+        "box": [
+          [
+            526.0,
+            904.0
+          ],
+          [
+            946.0,
+            903.0
+          ],
+          [
+            946.0,
+            926.0
+          ],
+          [
+            526.0,
+            927.0
+          ]
+        ],
+        "text": "proximation FehetFe.bulk·f(0).When we consider",
+        "score": 0.9116464548784754
+      },
+      {
+        "box": [
+          [
+            87.0,
+            906.0
+          ],
+          [
+            503.0,
+            906.0
+          ],
+          [
+            503.0,
+            926.0
+          ],
+          [
+            87.0,
+            926.0
+          ]
+        ],
+        "text": "of homogeneous nucleation by comparing our simula-",
+        "score": 0.9730738306045532
+      },
+      {
+        "box": [
+          [
+            87.0,
+            920.0
+          ],
+          [
+            505.0,
+            921.0
+          ],
+          [
+            505.0,
+            941.0
+          ],
+          [
+            87.0,
+            940.0
+          ]
+        ],
+        "text": "tion results for F(R) with the capillary approximation",
+        "score": 0.987059752146403
+      },
+      {
+        "box": [
+          [
+            529.0,
+            921.0
+          ],
+          [
+            944.0,
+            921.0
+          ],
+          [
+            944.0,
+            941.0
+          ],
+          [
+            529.0,
+            941.0
+          ]
+        ],
+        "text": "Fe,het(R,0)-Fs(R,0), we find that the difference in-",
+        "score": 0.9264069646596909
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 392,
+    "deduplicated": 283,
+    "elapsed_ms": 1360.73,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 1371.88
+}

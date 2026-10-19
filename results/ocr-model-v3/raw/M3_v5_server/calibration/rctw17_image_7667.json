@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_7667",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M3_v5_server",
+  "image_sha256": "4271a3d1c8c116c2cf62e7b085bf60b23da8c9d0921e54066db79d9d7888f2ee",
+  "ok": true,
+  "result": {
+    "text": "胜柏保健痛风康復\n胜柏",
+    "lines": [
+      {
+        "box": [
+          [
+            24.414893617021278,
+            672.8709677419355
+          ],
+          [
+            693.3829787234042,
+            646.5483870967743
+          ],
+          [
+            698.2659574468084,
+            746.9032258064517
+          ],
+          [
+            29.29787234042553,
+            773.2258064516129
+          ]
+        ],
+        "text": "胜柏保健痛风康復",
+        "score": 0.7902331352233887
+      },
+      {
+        "box": [
+          [
+            883.8191489361702,
+            1243.741935483871
+          ],
+          [
+            1132.851063829787,
+            1247.032258064516
+          ],
+          [
+            1131.223404255319,
+            1372.0645161290324
+          ],
+          [
+            882.1914893617021,
+            1368.774193548387
+          ]
+        ],
+        "text": "胜柏",
+        "score": 0.9881627559661865
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 4,
+    "elapsed_ms": 130.39
+  }
+}

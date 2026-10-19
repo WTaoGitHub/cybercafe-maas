@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_2253",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "17bc848de046e5353698a8876a57f696ed5fcdc357e5baf44cd0f90837d643fa",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "银泰·创意城\nINTIME CREATIVE CITY",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            597.7174072265625
+          ],
+          [
+            4205.87890625,
+            568.04345703125
+          ],
+          [
+            4205.87890625,
+            1625.70654296875
+          ],
+          [
+            0.0,
+            1655.3804931640625
+          ]
+        ],
+        "text": "银泰·创意城",
+        "score": 0.9696997503439585
+      },
+      {
+        "box": [
+          [
+            233.3064422607422,
+            1612.9891357421875
+          ],
+          [
+            4165.58056640625,
+            1593.9130859375
+          ],
+          [
+            4165.58056640625,
+            1810.1087646484375
+          ],
+          [
+            233.3064422607422,
+            1829.184814453125
+          ]
+        ],
+        "text": "INTIME CREATIVE CITY",
+        "score": 0.9572131186723709
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 94.75,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 2
+    },
+    "elapsed_ms": 94.76
+  }
+}

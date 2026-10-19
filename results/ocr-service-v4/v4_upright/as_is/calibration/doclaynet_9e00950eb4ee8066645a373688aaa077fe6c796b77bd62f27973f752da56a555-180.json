@@ -1,0 +1,65 @@
+{
+  "id": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+  "source": "doclaynet",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "00f723c55e1a5ac94ba1e1557e20e6933846ce87552ec0a6eb10c4b4c2e6212c",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "arXiv:1002.1474v1 [physics.atom-ph] 7 Feb 2010:\ns",
+    "lines": [
+      {
+        "box": [
+          [
+            72.0,
+            754.0
+          ],
+          [
+            22.0,
+            755.0
+          ],
+          [
+            17.0,
+            206.0
+          ],
+          [
+            67.0,
+            205.0
+          ]
+        ],
+        "text": "arXiv:1002.1474v1 [physics.atom-ph] 7 Feb 2010:",
+        "score": 0.932728442739933
+      },
+      {
+        "box": [
+          [
+            595.0,
+            387.0
+          ],
+          [
+            425.0,
+            387.0
+          ],
+          [
+            425.0,
+            364.0
+          ],
+          [
+            595.0,
+            364.0
+          ]
+        ],
+        "text": "s",
+        "score": 0.6183334589004517
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 104.39,
+    "direction_stats": {},
+    "elapsed_ms": 104.4
+  }
+}

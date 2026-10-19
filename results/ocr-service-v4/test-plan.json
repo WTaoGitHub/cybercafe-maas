@@ -1,0 +1,211 @@
+{
+  "created_at": "2026-10-19T09:03:10.598250+00:00",
+  "direction_plan": {
+    "selected": [
+      [
+        "calibration",
+        "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb"
+      ],
+      [
+        "calibration",
+        "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb"
+      ],
+      [
+        "calibration",
+        "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555"
+      ],
+      [
+        "calibration",
+        "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3"
+      ],
+      [
+        "calibration",
+        "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be"
+      ],
+      [
+        "calibration",
+        "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67"
+      ],
+      [
+        "calibration",
+        "rctw17_image_6180"
+      ],
+      [
+        "calibration",
+        "rctw17_image_1941"
+      ],
+      [
+        "calibration",
+        "rctw17_image_5534"
+      ],
+      [
+        "calibration",
+        "rctw17_image_5446"
+      ],
+      [
+        "calibration",
+        "rctw17_image_3962"
+      ],
+      [
+        "calibration",
+        "rctw17_image_5801"
+      ],
+      [
+        "evaluation",
+        "doclaynet_177255f0e6bbc58d5ffb1fa4da408b1f2f3478323cd472145272782126fb01e1"
+      ],
+      [
+        "evaluation",
+        "doclaynet_521242a5ebcd995c01b5f705dd391b7f7f060edbdee0b91cc312be3a169825cd"
+      ],
+      [
+        "evaluation",
+        "doclaynet_480e0cd3419d692410e76d2d17d87ac401085d6469425e388b377a0cb9f4e55f"
+      ],
+      [
+        "evaluation",
+        "doclaynet_50071dd4bbf40f883fd8f42c6416fdd3c196f33a1be6288b743100e51cb340da"
+      ],
+      [
+        "evaluation",
+        "doclaynet_92de316c06199912075582c4bbed69f6202ea1889c924bbf55ee99d08ed875dd"
+      ],
+      [
+        "evaluation",
+        "doclaynet_861fa296b937b1941a34044f03bcc932c6dfe6d90d8212b68da37736912c45b0"
+      ],
+      [
+        "evaluation",
+        "doclaynet_33f061d3b5aebd1539512316c39942ba0902d97defc8b52c3cdad93089a48a3a"
+      ],
+      [
+        "evaluation",
+        "doclaynet_fec9b5e6e2289942da0f6c222c2b65d9595e0fae265cfc8ba3cbc51d8009e03b"
+      ],
+      [
+        "evaluation",
+        "doclaynet_95ae9c60278540421c7f2cdb23cb0152957c5f649cb213541238811cf9e568f5"
+      ],
+      [
+        "evaluation",
+        "doclaynet_5f912500900c007932cf2a62d5001adf30ba251ab80308e7284bebccb9454377"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_18"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_4513"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_2207"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_4582"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_5074"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_1060"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_7463"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_445"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_511"
+      ],
+      [
+        "evaluation",
+        "rctw17_image_7818"
+      ]
+    ],
+    "angles_cw": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "variants": [
+      "v4_legacy",
+      "v4_upright",
+      "v4_guarded",
+      "v6_small"
+    ],
+    "explicit_correction": [
+      "v4_upright",
+      "v6_small"
+    ],
+    "note": "Lossless array rotation; predictions transformed back to original coordinates for unchanged spatial scoring; no ground-truth orientation inferred by the model."
+  },
+  "service_model": "wta-ocr-validation",
+  "single_worker": "XZ-31-002",
+  "service_requests_per_matrix_cell": 40,
+  "matrix": {
+    "1_replica": {
+      "variants": [
+        "v4_legacy",
+        "v4_upright",
+        "v4_guarded",
+        "v6_small"
+      ],
+      "concurrency": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "2_replicas": {
+      "variants": [
+        "v4_upright",
+        "v4_guarded",
+        "v6_small"
+      ],
+      "concurrency": [
+        2,
+        4,
+        8
+      ]
+    },
+    "4_replicas_extension": {
+      "variants": [
+        "v4_guarded",
+        "v6_small"
+      ],
+      "concurrency": [
+        4,
+        8,
+        16
+      ],
+      "reason": "Observed single-instance document phase GPU mean utilization ~34%; test whether two instances per GPU improve throughput."
+    }
+  },
+  "no_main_route_changes": true,
+  "cost": {
+    "electricity_cny_per_kwh": 1,
+    "hours_per_node_per_day": 8,
+    "gpu_only": true
+  },
+  "files_sha256": {
+    "wtaobj/service-validation/test_engine.py": "e9567006d3f96691549ae08a5a0e06516379c607dcaabeb0bc1b6b5c326bc08b",
+    "wtaobj/service-validation/direction.py": "80e89eaa5b046eb63895d95a73be16f92a114bec9e48bbd74fc6b22bcb3a02b1",
+    "wtaobj/service-validation/telemetry.py": "40cca367d5943aebe2a4125eb08489ddf9cbb1a0ef6b19721381557d2c572c49",
+    "wtaobj/service-validation/engine.py": "1e618bc8e340cb4db0f7a90a2af54622fe7ec9fd5c9eb723c0a5f3c484dacb04",
+    "wtaobj/service-validation/validation_server.py": "faa41e362f4a3e0a0a3ed297d23afc94421f1ca40434a3b88d21fc3287e11d41",
+    "wtaobj/service-validation/manage.py": "98d8e0ef46d82f553c3e8b8577677979fbcf906d50f85b76faabadab1c2bf096",
+    "wtaobj/service-validation/load.py": "af9f7cc88c36646f15be74e9dc64e6468aa838648147e6e2946a4ada441fc3ba",
+    "wtaobj/service-validation/analyze_direction.py": "c9fb7f83de4cc22b0c2739bb9a004709e112e0c6155fb20a94014739cb7e56eb"
+  }
+}

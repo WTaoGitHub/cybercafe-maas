@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_1542",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "d354f5eb16b16a8aea2cf80b5e559d45174f87e1ab421d0ffff38d87df956e9b",
+  "ok": true,
+  "result": {
+    "text": "福满栗香玛奇朵\nCHESTNUT MACCHIATO",
+    "lines": [
+      {
+        "box": [
+          [
+            558.2872340425532,
+            1750.4516129032259
+          ],
+          [
+            1938.5425531914893,
+            1740.5806451612905
+          ],
+          [
+            1940.1702127659573,
+            1977.483870967742
+          ],
+          [
+            559.9148936170212,
+            1987.3548387096776
+          ]
+        ],
+        "text": "福满栗香玛奇朵",
+        "score": 0.9964686632156372
+      },
+      {
+        "box": [
+          [
+            839.8723404255319,
+            2007.0967741935485
+          ],
+          [
+            1912.5,
+            1985.7096774193549
+          ],
+          [
+            1914.127659574468,
+            2077.8387096774195
+          ],
+          [
+            841.5,
+            2099.225806451613
+          ]
+        ],
+        "text": "CHESTNUT MACCHIATO",
+        "score": 0.9520232081413269
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 146.61
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_1311",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "a8c0b3274e2690649d75bc3ae2c600c03f8f1420f86b86d7d27c26d8e54523af",
+  "ok": true,
+  "result": {
+    "text": "皇室布艺\n国",
+    "lines": [
+      {
+        "box": [
+          [
+            960.6382978723404,
+            667.741935483871
+          ],
+          [
+            2123.936170212766,
+            553.2258064516129
+          ],
+          [
+            2157.446808510638,
+            909.6774193548387
+          ],
+          [
+            994.1489361702128,
+            1024.1935483870966
+          ]
+        ],
+        "text": "皇室布艺",
+        "score": 0.9963980913162231
+      },
+      {
+        "box": [
+          [
+            781.9148936170212,
+            748.3870967741935
+          ],
+          [
+            963.8297872340426,
+            737.0967741935483
+          ],
+          [
+            971.8085106382979,
+            870.9677419354838
+          ],
+          [
+            789.8936170212766,
+            882.258064516129
+          ]
+        ],
+        "text": "国",
+        "score": 0.5013725161552429
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 107.65
+  }
+}

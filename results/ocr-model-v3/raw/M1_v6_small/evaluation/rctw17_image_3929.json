@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_3929",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "bc9adca519afdb6ccc97053dc675021bc986b47323308b46ad3bb7ebdedd77ed",
+  "ok": true,
+  "result": {
+    "text": "KIA\n川M·S2299",
+    "lines": [
+      {
+        "box": [
+          [
+            1206.725806451613,
+            1010.5403225806451
+          ],
+          [
+            1386.8709677419356,
+            973.5241935483871
+          ],
+          [
+            1405.3790322580646,
+            1063.5967741935483
+          ],
+          [
+            1225.233870967742,
+            1100.6129032258066
+          ]
+        ],
+        "text": "KIA",
+        "score": 0.9691610932350159
+      },
+      {
+        "box": [
+          [
+            1068.532258064516,
+            1521.3629032258066
+          ],
+          [
+            1708.9112903225807,
+            1327.6451612903227
+          ],
+          [
+            1778.008064516129,
+            1557.1451612903227
+          ],
+          [
+            1137.6290322580646,
+            1750.8629032258066
+          ]
+        ],
+        "text": "川M·S2299",
+        "score": 0.9981638789176941
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1984,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 93.5
+  }
+}

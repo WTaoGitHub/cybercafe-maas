@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_3756",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "86177feb6a111b11ea41facf9a70139264989768f52542501d314289f439cd70",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "一直在装逼\n从未被打死",
+    "lines": [
+      {
+        "box": [
+          [
+            93.0,
+            350.0
+          ],
+          [
+            331.0,
+            350.0
+          ],
+          [
+            331.0,
+            403.0
+          ],
+          [
+            93.0,
+            403.0
+          ]
+        ],
+        "text": "一直在装逼",
+        "score": 0.9985305905342102
+      },
+      {
+        "box": [
+          [
+            95.0,
+            417.0
+          ],
+          [
+            328.0,
+            417.0
+          ],
+          [
+            328.0,
+            458.0
+          ],
+          [
+            95.0,
+            458.0
+          ]
+        ],
+        "text": "从未被打死",
+        "score": 0.993521785736084
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 62.02,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 2
+    },
+    "elapsed_ms": 62.03
+  }
+}

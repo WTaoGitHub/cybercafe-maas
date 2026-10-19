@@ -1,0 +1,372 @@
+{
+  "workers": {
+    "items": [
+      {
+        "name": "XZ-31-002",
+        "labels": {
+          "os": "linux",
+          "arch": "amd64",
+          "worker-name": "XZ-31-002"
+        },
+        "maintenance": null,
+        "advertise_address": "10.11.31.2",
+        "hostname": "XZ-31-002",
+        "ip": "10.11.31.2",
+        "ifname": "enp3s0",
+        "port": 10150,
+        "metrics_port": 10151,
+        "system_reserved": {
+          "ram": 0,
+          "vram": 0
+        },
+        "state_message": null,
+        "status": {
+          "cpu": {
+            "total": 24,
+            "utilization_rate": 0.1984126984126984
+          },
+          "memory": {
+            "total": 33454915584,
+            "utilization_rate": 7.697585514852154,
+            "is_unified_memory": false,
+            "used": 2575220736,
+            "allocated": 2147483648
+          },
+          "swap": {
+            "total": 0,
+            "utilization_rate": 0.0,
+            "used": 0
+          },
+          "filesystem": [
+            {
+              "name": "",
+              "mount_point": "/",
+              "mount_from": "overlay",
+              "total": 527086919680,
+              "used": 82854907904,
+              "free": 444232011776,
+              "available": 417382227968
+            }
+          ],
+          "os": {
+            "name": "Ubuntu",
+            "version": "24.04.4 LTS (Noble Numbat)"
+          },
+          "kernel": {
+            "name": "Linux",
+            "release": "6.14.0-27-generic",
+            "version": "#27~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 22 17:38:49 UTC 2",
+            "architecture": "x86_64"
+          },
+          "uptime": {
+            "uptime": 566913.17,
+            "boot_time": "2026-10-10T05:12:25.033+0800"
+          },
+          "gpu_devices": [
+            {
+              "vendor": "nvidia",
+              "type": "cuda",
+              "index": 0,
+              "device_index": 0,
+              "device_chip_index": 0,
+              "arch_family": "Ada-Lovelace",
+              "name": "NVIDIA GeForce RTX 4080 SUPER",
+              "uuid": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+              "driver_version": "535.274.02",
+              "runtime_version": "12.2",
+              "compute_capability": "8.9",
+              "core": {
+                "total": 10240,
+                "utilization_rate": 0.0
+              },
+              "memory": {
+                "total": 17171480576,
+                "utilization_rate": 3.69,
+                "is_unified_memory": false,
+                "used": 634388480,
+                "allocated": 2147483648
+              },
+              "temperature": 30.0,
+              "network": null
+            }
+          ],
+          "rpc_servers": null
+        },
+        "proxy_mode": "worker",
+        "cluster_id": 1,
+        "owner_principal_id": 1,
+        "external_id": null,
+        "worker_version": "v2.2.3",
+        "state": "ready",
+        "heartbeat_time": "2026-10-16T10:40:58Z",
+        "unreachable": false,
+        "system_principal_id": 6,
+        "provider": "Docker",
+        "worker_pool_id": null,
+        "ssh_key_id": null,
+        "provider_config": null,
+        "proxy_address": null,
+        "id": 2,
+        "created_at": "2026-10-16T10:29:15.272447Z",
+        "updated_at": "2026-10-16T10:40:59.297208Z",
+        "me": null,
+        "provision_progress": null
+      },
+      {
+        "name": "XZ-31-001",
+        "labels": {
+          "os": "linux",
+          "arch": "amd64",
+          "worker-name": "XZ-31-001"
+        },
+        "maintenance": null,
+        "advertise_address": "10.11.31.1",
+        "hostname": "XZ-31-001",
+        "ip": "10.11.31.1",
+        "ifname": "enp3s0",
+        "port": 10150,
+        "metrics_port": 10151,
+        "system_reserved": {
+          "ram": 0,
+          "vram": 0
+        },
+        "state_message": null,
+        "status": {
+          "cpu": {
+            "total": 24,
+            "utilization_rate": 0.4166666666666667
+          },
+          "memory": {
+            "total": 33454911488,
+            "utilization_rate": 19.839041649775954,
+            "is_unified_memory": false,
+            "used": 6637133824,
+            "allocated": 2147483648
+          },
+          "swap": {
+            "total": 0,
+            "utilization_rate": 0.0,
+            "used": 0
+          },
+          "filesystem": [
+            {
+              "name": "",
+              "mount_point": "/",
+              "mount_from": "overlay",
+              "total": 527086919680,
+              "used": 76683874304,
+              "free": 450403045376,
+              "available": 423553261568
+            }
+          ],
+          "os": {
+            "name": "Ubuntu",
+            "version": "24.04.4 LTS (Noble Numbat)"
+          },
+          "kernel": {
+            "name": "Linux",
+            "release": "6.14.0-27-generic",
+            "version": "#27~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 22 17:38:49 UTC 2",
+            "architecture": "x86_64"
+          },
+          "uptime": {
+            "uptime": 691976.12,
+            "boot_time": "2026-10-08T18:28:05.014+0800"
+          },
+          "gpu_devices": [
+            {
+              "vendor": "nvidia",
+              "type": "cuda",
+              "index": 0,
+              "device_index": 0,
+              "device_chip_index": 0,
+              "arch_family": "Ada-Lovelace",
+              "name": "NVIDIA GeForce RTX 4080 SUPER",
+              "uuid": "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c",
+              "driver_version": "535.274.02",
+              "runtime_version": "12.2",
+              "compute_capability": "8.9",
+              "core": {
+                "total": 10240,
+                "utilization_rate": 0.0
+              },
+              "memory": {
+                "total": 17171480576,
+                "utilization_rate": 7.97,
+                "is_unified_memory": false,
+                "used": 1368391680,
+                "allocated": 2147483648
+              },
+              "temperature": 34.0,
+              "network": null
+            }
+          ],
+          "rpc_servers": null
+        },
+        "proxy_mode": "worker",
+        "cluster_id": 1,
+        "owner_principal_id": 1,
+        "external_id": null,
+        "worker_version": "v2.2.3",
+        "state": "ready",
+        "heartbeat_time": "2026-10-16T10:41:01Z",
+        "unreachable": false,
+        "system_principal_id": 5,
+        "provider": "Docker",
+        "worker_pool_id": null,
+        "ssh_key_id": null,
+        "provider_config": null,
+        "proxy_address": null,
+        "id": 1,
+        "created_at": "2026-10-16T10:29:14.352460Z",
+        "updated_at": "2026-10-16T10:41:04.306503Z",
+        "me": null,
+        "provision_progress": null
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "perPage": 100,
+      "total": 2,
+      "totalPage": 1
+    }
+  },
+  "instances": {
+    "items": [
+      {
+        "source": "local_path",
+        "huggingface_repo_id": null,
+        "huggingface_filename": null,
+        "model_scope_model_id": null,
+        "model_scope_file_path": null,
+        "local_path": "/root/wtaobj/gpu-ocr",
+        "name": "rapidocr-gpu-ps5n3",
+        "worker_id": 1,
+        "worker_name": "XZ-31-001",
+        "worker_advertise_address": "10.11.31.1",
+        "worker_ip": "10.11.31.1",
+        "worker_ifname": "enp3s0",
+        "pid": 351,
+        "port": 40027,
+        "ports": [
+          40027
+        ],
+        "download_progress": 100.0,
+        "resolved_path": "/root/wtaobj/gpu-ocr",
+        "draft_model_source": null,
+        "draft_model_download_progress": null,
+        "draft_model_resolved_path": null,
+        "restart_count": 0,
+        "last_restart_time": null,
+        "state": "running",
+        "state_message": "",
+        "computed_resource_claim": {
+          "is_unified_memory": false,
+          "offload_layers": null,
+          "total_layers": null,
+          "ram": 2147483648,
+          "vram": {
+            "0": 2147483648
+          },
+          "tensor_split": null,
+          "vram_utilization": null
+        },
+        "gpu_type": "cuda",
+        "gpu_indexes": [
+          0
+        ],
+        "gpu_addresses": null,
+        "model_id": 1,
+        "model_name": "rapidocr-gpu",
+        "backend": "RapidOCR-custom",
+        "backend_version": "0.1",
+        "api_detected_backend_version": null,
+        "injected_backend_parameters": [
+          "--port=40027",
+          "--model=rapidocr-gpu"
+        ],
+        "distributed_servers": {
+          "mode": "delegated",
+          "download_model_files": true,
+          "subordinate_workers": null
+        },
+        "cluster_id": 1,
+        "owner_principal_id": 1,
+        "mounted_loras": [],
+        "id": 3,
+        "created_at": "2026-10-16T10:36:57.364821Z",
+        "updated_at": "2026-10-16T10:37:05.133201Z"
+      },
+      {
+        "source": "local_path",
+        "huggingface_repo_id": null,
+        "huggingface_filename": null,
+        "model_scope_model_id": null,
+        "model_scope_file_path": null,
+        "local_path": "/root/wtaobj/gpu-ocr",
+        "name": "rapidocr-gpu-uferg",
+        "worker_id": 2,
+        "worker_name": "XZ-31-002",
+        "worker_advertise_address": "10.11.31.2",
+        "worker_ip": "10.11.31.2",
+        "worker_ifname": "enp3s0",
+        "pid": 194,
+        "port": 40015,
+        "ports": [
+          40015
+        ],
+        "download_progress": 100.0,
+        "resolved_path": "/root/wtaobj/gpu-ocr",
+        "draft_model_source": null,
+        "draft_model_download_progress": null,
+        "draft_model_resolved_path": null,
+        "restart_count": 0,
+        "last_restart_time": null,
+        "state": "running",
+        "state_message": "",
+        "computed_resource_claim": {
+          "is_unified_memory": false,
+          "offload_layers": null,
+          "total_layers": null,
+          "ram": 2147483648,
+          "vram": {
+            "0": 2147483648
+          },
+          "tensor_split": null,
+          "vram_utilization": null
+        },
+        "gpu_type": "cuda",
+        "gpu_indexes": [
+          0
+        ],
+        "gpu_addresses": null,
+        "model_id": 1,
+        "model_name": "rapidocr-gpu",
+        "backend": "RapidOCR-custom",
+        "backend_version": "0.1",
+        "api_detected_backend_version": null,
+        "injected_backend_parameters": [
+          "--port=40015",
+          "--model=rapidocr-gpu"
+        ],
+        "distributed_servers": {
+          "mode": "delegated",
+          "download_model_files": true,
+          "subordinate_workers": null
+        },
+        "cluster_id": 1,
+        "owner_principal_id": 1,
+        "mounted_loras": [],
+        "id": 5,
+        "created_at": "2026-10-16T10:38:51.624115Z",
+        "updated_at": "2026-10-16T10:40:37.118586Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "perPage": 100,
+      "total": 2,
+      "totalPage": 1
+    }
+  }
+}

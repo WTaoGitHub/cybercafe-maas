@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_5787",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "822e95d58a57ae512f01e6f526f04daf0d14c0ef9c5f1b0a334a0997b1fd25df",
+  "ok": true,
+  "result": {
+    "text": "禁止酒后上岗",
+    "lines": [
+      {
+        "box": [
+          [
+            1040.4255319148936,
+            872.5806451612902
+          ],
+          [
+            1351.595744680851,
+            890.3225806451612
+          ],
+          [
+            1345.212765957447,
+            1016.1290322580644
+          ],
+          [
+            1034.0425531914893,
+            998.3870967741935
+          ]
+        ],
+        "text": "禁止酒后上岗",
+        "score": 0.9955922961235046
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 1,
+    "elapsed_ms": 129.32
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_6180",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M3_v5_server",
+  "image_sha256": "0adbd1bd01de4e8d18990d46935d0524b5847dd53fd2f65473691938f42d41c5",
+  "ok": true,
+  "result": {
+    "text": "暂停售票敬请谅解",
+    "lines": [
+      {
+        "box": [
+          [
+            111.70212765957447,
+            1541.9354838709676
+          ],
+          [
+            825.0,
+            1509.6774193548385
+          ],
+          [
+            831.3829787234042,
+            1667.741935483871
+          ],
+          [
+            118.08510638297872,
+            1700.0
+          ]
+        ],
+        "text": "暂停售票敬请谅解",
+        "score": 0.9943231344223022
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 4,
+    "elapsed_ms": 134.14
+  }
+}

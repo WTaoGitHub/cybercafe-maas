@@ -1,0 +1,13 @@
+{
+  "temporary_resources_deleted": true,
+  "temporary_key_revoked": true,
+  "original_model_unchanged": true,
+  "original": {
+    "id": 1,
+    "name": "rapidocr-gpu",
+    "replicas": 2,
+    "backend": "RapidOCR-custom",
+    "backend_version": "0.2",
+    "worker_selector": {}
+  }
+}

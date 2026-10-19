@@ -1,0 +1,14 @@
+OpenSSH_9.8p1, LibreSSL 3.3.6
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: Reading configuration data /etc/ssh/ssh_config.d/100-macos.conf
+debug1: /etc/ssh/ssh_config.d/100-macos.conf line 1: Applying options for *
+debug1: Reading configuration data /etc/ssh/crypto.conf
+debug2: resolve_canonicalize: hostname 10.11.31.1 is address
+debug1: Authenticator provider $SSH_SK_PROVIDER did not resolve; disabling
+debug1: Executing proxy command: exec ssh -o BatchMode=yes -i /Users/4paradigm/.ssh/id_ed25519 -p 16721 -W 10.11.31.1:22 root@111.4.255.126
+debug1: identity file /Users/4paradigm/.ssh/id_ed25519 type 3
+debug1: identity file /Users/4paradigm/.ssh/id_ed25519-cert type -1
+debug1: Local version string SSH-2.0-OpenSSH_9.8
+debug1: kex_exchange_identification: banner line 0: Exceeded MaxStartups
+kex_exchange_identification: Connection closed by remote host
+Connection closed by UNKNOWN port 65535

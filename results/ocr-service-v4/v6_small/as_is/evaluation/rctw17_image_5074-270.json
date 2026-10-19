@@ -1,0 +1,65 @@
+{
+  "id": "rctw17_image_5074",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "d94e1b2d97e6cce9fe2c8b056d8d9447ae52f4f290f03b4d11782221003fa0b1",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "文订\n论装",
+    "lines": [
+      {
+        "box": [
+          [
+            601.0,
+            99.0
+          ],
+          [
+            601.0,
+            269.0
+          ],
+          [
+            500.0,
+            269.0
+          ],
+          [
+            500.0,
+            99.0
+          ]
+        ],
+        "text": "文订",
+        "score": 0.9998382925987244
+      },
+      {
+        "box": [
+          [
+            529.0,
+            95.0
+          ],
+          [
+            526.0,
+            274.0
+          ],
+          [
+            422.0,
+            272.0
+          ],
+          [
+            425.0,
+            93.0
+          ]
+        ],
+        "text": "论装",
+        "score": 0.997941255569458
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 33.69,
+    "direction_stats": {},
+    "elapsed_ms": 33.7
+  }
+}

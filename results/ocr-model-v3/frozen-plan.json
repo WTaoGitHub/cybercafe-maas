@@ -1,0 +1,27 @@
+{
+  "frozen_at": "2026-10-19T08:07:41.490407+00:00",
+  "variants": [
+    "M1_v6_small",
+    "M2_v6_medium",
+    "M3_v5_server"
+  ],
+  "control": "A_v4_no_cls",
+  "reference": "A_default from previous isolated GPU run; direction classification enabled",
+  "split_counts": {
+    "calibration": 40,
+    "evaluation": 160
+  },
+  "parameters": {
+    "max_side_len": 2000,
+    "det_min_side": 736,
+    "det_threshold": 0.3,
+    "det_box_threshold": 0.5,
+    "det_unclip_ratio": 1.6,
+    "text_score_threshold": 0.5,
+    "recognition_batch_size": 6,
+    "candidate_textline_orientation": false
+  },
+  "runtime": "PaddleOCR3.7.0 + PaddleX3.7.2 ONNX engine, existing CUDA runtime",
+  "note": "Weights and decoders differ; candidate pipelines share explicit key settings, but v4 legacy vs new PaddleX is not a pure architecture-only experiment. No parameter tuning on evaluation. Do not start PaddleOCR-VL until models1-3 are reviewed.",
+  "runner_sha256": "db9879cf60d423ab5a6d8e9176b515254279f68e3c8f717d90a17232e0e35580"
+}

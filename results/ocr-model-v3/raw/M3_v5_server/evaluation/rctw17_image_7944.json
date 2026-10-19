@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_7944",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "ac045f7c8a4bcb89264ca8ad36e663b9f6f9571757a57822f5a02e68e57aadd3",
+  "ok": true,
+  "result": {
+    "text": "9销售中心",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            2016.1290322580644
+          ],
+          [
+            2144.68085106383,
+            1979.032258064516
+          ],
+          [
+            2152.659574468085,
+            2490.322580645161
+          ],
+          [
+            0.0,
+            2527.4193548387093
+          ]
+        ],
+        "text": "9销售中心",
+        "score": 0.958361804485321
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 1,
+    "elapsed_ms": 141.38
+  }
+}

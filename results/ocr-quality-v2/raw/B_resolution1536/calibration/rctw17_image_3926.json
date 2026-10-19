@@ -1,0 +1,84 @@
+{
+  "id": "rctw17_image_3926",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "CRS\n存取款一体机\nCash Recycling System",
+    "lines": [
+      {
+        "box": [
+          [
+            21.0,
+            92.0
+          ],
+          [
+            302.0,
+            92.0
+          ],
+          [
+            302.0,
+            187.0
+          ],
+          [
+            21.0,
+            187.0
+          ]
+        ],
+        "text": "CRS",
+        "score": 0.9888793230056763
+      },
+      {
+        "box": [
+          [
+            313.0,
+            97.0
+          ],
+          [
+            702.0,
+            93.0
+          ],
+          [
+            703.0,
+            150.0
+          ],
+          [
+            313.0,
+            155.0
+          ]
+        ],
+        "text": "存取款一体机",
+        "score": 0.9944485823313395
+      },
+      {
+        "box": [
+          [
+            319.0,
+            154.0
+          ],
+          [
+            647.0,
+            153.0
+          ],
+          [
+            647.0,
+            178.0
+          ],
+          [
+            319.0,
+            179.0
+          ]
+        ],
+        "text": "Cash Recycling System",
+        "score": 0.9727313972654796
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 3,
+    "deduplicated": 0,
+    "elapsed_ms": 122.94,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 127.76
+}

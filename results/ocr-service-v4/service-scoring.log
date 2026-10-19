@@ -1,0 +1,20 @@
+Matrix best within95% max: replicas variant source concurrency images/s p95 GPU-CNY/1000
+1 v4_guarded doclaynet 2 3.215 844.64 0.01429
+1 v4_guarded rctw17 4 7.434 586.73 0.00238
+1 v4_legacy doclaynet 2 3.374 837.64 0.01072
+1 v4_legacy rctw17 4 7.758 617.39 0.00224
+1 v4_upright doclaynet 2 4.139 714.47 0.01199
+1 v4_upright rctw17 4 8.957 539.42 0.00202
+1 v6_small doclaynet 2 2.221 1187.89 0.00844
+1 v6_small rctw17 4 10.701 415.83 0.00227
+2 v4_guarded doclaynet 8 6.276 1623.1 0.01014
+2 v4_guarded rctw17 4 12.333 441.56 0.00218
+2 v4_upright doclaynet 8 7.776 1533.72 0.00918
+2 v4_upright rctw17 8 13.83 819.85 0.00199
+2 v6_small doclaynet 4 4.097 1699.6 0.00741
+2 v6_small rctw17 8 16.521 769.13 0.0017
+4 v4_guarded doclaynet 16 8.235 2669.74 0.00998
+4 v4_guarded rctw17 8 18.404 582.41 0.00164
+4 v6_small doclaynet 8 5.781 2189.91 0.00943
+4 v6_small rctw17 16 26.554 792.04 0.00124
+Sustained: 5 Total measured HTTP requests 9799

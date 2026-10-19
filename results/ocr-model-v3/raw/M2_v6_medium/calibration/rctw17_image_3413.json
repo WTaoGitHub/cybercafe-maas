@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_3413",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M2_v6_medium",
+  "image_sha256": "6635d8ae3c92b261cac254ac8cce42600a67c3440df1d217a59f5d03a0733eac",
+  "ok": true,
+  "result": {
+    "text": "仙居洞",
+    "lines": [
+      {
+        "box": [
+          [
+            236.0,
+            70.0
+          ],
+          [
+            328.0,
+            70.0
+          ],
+          [
+            328.0,
+            254.0
+          ],
+          [
+            236.0,
+            254.0
+          ]
+        ],
+        "text": "仙居洞",
+        "score": 0.9998319745063782
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      321,
+      603,
+      3
+    ],
+    "detected_boxes": 1,
+    "elapsed_ms": 77.08
+  }
+}

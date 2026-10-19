@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_4513",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "f373e7563fbc345167f2187a23234ccd09d0fb0daba462597e4de4cd6592ccfe",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "珊瑚绒毯",
+    "lines": [
+      {
+        "box": [
+          [
+            1623.9198588709678,
+            1749.705430327869
+          ],
+          [
+            2099.125,
+            1872.3872950819673
+          ],
+          [
+            2067.686491935484,
+            1990.3048155737706
+          ],
+          [
+            1592.4813508064517,
+            1866.4318647540983
+          ]
+        ],
+        "text": "珊瑚绒毯",
+        "score": 0.9997676014900208
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 90.21,
+    "direction_stats": {},
+    "elapsed_ms": 90.21
+  }
+}

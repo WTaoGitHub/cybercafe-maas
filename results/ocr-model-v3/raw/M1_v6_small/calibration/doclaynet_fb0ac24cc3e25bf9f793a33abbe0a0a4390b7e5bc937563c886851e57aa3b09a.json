@@ -1,0 +1,849 @@
+{
+  "id": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "M1_v6_small",
+  "image_sha256": "aa1e429161198c50c0f2da7b4cef632bd5690f5fbd164175109e4754c8b83613",
+  "ok": true,
+  "result": {
+    "text": "OFDM symbol is given by 5\nHm = ejφejΦD(fm)Tm,\n(1)\nwhere φ is a common phase error (CPE) noise owing to the phase noises that\nvaries for different OFDM symbols. In () ΦD(fm) is the phase dispersion\nowing to CD and given by\nπcDLf2\nΦD(fm) =\nwith fm =\nm − 1\n(2)\nf2\nts\nwhere ts is the actual time duration of one DFT-spread OFDM symbol not\nincluding the cyclic prefix; c is the speed of the light; D is the CD parameter\nin unit of ps/pm/km; L is the total length of the multi-span fiber link; and\nfc is the carrier frequency of the laser. Here we assume that the periodic\ndispersion map is employed and the CD is completely compensated for at each\nspan. Hence Tm in () is the Jones matrix with the dispersion compensation\nfiber (DCF) inserted at each stage, given by\nnE\n0\nejπ(fc+fm)τ\n0\ncos θ1\nsin θ1\nnE\nl=1\n0 kl\n0\ne−jπ(fc+fm)τl\n− sin θl cos θi\n(3)\nwhere ki denotes the attenuation factor of PDL; τ is the differential group de-\nlay (DGD); θl is the uniformly random rotation angle 6]. For each span, the\nDGD is a random variable following the Maxwellian distribution. However,\n6",
+    "lines": [
+      {
+        "box": [
+          [
+            185.0,
+            165.0
+          ],
+          [
+            437.0,
+            165.0
+          ],
+          [
+            437.0,
+            182.0
+          ],
+          [
+            185.0,
+            182.0
+          ]
+        ],
+        "text": "OFDM symbol is given by 5",
+        "score": 0.985226035118103
+      },
+      {
+        "box": [
+          [
+            415.0,
+            216.0
+          ],
+          [
+            607.0,
+            219.0
+          ],
+          [
+            606.0,
+            243.0
+          ],
+          [
+            414.0,
+            240.0
+          ]
+        ],
+        "text": "Hm = ejφejΦD(fm)Tm,",
+        "score": 0.9080516695976257
+      },
+      {
+        "box": [
+          [
+            807.0,
+            221.0
+          ],
+          [
+            840.0,
+            221.0
+          ],
+          [
+            840.0,
+            244.0
+          ],
+          [
+            807.0,
+            244.0
+          ]
+        ],
+        "text": "(1)",
+        "score": 0.999792754650116
+      },
+      {
+        "box": [
+          [
+            183.0,
+            281.0
+          ],
+          [
+            837.0,
+            281.0
+          ],
+          [
+            837.0,
+            300.0
+          ],
+          [
+            183.0,
+            300.0
+          ]
+        ],
+        "text": "where φ is a common phase error (CPE) noise owing to the phase noises that",
+        "score": 0.9868425130844116
+      },
+      {
+        "box": [
+          [
+            184.0,
+            312.0
+          ],
+          [
+            837.0,
+            312.0
+          ],
+          [
+            837.0,
+            331.0
+          ],
+          [
+            184.0,
+            331.0
+          ]
+        ],
+        "text": "varies for different OFDM symbols. In () ΦD(fm) is the phase dispersion",
+        "score": 0.9662424921989441
+      },
+      {
+        "box": [
+          [
+            184.0,
+            345.0
+          ],
+          [
+            410.0,
+            345.0
+          ],
+          [
+            410.0,
+            362.0
+          ],
+          [
+            184.0,
+            362.0
+          ]
+        ],
+        "text": "owing to CD and given by",
+        "score": 0.9995434880256653
+      },
+      {
+        "box": [
+          [
+            423.0,
+            387.0
+          ],
+          [
+            505.0,
+            387.0
+          ],
+          [
+            505.0,
+            415.0
+          ],
+          [
+            423.0,
+            415.0
+          ]
+        ],
+        "text": "πcDLf2",
+        "score": 0.9064043164253235
+      },
+      {
+        "box": [
+          [
+            332.0,
+            400.0
+          ],
+          [
+            423.0,
+            400.0
+          ],
+          [
+            423.0,
+            421.0
+          ],
+          [
+            332.0,
+            421.0
+          ]
+        ],
+        "text": "ΦD(fm) =",
+        "score": 0.9828176498413086
+      },
+      {
+        "box": [
+          [
+            529.0,
+            401.0
+          ],
+          [
+            623.0,
+            401.0
+          ],
+          [
+            623.0,
+            421.0
+          ],
+          [
+            529.0,
+            421.0
+          ]
+        ],
+        "text": "with fm =",
+        "score": 0.9984557032585144
+      },
+      {
+        "box": [
+          [
+            622.0,
+            392.0
+          ],
+          [
+            682.0,
+            389.0
+          ],
+          [
+            683.0,
+            410.0
+          ],
+          [
+            623.0,
+            413.0
+          ]
+        ],
+        "text": "m − 1",
+        "score": 0.9364640116691589
+      },
+      {
+        "box": [
+          [
+            807.0,
+            399.0
+          ],
+          [
+            839.0,
+            399.0
+          ],
+          [
+            839.0,
+            423.0
+          ],
+          [
+            807.0,
+            423.0
+          ]
+        ],
+        "text": "(2)",
+        "score": 0.9998590350151062
+      },
+      {
+        "box": [
+          [
+            452.0,
+            411.0
+          ],
+          [
+            477.0,
+            411.0
+          ],
+          [
+            477.0,
+            433.0
+          ],
+          [
+            452.0,
+            433.0
+          ]
+        ],
+        "text": "f2",
+        "score": 0.9896385669708252
+      },
+      {
+        "box": [
+          [
+            643.0,
+            413.0
+          ],
+          [
+            663.0,
+            413.0
+          ],
+          [
+            663.0,
+            431.0
+          ],
+          [
+            643.0,
+            431.0
+          ]
+        ],
+        "text": "ts",
+        "score": 0.9625792503356934
+      },
+      {
+        "box": [
+          [
+            184.0,
+            461.0
+          ],
+          [
+            836.0,
+            461.0
+          ],
+          [
+            836.0,
+            480.0
+          ],
+          [
+            184.0,
+            480.0
+          ]
+        ],
+        "text": "where ts is the actual time duration of one DFT-spread OFDM symbol not",
+        "score": 0.9934301376342773
+      },
+      {
+        "box": [
+          [
+            184.0,
+            493.0
+          ],
+          [
+            836.0,
+            493.0
+          ],
+          [
+            836.0,
+            509.0
+          ],
+          [
+            184.0,
+            509.0
+          ]
+        ],
+        "text": "including the cyclic prefix; c is the speed of the light; D is the CD parameter",
+        "score": 0.9982450604438782
+      },
+      {
+        "box": [
+          [
+            182.0,
+            523.0
+          ],
+          [
+            837.0,
+            523.0
+          ],
+          [
+            837.0,
+            542.0
+          ],
+          [
+            182.0,
+            542.0
+          ]
+        ],
+        "text": "in unit of ps/pm/km; L is the total length of the multi-span fiber link; and",
+        "score": 0.9975759387016296
+      },
+      {
+        "box": [
+          [
+            183.0,
+            554.0
+          ],
+          [
+            837.0,
+            554.0
+          ],
+          [
+            837.0,
+            573.0
+          ],
+          [
+            183.0,
+            573.0
+          ]
+        ],
+        "text": "fc is the carrier frequency of the laser. Here we assume that the periodic",
+        "score": 0.9923410415649414
+      },
+      {
+        "box": [
+          [
+            184.0,
+            585.0
+          ],
+          [
+            836.0,
+            585.0
+          ],
+          [
+            836.0,
+            604.0
+          ],
+          [
+            184.0,
+            604.0
+          ]
+        ],
+        "text": "dispersion map is employed and the CD is completely compensated for at each",
+        "score": 0.9949769973754883
+      },
+      {
+        "box": [
+          [
+            182.0,
+            615.0
+          ],
+          [
+            837.0,
+            616.0
+          ],
+          [
+            837.0,
+            636.0
+          ],
+          [
+            182.0,
+            635.0
+          ]
+        ],
+        "text": "span. Hence Tm in () is the Jones matrix with the dispersion compensation",
+        "score": 0.9817612767219543
+      },
+      {
+        "box": [
+          [
+            184.0,
+            648.0
+          ],
+          [
+            564.0,
+            648.0
+          ],
+          [
+            564.0,
+            665.0
+          ],
+          [
+            184.0,
+            665.0
+          ]
+        ],
+        "text": "fiber (DCF) inserted at each stage, given by",
+        "score": 0.9932386875152588
+      },
+      {
+        "box": [
+          [
+            240.0,
+            698.0
+          ],
+          [
+            266.0,
+            701.0
+          ],
+          [
+            264.0,
+            716.0
+          ],
+          [
+            239.0,
+            713.0
+          ]
+        ],
+        "text": "nE",
+        "score": 0.9841777682304382
+      },
+      {
+        "box": [
+          [
+            398.0,
+            702.0
+          ],
+          [
+            415.0,
+            702.0
+          ],
+          [
+            415.0,
+            720.0
+          ],
+          [
+            398.0,
+            720.0
+          ]
+        ],
+        "text": "0",
+        "score": 0.9991870522499084
+      },
+      {
+        "box": [
+          [
+            459.0,
+            699.0
+          ],
+          [
+            555.0,
+            697.0
+          ],
+          [
+            556.0,
+            718.0
+          ],
+          [
+            460.0,
+            720.0
+          ]
+        ],
+        "text": "ejπ(fc+fm)τ",
+        "score": 0.947339653968811
+      },
+      {
+        "box": [
+          [
+            614.0,
+            702.0
+          ],
+          [
+            630.0,
+            702.0
+          ],
+          [
+            630.0,
+            721.0
+          ],
+          [
+            614.0,
+            721.0
+          ]
+        ],
+        "text": "0",
+        "score": 0.9992495179176331
+      },
+      {
+        "box": [
+          [
+            726.0,
+            702.0
+          ],
+          [
+            797.0,
+            702.0
+          ],
+          [
+            797.0,
+            723.0
+          ],
+          [
+            726.0,
+            723.0
+          ]
+        ],
+        "text": "cos θ1",
+        "score": 0.8637565970420837
+      },
+      {
+        "box": [
+          [
+            793.0,
+            702.0
+          ],
+          [
+            844.0,
+            702.0
+          ],
+          [
+            844.0,
+            723.0
+          ],
+          [
+            793.0,
+            723.0
+          ]
+        ],
+        "text": "sin θ1",
+        "score": 0.924490213394165
+      },
+      {
+        "box": [
+          [
+            311.0,
+            720.0
+          ],
+          [
+            332.0,
+            720.0
+          ],
+          [
+            332.0,
+            731.0
+          ],
+          [
+            311.0,
+            731.0
+          ]
+        ],
+        "text": "nE",
+        "score": 0.9804209470748901
+      },
+      {
+        "box": [
+          [
+            238.0,
+            736.0
+          ],
+          [
+            268.0,
+            736.0
+          ],
+          [
+            268.0,
+            754.0
+          ],
+          [
+            238.0,
+            754.0
+          ]
+        ],
+        "text": "l=1",
+        "score": 0.9619744420051575
+      },
+      {
+        "box": [
+          [
+            366.0,
+            730.0
+          ],
+          [
+            420.0,
+            730.0
+          ],
+          [
+            420.0,
+            756.0
+          ],
+          [
+            366.0,
+            756.0
+          ]
+        ],
+        "text": "0 kl",
+        "score": 0.879805326461792
+      },
+      {
+        "box": [
+          [
+            501.0,
+            733.0
+          ],
+          [
+            518.0,
+            733.0
+          ],
+          [
+            518.0,
+            752.0
+          ],
+          [
+            501.0,
+            752.0
+          ]
+        ],
+        "text": "0",
+        "score": 0.9995369911193848
+      },
+      {
+        "box": [
+          [
+            570.0,
+            731.0
+          ],
+          [
+            673.0,
+            731.0
+          ],
+          [
+            673.0,
+            751.0
+          ],
+          [
+            570.0,
+            751.0
+          ]
+        ],
+        "text": "e−jπ(fc+fm)τl",
+        "score": 0.9453944563865662
+      },
+      {
+        "box": [
+          [
+            721.0,
+            733.0
+          ],
+          [
+            845.0,
+            733.0
+          ],
+          [
+            845.0,
+            753.0
+          ],
+          [
+            721.0,
+            753.0
+          ]
+        ],
+        "text": "− sin θl cos θi",
+        "score": 0.9211424589157104
+      },
+      {
+        "box": [
+          [
+            807.0,
+            756.0
+          ],
+          [
+            839.0,
+            756.0
+          ],
+          [
+            839.0,
+            779.0
+          ],
+          [
+            807.0,
+            779.0
+          ]
+        ],
+        "text": "(3)",
+        "score": 0.9999135136604309
+      },
+      {
+        "box": [
+          [
+            183.0,
+            789.0
+          ],
+          [
+            837.0,
+            789.0
+          ],
+          [
+            837.0,
+            808.0
+          ],
+          [
+            183.0,
+            808.0
+          ]
+        ],
+        "text": "where ki denotes the attenuation factor of PDL; τ is the differential group de-",
+        "score": 0.9827411770820618
+      },
+      {
+        "box": [
+          [
+            183.0,
+            821.0
+          ],
+          [
+            837.0,
+            821.0
+          ],
+          [
+            837.0,
+            837.0
+          ],
+          [
+            183.0,
+            837.0
+          ]
+        ],
+        "text": "lay (DGD); θl is the uniformly random rotation angle 6]. For each span, the",
+        "score": 0.9868620038032532
+      },
+      {
+        "box": [
+          [
+            183.0,
+            850.0
+          ],
+          [
+            836.0,
+            850.0
+          ],
+          [
+            836.0,
+            869.0
+          ],
+          [
+            183.0,
+            869.0
+          ]
+        ],
+        "text": "DGD is a random variable following the Maxwellian distribution. However,",
+        "score": 0.9935959577560425
+      },
+      {
+        "box": [
+          [
+            503.0,
+            896.0
+          ],
+          [
+            517.0,
+            896.0
+          ],
+          [
+            517.0,
+            911.0
+          ],
+          [
+            503.0,
+            911.0
+          ]
+        ],
+        "text": "6",
+        "score": 0.9999678134918213
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 37,
+    "elapsed_ms": 214.95
+  }
+}

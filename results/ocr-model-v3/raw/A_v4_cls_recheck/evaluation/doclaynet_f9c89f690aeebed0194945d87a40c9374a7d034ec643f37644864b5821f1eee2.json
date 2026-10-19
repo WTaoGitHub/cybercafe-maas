@@ -1,0 +1,457 @@
+{
+  "id": "doclaynet_f9c89f690aeebed0194945d87a40c9374a7d034ec643f37644864b5821f1eee2",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "A_v4_cls_recheck",
+  "image_sha256": "96111b5f876bf2d2e0c740a48ddd046058fa303cf4a4cf90a7f588262f5764b9",
+  "ok": true,
+  "result": {
+    "text": "Field notes on modernization for\napplication integration\nIn thischapter,weexplorevariousguidancepointsforcustomerswhoplantomodernizetheir\nalready skilled in IBMApp Connect(oritspredecessors suchas IBMIntegrationBus,\nWebSphereMessageBroker).Weexploreataproductlevelwhatitmeanstomovetoamore\nagile integrationstyle.Forexample,suchamoveincludesamovetocontainertechnology,\nrefactoring to more fine-grained deployment, and automation of build pipelines.\nThis chapter has thefollowing sections:\nIBMAppConnectadoptionpaths\nSplittinguptheESB:Groupingintegrationsinacontainerizedenvironment\nWhendoes IBMAppConnectneeda local MQserver?\nMapping images to helm charts\nContinuousIntegrationand ContinuousDeliveryPipelineusingIBMAppConnectV11\narchitecture\nContinuousAdoptionforIBMAppConnect\nHighAvailabilityandScalingconsiderationsforIBMAppConnectincontainers\nMigratingcentralizedESBtoIBMAppConnectoncontainers\nSplittinganintegrationacrosson-premisesandcloud\n Copyright IBM Corp.2020.All rights reserved.\n433",
+    "lines": [
+      {
+        "box": [
+          [
+            228.0,
+            324.0
+          ],
+          [
+            906.0,
+            326.0
+          ],
+          [
+            906.0,
+            359.0
+          ],
+          [
+            228.0,
+            357.0
+          ]
+        ],
+        "text": "Field notes on modernization for",
+        "score": 0.9946910440921783
+      },
+      {
+        "box": [
+          [
+            228.0,
+            368.0
+          ],
+          [
+            699.0,
+            366.0
+          ],
+          [
+            699.0,
+            399.0
+          ],
+          [
+            228.0,
+            401.0
+          ]
+        ],
+        "text": "application integration",
+        "score": 0.9854656820711882
+      },
+      {
+        "box": [
+          [
+            227.0,
+            448.0
+          ],
+          [
+            915.0,
+            448.0
+          ],
+          [
+            915.0,
+            467.0
+          ],
+          [
+            227.0,
+            467.0
+          ]
+        ],
+        "text": "In thischapter,weexplorevariousguidancepointsforcustomerswhoplantomodernizetheir",
+        "score": 0.9885234571993351
+      },
+      {
+        "box": [
+          [
+            226.0,
+            477.0
+          ],
+          [
+            863.0,
+            478.0
+          ],
+          [
+            863.0,
+            498.0
+          ],
+          [
+            226.0,
+            497.0
+          ]
+        ],
+        "text": "already skilled in IBMApp Connect(oritspredecessors suchas IBMIntegrationBus,",
+        "score": 0.9628798644264023
+      },
+      {
+        "box": [
+          [
+            227.0,
+            494.0
+          ],
+          [
+            915.0,
+            494.0
+          ],
+          [
+            915.0,
+            514.0
+          ],
+          [
+            227.0,
+            514.0
+          ]
+        ],
+        "text": "WebSphereMessageBroker).Weexploreataproductlevelwhatitmeanstomovetoamore",
+        "score": 0.989809992412726
+      },
+      {
+        "box": [
+          [
+            226.0,
+            507.0
+          ],
+          [
+            904.0,
+            509.0
+          ],
+          [
+            904.0,
+            532.0
+          ],
+          [
+            226.0,
+            531.0
+          ]
+        ],
+        "text": "agile integrationstyle.Forexample,suchamoveincludesamovetocontainertechnology,",
+        "score": 0.9638745257487664
+      },
+      {
+        "box": [
+          [
+            227.0,
+            526.0
+          ],
+          [
+            814.0,
+            526.0
+          ],
+          [
+            814.0,
+            545.0
+          ],
+          [
+            227.0,
+            545.0
+          ]
+        ],
+        "text": "refactoring to more fine-grained deployment, and automation of build pipelines.",
+        "score": 0.9744169229193579
+      },
+      {
+        "box": [
+          [
+            229.0,
+            556.0
+          ],
+          [
+            523.0,
+            556.0
+          ],
+          [
+            523.0,
+            573.0
+          ],
+          [
+            229.0,
+            573.0
+          ]
+        ],
+        "text": "This chapter has thefollowing sections:",
+        "score": 0.9582007771883255
+      },
+      {
+        "box": [
+          [
+            246.0,
+            575.0
+          ],
+          [
+            502.0,
+            576.0
+          ],
+          [
+            501.0,
+            596.0
+          ],
+          [
+            246.0,
+            595.0
+          ]
+        ],
+        "text": "IBMAppConnectadoptionpaths",
+        "score": 0.99530428647995
+      },
+      {
+        "box": [
+          [
+            249.0,
+            592.0
+          ],
+          [
+            808.0,
+            592.0
+          ],
+          [
+            808.0,
+            612.0
+          ],
+          [
+            249.0,
+            612.0
+          ]
+        ],
+        "text": "SplittinguptheESB:Groupingintegrationsinacontainerizedenvironment",
+        "score": 0.9850631246199975
+      },
+      {
+        "box": [
+          [
+            249.0,
+            608.0
+          ],
+          [
+            664.0,
+            608.0
+          ],
+          [
+            664.0,
+            627.0
+          ],
+          [
+            249.0,
+            627.0
+          ]
+        ],
+        "text": "Whendoes IBMAppConnectneeda local MQserver?",
+        "score": 0.9643484076788259
+      },
+      {
+        "box": [
+          [
+            250.0,
+            624.0
+          ],
+          [
+            488.0,
+            624.0
+          ],
+          [
+            488.0,
+            641.0
+          ],
+          [
+            250.0,
+            641.0
+          ]
+        ],
+        "text": "Mapping images to helm charts",
+        "score": 0.978850167373131
+      },
+      {
+        "box": [
+          [
+            250.0,
+            638.0
+          ],
+          [
+            888.0,
+            638.0
+          ],
+          [
+            888.0,
+            657.0
+          ],
+          [
+            250.0,
+            657.0
+          ]
+        ],
+        "text": "ContinuousIntegrationand ContinuousDeliveryPipelineusingIBMAppConnectV11",
+        "score": 0.991129994392395
+      },
+      {
+        "box": [
+          [
+            252.0,
+            656.0
+          ],
+          [
+            342.0,
+            656.0
+          ],
+          [
+            342.0,
+            673.0
+          ],
+          [
+            252.0,
+            673.0
+          ]
+        ],
+        "text": "architecture",
+        "score": 0.9762850354115168
+      },
+      {
+        "box": [
+          [
+            249.0,
+            668.0
+          ],
+          [
+            572.0,
+            669.0
+          ],
+          [
+            572.0,
+            689.0
+          ],
+          [
+            249.0,
+            688.0
+          ]
+        ],
+        "text": "ContinuousAdoptionforIBMAppConnect",
+        "score": 0.9802041807595421
+      },
+      {
+        "box": [
+          [
+            249.0,
+            685.0
+          ],
+          [
+            839.0,
+            685.0
+          ],
+          [
+            839.0,
+            705.0
+          ],
+          [
+            249.0,
+            705.0
+          ]
+        ],
+        "text": "HighAvailabilityandScalingconsiderationsforIBMAppConnectincontainers",
+        "score": 0.9914891228956335
+      },
+      {
+        "box": [
+          [
+            249.0,
+            700.0
+          ],
+          [
+            709.0,
+            701.0
+          ],
+          [
+            709.0,
+            721.0
+          ],
+          [
+            249.0,
+            720.0
+          ]
+        ],
+        "text": "MigratingcentralizedESBtoIBMAppConnectoncontainers",
+        "score": 0.9946993470191956
+      },
+      {
+        "box": [
+          [
+            250.0,
+            718.0
+          ],
+          [
+            650.0,
+            718.0
+          ],
+          [
+            650.0,
+            734.0
+          ],
+          [
+            250.0,
+            734.0
+          ]
+        ],
+        "text": "Splittinganintegrationacrosson-premisesandcloud",
+        "score": 0.9912371521300458
+      },
+      {
+        "box": [
+          [
+            107.0,
+            975.0
+          ],
+          [
+            429.0,
+            975.0
+          ],
+          [
+            429.0,
+            992.0
+          ],
+          [
+            107.0,
+            992.0
+          ]
+        ],
+        "text": " Copyright IBM Corp.2020.All rights reserved.",
+        "score": 0.9570178680949741
+      },
+      {
+        "box": [
+          [
+            887.0,
+            975.0
+          ],
+          [
+            919.0,
+            975.0
+          ],
+          [
+            919.0,
+            990.0
+          ],
+          [
+            887.0,
+            990.0
+          ]
+        ],
+        "text": "433",
+        "score": 0.9520493944485983
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 148.83
+  }
+}

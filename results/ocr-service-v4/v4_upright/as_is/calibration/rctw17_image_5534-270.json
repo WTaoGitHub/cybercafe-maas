@@ -1,0 +1,65 @@
+{
+  "id": "rctw17_image_5534",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "84ab99385f16b6f5a9e269a5b691d8d58cd7cf4f2bb51ba43fe9289ed2a0ec0f",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "您\nLNEO COC",
+    "lines": [
+      {
+        "box": [
+          [
+            2348.0564498901367,
+            40.717742919921875
+          ],
+          [
+            2348.0564498901367,
+            75.26612854003906
+          ],
+          [
+            2317.209671020508,
+            75.26612854003906
+          ],
+          [
+            2317.209671020508,
+            40.717742919921875
+          ]
+        ],
+        "text": "您",
+        "score": 0.98125159740448
+      },
+      {
+        "box": [
+          [
+            1431.290283203125,
+            613.23388671875
+          ],
+          [
+            1431.290283203125,
+            662.5887451171875
+          ],
+          [
+            1040.1531982421875,
+            666.2903442382812
+          ],
+          [
+            1040.1531982421875,
+            616.9354858398438
+          ]
+        ],
+        "text": "LNEO COC",
+        "score": 0.5383696313947439
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 137.46,
+    "direction_stats": {},
+    "elapsed_ms": 137.46
+  }
+}

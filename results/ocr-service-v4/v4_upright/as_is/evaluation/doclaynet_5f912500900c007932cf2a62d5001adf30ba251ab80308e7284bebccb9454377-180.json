@@ -1,0 +1,109 @@
+{
+  "id": "doclaynet_5f912500900c007932cf2a62d5001adf30ba251ab80308e7284bebccb9454377",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "68cbf86154a2f0463354817f985b2304302c3192d04ed37655c0bad45dc8db8b",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "--\n..obuel\ns\nW1 ",
+    "lines": [
+      {
+        "box": [
+          [
+            917.0,
+            984.0
+          ],
+          [
+            872.0,
+            984.0
+          ],
+          [
+            872.0,
+            970.0
+          ],
+          [
+            917.0,
+            970.0
+          ]
+        ],
+        "text": "--",
+        "score": 0.6543164253234863
+      },
+      {
+        "box": [
+          [
+            600.0,
+            627.0
+          ],
+          [
+            529.0,
+            624.0
+          ],
+          [
+            530.0,
+            604.0
+          ],
+          [
+            601.0,
+            607.0
+          ]
+        ],
+        "text": "..obuel",
+        "score": 0.6432661009686333
+      },
+      {
+        "box": [
+          [
+            335.0,
+            567.0
+          ],
+          [
+            105.0,
+            564.0
+          ],
+          [
+            105.0,
+            544.0
+          ],
+          [
+            335.0,
+            547.0
+          ]
+        ],
+        "text": "s",
+        "score": 0.611524224281311
+      },
+      {
+        "box": [
+          [
+            914.0,
+            53.0
+          ],
+          [
+            881.0,
+            53.0
+          ],
+          [
+            881.0,
+            38.0
+          ],
+          [
+            914.0,
+            38.0
+          ]
+        ],
+        "text": "W1 ",
+        "score": 0.7359136343002319
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 291.2,
+    "direction_stats": {},
+    "elapsed_ms": 291.21
+  }
+}

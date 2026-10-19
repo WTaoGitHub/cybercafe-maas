@@ -1,0 +1,145 @@
+{
+  "id": "rctw17_image_7441",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "dd2c1599b3c44fcc24561a2645929d3ba75a3dde4c788cde5cc978dee3690fa9",
+  "ok": true,
+  "result": {
+    "text": "社会主义\n富强民主文明和谐\n核\n自由平等公正法治\n爱国敬业诚信友善",
+    "lines": [
+      {
+        "box": [
+          [
+            93.0,
+            175.0
+          ],
+          [
+            119.0,
+            176.0
+          ],
+          [
+            113.0,
+            271.0
+          ],
+          [
+            87.0,
+            270.0
+          ]
+        ],
+        "text": "社会主义",
+        "score": 0.6792197823524475
+      },
+      {
+        "box": [
+          [
+            193.0,
+            201.0
+          ],
+          [
+            356.0,
+            203.0
+          ],
+          [
+            356.0,
+            229.0
+          ],
+          [
+            192.0,
+            227.0
+          ]
+        ],
+        "text": "富强民主文明和谐",
+        "score": 0.9987859725952148
+      },
+      {
+        "box": [
+          [
+            14.0,
+            227.0
+          ],
+          [
+            91.0,
+            214.0
+          ],
+          [
+            108.0,
+            317.0
+          ],
+          [
+            31.0,
+            330.0
+          ]
+        ],
+        "text": "核",
+        "score": 0.9106653928756714
+      },
+      {
+        "box": [
+          [
+            179.0,
+            253.0
+          ],
+          [
+            357.0,
+            257.0
+          ],
+          [
+            357.0,
+            287.0
+          ],
+          [
+            178.0,
+            283.0
+          ]
+        ],
+        "text": "自由平等公正法治",
+        "score": 0.9323679208755493
+      },
+      {
+        "box": [
+          [
+            162.0,
+            310.0
+          ],
+          [
+            367.0,
+            316.0
+          ],
+          [
+            366.0,
+            349.0
+          ],
+          [
+            161.0,
+            344.0
+          ]
+        ],
+        "text": "爱国敬业诚信友善",
+        "score": 0.9987053275108337
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      522,
+      876,
+      3
+    ],
+    "detected_boxes": 6,
+    "elapsed_ms": 59.07
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_4702",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "a580177c49fa6dde1c48618d36b941949466b07ffd8d7009f59333fd77de7a07",
+  "ok": true,
+  "result": {
+    "text": "81067台区0.4kV\n4H19A-2用户接入点",
+    "lines": [
+      {
+        "box": [
+          [
+            462.25531914893617,
+            2041.6451612903227
+          ],
+          [
+            2068.755319148936,
+            2041.6451612903227
+          ],
+          [
+            2068.755319148936,
+            2299.935483870968
+          ],
+          [
+            462.25531914893617,
+            2299.935483870968
+          ]
+        ],
+        "text": "81067台区0.4kV",
+        "score": 0.9998512268066406
+      },
+      {
+        "box": [
+          [
+            195.31914893617022,
+            2395.3548387096776
+          ],
+          [
+            2360.1063829787236,
+            2395.3548387096776
+          ],
+          [
+            2360.1063829787236,
+            2668.451612903226
+          ],
+          [
+            195.31914893617022,
+            2668.451612903226
+          ]
+        ],
+        "text": "4H19A-2用户接入点",
+        "score": 0.999805212020874
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 82.66
+  }
+}

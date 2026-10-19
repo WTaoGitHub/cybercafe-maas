@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_511",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "487853caa84679b61cc0c0551b0ef9529e88907ccb5a07cb4f74f4cf6b1e5177",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "Uninpay",
+    "lines": [
+      {
+        "box": [
+          [
+            1144.148936170213,
+            864.516129032258
+          ],
+          [
+            734.0425531914893,
+            841.9354838709678
+          ],
+          [
+            740.4255319148936,
+            712.9032258064517
+          ],
+          [
+            1150.531914893617,
+            735.483870967742
+          ]
+        ],
+        "text": "Uninpay",
+        "score": 0.6715705990791321
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 49.88,
+    "direction_stats": {},
+    "elapsed_ms": 49.89
+  }
+}

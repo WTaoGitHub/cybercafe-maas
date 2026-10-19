@@ -1,0 +1,131 @@
+·
+Here
+p
+(
+) a prior distribution for parameter vector
+θ
+, which may itself have one or more
+levels of stochastic interdependence.
+The distribution of each HMM initial state
+x$_{i}$$_{1}$
+is
+· |
+· |
+f$_{i}$$_{1}$
+(
+θ
+). Markov state transition probabilities are given by
+f$_{it}$
+(
+θ, x$_{i,t}$$_{−}$$_{1}$
+) and observation
+· |
+probabilities by
+g$_{it}$
+(
+θ, x$_{it}$
+).
+Discrete HMMs have long been applied in the area of ecological capture-recapture (
+e.g.
+,
+Gimenez et al., 2007; King, 2012; Langrock et al., 2012). In this context, a set of
+n
+distinct
+animals is monitored for
+k
+sampling occasions. Each
+y$_{i}$
+represents the observation history of
+animal
+i
+, for
+i
+= 1
+, . . . , n
+, which can be modeled using HMMs as in (1). The set of possible
+Y
+observations
+may include a state to represent “unobserved”. Since all
+n
+animals are not
+typically observed on occasion
+t
+= 1, each embedded HMM will “begin” at the sampling
+period corresponding to the first genuine observation of that animal.
+2.2
+Model Likelihood
+We now provide the model likelihood for the general HMM formulation in (1), which is
+used in the Bayesian estimation procedures described next. We begin with the likelihood
+contribution from a single observation history,
+k
+k
+∑
+∏
+∏
+|
+|
+|
+|
+L
+(
+θ
+y$_{i}$
+) =
+f$_{i}$$_{1}$
+(
+x$_{i}$$_{1}$
+θ
+)$^{(}$
+f$_{it}$
+(
+x$_{it}$
+θ, x$_{i,t}$$_{−}$$_{1}$
+)$^{) (}$
+g$_{it}$
+(
+y$_{it}$
+θ, x$_{it}$
+)$^{)}$
+,
+(2)
+t
+=2
+t
+=1
+k
+∈X
+x$_{i}$
+k
+X
+X
+where
+denotes the standard
+k
+-fold Cartesian product of
+. Using the likelihood compo-
+nents in (2), the total model likelihood of
+y
+is
+n
+∏
+|
+|
+L
+(
+θ
+y
+) =
+L
+(
+θ
+y$_{i}$
+)
+.
+i
+=1
+2.3
+Computational Approaches
+We now describe several computational approaches to applying Bayesian estimation to em-
+bedded HMMs.
+These strategies will form the basis for our comparisons, using examples
+6

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_1418",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "e27619d22b00c22c0a89bff0a9fb971de3bf6e17f2dc4b4af023ff42001cc87d",
+  "ok": true,
+  "result": {
+    "text": "一门面出租\n13887695405",
+    "lines": [
+      {
+        "box": [
+          [
+            286.1329787234043,
+            1208.8548387096773
+          ],
+          [
+            2330.2340425531916,
+            1177.6451612903224
+          ],
+          [
+            2336.4095744680853,
+            1597.9354838709678
+          ],
+          [
+            292.3085106382979,
+            1629.1451612903224
+          ]
+        ],
+        "text": "一门面出租",
+        "score": 0.7356465458869934
+      },
+      {
+        "box": [
+          [
+            1233.0478723404256,
+            1610.4193548387095
+          ],
+          [
+            2079.095744680851,
+            1604.1774193548385
+          ],
+          [
+            2079.095744680851,
+            1679.0806451612902
+          ],
+          [
+            1233.0478723404256,
+            1685.3225806451612
+          ]
+        ],
+        "text": "13887695405",
+        "score": 0.9277783036231995
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 4,
+    "elapsed_ms": 149.16
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_2207",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "5217699edfd080f2184e43435bc7270bb45aef271aa81528c8f666fdf113939c",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "XINTAE RNT",
+    "lines": [
+      {
+        "box": [
+          [
+            2675.032258064516,
+            1373.7446808510638
+          ],
+          [
+            773.2258064516127,
+            1370.4893617021278
+          ],
+          [
+            773.2258064516127,
+            1163.776595744681
+          ],
+          [
+            2675.032258064516,
+            1167.031914893617
+          ]
+        ],
+        "text": "XINTAE RNT",
+        "score": 0.6597516536712646
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 66.67,
+    "direction_stats": {},
+    "elapsed_ms": 66.68
+  }
+}

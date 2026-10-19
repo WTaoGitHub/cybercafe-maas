@@ -1,0 +1,220 @@
+by a single-channel model,
+2
+h
+¯
+g
+H
+=
+−
+ψ
+$^{†}$∇
+$^{2}$ψ
++
+ψ
+$^{†}$ψ $^{†}$ψψ
+−
+µψ
+$^{†}$ψ,
+(1)
+2
+m
+2
+where
+ψ
+is the field operator of Bose atoms in the open channel, the coupling constant is
+given by
+g
+= 4
+π
+h
+¯
+$^{2}$a$_{s}$
+/m
+, and
+µ
+is the chemical potential of atoms.
+In the molecular-BEC state, atoms are paired into molecules and the off-diagonal long
+range order (ODLRO) appears, Δ
+≡
+g
+〈
+ψψ
+〉
+.
+Without losing any generality, Δ
+≥
+0
+is
+assumed in the following. In the mean field, in addition to the pairing energy, both Hartree
+and Fock energies should be taken into account, and the mean-field Hamiltonian density is
+given by
+2
+Δ
+h
+¯
+0
+ψ
+$^{†}$∇
+$^{2}$ψ
++ (2
+gn
+−
+µ
+)
+ψ
+$^{†}$ψ
++
+(
+ψ
+$^{†}$ψ †
++
+ψψ
+)
+,
+(2)
+H$_{p}$
+=
+H
+−
+p
+2
+m
+2
+0
+0
+where the constant
+H
+is given by
+H
+=
+−
+(
+gn
+$^{2}$+ Δ$^{2}$/
+2
+g
+). In this mean-field approximation,
+p
+p
+the pairing gap Δ and Hartree-Fock energy are determined self-consistently, but the fluctua-
+tion and three-body effects are ignored. The mean-field theory provides a description about
+single-particle excitations, but it is incapable to describe collective excitations or few-body
+properties such as Effimov effect. Nonetheless, the mean-field approximation can serve as a
+starting point of the theoretical description for the molecular-BEC state.
+The mean-field Hamiltonian can be diagonalized by Bogoliubov transformation,
+∑
+†
+E$_{k}$α
+$_{k}$α$_{k}$
+,
+(3)
+H$_{p}$
+=
+E$_{0}$
++
+k
+†
+where
+α$_{k}$
+=
+u$_{k}$ψ$_{k}$
++
+v$_{k}$ψ
+is the annihilation operator of atomic quasi-particles,
+E$_{k}$
+=
+−
+k
+√
+2
+2
+(
+ϵ$_{k}$
+−
+µ
+$^{′}$)
+−
+Δ
+is the quasi-particle energy, and the transformation coefficients are given
+2
+2
+′
+by
+u
+=
+v
++ 1 = [1 + (
+ϵ$_{k}$
+−
+µ
+$^{′}$)
+/E$_{k}$
+]
+/
+2
+with
+ϵ$_{k}$
+= ¯
+h
+$^{2}$k$^{2}$/
+2
+m
+and
+µ
+=
+µ
+−
+2
+gn
+. The energy
+k
+k
+constant
+E$_{0}$
+is given by
+2
+[
+]
+Δ
+βE$_{k}$
+1
+∑
+′
+E$_{k}$
+−
+ϵ$_{k}$
++
+µ
++
+coth(
+)
+−
+gn
+$^{2}$V,
+E$_{0}$
+=
+2
+2
+E$_{k}$
+2
+k
+where 1
+/β
+=
+k$_{B}$T
+and
+V
+is the volume.
+The order parameter Δ can be determined self-consistently,
+g
+∑
+u$_{k}$v$_{k}$
+[1 + 2
+f$_{k}$
+]
+,
+Δ =
+−
+V
+k
+3

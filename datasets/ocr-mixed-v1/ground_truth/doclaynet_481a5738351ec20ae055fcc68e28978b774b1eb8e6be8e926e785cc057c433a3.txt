@@ -1,0 +1,57 @@
+1.1
+Storage virtualization terminology
+Storage virtualization
+ is a term that is used extensively throughout the storage industry. It can 
+be applied to various technologies and underlying capabilities. In reality, most storage devices 
+technically can claim to be virtualized in one form or another. Therefore, this chapter starts by 
+defining the concept of storage virtualization as it is used in this book.
+IBM describes storage virtualization in the following way:
+Storage virtualization is a technology that makes one set of resources resemble another 
+GLYPH<SM590000>
+set of resources, preferably with more desirable characteristics.
+It is a logical representation of resources that is not constrained by physical limitations and 
+GLYPH<SM590000>
+hides part of the complexity of those resources. It also adds or integrates new functions 
+with existing services, and can be nested or applied to multiple layers of a system.
+Storage virtualization is also defined in the Storage Networking Industry Association’s (SNIA) 
+shared storage model version 2, shown in Figure 1-1. 
+1
+Figure 1-1
+SNIA shared storage model, version 2
+The model consists of the following layers:
+Application
+: the user of the storage domain
+GLYPH<SM590000>
+Storage domain
+, which is split into:
+GLYPH<SM590000>
+File/record/namespace virtualization
+File/record subsystem
+–
+ and 
+Block Virtualization
+–
+Block subsystem
+–
+Applications typically read and write data as vectors of bytes or records. Alternatively, storage 
+presents data as vectors of blocks of a constant size (512 bytes or, in newer devices, 4096 
+File/record/namespace virtualization
+File/record subsystem
+bytes per block). The 
+ and 
+ layers 
+convert records or files required by applications to vectors of blocks, which are the language 
+Block Virtualization
+Block Virtualization
+of the 
+ layer. The 
+ layer in turn maps requests of the 
+Storage devices
+Block subsystem
+higher layers to physical storage blocks, provided by 
+ in the 
+.
+1
+Source: Storage Networking Industry Association.
+2 
+Implementing the IBM System Storage SAN Volume Controller with IBM Spectrum Virtualize V8.2.1

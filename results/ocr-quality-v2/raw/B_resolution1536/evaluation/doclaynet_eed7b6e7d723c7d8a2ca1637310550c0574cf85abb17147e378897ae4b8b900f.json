@@ -1,0 +1,84 @@
+{
+  "id": "doclaynet_eed7b6e7d723c7d8a2ca1637310550c0574cf85abb17147e378897ae4b8b900f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "Figure 1: Snapshot of a freely diffusing chucker (left), and a chucker close to a hard-planar surface\n(right).\n21",
+    "lines": [
+      {
+        "box": [
+          [
+            123.0,
+            346.0
+          ],
+          [
+            928.0,
+            346.0
+          ],
+          [
+            928.0,
+            364.0
+          ],
+          [
+            123.0,
+            364.0
+          ]
+        ],
+        "text": "Figure 1: Snapshot of a freely diffusing chucker (left), and a chucker close to a hard-planar surface",
+        "score": 0.9920791847871082
+      },
+      {
+        "box": [
+          [
+            123.0,
+            372.0
+          ],
+          [
+            183.0,
+            372.0
+          ],
+          [
+            183.0,
+            390.0
+          ],
+          [
+            123.0,
+            390.0
+          ]
+        ],
+        "text": "(right).",
+        "score": 0.9742759093642235
+      },
+      {
+        "box": [
+          [
+            502.0,
+            918.0
+          ],
+          [
+            527.0,
+            918.0
+          ],
+          [
+            527.0,
+            936.0
+          ],
+          [
+            502.0,
+            936.0
+          ]
+        ],
+        "text": "21",
+        "score": 0.9905871450901031
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 3,
+    "deduplicated": 0,
+    "elapsed_ms": 97.98,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 106.06
+}

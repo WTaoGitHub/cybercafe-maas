@@ -1,0 +1,1091 @@
+{
+  "id": "doclaynet_4359052e68929ebaad2479924d3a0c5f8dbd1585f9a2ed373ca2332f4036f71e",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "26cbd070279da072fb6424631ea73b59982c5442fde726e8f807bcb275b0ec85",
+  "ok": true,
+  "result": {
+    "text": "The Concept of Data: Simple Data Types 17\nimplication\nas\nP <= Q\nequivalence\nas\nP = Q\nexclusive or\nas\nP <> Q\nPredeclared Boolean functions i.e., predeclared functions which\nyield a Boolean result — are:\nodd (I)\ntrue if the integer I is odd, false otherwise.\neoln (F)\nend of a line, explained in Chapter 9.\neof (F)\nend of file, explained in Chapter 9.\n(Appendix A summarizes all predeclared functions.)\n2.C. The Type Integer\nA value of type Integer is an element of an implementation-defined\nsubset of whole numbers. The following arithmetic operators yield an\ninteger value when applied to integer operands:\n★\nmultiply\ndiv\ndivide and truncate (i.e., value is not rounded)\nmod\nmodulus: let Remainder = A - (A div B) * B;\nif Remainder < 0 then A mod B = Remainder+B\notherwise A mod B = Remainder\n十\nadd\n一\nsubtract\nAn implementation-defined, predefined constant identifier\nMaxInt specifies the largest integer value allowable for all integer\noperations. If A and B are integer expressions, then the operation:\nA ○P B\nis guaranteed to be correctly implemented when:\nabs (A op B) <=\nMaxInt,\nabs (A)\n<=\nMaxInt, and\nabs (B)\n<=\nMaxInt",
+    "lines": [
+      {
+        "box": [
+          [
+            434.0,
+            45.0
+          ],
+          [
+            875.0,
+            45.0
+          ],
+          [
+            875.0,
+            64.0
+          ],
+          [
+            434.0,
+            64.0
+          ]
+        ],
+        "text": "The Concept of Data: Simple Data Types 17",
+        "score": 0.9996414184570312
+      },
+      {
+        "box": [
+          [
+            186.0,
+            89.0
+          ],
+          [
+            308.0,
+            89.0
+          ],
+          [
+            308.0,
+            106.0
+          ],
+          [
+            186.0,
+            106.0
+          ]
+        ],
+        "text": "implication",
+        "score": 0.999995231628418
+      },
+      {
+        "box": [
+          [
+            374.0,
+            89.0
+          ],
+          [
+            404.0,
+            89.0
+          ],
+          [
+            404.0,
+            108.0
+          ],
+          [
+            374.0,
+            108.0
+          ]
+        ],
+        "text": "as",
+        "score": 0.9988789558410645
+      },
+      {
+        "box": [
+          [
+            437.0,
+            86.0
+          ],
+          [
+            526.0,
+            88.0
+          ],
+          [
+            525.0,
+            109.0
+          ],
+          [
+            436.0,
+            107.0
+          ]
+        ],
+        "text": "P <= Q",
+        "score": 0.9841939806938171
+      },
+      {
+        "box": [
+          [
+            186.0,
+            119.0
+          ],
+          [
+            314.0,
+            119.0
+          ],
+          [
+            314.0,
+            136.0
+          ],
+          [
+            186.0,
+            136.0
+          ]
+        ],
+        "text": "equivalence",
+        "score": 0.9999708533287048
+      },
+      {
+        "box": [
+          [
+            374.0,
+            119.0
+          ],
+          [
+            404.0,
+            119.0
+          ],
+          [
+            404.0,
+            138.0
+          ],
+          [
+            374.0,
+            138.0
+          ]
+        ],
+        "text": "as",
+        "score": 0.9989398121833801
+      },
+      {
+        "box": [
+          [
+            436.0,
+            118.0
+          ],
+          [
+            512.0,
+            118.0
+          ],
+          [
+            512.0,
+            139.0
+          ],
+          [
+            436.0,
+            139.0
+          ]
+        ],
+        "text": "P = Q",
+        "score": 0.9959726333618164
+      },
+      {
+        "box": [
+          [
+            184.0,
+            147.0
+          ],
+          [
+            317.0,
+            147.0
+          ],
+          [
+            317.0,
+            164.0
+          ],
+          [
+            184.0,
+            164.0
+          ]
+        ],
+        "text": "exclusive or",
+        "score": 0.9999205470085144
+      },
+      {
+        "box": [
+          [
+            374.0,
+            148.0
+          ],
+          [
+            405.0,
+            148.0
+          ],
+          [
+            405.0,
+            167.0
+          ],
+          [
+            374.0,
+            167.0
+          ]
+        ],
+        "text": "as",
+        "score": 0.9992510080337524
+      },
+      {
+        "box": [
+          [
+            437.0,
+            148.0
+          ],
+          [
+            527.0,
+            148.0
+          ],
+          [
+            527.0,
+            168.0
+          ],
+          [
+            437.0,
+            168.0
+          ]
+        ],
+        "text": "P <> Q",
+        "score": 0.9876158833503723
+      },
+      {
+        "box": [
+          [
+            178.0,
+            177.0
+          ],
+          [
+            881.0,
+            177.0
+          ],
+          [
+            881.0,
+            196.0
+          ],
+          [
+            178.0,
+            196.0
+          ]
+        ],
+        "text": "Predeclared Boolean functions i.e., predeclared functions which",
+        "score": 0.9912521243095398
+      },
+      {
+        "box": [
+          [
+            139.0,
+            201.0
+          ],
+          [
+            453.0,
+            201.0
+          ],
+          [
+            453.0,
+            218.0
+          ],
+          [
+            139.0,
+            218.0
+          ]
+        ],
+        "text": "yield a Boolean result — are:",
+        "score": 0.9871044158935547
+      },
+      {
+        "box": [
+          [
+            184.0,
+            231.0
+          ],
+          [
+            265.0,
+            229.0
+          ],
+          [
+            265.0,
+            249.0
+          ],
+          [
+            185.0,
+            251.0
+          ]
+        ],
+        "text": "odd (I)",
+        "score": 0.9632108807563782
+      },
+      {
+        "box": [
+          [
+            319.0,
+            229.0
+          ],
+          [
+            788.0,
+            228.0
+          ],
+          [
+            788.0,
+            248.0
+          ],
+          [
+            319.0,
+            249.0
+          ]
+        ],
+        "text": "true if the integer I is odd, false otherwise.",
+        "score": 0.9883224368095398
+      },
+      {
+        "box": [
+          [
+            185.0,
+            262.0
+          ],
+          [
+            277.0,
+            262.0
+          ],
+          [
+            277.0,
+            279.0
+          ],
+          [
+            185.0,
+            279.0
+          ]
+        ],
+        "text": "eoln (F)",
+        "score": 0.9556431770324707
+      },
+      {
+        "box": [
+          [
+            319.0,
+            259.0
+          ],
+          [
+            719.0,
+            258.0
+          ],
+          [
+            719.0,
+            278.0
+          ],
+          [
+            319.0,
+            279.0
+          ]
+        ],
+        "text": "end of a line, explained in Chapter 9.",
+        "score": 0.9989627003669739
+      },
+      {
+        "box": [
+          [
+            186.0,
+            292.0
+          ],
+          [
+            264.0,
+            292.0
+          ],
+          [
+            264.0,
+            309.0
+          ],
+          [
+            186.0,
+            309.0
+          ]
+        ],
+        "text": "eof (F)",
+        "score": 0.9881457090377808
+      },
+      {
+        "box": [
+          [
+            321.0,
+            290.0
+          ],
+          [
+            696.0,
+            290.0
+          ],
+          [
+            696.0,
+            307.0
+          ],
+          [
+            321.0,
+            307.0
+          ]
+        ],
+        "text": "end of file, explained in Chapter 9.",
+        "score": 0.99986332654953
+      },
+      {
+        "box": [
+          [
+            137.0,
+            319.0
+          ],
+          [
+            702.0,
+            317.0
+          ],
+          [
+            702.0,
+            337.0
+          ],
+          [
+            137.0,
+            339.0
+          ]
+        ],
+        "text": "(Appendix A summarizes all predeclared functions.)",
+        "score": 0.9978165626525879
+      },
+      {
+        "box": [
+          [
+            138.0,
+            372.0
+          ],
+          [
+            403.0,
+            372.0
+          ],
+          [
+            403.0,
+            389.0
+          ],
+          [
+            138.0,
+            389.0
+          ]
+        ],
+        "text": "2.C. The Type Integer",
+        "score": 0.9991151690483093
+      },
+      {
+        "box": [
+          [
+            137.0,
+            399.0
+          ],
+          [
+            883.0,
+            398.0
+          ],
+          [
+            883.0,
+            421.0
+          ],
+          [
+            137.0,
+            422.0
+          ]
+        ],
+        "text": "A value of type Integer is an element of an implementation-defined",
+        "score": 0.9779161214828491
+      },
+      {
+        "box": [
+          [
+            137.0,
+            424.0
+          ],
+          [
+            882.0,
+            424.0
+          ],
+          [
+            882.0,
+            443.0
+          ],
+          [
+            137.0,
+            443.0
+          ]
+        ],
+        "text": "subset of whole numbers. The following arithmetic operators yield an",
+        "score": 0.999905526638031
+      },
+      {
+        "box": [
+          [
+            136.0,
+            446.0
+          ],
+          [
+            648.0,
+            445.0
+          ],
+          [
+            648.0,
+            465.0
+          ],
+          [
+            136.0,
+            466.0
+          ]
+        ],
+        "text": "integer value when applied to integer operands:",
+        "score": 0.999062180519104
+      },
+      {
+        "box": [
+          [
+            187.0,
+            478.0
+          ],
+          [
+            201.0,
+            478.0
+          ],
+          [
+            201.0,
+            492.0
+          ],
+          [
+            187.0,
+            492.0
+          ]
+        ],
+        "text": "★",
+        "score": 0.6569026112556458
+      },
+      {
+        "box": [
+          [
+            305.0,
+            476.0
+          ],
+          [
+            399.0,
+            476.0
+          ],
+          [
+            399.0,
+            496.0
+          ],
+          [
+            305.0,
+            496.0
+          ]
+        ],
+        "text": "multiply",
+        "score": 0.9999963045120239
+      },
+      {
+        "box": [
+          [
+            183.0,
+            507.0
+          ],
+          [
+            230.0,
+            504.0
+          ],
+          [
+            232.0,
+            526.0
+          ],
+          [
+            184.0,
+            529.0
+          ]
+        ],
+        "text": "div",
+        "score": 0.997053861618042
+      },
+      {
+        "box": [
+          [
+            305.0,
+            505.0
+          ],
+          [
+            803.0,
+            505.0
+          ],
+          [
+            803.0,
+            525.0
+          ],
+          [
+            305.0,
+            525.0
+          ]
+        ],
+        "text": "divide and truncate (i.e., value is not rounded)",
+        "score": 0.9960689544677734
+      },
+      {
+        "box": [
+          [
+            184.0,
+            538.0
+          ],
+          [
+            230.0,
+            538.0
+          ],
+          [
+            230.0,
+            556.0
+          ],
+          [
+            184.0,
+            556.0
+          ]
+        ],
+        "text": "mod",
+        "score": 0.9999842643737793
+      },
+      {
+        "box": [
+          [
+            305.0,
+            536.0
+          ],
+          [
+            854.0,
+            536.0
+          ],
+          [
+            854.0,
+            555.0
+          ],
+          [
+            305.0,
+            555.0
+          ]
+        ],
+        "text": "modulus: let Remainder = A - (A div B) * B;",
+        "score": 0.9616917371749878
+      },
+      {
+        "box": [
+          [
+            321.0,
+            558.0
+          ],
+          [
+            869.0,
+            558.0
+          ],
+          [
+            869.0,
+            577.0
+          ],
+          [
+            321.0,
+            577.0
+          ]
+        ],
+        "text": "if Remainder < 0 then A mod B = Remainder+B",
+        "score": 0.9850476980209351
+      },
+      {
+        "box": [
+          [
+            321.0,
+            581.0
+          ],
+          [
+            689.0,
+            582.0
+          ],
+          [
+            689.0,
+            599.0
+          ],
+          [
+            321.0,
+            598.0
+          ]
+        ],
+        "text": "otherwise A mod B = Remainder",
+        "score": 0.9992979764938354
+      },
+      {
+        "box": [
+          [
+            186.0,
+            614.0
+          ],
+          [
+            201.0,
+            614.0
+          ],
+          [
+            201.0,
+            628.0
+          ],
+          [
+            186.0,
+            628.0
+          ]
+        ],
+        "text": "十",
+        "score": 0.5290178656578064
+      },
+      {
+        "box": [
+          [
+            303.0,
+            608.0
+          ],
+          [
+            350.0,
+            608.0
+          ],
+          [
+            350.0,
+            630.0
+          ],
+          [
+            303.0,
+            630.0
+          ]
+        ],
+        "text": "add",
+        "score": 0.9999950528144836
+      },
+      {
+        "box": [
+          [
+            188.0,
+            646.0
+          ],
+          [
+            200.0,
+            646.0
+          ],
+          [
+            200.0,
+            655.0
+          ],
+          [
+            188.0,
+            655.0
+          ]
+        ],
+        "text": "一",
+        "score": 0.9464209675788879
+      },
+      {
+        "box": [
+          [
+            306.0,
+            640.0
+          ],
+          [
+            394.0,
+            640.0
+          ],
+          [
+            394.0,
+            657.0
+          ],
+          [
+            306.0,
+            657.0
+          ]
+        ],
+        "text": "subtract",
+        "score": 0.9993413686752319
+      },
+      {
+        "box": [
+          [
+            178.0,
+            668.0
+          ],
+          [
+            884.0,
+            668.0
+          ],
+          [
+            884.0,
+            688.0
+          ],
+          [
+            178.0,
+            688.0
+          ]
+        ],
+        "text": "An implementation-defined, predefined constant identifier",
+        "score": 0.98566073179245
+      },
+      {
+        "box": [
+          [
+            136.0,
+            691.0
+          ],
+          [
+            883.0,
+            690.0
+          ],
+          [
+            883.0,
+            710.0
+          ],
+          [
+            136.0,
+            711.0
+          ]
+        ],
+        "text": "MaxInt specifies the largest integer value allowable for all integer",
+        "score": 0.9975374937057495
+      },
+      {
+        "box": [
+          [
+            138.0,
+            714.0
+          ],
+          [
+            849.0,
+            714.0
+          ],
+          [
+            849.0,
+            733.0
+          ],
+          [
+            138.0,
+            733.0
+          ]
+        ],
+        "text": "operations. If A and B are integer expressions, then the operation:",
+        "score": 0.9832368493080139
+      },
+      {
+        "box": [
+          [
+            185.0,
+            746.0
+          ],
+          [
+            270.0,
+            746.0
+          ],
+          [
+            270.0,
+            763.0
+          ],
+          [
+            185.0,
+            763.0
+          ]
+        ],
+        "text": "A ○P B",
+        "score": 0.7405130863189697
+      },
+      {
+        "box": [
+          [
+            137.0,
+            773.0
+          ],
+          [
+            664.0,
+            772.0
+          ],
+          [
+            664.0,
+            792.0
+          ],
+          [
+            137.0,
+            793.0
+          ]
+        ],
+        "text": "is guaranteed to be correctly implemented when:",
+        "score": 0.9932491183280945
+      },
+      {
+        "box": [
+          [
+            187.0,
+            806.0
+          ],
+          [
+            368.0,
+            806.0
+          ],
+          [
+            368.0,
+            823.0
+          ],
+          [
+            187.0,
+            823.0
+          ]
+        ],
+        "text": "abs (A op B) <=",
+        "score": 0.9812365174293518
+      },
+      {
+        "box": [
+          [
+            402.0,
+            806.0
+          ],
+          [
+            495.0,
+            806.0
+          ],
+          [
+            495.0,
+            823.0
+          ],
+          [
+            402.0,
+            823.0
+          ]
+        ],
+        "text": "MaxInt,",
+        "score": 0.9994283318519592
+      },
+      {
+        "box": [
+          [
+            186.0,
+            829.0
+          ],
+          [
+            266.0,
+            829.0
+          ],
+          [
+            266.0,
+            846.0
+          ],
+          [
+            186.0,
+            846.0
+          ]
+        ],
+        "text": "abs (A)",
+        "score": 0.9365502595901489
+      },
+      {
+        "box": [
+          [
+            337.0,
+            828.0
+          ],
+          [
+            370.0,
+            828.0
+          ],
+          [
+            370.0,
+            846.0
+          ],
+          [
+            337.0,
+            846.0
+          ]
+        ],
+        "text": "<=",
+        "score": 0.9924758672714233
+      },
+      {
+        "box": [
+          [
+            400.0,
+            827.0
+          ],
+          [
+            539.0,
+            825.0
+          ],
+          [
+            540.0,
+            845.0
+          ],
+          [
+            401.0,
+            847.0
+          ]
+        ],
+        "text": "MaxInt, and",
+        "score": 0.9718307256698608
+      },
+      {
+        "box": [
+          [
+            187.0,
+            851.0
+          ],
+          [
+            266.0,
+            851.0
+          ],
+          [
+            266.0,
+            868.0
+          ],
+          [
+            187.0,
+            868.0
+          ]
+        ],
+        "text": "abs (B)",
+        "score": 0.9914268851280212
+      },
+      {
+        "box": [
+          [
+            338.0,
+            852.0
+          ],
+          [
+            369.0,
+            852.0
+          ],
+          [
+            369.0,
+            867.0
+          ],
+          [
+            338.0,
+            867.0
+          ]
+        ],
+        "text": "<=",
+        "score": 0.9919265508651733
+      },
+      {
+        "box": [
+          [
+            402.0,
+            851.0
+          ],
+          [
+            485.0,
+            851.0
+          ],
+          [
+            485.0,
+            868.0
+          ],
+          [
+            402.0,
+            868.0
+          ]
+        ],
+        "text": "MaxInt",
+        "score": 0.9997588992118835
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 48,
+    "elapsed_ms": 251.12
+  }
+}

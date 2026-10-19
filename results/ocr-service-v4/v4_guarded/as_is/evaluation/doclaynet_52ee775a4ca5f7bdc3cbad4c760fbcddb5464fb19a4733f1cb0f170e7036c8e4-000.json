@@ -1,0 +1,1257 @@
+{
+  "id": "doclaynet_52ee775a4ca5f7bdc3cbad4c760fbcddb5464fb19a4733f1cb0f170e7036c8e4",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "d9e5d7e752a946cee90be504a8325c61f8b559b23c2707b8a49f81b956fa80c3",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "US 9,551,933 B2\n231\n232\ncontinued\n-continued\n(D-55)\n(D-62)\n(D-56)\n10\n(D-63)\nHO\n(D-57) 20\n(D-64)\n25\n(D-58)\n30\n(D-65)\n35\nThe compound represented by formula (A)can be syn-\n40thesized byreferring to,for example,JP-A-2007-298569\n(D-59)\nand JP-A-2009-199021.\nIn the present invention,asfor the low molecular weight\ncompound (D), one compound may be used alone, or two or\nOH\nmore compounds may be mixed and used.\n45\nThe composition of the present invention may or may not\ncontain the low molecular compound (D), but in the case of\n(D-60)\ncontaining the compound (D), the content thereof is usually\nfrom 0.001 to 20 mass %, preferably from 0.001 to 10 mass\n%, more preferably from 0.01 to 5 mass %, based on the total\n50\nsolid content of the composition combined with the basic\ncompound.\nIn the case where the composition of the present invention\ncontains an acid generator, the ratio between the acid gen-\nerator and the compound (D) used in the composition is\n(D-61)\npreferably acidgenerator/[compound(D)+basic compound]\n55\n(by mol)=from 2.5 to 30o.That is, the molar ratio is\npreferably 2.5 or more in view of sensitivity and resolution\nand is preferably 300 or less from the standpoint of sup-\npressing the reductioninresolution due to thickening of the\nresist pattern over time after exposure until heat treatment.\n60\nThe acid generator/[compound (D)+basic compound](by\nmol) is more preferably from 5.0 to 200, still more prefer-\nably from 7.0 to 150.\nOther examples of the basic compound which can be used\nin the composition of the present invention include com-\n65pounds synthesized in Examples of JP-A-2002-363146and\ncompounds described in paragraph 0108 of JP-A-2007-\n298569.",
+    "lines": [
+      {
+        "box": [
+          [
+            433.0,
+            70.0
+          ],
+          [
+            579.0,
+            70.0
+          ],
+          [
+            579.0,
+            87.0
+          ],
+          [
+            433.0,
+            87.0
+          ]
+        ],
+        "text": "US 9,551,933 B2",
+        "score": 0.9276188532511394
+      },
+      {
+        "box": [
+          [
+            293.0,
+            89.0
+          ],
+          [
+            326.0,
+            89.0
+          ],
+          [
+            326.0,
+            107.0
+          ],
+          [
+            293.0,
+            107.0
+          ]
+        ],
+        "text": "231",
+        "score": 0.9994634985923767
+      },
+      {
+        "box": [
+          [
+            685.0,
+            89.0
+          ],
+          [
+            720.0,
+            89.0
+          ],
+          [
+            720.0,
+            107.0
+          ],
+          [
+            685.0,
+            107.0
+          ]
+        ],
+        "text": "232",
+        "score": 0.9995278517405192
+      },
+      {
+        "box": [
+          [
+            280.0,
+            111.0
+          ],
+          [
+            344.0,
+            109.0
+          ],
+          [
+            345.0,
+            123.0
+          ],
+          [
+            281.0,
+            125.0
+          ]
+        ],
+        "text": "continued",
+        "score": 0.9853300849596659
+      },
+      {
+        "box": [
+          [
+            670.0,
+            111.0
+          ],
+          [
+            736.0,
+            109.0
+          ],
+          [
+            737.0,
+            123.0
+          ],
+          [
+            671.0,
+            125.0
+          ]
+        ],
+        "text": "-continued",
+        "score": 0.957049822807312
+      },
+      {
+        "box": [
+          [
+            458.0,
+            125.0
+          ],
+          [
+            493.0,
+            125.0
+          ],
+          [
+            493.0,
+            139.0
+          ],
+          [
+            458.0,
+            139.0
+          ]
+        ],
+        "text": "(D-55)",
+        "score": 0.9620973865191141
+      },
+      {
+        "box": [
+          [
+            849.0,
+            122.0
+          ],
+          [
+            886.0,
+            122.0
+          ],
+          [
+            886.0,
+            136.0
+          ],
+          [
+            849.0,
+            136.0
+          ]
+        ],
+        "text": "(D-62)",
+        "score": 0.9663965503374735
+      },
+      {
+        "box": [
+          [
+            457.0,
+            233.0
+          ],
+          [
+            495.0,
+            233.0
+          ],
+          [
+            495.0,
+            247.0
+          ],
+          [
+            457.0,
+            247.0
+          ]
+        ],
+        "text": "(D-56)",
+        "score": 0.9359180629253387
+      },
+      {
+        "box": [
+          [
+            499.0,
+            226.0
+          ],
+          [
+            515.0,
+            226.0
+          ],
+          [
+            515.0,
+            238.0
+          ],
+          [
+            499.0,
+            238.0
+          ]
+        ],
+        "text": "10",
+        "score": 0.9960730075836182
+      },
+      {
+        "box": [
+          [
+            848.0,
+            265.0
+          ],
+          [
+            887.0,
+            265.0
+          ],
+          [
+            887.0,
+            282.0
+          ],
+          [
+            848.0,
+            282.0
+          ]
+        ],
+        "text": "(D-63)",
+        "score": 0.9724903206030527
+      },
+      {
+        "box": [
+          [
+            551.0,
+            275.0
+          ],
+          [
+            572.0,
+            275.0
+          ],
+          [
+            572.0,
+            287.0
+          ],
+          [
+            551.0,
+            287.0
+          ]
+        ],
+        "text": "HO",
+        "score": 0.9954034984111786
+      },
+      {
+        "box": [
+          [
+            456.0,
+            355.0
+          ],
+          [
+            516.0,
+            352.0
+          ],
+          [
+            517.0,
+            369.0
+          ],
+          [
+            457.0,
+            372.0
+          ]
+        ],
+        "text": "(D-57) 20",
+        "score": 0.9493327140808105
+      },
+      {
+        "box": [
+          [
+            848.0,
+            381.0
+          ],
+          [
+            887.0,
+            381.0
+          ],
+          [
+            887.0,
+            398.0
+          ],
+          [
+            848.0,
+            398.0
+          ]
+        ],
+        "text": "(D-64)",
+        "score": 0.9647205273310343
+      },
+      {
+        "box": [
+          [
+            501.0,
+            422.0
+          ],
+          [
+            510.0,
+            422.0
+          ],
+          [
+            510.0,
+            430.0
+          ],
+          [
+            501.0,
+            430.0
+          ]
+        ],
+        "text": "25",
+        "score": 0.9437014758586884
+      },
+      {
+        "box": [
+          [
+            457.0,
+            461.0
+          ],
+          [
+            493.0,
+            461.0
+          ],
+          [
+            493.0,
+            475.0
+          ],
+          [
+            457.0,
+            475.0
+          ]
+        ],
+        "text": "(D-58)",
+        "score": 0.9902436137199402
+      },
+      {
+        "box": [
+          [
+            500.0,
+            486.0
+          ],
+          [
+            514.0,
+            486.0
+          ],
+          [
+            514.0,
+            494.0
+          ],
+          [
+            500.0,
+            494.0
+          ]
+        ],
+        "text": "30",
+        "score": 0.9895105361938477
+      },
+      {
+        "box": [
+          [
+            849.0,
+            484.0
+          ],
+          [
+            885.0,
+            484.0
+          ],
+          [
+            885.0,
+            499.0
+          ],
+          [
+            849.0,
+            499.0
+          ]
+        ],
+        "text": "(D-65)",
+        "score": 0.9725074470043182
+      },
+      {
+        "box": [
+          [
+            501.0,
+            551.0
+          ],
+          [
+            511.0,
+            551.0
+          ],
+          [
+            511.0,
+            559.0
+          ],
+          [
+            501.0,
+            559.0
+          ]
+        ],
+        "text": "35",
+        "score": 0.9888638854026794
+      },
+      {
+        "box": [
+          [
+            534.0,
+            600.0
+          ],
+          [
+            886.0,
+            600.0
+          ],
+          [
+            886.0,
+            620.0
+          ],
+          [
+            534.0,
+            620.0
+          ]
+        ],
+        "text": "The compound represented by formula (A)can be syn-",
+        "score": 0.9601791870594024
+      },
+      {
+        "box": [
+          [
+            495.0,
+            610.0
+          ],
+          [
+            887.0,
+            612.0
+          ],
+          [
+            887.0,
+            633.0
+          ],
+          [
+            494.0,
+            631.0
+          ]
+        ],
+        "text": "40thesized byreferring to,for example,JP-A-2007-298569",
+        "score": 0.9414367344644334
+      },
+      {
+        "box": [
+          [
+            457.0,
+            631.0
+          ],
+          [
+            494.0,
+            628.0
+          ],
+          [
+            495.0,
+            643.0
+          ],
+          [
+            458.0,
+            646.0
+          ]
+        ],
+        "text": "(D-59)",
+        "score": 0.9454331795374552
+      },
+      {
+        "box": [
+          [
+            517.0,
+            626.0
+          ],
+          [
+            669.0,
+            625.0
+          ],
+          [
+            669.0,
+            642.0
+          ],
+          [
+            518.0,
+            643.0
+          ]
+        ],
+        "text": "and JP-A-2009-199021.",
+        "score": 0.9971798686754136
+      },
+      {
+        "box": [
+          [
+            531.0,
+            637.0
+          ],
+          [
+            887.0,
+            636.0
+          ],
+          [
+            887.0,
+            656.0
+          ],
+          [
+            532.0,
+            657.0
+          ]
+        ],
+        "text": "In the present invention,asfor the low molecular weight",
+        "score": 0.9339079835198142
+      },
+      {
+        "box": [
+          [
+            519.0,
+            651.0
+          ],
+          [
+            886.0,
+            651.0
+          ],
+          [
+            886.0,
+            668.0
+          ],
+          [
+            519.0,
+            668.0
+          ]
+        ],
+        "text": "compound (D), one compound may be used alone, or two or",
+        "score": 0.9943011988293041
+      },
+      {
+        "box": [
+          [
+            322.0,
+            663.0
+          ],
+          [
+            334.0,
+            663.0
+          ],
+          [
+            334.0,
+            671.0
+          ],
+          [
+            322.0,
+            671.0
+          ]
+        ],
+        "text": "OH",
+        "score": 0.7449915409088135
+      },
+      {
+        "box": [
+          [
+            517.0,
+            663.0
+          ],
+          [
+            786.0,
+            662.0
+          ],
+          [
+            786.0,
+            679.0
+          ],
+          [
+            518.0,
+            680.0
+          ]
+        ],
+        "text": "more compounds may be mixed and used.",
+        "score": 0.9710259163701856
+      },
+      {
+        "box": [
+          [
+            498.0,
+            678.0
+          ],
+          [
+            515.0,
+            678.0
+          ],
+          [
+            515.0,
+            690.0
+          ],
+          [
+            498.0,
+            690.0
+          ]
+        ],
+        "text": "45",
+        "score": 0.9995576441287994
+      },
+      {
+        "box": [
+          [
+            535.0,
+            676.0
+          ],
+          [
+            886.0,
+            676.0
+          ],
+          [
+            886.0,
+            693.0
+          ],
+          [
+            535.0,
+            693.0
+          ]
+        ],
+        "text": "The composition of the present invention may or may not",
+        "score": 0.9545492887496948
+      },
+      {
+        "box": [
+          [
+            520.0,
+            688.0
+          ],
+          [
+            886.0,
+            688.0
+          ],
+          [
+            886.0,
+            705.0
+          ],
+          [
+            520.0,
+            705.0
+          ]
+        ],
+        "text": "contain the low molecular compound (D), but in the case of",
+        "score": 0.980498841096615
+      },
+      {
+        "box": [
+          [
+            458.0,
+            709.0
+          ],
+          [
+            494.0,
+            709.0
+          ],
+          [
+            494.0,
+            723.0
+          ],
+          [
+            458.0,
+            723.0
+          ]
+        ],
+        "text": "(D-60)",
+        "score": 0.9856226146221161
+      },
+      {
+        "box": [
+          [
+            519.0,
+            700.0
+          ],
+          [
+            884.0,
+            700.0
+          ],
+          [
+            884.0,
+            717.0
+          ],
+          [
+            519.0,
+            717.0
+          ]
+        ],
+        "text": "containing the compound (D), the content thereof is usually",
+        "score": 0.9960818240198038
+      },
+      {
+        "box": [
+          [
+            520.0,
+            712.0
+          ],
+          [
+            886.0,
+            712.0
+          ],
+          [
+            886.0,
+            729.0
+          ],
+          [
+            520.0,
+            729.0
+          ]
+        ],
+        "text": "from 0.001 to 20 mass %, preferably from 0.001 to 10 mass",
+        "score": 0.9783973568364194
+      },
+      {
+        "box": [
+          [
+            520.0,
+            725.0
+          ],
+          [
+            886.0,
+            725.0
+          ],
+          [
+            886.0,
+            742.0
+          ],
+          [
+            520.0,
+            742.0
+          ]
+        ],
+        "text": "%, more preferably from 0.01 to 5 mass %, based on the total",
+        "score": 0.9726217250029247
+      },
+      {
+        "box": [
+          [
+            499.0,
+            743.0
+          ],
+          [
+            517.0,
+            743.0
+          ],
+          [
+            517.0,
+            754.0
+          ],
+          [
+            499.0,
+            754.0
+          ]
+        ],
+        "text": "50",
+        "score": 0.9920643270015717
+      },
+      {
+        "box": [
+          [
+            518.0,
+            737.0
+          ],
+          [
+            886.0,
+            737.0
+          ],
+          [
+            886.0,
+            754.0
+          ],
+          [
+            518.0,
+            754.0
+          ]
+        ],
+        "text": "solid content of the composition combined with the basic",
+        "score": 0.9888812654784748
+      },
+      {
+        "box": [
+          [
+            519.0,
+            749.0
+          ],
+          [
+            591.0,
+            749.0
+          ],
+          [
+            591.0,
+            766.0
+          ],
+          [
+            519.0,
+            766.0
+          ]
+        ],
+        "text": "compound.",
+        "score": 0.9984249803755019
+      },
+      {
+        "box": [
+          [
+            534.0,
+            761.0
+          ],
+          [
+            886.0,
+            761.0
+          ],
+          [
+            886.0,
+            778.0
+          ],
+          [
+            534.0,
+            778.0
+          ]
+        ],
+        "text": "In the case where the composition of the present invention",
+        "score": 0.9763904938410068
+      },
+      {
+        "box": [
+          [
+            518.0,
+            774.0
+          ],
+          [
+            884.0,
+            774.0
+          ],
+          [
+            884.0,
+            791.0
+          ],
+          [
+            518.0,
+            791.0
+          ]
+        ],
+        "text": "contains an acid generator, the ratio between the acid gen-",
+        "score": 0.9672526848518243
+      },
+      {
+        "box": [
+          [
+            519.0,
+            786.0
+          ],
+          [
+            886.0,
+            786.0
+          ],
+          [
+            886.0,
+            803.0
+          ],
+          [
+            519.0,
+            803.0
+          ]
+        ],
+        "text": "erator and the compound (D) used in the composition is",
+        "score": 0.9861654385372445
+      },
+      {
+        "box": [
+          [
+            457.0,
+            797.0
+          ],
+          [
+            495.0,
+            797.0
+          ],
+          [
+            495.0,
+            811.0
+          ],
+          [
+            457.0,
+            811.0
+          ]
+        ],
+        "text": "(D-61)",
+        "score": 0.9560967087745667
+      },
+      {
+        "box": [
+          [
+            518.0,
+            797.0
+          ],
+          [
+            887.0,
+            797.0
+          ],
+          [
+            887.0,
+            817.0
+          ],
+          [
+            518.0,
+            817.0
+          ]
+        ],
+        "text": "preferably acidgenerator/[compound(D)+basic compound]",
+        "score": 0.9599510161381848
+      },
+      {
+        "box": [
+          [
+            499.0,
+            808.0
+          ],
+          [
+            517.0,
+            808.0
+          ],
+          [
+            517.0,
+            819.0
+          ],
+          [
+            499.0,
+            819.0
+          ]
+        ],
+        "text": "55",
+        "score": 0.9992436766624451
+      },
+      {
+        "box": [
+          [
+            518.0,
+            810.0
+          ],
+          [
+            886.0,
+            810.0
+          ],
+          [
+            886.0,
+            827.0
+          ],
+          [
+            518.0,
+            827.0
+          ]
+        ],
+        "text": "(by mol)=from 2.5 to 30o.That is, the molar ratio is",
+        "score": 0.9037598096407377
+      },
+      {
+        "box": [
+          [
+            519.0,
+            823.0
+          ],
+          [
+            886.0,
+            823.0
+          ],
+          [
+            886.0,
+            840.0
+          ],
+          [
+            519.0,
+            840.0
+          ]
+        ],
+        "text": "preferably 2.5 or more in view of sensitivity and resolution",
+        "score": 0.9805860648552577
+      },
+      {
+        "box": [
+          [
+            519.0,
+            835.0
+          ],
+          [
+            885.0,
+            835.0
+          ],
+          [
+            885.0,
+            852.0
+          ],
+          [
+            519.0,
+            852.0
+          ]
+        ],
+        "text": "and is preferably 300 or less from the standpoint of sup-",
+        "score": 0.9727035363515218
+      },
+      {
+        "box": [
+          [
+            516.0,
+            846.0
+          ],
+          [
+            886.0,
+            845.0
+          ],
+          [
+            886.0,
+            865.0
+          ],
+          [
+            517.0,
+            866.0
+          ]
+        ],
+        "text": "pressing the reductioninresolution due to thickening of the",
+        "score": 0.9487141188928636
+      },
+      {
+        "box": [
+          [
+            520.0,
+            860.0
+          ],
+          [
+            884.0,
+            860.0
+          ],
+          [
+            884.0,
+            876.0
+          ],
+          [
+            520.0,
+            876.0
+          ]
+        ],
+        "text": "resist pattern over time after exposure until heat treatment.",
+        "score": 0.9915273140688412
+      },
+      {
+        "box": [
+          [
+            499.0,
+            873.0
+          ],
+          [
+            524.0,
+            873.0
+          ],
+          [
+            524.0,
+            884.0
+          ],
+          [
+            499.0,
+            884.0
+          ]
+        ],
+        "text": "60",
+        "score": 0.9948035478591919
+      },
+      {
+        "box": [
+          [
+            518.0,
+            872.0
+          ],
+          [
+            885.0,
+            872.0
+          ],
+          [
+            885.0,
+            889.0
+          ],
+          [
+            518.0,
+            889.0
+          ]
+        ],
+        "text": "The acid generator/[compound (D)+basic compound](by",
+        "score": 0.9666099326283324
+      },
+      {
+        "box": [
+          [
+            520.0,
+            884.0
+          ],
+          [
+            886.0,
+            884.0
+          ],
+          [
+            886.0,
+            901.0
+          ],
+          [
+            520.0,
+            901.0
+          ]
+        ],
+        "text": "mol) is more preferably from 5.0 to 200, still more prefer-",
+        "score": 0.972127093602035
+      },
+      {
+        "box": [
+          [
+            519.0,
+            896.0
+          ],
+          [
+            658.0,
+            896.0
+          ],
+          [
+            658.0,
+            913.0
+          ],
+          [
+            519.0,
+            913.0
+          ]
+        ],
+        "text": "ably from 7.0 to 150.",
+        "score": 0.9908169820195153
+      },
+      {
+        "box": [
+          [
+            534.0,
+            908.0
+          ],
+          [
+            884.0,
+            908.0
+          ],
+          [
+            884.0,
+            925.0
+          ],
+          [
+            534.0,
+            925.0
+          ]
+        ],
+        "text": "Other examples of the basic compound which can be used",
+        "score": 0.9929468565517001
+      },
+      {
+        "box": [
+          [
+            519.0,
+            921.0
+          ],
+          [
+            885.0,
+            921.0
+          ],
+          [
+            885.0,
+            938.0
+          ],
+          [
+            519.0,
+            938.0
+          ]
+        ],
+        "text": "in the composition of the present invention include com-",
+        "score": 0.9573499379413468
+      },
+      {
+        "box": [
+          [
+            495.0,
+            933.0
+          ],
+          [
+            886.0,
+            931.0
+          ],
+          [
+            886.0,
+            951.0
+          ],
+          [
+            496.0,
+            953.0
+          ]
+        ],
+        "text": "65pounds synthesized in Examples of JP-A-2002-363146and",
+        "score": 0.9787637157873674
+      },
+      {
+        "box": [
+          [
+            519.0,
+            947.0
+          ],
+          [
+            886.0,
+            947.0
+          ],
+          [
+            886.0,
+            964.0
+          ],
+          [
+            519.0,
+            964.0
+          ]
+        ],
+        "text": "compounds described in paragraph 0108 of JP-A-2007-",
+        "score": 0.9723148100516376
+      },
+      {
+        "box": [
+          [
+            521.0,
+            961.0
+          ],
+          [
+            573.0,
+            961.0
+          ],
+          [
+            573.0,
+            975.0
+          ],
+          [
+            521.0,
+            975.0
+          ]
+        ],
+        "text": "298569.",
+        "score": 0.9968965223857335
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 195.33,
+    "direction_stats": {
+      "lines_tested_180": 1,
+      "lines_chosen_180": 0,
+      "recognized_lines": 56
+    },
+    "elapsed_ms": 195.34
+  }
+}

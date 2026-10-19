@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_3108",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "2e9561378538dce79f8c9149bba380debffc1973a57c7e032e1b119a64418eca",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "鱼行街\n194",
+    "lines": [
+      {
+        "box": [
+          [
+            1419.319091796875,
+            1921.54833984375
+          ],
+          [
+            1640.6807861328125,
+            1875.48388671875
+          ],
+          [
+            1652.074462890625,
+            1936.3548583984375
+          ],
+          [
+            1430.7127685546875,
+            1982.4193115234375
+          ]
+        ],
+        "text": "鱼行街",
+        "score": 0.9934148192405701
+      },
+      {
+        "box": [
+          [
+            1453.5,
+            1967.6129150390625
+          ],
+          [
+            1639.05322265625,
+            1928.1290283203125
+          ],
+          [
+            1663.468017578125,
+            2041.6451416015625
+          ],
+          [
+            1477.9149169921875,
+            2081.12890625
+          ]
+        ],
+        "text": "194",
+        "score": 0.9983992179234823
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 93.0,
+    "direction_stats": {
+      "lines_tested_180": 2,
+      "lines_chosen_180": 2,
+      "recognized_lines": 4
+    },
+    "elapsed_ms": 93.01
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_7818",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "422b563d7aba03a690dfe93e4abc0c3b29e0a1da9e8f5b3df93742884043f59b",
+  "ok": true,
+  "result": {
+    "text": "由“楚霸王”到“光谷新贵”\n谁能独享雄楚",
+    "lines": [
+      {
+        "box": [
+          [
+            470.96774193548384,
+            1522.340425531915
+          ],
+          [
+            2695.1612903225805,
+            1535.1063829787233
+          ],
+          [
+            2693.548387096774,
+            1820.7446808510638
+          ],
+          [
+            469.3548387096774,
+            1807.9787234042553
+          ]
+        ],
+        "text": "由“楚霸王”到“光谷新贵”",
+        "score": 0.9998677372932434
+      },
+      {
+        "box": [
+          [
+            262.9032258064516,
+            1661.1702127659573
+          ],
+          [
+            3200.0,
+            1718.6170212765958
+          ],
+          [
+            3200.0,
+            2400.0
+          ],
+          [
+            246.77419354838707,
+            2400.0
+          ]
+        ],
+        "text": "谁能独享雄楚",
+        "score": 0.9998197555541992
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1504,
+      1984,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 109.4
+  }
+}

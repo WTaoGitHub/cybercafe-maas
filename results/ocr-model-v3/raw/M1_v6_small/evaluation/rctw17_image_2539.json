@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_2539",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "ce6e10d28172e74ff40292aaa70d57d365a6bb3450ab42fa9542be71b6a34471",
+  "ok": true,
+  "result": {
+    "text": "求是二路\nQiushi Road No.2",
+    "lines": [
+      {
+        "box": [
+          [
+            1137.4857142857143,
+            1853.725806451613
+          ],
+          [
+            1437.7142857142858,
+            1843.1209677419356
+          ],
+          [
+            1439.8285714285714,
+            1915.233870967742
+          ],
+          [
+            1139.6,
+            1925.8387096774195
+          ]
+        ],
+        "text": "求是二路",
+        "score": 0.9999008178710938
+      },
+      {
+        "box": [
+          [
+            1158.6285714285714,
+            1923.717741935484
+          ],
+          [
+            1420.8,
+            1915.233870967742
+          ],
+          [
+            1420.8,
+            1957.6532258064517
+          ],
+          [
+            1158.6285714285714,
+            1966.1370967741937
+          ]
+        ],
+        "text": "Qiushi Road No.2",
+        "score": 0.9930731058120728
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1120,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 74.24
+  }
+}

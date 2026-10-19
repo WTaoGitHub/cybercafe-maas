@@ -1,0 +1,113 @@
+{
+  "id": "rctw17_image_5446",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 90,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "ff4ecc9208d06b93230c928453b6b5119bb68b02bb3d07cba23f9f4c49fcf3ca",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "赴新疆县级团\n吉\nND\n201",
+    "lines": [
+      {
+        "box": [
+          [
+            193.0,
+            109.0
+          ],
+          [
+            193.0,
+            90.0
+          ],
+          [
+            326.0,
+            91.0
+          ],
+          [
+            326.0,
+            110.0
+          ]
+        ],
+        "text": "赴新疆县级团",
+        "score": 0.9944949646790823
+      },
+      {
+        "box": [
+          [
+            471.0,
+            111.0
+          ],
+          [
+            471.0,
+            92.0
+          ],
+          [
+            487.0,
+            92.0
+          ],
+          [
+            487.0,
+            111.0
+          ]
+        ],
+        "text": "吉",
+        "score": 0.9952183365821838
+      },
+      {
+        "box": [
+          [
+            479.0,
+            110.0
+          ],
+          [
+            481.0,
+            91.0
+          ],
+          [
+            499.0,
+            93.0
+          ],
+          [
+            499.0,
+            111.0
+          ]
+        ],
+        "text": "ND",
+        "score": 0.5980489552021027
+      },
+      {
+        "box": [
+          [
+            476.0,
+            89.0
+          ],
+          [
+            476.0,
+            76.0
+          ],
+          [
+            497.0,
+            76.0
+          ],
+          [
+            497.0,
+            89.0
+          ]
+        ],
+        "text": "201",
+        "score": 0.9985037843386332
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 108.96,
+    "direction_stats": {
+      "lines_tested_180": 5,
+      "lines_chosen_180": 3,
+      "recognized_lines": 8
+    },
+    "elapsed_ms": 108.97
+  }
+}

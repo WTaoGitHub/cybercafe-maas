@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_511",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "487853caa84679b61cc0c0551b0ef9529e88907ccb5a07cb4f74f4cf6b1e5177",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "银",
+    "lines": [
+      {
+        "box": [
+          [
+            1013.2978723404256,
+            825.8064516129032
+          ],
+          [
+            1019.6808510638298,
+            904.8387096774193
+          ],
+          [
+            915.9574468085107,
+            912.9032258064516
+          ],
+          [
+            909.5744680851064,
+            833.8709677419355
+          ]
+        ],
+        "text": "银",
+        "score": 0.9929718375205994
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 83.21,
+    "direction_stats": {},
+    "elapsed_ms": 83.22
+  }
+}

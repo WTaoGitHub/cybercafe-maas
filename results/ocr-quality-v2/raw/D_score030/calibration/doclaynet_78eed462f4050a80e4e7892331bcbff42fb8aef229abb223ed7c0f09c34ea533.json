@@ -1,0 +1,128 @@
+{
+  "id": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "D_score030",
+  "ok": true,
+  "result": {
+    "text": "8.\nDeterminingthePerformanceofSmallUnmannedAircraft\nThispageintentionallyleftblank.\nRemotePilot-SmallUnmannedAircraftSystemsStudyGuide\n44",
+    "lines": [
+      {
+        "box": [
+          [
+            90.0,
+            39.0
+          ],
+          [
+            103.0,
+            39.0
+          ],
+          [
+            103.0,
+            52.0
+          ],
+          [
+            90.0,
+            52.0
+          ]
+        ],
+        "text": "8.",
+        "score": 0.9946836829185486
+      },
+      {
+        "box": [
+          [
+            126.0,
+            36.0
+          ],
+          [
+            559.0,
+            37.0
+          ],
+          [
+            559.0,
+            54.0
+          ],
+          [
+            126.0,
+            53.0
+          ]
+        ],
+        "text": "DeterminingthePerformanceofSmallUnmannedAircraft",
+        "score": 0.9955067696670691
+      },
+      {
+        "box": [
+          [
+            385.0,
+            90.0
+          ],
+          [
+            637.0,
+            91.0
+          ],
+          [
+            637.0,
+            111.0
+          ],
+          [
+            385.0,
+            110.0
+          ]
+        ],
+        "text": "Thispageintentionallyleftblank.",
+        "score": 0.9844441740743576
+      },
+      {
+        "box": [
+          [
+            90.0,
+            969.0
+          ],
+          [
+            594.0,
+            969.0
+          ],
+          [
+            594.0,
+            985.0
+          ],
+          [
+            90.0,
+            985.0
+          ]
+        ],
+        "text": "RemotePilot-SmallUnmannedAircraftSystemsStudyGuide",
+        "score": 0.9944658553600312
+      },
+      {
+        "box": [
+          [
+            912.0,
+            967.0
+          ],
+          [
+            938.0,
+            967.0
+          ],
+          [
+            938.0,
+            987.0
+          ],
+          [
+            912.0,
+            987.0
+          ]
+        ],
+        "text": "44",
+        "score": 0.9993802309036255
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 5,
+    "deduplicated": 0,
+    "elapsed_ms": 64.62,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 71.43
+}

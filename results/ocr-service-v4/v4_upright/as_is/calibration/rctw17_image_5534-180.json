@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_5534",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "84ab99385f16b6f5a9e269a5b691d8d58cd7cf4f2bb51ba43fe9289ed2a0ec0f",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "国中",
+    "lines": [
+      {
+        "box": [
+          [
+            2441.830645084381,
+            175.209716796875
+          ],
+          [
+            2406.048385620117,
+            170.274169921875
+          ],
+          [
+            2408.516128540039,
+            146.83056640625
+          ],
+          [
+            2445.5322580337524,
+            151.76611328125
+          ]
+        ],
+        "text": "国中",
+        "score": 0.9225681722164154
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 108.96,
+    "direction_stats": {},
+    "elapsed_ms": 108.97
+  }
+}

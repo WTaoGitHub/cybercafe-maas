@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_6180",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "0adbd1bd01de4e8d18990d46935d0524b5847dd53fd2f65473691938f42d41c5",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "中",
+    "lines": [
+      {
+        "box": [
+          [
+            2385.6382970809937,
+            514.51611328125
+          ],
+          [
+            2296.276596069336,
+            514.51611328125
+          ],
+          [
+            2296.276596069336,
+            459.677490234375
+          ],
+          [
+            2385.6382970809937,
+            459.677490234375
+          ]
+        ],
+        "text": "中",
+        "score": 0.9842770099639893
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 79.41,
+    "direction_stats": {},
+    "elapsed_ms": 79.41
+  }
+}

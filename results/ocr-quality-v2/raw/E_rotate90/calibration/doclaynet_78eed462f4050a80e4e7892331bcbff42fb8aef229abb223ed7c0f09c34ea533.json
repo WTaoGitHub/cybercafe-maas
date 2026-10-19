@@ -1,0 +1,84 @@
+{
+  "id": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "E_rotate90",
+  "ok": true,
+  "result": {
+    "text": "Thispageintentionallyleftblank.\nRemotePilot-SmallUnmannedAircraftSystemsStudyGuide\nDeterminingthePerformanceofSmallUnmannedAircraft",
+    "lines": [
+      {
+        "box": [
+          [
+            636.0,
+            90.0
+          ],
+          [
+            636.0,
+            113.0
+          ],
+          [
+            385.0,
+            113.0
+          ],
+          [
+            385.0,
+            90.0
+          ]
+        ],
+        "text": "Thispageintentionallyleftblank.",
+        "score": 0.9927522078637154
+      },
+      {
+        "box": [
+          [
+            594.0,
+            967.0
+          ],
+          [
+            594.0,
+            987.0
+          ],
+          [
+            85.0,
+            987.0
+          ],
+          [
+            85.0,
+            967.0
+          ]
+        ],
+        "text": "RemotePilot-SmallUnmannedAircraftSystemsStudyGuide",
+        "score": 0.9971642243862152
+      },
+      {
+        "box": [
+          [
+            558.0,
+            36.0
+          ],
+          [
+            558.0,
+            56.0
+          ],
+          [
+            121.0,
+            56.0
+          ],
+          [
+            121.0,
+            36.0
+          ]
+        ],
+        "text": "DeterminingthePerformanceofSmallUnmannedAircraft",
+        "score": 0.9937032895783583
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 3,
+    "deduplicated": 0,
+    "elapsed_ms": 64.76,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 71.5
+}

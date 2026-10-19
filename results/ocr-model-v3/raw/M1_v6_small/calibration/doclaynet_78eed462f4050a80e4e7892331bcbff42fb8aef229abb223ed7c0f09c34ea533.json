@@ -1,0 +1,145 @@
+{
+  "id": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "M1_v6_small",
+  "image_sha256": "d10d041eebb3a2814ef74f4dc11cdfe5fa839c659fb5b4822334a5b8ce05f75e",
+  "ok": true,
+  "result": {
+    "text": "8.\nDetermining the Performance of Small Unmanned Aircraft\nThis page intentionally left blank.\nRemote Pilot — Small Unmanned Aircraft Systems Study Guide\n44",
+    "lines": [
+      {
+        "box": [
+          [
+            89.0,
+            37.0
+          ],
+          [
+            106.0,
+            37.0
+          ],
+          [
+            106.0,
+            50.0
+          ],
+          [
+            89.0,
+            50.0
+          ]
+        ],
+        "text": "8.",
+        "score": 0.978595495223999
+      },
+      {
+        "box": [
+          [
+            124.0,
+            35.0
+          ],
+          [
+            558.0,
+            35.0
+          ],
+          [
+            558.0,
+            51.0
+          ],
+          [
+            124.0,
+            51.0
+          ]
+        ],
+        "text": "Determining the Performance of Small Unmanned Aircraft",
+        "score": 0.991793155670166
+      },
+      {
+        "box": [
+          [
+            387.0,
+            91.0
+          ],
+          [
+            636.0,
+            91.0
+          ],
+          [
+            636.0,
+            107.0
+          ],
+          [
+            387.0,
+            107.0
+          ]
+        ],
+        "text": "This page intentionally left blank.",
+        "score": 0.9959377646446228
+      },
+      {
+        "box": [
+          [
+            88.0,
+            967.0
+          ],
+          [
+            593.0,
+            967.0
+          ],
+          [
+            593.0,
+            983.0
+          ],
+          [
+            88.0,
+            983.0
+          ]
+        ],
+        "text": "Remote Pilot — Small Unmanned Aircraft Systems Study Guide",
+        "score": 0.9862713813781738
+      },
+      {
+        "box": [
+          [
+            910.0,
+            965.0
+          ],
+          [
+            938.0,
+            965.0
+          ],
+          [
+            938.0,
+            985.0
+          ],
+          [
+            910.0,
+            985.0
+          ]
+        ],
+        "text": "44",
+        "score": 0.999988317489624
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 5,
+    "elapsed_ms": 57.92
+  }
+}

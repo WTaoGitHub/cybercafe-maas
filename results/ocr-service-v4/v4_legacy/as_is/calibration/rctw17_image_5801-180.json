@@ -1,0 +1,65 @@
+{
+  "id": "rctw17_image_5801",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_legacy",
+  "image_sha256": "d0126cbb240c19b6cf5e7f0e9fe0294f8160a124f1f4b826217b83f638b58d86",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "文文明市民\n文明城市",
+    "lines": [
+      {
+        "box": [
+          [
+            482.0,
+            344.0
+          ],
+          [
+            190.0,
+            344.0
+          ],
+          [
+            190.0,
+            244.0
+          ],
+          [
+            482.0,
+            244.0
+          ]
+        ],
+        "text": "文文明市民",
+        "score": 0.9253090143203735
+      },
+      {
+        "box": [
+          [
+            700.0,
+            334.0
+          ],
+          [
+            534.0,
+            334.0
+          ],
+          [
+            534.0,
+            262.0
+          ],
+          [
+            700.0,
+            262.0
+          ]
+        ],
+        "text": "文明城市",
+        "score": 0.9072248935699463
+      }
+    ],
+    "variant": "v4_legacy",
+    "rotation_cw": 0,
+    "processing_ms": 31.59,
+    "direction_stats": {},
+    "elapsed_ms": 31.6
+  }
+}

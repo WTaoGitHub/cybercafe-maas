@@ -1,0 +1,339 @@
+3
+400
+ο
+θ = 90.0
+ο
+θ = 82.3
+bulk
+ο
+θ = 74.6
+300
+ο
+θ = 66.6
+capillarity 
+/kT
+approx.
+ο
+s
+θ = 58.2
+200
+F
+FIG. 3: Chemical potential as a function of density. The den-
+sity of the sphere-cap shaped droplet at overall density
+ρ
+is
+100
+′
+′
+given by
+ρ
+, the density of the environment by
+ρ
+. Δ
+F
+is ob-
+s
+v
+l
+ο
+tained by integrating the chemical potential over the density
+θ = 49.1
+′
+from
+ρ
+to
+ρ
+.
+v
+10
+5
+15
+R
+adaptation [16, 17] of the Widom test particle insertion
+-0.1
+30
+method [22]. In the flat region of the isotherm depicted
+40
+slab
+in Fig. 3, a single droplet is present in the simulation box,
+which will be used for the determination of the surface
+-0.15
+free energy. At small densities the ascending branch of
+µ
+Τ
+Β
+τ /κ
+represents pure vapor (with no single large droplet being
+present), and the subsequent rapid decrease signifies the
+-0.2
+system size dependent transition towards a single droplet
+phase [23–26]. At larger densities, the droplet region is
+-0.25
+delimited by a transition towards a cylindrical droplet
+which is stabilized by the boundary conditions.
+Note
+30
+40
+70
+80
+90
+60
+50
+that for each system size, only a certain range of droplet
+θ
+sizes can be stabilized and we have to simulate a whole
+FIG. 4: a) Plot of
+F
+(
+R, θ
+)
+/k
+T
+vs.
+R
+for
+k
+T/J
+= 3
+.
+0
+and
+range of box sizes to cover all radii.
+s
+B
+B
+a broad range of values for
+θ
+.
+Dotted lines are results for
+As indicated in Fig. 3 for each droplet state at den-
+L
+=
+D
+= 30, dashes lines for
+D
+=
+L
+= 40, dash-dotted lines
+′
+and one liquid
+sity
+ρ
+, there exists one vapor state at
+ρ
+v
+for
+L
+= 60,
+D
+= 20. For the systems (bulk,
+H
+/J
+= 0 and
+1
+′
+state at
+ρ
+which have the same chemical potential. Equi-
+H
+/J
+= 0
+.
+4
+(
+θ
+58
+$^{o}$)) the classical predictions 4
+πR
+$^{2}$γ
+and
+≈
+l
+1
+vℓ
+librium conditions require that the chemical potential is
+4
+πR
+$^{2}$γ
+f
+(
+θ
+) are included (full curves).
+b)
+Plot of
+τ
+vs.
+θ
+vℓ
+constant throughout the box. Therefore, the droplet has
+for
+k
+T/J
+= 3
+.
+0.
+Crosses are data for
+D
+=
+L
+= 30, circles
+B
+for
+D
+=
+L
+= 40, diamonds
+D
+= 10,
+L
+= 60, and squares for
+′
+density
+ρ
+and is surrounded by an environment with den-
+l
+D
+= 10,
+R
+= 80.
+′
+sity
+ρ
+$_{v}$. The surface free energy of the droplet is simply
+given by the difference in free energy between the droplet
+and the vapor state and can be determined by thermo-
+dynamic integration:
+F$_{c,bulk}$
+(
+R
+) = 4
+πR
+$^{2}$γ$_{vℓ}$
+[16, 26] (
+γ$_{vℓ}$
+being the interfacial
+tension for a flat interface.) For
+R
+= 5 the difference be-
+∫
+tween the theoretical estimate and our simulation results
+ρ
+F$_{s}$
+(
+ρ
+) =
+µ
+(
+ρ
+$^{′}$)
+dρ
+$^{′}$.
+(7)
+is already less than 5% (at
+k$_{B}$T/J
+= 3
+.
+0)
+and quickly
+ρ
+′
+vanishes with increasing droplet radius. The validity of
+v
+the capillarity approximation for the bulk agrees with
+The number of particles in the box is conserved:
+conclusions drawn from surface force measurements on
+liquid bridges [29], but contrasts a large body of other
+′
+′
+ρ
+$_{v}$(
+V
+V$_{drop}$
+) +
+ρ
+$_{l}$V$_{drop}$
+=
+ρV.
+(8)
+−
+work (see [26] for a discussion).
+We have also determined the surface free energy for a
+If we further require that the (average) droplet is spher-
+sphere-cap shaped droplet attached to the wall for sev-
+ical in the bulk and sphere-cap shaped for the hetero-
+3
+eral contact angles as a function of the radius of cur-
+geneous case,
+V$_{drop}$
+becomes 4
+/
+3
+πR
+or 4
+/
+3
+πR
+$^{3}$f
+(
+θ
+), re-
+vature.
+It is important to note that within statistical
+spectively, and we obtain
+R
+(
+ρ
+) and finally
+F$_{s}$
+(
+R
+) and
+errors different choices of
+L
+and
+D
+yield identical re-
+F$_{s}$
+(
+R, θ
+).
+o
+o
+sults.
+For
+θ
+= 90
+and
+θ
+= 58
+.
+2
+we have also in-
+Fig. 4 a highlights the main results of our study.
+cluded the theoretical estimate from the capillarity ap-
+For the bulk we can directly test the classical theory
+proximation
+F$_{c,het}$
+=
+F$_{c,bulk}$
+f
+(
+θ
+).
+When we consider
+of homogeneous nucleation by comparing our simula-
+·
+F$_{c,het}$
+(
+R, θ
+)
+F$_{s}$
+(
+R, θ
+), we find that the difference in-
+tion results for
+F$_{s}$
+(
+R
+) with the capillary approximation
+−

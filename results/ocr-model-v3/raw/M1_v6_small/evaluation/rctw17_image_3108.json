@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_3108",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "2e9561378538dce79f8c9149bba380debffc1973a57c7e032e1b119a64418eca",
+  "ok": true,
+  "result": {
+    "text": "鱼行街\n194",
+    "lines": [
+      {
+        "box": [
+          [
+            1406.2978723404256,
+            1908.3870967741937
+          ],
+          [
+            1642.3085106382978,
+            1860.6774193548388
+          ],
+          [
+            1658.5851063829787,
+            1941.2903225806454
+          ],
+          [
+            1422.5744680851064,
+            1989.0
+          ]
+        ],
+        "text": "鱼行街",
+        "score": 0.9998520016670227
+      },
+      {
+        "box": [
+          [
+            1446.9893617021276,
+            1954.4516129032259
+          ],
+          [
+            1653.7021276595744,
+            1916.6129032258066
+          ],
+          [
+            1678.1170212765958,
+            2049.8709677419356
+          ],
+          [
+            1471.404255319149,
+            2087.709677419355
+          ]
+        ],
+        "text": "194",
+        "score": 0.9999901652336121
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 68.34
+  }
+}

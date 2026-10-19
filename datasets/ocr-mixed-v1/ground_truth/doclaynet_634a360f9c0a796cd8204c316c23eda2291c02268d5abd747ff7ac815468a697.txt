@@ -1,0 +1,381 @@
+13
+2
+σ
+decreasing in
+$_{q$_{d}$}$. We then have the following equivalent problem
+A
+$^{2}$E$_{x}$$_{d}$
+a
+¯
++
+A
+$^{2}$E$_{x}$$_{d}$
+CRB$_{θ}$
+CRB$_{τ}$
+(25a)
+minimize
+2
+T
+$_{p}$[
+k
+]
+S$_{Q}$
+n
+N$_{p}$
+−
+1
+(
+)
+F
+−
+1
+N
+2
+$^{2}$|
+|
+E$_{x}$$_{p}$A
+G
+$^{n}$[
+k
+]
++
+0
+∑
+∑
+T$_{s}$
+≤
+log$_{2}$
+1
++
+N$_{p}$C,
+(25b)
+s.t.
+S$_{Q}$
+$_{p}$[
+k
+]
+n
+n
+=0
+k
+=0
+≥
+−
+−
+S$_{Q}$
+[
+k
+]
+0
+,
+n
+= 0
+, ..., F
+1
+, k
+= 0
+, ..., N$_{p}$
+1
+,
+(25c)
+n
+where the objective function (25a) can be rewritten, using (13) and (14), as
+2
+A
+$^{2}$E$_{x}$$_{d}$
+A
+$^{2}$E$_{x}$$_{d}$
+a/T
+¯
+.
++
+(26)
+2
+E$_{x}$$_{p}$A
+$^{2}$|
+G
+$^{n}$[
+k
+]
+|
+N$_{p}$
+−
+1
+F
+−
+1
+)
+(
+2
+E$_{x}$$_{p}$A
+$^{2}$k$^{2}$|
+G
+$^{n}$[
+k
+]
+|
+N$_{p}$
+−
+1
+∑
+∑
+F
+−
+1
+2
+π
+$^{2}$∑
+∑
+k
+=0
+n
+=0
+N$_{0}$
++
+S$_{Q}$
+$_{p}$[
+k
+]
+k
+=0
+n
+=0
+N$_{0}$
+N$_{p}$T$_{s}$
+n
++
+S$_{Q}$
+$_{p}$[
+k
+]
+n
+T
+s
+T
+s
+−
+≜
+[
+k
+])
+u$_{n,k}$
+(
+S$_{Q}$
+$^{1}$,
+To tackle the optimization problem (25), we first define the au
+xiliary variables
+n
+2
+≜
+≜
+|
+|
+$^{2}$|
+|
+|
+|
+$^{2}$|
+|
+A
+G
+$^{n}$[
+k
+]
+A
+G
+$^{n}$[
+k
+]
+b$_{n,k}$
+E$_{x}$$_{p}$
+a$_{n,k}$
+(2
+π/
+(
+N$_{p}$T$_{s}$
+))
+$^{2}$k
+E$_{x}$$_{p}$
+$^{2}$, and then use the Charnes-
+$^{2}$, and
+−
+v$_{n,k}$
+= (1 + (
+N$_{0}$/T$_{s}$
+)
+u$_{n,k}$
+)
+Cooper transformation [9], i.e., we set
+$^{1}$, yielding the equivalent
+objective function
+2
+A
+$^{2}$E$_{x}$$_{d}$
+A
+$^{2}$E$_{x}$$_{d}$
+a/T
+¯
++
+.
+(27)
+N$_{p}$
+−
+1
+a$_{n,k}$
+N$_{p}$
+−
+1
+b$_{n,k}$
+F
+−
+1
+F
+−
+1
+∑
+∑
+∑
+∑
+−
+−
+$_{/T$_{s}$}$(1
+v$_{n,k}$
+)
+$_{/T$_{s}$}$(1
+v$_{n,k}$
+)
+k
+=0
+k
+=0
+n
+=0
+n
+=0
+N
+N
+0
+0
+Algorithm 1
+DC algorithm for problem (25)
+(0)
+−
+−
+i
+= 0
+v
+= 1
+n
+= 0
+, ..., F
+1
+k
+= 0
+, ..., N$_{p}$
+1
+and
+for
+,
+1: Initialization:
+n,k
+(
+i
++1)
+}
+{
+v
+as a solution of the following convex problem:
+2: Obtain
+n,k
+n,k
+minimize
+(27)
+v$_{n,k}$
+N$_{p}$
+−
+1
+F
+−
+1
+(
+i
+)
+(
+i
+)
+∑
+∑
+−
+≤
+(
+e
+$_{n,k}$v$_{n,k}$
++
+f
+log$_{2}$((
+N$_{0}$/T$_{s}$
+)
+v$_{n,k}$
+)
+N$_{p}$C,
+s.t.
+n,k
+n
+=0
+k
+=0
+≤
+≤
+∀
+0
+v$_{n,k}$
+1
+,
+n, k
+(28)
+i
+=
+i
++ 1
+3: Set
+4: If a convergence criterion is satisfied, stop; otherwise, goto step 2. Return the obtained
+(
+i
+)
+−
+−
+v
+n
+= 0
+, ..., F
+1
+k
+= 0
+,
+1
+, ..., N$_{p}$
+1
+solution
+for
+,
+.
+n,k
+v$_{n,k}$
+The objective function (27) is convex with respect to the variables
+since denominator of
+v$_{n,k}$
+1
+/g
+(
+x
+)
+g
+(
+x
+)
+each term is an affine function of
+, and the function
+is convex if
+is concave and
+July 9, 2018
+DRAFT

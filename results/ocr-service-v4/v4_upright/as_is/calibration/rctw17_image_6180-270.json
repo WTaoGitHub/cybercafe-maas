@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_6180",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "0adbd1bd01de4e8d18990d46935d0524b5847dd53fd2f65473691938f42d41c5",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "票",
+    "lines": [
+      {
+        "box": [
+          [
+            821.8084716796875,
+            1759.677490234375
+          ],
+          [
+            825.0,
+            1837.0968017578125
+          ],
+          [
+            154.787109375,
+            1859.677490234375
+          ],
+          [
+            151.595703125,
+            1782.258056640625
+          ]
+        ],
+        "text": "票",
+        "score": 0.6070960760116577
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 78.19,
+    "direction_stats": {},
+    "elapsed_ms": 78.2
+  }
+}

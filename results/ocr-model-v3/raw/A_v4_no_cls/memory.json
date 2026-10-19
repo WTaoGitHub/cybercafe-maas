@@ -1,0 +1,224 @@
+{
+  "sample_interval_s": 1,
+  "baseline_processes": {
+    "976552": 1646
+  },
+  "new_process_peak_mib": 1850,
+  "samples": [
+    {
+      "unix_time": 1792397289.4257445,
+      "new_process_memory_mib": {}
+    },
+    {
+      "unix_time": 1792397290.4380713,
+      "new_process_memory_mib": {
+        "1024711": 824
+      }
+    },
+    {
+      "unix_time": 1792397291.4521976,
+      "new_process_memory_mib": {
+        "1024711": 824
+      }
+    },
+    {
+      "unix_time": 1792397292.463735,
+      "new_process_memory_mib": {
+        "1024711": 826
+      }
+    },
+    {
+      "unix_time": 1792397293.4748695,
+      "new_process_memory_mib": {
+        "1024711": 826
+      }
+    },
+    {
+      "unix_time": 1792397294.486132,
+      "new_process_memory_mib": {
+        "1024711": 826
+      }
+    },
+    {
+      "unix_time": 1792397295.497311,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397296.509167,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397297.5202665,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397298.5335917,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397299.544568,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397300.5557625,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397301.566621,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397302.5782967,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397303.5893228,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397304.6027555,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397305.614117,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397306.6250784,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397307.6397367,
+      "new_process_memory_mib": {
+        "1024711": 1594
+      }
+    },
+    {
+      "unix_time": 1792397308.651414,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397309.6629486,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397310.673857,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397311.6846774,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397312.6959987,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397313.7065291,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397314.717285,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397315.7307415,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397316.746332,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397317.761558,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397318.773264,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397319.7865205,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397320.797472,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397321.808508,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397322.8226871,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397323.834647,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    },
+    {
+      "unix_time": 1792397324.845631,
+      "new_process_memory_mib": {
+        "1024711": 1850
+      }
+    }
+  ],
+  "note": "Sampled GPU process allocations, not instantaneous CUDA operator peak; excludes pre-existing serving PIDs."
+}

@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_3929",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "KIA\n川M·S2299",
+    "lines": [
+      {
+        "box": [
+          [
+            1245.0,
+            1021.0
+          ],
+          [
+            1378.0,
+            997.0
+          ],
+          [
+            1388.0,
+            1054.0
+          ],
+          [
+            1255.0,
+            1078.0
+          ]
+        ],
+        "text": "KIA",
+        "score": 0.9145832459131876
+      },
+      {
+        "box": [
+          [
+            1128.0,
+            1551.0
+          ],
+          [
+            1691.0,
+            1391.0
+          ],
+          [
+            1731.0,
+            1531.0
+          ],
+          [
+            1168.0,
+            1691.0
+          ]
+        ],
+        "text": "川M·S2299",
+        "score": 0.9816085696220398
+      }
+    ],
+    "engine_calls": 9,
+    "raw_line_count": 5,
+    "deduplicated": 3,
+    "elapsed_ms": 341.29,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 373.26
+}

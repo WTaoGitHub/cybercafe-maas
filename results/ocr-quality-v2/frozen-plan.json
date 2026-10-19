@@ -1,0 +1,19 @@
+{
+  "frozen_at": "2026-10-19T07:47:49.997135+00:00",
+  "script_sha256": "d852760606d3f8376525b6a1f4540d2bffd8891679afe196bb9b3ddfb54c7b7a",
+  "calibration_completed": {
+    "A_default": 40,
+    "B_resolution1536": 40,
+    "C_tiles1024": 40,
+    "D_score030": 40,
+    "E_rotate90": 40
+  },
+  "evaluation_candidates": [
+    "A_default",
+    "B_resolution1536",
+    "C_tiles1024",
+    "D_score030"
+  ],
+  "selection_rationale": "B reduces unmatched document regions; C improves document CER at high cost; D tests inexpensive filtering relaxation. E clearly regresses and is excluded. No default deployment change is selected.",
+  "evaluation_note": "The evaluation set was previously inspected in v1; this is version comparison, not a fresh blind benchmark."
+}

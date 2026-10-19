@@ -1,0 +1,15 @@
+{
+  "direction_runs": 872,
+  "explicit_corrections_text_and_boxes_restored": 192,
+  "max_box_coordinate_delta": 2.2737367544323206e-13,
+  "matrix_cells": 62,
+  "matrix_requests": 2480,
+  "sustained_phases": 5,
+  "timed_http_requests": 9799,
+  "all_successful_nonempty": true,
+  "all_multinode_phases_used_both_GPUs": true,
+  "within_phase_repeated_text_consistent": true,
+  "power_coverage_and_cost_identity_passed": true,
+  "original_endpoint_recheck_passed": true,
+  "temporary_containers_removed_and_telemetry_stopped": "verified via docker ps and pgrep on both hosts after cleanup"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_7944",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "9销售中心",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            2014.51611328125
+          ],
+          [
+            2147.872314453125,
+            1982.258056640625
+          ],
+          [
+            2155.85107421875,
+            2491.935546875
+          ],
+          [
+            0.0,
+            2524.193603515625
+          ]
+        ],
+        "text": "9销售中心",
+        "score": 0.9902690410614013
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 125.88,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 169.42
+}

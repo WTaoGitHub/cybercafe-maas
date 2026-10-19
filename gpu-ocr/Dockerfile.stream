@@ -1,0 +1,2 @@
+FROM cybercafe-gpu-ocr:0.1
+COPY server.py ocr_protocol.py /app/

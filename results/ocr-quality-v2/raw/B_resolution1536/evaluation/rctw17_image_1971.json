@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_1971",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "I·FREE爱无季",
+    "lines": [
+      {
+        "box": [
+          [
+            305.4193420410156,
+            1295.0543212890625
+          ],
+          [
+            3389.30615234375,
+            1085.2174072265625
+          ],
+          [
+            3429.604736328125,
+            1672.3370361328125
+          ],
+          [
+            345.71771240234375,
+            1882.1739501953125
+          ]
+        ],
+        "text": "I·FREE爱无季",
+        "score": 0.9419920643170675
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 123.95,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 201.51
+}

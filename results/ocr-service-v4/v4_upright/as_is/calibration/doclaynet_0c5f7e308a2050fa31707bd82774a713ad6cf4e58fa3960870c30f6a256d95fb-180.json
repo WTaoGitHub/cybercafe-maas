@@ -1,0 +1,65 @@
+{
+  "id": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+  "source": "doclaynet",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "b9a6cbb3a4c943b355cfa402d292ea4fbc3b217f892f53b58321cc1142057502",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "nd pun suao exo at o s1 snpauos yo  pue I sqdered Kq possu sm 1I nps go I ued :I ‘ 8861\n(B)",
+    "lines": [
+      {
+        "box": [
+          [
+            871.0,
+            900.0
+          ],
+          [
+            182.0,
+            899.0
+          ],
+          [
+            182.0,
+            882.0
+          ],
+          [
+            871.0,
+            883.0
+          ]
+        ],
+        "text": "nd pun suao exo at o s1 snpauos yo  pue I sqdered Kq possu sm 1I nps go I ued :I ‘ 8861",
+        "score": 0.6041693166754711
+      },
+      {
+        "box": [
+          [
+            173.0,
+            897.0
+          ],
+          [
+            153.0,
+            897.0
+          ],
+          [
+            153.0,
+            885.0
+          ],
+          [
+            173.0,
+            885.0
+          ]
+        ],
+        "text": "(B)",
+        "score": 0.6739036937554678
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 149.73,
+    "direction_stats": {},
+    "elapsed_ms": 149.74
+  }
+}

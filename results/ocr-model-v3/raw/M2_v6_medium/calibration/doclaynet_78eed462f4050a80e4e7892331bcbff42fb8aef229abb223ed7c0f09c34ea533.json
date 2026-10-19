@@ -1,0 +1,145 @@
+{
+  "id": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "M2_v6_medium",
+  "image_sha256": "d10d041eebb3a2814ef74f4dc11cdfe5fa839c659fb5b4822334a5b8ce05f75e",
+  "ok": true,
+  "result": {
+    "text": "8.\nDetermining the Performance of Small Unmanned Aircraft\nThis page intentionally left blank.\nRemote Pilot - Small Unmanned Aircraft Systems Study Guide\n44",
+    "lines": [
+      {
+        "box": [
+          [
+            86.0,
+            34.0
+          ],
+          [
+            116.0,
+            34.0
+          ],
+          [
+            116.0,
+            52.0
+          ],
+          [
+            86.0,
+            52.0
+          ]
+        ],
+        "text": "8.",
+        "score": 0.9984438419342041
+      },
+      {
+        "box": [
+          [
+            123.0,
+            35.0
+          ],
+          [
+            559.0,
+            35.0
+          ],
+          [
+            559.0,
+            51.0
+          ],
+          [
+            123.0,
+            51.0
+          ]
+        ],
+        "text": "Determining the Performance of Small Unmanned Aircraft",
+        "score": 0.9999489784240723
+      },
+      {
+        "box": [
+          [
+            387.0,
+            90.0
+          ],
+          [
+            636.0,
+            90.0
+          ],
+          [
+            636.0,
+            107.0
+          ],
+          [
+            387.0,
+            107.0
+          ]
+        ],
+        "text": "This page intentionally left blank.",
+        "score": 0.999587893486023
+      },
+      {
+        "box": [
+          [
+            87.0,
+            965.0
+          ],
+          [
+            592.0,
+            965.0
+          ],
+          [
+            592.0,
+            984.0
+          ],
+          [
+            87.0,
+            984.0
+          ]
+        ],
+        "text": "Remote Pilot - Small Unmanned Aircraft Systems Study Guide",
+        "score": 0.984499990940094
+      },
+      {
+        "box": [
+          [
+            909.0,
+            965.0
+          ],
+          [
+            938.0,
+            965.0
+          ],
+          [
+            938.0,
+            984.0
+          ],
+          [
+            909.0,
+            984.0
+          ]
+        ],
+        "text": "44",
+        "score": 0.9999969005584717
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 5,
+    "elapsed_ms": 62.42
+  }
+}

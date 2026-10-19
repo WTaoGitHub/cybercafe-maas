@@ -1,0 +1,233 @@
+10
+Since the proof of the diagonalization is somewhat technical, we will proceed in reverse
+order, first defining the three sectors of the model, together with the conditions that the
+corresponding wave-functions have to satisfy, then show how the three sectors are derived
+by the request of diagonalizing the KK expanded Lagrangian. The three sectors are:
+1
+,
+2
+•
+A
+sector coming from the expansion of the (
+W
+)$_{M}$ fields and the brane
+left charged
+L
+1
+,
+pseudo-scalars
+π
+$^{2}$. The explicit form of the expansion is
+∞
+1
+,
+2(
+n
+)
+∑
+1
+,
+2
+1
+,
+2
+W
+$_{L µ}$(
+x, y
+) =
+f
+$_{L n}$(
+y
+)
+W
+(
+x
+)
+,
+Lµ
+n
+=0
+∞
+1
+,
+2
+(
+n
+)
+∑
+1
+,
+2
+1
+,
+2
+$_{5}$(
+x, y
+) =
+g
+$_{L n}$(
+y
+)
+G
+(
+x
+)
+,
+W
+(14)
+L
+L
+n
+=0
+∞
+∑
+1
+,
+1
+,
+2
+(
+n
+π
+$^{2}$(
+x
+) =
+c
+G
+$^{)}$(
+x
+)
+.
+n
+n
+=0
+The wave-functions of the vector fields satisfy the equation of motion:
+ˆ
+1
+,
+2
+1
+,
+2
+2
+Df
+=
+−
+m
+$_{L n}$f
+$_{L n}$,
+(15)
+L n
+where we defined the differential operator:
+ˆ
+D
+≡
+∂$_{y}$
+(
+b
+(
+y
+)
+∂$_{y}$
+(
+·
+))
+,
+(16)
+and the set of BCs:
+1
+,
+2
+∂$_{y}$f
+= 0
+at
+y
+= 0
+,
+(17)
+L n
+)
+(
+2
+2
+1
+,
+2
+g
+˜
+g
+˜
+$^{2}$˜
+v
+2
+f
+= 0
+at
+y
+=
+πR.
+(18)
+$_{5}$∂$_{y}$
+−
+b
+(
+πR
+)
+m
++
+L n
+L n
+2
+4
+g
+The pseudo-scalar profiles are fixed by the conditions:
+1
+v
+˜
+1
+,
+2
+1
+,
+2
+1
+,
+2
+1
+,
+2
+∣
+g
+=
+∂$_{y}$f
+$_{L n}$,
+c
+=
+f
+$_{πR}$.
+(19)
+n
+L n
+L n
+m$_{L n}$
+2
+m$_{L n}$
+Note that in this sector no massless solution is allowed; in fact, eq. (15) together with
+the Neumann BC at
+y
+= 0 (17) imply that a massless mode must have a
+constant
+profile, and a constant, massless solution cannot satisfy the BC at
+y
+=
+πR
+(18). Also
+note that eq. (15) and the BCs (17) and (18) are diagonal in the isospin index, so we
+1
+2
+have
+f
+=
+f
+$_{L n}$.
+L n

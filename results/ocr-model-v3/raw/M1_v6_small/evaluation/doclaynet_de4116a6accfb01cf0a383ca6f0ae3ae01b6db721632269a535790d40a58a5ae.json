@@ -1,0 +1,761 @@
+{
+  "id": "doclaynet_de4116a6accfb01cf0a383ca6f0ae3ae01b6db721632269a535790d40a58a5ae",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "51362f5000068df43bc1c0f71df2498950af4ced1b16dfb1507ac24fc55a0900",
+  "ok": true,
+  "result": {
+    "text": "that the market maker is not expected to lose money, regardless of the outcome.\nFinally, the market aggregates liquidity across different markets into the common pool (Baron\nand Lange, 2007). For example, consider the horse race example above but with a slight modifica-\ntion. Suppose that people trade securities with fixed payoffs: Claim A and Claim B. Let \"Claim\nA\" refer to the contingent claim that pays $1 if and only if Horse A wins. Define the term \"Claim\nB\" similarly. The potential payout to the holders of Claim A is financed by the premiums collected\nfrom the holders of Claim B and vice versa. Therefore, it is as if the holders of Claim A and those\nof Claim B were transacting with one another via a common pari-mutuel auctioneer. Compare\nthis case with an alternative situation in which potential buyers of Claim A (or Claim B) only\ntrade with potential sellers of Claim A (or Claim B). The effective number of people trading with\none another is larger in the former case. It is as if the common auctioneer pooled liquidity from\nindividual markets - the market for Claim A and the market for Claim B - into the common pool.\nAs a result, market participants can enjoy a more liquid market.\nIn the 2000s, researchers (Lange and Economide, 2005; Baron and Lange, 2007) noted that the\npari-mutuel principle can be used to better organize a certain type of financial derivatives market.\nFor example, note that the pari-mutuel auctioneer is well protected from financial loss at the\ntime the claims mature. This property of the pari-mutuel market allows the auctioneer to be less\nconcerned with fluctuations in the value of the inventory. Therefore, the pari-mutuel principle can\nbe used to design a market if the market maker has difficulty hedging against inventory risk (Lange\nand Economide, 2005; Baron and Lange, 2007). For example, Lange and Economide (2005) designed\nthe Pari-mutuel Digital Call Auction (PDCA) to trade options written on economic indices, for\nwhich delta hedging using the underlying asset is not feasible.\nLongitude, a financial technology company, developed software to implement the PDCA. In\ncollaboration with investment banks (e.g., Goldman Sachs) and financial exchanges (e.g., the In-\nternational Securities Exchange (ISE)) new PDCA-based derivatives markets were launched. Due\nto lack of active market participation, the ISE shut down the auction in June 2007. However, the\nISE has shown consistent interest in utilizing this technology in the near future (Burne, 2013).\nDespite their use in the financial industry, many pari-mutuel auctions have design features\nthat are different from the modeling assumptions that economists use. A potential reason for this\nis that pari-mutuel auctions have primarily been studied by scholars in operations research. For\nexample, many pari-mutuel auctions optimally clear the market while placing a lower bound on\nthe auctioneer's maximum possible loss (Hanson, 2003; Pennock, 2004; Peters et al., 2005; Lange\n2",
+    "lines": [
+      {
+        "box": [
+          [
+            119.0,
+            94.0
+          ],
+          [
+            763.0,
+            95.0
+          ],
+          [
+            763.0,
+            111.0
+          ],
+          [
+            119.0,
+            110.0
+          ]
+        ],
+        "text": "that the market maker is not expected to lose money, regardless of the outcome.",
+        "score": 0.9951403737068176
+      },
+      {
+        "box": [
+          [
+            147.0,
+            121.0
+          ],
+          [
+            905.0,
+            121.0
+          ],
+          [
+            905.0,
+            137.0
+          ],
+          [
+            147.0,
+            137.0
+          ]
+        ],
+        "text": "Finally, the market aggregates liquidity across different markets into the common pool (Baron",
+        "score": 0.9932405948638916
+      },
+      {
+        "box": [
+          [
+            120.0,
+            149.0
+          ],
+          [
+            904.0,
+            149.0
+          ],
+          [
+            904.0,
+            162.0
+          ],
+          [
+            120.0,
+            162.0
+          ]
+        ],
+        "text": "and Lange, 2007). For example, consider the horse race example above but with a slight modifica-",
+        "score": 0.9925767779350281
+      },
+      {
+        "box": [
+          [
+            118.0,
+            173.0
+          ],
+          [
+            905.0,
+            172.0
+          ],
+          [
+            905.0,
+            188.0
+          ],
+          [
+            118.0,
+            189.0
+          ]
+        ],
+        "text": "tion. Suppose that people trade securities with fixed payoffs: Claim A and Claim B. Let \"Claim",
+        "score": 0.9940346479415894
+      },
+      {
+        "box": [
+          [
+            119.0,
+            200.0
+          ],
+          [
+            905.0,
+            200.0
+          ],
+          [
+            905.0,
+            216.0
+          ],
+          [
+            119.0,
+            216.0
+          ]
+        ],
+        "text": "A\" refer to the contingent claim that pays $1 if and only if Horse A wins. Define the term \"Claim",
+        "score": 0.9881290793418884
+      },
+      {
+        "box": [
+          [
+            118.0,
+            226.0
+          ],
+          [
+            905.0,
+            226.0
+          ],
+          [
+            905.0,
+            242.0
+          ],
+          [
+            118.0,
+            242.0
+          ]
+        ],
+        "text": "B\" similarly. The potential payout to the holders of Claim A is financed by the premiums collected",
+        "score": 0.9892252087593079
+      },
+      {
+        "box": [
+          [
+            118.0,
+            252.0
+          ],
+          [
+            905.0,
+            252.0
+          ],
+          [
+            905.0,
+            268.0
+          ],
+          [
+            118.0,
+            268.0
+          ]
+        ],
+        "text": "from the holders of Claim B and vice versa. Therefore, it is as if the holders of Claim A and those",
+        "score": 0.9919593930244446
+      },
+      {
+        "box": [
+          [
+            117.0,
+            277.0
+          ],
+          [
+            906.0,
+            278.0
+          ],
+          [
+            906.0,
+            295.0
+          ],
+          [
+            117.0,
+            294.0
+          ]
+        ],
+        "text": "of Claim B were transacting with one another via a common pari-mutuel auctioneer. Compare",
+        "score": 0.9997669458389282
+      },
+      {
+        "box": [
+          [
+            120.0,
+            307.0
+          ],
+          [
+            903.0,
+            307.0
+          ],
+          [
+            903.0,
+            320.0
+          ],
+          [
+            120.0,
+            320.0
+          ]
+        ],
+        "text": "this case with an alternative situation in which potential buyers of Claim A (or Claim B) only",
+        "score": 0.9950487017631531
+      },
+      {
+        "box": [
+          [
+            120.0,
+            333.0
+          ],
+          [
+            904.0,
+            333.0
+          ],
+          [
+            904.0,
+            346.0
+          ],
+          [
+            120.0,
+            346.0
+          ]
+        ],
+        "text": "trade with potential sellers of Claim A (or Claim B). The effective number of people trading with",
+        "score": 0.9921082258224487
+      },
+      {
+        "box": [
+          [
+            118.0,
+            358.0
+          ],
+          [
+            905.0,
+            358.0
+          ],
+          [
+            905.0,
+            374.0
+          ],
+          [
+            118.0,
+            374.0
+          ]
+        ],
+        "text": "one another is larger in the former case. It is as if the common auctioneer pooled liquidity from",
+        "score": 0.9995050430297852
+      },
+      {
+        "box": [
+          [
+            119.0,
+            385.0
+          ],
+          [
+            903.0,
+            385.0
+          ],
+          [
+            903.0,
+            398.0
+          ],
+          [
+            119.0,
+            398.0
+          ]
+        ],
+        "text": "individual markets - the market for Claim A and the market for Claim B - into the common pool.",
+        "score": 0.9895902872085571
+      },
+      {
+        "box": [
+          [
+            119.0,
+            411.0
+          ],
+          [
+            636.0,
+            411.0
+          ],
+          [
+            636.0,
+            427.0
+          ],
+          [
+            119.0,
+            427.0
+          ]
+        ],
+        "text": "As a result, market participants can enjoy a more liquid market.",
+        "score": 0.9886127710342407
+      },
+      {
+        "box": [
+          [
+            146.0,
+            437.0
+          ],
+          [
+            906.0,
+            437.0
+          ],
+          [
+            906.0,
+            453.0
+          ],
+          [
+            146.0,
+            453.0
+          ]
+        ],
+        "text": "In the 2000s, researchers (Lange and Economide, 2005; Baron and Lange, 2007) noted that the",
+        "score": 0.9988163709640503
+      },
+      {
+        "box": [
+          [
+            117.0,
+            463.0
+          ],
+          [
+            904.0,
+            462.0
+          ],
+          [
+            904.0,
+            478.0
+          ],
+          [
+            117.0,
+            479.0
+          ]
+        ],
+        "text": "pari-mutuel principle can be used to better organize a certain type of financial derivatives market.",
+        "score": 0.9992772936820984
+      },
+      {
+        "box": [
+          [
+            118.0,
+            489.0
+          ],
+          [
+            906.0,
+            489.0
+          ],
+          [
+            906.0,
+            505.0
+          ],
+          [
+            118.0,
+            505.0
+          ]
+        ],
+        "text": "For example, note that the pari-mutuel auctioneer is well protected from financial loss at the",
+        "score": 0.9970042705535889
+      },
+      {
+        "box": [
+          [
+            119.0,
+            516.0
+          ],
+          [
+            906.0,
+            516.0
+          ],
+          [
+            906.0,
+            532.0
+          ],
+          [
+            119.0,
+            532.0
+          ]
+        ],
+        "text": "time the claims mature. This property of the pari-mutuel market allows the auctioneer to be less",
+        "score": 0.9912589192390442
+      },
+      {
+        "box": [
+          [
+            119.0,
+            542.0
+          ],
+          [
+            905.0,
+            542.0
+          ],
+          [
+            905.0,
+            558.0
+          ],
+          [
+            119.0,
+            558.0
+          ]
+        ],
+        "text": "concerned with fluctuations in the value of the inventory. Therefore, the pari-mutuel principle can",
+        "score": 0.9895678162574768
+      },
+      {
+        "box": [
+          [
+            118.0,
+            569.0
+          ],
+          [
+            905.0,
+            569.0
+          ],
+          [
+            905.0,
+            585.0
+          ],
+          [
+            118.0,
+            585.0
+          ]
+        ],
+        "text": "be used to design a market if the market maker has difficulty hedging against inventory risk (Lange",
+        "score": 0.9923774003982544
+      },
+      {
+        "box": [
+          [
+            118.0,
+            595.0
+          ],
+          [
+            906.0,
+            595.0
+          ],
+          [
+            906.0,
+            611.0
+          ],
+          [
+            118.0,
+            611.0
+          ]
+        ],
+        "text": "and Economide, 2005; Baron and Lange, 2007). For example, Lange and Economide (2005) designed",
+        "score": 0.9929292798042297
+      },
+      {
+        "box": [
+          [
+            118.0,
+            621.0
+          ],
+          [
+            905.0,
+            621.0
+          ],
+          [
+            905.0,
+            637.0
+          ],
+          [
+            118.0,
+            637.0
+          ]
+        ],
+        "text": "the Pari-mutuel Digital Call Auction (PDCA) to trade options written on economic indices, for",
+        "score": 0.987068772315979
+      },
+      {
+        "box": [
+          [
+            119.0,
+            648.0
+          ],
+          [
+            616.0,
+            648.0
+          ],
+          [
+            616.0,
+            664.0
+          ],
+          [
+            119.0,
+            664.0
+          ]
+        ],
+        "text": "which delta hedging using the underlying asset is not feasible.",
+        "score": 0.9865948557853699
+      },
+      {
+        "box": [
+          [
+            146.0,
+            673.0
+          ],
+          [
+            904.0,
+            673.0
+          ],
+          [
+            904.0,
+            689.0
+          ],
+          [
+            146.0,
+            689.0
+          ]
+        ],
+        "text": "Longitude, a financial technology company, developed software to implement the PDCA. In",
+        "score": 0.994777262210846
+      },
+      {
+        "box": [
+          [
+            119.0,
+            700.0
+          ],
+          [
+            904.0,
+            700.0
+          ],
+          [
+            904.0,
+            716.0
+          ],
+          [
+            119.0,
+            716.0
+          ]
+        ],
+        "text": "collaboration with investment banks (e.g., Goldman Sachs) and financial exchanges (e.g., the In-",
+        "score": 0.9919131398200989
+      },
+      {
+        "box": [
+          [
+            119.0,
+            728.0
+          ],
+          [
+            904.0,
+            728.0
+          ],
+          [
+            904.0,
+            741.0
+          ],
+          [
+            119.0,
+            741.0
+          ]
+        ],
+        "text": "ternational Securities Exchange (ISE)) new PDCA-based derivatives markets were launched. Due",
+        "score": 0.9932445883750916
+      },
+      {
+        "box": [
+          [
+            120.0,
+            754.0
+          ],
+          [
+            905.0,
+            754.0
+          ],
+          [
+            905.0,
+            767.0
+          ],
+          [
+            120.0,
+            767.0
+          ]
+        ],
+        "text": "to lack of active market participation, the ISE shut down the auction in June 2007. However, the",
+        "score": 0.9921987652778625
+      },
+      {
+        "box": [
+          [
+            118.0,
+            779.0
+          ],
+          [
+            876.0,
+            779.0
+          ],
+          [
+            876.0,
+            795.0
+          ],
+          [
+            118.0,
+            795.0
+          ]
+        ],
+        "text": "ISE has shown consistent interest in utilizing this technology in the near future (Burne, 2013).",
+        "score": 0.989849328994751
+      },
+      {
+        "box": [
+          [
+            147.0,
+            806.0
+          ],
+          [
+            905.0,
+            806.0
+          ],
+          [
+            905.0,
+            822.0
+          ],
+          [
+            147.0,
+            822.0
+          ]
+        ],
+        "text": "Despite their use in the financial industry, many pari-mutuel auctions have design features",
+        "score": 0.990135133266449
+      },
+      {
+        "box": [
+          [
+            119.0,
+            832.0
+          ],
+          [
+            906.0,
+            832.0
+          ],
+          [
+            906.0,
+            848.0
+          ],
+          [
+            119.0,
+            848.0
+          ]
+        ],
+        "text": "that are different from the modeling assumptions that economists use. A potential reason for this",
+        "score": 0.991004467010498
+      },
+      {
+        "box": [
+          [
+            118.0,
+            858.0
+          ],
+          [
+            905.0,
+            858.0
+          ],
+          [
+            905.0,
+            874.0
+          ],
+          [
+            118.0,
+            874.0
+          ]
+        ],
+        "text": "is that pari-mutuel auctions have primarily been studied by scholars in operations research. For",
+        "score": 0.9951159358024597
+      },
+      {
+        "box": [
+          [
+            119.0,
+            885.0
+          ],
+          [
+            905.0,
+            885.0
+          ],
+          [
+            905.0,
+            901.0
+          ],
+          [
+            119.0,
+            901.0
+          ]
+        ],
+        "text": "example, many pari-mutuel auctions optimally clear the market while placing a lower bound on",
+        "score": 0.9875255227088928
+      },
+      {
+        "box": [
+          [
+            119.0,
+            911.0
+          ],
+          [
+            905.0,
+            911.0
+          ],
+          [
+            905.0,
+            927.0
+          ],
+          [
+            119.0,
+            927.0
+          ]
+        ],
+        "text": "the auctioneer's maximum possible loss (Hanson, 2003; Pennock, 2004; Peters et al., 2005; Lange",
+        "score": 0.9980436563491821
+      },
+      {
+        "box": [
+          [
+            505.0,
+            959.0
+          ],
+          [
+            519.0,
+            959.0
+          ],
+          [
+            519.0,
+            973.0
+          ],
+          [
+            505.0,
+            973.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9999678134918213
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 33,
+    "elapsed_ms": 369.1
+  }
+}

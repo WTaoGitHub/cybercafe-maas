@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_1060",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_legacy",
+  "image_sha256": "071dbd804dbcd1b0eabc70a7670b4d89212466a15ad21605185fe3fca11e2390",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "当天内容",
+    "lines": [
+      {
+        "box": [
+          [
+            2383.1612854003906,
+            1395.1428604125977
+          ],
+          [
+            10.838623046875,
+            1210.5714416503906
+          ],
+          [
+            33.870849609375,
+            902.5
+          ],
+          [
+            2406.1935424804688,
+            1087.0714416503906
+          ]
+        ],
+        "text": "当天内容",
+        "score": 0.9820817559957504
+      }
+    ],
+    "variant": "v4_legacy",
+    "rotation_cw": 0,
+    "processing_ms": 133.98,
+    "direction_stats": {},
+    "elapsed_ms": 133.99
+  }
+}

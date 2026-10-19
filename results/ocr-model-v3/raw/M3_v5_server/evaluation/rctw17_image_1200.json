@@ -1,0 +1,145 @@
+{
+  "id": "rctw17_image_1200",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "91fde211c291ec50ab03003a55bd3ff8fe7c557103e379b562a0c3cc8753ecb2",
+  "ok": true,
+  "result": {
+    "text": "星乐作文\n培训\n贴\n本二楼\n中",
+    "lines": [
+      {
+        "box": [
+          [
+            227.0,
+            115.0
+          ],
+          [
+            298.0,
+            113.0
+          ],
+          [
+            300.0,
+            235.0
+          ],
+          [
+            229.0,
+            237.0
+          ]
+        ],
+        "text": "星乐作文",
+        "score": 0.5448260307312012
+      },
+      {
+        "box": [
+          [
+            129.0,
+            138.0
+          ],
+          [
+            205.0,
+            134.0
+          ],
+          [
+            207.0,
+            177.0
+          ],
+          [
+            131.0,
+            181.0
+          ]
+        ],
+        "text": "培训",
+        "score": 0.9991928339004517
+      },
+      {
+        "box": [
+          [
+            105.0,
+            149.0
+          ],
+          [
+            134.0,
+            149.0
+          ],
+          [
+            134.0,
+            182.0
+          ],
+          [
+            105.0,
+            182.0
+          ]
+        ],
+        "text": "贴",
+        "score": 0.7697005271911621
+      },
+      {
+        "box": [
+          [
+            244.0,
+            241.0
+          ],
+          [
+            289.0,
+            243.0
+          ],
+          [
+            288.0,
+            260.0
+          ],
+          [
+            244.0,
+            258.0
+          ]
+        ],
+        "text": "本二楼",
+        "score": 0.8241508603096008
+      },
+      {
+        "box": [
+          [
+            98.0,
+            280.0
+          ],
+          [
+            113.0,
+            280.0
+          ],
+          [
+            113.0,
+            297.0
+          ],
+          [
+            98.0,
+            297.0
+          ]
+        ],
+        "text": "中",
+        "score": 0.9438705444335938
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      592,
+      503,
+      3
+    ],
+    "detected_boxes": 7,
+    "elapsed_ms": 135.76
+  }
+}

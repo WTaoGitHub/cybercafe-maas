@@ -1,0 +1,981 @@
+{
+  "id": "doclaynet_655e794efb17f5f5f98db0e35596d274571dfa18ac818b2f15e9eb25f833cbd3",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "00cb5ba3414a98fd4ed27db307902b2749f033c30def0eaca31b62bb9c0ba873",
+  "ok": true,
+  "result": {
+    "text": "MongoDB Documentation, Release 3.0.4\ndb.inventory.find(\n( quantity: ( $gte: 100, $lte: 300 ), type: \"food\" )\n).hint (( type: 1, quantity: 1 ).explain(\"executionStats\")\nThe explain () method returns the following output:\n(\n\"queryPlanner\" : {\n\"winningPlan\" : {\n\"stage\" : \"FETCH\",\n\"inputStage\" : {\n\"stage\" : \"IXSCAN\",\n\"keyPattern\" : {\n\"type\" : 1,\n\"quantity\" : 1\n)，\n}\n},\n\"rejectedPlans\" : [ ]\n}，\n\"executionStats\" : {\n\"executionSuccess\" : true,\n\"nReturned\" : 2,\n\"executionTimeMillis\" : 0,\n\"totalKeysExamined\" : 2,\n\"totalDocsExamined\" : 2,\n\"executionstages\" : (\n}\n)，\n}\nMongoDB scanned 2 index keys (execut ionStats.totalKeysExamined) to return 2 matching documents\n(executionStats.nReturned).\nFor this example query, the compound index { type: 1, quant ity: 1 } is more efficient than the com-\npound index { quantity: 1, type: 1 }.\nSee also:\nQuery Optimization (page 65), Query Plans (page 68), Optimize Query Performance (page 216), Indexing Strategies\n(page 546)\n3.3.9 Perform Two Phase Commits\nSynopsis\nThis document provides a pattern for doing multi-document updates or \"multi-document transactions\" using a two-\nphase commit approach for writing data to multiple documents. Additionally, you can extend this process to provide\na rollback-like (page 120) functionality.\n3.3. MongoDB CRUD Tutorials\n115",
+    "lines": [
+      {
+        "box": [
+          [
+            585.0,
+            44.0
+          ],
+          [
+            905.0,
+            44.0
+          ],
+          [
+            905.0,
+            57.0
+          ],
+          [
+            585.0,
+            57.0
+          ]
+        ],
+        "text": "MongoDB Documentation, Release 3.0.4",
+        "score": 0.9989286065101624
+      },
+      {
+        "box": [
+          [
+            119.0,
+            99.0
+          ],
+          [
+            284.0,
+            99.0
+          ],
+          [
+            284.0,
+            112.0
+          ],
+          [
+            119.0,
+            112.0
+          ]
+        ],
+        "text": "db.inventory.find(",
+        "score": 0.997181236743927
+      },
+      {
+        "box": [
+          [
+            147.0,
+            113.0
+          ],
+          [
+            615.0,
+            113.0
+          ],
+          [
+            615.0,
+            126.0
+          ],
+          [
+            147.0,
+            126.0
+          ]
+        ],
+        "text": "( quantity: ( $gte: 100, $lte: 300 ), type: \"food\" )",
+        "score": 0.926472544670105
+      },
+      {
+        "box": [
+          [
+            119.0,
+            128.0
+          ],
+          [
+            641.0,
+            128.0
+          ],
+          [
+            641.0,
+            141.0
+          ],
+          [
+            119.0,
+            141.0
+          ]
+        ],
+        "text": ").hint (( type: 1, quantity: 1 ).explain(\"executionStats\")",
+        "score": 0.9771586656570435
+      },
+      {
+        "box": [
+          [
+            118.0,
+            155.0
+          ],
+          [
+            490.0,
+            155.0
+          ],
+          [
+            490.0,
+            171.0
+          ],
+          [
+            118.0,
+            171.0
+          ]
+        ],
+        "text": "The explain () method returns the following output:",
+        "score": 0.9940734505653381
+      },
+      {
+        "box": [
+          [
+            120.0,
+            181.0
+          ],
+          [
+            129.0,
+            181.0
+          ],
+          [
+            129.0,
+            193.0
+          ],
+          [
+            120.0,
+            193.0
+          ]
+        ],
+        "text": "(",
+        "score": 0.6343598961830139
+      },
+      {
+        "box": [
+          [
+            145.0,
+            193.0
+          ],
+          [
+            310.0,
+            193.0
+          ],
+          [
+            310.0,
+            209.0
+          ],
+          [
+            145.0,
+            209.0
+          ]
+        ],
+        "text": "\"queryPlanner\" : {",
+        "score": 0.9615060091018677
+      },
+      {
+        "box": [
+          [
+            175.0,
+            222.0
+          ],
+          [
+            327.0,
+            222.0
+          ],
+          [
+            327.0,
+            235.0
+          ],
+          [
+            175.0,
+            235.0
+          ]
+        ],
+        "text": "\"winningPlan\" : {",
+        "score": 0.9427481293678284
+      },
+      {
+        "box": [
+          [
+            199.0,
+            236.0
+          ],
+          [
+            361.0,
+            236.0
+          ],
+          [
+            361.0,
+            252.0
+          ],
+          [
+            199.0,
+            252.0
+          ]
+        ],
+        "text": "\"stage\" : \"FETCH\",",
+        "score": 0.9850691556930542
+      },
+      {
+        "box": [
+          [
+            199.0,
+            250.0
+          ],
+          [
+            347.0,
+            250.0
+          ],
+          [
+            347.0,
+            266.0
+          ],
+          [
+            199.0,
+            266.0
+          ]
+        ],
+        "text": "\"inputStage\" : {",
+        "score": 0.9526633620262146
+      },
+      {
+        "box": [
+          [
+            227.0,
+            265.0
+          ],
+          [
+            396.0,
+            265.0
+          ],
+          [
+            396.0,
+            278.0
+          ],
+          [
+            227.0,
+            278.0
+          ]
+        ],
+        "text": "\"stage\" : \"IXSCAN\",",
+        "score": 0.8929930329322815
+      },
+      {
+        "box": [
+          [
+            227.0,
+            278.0
+          ],
+          [
+            373.0,
+            279.0
+          ],
+          [
+            373.0,
+            293.0
+          ],
+          [
+            227.0,
+            292.0
+          ]
+        ],
+        "text": "\"keyPattern\" : {",
+        "score": 0.9881823062896729
+      },
+      {
+        "box": [
+          [
+            254.0,
+            293.0
+          ],
+          [
+            355.0,
+            293.0
+          ],
+          [
+            355.0,
+            309.0
+          ],
+          [
+            254.0,
+            309.0
+          ]
+        ],
+        "text": "\"type\" : 1,",
+        "score": 0.9790263772010803
+      },
+      {
+        "box": [
+          [
+            254.0,
+            307.0
+          ],
+          [
+            382.0,
+            307.0
+          ],
+          [
+            382.0,
+            323.0
+          ],
+          [
+            254.0,
+            323.0
+          ]
+        ],
+        "text": "\"quantity\" : 1",
+        "score": 0.9702687859535217
+      },
+      {
+        "box": [
+          [
+            225.0,
+            321.0
+          ],
+          [
+            246.0,
+            321.0
+          ],
+          [
+            246.0,
+            337.0
+          ],
+          [
+            225.0,
+            337.0
+          ]
+        ],
+        "text": ")，",
+        "score": 0.6034303903579712
+      },
+      {
+        "box": [
+          [
+            199.0,
+            349.0
+          ],
+          [
+            210.0,
+            349.0
+          ],
+          [
+            210.0,
+            364.0
+          ],
+          [
+            199.0,
+            364.0
+          ]
+        ],
+        "text": "}",
+        "score": 0.98737633228302
+      },
+      {
+        "box": [
+          [
+            173.0,
+            365.0
+          ],
+          [
+            190.0,
+            365.0
+          ],
+          [
+            190.0,
+            378.0
+          ],
+          [
+            173.0,
+            378.0
+          ]
+        ],
+        "text": "},",
+        "score": 0.8004110455513
+      },
+      {
+        "box": [
+          [
+            172.0,
+            376.0
+          ],
+          [
+            363.0,
+            377.0
+          ],
+          [
+            363.0,
+            393.0
+          ],
+          [
+            172.0,
+            392.0
+          ]
+        ],
+        "text": "\"rejectedPlans\" : [ ]",
+        "score": 0.94780433177948
+      },
+      {
+        "box": [
+          [
+            145.0,
+            392.0
+          ],
+          [
+            164.0,
+            392.0
+          ],
+          [
+            164.0,
+            408.0
+          ],
+          [
+            145.0,
+            408.0
+          ]
+        ],
+        "text": "}，",
+        "score": 0.5199859142303467
+      },
+      {
+        "box": [
+          [
+            146.0,
+            407.0
+          ],
+          [
+            328.0,
+            407.0
+          ],
+          [
+            328.0,
+            420.0
+          ],
+          [
+            146.0,
+            420.0
+          ]
+        ],
+        "text": "\"executionStats\" : {",
+        "score": 0.947209358215332
+      },
+      {
+        "box": [
+          [
+            172.0,
+            419.0
+          ],
+          [
+            406.0,
+            420.0
+          ],
+          [
+            406.0,
+            436.0
+          ],
+          [
+            172.0,
+            435.0
+          ]
+        ],
+        "text": "\"executionSuccess\" : true,",
+        "score": 0.9854068756103516
+      },
+      {
+        "box": [
+          [
+            172.0,
+            434.0
+          ],
+          [
+            316.0,
+            436.0
+          ],
+          [
+            316.0,
+            450.0
+          ],
+          [
+            172.0,
+            447.0
+          ]
+        ],
+        "text": "\"nReturned\" : 2,",
+        "score": 0.9885274171829224
+      },
+      {
+        "box": [
+          [
+            172.0,
+            448.0
+          ],
+          [
+            406.0,
+            449.0
+          ],
+          [
+            406.0,
+            463.0
+          ],
+          [
+            172.0,
+            462.0
+          ]
+        ],
+        "text": "\"executionTimeMillis\" : 0,",
+        "score": 0.9775228500366211
+      },
+      {
+        "box": [
+          [
+            172.0,
+            462.0
+          ],
+          [
+            388.0,
+            464.0
+          ],
+          [
+            388.0,
+            478.0
+          ],
+          [
+            172.0,
+            475.0
+          ]
+        ],
+        "text": "\"totalKeysExamined\" : 2,",
+        "score": 0.9784221649169922
+      },
+      {
+        "box": [
+          [
+            172.0,
+            476.0
+          ],
+          [
+            389.0,
+            477.0
+          ],
+          [
+            389.0,
+            492.0
+          ],
+          [
+            172.0,
+            490.0
+          ]
+        ],
+        "text": "\"totalDocsExamined\" : 2,",
+        "score": 0.9807886481285095
+      },
+      {
+        "box": [
+          [
+            172.0,
+            491.0
+          ],
+          [
+            365.0,
+            493.0
+          ],
+          [
+            365.0,
+            507.0
+          ],
+          [
+            172.0,
+            505.0
+          ]
+        ],
+        "text": "\"executionstages\" : (",
+        "score": 0.9444505572319031
+      },
+      {
+        "box": [
+          [
+            173.0,
+            522.0
+          ],
+          [
+            182.0,
+            522.0
+          ],
+          [
+            182.0,
+            533.0
+          ],
+          [
+            173.0,
+            533.0
+          ]
+        ],
+        "text": "}",
+        "score": 0.9739530682563782
+      },
+      {
+        "box": [
+          [
+            144.0,
+            534.0
+          ],
+          [
+            164.0,
+            534.0
+          ],
+          [
+            164.0,
+            550.0
+          ],
+          [
+            144.0,
+            550.0
+          ]
+        ],
+        "text": ")，",
+        "score": 0.6243181228637695
+      },
+      {
+        "box": [
+          [
+            117.0,
+            564.0
+          ],
+          [
+            129.0,
+            564.0
+          ],
+          [
+            129.0,
+            578.0
+          ],
+          [
+            117.0,
+            578.0
+          ]
+        ],
+        "text": "}",
+        "score": 0.9979033470153809
+      },
+      {
+        "box": [
+          [
+            118.0,
+            591.0
+          ],
+          [
+            906.0,
+            591.0
+          ],
+          [
+            906.0,
+            607.0
+          ],
+          [
+            118.0,
+            607.0
+          ]
+        ],
+        "text": "MongoDB scanned 2 index keys (execut ionStats.totalKeysExamined) to return 2 matching documents",
+        "score": 0.9896640777587891
+      },
+      {
+        "box": [
+          [
+            118.0,
+            608.0
+          ],
+          [
+            375.0,
+            608.0
+          ],
+          [
+            375.0,
+            621.0
+          ],
+          [
+            118.0,
+            621.0
+          ]
+        ],
+        "text": "(executionStats.nReturned).",
+        "score": 0.9991661310195923
+      },
+      {
+        "box": [
+          [
+            117.0,
+            629.0
+          ],
+          [
+            906.0,
+            629.0
+          ],
+          [
+            906.0,
+            645.0
+          ],
+          [
+            117.0,
+            645.0
+          ]
+        ],
+        "text": "For this example query, the compound index { type: 1, quant ity: 1 } is more efficient than the com-",
+        "score": 0.9871346950531006
+      },
+      {
+        "box": [
+          [
+            118.0,
+            647.0
+          ],
+          [
+            472.0,
+            647.0
+          ],
+          [
+            472.0,
+            660.0
+          ],
+          [
+            118.0,
+            660.0
+          ]
+        ],
+        "text": "pound index { quantity: 1, type: 1 }.",
+        "score": 0.9743645191192627
+      },
+      {
+        "box": [
+          [
+            118.0,
+            668.0
+          ],
+          [
+            182.0,
+            668.0
+          ],
+          [
+            182.0,
+            682.0
+          ],
+          [
+            118.0,
+            682.0
+          ]
+        ],
+        "text": "See also:",
+        "score": 0.9999656677246094
+      },
+      {
+        "box": [
+          [
+            118.0,
+            692.0
+          ],
+          [
+            906.0,
+            692.0
+          ],
+          [
+            906.0,
+            708.0
+          ],
+          [
+            118.0,
+            708.0
+          ]
+        ],
+        "text": "Query Optimization (page 65), Query Plans (page 68), Optimize Query Performance (page 216), Indexing Strategies",
+        "score": 0.9947017431259155
+      },
+      {
+        "box": [
+          [
+            119.0,
+            708.0
+          ],
+          [
+            192.0,
+            708.0
+          ],
+          [
+            192.0,
+            722.0
+          ],
+          [
+            119.0,
+            722.0
+          ]
+        ],
+        "text": "(page 546)",
+        "score": 0.9999356269836426
+      },
+      {
+        "box": [
+          [
+            117.0,
+            747.0
+          ],
+          [
+            450.0,
+            748.0
+          ],
+          [
+            450.0,
+            765.0
+          ],
+          [
+            117.0,
+            764.0
+          ]
+        ],
+        "text": "3.3.9 Perform Two Phase Commits",
+        "score": 0.996289849281311
+      },
+      {
+        "box": [
+          [
+            118.0,
+            783.0
+          ],
+          [
+            196.0,
+            783.0
+          ],
+          [
+            196.0,
+            800.0
+          ],
+          [
+            118.0,
+            800.0
+          ]
+        ],
+        "text": "Synopsis",
+        "score": 0.9999895691871643
+      },
+      {
+        "box": [
+          [
+            119.0,
+            817.0
+          ],
+          [
+            904.0,
+            817.0
+          ],
+          [
+            904.0,
+            830.0
+          ],
+          [
+            119.0,
+            830.0
+          ]
+        ],
+        "text": "This document provides a pattern for doing multi-document updates or \"multi-document transactions\" using a two-",
+        "score": 0.9982550740242004
+      },
+      {
+        "box": [
+          [
+            119.0,
+            833.0
+          ],
+          [
+            904.0,
+            833.0
+          ],
+          [
+            904.0,
+            846.0
+          ],
+          [
+            119.0,
+            846.0
+          ]
+        ],
+        "text": "phase commit approach for writing data to multiple documents. Additionally, you can extend this process to provide",
+        "score": 0.999973475933075
+      },
+      {
+        "box": [
+          [
+            118.0,
+            848.0
+          ],
+          [
+            384.0,
+            848.0
+          ],
+          [
+            384.0,
+            861.0
+          ],
+          [
+            118.0,
+            861.0
+          ]
+        ],
+        "text": "a rollback-like (page 120) functionality.",
+        "score": 0.9993354082107544
+      },
+      {
+        "box": [
+          [
+            118.0,
+            957.0
+          ],
+          [
+            364.0,
+            957.0
+          ],
+          [
+            364.0,
+            973.0
+          ],
+          [
+            118.0,
+            973.0
+          ]
+        ],
+        "text": "3.3. MongoDB CRUD Tutorials",
+        "score": 0.9998328685760498
+      },
+      {
+        "box": [
+          [
+            872.0,
+            956.0
+          ],
+          [
+            908.0,
+            956.0
+          ],
+          [
+            908.0,
+            974.0
+          ],
+          [
+            872.0,
+            974.0
+          ]
+        ],
+        "text": "115",
+        "score": 0.9999977946281433
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 43,
+    "elapsed_ms": 309.05
+  }
+}

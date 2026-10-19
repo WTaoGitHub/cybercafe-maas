@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_539",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "faac33931101161c5d58ef41dceaade344d3dfddc5bd5cc528c71afdbde91198",
+  "ok": true,
+  "result": {
+    "text": "柳暗花明又一村\nThere is /a way out",
+    "lines": [
+      {
+        "box": [
+          [
+            416.6808510638298,
+            1906.741935483871
+          ],
+          [
+            774.7659574468084,
+            1975.8387096774195
+          ],
+          [
+            753.6063829787233,
+            2089.3548387096776
+          ],
+          [
+            395.52127659574467,
+            2020.2580645161293
+          ]
+        ],
+        "text": "柳暗花明又一村",
+        "score": 0.9992283582687378
+      },
+      {
+        "box": [
+          [
+            423.1914893617021,
+            1989.0
+          ],
+          [
+            761.7446808510638,
+            2071.2580645161293
+          ],
+          [
+            743.8404255319149,
+            2148.5806451612902
+          ],
+          [
+            405.28723404255317,
+            2066.3225806451615
+          ]
+        ],
+        "text": "There is /a way out",
+        "score": 0.9690526723861694
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 79.87
+  }
+}

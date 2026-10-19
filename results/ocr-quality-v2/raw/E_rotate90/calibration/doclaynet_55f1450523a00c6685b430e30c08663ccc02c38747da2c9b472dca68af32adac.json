@@ -1,0 +1,480 @@
+{
+  "id": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "E_rotate90",
+  "ok": true,
+  "result": {
+    "text": "Here p() a prior distribution for parameter vector 0, which may itself have one or more\nThe distribution of each HMM initial state Ca1 is\nfa(-|0). Markov state transition probabilities are given by fa(-|0,ti,t-1） and observation\nThe set of possible\n“unobserved\". Since all n animals are not\nWe now describe several computational approaches to applying Bayesian estimation to em-\nbedded HMMs. These strategies will form the basis for our comparisons, using examples\nperiod corresponding to the first genuine observation of that animal.\n(|0)7 \nobservations） may include a state to represent‘\ncontribution from a single observation history,\nnents in , the total model likelihood of y is\n6\n=(6|0)T\nComputational Approaches\nlevels of stochastic interdependence.\nModel Likelihood\nprobabilities by ga(-|0, rat).\n=(f|0)T\n2.2\n2.3",
+    "lines": [
+      {
+        "box": [
+          [
+            909.0,
+            90.0
+          ],
+          [
+            909.0,
+            119.0
+          ],
+          [
+            142.0,
+            120.0
+          ],
+          [
+            142.0,
+            91.0
+          ]
+        ],
+        "text": "Here p() a prior distribution for parameter vector 0, which may itself have one or more",
+        "score": 0.9822613302318529
+      },
+      {
+        "box": [
+          [
+            907.0,
+            123.0
+          ],
+          [
+            907.0,
+            150.0
+          ],
+          [
+            442.0,
+            147.0
+          ],
+          [
+            443.0,
+            120.0
+          ]
+        ],
+        "text": "The distribution of each HMM initial state Ca1 is",
+        "score": 0.9481021445624682
+      },
+      {
+        "box": [
+          [
+            904.0,
+            155.0
+          ],
+          [
+            904.0,
+            181.0
+          ],
+          [
+            117.0,
+            181.0
+          ],
+          [
+            117.0,
+            155.0
+          ]
+        ],
+        "text": "fa(-|0). Markov state transition probabilities are given by fa(-|0,ti,t-1） and observation",
+        "score": 0.9526015995277299
+      },
+      {
+        "box": [
+          [
+            905.0,
+            309.0
+          ],
+          [
+            905.0,
+            335.0
+          ],
+          [
+            730.0,
+            335.0
+          ],
+          [
+            730.0,
+            309.0
+          ]
+        ],
+        "text": "The set of possible",
+        "score": 0.9703821477137113
+      },
+      {
+        "box": [
+          [
+            904.0,
+            341.0
+          ],
+          [
+            904.0,
+            364.0
+          ],
+          [
+            532.0,
+            363.0
+          ],
+          [
+            533.0,
+            340.0
+          ]
+        ],
+        "text": "“unobserved\". Since all n animals are not",
+        "score": 0.9640879616504763
+      },
+      {
+        "box": [
+          [
+            907.0,
+            876.0
+          ],
+          [
+            907.0,
+            905.0
+          ],
+          [
+            116.0,
+            905.0
+          ],
+          [
+            116.0,
+            876.0
+          ]
+        ],
+        "text": "We now describe several computational approaches to applying Bayesian estimation to em-",
+        "score": 0.9884953245349314
+      },
+      {
+        "box": [
+          [
+            907.0,
+            909.0
+          ],
+          [
+            907.0,
+            932.0
+          ],
+          [
+            117.0,
+            932.0
+          ],
+          [
+            117.0,
+            909.0
+          ]
+        ],
+        "text": "bedded HMMs. These strategies will form the basis for our comparisons, using examples",
+        "score": 0.9846456071909736
+      },
+      {
+        "box": [
+          [
+            711.0,
+            402.0
+          ],
+          [
+            711.0,
+            425.0
+          ],
+          [
+            117.0,
+            425.0
+          ],
+          [
+            117.0,
+            402.0
+          ]
+        ],
+        "text": "period corresponding to the first genuine observation of that animal.",
+        "score": 0.9961797292681708
+      },
+      {
+        "box": [
+          [
+            611.0,
+            765.0
+          ],
+          [
+            611.0,
+            804.0
+          ],
+          [
+            495.0,
+            804.0
+          ],
+          [
+            495.0,
+            765.0
+          ]
+        ],
+        "text": "(|0)7 ",
+        "score": 0.6839039574066798
+      },
+      {
+        "box": [
+          [
+            546.0,
+            340.0
+          ],
+          [
+            545.0,
+            366.0
+          ],
+          [
+            117.0,
+            365.0
+          ],
+          [
+            117.0,
+            339.0
+          ]
+        ],
+        "text": "observations） may include a state to represent‘",
+        "score": 0.9605142854629679
+      },
+      {
+        "box": [
+          [
+            521.0,
+            565.0
+          ],
+          [
+            520.0,
+            591.0
+          ],
+          [
+            116.0,
+            589.0
+          ],
+          [
+            116.0,
+            563.0
+          ]
+        ],
+        "text": "contribution from a single observation history,",
+        "score": 0.967517724696626
+      },
+      {
+        "box": [
+          [
+            521.0,
+            713.0
+          ],
+          [
+            521.0,
+            743.0
+          ],
+          [
+            113.0,
+            743.0
+          ],
+          [
+            113.0,
+            713.0
+          ]
+        ],
+        "text": "nents in , the total model likelihood of y is",
+        "score": 0.9678608198960622
+      },
+      {
+        "box": [
+          [
+            520.0,
+            958.0
+          ],
+          [
+            520.0,
+            973.0
+          ],
+          [
+            499.0,
+            973.0
+          ],
+          [
+            499.0,
+            958.0
+          ]
+        ],
+        "text": "6",
+        "score": 0.9240818619728088
+      },
+      {
+        "box": [
+          [
+            508.0,
+            772.0
+          ],
+          [
+            508.0,
+            796.0
+          ],
+          [
+            413.0,
+            796.0
+          ],
+          [
+            413.0,
+            772.0
+          ]
+        ],
+        "text": "=(6|0)T",
+        "score": 0.7600834454808917
+      },
+      {
+        "box": [
+          [
+            509.0,
+            834.0
+          ],
+          [
+            509.0,
+            863.0
+          ],
+          [
+            174.0,
+            863.0
+          ],
+          [
+            174.0,
+            834.0
+          ]
+        ],
+        "text": "Computational Approaches",
+        "score": 0.9825022369623184
+      },
+      {
+        "box": [
+          [
+            441.0,
+            126.0
+          ],
+          [
+            441.0,
+            146.0
+          ],
+          [
+            119.0,
+            146.0
+          ],
+          [
+            119.0,
+            126.0
+          ]
+        ],
+        "text": "levels of stochastic interdependence.",
+        "score": 0.970940747776547
+      },
+      {
+        "box": [
+          [
+            390.0,
+            461.0
+          ],
+          [
+            390.0,
+            484.0
+          ],
+          [
+            157.0,
+            484.0
+          ],
+          [
+            157.0,
+            461.0
+          ]
+        ],
+        "text": "Model Likelihood",
+        "score": 0.952604129910469
+      },
+      {
+        "box": [
+          [
+            366.0,
+            184.0
+          ],
+          [
+            366.0,
+            213.0
+          ],
+          [
+            115.0,
+            211.0
+          ],
+          [
+            115.0,
+            182.0
+          ]
+        ],
+        "text": "probabilities by ga(-|0, rat).",
+        "score": 0.9064212302366893
+      },
+      {
+        "box": [
+          [
+            309.0,
+            624.0
+          ],
+          [
+            307.0,
+            651.0
+          ],
+          [
+            206.0,
+            646.0
+          ],
+          [
+            207.0,
+            619.0
+          ]
+        ],
+        "text": "=(f|0)T",
+        "score": 0.794747212103435
+      },
+      {
+        "box": [
+          [
+            165.0,
+            462.0
+          ],
+          [
+            165.0,
+            484.0
+          ],
+          [
+            117.0,
+            484.0
+          ],
+          [
+            117.0,
+            462.0
+          ]
+        ],
+        "text": "2.2",
+        "score": 0.9998810489972433
+      },
+      {
+        "box": [
+          [
+            164.0,
+            834.0
+          ],
+          [
+            166.0,
+            855.0
+          ],
+          [
+            116.0,
+            858.0
+          ],
+          [
+            115.0,
+            837.0
+          ]
+        ],
+        "text": "2.3",
+        "score": 0.9997392495473226
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 21,
+    "deduplicated": 0,
+    "elapsed_ms": 152.74,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 161.57
+}

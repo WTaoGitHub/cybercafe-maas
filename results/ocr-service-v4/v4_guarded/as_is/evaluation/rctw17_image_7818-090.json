@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_7818",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 90,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "422b563d7aba03a690dfe93e4abc0c3b29e0a1da9e8f5b3df93742884043f59b",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "谁能独享雄楚\n由“楚霸王”到“光谷新贵”",
+    "lines": [
+      {
+        "box": [
+          [
+            269.3548278808594,
+            2400.0
+          ],
+          [
+            285.48388671875,
+            1670.74462890625
+          ],
+          [
+            3198.38720703125,
+            1728.1914672851562
+          ],
+          [
+            3198.38720703125,
+            2400.0
+          ]
+        ],
+        "text": "谁能独享雄楚",
+        "score": 0.9920932451883951
+      },
+      {
+        "box": [
+          [
+            500.0,
+            1793.6170043945312
+          ],
+          [
+            501.6129150390625,
+            1538.2978515625
+          ],
+          [
+            2614.51611328125,
+            1557.44677734375
+          ],
+          [
+            2612.9033203125,
+            1812.7659301757812
+          ]
+        ],
+        "text": "由“楚霸王”到“光谷新贵”",
+        "score": 0.8929583613689129
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 90.93,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 2
+    },
+    "elapsed_ms": 90.93
+  }
+}

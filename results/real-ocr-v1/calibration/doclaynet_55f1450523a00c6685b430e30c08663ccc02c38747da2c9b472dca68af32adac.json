@@ -1,0 +1,587 @@
+{
+  "id": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+  "source": "doclaynet",
+  "split": "calibration",
+  "image_sha256": "fb473df408bd49cf0cec3d8c81a4e555bd179fc809c155041ae621a344bf86e0",
+  "client_ms": 317.27,
+  "result": {
+    "text": "Here p() a prior distribution for parameter vector 0,which may itself have one or more\nlevels of stochastic interdependence.The distribution of each HMM initial state C1is\nfa1(-|0).Markov state transition probabilities are given by fa(·|0,ci,t-1） and observation\nprobabilities by git(-|0,cat).\nDiscrete HMMs have long been applied in the area of ecological capture-recapture (e.g.,\nGimenez et al.,2007King. 2012 Langrock et al.,2012). In this context, a set of n distinct\nanimals is monitored for k sampling occasions. Each y; represents the observation history of\nobservations )’ may include a state to represent “unobserved\".Since all n animals are not\ntypically observed on occasion t = 1, each embedded HMM will “begin” at the sampling\nperiod corresponding to the first genuine observation of that animal.\n2.2ModelLikelihood\nWe now provide the model likelihood for the general HMM formulation in .which is\nused in the Bayesian estimation procedures described next.We begin with the likelihood\ncontribution from a single observation history.\nL(0lyi) =≥ fa(za|θ)\n(2)\nZ;EXk\n=2\nwhere X* denotes the standard k-fold Cartesian product of X.Using the likelihood compo-\nnents in ,the total model likelihood of y is\nL(0|y) =II L(0|y).\ni=1\n2.3ComputationalApproaches\nWe now describe several computational approaches to applying Bayesian estimation to em-\nbedded HMMs. These strategies will form the basis for our comparisons, using examples\n6",
+    "lines": [
+      {
+        "box": [
+          [
+            147.0,
+            93.0
+          ],
+          [
+            908.0,
+            94.0
+          ],
+          [
+            908.0,
+            117.0
+          ],
+          [
+            147.0,
+            116.0
+          ]
+        ],
+        "text": "Here p() a prior distribution for parameter vector 0,which may itself have one or more",
+        "score": 0.9792807116064914
+      },
+      {
+        "box": [
+          [
+            119.0,
+            126.0
+          ],
+          [
+            907.0,
+            126.0
+          ],
+          [
+            907.0,
+            146.0
+          ],
+          [
+            119.0,
+            146.0
+          ]
+        ],
+        "text": "levels of stochastic interdependence.The distribution of each HMM initial state C1is",
+        "score": 0.9521172749144691
+      },
+      {
+        "box": [
+          [
+            121.0,
+            158.0
+          ],
+          [
+            906.0,
+            158.0
+          ],
+          [
+            906.0,
+            178.0
+          ],
+          [
+            121.0,
+            178.0
+          ]
+        ],
+        "text": "fa1(-|0).Markov state transition probabilities are given by fa(·|0,ci,t-1） and observation",
+        "score": 0.9249220026863946
+      },
+      {
+        "box": [
+          [
+            120.0,
+            189.0
+          ],
+          [
+            359.0,
+            189.0
+          ],
+          [
+            359.0,
+            209.0
+          ],
+          [
+            120.0,
+            209.0
+          ]
+        ],
+        "text": "probabilities by git(-|0,cat).",
+        "score": 0.9260737309853236
+      },
+      {
+        "box": [
+          [
+            146.0,
+            215.0
+          ],
+          [
+            909.0,
+            217.0
+          ],
+          [
+            909.0,
+            243.0
+          ],
+          [
+            146.0,
+            241.0
+          ]
+        ],
+        "text": "Discrete HMMs have long been applied in the area of ecological capture-recapture (e.g.,",
+        "score": 0.983326987973575
+      },
+      {
+        "box": [
+          [
+            117.0,
+            246.0
+          ],
+          [
+            908.0,
+            247.0
+          ],
+          [
+            908.0,
+            273.0
+          ],
+          [
+            117.0,
+            272.0
+          ]
+        ],
+        "text": "Gimenez et al.,2007King. 2012 Langrock et al.,2012). In this context, a set of n distinct",
+        "score": 0.9684733353304059
+      },
+      {
+        "box": [
+          [
+            117.0,
+            278.0
+          ],
+          [
+            909.0,
+            279.0
+          ],
+          [
+            909.0,
+            302.0
+          ],
+          [
+            117.0,
+            301.0
+          ]
+        ],
+        "text": "animals is monitored for k sampling occasions. Each y; represents the observation history of",
+        "score": 0.9799883592387905
+      },
+      {
+        "box": [
+          [
+            120.0,
+            342.0
+          ],
+          [
+            905.0,
+            342.0
+          ],
+          [
+            905.0,
+            362.0
+          ],
+          [
+            120.0,
+            362.0
+          ]
+        ],
+        "text": "observations )’ may include a state to represent “unobserved\".Since all n animals are not",
+        "score": 0.9483356954676382
+      },
+      {
+        "box": [
+          [
+            119.0,
+            371.0
+          ],
+          [
+            907.0,
+            372.0
+          ],
+          [
+            907.0,
+            396.0
+          ],
+          [
+            119.0,
+            395.0
+          ]
+        ],
+        "text": "typically observed on occasion t = 1, each embedded HMM will “begin” at the sampling",
+        "score": 0.9731437379405612
+      },
+      {
+        "box": [
+          [
+            118.0,
+            404.0
+          ],
+          [
+            709.0,
+            402.0
+          ],
+          [
+            709.0,
+            425.0
+          ],
+          [
+            118.0,
+            427.0
+          ]
+        ],
+        "text": "period corresponding to the first genuine observation of that animal.",
+        "score": 0.9723843120146489
+      },
+      {
+        "box": [
+          [
+            119.0,
+            464.0
+          ],
+          [
+            390.0,
+            464.0
+          ],
+          [
+            390.0,
+            484.0
+          ],
+          [
+            119.0,
+            484.0
+          ]
+        ],
+        "text": "2.2ModelLikelihood",
+        "score": 0.9991418686177995
+      },
+      {
+        "box": [
+          [
+            119.0,
+            504.0
+          ],
+          [
+            907.0,
+            504.0
+          ],
+          [
+            907.0,
+            528.0
+          ],
+          [
+            119.0,
+            528.0
+          ]
+        ],
+        "text": "We now provide the model likelihood for the general HMM formulation in .which is",
+        "score": 0.9663636691868305
+      },
+      {
+        "box": [
+          [
+            118.0,
+            536.0
+          ],
+          [
+            907.0,
+            535.0
+          ],
+          [
+            907.0,
+            558.0
+          ],
+          [
+            118.0,
+            559.0
+          ]
+        ],
+        "text": "used in the Bayesian estimation procedures described next.We begin with the likelihood",
+        "score": 0.9928115966708161
+      },
+      {
+        "box": [
+          [
+            117.0,
+            566.0
+          ],
+          [
+            521.0,
+            568.0
+          ],
+          [
+            520.0,
+            591.0
+          ],
+          [
+            117.0,
+            589.0
+          ]
+        ],
+        "text": "contribution from a single observation history.",
+        "score": 0.9607271032130464
+      },
+      {
+        "box": [
+          [
+            212.0,
+            621.0
+          ],
+          [
+            439.0,
+            621.0
+          ],
+          [
+            439.0,
+            648.0
+          ],
+          [
+            212.0,
+            648.0
+          ]
+        ],
+        "text": "L(0lyi) =≥ fa(za|θ)",
+        "score": 0.7953801484484422
+      },
+      {
+        "box": [
+          [
+            878.0,
+            627.0
+          ],
+          [
+            904.0,
+            627.0
+          ],
+          [
+            904.0,
+            648.0
+          ],
+          [
+            878.0,
+            648.0
+          ]
+        ],
+        "text": "(2)",
+        "score": 0.9837512175242106
+      },
+      {
+        "box": [
+          [
+            303.0,
+            649.0
+          ],
+          [
+            346.0,
+            644.0
+          ],
+          [
+            348.0,
+            662.0
+          ],
+          [
+            305.0,
+            667.0
+          ]
+        ],
+        "text": "Z;EXk",
+        "score": 0.5267263054847717
+      },
+      {
+        "box": [
+          [
+            456.0,
+            651.0
+          ],
+          [
+            478.0,
+            651.0
+          ],
+          [
+            478.0,
+            658.0
+          ],
+          [
+            456.0,
+            658.0
+          ]
+        ],
+        "text": "=2",
+        "score": 0.7442766427993774
+      },
+      {
+        "box": [
+          [
+            119.0,
+            685.0
+          ],
+          [
+            905.0,
+            686.0
+          ],
+          [
+            905.0,
+            709.0
+          ],
+          [
+            119.0,
+            708.0
+          ]
+        ],
+        "text": "where X* denotes the standard k-fold Cartesian product of X.Using the likelihood compo-",
+        "score": 0.9790780838878675
+      },
+      {
+        "box": [
+          [
+            117.0,
+            714.0
+          ],
+          [
+            518.0,
+            716.0
+          ],
+          [
+            517.0,
+            742.0
+          ],
+          [
+            117.0,
+            740.0
+          ]
+        ],
+        "text": "nents in ,the total model likelihood of y is",
+        "score": 0.9862319217486815
+      },
+      {
+        "box": [
+          [
+            417.0,
+            765.0
+          ],
+          [
+            609.0,
+            768.0
+          ],
+          [
+            608.0,
+            799.0
+          ],
+          [
+            416.0,
+            796.0
+          ]
+        ],
+        "text": "L(0|y) =II L(0|y).",
+        "score": 0.8302024288309945
+      },
+      {
+        "box": [
+          [
+            505.0,
+            797.0
+          ],
+          [
+            532.0,
+            797.0
+          ],
+          [
+            532.0,
+            811.0
+          ],
+          [
+            505.0,
+            811.0
+          ]
+        ],
+        "text": "i=1",
+        "score": 0.9882089694341024
+      },
+      {
+        "box": [
+          [
+            118.0,
+            836.0
+          ],
+          [
+            507.0,
+            837.0
+          ],
+          [
+            506.0,
+            860.0
+          ],
+          [
+            118.0,
+            859.0
+          ]
+        ],
+        "text": "2.3ComputationalApproaches",
+        "score": 0.9994209064887121
+      },
+      {
+        "box": [
+          [
+            118.0,
+            878.0
+          ],
+          [
+            905.0,
+            879.0
+          ],
+          [
+            905.0,
+            902.0
+          ],
+          [
+            118.0,
+            901.0
+          ]
+        ],
+        "text": "We now describe several computational approaches to applying Bayesian estimation to em-",
+        "score": 0.9829022521260141
+      },
+      {
+        "box": [
+          [
+            118.0,
+            909.0
+          ],
+          [
+            906.0,
+            910.0
+          ],
+          [
+            906.0,
+            933.0
+          ],
+          [
+            118.0,
+            932.0
+          ]
+        ],
+        "text": "bedded HMMs. These strategies will form the basis for our comparisons, using examples",
+        "score": 0.9847616805749781
+      },
+      {
+        "box": [
+          [
+            506.0,
+            961.0
+          ],
+          [
+            520.0,
+            961.0
+          ],
+          [
+            520.0,
+            975.0
+          ],
+          [
+            506.0,
+            975.0
+          ]
+        ],
+        "text": "6",
+        "score": 0.9990440011024475
+      }
+    ],
+    "elapsed_ms": 168.2,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "ok": true
+}

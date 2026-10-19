@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_6932",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "ec3c0baf1c7b5ffaf2f173c4acc8ed780c6dad23512013ea399f01a3894d48d5",
+  "ok": true,
+  "result": {
+    "text": "三元桥分理处\nSANYUANQIAOBRANCH\n西",
+    "lines": [
+      {
+        "box": [
+          [
+            512.7127659574468,
+            2494.064516129032
+          ],
+          [
+            1064.4893617021276,
+            2508.8709677419356
+          ],
+          [
+            1061.2340425531916,
+            2630.612903225807
+          ],
+          [
+            509.4574468085106,
+            2615.8064516129034
+          ]
+        ],
+        "text": "三元桥分理处",
+        "score": 0.999187171459198
+      },
+      {
+        "box": [
+          [
+            533.8723404255319,
+            2602.645161290323
+          ],
+          [
+            1056.351063829787,
+            2614.161290322581
+          ],
+          [
+            1056.351063829787,
+            2652.0
+          ],
+          [
+            533.8723404255319,
+            2640.483870967742
+          ]
+        ],
+        "text": "SANYUANQIAOBRANCH",
+        "score": 0.9999566674232483
+      },
+      {
+        "box": [
+          [
+            2371.5,
+            2821.451612903226
+          ],
+          [
+            2420.3297872340427,
+            2808.2903225806454
+          ],
+          [
+            2434.978723404255,
+            2862.5806451612907
+          ],
+          [
+            2386.148936170213,
+            2875.741935483871
+          ]
+        ],
+        "text": "西",
+        "score": 0.5205264091491699
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 106.92
+  }
+}

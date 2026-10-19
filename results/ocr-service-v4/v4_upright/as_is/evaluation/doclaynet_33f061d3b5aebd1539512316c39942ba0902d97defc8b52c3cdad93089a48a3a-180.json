@@ -1,0 +1,65 @@
+{
+  "id": "doclaynet_33f061d3b5aebd1539512316c39942ba0902d97defc8b52c3cdad93089a48a3a",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "49399933692d02f07c03bc74e9ebfce84fce9aa810e9a2a807ea58c2c5a69ec2",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "SE\nST",
+    "lines": [
+      {
+        "box": [
+          [
+            116.0,
+            896.0
+          ],
+          [
+            96.0,
+            896.0
+          ],
+          [
+            96.0,
+            884.0
+          ],
+          [
+            116.0,
+            884.0
+          ]
+        ],
+        "text": "SE",
+        "score": 0.5336635708808899
+      },
+      {
+        "box": [
+          [
+            116.0,
+            436.0
+          ],
+          [
+            96.0,
+            436.0
+          ],
+          [
+            96.0,
+            420.0
+          ],
+          [
+            116.0,
+            420.0
+          ]
+        ],
+        "text": "ST",
+        "score": 0.8869239091873169
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 232.62,
+    "direction_stats": {},
+    "elapsed_ms": 232.64
+  }
+}

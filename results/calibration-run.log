@@ -1,0 +1,98 @@
+calibration 1/40 doclaynet_a5c8842acf7bcf5946 ok=True
+calibration 2/40 doclaynet_0c5f7e308a2050fa31 ok=True
+calibration 3/40 doclaynet_67dfd048813d1e584d ok=True
+calibration 4/40 doclaynet_78eed462f4050a80e4 ok=True
+calibration 5/40 doclaynet_aa4fb8bda35615ad99 ok=True
+calibration 6/40 doclaynet_fb0ac24cc3e25bf9f7 ok=True
+calibration 7/40 doclaynet_7a5867ce59161f0eee ok=True
+calibration 8/40 doclaynet_ff4bda6278a9ea9794 ok=True
+calibration 9/40 doclaynet_dcec5787f4527ca833 ok=True
+calibration 10/40 doclaynet_8d4a38494b4efd9c3c ok=True
+calibration 11/40 doclaynet_55f1450523a00c6685 ok=True
+calibration 12/40 doclaynet_9e17a6b7be69a8c941 ok=True
+calibration 13/40 doclaynet_3a3a10d0cf6465204e ok=True
+calibration 14/40 doclaynet_cb545060025ba0d03c ok=True
+calibration 15/40 doclaynet_edee955fd6438327e2 ok=True
+calibration 16/40 doclaynet_fd05b9ec9879b810a1 ok=True
+calibration 17/40 doclaynet_9e00950eb4ee806664 ok=True
+calibration 18/40 doclaynet_3325a6a5515fd07772 ok=True
+calibration 19/40 doclaynet_76652bc40615f98875 ok=True
+calibration 20/40 doclaynet_694dd3c87e655e94bf ok=True
+calibration 21/40 rctw17_image_4853 ok=True
+calibration 22/40 rctw17_image_1941 ok=True
+calibration 23/40 rctw17_image_7667 ok=True
+calibration 24/40 rctw17_image_5630 ok=True
+calibration 25/40 rctw17_image_2345 ok=True
+calibration 26/40 rctw17_image_7919 ok=True
+calibration 27/40 rctw17_image_5003 ok=True
+calibration 28/40 rctw17_image_6180 ok=True
+calibration 29/40 rctw17_image_2253 ok=True
+calibration 30/40 rctw17_image_3926 ok=True
+calibration 31/40 rctw17_image_1727 ok=True
+calibration 32/40 rctw17_image_1463 ok=True
+calibration 33/40 rctw17_image_5801 ok=True
+calibration 34/40 rctw17_image_3413 ok=True
+calibration 35/40 rctw17_image_3962 ok=True
+calibration 36/40 rctw17_image_4246 ok=True
+calibration 37/40 rctw17_image_5534 ok=True
+calibration 38/40 rctw17_image_5446 ok=True
+calibration 39/40 rctw17_image_7955 ok=True
+calibration 40/40 rctw17_image_2301 ok=True
+{
+  "split": "calibration",
+  "concurrency": 1,
+  "retries": 0,
+  "model": "rapidocr-gpu",
+  "sources": {
+    "doclaynet": {
+      "total": 20,
+      "success": 20,
+      "client_p50_ms": 534.7,
+      "client_p95_ms": 716.46,
+      "server_p50_ms": 313.21,
+      "server_p95_ms": 418.57,
+      "strict_grouped_cer": 0.10284335572943719,
+      "normalized_grouped_cer": 0.07924037864680322,
+      "counts": {
+        "invalid_reference_regions": 16,
+        "reference_chars": 59683,
+        "strict_edits": 6138,
+        "normalized_reference_chars": 51552,
+        "normalized_edits": 4085,
+        "missing_regions": 199,
+        "reference_regions": 2402,
+        "unmatched_predictions": 10,
+        "ignored_predictions": 0
+      },
+      "nodes": {
+        "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6": 14,
+        "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c": 6
+      }
+    },
+    "rctw17": {
+      "total": 20,
+      "success": 20,
+      "client_p50_ms": 456.39,
+      "client_p95_ms": 960.29,
+      "server_p50_ms": 115.3,
+      "server_p95_ms": 154.35,
+      "strict_grouped_cer": 0.19662921348314608,
+      "normalized_grouped_cer": 0.1859799713876967,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 712,
+        "strict_edits": 140,
+        "normalized_reference_chars": 699,
+        "normalized_edits": 130,
+        "missing_regions": 23,
+        "reference_regions": 117,
+        "unmatched_predictions": 6,
+        "ignored_predictions": 6
+      },
+      "nodes": {
+        "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6": 10,
+        "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c": 10
+      }
+    }
+  }
+}

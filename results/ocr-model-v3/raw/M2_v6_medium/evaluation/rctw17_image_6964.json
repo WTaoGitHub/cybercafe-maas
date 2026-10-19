@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_6964",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "017d67fb785d64d17eb89d51d70a75e96c7809bebbb714592c5cce9215549a1f",
+  "ok": true,
+  "result": {
+    "text": "酒香不怕巷子深\nWadp",
+    "lines": [
+      {
+        "box": [
+          [
+            942.4148936170212,
+            1757.0322580645163
+          ],
+          [
+            1580.4574468085107,
+            1757.0322580645163
+          ],
+          [
+            1580.4574468085107,
+            1906.741935483871
+          ],
+          [
+            942.4148936170212,
+            1906.741935483871
+          ]
+        ],
+        "text": "酒香不怕巷子深",
+        "score": 0.9997100234031677
+      },
+      {
+        "box": [
+          [
+            971.7127659574468,
+            1857.3870967741937
+          ],
+          [
+            1601.6170212765958,
+            1883.7096774193549
+          ],
+          [
+            1596.7340425531916,
+            1992.2903225806454
+          ],
+          [
+            966.8297872340426,
+            1965.967741935484
+          ]
+        ],
+        "text": "Wadp",
+        "score": 0.6559364795684814
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 97.69
+  }
+}

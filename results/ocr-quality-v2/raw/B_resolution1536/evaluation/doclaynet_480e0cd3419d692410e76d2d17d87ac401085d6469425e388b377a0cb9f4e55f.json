@@ -1,0 +1,1052 @@
+{
+  "id": "doclaynet_480e0cd3419d692410e76d2d17d87ac401085d6469425e388b377a0cb9f4e55f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "92.3.MODULESANDPRAGMATA\nCHAPTER92.PERL56DELTA\nDB_File\nDB_File can nowbebuilt with BerkeleyDB versions 1,2 or 3.See ext/DB_Fi1e/Changes.\nDevel::DProf\nDevel::DProf,a Perl source code profiler has been added.See Devel::DProf and dprofpp.\nDevel::Peek\nThe Devel::Peek module provides access to the internal representation of Perl variables and data. It is a data\ndebuggingtoolfor theXSprogrammer.\nDumpvalue\nThe Dumpvalue module provides screen dumps of Perl data.\nDynaLoader\nDynaLoader now supports a dl_unload_fileO function on platforms that support unloading shared objects using\ndlcloseO.\nPerl can also optionally arrange to unload all extension shared objects loaded by Perl. To enable this, build Perl\nwith the Configure option -Accflags=-DDL_UNLOAD_ALL_AT_EXIT. (This maybe useful if you are using Apache\nwith mod_perl.)\nEnglish\n$PERL_VERSION nowstands for$^V(astringvalue)rather than for $](anumeric value).\nEnv\nEnv now supports accessing environment variables like PATH as array variables.\nFcntl\nMore Fcntl constants added: F_SETLK64, F_SETLKW64, O_LARGEFILE for large file (more than 4GB) access\n(NOTE: the O_LARGEFILE is automatically added to sysopenO flags if large file support has been configured, as\nis the default),Free/Net/OpenBSD lockingbehaviour flags F_FLOCK,F_POSIX,Linux F_SHLCK,and\nO_ACCMODE:the combined mask of O_RDONLY,O_WRONLY,and O_RDWR.The seekO/sysseekOconstants\nSEEK_SET, SEEK_CUR, and SEEK_END are available via the :seek tag. The chmodO/statO S_IF* constants\nand S_IS* functions are available via the :mode tag.\nFile::Compare\nA compare_textO function has been added, which allows custom comparison functions.See File::Compare.\nFile::Find\nFile::FindnowworkscorrectlywhenthewantedOfunctioniseitherautoloadedorisasymbolicreference.\nAbugthatcaused File::Find tolose track of the workingdirectorywhenpruning top-leveldirectorieshasbeen\nfixed.\nFile:Find now also supports several other options to control its behavior. It can follow symbolic links if the\nfollow option is specified. Enabling the no_chdir option will make File::Find skip changing the current\ndirectory when walking directories. The untaint fag can be useful when running with taint checks enabled.\nSeeFile::Find.\nFile::Glob\nThis extension implements BSD-style file globbing. By default, it will also be used for the internal implementation\noftheglobOoperator.SeeFile::Glob.\nFile::Spec\nNew methods have been added to the File::Spec module: devnullO returns the name of the null1 device (/dev/null\nonUnix)and tmpdirO the name of the temp directory(normally/tmp onUnix).There are nowalsomethods to\nconvert between absolute and relative filenames:abs2relO and rel2absO.For compatibility with operating systems\nthat specify volume names in file paths, the splitpathO, splitdirO, and catdirO methods have been added.\n1431",
+    "lines": [
+      {
+        "box": [
+          [
+            99.0,
+            111.0
+          ],
+          [
+            361.0,
+            111.0
+          ],
+          [
+            361.0,
+            123.0
+          ],
+          [
+            99.0,
+            123.0
+          ]
+        ],
+        "text": "92.3.MODULESANDPRAGMATA",
+        "score": 0.9980850401132003
+      },
+      {
+        "box": [
+          [
+            703.0,
+            111.0
+          ],
+          [
+            927.0,
+            111.0
+          ],
+          [
+            927.0,
+            124.0
+          ],
+          [
+            703.0,
+            124.0
+          ]
+        ],
+        "text": "CHAPTER92.PERL56DELTA",
+        "score": 0.9985146323839823
+      },
+      {
+        "box": [
+          [
+            97.0,
+            149.0
+          ],
+          [
+            159.0,
+            149.0
+          ],
+          [
+            159.0,
+            163.0
+          ],
+          [
+            97.0,
+            163.0
+          ]
+        ],
+        "text": "DB_File",
+        "score": 0.9985592365264893
+      },
+      {
+        "box": [
+          [
+            140.0,
+            169.0
+          ],
+          [
+            781.0,
+            170.0
+          ],
+          [
+            781.0,
+            183.0
+          ],
+          [
+            140.0,
+            182.0
+          ]
+        ],
+        "text": "DB_File can nowbebuilt with BerkeleyDB versions 1,2 or 3.See ext/DB_Fi1e/Changes.",
+        "score": 0.9452418655525019
+      },
+      {
+        "box": [
+          [
+            97.0,
+            194.0
+          ],
+          [
+            196.0,
+            194.0
+          ],
+          [
+            196.0,
+            207.0
+          ],
+          [
+            97.0,
+            207.0
+          ]
+        ],
+        "text": "Devel::DProf",
+        "score": 0.9857476651668549
+      },
+      {
+        "box": [
+          [
+            139.0,
+            212.0
+          ],
+          [
+            755.0,
+            213.0
+          ],
+          [
+            755.0,
+            228.0
+          ],
+          [
+            139.0,
+            227.0
+          ]
+        ],
+        "text": "Devel::DProf,a Perl source code profiler has been added.See Devel::DProf and dprofpp.",
+        "score": 0.976289183251998
+      },
+      {
+        "box": [
+          [
+            97.0,
+            236.0
+          ],
+          [
+            185.0,
+            236.0
+          ],
+          [
+            185.0,
+            249.0
+          ],
+          [
+            97.0,
+            249.0
+          ]
+        ],
+        "text": "Devel::Peek",
+        "score": 0.9813237894665111
+      },
+      {
+        "box": [
+          [
+            140.0,
+            255.0
+          ],
+          [
+            882.0,
+            255.0
+          ],
+          [
+            882.0,
+            270.0
+          ],
+          [
+            140.0,
+            270.0
+          ]
+        ],
+        "text": "The Devel::Peek module provides access to the internal representation of Perl variables and data. It is a data",
+        "score": 0.9817146111618389
+      },
+      {
+        "box": [
+          [
+            140.0,
+            270.0
+          ],
+          [
+            413.0,
+            271.0
+          ],
+          [
+            413.0,
+            286.0
+          ],
+          [
+            139.0,
+            285.0
+          ]
+        ],
+        "text": "debuggingtoolfor theXSprogrammer.",
+        "score": 0.9751422838731245
+      },
+      {
+        "box": [
+          [
+            97.0,
+            294.0
+          ],
+          [
+            184.0,
+            294.0
+          ],
+          [
+            184.0,
+            309.0
+          ],
+          [
+            97.0,
+            309.0
+          ]
+        ],
+        "text": "Dumpvalue",
+        "score": 0.9982633921835158
+      },
+      {
+        "box": [
+          [
+            139.0,
+            312.0
+          ],
+          [
+            556.0,
+            313.0
+          ],
+          [
+            556.0,
+            328.0
+          ],
+          [
+            139.0,
+            328.0
+          ]
+        ],
+        "text": "The Dumpvalue module provides screen dumps of Perl data.",
+        "score": 0.961718313395977
+      },
+      {
+        "box": [
+          [
+            97.0,
+            338.0
+          ],
+          [
+            191.0,
+            338.0
+          ],
+          [
+            191.0,
+            353.0
+          ],
+          [
+            97.0,
+            353.0
+          ]
+        ],
+        "text": "DynaLoader",
+        "score": 0.9979408323764801
+      },
+      {
+        "box": [
+          [
+            139.0,
+            356.0
+          ],
+          [
+            904.0,
+            357.0
+          ],
+          [
+            904.0,
+            373.0
+          ],
+          [
+            139.0,
+            372.0
+          ]
+        ],
+        "text": "DynaLoader now supports a dl_unload_fileO function on platforms that support unloading shared objects using",
+        "score": 0.9858537221623358
+      },
+      {
+        "box": [
+          [
+            140.0,
+            371.0
+          ],
+          [
+            206.0,
+            372.0
+          ],
+          [
+            205.0,
+            386.0
+          ],
+          [
+            140.0,
+            385.0
+          ]
+        ],
+        "text": "dlcloseO.",
+        "score": 0.9837985899713304
+      },
+      {
+        "box": [
+          [
+            139.0,
+            391.0
+          ],
+          [
+            905.0,
+            390.0
+          ],
+          [
+            905.0,
+            406.0
+          ],
+          [
+            139.0,
+            406.0
+          ]
+        ],
+        "text": "Perl can also optionally arrange to unload all extension shared objects loaded by Perl. To enable this, build Perl",
+        "score": 0.9841429308841103
+      },
+      {
+        "box": [
+          [
+            141.0,
+            405.0
+          ],
+          [
+            927.0,
+            405.0
+          ],
+          [
+            927.0,
+            420.0
+          ],
+          [
+            141.0,
+            420.0
+          ]
+        ],
+        "text": "with the Configure option -Accflags=-DDL_UNLOAD_ALL_AT_EXIT. (This maybe useful if you are using Apache",
+        "score": 0.978645050988614
+      },
+      {
+        "box": [
+          [
+            140.0,
+            420.0
+          ],
+          [
+            253.0,
+            420.0
+          ],
+          [
+            253.0,
+            435.0
+          ],
+          [
+            140.0,
+            435.0
+          ]
+        ],
+        "text": "with mod_perl.)",
+        "score": 0.9967381755510966
+      },
+      {
+        "box": [
+          [
+            98.0,
+            444.0
+          ],
+          [
+            153.0,
+            444.0
+          ],
+          [
+            153.0,
+            458.0
+          ],
+          [
+            98.0,
+            458.0
+          ]
+        ],
+        "text": "English",
+        "score": 0.9984553796904427
+      },
+      {
+        "box": [
+          [
+            140.0,
+            464.0
+          ],
+          [
+            771.0,
+            464.0
+          ],
+          [
+            771.0,
+            477.0
+          ],
+          [
+            140.0,
+            477.0
+          ]
+        ],
+        "text": "$PERL_VERSION nowstands for$^V(astringvalue)rather than for $](anumeric value).",
+        "score": 0.9416833029517645
+      },
+      {
+        "box": [
+          [
+            96.0,
+            488.0
+          ],
+          [
+            127.0,
+            488.0
+          ],
+          [
+            127.0,
+            502.0
+          ],
+          [
+            96.0,
+            502.0
+          ]
+        ],
+        "text": "Env",
+        "score": 0.9898461302121481
+      },
+      {
+        "box": [
+          [
+            139.0,
+            507.0
+          ],
+          [
+            693.0,
+            507.0
+          ],
+          [
+            693.0,
+            523.0
+          ],
+          [
+            139.0,
+            523.0
+          ]
+        ],
+        "text": "Env now supports accessing environment variables like PATH as array variables.",
+        "score": 0.9883959897053547
+      },
+      {
+        "box": [
+          [
+            96.0,
+            530.0
+          ],
+          [
+            138.0,
+            532.0
+          ],
+          [
+            137.0,
+            546.0
+          ],
+          [
+            96.0,
+            544.0
+          ]
+        ],
+        "text": "Fcntl",
+        "score": 0.8961268186569213
+      },
+      {
+        "box": [
+          [
+            140.0,
+            551.0
+          ],
+          [
+            924.0,
+            551.0
+          ],
+          [
+            924.0,
+            565.0
+          ],
+          [
+            140.0,
+            565.0
+          ]
+        ],
+        "text": "More Fcntl constants added: F_SETLK64, F_SETLKW64, O_LARGEFILE for large file (more than 4GB) access",
+        "score": 0.9628003531694412
+      },
+      {
+        "box": [
+          [
+            139.0,
+            565.0
+          ],
+          [
+            924.0,
+            565.0
+          ],
+          [
+            924.0,
+            580.0
+          ],
+          [
+            139.0,
+            580.0
+          ]
+        ],
+        "text": "(NOTE: the O_LARGEFILE is automatically added to sysopenO flags if large file support has been configured, as",
+        "score": 0.9834751136806033
+      },
+      {
+        "box": [
+          [
+            139.0,
+            579.0
+          ],
+          [
+            861.0,
+            579.0
+          ],
+          [
+            861.0,
+            594.0
+          ],
+          [
+            139.0,
+            595.0
+          ]
+        ],
+        "text": "is the default),Free/Net/OpenBSD lockingbehaviour flags F_FLOCK,F_POSIX,Linux F_SHLCK,and",
+        "score": 0.9532343363494016
+      },
+      {
+        "box": [
+          [
+            140.0,
+            594.0
+          ],
+          [
+            928.0,
+            594.0
+          ],
+          [
+            928.0,
+            607.0
+          ],
+          [
+            140.0,
+            607.0
+          ]
+        ],
+        "text": "O_ACCMODE:the combined mask of O_RDONLY,O_WRONLY,and O_RDWR.The seekO/sysseekOconstants",
+        "score": 0.96938766076647
+      },
+      {
+        "box": [
+          [
+            139.0,
+            607.0
+          ],
+          [
+            911.0,
+            608.0
+          ],
+          [
+            911.0,
+            623.0
+          ],
+          [
+            139.0,
+            623.0
+          ]
+        ],
+        "text": "SEEK_SET, SEEK_CUR, and SEEK_END are available via the :seek tag. The chmodO/statO S_IF* constants",
+        "score": 0.9743331968784332
+      },
+      {
+        "box": [
+          [
+            139.0,
+            621.0
+          ],
+          [
+            501.0,
+            623.0
+          ],
+          [
+            500.0,
+            639.0
+          ],
+          [
+            139.0,
+            637.0
+          ]
+        ],
+        "text": "and S_IS* functions are available via the :mode tag.",
+        "score": 0.9563884907043897
+      },
+      {
+        "box": [
+          [
+            97.0,
+            646.0
+          ],
+          [
+            206.0,
+            647.0
+          ],
+          [
+            206.0,
+            663.0
+          ],
+          [
+            97.0,
+            661.0
+          ]
+        ],
+        "text": "File::Compare",
+        "score": 0.9949001165536734
+      },
+      {
+        "box": [
+          [
+            140.0,
+            667.0
+          ],
+          [
+            881.0,
+            667.0
+          ],
+          [
+            881.0,
+            681.0
+          ],
+          [
+            140.0,
+            681.0
+          ]
+        ],
+        "text": "A compare_textO function has been added, which allows custom comparison functions.See File::Compare.",
+        "score": 0.976241210103035
+      },
+      {
+        "box": [
+          [
+            97.0,
+            691.0
+          ],
+          [
+            172.0,
+            691.0
+          ],
+          [
+            172.0,
+            704.0
+          ],
+          [
+            97.0,
+            704.0
+          ]
+        ],
+        "text": "File::Find",
+        "score": 0.9850381672382355
+      },
+      {
+        "box": [
+          [
+            140.0,
+            711.0
+          ],
+          [
+            870.0,
+            711.0
+          ],
+          [
+            870.0,
+            724.0
+          ],
+          [
+            140.0,
+            724.0
+          ]
+        ],
+        "text": "File::FindnowworkscorrectlywhenthewantedOfunctioniseitherautoloadedorisasymbolicreference.",
+        "score": 0.9944667286343045
+      },
+      {
+        "box": [
+          [
+            141.0,
+            730.0
+          ],
+          [
+            899.0,
+            730.0
+          ],
+          [
+            899.0,
+            743.0
+          ],
+          [
+            141.0,
+            743.0
+          ]
+        ],
+        "text": "Abugthatcaused File::Find tolose track of the workingdirectorywhenpruning top-leveldirectorieshasbeen",
+        "score": 0.9683021749600326
+      },
+      {
+        "box": [
+          [
+            141.0,
+            745.0
+          ],
+          [
+            179.0,
+            745.0
+          ],
+          [
+            179.0,
+            757.0
+          ],
+          [
+            141.0,
+            757.0
+          ]
+        ],
+        "text": "fixed.",
+        "score": 0.9856746097405752
+      },
+      {
+        "box": [
+          [
+            138.0,
+            761.0
+          ],
+          [
+            880.0,
+            762.0
+          ],
+          [
+            880.0,
+            779.0
+          ],
+          [
+            138.0,
+            779.0
+          ]
+        ],
+        "text": "File:Find now also supports several other options to control its behavior. It can follow symbolic links if the",
+        "score": 0.9536986632780595
+      },
+      {
+        "box": [
+          [
+            141.0,
+            777.0
+          ],
+          [
+            868.0,
+            777.0
+          ],
+          [
+            868.0,
+            792.0
+          ],
+          [
+            141.0,
+            792.0
+          ]
+        ],
+        "text": "follow option is specified. Enabling the no_chdir option will make File::Find skip changing the current",
+        "score": 0.974716094512384
+      },
+      {
+        "box": [
+          [
+            139.0,
+            792.0
+          ],
+          [
+            890.0,
+            791.0
+          ],
+          [
+            890.0,
+            807.0
+          ],
+          [
+            139.0,
+            807.0
+          ]
+        ],
+        "text": "directory when walking directories. The untaint fag can be useful when running with taint checks enabled.",
+        "score": 0.986637430531638
+      },
+      {
+        "box": [
+          [
+            140.0,
+            812.0
+          ],
+          [
+            244.0,
+            812.0
+          ],
+          [
+            244.0,
+            825.0
+          ],
+          [
+            140.0,
+            825.0
+          ]
+        ],
+        "text": "SeeFile::Find.",
+        "score": 0.9817379500184741
+      },
+      {
+        "box": [
+          [
+            96.0,
+            835.0
+          ],
+          [
+            175.0,
+            835.0
+          ],
+          [
+            175.0,
+            850.0
+          ],
+          [
+            96.0,
+            850.0
+          ]
+        ],
+        "text": "File::Glob",
+        "score": 0.9755424737930298
+      },
+      {
+        "box": [
+          [
+            139.0,
+            853.0
+          ],
+          [
+            928.0,
+            854.0
+          ],
+          [
+            928.0,
+            871.0
+          ],
+          [
+            139.0,
+            870.0
+          ]
+        ],
+        "text": "This extension implements BSD-style file globbing. By default, it will also be used for the internal implementation",
+        "score": 0.9900340515634288
+      },
+      {
+        "box": [
+          [
+            141.0,
+            871.0
+          ],
+          [
+            402.0,
+            871.0
+          ],
+          [
+            402.0,
+            884.0
+          ],
+          [
+            141.0,
+            884.0
+          ]
+        ],
+        "text": "oftheglobOoperator.SeeFile::Glob.",
+        "score": 0.9921506715543342
+      },
+      {
+        "box": [
+          [
+            97.0,
+            894.0
+          ],
+          [
+            172.0,
+            894.0
+          ],
+          [
+            172.0,
+            909.0
+          ],
+          [
+            97.0,
+            909.0
+          ]
+        ],
+        "text": "File::Spec",
+        "score": 0.9828068673610687
+      },
+      {
+        "box": [
+          [
+            139.0,
+            913.0
+          ],
+          [
+            911.0,
+            913.0
+          ],
+          [
+            911.0,
+            928.0
+          ],
+          [
+            139.0,
+            928.0
+          ]
+        ],
+        "text": "New methods have been added to the File::Spec module: devnullO returns the name of the null1 device (/dev/null",
+        "score": 0.9547972792928869
+      },
+      {
+        "box": [
+          [
+            141.0,
+            928.0
+          ],
+          [
+            902.0,
+            928.0
+          ],
+          [
+            902.0,
+            941.0
+          ],
+          [
+            141.0,
+            941.0
+          ]
+        ],
+        "text": "onUnix)and tmpdirO the name of the temp directory(normally/tmp onUnix).There are nowalsomethods to",
+        "score": 0.9596611693197367
+      },
+      {
+        "box": [
+          [
+            139.0,
+            942.0
+          ],
+          [
+            926.0,
+            942.0
+          ],
+          [
+            926.0,
+            958.0
+          ],
+          [
+            139.0,
+            957.0
+          ]
+        ],
+        "text": "convert between absolute and relative filenames:abs2relO and rel2absO.For compatibility with operating systems",
+        "score": 0.9708528746258128
+      },
+      {
+        "box": [
+          [
+            140.0,
+            956.0
+          ],
+          [
+            854.0,
+            956.0
+          ],
+          [
+            854.0,
+            972.0
+          ],
+          [
+            140.0,
+            972.0
+          ]
+        ],
+        "text": "that specify volume names in file paths, the splitpathO, splitdirO, and catdirO methods have been added.",
+        "score": 0.9927325970851458
+      },
+      {
+        "box": [
+          [
+            496.0,
+            988.0
+          ],
+          [
+            530.0,
+            988.0
+          ],
+          [
+            530.0,
+            1000.0
+          ],
+          [
+            496.0,
+            1000.0
+          ]
+        ],
+        "text": "1431",
+        "score": 0.9990484565496445
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 47,
+    "deduplicated": 0,
+    "elapsed_ms": 350.45,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 360.1
+}

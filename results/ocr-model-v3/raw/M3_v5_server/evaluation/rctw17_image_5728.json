@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_5728",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "15186d23d8fa3e313519d95c6bf2d0043dc3ebad538996160ba8bf566cf50862",
+  "ok": true,
+  "result": {
+    "text": "12308\n购票",
+    "lines": [
+      {
+        "box": [
+          [
+            1054.787234042553,
+            2324.1935483870966
+          ],
+          [
+            2017.0212765957447,
+            2369.354838709677
+          ],
+          [
+            2007.4468085106382,
+            2582.258064516129
+          ],
+          [
+            1045.212765957447,
+            2537.0967741935483
+          ]
+        ],
+        "text": "12308",
+        "score": 0.9976174235343933
+      },
+      {
+        "box": [
+          [
+            1132.9787234042553,
+            2508.064516129032
+          ],
+          [
+            2013.8297872340424,
+            2541.935483870968
+          ],
+          [
+            2002.659574468085,
+            2833.870967741935
+          ],
+          [
+            1121.8085106382978,
+            2800.0
+          ]
+        ],
+        "text": "购票",
+        "score": 0.9984480142593384
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 130.26
+  }
+}

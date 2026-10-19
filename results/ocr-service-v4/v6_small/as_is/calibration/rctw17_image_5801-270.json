@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_5801",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "d0126cbb240c19b6cf5e7f0e9fe0294f8160a124f1f4b826217b83f638b58d86",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "做",
+    "lines": [
+      {
+        "box": [
+          [
+            220.0,
+            232.0
+          ],
+          [
+            220.0,
+            340.0
+          ],
+          [
+            151.0,
+            340.0
+          ],
+          [
+            151.0,
+            232.0
+          ]
+        ],
+        "text": "做",
+        "score": 0.8940190672874451
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 33.03,
+    "direction_stats": {},
+    "elapsed_ms": 33.03
+  }
+}

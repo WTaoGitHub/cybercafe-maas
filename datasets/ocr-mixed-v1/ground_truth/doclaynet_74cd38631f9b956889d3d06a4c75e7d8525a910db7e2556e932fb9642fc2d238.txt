@@ -1,0 +1,61 @@
+Power option setting for the highest performance
+Select 
+Control Panel
+ Hardware
+ Power Options
+. In the window, select the 
+High 
+→
+→
+performance
+ Windows power plan option, as shown in Figure 6-14.
+Figure 6-14
+Windows Power Options
+Optimum disk command timeout settings
+Adjust the disk 
+ parameter on the Windows operating system for more reliable 
+TimeOutValue
+multipath access.
+Windows operating systems feature a default disk command 
+ of 60 seconds. If a 
+TimeOutValue
+SCSI command does not complete, the application waits 60 seconds before an I/O request is 
+tried again. Because this behavior can create issues with most applications, you must adjust 
+the disk 
+ in the registry key to a lower value. For more information about setting 
+TimeOutValue
+this value, see the Microsoft TechNet website at 
+.
+https://technet.microsoft.com/en-us/library/aa997069(v=exchg.80).aspx
+Adjust the following key to your needs: 
+HKLM\System\CurrentControlSet\Services\Disk\TimeOutValue
+Consider the following points:
+nonclustered
+For a disk in a 
+ configuration, set 
+ to 
+.
+GLYPH<SM590000>
+TimeOutValue
+10
+clustered
+For a disk in a 
+ configuration, set 
+ to 
+.
+GLYPH<SM590000>
+TimeOutValue
+20
+6.3.7
+FlashSystem 900 and client VMware ESX hosts
+The FlashSystem 900 can be attached to VMware ESX client hosts by using the FC method.
+Arbitrated loop topology is required when you attach the IBM FlashSystem 900 directly to the 
+client VMware ESX hosts.
+Note:
+ The FlashSystem 900 16 Gbps FC attachment does not support arbitrated loop 
+topology. The IBM FlashSystem 900 must be connected to a SAN switch when 16 Gbps 
+FC is used if the host operating system does not support point-to-point FC direct 
+connections. If arbitrated loop is required by the client host, connect at 8 Gbps FC to the 
+IBM FlashSystem 900.
+171
+Chapter 6. IBM FlashSystem 900 client host attachment and implementation 

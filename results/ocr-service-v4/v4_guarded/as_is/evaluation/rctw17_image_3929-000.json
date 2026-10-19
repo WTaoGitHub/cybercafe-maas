@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_3929",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "bc9adca519afdb6ccc97053dc675021bc986b47323308b46ad3bb7ebdedd77ed",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "KIA\n川M·S2299",
+    "lines": [
+      {
+        "box": [
+          [
+            1235.1048583984375,
+            1019.1774291992188
+          ],
+          [
+            1379.4677734375,
+            990.7984008789062
+          ],
+          [
+            1393.040283203125,
+            1058.6612548828125
+          ],
+          [
+            1248.677490234375,
+            1087.040283203125
+          ]
+        ],
+        "text": "KIA",
+        "score": 0.8976456522941589
+      },
+      {
+        "box": [
+          [
+            1119.1209716796875,
+            1547.274169921875
+          ],
+          [
+            1695.3387451171875,
+            1379.4677734375
+          ],
+          [
+            1742.225830078125,
+            1539.8709716796875
+          ],
+          [
+            1166.008056640625,
+            1707.677490234375
+          ]
+        ],
+        "text": "川M·S2299",
+        "score": 0.9827471375465393
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 142.18,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 2
+    },
+    "elapsed_ms": 142.19
+  }
+}

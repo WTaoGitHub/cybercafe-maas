@@ -1,0 +1,62 @@
+{
+  "variant": "v4_guarded",
+  "selected": {
+    "replicas": 4,
+    "concurrency": 16,
+    "estimated_mixed_ips": 10.756868034285095
+  },
+  "rule": "Harmonic mean for 1:1 request mix; choose lowest replicas/concurrency within95% of max estimate; validate actual throughput with sustained test. This is capacity selection, not a profit optimum.",
+  "candidates": [
+    {
+      "replicas": 4,
+      "concurrency": 8,
+      "estimated_mixed_ips": 10.157641822741956
+    },
+    {
+      "replicas": 4,
+      "concurrency": 4,
+      "estimated_mixed_ips": 9.509372140125883
+    },
+    {
+      "replicas": 2,
+      "concurrency": 2,
+      "estimated_mixed_ips": 5.315091834239699
+    },
+    {
+      "replicas": 2,
+      "concurrency": 8,
+      "estimated_mixed_ips": 8.065006664469012
+    },
+    {
+      "replicas": 1,
+      "concurrency": 4,
+      "estimated_mixed_ips": 4.497571538333295
+    },
+    {
+      "replicas": 1,
+      "concurrency": 8,
+      "estimated_mixed_ips": 4.451997230546815
+    },
+    {
+      "replicas": 1,
+      "concurrency": 1,
+      "estimated_mixed_ips": 3.1256383890297896
+    },
+    {
+      "replicas": 2,
+      "concurrency": 4,
+      "estimated_mixed_ips": 7.72219120073234
+    },
+    {
+      "replicas": 1,
+      "concurrency": 2,
+      "estimated_mixed_ips": 4.378071356138224
+    },
+    {
+      "replicas": 4,
+      "concurrency": 16,
+      "estimated_mixed_ips": 10.756868034285095
+    }
+  ],
+  "sustain_seconds": 120
+}

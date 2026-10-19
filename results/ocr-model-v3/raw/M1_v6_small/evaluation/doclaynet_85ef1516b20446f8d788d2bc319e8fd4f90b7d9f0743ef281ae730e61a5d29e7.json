@@ -1,0 +1,387 @@
+{
+  "id": "doclaynet_85ef1516b20446f8d788d2bc319e8fd4f90b7d9f0743ef281ae730e61a5d29e7",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "1548b681101a741cf8f636bcd6964466962829a13c806c767fc5db4aaaf9dcfe",
+  "ok": true,
+  "result": {
+    "text": "6\n022303 (2008).\n[16] M. Gu, C. Weedbrook, N. C. Menicucci, T. C. Ralph,\n[13] P. W. Shor, in IEEE Symposium on Foundations of Com-\nand P. van Loock, Phys. Rev. A 79 (2009).\nputer Science (1994) pp. 124–134.\n[17] Handbook of Mathematical Functions with Formu-\n[14] L. K. Grover, in Proceedings of the Twenty-Eighth Annual\nlas, Graphs, and Mathematical Tables, edited by\nACM Symposium on Theory of Computing (1996) Pp.\nM. Abramowitz and I. A. Stegun (Dover, 1972).\n212-219.\n[18] S. Winitzki, \"A handy approximation for the error func-\n[15] As said before, this consideration simplifies our initial\ntion and its inverse,\" (2008).\nanalysis, but it will be dropped in the next section.",
+    "lines": [
+      {
+        "box": [
+          [
+            930.0,
+            35.0
+          ],
+          [
+            943.0,
+            35.0
+          ],
+          [
+            943.0,
+            49.0
+          ],
+          [
+            930.0,
+            49.0
+          ]
+        ],
+        "text": "6",
+        "score": 0.9999772310256958
+      },
+      {
+        "box": [
+          [
+            118.0,
+            69.0
+          ],
+          [
+            218.0,
+            69.0
+          ],
+          [
+            218.0,
+            82.0
+          ],
+          [
+            118.0,
+            82.0
+          ]
+        ],
+        "text": "022303 (2008).",
+        "score": 0.954646646976471
+      },
+      {
+        "box": [
+          [
+            529.0,
+            68.0
+          ],
+          [
+            943.0,
+            68.0
+          ],
+          [
+            943.0,
+            84.0
+          ],
+          [
+            529.0,
+            84.0
+          ]
+        ],
+        "text": "[16] M. Gu, C. Weedbrook, N. C. Menicucci, T. C. Ralph,",
+        "score": 0.9877049326896667
+      },
+      {
+        "box": [
+          [
+            87.0,
+            80.0
+          ],
+          [
+            503.0,
+            80.0
+          ],
+          [
+            503.0,
+            99.0
+          ],
+          [
+            87.0,
+            99.0
+          ]
+        ],
+        "text": "[13] P. W. Shor, in IEEE Symposium on Foundations of Com-",
+        "score": 0.9975916147232056
+      },
+      {
+        "box": [
+          [
+            558.0,
+            81.0
+          ],
+          [
+            856.0,
+            81.0
+          ],
+          [
+            856.0,
+            97.0
+          ],
+          [
+            558.0,
+            97.0
+          ]
+        ],
+        "text": "and P. van Loock, Phys. Rev. A 79 (2009).",
+        "score": 0.9989496469497681
+      },
+      {
+        "box": [
+          [
+            117.0,
+            95.0
+          ],
+          [
+            350.0,
+            95.0
+          ],
+          [
+            350.0,
+            111.0
+          ],
+          [
+            117.0,
+            111.0
+          ]
+        ],
+        "text": "puter Science (1994) pp. 124–134.",
+        "score": 0.9980500936508179
+      },
+      {
+        "box": [
+          [
+            527.0,
+            93.0
+          ],
+          [
+            943.0,
+            93.0
+          ],
+          [
+            943.0,
+            112.0
+          ],
+          [
+            527.0,
+            112.0
+          ]
+        ],
+        "text": "[17] Handbook of Mathematical Functions with Formu-",
+        "score": 0.9768289923667908
+      },
+      {
+        "box": [
+          [
+            88.0,
+            108.0
+          ],
+          [
+            503.0,
+            108.0
+          ],
+          [
+            503.0,
+            124.0
+          ],
+          [
+            88.0,
+            124.0
+          ]
+        ],
+        "text": "[14] L. K. Grover, in Proceedings of the Twenty-Eighth Annual",
+        "score": 0.9909969568252563
+      },
+      {
+        "box": [
+          [
+            559.0,
+            108.0
+          ],
+          [
+            943.0,
+            108.0
+          ],
+          [
+            943.0,
+            124.0
+          ],
+          [
+            559.0,
+            124.0
+          ]
+        ],
+        "text": "las, Graphs, and Mathematical Tables, edited by",
+        "score": 0.9865861535072327
+      },
+      {
+        "box": [
+          [
+            118.0,
+            122.0
+          ],
+          [
+            500.0,
+            122.0
+          ],
+          [
+            500.0,
+            138.0
+          ],
+          [
+            118.0,
+            138.0
+          ]
+        ],
+        "text": "ACM Symposium on Theory of Computing (1996) Pp.",
+        "score": 0.9834028482437134
+      },
+      {
+        "box": [
+          [
+            559.0,
+            122.0
+          ],
+          [
+            888.0,
+            122.0
+          ],
+          [
+            888.0,
+            138.0
+          ],
+          [
+            559.0,
+            138.0
+          ]
+        ],
+        "text": "M. Abramowitz and I. A. Stegun (Dover, 1972).",
+        "score": 0.9976872801780701
+      },
+      {
+        "box": [
+          [
+            119.0,
+            136.0
+          ],
+          [
+            181.0,
+            136.0
+          ],
+          [
+            181.0,
+            149.0
+          ],
+          [
+            119.0,
+            149.0
+          ]
+        ],
+        "text": "212-219.",
+        "score": 0.9990732669830322
+      },
+      {
+        "box": [
+          [
+            529.0,
+            135.0
+          ],
+          [
+            942.0,
+            135.0
+          ],
+          [
+            942.0,
+            151.0
+          ],
+          [
+            529.0,
+            151.0
+          ]
+        ],
+        "text": "[18] S. Winitzki, \"A handy approximation for the error func-",
+        "score": 0.9887971878051758
+      },
+      {
+        "box": [
+          [
+            88.0,
+            149.0
+          ],
+          [
+            502.0,
+            149.0
+          ],
+          [
+            502.0,
+            165.0
+          ],
+          [
+            88.0,
+            165.0
+          ]
+        ],
+        "text": "[15] As said before, this consideration simplifies our initial",
+        "score": 0.9868266582489014
+      },
+      {
+        "box": [
+          [
+            559.0,
+            149.0
+          ],
+          [
+            757.0,
+            149.0
+          ],
+          [
+            757.0,
+            165.0
+          ],
+          [
+            559.0,
+            165.0
+          ]
+        ],
+        "text": "tion and its inverse,\" (2008).",
+        "score": 0.9948746562004089
+      },
+      {
+        "box": [
+          [
+            116.0,
+            162.0
+          ],
+          [
+            468.0,
+            161.0
+          ],
+          [
+            468.0,
+            177.0
+          ],
+          [
+            116.0,
+            178.0
+          ]
+        ],
+        "text": "analysis, but it will be dropped in the next section.",
+        "score": 0.9982057809829712
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 16,
+    "elapsed_ms": 130.8
+  }
+}

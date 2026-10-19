@@ -1,0 +1,1113 @@
+{
+  "id": "doclaynet_5e40a0c1b04b4e06e86937f6c03f5b81b86782283f78ec93af045fec53c2c255",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "e9f60c6e3bdd83a90c4abfcb331876ef73e8a35405961f4f2a270ef0bdaea1a0",
+  "ok": true,
+  "result": {
+    "text": "8459ch02.fm\nDraft Document for Review December 11, 2019 1:55 pm\nContainerize the applications, also called the VM-based lift and shift method. When you\ncontainerize an application, you reduce future costs, simplify operations, and cloud\nmigration to a common Kubernetes platform. You also focus on a single operational model\nthat can be used by both new cloud-native applications and traditional applications.\nExpose on-premises assets by using APIs\nThe use of APls allows new applications to use the exposed capability in an accessible\nway. Typically, this connection is made by way of The OpenAPI Specification (OAS) REST\nstandard that allows the interface to be discovered and managed.\nRefactor the monolith into macroservices\nTransform your monolith application to become cloud-native. For example: where you deal\nwith a huge Java or JavaScript files and break monoliths into smaller deployable\ncomponents.\nAdd capabilities as microservices\nEnrich your application with new business functions implemented as microservices. Your\napplication can consume a wide variety of services that are available in the cloud, such as\nAl. industry, and domain services.\nStrangle the monolith\nIncrementally withdraw the monolith from service by replacing functions with new\ncloud-native implementations.\nTo help you on your cloud journey, IBM introduced new and better experiences on\nmodernization approaches such as the incremental lift-and-shift to cloud-native\nmicroservices. You do not need to rewrite your entire application assets to move to the cloud.\nWith a cloud-native microservices approach, you can capitalize on the scalability and\nflexibility that is inherent in any robust cloud infrastructure.\nThe DevOps approach\nDevOps is about tools and techniques needed to bring the worlds of development and\noperations closer together. It is about the practices and automation required to reliably and\nrapidly deploy new code through the build and test cycles to production environments.\nDevOps is an approach where companies and their development, operations, and quality\nassurance teams collaborate to continuously deliver software. By following this approach,\nwhich is based on lean and agile principles, enterprises can seize market opportunities and\nreduce the time to include customer feedback in their products. DevOps applies to aging,\ntraditional, cloud-ready, and cloud-native applications.\nFailing fast and iterating quickly are DevOps requirements for competitive app delivery. They\nimply application architectures that decouple services from each other in a continuous\ndevelopment and delivery cycle, although ensuring well-performing interactions with users.\nIn a cloud-native environment, applications are viewed as collections of microservices with\nmany deployable components that deploy at various speeds and independently of each other.\nManually deploying anything becomes an unsustainable effort prone to error, inconsistency,\nand delays. Automating continuous delivery pipelines is a way to help operations from\ndeploying an application they have little knowledge of and rescue developers from complex\nconfigurations and deployments. Efficient delivery means more time for innovation, enabling\nthe business to disrupt the market and competitors.\nWhether they are accessing a website or a mobile app, people have high expectations of the\napps that they regularly use. As a result, companies must continuously deliver new features\n8\nRed Hat OpenShift and IBM Cloud Paks on IBM Power Systems: Volume 1",
+    "lines": [
+      {
+        "box": [
+          [
+            106.0,
+            41.0
+          ],
+          [
+            209.0,
+            41.0
+          ],
+          [
+            209.0,
+            54.0
+          ],
+          [
+            106.0,
+            54.0
+          ]
+        ],
+        "text": "8459ch02.fm",
+        "score": 0.9998773336410522
+      },
+      {
+        "box": [
+          [
+            540.0,
+            43.0
+          ],
+          [
+            917.0,
+            43.0
+          ],
+          [
+            917.0,
+            56.0
+          ],
+          [
+            540.0,
+            56.0
+          ]
+        ],
+        "text": "Draft Document for Review December 11, 2019 1:55 pm",
+        "score": 0.9880440831184387
+      },
+      {
+        "box": [
+          [
+            252.0,
+            90.0
+          ],
+          [
+            900.0,
+            90.0
+          ],
+          [
+            900.0,
+            103.0
+          ],
+          [
+            252.0,
+            103.0
+          ]
+        ],
+        "text": "Containerize the applications, also called the VM-based lift and shift method. When you",
+        "score": 0.9965206384658813
+      },
+      {
+        "box": [
+          [
+            251.0,
+            105.0
+          ],
+          [
+            866.0,
+            105.0
+          ],
+          [
+            866.0,
+            118.0
+          ],
+          [
+            251.0,
+            118.0
+          ]
+        ],
+        "text": "containerize an application, you reduce future costs, simplify operations, and cloud",
+        "score": 0.9964287877082825
+      },
+      {
+        "box": [
+          [
+            252.0,
+            121.0
+          ],
+          [
+            913.0,
+            121.0
+          ],
+          [
+            913.0,
+            134.0
+          ],
+          [
+            252.0,
+            134.0
+          ]
+        ],
+        "text": "migration to a common Kubernetes platform. You also focus on a single operational model",
+        "score": 0.9942573308944702
+      },
+      {
+        "box": [
+          [
+            250.0,
+            135.0
+          ],
+          [
+            868.0,
+            135.0
+          ],
+          [
+            868.0,
+            151.0
+          ],
+          [
+            250.0,
+            151.0
+          ]
+        ],
+        "text": "that can be used by both new cloud-native applications and traditional applications.",
+        "score": 0.996513843536377
+      },
+      {
+        "box": [
+          [
+            252.0,
+            158.0
+          ],
+          [
+            567.0,
+            158.0
+          ],
+          [
+            567.0,
+            171.0
+          ],
+          [
+            252.0,
+            171.0
+          ]
+        ],
+        "text": "Expose on-premises assets by using APIs",
+        "score": 0.9913889765739441
+      },
+      {
+        "box": [
+          [
+            252.0,
+            180.0
+          ],
+          [
+            896.0,
+            180.0
+          ],
+          [
+            896.0,
+            193.0
+          ],
+          [
+            252.0,
+            193.0
+          ]
+        ],
+        "text": "The use of APls allows new applications to use the exposed capability in an accessible",
+        "score": 0.9887005090713501
+      },
+      {
+        "box": [
+          [
+            250.0,
+            195.0
+          ],
+          [
+            913.0,
+            195.0
+          ],
+          [
+            913.0,
+            211.0
+          ],
+          [
+            250.0,
+            211.0
+          ]
+        ],
+        "text": "way. Typically, this connection is made by way of The OpenAPI Specification (OAS) REST",
+        "score": 0.9966849684715271
+      },
+      {
+        "box": [
+          [
+            251.0,
+            211.0
+          ],
+          [
+            737.0,
+            211.0
+          ],
+          [
+            737.0,
+            224.0
+          ],
+          [
+            251.0,
+            224.0
+          ]
+        ],
+        "text": "standard that allows the interface to be discovered and managed.",
+        "score": 0.9966334700584412
+      },
+      {
+        "box": [
+          [
+            251.0,
+            233.0
+          ],
+          [
+            557.0,
+            233.0
+          ],
+          [
+            557.0,
+            246.0
+          ],
+          [
+            251.0,
+            246.0
+          ]
+        ],
+        "text": "Refactor the monolith into macroservices",
+        "score": 0.9999133944511414
+      },
+      {
+        "box": [
+          [
+            252.0,
+            255.0
+          ],
+          [
+            913.0,
+            255.0
+          ],
+          [
+            913.0,
+            268.0
+          ],
+          [
+            252.0,
+            268.0
+          ]
+        ],
+        "text": "Transform your monolith application to become cloud-native. For example: where you deal",
+        "score": 0.9978182315826416
+      },
+      {
+        "box": [
+          [
+            251.0,
+            270.0
+          ],
+          [
+            846.0,
+            270.0
+          ],
+          [
+            846.0,
+            283.0
+          ],
+          [
+            251.0,
+            283.0
+          ]
+        ],
+        "text": "with a huge Java or JavaScript files and break monoliths into smaller deployable",
+        "score": 0.9979265928268433
+      },
+      {
+        "box": [
+          [
+            251.0,
+            287.0
+          ],
+          [
+            348.0,
+            287.0
+          ],
+          [
+            348.0,
+            300.0
+          ],
+          [
+            251.0,
+            300.0
+          ]
+        ],
+        "text": "components.",
+        "score": 0.9999650716781616
+      },
+      {
+        "box": [
+          [
+            252.0,
+            308.0
+          ],
+          [
+            499.0,
+            308.0
+          ],
+          [
+            499.0,
+            321.0
+          ],
+          [
+            252.0,
+            321.0
+          ]
+        ],
+        "text": "Add capabilities as microservices",
+        "score": 0.9998731017112732
+      },
+      {
+        "box": [
+          [
+            252.0,
+            330.0
+          ],
+          [
+            910.0,
+            330.0
+          ],
+          [
+            910.0,
+            343.0
+          ],
+          [
+            252.0,
+            343.0
+          ]
+        ],
+        "text": "Enrich your application with new business functions implemented as microservices. Your",
+        "score": 0.9969577193260193
+      },
+      {
+        "box": [
+          [
+            250.0,
+            345.0
+          ],
+          [
+            913.0,
+            345.0
+          ],
+          [
+            913.0,
+            361.0
+          ],
+          [
+            250.0,
+            361.0
+          ]
+        ],
+        "text": "application can consume a wide variety of services that are available in the cloud, such as",
+        "score": 0.9945672750473022
+      },
+      {
+        "box": [
+          [
+            251.0,
+            360.0
+          ],
+          [
+            504.0,
+            360.0
+          ],
+          [
+            504.0,
+            373.0
+          ],
+          [
+            251.0,
+            373.0
+          ]
+        ],
+        "text": "Al. industry, and domain services.",
+        "score": 0.9724493622779846
+      },
+      {
+        "box": [
+          [
+            251.0,
+            382.0
+          ],
+          [
+            412.0,
+            382.0
+          ],
+          [
+            412.0,
+            398.0
+          ],
+          [
+            251.0,
+            398.0
+          ]
+        ],
+        "text": "Strangle the monolith",
+        "score": 0.9999861717224121
+      },
+      {
+        "box": [
+          [
+            250.0,
+            404.0
+          ],
+          [
+            852.0,
+            404.0
+          ],
+          [
+            852.0,
+            420.0
+          ],
+          [
+            250.0,
+            420.0
+          ]
+        ],
+        "text": "Incrementally withdraw the monolith from service by replacing functions with new",
+        "score": 0.9999853372573853
+      },
+      {
+        "box": [
+          [
+            251.0,
+            421.0
+          ],
+          [
+            474.0,
+            421.0
+          ],
+          [
+            474.0,
+            434.0
+          ],
+          [
+            251.0,
+            434.0
+          ]
+        ],
+        "text": "cloud-native implementations.",
+        "score": 0.9999114274978638
+      },
+      {
+        "box": [
+          [
+            227.0,
+            448.0
+          ],
+          [
+            838.0,
+            448.0
+          ],
+          [
+            838.0,
+            464.0
+          ],
+          [
+            227.0,
+            464.0
+          ]
+        ],
+        "text": "To help you on your cloud journey, IBM introduced new and better experiences on",
+        "score": 0.9948970079421997
+      },
+      {
+        "box": [
+          [
+            226.0,
+            463.0
+          ],
+          [
+            814.0,
+            463.0
+          ],
+          [
+            814.0,
+            479.0
+          ],
+          [
+            226.0,
+            479.0
+          ]
+        ],
+        "text": "modernization approaches such as the incremental lift-and-shift to cloud-native",
+        "score": 0.999746561050415
+      },
+      {
+        "box": [
+          [
+            227.0,
+            480.0
+          ],
+          [
+            912.0,
+            480.0
+          ],
+          [
+            912.0,
+            493.0
+          ],
+          [
+            227.0,
+            493.0
+          ]
+        ],
+        "text": "microservices. You do not need to rewrite your entire application assets to move to the cloud.",
+        "score": 0.9934300184249878
+      },
+      {
+        "box": [
+          [
+            226.0,
+            495.0
+          ],
+          [
+            858.0,
+            495.0
+          ],
+          [
+            858.0,
+            511.0
+          ],
+          [
+            226.0,
+            511.0
+          ]
+        ],
+        "text": "With a cloud-native microservices approach, you can capitalize on the scalability and",
+        "score": 0.9976986050605774
+      },
+      {
+        "box": [
+          [
+            227.0,
+            511.0
+          ],
+          [
+            659.0,
+            511.0
+          ],
+          [
+            659.0,
+            525.0
+          ],
+          [
+            227.0,
+            525.0
+          ]
+        ],
+        "text": "flexibility that is inherent in any robust cloud infrastructure.",
+        "score": 0.9999021291732788
+      },
+      {
+        "box": [
+          [
+            227.0,
+            551.0
+          ],
+          [
+            442.0,
+            551.0
+          ],
+          [
+            442.0,
+            568.0
+          ],
+          [
+            227.0,
+            568.0
+          ]
+        ],
+        "text": "The DevOps approach",
+        "score": 0.9999760985374451
+      },
+      {
+        "box": [
+          [
+            227.0,
+            570.0
+          ],
+          [
+            866.0,
+            570.0
+          ],
+          [
+            866.0,
+            586.0
+          ],
+          [
+            227.0,
+            586.0
+          ]
+        ],
+        "text": "DevOps is about tools and techniques needed to bring the worlds of development and",
+        "score": 0.9970332980155945
+      },
+      {
+        "box": [
+          [
+            227.0,
+            585.0
+          ],
+          [
+            899.0,
+            585.0
+          ],
+          [
+            899.0,
+            601.0
+          ],
+          [
+            227.0,
+            601.0
+          ]
+        ],
+        "text": "operations closer together. It is about the practices and automation required to reliably and",
+        "score": 0.9969127774238586
+      },
+      {
+        "box": [
+          [
+            226.0,
+            602.0
+          ],
+          [
+            866.0,
+            601.0
+          ],
+          [
+            866.0,
+            617.0
+          ],
+          [
+            226.0,
+            618.0
+          ]
+        ],
+        "text": "rapidly deploy new code through the build and test cycles to production environments.",
+        "score": 0.9921649694442749
+      },
+      {
+        "box": [
+          [
+            227.0,
+            630.0
+          ],
+          [
+            889.0,
+            630.0
+          ],
+          [
+            889.0,
+            646.0
+          ],
+          [
+            227.0,
+            646.0
+          ]
+        ],
+        "text": "DevOps is an approach where companies and their development, operations, and quality",
+        "score": 0.9950880408287048
+      },
+      {
+        "box": [
+          [
+            227.0,
+            647.0
+          ],
+          [
+            889.0,
+            647.0
+          ],
+          [
+            889.0,
+            660.0
+          ],
+          [
+            227.0,
+            660.0
+          ]
+        ],
+        "text": "assurance teams collaborate to continuously deliver software. By following this approach,",
+        "score": 0.9923385381698608
+      },
+      {
+        "box": [
+          [
+            226.0,
+            661.0
+          ],
+          [
+            904.0,
+            661.0
+          ],
+          [
+            904.0,
+            677.0
+          ],
+          [
+            226.0,
+            677.0
+          ]
+        ],
+        "text": "which is based on lean and agile principles, enterprises can seize market opportunities and",
+        "score": 0.9949118494987488
+      },
+      {
+        "box": [
+          [
+            225.0,
+            676.0
+          ],
+          [
+            888.0,
+            677.0
+          ],
+          [
+            888.0,
+            693.0
+          ],
+          [
+            225.0,
+            692.0
+          ]
+        ],
+        "text": "reduce the time to include customer feedback in their products. DevOps applies to aging,",
+        "score": 0.9955049157142639
+      },
+      {
+        "box": [
+          [
+            227.0,
+            694.0
+          ],
+          [
+            629.0,
+            694.0
+          ],
+          [
+            629.0,
+            707.0
+          ],
+          [
+            227.0,
+            707.0
+          ]
+        ],
+        "text": "traditional, cloud-ready, and cloud-native applications.",
+        "score": 0.9989402890205383
+      },
+      {
+        "box": [
+          [
+            227.0,
+            721.0
+          ],
+          [
+            913.0,
+            721.0
+          ],
+          [
+            913.0,
+            737.0
+          ],
+          [
+            227.0,
+            737.0
+          ]
+        ],
+        "text": "Failing fast and iterating quickly are DevOps requirements for competitive app delivery. They",
+        "score": 0.9960281252861023
+      },
+      {
+        "box": [
+          [
+            227.0,
+            736.0
+          ],
+          [
+            865.0,
+            736.0
+          ],
+          [
+            865.0,
+            752.0
+          ],
+          [
+            227.0,
+            752.0
+          ]
+        ],
+        "text": "imply application architectures that decouple services from each other in a continuous",
+        "score": 0.9999316930770874
+      },
+      {
+        "box": [
+          [
+            227.0,
+            752.0
+          ],
+          [
+            898.0,
+            752.0
+          ],
+          [
+            898.0,
+            765.0
+          ],
+          [
+            227.0,
+            765.0
+          ]
+        ],
+        "text": "development and delivery cycle, although ensuring well-performing interactions with users.",
+        "score": 0.9989776015281677
+      },
+      {
+        "box": [
+          [
+            226.0,
+            779.0
+          ],
+          [
+            898.0,
+            779.0
+          ],
+          [
+            898.0,
+            795.0
+          ],
+          [
+            226.0,
+            795.0
+          ]
+        ],
+        "text": "In a cloud-native environment, applications are viewed as collections of microservices with",
+        "score": 0.9995766878128052
+      },
+      {
+        "box": [
+          [
+            227.0,
+            797.0
+          ],
+          [
+            912.0,
+            797.0
+          ],
+          [
+            912.0,
+            810.0
+          ],
+          [
+            227.0,
+            810.0
+          ]
+        ],
+        "text": "many deployable components that deploy at various speeds and independently of each other.",
+        "score": 0.9994397163391113
+      },
+      {
+        "box": [
+          [
+            225.0,
+            810.0
+          ],
+          [
+            908.0,
+            811.0
+          ],
+          [
+            908.0,
+            828.0
+          ],
+          [
+            225.0,
+            827.0
+          ]
+        ],
+        "text": "Manually deploying anything becomes an unsustainable effort prone to error, inconsistency,",
+        "score": 0.9999406337738037
+      },
+      {
+        "box": [
+          [
+            227.0,
+            828.0
+          ],
+          [
+            865.0,
+            828.0
+          ],
+          [
+            865.0,
+            841.0
+          ],
+          [
+            227.0,
+            841.0
+          ]
+        ],
+        "text": "and delays. Automating continuous delivery pipelines is a way to help operations from",
+        "score": 0.9905500411987305
+      },
+      {
+        "box": [
+          [
+            227.0,
+            842.0
+          ],
+          [
+            905.0,
+            842.0
+          ],
+          [
+            905.0,
+            858.0
+          ],
+          [
+            227.0,
+            858.0
+          ]
+        ],
+        "text": "deploying an application they have little knowledge of and rescue developers from complex",
+        "score": 0.9849815964698792
+      },
+      {
+        "box": [
+          [
+            226.0,
+            858.0
+          ],
+          [
+            909.0,
+            858.0
+          ],
+          [
+            909.0,
+            874.0
+          ],
+          [
+            226.0,
+            874.0
+          ]
+        ],
+        "text": "configurations and deployments. Efficient delivery means more time for innovation, enabling",
+        "score": 0.9999619126319885
+      },
+      {
+        "box": [
+          [
+            227.0,
+            874.0
+          ],
+          [
+            609.0,
+            874.0
+          ],
+          [
+            609.0,
+            887.0
+          ],
+          [
+            227.0,
+            887.0
+          ]
+        ],
+        "text": "the business to disrupt the market and competitors.",
+        "score": 0.9944716691970825
+      },
+      {
+        "box": [
+          [
+            228.0,
+            903.0
+          ],
+          [
+            912.0,
+            903.0
+          ],
+          [
+            912.0,
+            916.0
+          ],
+          [
+            228.0,
+            916.0
+          ]
+        ],
+        "text": "Whether they are accessing a website or a mobile app, people have high expectations of the",
+        "score": 0.9924196004867554
+      },
+      {
+        "box": [
+          [
+            226.0,
+            918.0
+          ],
+          [
+            908.0,
+            917.0
+          ],
+          [
+            908.0,
+            933.0
+          ],
+          [
+            226.0,
+            934.0
+          ]
+        ],
+        "text": "apps that they regularly use. As a result, companies must continuously deliver new features",
+        "score": 0.9962297081947327
+      },
+      {
+        "box": [
+          [
+            105.0,
+            975.0
+          ],
+          [
+            120.0,
+            975.0
+          ],
+          [
+            120.0,
+            987.0
+          ],
+          [
+            105.0,
+            987.0
+          ]
+        ],
+        "text": "8",
+        "score": 0.9999383687973022
+      },
+      {
+        "box": [
+          [
+            145.0,
+            975.0
+          ],
+          [
+            667.0,
+            975.0
+          ],
+          [
+            667.0,
+            988.0
+          ],
+          [
+            145.0,
+            988.0
+          ]
+        ],
+        "text": "Red Hat OpenShift and IBM Cloud Paks on IBM Power Systems: Volume 1",
+        "score": 0.9952729344367981
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 49,
+    "elapsed_ms": 511.56
+  }
+}

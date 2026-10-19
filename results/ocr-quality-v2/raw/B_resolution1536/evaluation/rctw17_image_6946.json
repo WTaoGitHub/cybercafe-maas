@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_6946",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "退币口",
+    "lines": [
+      {
+        "box": [
+          [
+            1308.6370849609375,
+            1131.142822265625
+          ],
+          [
+            2606.669189453125,
+            1162.857177734375
+          ],
+          [
+            2598.185302734375,
+            1549.771484375
+          ],
+          [
+            1298.0322265625,
+            1518.05712890625
+          ]
+        ],
+        "text": "退币口",
+        "score": 0.985062857468923
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 151.17,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 209.32
+}

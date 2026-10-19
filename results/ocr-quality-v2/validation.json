@@ -1,0 +1,44 @@
+{
+  "run_counts": {
+    "E_rotate90/calibration": {
+      "total": 40,
+      "success": 40
+    },
+    "A_default/calibration": {
+      "total": 40,
+      "success": 40
+    },
+    "A_default/evaluation": {
+      "total": 160,
+      "success": 160
+    },
+    "B_resolution1536/calibration": {
+      "total": 40,
+      "success": 40
+    },
+    "B_resolution1536/evaluation": {
+      "total": 160,
+      "success": 160
+    },
+    "D_score030/calibration": {
+      "total": 40,
+      "success": 40
+    },
+    "D_score030/evaluation": {
+      "total": 160,
+      "success": 160
+    },
+    "C_tiles1024/calibration": {
+      "total": 40,
+      "success": 40
+    },
+    "C_tiles1024/evaluation": {
+      "total": 160,
+      "success": 160
+    }
+  },
+  "v1_baseline_agreement": {
+    "same_text": 200,
+    "same_lines": 200
+  }
+}

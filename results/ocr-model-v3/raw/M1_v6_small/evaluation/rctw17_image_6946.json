@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_6946",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "2835460a6821170b49eb291673375d1a8852c1636915e77cb99cd97d2f3a6e1f",
+  "ok": true,
+  "result": {
+    "text": "回品\n退币口",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            3143.2741935483873,
+            0.0
+          ],
+          [
+            3143.2741935483873,
+            942.9714285714285
+          ],
+          [
+            0.0,
+            942.9714285714285
+          ]
+        ],
+        "text": "回品",
+        "score": 0.6608850359916687
+      },
+      {
+        "box": [
+          [
+            1289.5483870967741,
+            1088.857142857143
+          ],
+          [
+            2632.1209677419356,
+            1114.2285714285715
+          ],
+          [
+            2623.6370967741937,
+            1579.3714285714286
+          ],
+          [
+            1281.0645161290324,
+            1554.0
+          ]
+        ],
+        "text": "退币口",
+        "score": 0.9808594584465027
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1120,
+      1984,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 75.49
+  }
+}

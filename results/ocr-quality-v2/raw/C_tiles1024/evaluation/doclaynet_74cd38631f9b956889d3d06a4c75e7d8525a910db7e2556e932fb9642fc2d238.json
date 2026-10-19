@@ -1,0 +1,1228 @@
+{
+  "id": "doclaynet_74cd38631f9b956889d3d06a4c75e7d8525a910db7e2556e932fb9642fc2d238",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "Poweroptionsettingforthehighestperformance\nSelectControlPanel→Hardware→PowerOptions.Inthewindow,selecttheHigh\nperformanceWindows power plan option,as shown inFigure 6-14.\nCcrtralPerel-HardvrarePoner Options\nSeerchContol Panel\n?\nControl Panel Home\nSelect a power plan\nposver plans can hep you mazmize your computer's performance or conserve energy.\nChoose nhst ths power buttcn\nMake a plan acbve by selecbng t, or chooce  plan and customize it by changing ts pcvrer\neraod s bufueup Aq al ezjuoqsns pue ue/d e esooup ao  bugpelas (q anqoe ueld e e>\ndoes\nsettings. Tol mo moro about povs plans\nCreate a power plan\nPreferred plers\nChoose nhen to turn off ths\nC Balonced (rccommcnded)\nChange plen sottigs\ndisplay\nAodsip\nAutomatically balances performance with cnergy consumptien on\ncapable hardware.\nHigh performance\nChange plan settings\nFavors performance, but may use more energy.\nSee also\nsueqd ouensppo xcus\n5how additional plans\nUser Accounts\nFigure6-14WindowsPowerOptions\nOptimumdiskcommandtimeoutsettings\nAdjustthediskTimeoutvalueparameterontheWindowsoperatingsystemformorereliable\nmultipath access.\nWindowsoperatingsystemsfeatureadefaultdiskcommandTime0utvalueof60seconds.Ifa\nSCSlcommanddoesnotcomplete,theapplicationwaits60secondsbeforeanI/Orequestis\ntriedagain.Because thisbehaviorcancreateissueswithmostapplications,youmustadjust\nthediskTime0utvalueintheregistrykeytoalowervalue.Formoreinformationaboutsetting\nthisvalue,seetheMicrosoftTechNetwebsiteat\nhttps://technet.microsoft.com/en-us/1ibrary/aa997069(v=exchg.80).aspx.\nAdjust thefollowingkeytoyourneeds:\nHKLM\\System\\CurrentControlSet\\Services\\Disk\\TimeOutValue\nConsider thefollowingpoints:\nFor a disk in a nonclusteredconfiguration,setTime0utValue to 10.\nFor a disk in a clustered configuration,setTimeOutValue to20.\n6.3.7FlashSystem900andclientVMwareESXhosts\nTheFlashSystem9oocanbe attached toVMwareESXclient hostsbyusing theFCmethod.\nArbitratedlooptopologyisrequiredwhenyou attachtheIBMFlashSystem9oodirectlytothe\nclientVMwareESXhosts.\ntopology.TheIBMFlashSystem9oomustbeconnectedtoaSANswitchwhen16Gbps\nFC isusedif thehostoperatingsystemdoesnotsupportpoint-to-pointFCdirect\nconnections.Ifarbitratedloopisrequiredbytheclienthost,connectat8GbpsFCtothe\nIBMFlashSystem900.\nChapter 6. 1BM FlashSystem 9o0 client host attachment and implementation\n171",
+    "lines": [
+      {
+        "box": [
+          [
+            227.0,
+            89.0
+          ],
+          [
+            703.0,
+            91.0
+          ],
+          [
+            703.0,
+            111.0
+          ],
+          [
+            227.0,
+            109.0
+          ]
+        ],
+        "text": "Poweroptionsettingforthehighestperformance",
+        "score": 0.9976609718231928
+      },
+      {
+        "box": [
+          [
+            227.0,
+            109.0
+          ],
+          [
+            871.0,
+            109.0
+          ],
+          [
+            871.0,
+            128.0
+          ],
+          [
+            227.0,
+            128.0
+          ]
+        ],
+        "text": "SelectControlPanel→Hardware→PowerOptions.Inthewindow,selecttheHigh",
+        "score": 0.9868067060456132
+      },
+      {
+        "box": [
+          [
+            226.0,
+            124.0
+          ],
+          [
+            735.0,
+            123.0
+          ],
+          [
+            735.0,
+            143.0
+          ],
+          [
+            226.0,
+            144.0
+          ]
+        ],
+        "text": "performanceWindows power plan option,as shown inFigure 6-14.",
+        "score": 0.9664271652698517
+      },
+      {
+        "box": [
+          [
+            284.0,
+            162.0
+          ],
+          [
+            563.0,
+            162.0
+          ],
+          [
+            563.0,
+            182.0
+          ],
+          [
+            284.0,
+            182.0
+          ]
+        ],
+        "text": "CcrtralPerel-HardvrarePoner Options",
+        "score": 0.8836029163428716
+      },
+      {
+        "box": [
+          [
+            613.0,
+            165.0
+          ],
+          [
+            771.0,
+            165.0
+          ],
+          [
+            771.0,
+            182.0
+          ],
+          [
+            613.0,
+            182.0
+          ]
+        ],
+        "text": "SeerchContol Panel",
+        "score": 0.92037476433648
+      },
+      {
+        "box": [
+          [
+            891.0,
+            191.0
+          ],
+          [
+            902.0,
+            191.0
+          ],
+          [
+            902.0,
+            200.0
+          ],
+          [
+            891.0,
+            200.0
+          ]
+        ],
+        "text": "?",
+        "score": 0.5711093544960022
+      },
+      {
+        "box": [
+          [
+            260.0,
+            197.0
+          ],
+          [
+            359.0,
+            197.0
+          ],
+          [
+            359.0,
+            212.0
+          ],
+          [
+            260.0,
+            212.0
+          ]
+        ],
+        "text": "Control Panel Home",
+        "score": 0.9896839658419291
+      },
+      {
+        "box": [
+          [
+            456.0,
+            201.0
+          ],
+          [
+            572.0,
+            201.0
+          ],
+          [
+            572.0,
+            217.0
+          ],
+          [
+            456.0,
+            217.0
+          ]
+        ],
+        "text": "Select a power plan",
+        "score": 0.9859868350781893
+      },
+      {
+        "box": [
+          [
+            454.0,
+            215.0
+          ],
+          [
+            877.0,
+            215.0
+          ],
+          [
+            877.0,
+            234.0
+          ],
+          [
+            454.0,
+            234.0
+          ]
+        ],
+        "text": "posver plans can hep you mazmize your computer's performance or conserve energy.",
+        "score": 0.9446240529417992
+      },
+      {
+        "box": [
+          [
+            260.0,
+            224.0
+          ],
+          [
+            415.0,
+            224.0
+          ],
+          [
+            415.0,
+            240.0
+          ],
+          [
+            260.0,
+            240.0
+          ]
+        ],
+        "text": "Choose nhst ths power buttcn",
+        "score": 0.9284515604376793
+      },
+      {
+        "box": [
+          [
+            455.0,
+            225.0
+          ],
+          [
+            894.0,
+            226.0
+          ],
+          [
+            894.0,
+            243.0
+          ],
+          [
+            455.0,
+            242.0
+          ]
+        ],
+        "text": "Make a plan acbve by selecbng t, or chooce  plan and customize it by changing ts pcvrer",
+        "score": 0.9174913647531093
+      },
+      {
+        "box": [
+          [
+            455.0,
+            227.0
+          ],
+          [
+            896.0,
+            227.0
+          ],
+          [
+            896.0,
+            243.0
+          ],
+          [
+            455.0,
+            243.0
+          ]
+        ],
+        "text": "eraod s bufueup Aq al ezjuoqsns pue ue/d e esooup ao  bugpelas (q anqoe ueld e e>",
+        "score": 0.698175349905167
+      },
+      {
+        "box": [
+          [
+            260.0,
+            236.0
+          ],
+          [
+            287.0,
+            236.0
+          ],
+          [
+            287.0,
+            250.0
+          ],
+          [
+            260.0,
+            250.0
+          ]
+        ],
+        "text": "does",
+        "score": 0.9896571040153503
+      },
+      {
+        "box": [
+          [
+            455.0,
+            236.0
+          ],
+          [
+            659.0,
+            237.0
+          ],
+          [
+            659.0,
+            254.0
+          ],
+          [
+            455.0,
+            253.0
+          ]
+        ],
+        "text": "settings. Tol mo moro about povs plans",
+        "score": 0.9304970518538827
+      },
+      {
+        "box": [
+          [
+            258.0,
+            249.0
+          ],
+          [
+            364.0,
+            251.0
+          ],
+          [
+            364.0,
+            268.0
+          ],
+          [
+            258.0,
+            266.0
+          ]
+        ],
+        "text": "Create a power plan",
+        "score": 0.9572728135083851
+      },
+      {
+        "box": [
+          [
+            457.0,
+            259.0
+          ],
+          [
+            536.0,
+            259.0
+          ],
+          [
+            536.0,
+            273.0
+          ],
+          [
+            457.0,
+            273.0
+          ]
+        ],
+        "text": "Preferred plers",
+        "score": 0.9850600560506185
+      },
+      {
+        "box": [
+          [
+            240.0,
+            266.0
+          ],
+          [
+            402.0,
+            266.0
+          ],
+          [
+            402.0,
+            283.0
+          ],
+          [
+            240.0,
+            283.0
+          ]
+        ],
+        "text": "Choose nhen to turn off ths",
+        "score": 0.9452412172600075
+      },
+      {
+        "box": [
+          [
+            472.0,
+            274.0
+          ],
+          [
+            641.0,
+            275.0
+          ],
+          [
+            641.0,
+            292.0
+          ],
+          [
+            472.0,
+            291.0
+          ]
+        ],
+        "text": "C Balonced (rccommcnded)",
+        "score": 0.9248624965548515
+      },
+      {
+        "box": [
+          [
+            770.0,
+            275.0
+          ],
+          [
+            876.0,
+            275.0
+          ],
+          [
+            876.0,
+            292.0
+          ],
+          [
+            770.0,
+            292.0
+          ]
+        ],
+        "text": "Change plen sottigs",
+        "score": 0.9705047513309278
+      },
+      {
+        "box": [
+          [
+            260.0,
+            279.0
+          ],
+          [
+            297.0,
+            279.0
+          ],
+          [
+            297.0,
+            293.0
+          ],
+          [
+            260.0,
+            293.0
+          ]
+        ],
+        "text": "display",
+        "score": 0.9940567186900547
+      },
+      {
+        "box": [
+          [
+            260.0,
+            279.0
+          ],
+          [
+            296.0,
+            279.0
+          ],
+          [
+            296.0,
+            293.0
+          ],
+          [
+            260.0,
+            293.0
+          ]
+        ],
+        "text": "Aodsip",
+        "score": 0.7033946265776952
+      },
+      {
+        "box": [
+          [
+            485.0,
+            293.0
+          ],
+          [
+            843.0,
+            295.0
+          ],
+          [
+            843.0,
+            312.0
+          ],
+          [
+            485.0,
+            310.0
+          ]
+        ],
+        "text": "Automatically balances performance with cnergy consumptien on",
+        "score": 0.9514604132683551
+      },
+      {
+        "box": [
+          [
+            487.0,
+            308.0
+          ],
+          [
+            584.0,
+            308.0
+          ],
+          [
+            584.0,
+            322.0
+          ],
+          [
+            487.0,
+            322.0
+          ]
+        ],
+        "text": "capable hardware.",
+        "score": 0.9814372623667997
+      },
+      {
+        "box": [
+          [
+            472.0,
+            330.0
+          ],
+          [
+            580.0,
+            333.0
+          ],
+          [
+            580.0,
+            350.0
+          ],
+          [
+            472.0,
+            347.0
+          ]
+        ],
+        "text": "High performance",
+        "score": 0.9554287269711494
+      },
+      {
+        "box": [
+          [
+            770.0,
+            332.0
+          ],
+          [
+            876.0,
+            332.0
+          ],
+          [
+            876.0,
+            348.0
+          ],
+          [
+            770.0,
+            348.0
+          ]
+        ],
+        "text": "Change plan settings",
+        "score": 0.9785829782485962
+      },
+      {
+        "box": [
+          [
+            485.0,
+            351.0
+          ],
+          [
+            739.0,
+            352.0
+          ],
+          [
+            739.0,
+            369.0
+          ],
+          [
+            485.0,
+            368.0
+          ]
+        ],
+        "text": "Favors performance, but may use more energy.",
+        "score": 0.9831442480737512
+      },
+      {
+        "box": [
+          [
+            260.0,
+            370.0
+          ],
+          [
+            312.0,
+            370.0
+          ],
+          [
+            312.0,
+            384.0
+          ],
+          [
+            260.0,
+            384.0
+          ]
+        ],
+        "text": "See also",
+        "score": 0.9463966861367226
+      },
+      {
+        "box": [
+          [
+            456.0,
+            382.0
+          ],
+          [
+            565.0,
+            381.0
+          ],
+          [
+            565.0,
+            398.0
+          ],
+          [
+            456.0,
+            399.0
+          ]
+        ],
+        "text": "sueqd ouensppo xcus",
+        "score": 0.7483292849440324
+      },
+      {
+        "box": [
+          [
+            457.0,
+            382.0
+          ],
+          [
+            564.0,
+            382.0
+          ],
+          [
+            564.0,
+            398.0
+          ],
+          [
+            457.0,
+            398.0
+          ]
+        ],
+        "text": "5how additional plans",
+        "score": 0.9653708423886981
+      },
+      {
+        "box": [
+          [
+            259.0,
+            385.0
+          ],
+          [
+            334.0,
+            385.0
+          ],
+          [
+            334.0,
+            402.0
+          ],
+          [
+            259.0,
+            402.0
+          ]
+        ],
+        "text": "User Accounts",
+        "score": 0.9218299893232492
+      },
+      {
+        "box": [
+          [
+            229.0,
+            403.0
+          ],
+          [
+            486.0,
+            403.0
+          ],
+          [
+            486.0,
+            420.0
+          ],
+          [
+            229.0,
+            420.0
+          ]
+        ],
+        "text": "Figure6-14WindowsPowerOptions",
+        "score": 0.9877415648822127
+      },
+      {
+        "box": [
+          [
+            228.0,
+            436.0
+          ],
+          [
+            626.0,
+            437.0
+          ],
+          [
+            626.0,
+            457.0
+          ],
+          [
+            228.0,
+            456.0
+          ]
+        ],
+        "text": "Optimumdiskcommandtimeoutsettings",
+        "score": 0.9978066899559714
+      },
+      {
+        "box": [
+          [
+            226.0,
+            454.0
+          ],
+          [
+            908.0,
+            455.0
+          ],
+          [
+            908.0,
+            475.0
+          ],
+          [
+            226.0,
+            474.0
+          ]
+        ],
+        "text": "AdjustthediskTimeoutvalueparameterontheWindowsoperatingsystemformorereliable",
+        "score": 0.9847180184565092
+      },
+      {
+        "box": [
+          [
+            225.0,
+            469.0
+          ],
+          [
+            361.0,
+            471.0
+          ],
+          [
+            361.0,
+            491.0
+          ],
+          [
+            225.0,
+            489.0
+          ]
+        ],
+        "text": "multipath access.",
+        "score": 0.9947451388134676
+      },
+      {
+        "box": [
+          [
+            226.0,
+            498.0
+          ],
+          [
+            916.0,
+            499.0
+          ],
+          [
+            916.0,
+            519.0
+          ],
+          [
+            226.0,
+            518.0
+          ]
+        ],
+        "text": "WindowsoperatingsystemsfeatureadefaultdiskcommandTime0utvalueof60seconds.Ifa",
+        "score": 0.9756157782516981
+      },
+      {
+        "box": [
+          [
+            227.0,
+            515.0
+          ],
+          [
+            915.0,
+            515.0
+          ],
+          [
+            915.0,
+            534.0
+          ],
+          [
+            227.0,
+            534.0
+          ]
+        ],
+        "text": "SCSlcommanddoesnotcomplete,theapplicationwaits60secondsbeforeanI/Orequestis",
+        "score": 0.9814851435025533
+      },
+      {
+        "box": [
+          [
+            225.0,
+            529.0
+          ],
+          [
+            915.0,
+            530.0
+          ],
+          [
+            915.0,
+            550.0
+          ],
+          [
+            225.0,
+            549.0
+          ]
+        ],
+        "text": "triedagain.Because thisbehaviorcancreateissueswithmostapplications,youmustadjust",
+        "score": 0.9752753116190434
+      },
+      {
+        "box": [
+          [
+            225.0,
+            544.0
+          ],
+          [
+            915.0,
+            546.0
+          ],
+          [
+            915.0,
+            566.0
+          ],
+          [
+            225.0,
+            564.0
+          ]
+        ],
+        "text": "thediskTime0utvalueintheregistrykeytoalowervalue.Formoreinformationaboutsetting",
+        "score": 0.9731995448281493
+      },
+      {
+        "box": [
+          [
+            227.0,
+            563.0
+          ],
+          [
+            588.0,
+            563.0
+          ],
+          [
+            588.0,
+            580.0
+          ],
+          [
+            227.0,
+            580.0
+          ]
+        ],
+        "text": "thisvalue,seetheMicrosoftTechNetwebsiteat",
+        "score": 0.9844780927751122
+      },
+      {
+        "box": [
+          [
+            227.0,
+            577.0
+          ],
+          [
+            813.0,
+            577.0
+          ],
+          [
+            813.0,
+            596.0
+          ],
+          [
+            227.0,
+            596.0
+          ]
+        ],
+        "text": "https://technet.microsoft.com/en-us/1ibrary/aa997069(v=exchg.80).aspx.",
+        "score": 0.9908354980604989
+      },
+      {
+        "box": [
+          [
+            228.0,
+            607.0
+          ],
+          [
+            517.0,
+            607.0
+          ],
+          [
+            517.0,
+            624.0
+          ],
+          [
+            228.0,
+            624.0
+          ]
+        ],
+        "text": "Adjust thefollowingkeytoyourneeds:",
+        "score": 0.9878768394975102
+      },
+      {
+        "box": [
+          [
+            227.0,
+            627.0
+          ],
+          [
+            699.0,
+            628.0
+          ],
+          [
+            699.0,
+            645.0
+          ],
+          [
+            227.0,
+            644.0
+          ]
+        ],
+        "text": "HKLM\\System\\CurrentControlSet\\Services\\Disk\\TimeOutValue",
+        "score": 0.9833805816514152
+      },
+      {
+        "box": [
+          [
+            227.0,
+            656.0
+          ],
+          [
+            449.0,
+            657.0
+          ],
+          [
+            449.0,
+            674.0
+          ],
+          [
+            227.0,
+            673.0
+          ]
+        ],
+        "text": "Consider thefollowingpoints:",
+        "score": 0.9776146944080081
+      },
+      {
+        "box": [
+          [
+            251.0,
+            680.0
+          ],
+          [
+            741.0,
+            680.0
+          ],
+          [
+            741.0,
+            699.0
+          ],
+          [
+            251.0,
+            699.0
+          ]
+        ],
+        "text": "For a disk in a nonclusteredconfiguration,setTime0utValue to 10.",
+        "score": 0.94352987408638
+      },
+      {
+        "box": [
+          [
+            250.0,
+            697.0
+          ],
+          [
+            712.0,
+            697.0
+          ],
+          [
+            712.0,
+            713.0
+          ],
+          [
+            250.0,
+            713.0
+          ]
+        ],
+        "text": "For a disk in a clustered configuration,setTimeOutValue to20.",
+        "score": 0.9380302497597991
+      },
+      {
+        "box": [
+          [
+            107.0,
+            735.0
+          ],
+          [
+            657.0,
+            735.0
+          ],
+          [
+            657.0,
+            754.0
+          ],
+          [
+            107.0,
+            754.0
+          ]
+        ],
+        "text": "6.3.7FlashSystem900andclientVMwareESXhosts",
+        "score": 0.9741063628877912
+      },
+      {
+        "box": [
+          [
+            227.0,
+            767.0
+          ],
+          [
+            913.0,
+            767.0
+          ],
+          [
+            913.0,
+            786.0
+          ],
+          [
+            227.0,
+            786.0
+          ]
+        ],
+        "text": "TheFlashSystem9oocanbe attached toVMwareESXclient hostsbyusing theFCmethod.",
+        "score": 0.9700539509455363
+      },
+      {
+        "box": [
+          [
+            228.0,
+            796.0
+          ],
+          [
+            915.0,
+            796.0
+          ],
+          [
+            915.0,
+            815.0
+          ],
+          [
+            228.0,
+            815.0
+          ]
+        ],
+        "text": "Arbitratedlooptopologyisrequiredwhenyou attachtheIBMFlashSystem9oodirectlytothe",
+        "score": 0.9826662072652503
+      },
+      {
+        "box": [
+          [
+            228.0,
+            813.0
+          ],
+          [
+            422.0,
+            813.0
+          ],
+          [
+            422.0,
+            829.0
+          ],
+          [
+            228.0,
+            829.0
+          ]
+        ],
+        "text": "clientVMwareESXhosts.",
+        "score": 0.9733016377403623
+      },
+      {
+        "box": [
+          [
+            235.0,
+            863.0
+          ],
+          [
+            894.0,
+            862.0
+          ],
+          [
+            894.0,
+            882.0
+          ],
+          [
+            235.0,
+            883.0
+          ]
+        ],
+        "text": "topology.TheIBMFlashSystem9oomustbeconnectedtoaSANswitchwhen16Gbps",
+        "score": 0.980235988443548
+      },
+      {
+        "box": [
+          [
+            237.0,
+            879.0
+          ],
+          [
+            835.0,
+            879.0
+          ],
+          [
+            835.0,
+            899.0
+          ],
+          [
+            237.0,
+            899.0
+          ]
+        ],
+        "text": "FC isusedif thehostoperatingsystemdoesnotsupportpoint-to-pointFCdirect",
+        "score": 0.9810973516532353
+      },
+      {
+        "box": [
+          [
+            237.0,
+            895.0
+          ],
+          [
+            892.0,
+            894.0
+          ],
+          [
+            892.0,
+            913.0
+          ],
+          [
+            237.0,
+            914.0
+          ]
+        ],
+        "text": "connections.Ifarbitratedloopisrequiredbytheclienthost,connectat8GbpsFCtothe",
+        "score": 0.9793837896982829
+      },
+      {
+        "box": [
+          [
+            237.0,
+            909.0
+          ],
+          [
+            407.0,
+            910.0
+          ],
+          [
+            407.0,
+            927.0
+          ],
+          [
+            237.0,
+            926.0
+          ]
+        ],
+        "text": "IBMFlashSystem900.",
+        "score": 0.9847430255677965
+      },
+      {
+        "box": [
+          [
+            355.0,
+            976.0
+          ],
+          [
+            866.0,
+            976.0
+          ],
+          [
+            866.0,
+            992.0
+          ],
+          [
+            355.0,
+            992.0
+          ]
+        ],
+        "text": "Chapter 6. 1BM FlashSystem 9o0 client host attachment and implementation",
+        "score": 0.9581605643033981
+      },
+      {
+        "box": [
+          [
+            887.0,
+            976.0
+          ],
+          [
+            917.0,
+            976.0
+          ],
+          [
+            917.0,
+            990.0
+          ],
+          [
+            887.0,
+            990.0
+          ]
+        ],
+        "text": "171",
+        "score": 0.9998114506403605
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 201,
+    "deduplicated": 146,
+    "elapsed_ms": 891.06,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 901.11
+}

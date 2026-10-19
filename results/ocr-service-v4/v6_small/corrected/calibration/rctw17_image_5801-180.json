@@ -1,0 +1,65 @@
+{
+  "id": "rctw17_image_5801",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": true,
+  "variant": "v6_small",
+  "image_sha256": "d0126cbb240c19b6cf5e7f0e9fe0294f8160a124f1f4b826217b83f638b58d86",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "做文明市民\n文明城",
+    "lines": [
+      {
+        "box": [
+          [
+            131.0,
+            218.0
+          ],
+          [
+            499.0,
+            232.0
+          ],
+          [
+            493.0,
+            368.0
+          ],
+          [
+            125.0,
+            353.0
+          ]
+        ],
+        "text": "做文明市民",
+        "score": 0.9999712109565735
+      },
+      {
+        "box": [
+          [
+            534.0,
+            254.0
+          ],
+          [
+            658.0,
+            259.0
+          ],
+          [
+            655.0,
+            336.0
+          ],
+          [
+            531.0,
+            331.0
+          ]
+        ],
+        "text": "文明城",
+        "score": 0.9984939694404602
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 180,
+    "processing_ms": 13.99,
+    "direction_stats": {},
+    "elapsed_ms": 14.0
+  }
+}

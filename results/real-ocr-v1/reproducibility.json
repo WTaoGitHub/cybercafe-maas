@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-10-19T07:38:46.669675+00:00",
+  "files": {
+    "evaluate_ocr.py": "6306ae56522070bbe09e37f05f585fa20feff5c672902b685696c194b1a0897d",
+    "report_ocr.py": "04b6cea62050a010caffad884d05f94d562b0d35bf70e6e76737500b9772848c",
+    "datasets/ocr-mixed-v1/manifest.jsonl": "fbb94970c0d6ecbc9bf2b412b535c65facfc2abf40dc48281d811fc1e6d9ed90",
+    "datasets/ocr-mixed-v1/splits.json": "982b92ec25b06e672aa61e940f4470f9d820166214bd135e04cf55fdc39e6893"
+  },
+  "parameters": {
+    "overlap_min_area_threshold": 0.5,
+    "ignore_prediction_coverage_threshold": 0.5,
+    "row_center_tolerance": 0.45,
+    "normalization": "NFKC + casefold + remove whitespace; punctuation retained",
+    "concurrency": 1,
+    "retries": 0
+  }
+}

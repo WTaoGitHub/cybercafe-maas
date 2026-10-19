@@ -1,0 +1,986 @@
+{
+  "id": "doclaynet_e5957b3e7d4cbabcd32bdb2d42e52ae0d92c74813da19b8606665e87e98add34",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "In the incoherent regime, the adiabatic elimination leads to the set of coupled dynamical\nequations:\n(e）p\nd(ata)\n-(k+R)(ata)+R(o+o_)\ndt\nd(o+o_)\n-(+R)(o+o-)+R(ata)，\n(6)\nP\nwherewehaveintroducedthe quantity\n4g2\n1\nR=\n(7)\n+++\n25\n++\nAs it was underlined in Ref.Tl],the quantity R can be seen as an effective coupling rate\nbetween the atom and the cavity mode, i.e.the system is formally equivalent to two coupled\nboxes (as represented in Fig.p). The “atomic”box is initially charged with a quantum of\nenergy that can escape in the environment at rate , or in the “cavity”box at rate R. In the\nsame way, the cavity box can lose its excitation with a rate k,or give it back to the atomic\nbox with a probability per unit time R. The parameter R is also involved in the efficiency\nof the corresponding single photon source,which reads\nRk/(R+k)\n(8)\nβ=\n+Rk/(R+k)\nSeen from the atom point of view,the cavity mode appears as a further loss channel,\nwhose effective rate is Rk/(R+k)(see Fig). This result could have been straightforwardly\nderived from the classical picture.Such an expression for β is valid in any regime, even out\nof the incoherent regime,the only one in which the adiabatic elimination is supposed to\nbe valid.Thus,the effective coupling rate R appears as a key parameter,allowing us to\nrevisit the notions of good and bad cavity regimes,respectively.The bad cavity regime is\nachieved when k >R,namely when the cavity damping time is shorter than the typical\natom-cavity coupling time.In this case,the quantum exits the cavity mode as soon as it is\nreleased from the emitter:the cavity behaves as a supplementary loss channel.This is the\nusual regime for single photon sources and it is studied in the next two sections. In the good\ncavity regime,which is achieved when R >K,the quantum of energy is emitted by the atom\nand can stay in the cavity mode before being lost in the environment.We stress here that\nthe good cavity regime,which at resonance is achieved when 2g >√k(k + + *), is more\ndemanding than the strong coupling regime if * becomes non negligible (whereas again,\n6",
+    "lines": [
+      {
+        "box": [
+          [
+            145.0,
+            92.0
+          ],
+          [
+            903.0,
+            92.0
+          ],
+          [
+            903.0,
+            112.0
+          ],
+          [
+            145.0,
+            112.0
+          ]
+        ],
+        "text": "In the incoherent regime, the adiabatic elimination leads to the set of coupled dynamical",
+        "score": 0.971873371788625
+      },
+      {
+        "box": [
+          [
+            118.0,
+            120.0
+          ],
+          [
+            210.0,
+            118.0
+          ],
+          [
+            210.0,
+            138.0
+          ],
+          [
+            118.0,
+            140.0
+          ]
+        ],
+        "text": "equations:",
+        "score": 0.9879697322845459
+      },
+      {
+        "box": [
+          [
+            357.0,
+            151.0
+          ],
+          [
+            412.0,
+            151.0
+          ],
+          [
+            412.0,
+            168.0
+          ],
+          [
+            357.0,
+            168.0
+          ]
+        ],
+        "text": "(e）p",
+        "score": 0.5610054656863213
+      },
+      {
+        "box": [
+          [
+            358.0,
+            151.0
+          ],
+          [
+            413.0,
+            151.0
+          ],
+          [
+            413.0,
+            169.0
+          ],
+          [
+            358.0,
+            169.0
+          ]
+        ],
+        "text": "d(ata)",
+        "score": 0.9640706479549408
+      },
+      {
+        "box": [
+          [
+            430.0,
+            157.0
+          ],
+          [
+            676.0,
+            160.0
+          ],
+          [
+            676.0,
+            183.0
+          ],
+          [
+            430.0,
+            180.0
+          ]
+        ],
+        "text": "-(k+R)(ata)+R(o+o_)",
+        "score": 0.867618938809947
+      },
+      {
+        "box": [
+          [
+            373.0,
+            171.0
+          ],
+          [
+            398.0,
+            171.0
+          ],
+          [
+            398.0,
+            191.0
+          ],
+          [
+            373.0,
+            191.0
+          ]
+        ],
+        "text": "dt",
+        "score": 0.9989497363567352
+      },
+      {
+        "box": [
+          [
+            338.0,
+            189.0
+          ],
+          [
+            414.0,
+            189.0
+          ],
+          [
+            414.0,
+            210.0
+          ],
+          [
+            338.0,
+            210.0
+          ]
+        ],
+        "text": "d(o+o_)",
+        "score": 0.7603404479367393
+      },
+      {
+        "box": [
+          [
+            432.0,
+            199.0
+          ],
+          [
+            685.0,
+            199.0
+          ],
+          [
+            685.0,
+            219.0
+          ],
+          [
+            432.0,
+            219.0
+          ]
+        ],
+        "text": "-(+R)(o+o-)+R(ata)，",
+        "score": 0.8291937975507033
+      },
+      {
+        "box": [
+          [
+            876.0,
+            199.0
+          ],
+          [
+            902.0,
+            199.0
+          ],
+          [
+            902.0,
+            219.0
+          ],
+          [
+            876.0,
+            219.0
+          ]
+        ],
+        "text": "(6)",
+        "score": 0.9968058864275614
+      },
+      {
+        "box": [
+          [
+            363.0,
+            210.0
+          ],
+          [
+            389.0,
+            210.0
+          ],
+          [
+            389.0,
+            229.0
+          ],
+          [
+            363.0,
+            229.0
+          ]
+        ],
+        "text": "P",
+        "score": 0.7105512022972107
+      },
+      {
+        "box": [
+          [
+            119.0,
+            240.0
+          ],
+          [
+            455.0,
+            242.0
+          ],
+          [
+            455.0,
+            262.0
+          ],
+          [
+            119.0,
+            260.0
+          ]
+        ],
+        "text": "wherewehaveintroducedthe quantity",
+        "score": 0.9855785279562979
+      },
+      {
+        "box": [
+          [
+            446.0,
+            273.0
+          ],
+          [
+            478.0,
+            271.0
+          ],
+          [
+            479.0,
+            291.0
+          ],
+          [
+            447.0,
+            293.0
+          ]
+        ],
+        "text": "4g2",
+        "score": 0.9064714113871256
+      },
+      {
+        "box": [
+          [
+            568.0,
+            277.0
+          ],
+          [
+            578.0,
+            277.0
+          ],
+          [
+            578.0,
+            287.0
+          ],
+          [
+            568.0,
+            287.0
+          ]
+        ],
+        "text": "1",
+        "score": 0.985188364982605
+      },
+      {
+        "box": [
+          [
+            374.0,
+            282.0
+          ],
+          [
+            415.0,
+            288.0
+          ],
+          [
+            412.0,
+            305.0
+          ],
+          [
+            371.0,
+            299.0
+          ]
+        ],
+        "text": "R=",
+        "score": 0.9992371499538422
+      },
+      {
+        "box": [
+          [
+            876.0,
+            283.0
+          ],
+          [
+            903.0,
+            283.0
+          ],
+          [
+            903.0,
+            303.0
+          ],
+          [
+            876.0,
+            303.0
+          ]
+        ],
+        "text": "(7)",
+        "score": 0.9883123636245728
+      },
+      {
+        "box": [
+          [
+            411.0,
+            286.0
+          ],
+          [
+            548.0,
+            297.0
+          ],
+          [
+            546.0,
+            324.0
+          ],
+          [
+            409.0,
+            313.0
+          ]
+        ],
+        "text": "+++",
+        "score": 0.7813863754272461
+      },
+      {
+        "box": [
+          [
+            573.0,
+            299.0
+          ],
+          [
+            597.0,
+            299.0
+          ],
+          [
+            597.0,
+            314.0
+          ],
+          [
+            573.0,
+            314.0
+          ]
+        ],
+        "text": "25",
+        "score": 0.9033988118171692
+      },
+      {
+        "box": [
+          [
+            549.0,
+            311.0
+          ],
+          [
+            613.0,
+            311.0
+          ],
+          [
+            613.0,
+            325.0
+          ],
+          [
+            549.0,
+            325.0
+          ]
+        ],
+        "text": "++",
+        "score": 0.8803927302360535
+      },
+      {
+        "box": [
+          [
+            118.0,
+            338.0
+          ],
+          [
+            903.0,
+            339.0
+          ],
+          [
+            903.0,
+            359.0
+          ],
+          [
+            118.0,
+            358.0
+          ]
+        ],
+        "text": "As it was underlined in Ref.Tl],the quantity R can be seen as an effective coupling rate",
+        "score": 0.9559313749725168
+      },
+      {
+        "box": [
+          [
+            119.0,
+            366.0
+          ],
+          [
+            904.0,
+            366.0
+          ],
+          [
+            904.0,
+            386.0
+          ],
+          [
+            119.0,
+            386.0
+          ]
+        ],
+        "text": "between the atom and the cavity mode, i.e.the system is formally equivalent to two coupled",
+        "score": 0.9772532787587908
+      },
+      {
+        "box": [
+          [
+            118.0,
+            392.0
+          ],
+          [
+            906.0,
+            392.0
+          ],
+          [
+            906.0,
+            415.0
+          ],
+          [
+            118.0,
+            415.0
+          ]
+        ],
+        "text": "boxes (as represented in Fig.p). The “atomic”box is initially charged with a quantum of",
+        "score": 0.967548478608844
+      },
+      {
+        "box": [
+          [
+            118.0,
+            420.0
+          ],
+          [
+            905.0,
+            419.0
+          ],
+          [
+            905.0,
+            442.0
+          ],
+          [
+            118.0,
+            443.0
+          ]
+        ],
+        "text": "energy that can escape in the environment at rate , or in the “cavity”box at rate R. In the",
+        "score": 0.9695420258647793
+      },
+      {
+        "box": [
+          [
+            119.0,
+            448.0
+          ],
+          [
+            904.0,
+            448.0
+          ],
+          [
+            904.0,
+            468.0
+          ],
+          [
+            119.0,
+            468.0
+          ]
+        ],
+        "text": "same way, the cavity box can lose its excitation with a rate k,or give it back to the atomic",
+        "score": 0.9695390981176625
+      },
+      {
+        "box": [
+          [
+            117.0,
+            473.0
+          ],
+          [
+            903.0,
+            474.0
+          ],
+          [
+            903.0,
+            497.0
+          ],
+          [
+            117.0,
+            496.0
+          ]
+        ],
+        "text": "box with a probability per unit time R. The parameter R is also involved in the efficiency",
+        "score": 0.9667566412025028
+      },
+      {
+        "box": [
+          [
+            118.0,
+            501.0
+          ],
+          [
+            594.0,
+            501.0
+          ],
+          [
+            594.0,
+            524.0
+          ],
+          [
+            118.0,
+            524.0
+          ]
+        ],
+        "text": "of the corresponding single photon source,which reads",
+        "score": 0.9817227260121759
+      },
+      {
+        "box": [
+          [
+            474.0,
+            532.0
+          ],
+          [
+            580.0,
+            532.0
+          ],
+          [
+            580.0,
+            555.0
+          ],
+          [
+            474.0,
+            555.0
+          ]
+        ],
+        "text": "Rk/(R+k)",
+        "score": 0.9403175488114357
+      },
+      {
+        "box": [
+          [
+            875.0,
+            545.0
+          ],
+          [
+            903.0,
+            545.0
+          ],
+          [
+            903.0,
+            564.0
+          ],
+          [
+            875.0,
+            564.0
+          ]
+        ],
+        "text": "(8)",
+        "score": 0.980128268400828
+      },
+      {
+        "box": [
+          [
+            416.0,
+            546.0
+          ],
+          [
+            457.0,
+            546.0
+          ],
+          [
+            457.0,
+            563.0
+          ],
+          [
+            416.0,
+            563.0
+          ]
+        ],
+        "text": "β=",
+        "score": 0.9832989275455475
+      },
+      {
+        "box": [
+          [
+            454.0,
+            555.0
+          ],
+          [
+            601.0,
+            553.0
+          ],
+          [
+            601.0,
+            574.0
+          ],
+          [
+            454.0,
+            576.0
+          ]
+        ],
+        "text": "+Rk/(R+k)",
+        "score": 0.8944151798884074
+      },
+      {
+        "box": [
+          [
+            144.0,
+            586.0
+          ],
+          [
+            902.0,
+            586.0
+          ],
+          [
+            902.0,
+            606.0
+          ],
+          [
+            144.0,
+            606.0
+          ]
+        ],
+        "text": "Seen from the atom point of view,the cavity mode appears as a further loss channel,",
+        "score": 0.9601543093302164
+      },
+      {
+        "box": [
+          [
+            119.0,
+            612.0
+          ],
+          [
+            903.0,
+            612.0
+          ],
+          [
+            903.0,
+            635.0
+          ],
+          [
+            119.0,
+            635.0
+          ]
+        ],
+        "text": "whose effective rate is Rk/(R+k)(see Fig). This result could have been straightforwardly",
+        "score": 0.9615870121527802
+      },
+      {
+        "box": [
+          [
+            119.0,
+            639.0
+          ],
+          [
+            904.0,
+            641.0
+          ],
+          [
+            904.0,
+            661.0
+          ],
+          [
+            119.0,
+            659.0
+          ]
+        ],
+        "text": "derived from the classical picture.Such an expression for β is valid in any regime, even out",
+        "score": 0.9736342948416005
+      },
+      {
+        "box": [
+          [
+            118.0,
+            666.0
+          ],
+          [
+            905.0,
+            666.0
+          ],
+          [
+            905.0,
+            689.0
+          ],
+          [
+            118.0,
+            689.0
+          ]
+        ],
+        "text": "of the incoherent regime,the only one in which the adiabatic elimination is supposed to",
+        "score": 0.9711591128645272
+      },
+      {
+        "box": [
+          [
+            118.0,
+            693.0
+          ],
+          [
+            904.0,
+            694.0
+          ],
+          [
+            904.0,
+            714.0
+          ],
+          [
+            118.0,
+            713.0
+          ]
+        ],
+        "text": "be valid.Thus,the effective coupling rate R appears as a key parameter,allowing us to",
+        "score": 0.9836235593346988
+      },
+      {
+        "box": [
+          [
+            119.0,
+            722.0
+          ],
+          [
+            904.0,
+            722.0
+          ],
+          [
+            904.0,
+            742.0
+          ],
+          [
+            119.0,
+            742.0
+          ]
+        ],
+        "text": "revisit the notions of good and bad cavity regimes,respectively.The bad cavity regime is",
+        "score": 0.9799452932043509
+      },
+      {
+        "box": [
+          [
+            118.0,
+            746.0
+          ],
+          [
+            905.0,
+            747.0
+          ],
+          [
+            905.0,
+            770.0
+          ],
+          [
+            118.0,
+            769.0
+          ]
+        ],
+        "text": "achieved when k >R,namely when the cavity damping time is shorter than the typical",
+        "score": 0.9680909441738594
+      },
+      {
+        "box": [
+          [
+            120.0,
+            776.0
+          ],
+          [
+            904.0,
+            776.0
+          ],
+          [
+            904.0,
+            795.0
+          ],
+          [
+            120.0,
+            795.0
+          ]
+        ],
+        "text": "atom-cavity coupling time.In this case,the quantum exits the cavity mode as soon as it is",
+        "score": 0.9754561641243067
+      },
+      {
+        "box": [
+          [
+            119.0,
+            803.0
+          ],
+          [
+            904.0,
+            803.0
+          ],
+          [
+            904.0,
+            822.0
+          ],
+          [
+            119.0,
+            822.0
+          ]
+        ],
+        "text": "released from the emitter:the cavity behaves as a supplementary loss channel.This is the",
+        "score": 0.9808778959241781
+      },
+      {
+        "box": [
+          [
+            120.0,
+            830.0
+          ],
+          [
+            903.0,
+            830.0
+          ],
+          [
+            903.0,
+            849.0
+          ],
+          [
+            120.0,
+            849.0
+          ]
+        ],
+        "text": "usual regime for single photon sources and it is studied in the next two sections. In the good",
+        "score": 0.9917254238686664
+      },
+      {
+        "box": [
+          [
+            121.0,
+            857.0
+          ],
+          [
+            903.0,
+            857.0
+          ],
+          [
+            903.0,
+            876.0
+          ],
+          [
+            121.0,
+            876.0
+          ]
+        ],
+        "text": "cavity regime,which is achieved when R >K,the quantum of energy is emitted by the atom",
+        "score": 0.957635102230449
+      },
+      {
+        "box": [
+          [
+            120.0,
+            883.0
+          ],
+          [
+            902.0,
+            883.0
+          ],
+          [
+            902.0,
+            903.0
+          ],
+          [
+            120.0,
+            903.0
+          ]
+        ],
+        "text": "and can stay in the cavity mode before being lost in the environment.We stress here that",
+        "score": 0.972940325059674
+      },
+      {
+        "box": [
+          [
+            118.0,
+            909.0
+          ],
+          [
+            904.0,
+            908.0
+          ],
+          [
+            904.0,
+            931.0
+          ],
+          [
+            118.0,
+            932.0
+          ]
+        ],
+        "text": "the good cavity regime,which at resonance is achieved when 2g >√k(k + + *), is more",
+        "score": 0.9473340841661017
+      },
+      {
+        "box": [
+          [
+            118.0,
+            935.0
+          ],
+          [
+            903.0,
+            937.0
+          ],
+          [
+            903.0,
+            960.0
+          ],
+          [
+            118.0,
+            958.0
+          ]
+        ],
+        "text": "demanding than the strong coupling regime if * becomes non negligible (whereas again,",
+        "score": 0.9777109216241275
+      },
+      {
+        "box": [
+          [
+            495.0,
+            979.0
+          ],
+          [
+            509.0,
+            979.0
+          ],
+          [
+            509.0,
+            994.0
+          ],
+          [
+            495.0,
+            994.0
+          ]
+        ],
+        "text": "6",
+        "score": 0.9994277358055115
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 165,
+    "deduplicated": 121,
+    "elapsed_ms": 794.65,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 804.23
+}

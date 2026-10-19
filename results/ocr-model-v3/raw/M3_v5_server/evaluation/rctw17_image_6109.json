@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_6109",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "3f010ae28bbff4ec7bedacf42ed8aebf6c0ddea07825b2e7804bcea39893c564",
+  "ok": true,
+  "result": {
+    "text": "畅爽怡神\n就要\n可口可乐",
+    "lines": [
+      {
+        "box": [
+          [
+            191.0,
+            247.0
+          ],
+          [
+            644.0,
+            266.0
+          ],
+          [
+            640.0,
+            372.0
+          ],
+          [
+            186.0,
+            353.0
+          ]
+        ],
+        "text": "畅爽怡神",
+        "score": 0.9964578151702881
+      },
+      {
+        "box": [
+          [
+            649.0,
+            272.0
+          ],
+          [
+            710.0,
+            268.0
+          ],
+          [
+            716.0,
+            368.0
+          ],
+          [
+            656.0,
+            372.0
+          ]
+        ],
+        "text": "就要",
+        "score": 0.9958914518356323
+      },
+      {
+        "box": [
+          [
+            755.0,
+            310.0
+          ],
+          [
+            871.0,
+            316.0
+          ],
+          [
+            869.0,
+            354.0
+          ],
+          [
+            753.0,
+            347.0
+          ]
+        ],
+        "text": "可口可乐",
+        "score": 0.9958218932151794
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      666,
+      1000,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 104.77
+  }
+}

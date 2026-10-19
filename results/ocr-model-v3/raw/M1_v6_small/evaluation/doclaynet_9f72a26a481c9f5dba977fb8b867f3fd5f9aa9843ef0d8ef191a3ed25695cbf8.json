@@ -1,0 +1,1069 @@
+{
+  "id": "doclaynet_9f72a26a481c9f5dba977fb8b867f3fd5f9aa9843ef0d8ef191a3ed25695cbf8",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "dd659cdb9b3deeac68e8c772c5fa0920f14bf02ab833bf808fa9cbc6a73455ac",
+  "ok": true,
+  "result": {
+    "text": "Section 23.4.4, \"ndb_mgmd — The NDB Cluster Management Server Daemon\"\n--configinfo\nSection 23.4.7, \"ndb_config — Extract NDB Cluster Configuration Information\"\n--connect\nSection 23.4.23, \"ndb_restore — Restore an NDB Cluster Backup\"\n--connect-delay\nSection 23.4.1, \"ndbd — The NDB Cluster Data Node Daemon\"\n--connect-expired-password\nSection 4.5.1.1, \"mysql Client Options\"\nSection 6.2.16, \"Server Handling of Expired Passwords\"\n--connect-retries\nSection 23.4.6, \"ndb_blob_tool — Check and Repair BLOB and TEXT columns of NDB Cluster Tables\"\nSection 23.4.7, \"ndb_config — Extract NDB Cluster Configuration Information\"\nSection 23.4.8, \"ndb_delete_all — Delete All Rows from an NDB Table\"\nSection 23.4.9, \"ndb_desc — Describe NDB Tables\"\nSection 23.4.10, “ndb_drop_index — Drop Index from an NDB Table\"\nSection 23.4.11, “ndb_drop_table — Drop an NDB Table\"\nSection 23.4.13, “ndb_import — Import CSV Data Into NDB\"\nSection 23.4.14, “ndb_index_stat— NDB Index Statistics Utility\"\nSection 23.4.5, \"ndb_mgm — The NDB Cluster Management Client\"\nSection 23.4.4, \"ndb_mgmd — The NDB Cluster Management Server Daemon\"\nSection 23.4.15, \"ndb_move_data — NDB Data Copy Utility\"\nSection 23.4.23, \"ndb_restore — Restore an NDB Cluster Backup\"\nSection 23.4.24, “ndb_select_all — Print Rows from an NDB Table\"\nSection 23.4.25, “ndb_select_count — Print Row Counts for NDB Tables\"\nSection 23.4.27, \"ndb_show_tables — Display List of NDB Tables\"\nSection 23.4.30, \"ndb_waiter — Wait for NDB Cluster to Reach a Given Status\"\nSection 23.4.1, \"ndbd — The NDB Cluster Data Node Daemon\"\nSection 23.4.2, \"ndbinfo_select_all — Select From ndbinfo Tables\"\n--connect-retry-delay\nSection 23.4.6, \"ndb_blob_tool — Check and Repair BLOB and TEXT columns of NDB Cluster Tables\"\nSection 23.4.7, \"ndb config — Extract NDB Cluster Configuration Information\"\nSection 23.4.8, \"ndb_delete_all — Delete All Rows from an NDB Table\"\nSection 23.4.9, \"ndb_desc — Describe NDB Tables\"\nSection 23.4.10, “ndb_drop_index — Drop Index from an NDB Table\"\nSection 23.4.11, “ndb_drop_table — Drop an NDB Table\"\nSection 23.4.13, “ndb_import — Import CSV Data Into NDB\"\nSection 23.4.14, \"ndb_index_stat — NDB Index Statistics Utility\"\nSection 23.4.5, \"ndb_mgm — The NDB Cluster Management Client\"\nSection 23.4.4, \"ndb_mgmd — The NDB Cluster Management Server Daemon\"\nSection 23.4.15, \"ndb_move_data — NDB Data Copy Utility\"\nSection 23.4.23, “ndb_restore — Restore an NDB Cluster Backup\"\nSection 23.4.24, “ndb_select_all — Print Rows from an NDB Table\"\nSection 23.4.25, “ndb_select_count — Print Row Counts for NDB Tables\"\nSection 23.4.27, \"ndb_show_tables — Display List of NDB Tables\"\nSection 23.4.30, \"ndb_waiter — Wait for NDB Cluster to Reach a Given Status\"\n5763",
+    "lines": [
+      {
+        "box": [
+          [
+            169.0,
+            90.0
+          ],
+          [
+            761.0,
+            90.0
+          ],
+          [
+            761.0,
+            106.0
+          ],
+          [
+            169.0,
+            106.0
+          ]
+        ],
+        "text": "Section 23.4.4, \"ndb_mgmd — The NDB Cluster Management Server Daemon\"",
+        "score": 0.9875108003616333
+      },
+      {
+        "box": [
+          [
+            169.0,
+            121.0
+          ],
+          [
+            304.0,
+            121.0
+          ],
+          [
+            304.0,
+            141.0
+          ],
+          [
+            169.0,
+            141.0
+          ]
+        ],
+        "text": "--configinfo",
+        "score": 0.9996697306632996
+      },
+      {
+        "box": [
+          [
+            169.0,
+            142.0
+          ],
+          [
+            750.0,
+            142.0
+          ],
+          [
+            750.0,
+            158.0
+          ],
+          [
+            169.0,
+            158.0
+          ]
+        ],
+        "text": "Section 23.4.7, \"ndb_config — Extract NDB Cluster Configuration Information\"",
+        "score": 0.9870147705078125
+      },
+      {
+        "box": [
+          [
+            169.0,
+            175.0
+          ],
+          [
+            280.0,
+            175.0
+          ],
+          [
+            280.0,
+            192.0
+          ],
+          [
+            169.0,
+            192.0
+          ]
+        ],
+        "text": "--connect",
+        "score": 0.9997587203979492
+      },
+      {
+        "box": [
+          [
+            169.0,
+            193.0
+          ],
+          [
+            664.0,
+            193.0
+          ],
+          [
+            664.0,
+            209.0
+          ],
+          [
+            169.0,
+            209.0
+          ]
+        ],
+        "text": "Section 23.4.23, \"ndb_restore — Restore an NDB Cluster Backup\"",
+        "score": 0.9787395000457764
+      },
+      {
+        "box": [
+          [
+            169.0,
+            226.0
+          ],
+          [
+            348.0,
+            226.0
+          ],
+          [
+            348.0,
+            243.0
+          ],
+          [
+            169.0,
+            243.0
+          ]
+        ],
+        "text": "--connect-delay",
+        "score": 0.9998539090156555
+      },
+      {
+        "box": [
+          [
+            170.0,
+            247.0
+          ],
+          [
+            641.0,
+            247.0
+          ],
+          [
+            641.0,
+            260.0
+          ],
+          [
+            170.0,
+            260.0
+          ]
+        ],
+        "text": "Section 23.4.1, \"ndbd — The NDB Cluster Data Node Daemon\"",
+        "score": 0.9902650117874146
+      },
+      {
+        "box": [
+          [
+            169.0,
+            278.0
+          ],
+          [
+            493.0,
+            278.0
+          ],
+          [
+            493.0,
+            295.0
+          ],
+          [
+            169.0,
+            295.0
+          ]
+        ],
+        "text": "--connect-expired-password",
+        "score": 0.9999082088470459
+      },
+      {
+        "box": [
+          [
+            168.0,
+            297.0
+          ],
+          [
+            459.0,
+            296.0
+          ],
+          [
+            459.0,
+            313.0
+          ],
+          [
+            168.0,
+            314.0
+          ]
+        ],
+        "text": "Section 4.5.1.1, \"mysql Client Options\"",
+        "score": 0.9818724393844604
+      },
+      {
+        "box": [
+          [
+            169.0,
+            313.0
+          ],
+          [
+            586.0,
+            313.0
+          ],
+          [
+            586.0,
+            329.0
+          ],
+          [
+            169.0,
+            329.0
+          ]
+        ],
+        "text": "Section 6.2.16, \"Server Handling of Expired Passwords\"",
+        "score": 0.993579626083374
+      },
+      {
+        "box": [
+          [
+            169.0,
+            345.0
+          ],
+          [
+            361.0,
+            345.0
+          ],
+          [
+            361.0,
+            362.0
+          ],
+          [
+            169.0,
+            362.0
+          ]
+        ],
+        "text": "--connect-retries",
+        "score": 0.9945901036262512
+      },
+      {
+        "box": [
+          [
+            169.0,
+            365.0
+          ],
+          [
+            932.0,
+            365.0
+          ],
+          [
+            932.0,
+            381.0
+          ],
+          [
+            169.0,
+            381.0
+          ]
+        ],
+        "text": "Section 23.4.6, \"ndb_blob_tool — Check and Repair BLOB and TEXT columns of NDB Cluster Tables\"",
+        "score": 0.9859430193901062
+      },
+      {
+        "box": [
+          [
+            169.0,
+            380.0
+          ],
+          [
+            750.0,
+            380.0
+          ],
+          [
+            750.0,
+            396.0
+          ],
+          [
+            169.0,
+            396.0
+          ]
+        ],
+        "text": "Section 23.4.7, \"ndb_config — Extract NDB Cluster Configuration Information\"",
+        "score": 0.9904904365539551
+      },
+      {
+        "box": [
+          [
+            169.0,
+            395.0
+          ],
+          [
+            700.0,
+            395.0
+          ],
+          [
+            700.0,
+            411.0
+          ],
+          [
+            169.0,
+            411.0
+          ]
+        ],
+        "text": "Section 23.4.8, \"ndb_delete_all — Delete All Rows from an NDB Table\"",
+        "score": 0.9894053339958191
+      },
+      {
+        "box": [
+          [
+            169.0,
+            411.0
+          ],
+          [
+            561.0,
+            411.0
+          ],
+          [
+            561.0,
+            427.0
+          ],
+          [
+            169.0,
+            427.0
+          ]
+        ],
+        "text": "Section 23.4.9, \"ndb_desc — Describe NDB Tables\"",
+        "score": 0.9720085263252258
+      },
+      {
+        "box": [
+          [
+            168.0,
+            426.0
+          ],
+          [
+            683.0,
+            426.0
+          ],
+          [
+            683.0,
+            442.0
+          ],
+          [
+            168.0,
+            442.0
+          ]
+        ],
+        "text": "Section 23.4.10, “ndb_drop_index — Drop Index from an NDB Table\"",
+        "score": 0.9838472008705139
+      },
+      {
+        "box": [
+          [
+            169.0,
+            442.0
+          ],
+          [
+            599.0,
+            442.0
+          ],
+          [
+            599.0,
+            458.0
+          ],
+          [
+            169.0,
+            458.0
+          ]
+        ],
+        "text": "Section 23.4.11, “ndb_drop_table — Drop an NDB Table\"",
+        "score": 0.979295551776886
+      },
+      {
+        "box": [
+          [
+            168.0,
+            457.0
+          ],
+          [
+            619.0,
+            456.0
+          ],
+          [
+            619.0,
+            473.0
+          ],
+          [
+            168.0,
+            474.0
+          ]
+        ],
+        "text": "Section 23.4.13, “ndb_import — Import CSV Data Into NDB\"",
+        "score": 0.9763221740722656
+      },
+      {
+        "box": [
+          [
+            169.0,
+            473.0
+          ],
+          [
+            647.0,
+            473.0
+          ],
+          [
+            647.0,
+            489.0
+          ],
+          [
+            169.0,
+            489.0
+          ]
+        ],
+        "text": "Section 23.4.14, “ndb_index_stat— NDB Index Statistics Utility\"",
+        "score": 0.9742779731750488
+      },
+      {
+        "box": [
+          [
+            169.0,
+            489.0
+          ],
+          [
+            677.0,
+            489.0
+          ],
+          [
+            677.0,
+            505.0
+          ],
+          [
+            169.0,
+            505.0
+          ]
+        ],
+        "text": "Section 23.4.5, \"ndb_mgm — The NDB Cluster Management Client\"",
+        "score": 0.993756890296936
+      },
+      {
+        "box": [
+          [
+            170.0,
+            506.0
+          ],
+          [
+            759.0,
+            506.0
+          ],
+          [
+            759.0,
+            520.0
+          ],
+          [
+            170.0,
+            520.0
+          ]
+        ],
+        "text": "Section 23.4.4, \"ndb_mgmd — The NDB Cluster Management Server Daemon\"",
+        "score": 0.9820957183837891
+      },
+      {
+        "box": [
+          [
+            168.0,
+            519.0
+          ],
+          [
+            621.0,
+            517.0
+          ],
+          [
+            621.0,
+            537.0
+          ],
+          [
+            168.0,
+            538.0
+          ]
+        ],
+        "text": "Section 23.4.15, \"ndb_move_data — NDB Data Copy Utility\"",
+        "score": 0.9765511155128479
+      },
+      {
+        "box": [
+          [
+            169.0,
+            537.0
+          ],
+          [
+            663.0,
+            537.0
+          ],
+          [
+            663.0,
+            550.0
+          ],
+          [
+            169.0,
+            550.0
+          ]
+        ],
+        "text": "Section 23.4.23, \"ndb_restore — Restore an NDB Cluster Backup\"",
+        "score": 0.9786802530288696
+      },
+      {
+        "box": [
+          [
+            169.0,
+            552.0
+          ],
+          [
+            672.0,
+            552.0
+          ],
+          [
+            672.0,
+            568.0
+          ],
+          [
+            169.0,
+            568.0
+          ]
+        ],
+        "text": "Section 23.4.24, “ndb_select_all — Print Rows from an NDB Table\"",
+        "score": 0.9822663068771362
+      },
+      {
+        "box": [
+          [
+            169.0,
+            566.0
+          ],
+          [
+            715.0,
+            566.0
+          ],
+          [
+            715.0,
+            582.0
+          ],
+          [
+            169.0,
+            582.0
+          ]
+        ],
+        "text": "Section 23.4.25, “ndb_select_count — Print Row Counts for NDB Tables\"",
+        "score": 0.9766458868980408
+      },
+      {
+        "box": [
+          [
+            168.0,
+            582.0
+          ],
+          [
+            665.0,
+            581.0
+          ],
+          [
+            665.0,
+            598.0
+          ],
+          [
+            168.0,
+            599.0
+          ]
+        ],
+        "text": "Section 23.4.27, \"ndb_show_tables — Display List of NDB Tables\"",
+        "score": 0.9827340841293335
+      },
+      {
+        "box": [
+          [
+            169.0,
+            599.0
+          ],
+          [
+            759.0,
+            599.0
+          ],
+          [
+            759.0,
+            615.0
+          ],
+          [
+            169.0,
+            615.0
+          ]
+        ],
+        "text": "Section 23.4.30, \"ndb_waiter — Wait for NDB Cluster to Reach a Given Status\"",
+        "score": 0.9770729541778564
+      },
+      {
+        "box": [
+          [
+            169.0,
+            614.0
+          ],
+          [
+            643.0,
+            614.0
+          ],
+          [
+            643.0,
+            630.0
+          ],
+          [
+            169.0,
+            630.0
+          ]
+        ],
+        "text": "Section 23.4.1, \"ndbd — The NDB Cluster Data Node Daemon\"",
+        "score": 0.9832013249397278
+      },
+      {
+        "box": [
+          [
+            169.0,
+            629.0
+          ],
+          [
+            665.0,
+            629.0
+          ],
+          [
+            665.0,
+            645.0
+          ],
+          [
+            169.0,
+            645.0
+          ]
+        ],
+        "text": "Section 23.4.2, \"ndbinfo_select_all — Select From ndbinfo Tables\"",
+        "score": 0.9950353503227234
+      },
+      {
+        "box": [
+          [
+            168.0,
+            661.0
+          ],
+          [
+            411.0,
+            661.0
+          ],
+          [
+            411.0,
+            681.0
+          ],
+          [
+            168.0,
+            681.0
+          ]
+        ],
+        "text": "--connect-retry-delay",
+        "score": 0.9996591210365295
+      },
+      {
+        "box": [
+          [
+            169.0,
+            681.0
+          ],
+          [
+            932.0,
+            681.0
+          ],
+          [
+            932.0,
+            697.0
+          ],
+          [
+            169.0,
+            697.0
+          ]
+        ],
+        "text": "Section 23.4.6, \"ndb_blob_tool — Check and Repair BLOB and TEXT columns of NDB Cluster Tables\"",
+        "score": 0.9863535165786743
+      },
+      {
+        "box": [
+          [
+            170.0,
+            697.0
+          ],
+          [
+            748.0,
+            697.0
+          ],
+          [
+            748.0,
+            710.0
+          ],
+          [
+            170.0,
+            710.0
+          ]
+        ],
+        "text": "Section 23.4.7, \"ndb config — Extract NDB Cluster Configuration Information\"",
+        "score": 0.9856552481651306
+      },
+      {
+        "box": [
+          [
+            169.0,
+            712.0
+          ],
+          [
+            700.0,
+            712.0
+          ],
+          [
+            700.0,
+            728.0
+          ],
+          [
+            169.0,
+            728.0
+          ]
+        ],
+        "text": "Section 23.4.8, \"ndb_delete_all — Delete All Rows from an NDB Table\"",
+        "score": 0.9936985969543457
+      },
+      {
+        "box": [
+          [
+            169.0,
+            728.0
+          ],
+          [
+            560.0,
+            728.0
+          ],
+          [
+            560.0,
+            744.0
+          ],
+          [
+            169.0,
+            744.0
+          ]
+        ],
+        "text": "Section 23.4.9, \"ndb_desc — Describe NDB Tables\"",
+        "score": 0.9845573306083679
+      },
+      {
+        "box": [
+          [
+            169.0,
+            743.0
+          ],
+          [
+            685.0,
+            743.0
+          ],
+          [
+            685.0,
+            759.0
+          ],
+          [
+            169.0,
+            759.0
+          ]
+        ],
+        "text": "Section 23.4.10, “ndb_drop_index — Drop Index from an NDB Table\"",
+        "score": 0.9839990139007568
+      },
+      {
+        "box": [
+          [
+            168.0,
+            758.0
+          ],
+          [
+            599.0,
+            757.0
+          ],
+          [
+            599.0,
+            774.0
+          ],
+          [
+            168.0,
+            775.0
+          ]
+        ],
+        "text": "Section 23.4.11, “ndb_drop_table — Drop an NDB Table\"",
+        "score": 0.974511981010437
+      },
+      {
+        "box": [
+          [
+            169.0,
+            774.0
+          ],
+          [
+            619.0,
+            774.0
+          ],
+          [
+            619.0,
+            790.0
+          ],
+          [
+            169.0,
+            790.0
+          ]
+        ],
+        "text": "Section 23.4.13, “ndb_import — Import CSV Data Into NDB\"",
+        "score": 0.9718011617660522
+      },
+      {
+        "box": [
+          [
+            169.0,
+            790.0
+          ],
+          [
+            647.0,
+            790.0
+          ],
+          [
+            647.0,
+            806.0
+          ],
+          [
+            169.0,
+            806.0
+          ]
+        ],
+        "text": "Section 23.4.14, \"ndb_index_stat — NDB Index Statistics Utility\"",
+        "score": 0.9771631956100464
+      },
+      {
+        "box": [
+          [
+            168.0,
+            805.0
+          ],
+          [
+            676.0,
+            805.0
+          ],
+          [
+            676.0,
+            821.0
+          ],
+          [
+            168.0,
+            821.0
+          ]
+        ],
+        "text": "Section 23.4.5, \"ndb_mgm — The NDB Cluster Management Client\"",
+        "score": 0.9917459487915039
+      },
+      {
+        "box": [
+          [
+            169.0,
+            821.0
+          ],
+          [
+            760.0,
+            821.0
+          ],
+          [
+            760.0,
+            837.0
+          ],
+          [
+            169.0,
+            837.0
+          ]
+        ],
+        "text": "Section 23.4.4, \"ndb_mgmd — The NDB Cluster Management Server Daemon\"",
+        "score": 0.9957982897758484
+      },
+      {
+        "box": [
+          [
+            169.0,
+            836.0
+          ],
+          [
+            620.0,
+            836.0
+          ],
+          [
+            620.0,
+            852.0
+          ],
+          [
+            169.0,
+            852.0
+          ]
+        ],
+        "text": "Section 23.4.15, \"ndb_move_data — NDB Data Copy Utility\"",
+        "score": 0.9780346751213074
+      },
+      {
+        "box": [
+          [
+            169.0,
+            852.0
+          ],
+          [
+            665.0,
+            852.0
+          ],
+          [
+            665.0,
+            868.0
+          ],
+          [
+            169.0,
+            868.0
+          ]
+        ],
+        "text": "Section 23.4.23, “ndb_restore — Restore an NDB Cluster Backup\"",
+        "score": 0.982304036617279
+      },
+      {
+        "box": [
+          [
+            170.0,
+            869.0
+          ],
+          [
+            670.0,
+            869.0
+          ],
+          [
+            670.0,
+            882.0
+          ],
+          [
+            170.0,
+            882.0
+          ]
+        ],
+        "text": "Section 23.4.24, “ndb_select_all — Print Rows from an NDB Table\"",
+        "score": 0.9775497913360596
+      },
+      {
+        "box": [
+          [
+            169.0,
+            883.0
+          ],
+          [
+            715.0,
+            883.0
+          ],
+          [
+            715.0,
+            899.0
+          ],
+          [
+            169.0,
+            899.0
+          ]
+        ],
+        "text": "Section 23.4.25, “ndb_select_count — Print Row Counts for NDB Tables\"",
+        "score": 0.9831761717796326
+      },
+      {
+        "box": [
+          [
+            169.0,
+            898.0
+          ],
+          [
+            665.0,
+            898.0
+          ],
+          [
+            665.0,
+            914.0
+          ],
+          [
+            169.0,
+            914.0
+          ]
+        ],
+        "text": "Section 23.4.27, \"ndb_show_tables — Display List of NDB Tables\"",
+        "score": 0.980126678943634
+      },
+      {
+        "box": [
+          [
+            169.0,
+            914.0
+          ],
+          [
+            758.0,
+            914.0
+          ],
+          [
+            758.0,
+            930.0
+          ],
+          [
+            169.0,
+            930.0
+          ]
+        ],
+        "text": "Section 23.4.30, \"ndb_waiter — Wait for NDB Cluster to Reach a Given Status\"",
+        "score": 0.9755145907402039
+      },
+      {
+        "box": [
+          [
+            924.0,
+            960.0
+          ],
+          [
+            967.0,
+            960.0
+          ],
+          [
+            967.0,
+            977.0
+          ],
+          [
+            924.0,
+            977.0
+          ]
+        ],
+        "text": "5763",
+        "score": 0.9999954700469971
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 47,
+    "elapsed_ms": 384.42
+  }
+}

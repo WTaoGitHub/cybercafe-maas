@@ -1,0 +1,25 @@
+variant/split source n CER p50/p95 mean_ms missing
+A_default/calibration doclaynet 20 7.92 306.49 404.04 271.48 199
+A_default/calibration rctw17 20 18.6 110.88 148.95 107.9 23
+A_default/evaluation doclaynet 80 14.74 236.24 376.71 243.76 990
+A_default/evaluation rctw17 80 18.47 114.59 161.75 114.61 65
+A_v4_cls_recheck/calibration doclaynet 20 7.92 298.96 403.61 269.38 199
+A_v4_cls_recheck/calibration rctw17 20 18.6 114.34 151.02 109.92 23
+A_v4_cls_recheck/evaluation doclaynet 80 14.74 236.74 374.14 244.56 990
+A_v4_cls_recheck/evaluation rctw17 80 18.47 115.66 161.57 115.99 65
+A_v4_no_cls/calibration doclaynet 20 4.08 245.52 350.45 223.06 166
+A_v4_no_cls/calibration rctw17 20 18.6 93.72 118.09 85.49 23
+A_v4_no_cls/evaluation doclaynet 80 7.75 190.68 334.42 202.73 776
+A_v4_no_cls/evaluation rctw17 80 18.55 94.42 124.16 92.52 66
+M1_v6_small/calibration doclaynet 20 3.11 468.62 676.77 420.14 83
+M1_v6_small/calibration rctw17 20 16.17 77.47 139.38 82.17 13
+M1_v6_small/evaluation doclaynet 80 5.52 362.51 619.13 369.65 422
+M1_v6_small/evaluation rctw17 80 18.84 79.15 130.36 82.52 52
+M2_v6_medium/calibration doclaynet 20 3.28 503.48 739.62 468.82 62
+M2_v6_medium/calibration rctw17 20 12.45 109.34 170.1 112.45 13
+M2_v6_medium/evaluation doclaynet 80 5.59 408.28 703.19 423.57 322
+M2_v6_medium/evaluation rctw17 80 17.8 109.0 172.96 114.99 40
+M3_v5_server/calibration doclaynet 20 3.45 627.5 943.25 579.37 78
+M3_v5_server/calibration rctw17 20 15.45 144.75 239.58 162.78 14
+M3_v5_server/evaluation doclaynet 80 6.19 488.42 856.08 504.2 344
+M3_v5_server/evaluation rctw17 80 15.54 145.19 219.96 153.23 36

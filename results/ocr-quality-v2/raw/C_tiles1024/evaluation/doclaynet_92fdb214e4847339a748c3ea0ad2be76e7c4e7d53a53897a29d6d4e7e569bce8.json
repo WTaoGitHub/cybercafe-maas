@@ -1,0 +1,260 @@
+{
+  "id": "doclaynet_92fdb214e4847339a748c3ea0ad2be76e7c4e7d53a53897a29d6d4e7e569bce8",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "We are the refreshingly\nclear choice..\n..for stockholders, who have\ncome to know us for our reliable\ndividends and our solid financial\nperformance; for customers, who\nrely on us to provide a high-quality\nproduct and excellent service; and\nfor employees, who have come to\nwork where they are appreciated\nand their contributions are valued.",
+    "lines": [
+      {
+        "box": [
+          [
+            136.0,
+            87.0
+          ],
+          [
+            659.0,
+            97.0
+          ],
+          [
+            658.0,
+            143.0
+          ],
+          [
+            135.0,
+            133.0
+          ]
+        ],
+        "text": "We are the refreshingly",
+        "score": 0.99549066502115
+      },
+      {
+        "box": [
+          [
+            139.0,
+            147.0
+          ],
+          [
+            436.0,
+            149.0
+          ],
+          [
+            436.0,
+            179.0
+          ],
+          [
+            139.0,
+            177.0
+          ]
+        ],
+        "text": "clear choice..",
+        "score": 0.9979143866470882
+      },
+      {
+        "box": [
+          [
+            160.0,
+            246.0
+          ],
+          [
+            817.0,
+            246.0
+          ],
+          [
+            817.0,
+            276.0
+          ],
+          [
+            160.0,
+            276.0
+          ]
+        ],
+        "text": "..for stockholders, who have",
+        "score": 0.9984343286071505
+      },
+      {
+        "box": [
+          [
+            138.0,
+            294.0
+          ],
+          [
+            883.0,
+            291.0
+          ],
+          [
+            883.0,
+            324.0
+          ],
+          [
+            138.0,
+            327.0
+          ]
+        ],
+        "text": "come to know us for our reliable",
+        "score": 0.9819202367216349
+      },
+      {
+        "box": [
+          [
+            138.0,
+            341.0
+          ],
+          [
+            884.0,
+            342.0
+          ],
+          [
+            884.0,
+            372.0
+          ],
+          [
+            138.0,
+            371.0
+          ]
+        ],
+        "text": "dividends and our solid financial",
+        "score": 0.9922183228261543
+      },
+      {
+        "box": [
+          [
+            136.0,
+            391.0
+          ],
+          [
+            872.0,
+            387.0
+          ],
+          [
+            872.0,
+            424.0
+          ],
+          [
+            136.0,
+            428.0
+          ]
+        ],
+        "text": "performance; for customers, who",
+        "score": 0.9957046508789062
+      },
+      {
+        "box": [
+          [
+            136.0,
+            437.0
+          ],
+          [
+            901.0,
+            439.0
+          ],
+          [
+            901.0,
+            478.0
+          ],
+          [
+            136.0,
+            476.0
+          ]
+        ],
+        "text": "rely on us to provide a high-quality",
+        "score": 0.986278235912323
+      },
+      {
+        "box": [
+          [
+            136.0,
+            487.0
+          ],
+          [
+            910.0,
+            482.0
+          ],
+          [
+            910.0,
+            522.0
+          ],
+          [
+            136.0,
+            527.0
+          ]
+        ],
+        "text": "product and excellent service; and",
+        "score": 0.9997792717288522
+      },
+      {
+        "box": [
+          [
+            136.0,
+            535.0
+          ],
+          [
+            883.0,
+            537.0
+          ],
+          [
+            883.0,
+            573.0
+          ],
+          [
+            136.0,
+            571.0
+          ]
+        ],
+        "text": "for employees, who have come to",
+        "score": 0.9989259069965731
+      },
+      {
+        "box": [
+          [
+            136.0,
+            581.0
+          ],
+          [
+            841.0,
+            581.0
+          ],
+          [
+            841.0,
+            627.0
+          ],
+          [
+            136.0,
+            627.0
+          ]
+        ],
+        "text": "work where they are appreciated",
+        "score": 0.9778454803651379
+      },
+      {
+        "box": [
+          [
+            139.0,
+            635.0
+          ],
+          [
+            906.0,
+            635.0
+          ],
+          [
+            906.0,
+            665.0
+          ],
+          [
+            139.0,
+            665.0
+          ]
+        ],
+        "text": "and their contributions are valued.",
+        "score": 0.995880993774959
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 41,
+    "deduplicated": 30,
+    "elapsed_ms": 430.6,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 438.76
+}

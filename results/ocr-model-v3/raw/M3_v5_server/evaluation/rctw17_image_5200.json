@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_5200",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "bcb6148dbcad9c745de2694f4c865aba01b99b0d32cdddddd79b8dbce9e70f90",
+  "ok": true,
+  "result": {
+    "text": "KIA\nSPORTAGER\n川M·V2655",
+    "lines": [
+      {
+        "box": [
+          [
+            1257.3145161290322,
+            39.483870967741936
+          ],
+          [
+            1652.1532258064517,
+            101.1774193548387
+          ],
+          [
+            1622.5403225806451,
+            293.66129032258067
+          ],
+          [
+            1227.7016129032259,
+            231.96774193548387
+          ]
+        ],
+        "text": "KIA",
+        "score": 0.8618106245994568
+      },
+      {
+        "box": [
+          [
+            50.58870967741935,
+            197.4193548387097
+          ],
+          [
+            612.0,
+            393.60483870967744
+          ],
+          [
+            583.6209677419355,
+            472.5725806451613
+          ],
+          [
+            22.20967741935484,
+            277.6209677419355
+          ]
+        ],
+        "text": "SPORTAGER",
+        "score": 0.9208667278289795
+      },
+      {
+        "box": [
+          [
+            863.7096774193549,
+            1017.9435483870968
+          ],
+          [
+            1880.4193548387098,
+            1238.8064516129032
+          ],
+          [
+            1829.8306451612902,
+            1478.1774193548388
+          ],
+          [
+            813.1209677419355,
+            1257.3145161290322
+          ]
+        ],
+        "text": "川M·V2655",
+        "score": 0.9704368710517883
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1984,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 170.09
+  }
+}

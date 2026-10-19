@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_3756",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "一直在装逼\n从未被打死",
+    "lines": [
+      {
+        "box": [
+          [
+            89.0,
+            343.0
+          ],
+          [
+            336.0,
+            345.0
+          ],
+          [
+            336.0,
+            402.0
+          ],
+          [
+            88.0,
+            400.0
+          ]
+        ],
+        "text": "一直在装逼",
+        "score": 0.9990444302558898
+      },
+      {
+        "box": [
+          [
+            91.0,
+            415.0
+          ],
+          [
+            332.0,
+            416.0
+          ],
+          [
+            332.0,
+            462.0
+          ],
+          [
+            91.0,
+            462.0
+          ]
+        ],
+        "text": "从未被打死",
+        "score": 0.9984413385391235
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 2,
+    "deduplicated": 0,
+    "elapsed_ms": 82.91,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 84.07
+}

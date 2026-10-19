@@ -1,0 +1,2111 @@
+{
+  "id": "doclaynet_fec9b5e6e2289942da0f6c222c2b65d9595e0fae265cfc8ba3cbc51d8009e03b",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 270,
+  "explicit_correction": true,
+  "variant": "v6_small",
+  "image_sha256": "392867d3d528a1cb85b5be500d7955f3f38c57b12408573fafa1a834a3bbab6b",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "Piezoresistive heat engine and refrigerator\nP.G. Steeneken, K. Le Phan, M.J. Goossens, G.E.J. Koops, G.J.A.M. Brom, C. van der Avoort and J.T.M. van Beek\nNXP-TSMC Research Center, NXP Semiconductors, HTC 4, 5656 AE Eindhoven, the Netherlands.\nHeat engines provide most of our mechanical power and are essential for transportation on macro-\nscopic scale. However, although significant progress has been made in the miniaturization of elec-\ntrostatic engines, it has proven difficult to reduce the size of liquid or gas driven heat engines below\n107µm³.\nHere we demonstrate that a crystalline silicon structure operates as a cyclic piezoresistive heat\nengine when it is driven by a sufficiently high DC current. A 0.34 µm3 engine beam draws heat from\nthe DC current using the piezoresistive effect and converts it into mechanical work by expansion\nand contraction at different temperatures. This mechanical power drives a silicon resonator of\n1.1× 103 µm3 into sustained oscillation. Even below the oscillation threshold the engine beam\ncontinues to amplify the resonator's Brownian motion. When its thermodynamic cycle is inverted,\nthe structure is shown to reduce these thermal fluctuations, therefore operating as a refrigerator.\nMost heat engines operate by the cyclic expansion and\ncyclic motion. In the first part of this article the opera-\ncontraction of a gas at different temperatures. Much ef-\ntion of the piezoresistive heat engine above this threshold\nfort has gone into miniaturizing these conventional heat\npower Pt is demonstrated by driving a resonator into sus-\nengine concepts1-3. However this downscaling is diffi-\ntained oscillation. In the second part the motion of the\ncult, because the efficiency and power density of these\ndevice at driving powers below Pt is investigated. Mea-\nengines reduce strongly with its size4. A promising route\nsurements show that the engine beam continues to in-\nfor the miniaturization of heat engines is the use of an\ncrease the thermal energy stored in the resonance mode\nelectrically heated solid as a working substance, because\nlike a heat pump. When the thermodynamic cycle of\nthe large heat capacitance of solids allows much higher\nthe engine is reversed, it is shown to reduce the stored\npower densities and electrical interconnect facilitates en-\nthermal energy in the resonant mode, similar to recently\nergy transport and localized heat generation at the mi-\ndeveloped optical and RF refrigerators11-18. In contrast\ncroscale. This concept has often been applied in elec-\nto conventional refrigerators, which simultaneously re-\ntrothermal actuators for microscopic devicesã-10, how-\nmove thermal energy from many degrees of freedom of\never the similarity between thermal expansion actuators\na substance, this type of refrigerators cools by removing\nand heat engines has received little attention.\nthermal energy from only a single mechanical resonance\nIn order to operate as a cyclic heat engine, a thermal\nmode. This piezoresistive refrigerator provides an alter-\nactuator needs to be supplemented with a mechanism\nnative way to reduce undesirable Brownian fluctuations\nthat regulates the thermodynamic cycle of heating, ex-\nin micromechanical sensors and mirrors.\npansion, cooling and compression. This cycle can be reg-\nulated by an external AC frequency synthesizer7 or by\na feedback loop, where a sustained reciprocating motion\nPiezoresistive heat engine\nis generated from a DC power5.9.10. In previous reports\nof electrothermal engines, the thermodynamic cycle was\nExperiments are performed on the homogeneous crys-\nalways regulated by external electronic transistor circuits\ntalline silicon structure shown in Fig. h. The struc-\nand amplifiers.\nture consists of a mass measuring 12.5×60.0×1.5 µm3,\nHere it is shown that a well-dimensioned silicon crystal\nwhich is suspended by a 3 µm wide spring beam and a\nof uniform composition operates as a cyclic heat engine\n280 nm narrow engine beam. Both beams have a length\nwhen driven by a DC current. It is demonstrated that\nof 800 nm. Before discussing the stand-alone operation\na silicon engine beam can drive a silicon resonator into\nof the heat engine, its in-plane mechanical resonance at\nsustained oscillation. In contrast to earlier work5.9.10, no\n1.26 MHz (Fig. 2h) is characterized by actuating it via\nexternal transistors or amplifiers are needed to regulate\nterminal T3 with an AC electrostatic force and detect-\nthe heat engine, because a mechanism based on the in-\ning the strain variations in the engine beam using the\ntrinsic piezoresistive heating and thermal expansion of\npiezoresistive effect (see Methods). To operate the de-\nsilicon provides the required feedback. The engine dis-\nvice as a piezoresistive heat engine, the external AC ac-\nplacement volume of the heat engine, which similar to car\ntuation voltage is disconnected from terminal T3. Thus,\nengines is defined by the space occupied by the working\nas shown in Fig.Ib the device is only connected at ter-\nsubstance, is 0.34 µm3. Despite its low efficiency, the en-\nminal T1 to a DC current source Idc and to a capacitively\ngine's power density is almost a factor 1000 higher than\ncoupled oscilloscope. All other terminals are grounded.\nthat of modern car engines.\nAt low values of Idc only noise is observed on the oscil-\nLike any other reciprocating heat engine, this piezore-\nloscope. However, if the DC current is increased above\nsistive heat engine requires a minimum threshold power\na threshold It=1.19 mA a remarkable effect occurs: the\nPt to compensate its internal dissipation and sustain its\ndevice spontaneously starts to oscillate and generates a",
+    "lines": [
+      {
+        "box": [
+          [
+            304.0,
+            67.0
+          ],
+          [
+            725.0,
+            67.0
+          ],
+          [
+            725.0,
+            83.0
+          ],
+          [
+            304.0,
+            83.0
+          ]
+        ],
+        "text": "Piezoresistive heat engine and refrigerator",
+        "score": 0.9923999905586243
+      },
+      {
+        "box": [
+          [
+            88.0,
+            97.0
+          ],
+          [
+            941.0,
+            98.0
+          ],
+          [
+            941.0,
+            114.0
+          ],
+          [
+            88.0,
+            113.0
+          ]
+        ],
+        "text": "P.G. Steeneken, K. Le Phan, M.J. Goossens, G.E.J. Koops, G.J.A.M. Brom, C. van der Avoort and J.T.M. van Beek",
+        "score": 0.9907010793685913
+      },
+      {
+        "box": [
+          [
+            172.0,
+            113.0
+          ],
+          [
+            858.0,
+            113.0
+          ],
+          [
+            858.0,
+            126.0
+          ],
+          [
+            172.0,
+            126.0
+          ]
+        ],
+        "text": "NXP-TSMC Research Center, NXP Semiconductors, HTC 4, 5656 AE Eindhoven, the Netherlands.",
+        "score": 0.9930904507637024
+      },
+      {
+        "box": [
+          [
+            194.0,
+            138.0
+          ],
+          [
+            849.0,
+            140.0
+          ],
+          [
+            849.0,
+            153.0
+          ],
+          [
+            194.0,
+            151.0
+          ]
+        ],
+        "text": "Heat engines provide most of our mechanical power and are essential for transportation on macro-",
+        "score": 0.9913057684898376
+      },
+      {
+        "box": [
+          [
+            179.0,
+            152.0
+          ],
+          [
+            850.0,
+            152.0
+          ],
+          [
+            850.0,
+            168.0
+          ],
+          [
+            179.0,
+            168.0
+          ]
+        ],
+        "text": "scopic scale. However, although significant progress has been made in the miniaturization of elec-",
+        "score": 0.9883710741996765
+      },
+      {
+        "box": [
+          [
+            180.0,
+            167.0
+          ],
+          [
+            849.0,
+            167.0
+          ],
+          [
+            849.0,
+            180.0
+          ],
+          [
+            180.0,
+            180.0
+          ]
+        ],
+        "text": "trostatic engines, it has proven difficult to reduce the size of liquid or gas driven heat engines below",
+        "score": 0.9957761764526367
+      },
+      {
+        "box": [
+          [
+            180.0,
+            180.0
+          ],
+          [
+            239.0,
+            178.0
+          ],
+          [
+            239.0,
+            192.0
+          ],
+          [
+            181.0,
+            194.0
+          ]
+        ],
+        "text": "107µm³.",
+        "score": 0.9380107522010803
+      },
+      {
+        "box": [
+          [
+            195.0,
+            193.0
+          ],
+          [
+            850.0,
+            193.0
+          ],
+          [
+            850.0,
+            206.0
+          ],
+          [
+            195.0,
+            206.0
+          ]
+        ],
+        "text": "Here we demonstrate that a crystalline silicon structure operates as a cyclic piezoresistive heat",
+        "score": 0.9940786361694336
+      },
+      {
+        "box": [
+          [
+            178.0,
+            206.0
+          ],
+          [
+            851.0,
+            205.0
+          ],
+          [
+            851.0,
+            221.0
+          ],
+          [
+            178.0,
+            222.0
+          ]
+        ],
+        "text": "engine when it is driven by a sufficiently high DC current. A 0.34 µm3 engine beam draws heat from",
+        "score": 0.992687463760376
+      },
+      {
+        "box": [
+          [
+            180.0,
+            221.0
+          ],
+          [
+            850.0,
+            221.0
+          ],
+          [
+            850.0,
+            234.0
+          ],
+          [
+            180.0,
+            234.0
+          ]
+        ],
+        "text": "the DC current using the piezoresistive effect and converts it into mechanical work by expansion",
+        "score": 0.9938812851905823
+      },
+      {
+        "box": [
+          [
+            180.0,
+            234.0
+          ],
+          [
+            850.0,
+            234.0
+          ],
+          [
+            850.0,
+            247.0
+          ],
+          [
+            180.0,
+            247.0
+          ]
+        ],
+        "text": "and contraction at different temperatures. This mechanical power drives a silicon resonator of",
+        "score": 0.9976279735565186
+      },
+      {
+        "box": [
+          [
+            178.0,
+            245.0
+          ],
+          [
+            852.0,
+            246.0
+          ],
+          [
+            852.0,
+            262.0
+          ],
+          [
+            178.0,
+            261.0
+          ]
+        ],
+        "text": "1.1× 103 µm3 into sustained oscillation. Even below the oscillation threshold the engine beam",
+        "score": 0.9783190488815308
+      },
+      {
+        "box": [
+          [
+            180.0,
+            260.0
+          ],
+          [
+            849.0,
+            260.0
+          ],
+          [
+            849.0,
+            273.0
+          ],
+          [
+            180.0,
+            273.0
+          ]
+        ],
+        "text": "continues to amplify the resonator's Brownian motion. When its thermodynamic cycle is inverted,",
+        "score": 0.998475968837738
+      },
+      {
+        "box": [
+          [
+            180.0,
+            275.0
+          ],
+          [
+            837.0,
+            275.0
+          ],
+          [
+            837.0,
+            288.0
+          ],
+          [
+            180.0,
+            288.0
+          ]
+        ],
+        "text": "the structure is shown to reduce these thermal fluctuations, therefore operating as a refrigerator.",
+        "score": 0.9948260188102722
+      },
+      {
+        "box": [
+          [
+            105.0,
+            315.0
+          ],
+          [
+            501.0,
+            315.0
+          ],
+          [
+            501.0,
+            328.0
+          ],
+          [
+            105.0,
+            328.0
+          ]
+        ],
+        "text": "Most heat engines operate by the cyclic expansion and",
+        "score": 0.9981173872947693
+      },
+      {
+        "box": [
+          [
+            530.0,
+            315.0
+          ],
+          [
+            941.0,
+            315.0
+          ],
+          [
+            941.0,
+            328.0
+          ],
+          [
+            530.0,
+            328.0
+          ]
+        ],
+        "text": "cyclic motion. In the first part of this article the opera-",
+        "score": 0.9886907339096069
+      },
+      {
+        "box": [
+          [
+            88.0,
+            329.0
+          ],
+          [
+            500.0,
+            329.0
+          ],
+          [
+            500.0,
+            342.0
+          ],
+          [
+            88.0,
+            342.0
+          ]
+        ],
+        "text": "contraction of a gas at different temperatures. Much ef-",
+        "score": 0.9978784322738647
+      },
+      {
+        "box": [
+          [
+            529.0,
+            329.0
+          ],
+          [
+            942.0,
+            329.0
+          ],
+          [
+            942.0,
+            342.0
+          ],
+          [
+            529.0,
+            342.0
+          ]
+        ],
+        "text": "tion of the piezoresistive heat engine above this threshold",
+        "score": 0.9992417097091675
+      },
+      {
+        "box": [
+          [
+            89.0,
+            344.0
+          ],
+          [
+            500.0,
+            344.0
+          ],
+          [
+            500.0,
+            357.0
+          ],
+          [
+            89.0,
+            357.0
+          ]
+        ],
+        "text": "fort has gone into miniaturizing these conventional heat",
+        "score": 0.9897269606590271
+      },
+      {
+        "box": [
+          [
+            526.0,
+            343.0
+          ],
+          [
+            942.0,
+            342.0
+          ],
+          [
+            942.0,
+            358.0
+          ],
+          [
+            527.0,
+            359.0
+          ]
+        ],
+        "text": "power Pt is demonstrated by driving a resonator into sus-",
+        "score": 0.99853515625
+      },
+      {
+        "box": [
+          [
+            87.0,
+            357.0
+          ],
+          [
+            501.0,
+            357.0
+          ],
+          [
+            501.0,
+            373.0
+          ],
+          [
+            87.0,
+            373.0
+          ]
+        ],
+        "text": "engine concepts1-3. However this downscaling is diffi-",
+        "score": 0.9955034852027893
+      },
+      {
+        "box": [
+          [
+            530.0,
+            359.0
+          ],
+          [
+            942.0,
+            359.0
+          ],
+          [
+            942.0,
+            372.0
+          ],
+          [
+            530.0,
+            372.0
+          ]
+        ],
+        "text": "tained oscillation. In the second part the motion of the",
+        "score": 0.9991164803504944
+      },
+      {
+        "box": [
+          [
+            88.0,
+            374.0
+          ],
+          [
+            501.0,
+            374.0
+          ],
+          [
+            501.0,
+            387.0
+          ],
+          [
+            88.0,
+            387.0
+          ]
+        ],
+        "text": "cult, because the efficiency and power density of these",
+        "score": 0.9908761978149414
+      },
+      {
+        "box": [
+          [
+            530.0,
+            374.0
+          ],
+          [
+            941.0,
+            374.0
+          ],
+          [
+            941.0,
+            387.0
+          ],
+          [
+            530.0,
+            387.0
+          ]
+        ],
+        "text": "device at driving powers below Pt is investigated. Mea-",
+        "score": 0.9816339015960693
+      },
+      {
+        "box": [
+          [
+            87.0,
+            387.0
+          ],
+          [
+            501.0,
+            387.0
+          ],
+          [
+            501.0,
+            403.0
+          ],
+          [
+            87.0,
+            403.0
+          ]
+        ],
+        "text": "engines reduce strongly with its size4. A promising route",
+        "score": 0.9995255470275879
+      },
+      {
+        "box": [
+          [
+            529.0,
+            389.0
+          ],
+          [
+            941.0,
+            389.0
+          ],
+          [
+            941.0,
+            402.0
+          ],
+          [
+            529.0,
+            402.0
+          ]
+        ],
+        "text": "surements show that the engine beam continues to in-",
+        "score": 0.9855894446372986
+      },
+      {
+        "box": [
+          [
+            88.0,
+            402.0
+          ],
+          [
+            501.0,
+            403.0
+          ],
+          [
+            500.0,
+            417.0
+          ],
+          [
+            88.0,
+            416.0
+          ]
+        ],
+        "text": "for the miniaturization of heat engines is the use of an",
+        "score": 0.9914153218269348
+      },
+      {
+        "box": [
+          [
+            530.0,
+            404.0
+          ],
+          [
+            941.0,
+            404.0
+          ],
+          [
+            941.0,
+            417.0
+          ],
+          [
+            530.0,
+            417.0
+          ]
+        ],
+        "text": "crease the thermal energy stored in the resonance mode",
+        "score": 0.9986832737922668
+      },
+      {
+        "box": [
+          [
+            88.0,
+            417.0
+          ],
+          [
+            502.0,
+            418.0
+          ],
+          [
+            501.0,
+            432.0
+          ],
+          [
+            88.0,
+            431.0
+          ]
+        ],
+        "text": "electrically heated solid as a working substance, because",
+        "score": 0.9979140758514404
+      },
+      {
+        "box": [
+          [
+            529.0,
+            417.0
+          ],
+          [
+            944.0,
+            417.0
+          ],
+          [
+            944.0,
+            433.0
+          ],
+          [
+            529.0,
+            433.0
+          ]
+        ],
+        "text": "like a heat pump. When the thermodynamic cycle of",
+        "score": 0.9991273880004883
+      },
+      {
+        "box": [
+          [
+            87.0,
+            431.0
+          ],
+          [
+            502.0,
+            432.0
+          ],
+          [
+            501.0,
+            448.0
+          ],
+          [
+            87.0,
+            447.0
+          ]
+        ],
+        "text": "the large heat capacitance of solids allows much higher",
+        "score": 0.9950862526893616
+      },
+      {
+        "box": [
+          [
+            529.0,
+            432.0
+          ],
+          [
+            943.0,
+            432.0
+          ],
+          [
+            943.0,
+            448.0
+          ],
+          [
+            529.0,
+            448.0
+          ]
+        ],
+        "text": "the engine is reversed, it is shown to reduce the stored",
+        "score": 0.9979481101036072
+      },
+      {
+        "box": [
+          [
+            86.0,
+            447.0
+          ],
+          [
+            501.0,
+            446.0
+          ],
+          [
+            502.0,
+            462.0
+          ],
+          [
+            86.0,
+            463.0
+          ]
+        ],
+        "text": "power densities and electrical interconnect facilitates en-",
+        "score": 0.9985413551330566
+      },
+      {
+        "box": [
+          [
+            530.0,
+            448.0
+          ],
+          [
+            941.0,
+            448.0
+          ],
+          [
+            941.0,
+            461.0
+          ],
+          [
+            530.0,
+            461.0
+          ]
+        ],
+        "text": "thermal energy in the resonant mode, similar to recently",
+        "score": 0.9936322569847107
+      },
+      {
+        "box": [
+          [
+            86.0,
+            462.0
+          ],
+          [
+            500.0,
+            461.0
+          ],
+          [
+            501.0,
+            477.0
+          ],
+          [
+            86.0,
+            478.0
+          ]
+        ],
+        "text": "ergy transport and localized heat generation at the mi-",
+        "score": 0.9948409795761108
+      },
+      {
+        "box": [
+          [
+            529.0,
+            461.0
+          ],
+          [
+            943.0,
+            461.0
+          ],
+          [
+            943.0,
+            477.0
+          ],
+          [
+            529.0,
+            477.0
+          ]
+        ],
+        "text": "developed optical and RF refrigerators11-18. In contrast",
+        "score": 0.9950176477432251
+      },
+      {
+        "box": [
+          [
+            88.0,
+            478.0
+          ],
+          [
+            501.0,
+            478.0
+          ],
+          [
+            501.0,
+            491.0
+          ],
+          [
+            88.0,
+            491.0
+          ]
+        ],
+        "text": "croscale. This concept has often been applied in elec-",
+        "score": 0.9964680671691895
+      },
+      {
+        "box": [
+          [
+            529.0,
+            478.0
+          ],
+          [
+            942.0,
+            478.0
+          ],
+          [
+            942.0,
+            491.0
+          ],
+          [
+            529.0,
+            491.0
+          ]
+        ],
+        "text": "to conventional refrigerators, which simultaneously re-",
+        "score": 0.99432772397995
+      },
+      {
+        "box": [
+          [
+            87.0,
+            490.0
+          ],
+          [
+            501.0,
+            490.0
+          ],
+          [
+            501.0,
+            506.0
+          ],
+          [
+            87.0,
+            506.0
+          ]
+        ],
+        "text": "trothermal actuators for microscopic devicesã-10, how-",
+        "score": 0.9795827269554138
+      },
+      {
+        "box": [
+          [
+            529.0,
+            492.0
+          ],
+          [
+            942.0,
+            492.0
+          ],
+          [
+            942.0,
+            505.0
+          ],
+          [
+            529.0,
+            505.0
+          ]
+        ],
+        "text": "move thermal energy from many degrees of freedom of",
+        "score": 0.9974600672721863
+      },
+      {
+        "box": [
+          [
+            88.0,
+            507.0
+          ],
+          [
+            501.0,
+            507.0
+          ],
+          [
+            501.0,
+            521.0
+          ],
+          [
+            88.0,
+            521.0
+          ]
+        ],
+        "text": "ever the similarity between thermal expansion actuators",
+        "score": 0.9947097897529602
+      },
+      {
+        "box": [
+          [
+            528.0,
+            506.0
+          ],
+          [
+            943.0,
+            506.0
+          ],
+          [
+            943.0,
+            523.0
+          ],
+          [
+            528.0,
+            523.0
+          ]
+        ],
+        "text": "a substance, this type of refrigerators cools by removing",
+        "score": 0.9997599124908447
+      },
+      {
+        "box": [
+          [
+            88.0,
+            523.0
+          ],
+          [
+            425.0,
+            523.0
+          ],
+          [
+            425.0,
+            536.0
+          ],
+          [
+            88.0,
+            536.0
+          ]
+        ],
+        "text": "and heat engines has received little attention.",
+        "score": 0.9993855953216553
+      },
+      {
+        "box": [
+          [
+            530.0,
+            523.0
+          ],
+          [
+            942.0,
+            523.0
+          ],
+          [
+            942.0,
+            536.0
+          ],
+          [
+            530.0,
+            536.0
+          ]
+        ],
+        "text": "thermal energy from only a single mechanical resonance",
+        "score": 0.9975369572639465
+      },
+      {
+        "box": [
+          [
+            102.0,
+            536.0
+          ],
+          [
+            502.0,
+            537.0
+          ],
+          [
+            501.0,
+            553.0
+          ],
+          [
+            102.0,
+            552.0
+          ]
+        ],
+        "text": "In order to operate as a cyclic heat engine, a thermal",
+        "score": 0.9995240569114685
+      },
+      {
+        "box": [
+          [
+            528.0,
+            537.0
+          ],
+          [
+            940.0,
+            537.0
+          ],
+          [
+            940.0,
+            550.0
+          ],
+          [
+            528.0,
+            550.0
+          ]
+        ],
+        "text": "mode. This piezoresistive refrigerator provides an alter-",
+        "score": 0.9979602098464966
+      },
+      {
+        "box": [
+          [
+            88.0,
+            554.0
+          ],
+          [
+            500.0,
+            554.0
+          ],
+          [
+            500.0,
+            567.0
+          ],
+          [
+            88.0,
+            567.0
+          ]
+        ],
+        "text": "actuator needs to be supplemented with a mechanism",
+        "score": 0.9832229018211365
+      },
+      {
+        "box": [
+          [
+            526.0,
+            551.0
+          ],
+          [
+            943.0,
+            550.0
+          ],
+          [
+            943.0,
+            566.0
+          ],
+          [
+            527.0,
+            567.0
+          ]
+        ],
+        "text": "native way to reduce undesirable Brownian fluctuations",
+        "score": 0.9997586607933044
+      },
+      {
+        "box": [
+          [
+            88.0,
+            567.0
+          ],
+          [
+            502.0,
+            567.0
+          ],
+          [
+            502.0,
+            583.0
+          ],
+          [
+            88.0,
+            583.0
+          ]
+        ],
+        "text": "that regulates the thermodynamic cycle of heating, ex-",
+        "score": 0.9992465972900391
+      },
+      {
+        "box": [
+          [
+            530.0,
+            569.0
+          ],
+          [
+            824.0,
+            569.0
+          ],
+          [
+            824.0,
+            579.0
+          ],
+          [
+            530.0,
+            579.0
+          ]
+        ],
+        "text": "in micromechanical sensors and mirrors.",
+        "score": 0.9945933818817139
+      },
+      {
+        "box": [
+          [
+            87.0,
+            582.0
+          ],
+          [
+            501.0,
+            582.0
+          ],
+          [
+            501.0,
+            598.0
+          ],
+          [
+            87.0,
+            598.0
+          ]
+        ],
+        "text": "pansion, cooling and compression. This cycle can be reg-",
+        "score": 0.9877535700798035
+      },
+      {
+        "box": [
+          [
+            88.0,
+            596.0
+          ],
+          [
+            501.0,
+            596.0
+          ],
+          [
+            501.0,
+            612.0
+          ],
+          [
+            88.0,
+            612.0
+          ]
+        ],
+        "text": "ulated by an external AC frequency synthesizer7 or by",
+        "score": 0.9851147532463074
+      },
+      {
+        "box": [
+          [
+            87.0,
+            610.0
+          ],
+          [
+            502.0,
+            611.0
+          ],
+          [
+            501.0,
+            627.0
+          ],
+          [
+            87.0,
+            626.0
+          ]
+        ],
+        "text": "a feedback loop, where a sustained reciprocating motion",
+        "score": 0.9969083666801453
+      },
+      {
+        "box": [
+          [
+            633.0,
+            609.0
+          ],
+          [
+            837.0,
+            610.0
+          ],
+          [
+            837.0,
+            624.0
+          ],
+          [
+            633.0,
+            623.0
+          ]
+        ],
+        "text": "Piezoresistive heat engine",
+        "score": 0.999872088432312
+      },
+      {
+        "box": [
+          [
+            86.0,
+            623.0
+          ],
+          [
+            503.0,
+            623.0
+          ],
+          [
+            503.0,
+            642.0
+          ],
+          [
+            86.0,
+            642.0
+          ]
+        ],
+        "text": "is generated from a DC power5.9.10. In previous reports",
+        "score": 0.9893098473548889
+      },
+      {
+        "box": [
+          [
+            89.0,
+            642.0
+          ],
+          [
+            501.0,
+            642.0
+          ],
+          [
+            501.0,
+            655.0
+          ],
+          [
+            89.0,
+            655.0
+          ]
+        ],
+        "text": "of electrothermal engines, the thermodynamic cycle was",
+        "score": 0.9990413784980774
+      },
+      {
+        "box": [
+          [
+            546.0,
+            643.0
+          ],
+          [
+            941.0,
+            643.0
+          ],
+          [
+            941.0,
+            656.0
+          ],
+          [
+            546.0,
+            656.0
+          ]
+        ],
+        "text": "Experiments are performed on the homogeneous crys-",
+        "score": 0.9951844215393066
+      },
+      {
+        "box": [
+          [
+            89.0,
+            657.0
+          ],
+          [
+            501.0,
+            657.0
+          ],
+          [
+            501.0,
+            670.0
+          ],
+          [
+            89.0,
+            670.0
+          ]
+        ],
+        "text": "always regulated by external electronic transistor circuits",
+        "score": 0.9952187538146973
+      },
+      {
+        "box": [
+          [
+            529.0,
+            656.0
+          ],
+          [
+            942.0,
+            656.0
+          ],
+          [
+            942.0,
+            672.0
+          ],
+          [
+            529.0,
+            672.0
+          ]
+        ],
+        "text": "talline silicon structure shown in Fig. h. The struc-",
+        "score": 0.9725370407104492
+      },
+      {
+        "box": [
+          [
+            88.0,
+            672.0
+          ],
+          [
+            198.0,
+            672.0
+          ],
+          [
+            198.0,
+            685.0
+          ],
+          [
+            88.0,
+            685.0
+          ]
+        ],
+        "text": "and amplifiers.",
+        "score": 0.9933801293373108
+      },
+      {
+        "box": [
+          [
+            529.0,
+            672.0
+          ],
+          [
+            940.0,
+            672.0
+          ],
+          [
+            940.0,
+            685.0
+          ],
+          [
+            529.0,
+            685.0
+          ]
+        ],
+        "text": "ture consists of a mass measuring 12.5×60.0×1.5 µm3,",
+        "score": 0.9871100187301636
+      },
+      {
+        "box": [
+          [
+            105.0,
+            685.0
+          ],
+          [
+            500.0,
+            685.0
+          ],
+          [
+            500.0,
+            698.0
+          ],
+          [
+            105.0,
+            698.0
+          ]
+        ],
+        "text": "Here it is shown that a well-dimensioned silicon crystal",
+        "score": 0.9948835372924805
+      },
+      {
+        "box": [
+          [
+            530.0,
+            688.0
+          ],
+          [
+            943.0,
+            688.0
+          ],
+          [
+            943.0,
+            701.0
+          ],
+          [
+            530.0,
+            701.0
+          ]
+        ],
+        "text": "which is suspended by a 3 µm wide spring beam and a",
+        "score": 0.984774112701416
+      },
+      {
+        "box": [
+          [
+            86.0,
+            699.0
+          ],
+          [
+            503.0,
+            700.0
+          ],
+          [
+            502.0,
+            716.0
+          ],
+          [
+            86.0,
+            715.0
+          ]
+        ],
+        "text": "of uniform composition operates as a cyclic heat engine",
+        "score": 0.9969949126243591
+      },
+      {
+        "box": [
+          [
+            527.0,
+            700.0
+          ],
+          [
+            942.0,
+            701.0
+          ],
+          [
+            942.0,
+            717.0
+          ],
+          [
+            526.0,
+            716.0
+          ]
+        ],
+        "text": "280 nm narrow engine beam. Both beams have a length",
+        "score": 0.9881429672241211
+      },
+      {
+        "box": [
+          [
+            88.0,
+            715.0
+          ],
+          [
+            502.0,
+            715.0
+          ],
+          [
+            502.0,
+            731.0
+          ],
+          [
+            88.0,
+            731.0
+          ]
+        ],
+        "text": "when driven by a DC current. It is demonstrated that",
+        "score": 0.9893455505371094
+      },
+      {
+        "box": [
+          [
+            527.0,
+            715.0
+          ],
+          [
+            943.0,
+            716.0
+          ],
+          [
+            943.0,
+            732.0
+          ],
+          [
+            526.0,
+            731.0
+          ]
+        ],
+        "text": "of 800 nm. Before discussing the stand-alone operation",
+        "score": 0.9970335364341736
+      },
+      {
+        "box": [
+          [
+            87.0,
+            730.0
+          ],
+          [
+            502.0,
+            730.0
+          ],
+          [
+            502.0,
+            746.0
+          ],
+          [
+            87.0,
+            746.0
+          ]
+        ],
+        "text": "a silicon engine beam can drive a silicon resonator into",
+        "score": 0.9995099902153015
+      },
+      {
+        "box": [
+          [
+            528.0,
+            731.0
+          ],
+          [
+            943.0,
+            731.0
+          ],
+          [
+            943.0,
+            747.0
+          ],
+          [
+            528.0,
+            747.0
+          ]
+        ],
+        "text": "of the heat engine, its in-plane mechanical resonance at",
+        "score": 0.9998182654380798
+      },
+      {
+        "box": [
+          [
+            86.0,
+            742.0
+          ],
+          [
+            503.0,
+            742.0
+          ],
+          [
+            503.0,
+            761.0
+          ],
+          [
+            86.0,
+            761.0
+          ]
+        ],
+        "text": "sustained oscillation. In contrast to earlier work5.9.10, no",
+        "score": 0.9901548624038696
+      },
+      {
+        "box": [
+          [
+            528.0,
+            745.0
+          ],
+          [
+            943.0,
+            746.0
+          ],
+          [
+            943.0,
+            762.0
+          ],
+          [
+            527.0,
+            761.0
+          ]
+        ],
+        "text": "1.26 MHz (Fig. 2h) is characterized by actuating it via",
+        "score": 0.9820030331611633
+      },
+      {
+        "box": [
+          [
+            87.0,
+            760.0
+          ],
+          [
+            502.0,
+            760.0
+          ],
+          [
+            502.0,
+            776.0
+          ],
+          [
+            87.0,
+            776.0
+          ]
+        ],
+        "text": "external transistors or amplifiers are needed to regulate",
+        "score": 0.9998087882995605
+      },
+      {
+        "box": [
+          [
+            529.0,
+            762.0
+          ],
+          [
+            941.0,
+            762.0
+          ],
+          [
+            941.0,
+            775.0
+          ],
+          [
+            529.0,
+            775.0
+          ]
+        ],
+        "text": "terminal T3 with an AC electrostatic force and detect-",
+        "score": 0.995673656463623
+      },
+      {
+        "box": [
+          [
+            87.0,
+            775.0
+          ],
+          [
+            501.0,
+            775.0
+          ],
+          [
+            501.0,
+            791.0
+          ],
+          [
+            87.0,
+            791.0
+          ]
+        ],
+        "text": "the heat engine, because a mechanism based on the in-",
+        "score": 0.9996750354766846
+      },
+      {
+        "box": [
+          [
+            529.0,
+            777.0
+          ],
+          [
+            942.0,
+            777.0
+          ],
+          [
+            942.0,
+            790.0
+          ],
+          [
+            529.0,
+            790.0
+          ]
+        ],
+        "text": "ing the strain variations in the engine beam using the",
+        "score": 0.9924303889274597
+      },
+      {
+        "box": [
+          [
+            88.0,
+            791.0
+          ],
+          [
+            501.0,
+            791.0
+          ],
+          [
+            501.0,
+            804.0
+          ],
+          [
+            88.0,
+            804.0
+          ]
+        ],
+        "text": "trinsic piezoresistive heating and thermal expansion of",
+        "score": 0.9988603591918945
+      },
+      {
+        "box": [
+          [
+            526.0,
+            790.0
+          ],
+          [
+            942.0,
+            789.0
+          ],
+          [
+            942.0,
+            805.0
+          ],
+          [
+            527.0,
+            806.0
+          ]
+        ],
+        "text": "piezoresistive effect (see Methods). To operate the de-",
+        "score": 0.9896284341812134
+      },
+      {
+        "box": [
+          [
+            88.0,
+            806.0
+          ],
+          [
+            500.0,
+            806.0
+          ],
+          [
+            500.0,
+            819.0
+          ],
+          [
+            88.0,
+            819.0
+          ]
+        ],
+        "text": "silicon provides the required feedback. The engine dis-",
+        "score": 0.9947905540466309
+      },
+      {
+        "box": [
+          [
+            530.0,
+            806.0
+          ],
+          [
+            941.0,
+            806.0
+          ],
+          [
+            941.0,
+            819.0
+          ],
+          [
+            530.0,
+            819.0
+          ]
+        ],
+        "text": "vice as a piezoresistive heat engine, the external AC ac-",
+        "score": 0.9973776340484619
+      },
+      {
+        "box": [
+          [
+            88.0,
+            821.0
+          ],
+          [
+            501.0,
+            821.0
+          ],
+          [
+            501.0,
+            834.0
+          ],
+          [
+            88.0,
+            834.0
+          ]
+        ],
+        "text": "placement volume of the heat engine, which similar to car",
+        "score": 0.9905906915664673
+      },
+      {
+        "box": [
+          [
+            530.0,
+            821.0
+          ],
+          [
+            941.0,
+            821.0
+          ],
+          [
+            941.0,
+            834.0
+          ],
+          [
+            530.0,
+            834.0
+          ]
+        ],
+        "text": "tuation voltage is disconnected from terminal T3. Thus,",
+        "score": 0.9965134263038635
+      },
+      {
+        "box": [
+          [
+            89.0,
+            836.0
+          ],
+          [
+            501.0,
+            836.0
+          ],
+          [
+            501.0,
+            849.0
+          ],
+          [
+            89.0,
+            849.0
+          ]
+        ],
+        "text": "engines is defined by the space occupied by the working",
+        "score": 0.9986036419868469
+      },
+      {
+        "box": [
+          [
+            530.0,
+            836.0
+          ],
+          [
+            941.0,
+            836.0
+          ],
+          [
+            941.0,
+            849.0
+          ],
+          [
+            530.0,
+            849.0
+          ]
+        ],
+        "text": "as shown in Fig.Ib the device is only connected at ter-",
+        "score": 0.9810397028923035
+      },
+      {
+        "box": [
+          [
+            87.0,
+            849.0
+          ],
+          [
+            501.0,
+            849.0
+          ],
+          [
+            501.0,
+            865.0
+          ],
+          [
+            87.0,
+            865.0
+          ]
+        ],
+        "text": "substance, is 0.34 µm3. Despite its low efficiency, the en-",
+        "score": 0.9774466156959534
+      },
+      {
+        "box": [
+          [
+            529.0,
+            851.0
+          ],
+          [
+            941.0,
+            851.0
+          ],
+          [
+            941.0,
+            864.0
+          ],
+          [
+            529.0,
+            864.0
+          ]
+        ],
+        "text": "minal T1 to a DC current source Idc and to a capacitively",
+        "score": 0.9928063750267029
+      },
+      {
+        "box": [
+          [
+            88.0,
+            865.0
+          ],
+          [
+            500.0,
+            865.0
+          ],
+          [
+            500.0,
+            878.0
+          ],
+          [
+            88.0,
+            878.0
+          ]
+        ],
+        "text": "gine's power density is almost a factor 1000 higher than",
+        "score": 0.9867286086082458
+      },
+      {
+        "box": [
+          [
+            529.0,
+            864.0
+          ],
+          [
+            942.0,
+            864.0
+          ],
+          [
+            942.0,
+            880.0
+          ],
+          [
+            529.0,
+            880.0
+          ]
+        ],
+        "text": "coupled oscilloscope. All other terminals are grounded.",
+        "score": 0.9984115362167358
+      },
+      {
+        "box": [
+          [
+            89.0,
+            880.0
+          ],
+          [
+            292.0,
+            880.0
+          ],
+          [
+            292.0,
+            893.0
+          ],
+          [
+            89.0,
+            893.0
+          ]
+        ],
+        "text": "that of modern car engines.",
+        "score": 0.9925532937049866
+      },
+      {
+        "box": [
+          [
+            531.0,
+            880.0
+          ],
+          [
+            941.0,
+            880.0
+          ],
+          [
+            941.0,
+            893.0
+          ],
+          [
+            531.0,
+            893.0
+          ]
+        ],
+        "text": "At low values of Idc only noise is observed on the oscil-",
+        "score": 0.9936500787734985
+      },
+      {
+        "box": [
+          [
+            103.0,
+            893.0
+          ],
+          [
+            501.0,
+            894.0
+          ],
+          [
+            500.0,
+            910.0
+          ],
+          [
+            103.0,
+            909.0
+          ]
+        ],
+        "text": "Like any other reciprocating heat engine, this piezore-",
+        "score": 0.9956944584846497
+      },
+      {
+        "box": [
+          [
+            528.0,
+            894.0
+          ],
+          [
+            943.0,
+            894.0
+          ],
+          [
+            943.0,
+            910.0
+          ],
+          [
+            528.0,
+            910.0
+          ]
+        ],
+        "text": "loscope. However, if the DC current is increased above",
+        "score": 0.9934974312782288
+      },
+      {
+        "box": [
+          [
+            87.0,
+            909.0
+          ],
+          [
+            502.0,
+            909.0
+          ],
+          [
+            502.0,
+            925.0
+          ],
+          [
+            87.0,
+            925.0
+          ]
+        ],
+        "text": "sistive heat engine requires a minimum threshold power",
+        "score": 0.9887399077415466
+      },
+      {
+        "box": [
+          [
+            529.0,
+            910.0
+          ],
+          [
+            941.0,
+            910.0
+          ],
+          [
+            941.0,
+            923.0
+          ],
+          [
+            529.0,
+            923.0
+          ]
+        ],
+        "text": "a threshold It=1.19 mA a remarkable effect occurs: the",
+        "score": 0.974353015422821
+      },
+      {
+        "box": [
+          [
+            89.0,
+            925.0
+          ],
+          [
+            501.0,
+            925.0
+          ],
+          [
+            501.0,
+            938.0
+          ],
+          [
+            89.0,
+            938.0
+          ]
+        ],
+        "text": "Pt to compensate its internal dissipation and sustain its",
+        "score": 0.9951712489128113
+      },
+      {
+        "box": [
+          [
+            530.0,
+            925.0
+          ],
+          [
+            942.0,
+            925.0
+          ],
+          [
+            942.0,
+            938.0
+          ],
+          [
+            530.0,
+            938.0
+          ]
+        ],
+        "text": "device spontaneously starts to oscillate and generates a",
+        "score": 0.99885493516922
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 90,
+    "processing_ms": 675.59,
+    "direction_stats": {},
+    "elapsed_ms": 675.6
+  }
+}

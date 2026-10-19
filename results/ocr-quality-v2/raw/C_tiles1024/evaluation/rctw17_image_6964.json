@@ -1,0 +1,84 @@
+{
+  "id": "rctw17_image_6964",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "酒香不怕巷子深\nWine snot afraid of alley deep\nay deep",
+    "lines": [
+      {
+        "box": [
+          [
+            963.0,
+            1775.0
+          ],
+          [
+            1567.0,
+            1775.0
+          ],
+          [
+            1567.0,
+            1889.0
+          ],
+          [
+            963.0,
+            1889.0
+          ]
+        ],
+        "text": "酒香不怕巷子深",
+        "score": 0.9845377547400338
+      },
+      {
+        "box": [
+          [
+            989.0,
+            1882.0
+          ],
+          [
+            1584.0,
+            1900.0
+          ],
+          [
+            1581.0,
+            1976.0
+          ],
+          [
+            986.0,
+            1958.0
+          ]
+        ],
+        "text": "Wine snot afraid of alley deep",
+        "score": 0.9026102721691132
+      },
+      {
+        "box": [
+          [
+            1433.0,
+            1886.0
+          ],
+          [
+            1594.0,
+            1892.0
+          ],
+          [
+            1591.0,
+            1985.0
+          ],
+          [
+            1430.0,
+            1979.0
+          ]
+        ],
+        "text": "ay deep",
+        "score": 0.797382869890758
+      }
+    ],
+    "engine_calls": 12,
+    "raw_line_count": 6,
+    "deduplicated": 3,
+    "elapsed_ms": 526.93,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 574.39
+}

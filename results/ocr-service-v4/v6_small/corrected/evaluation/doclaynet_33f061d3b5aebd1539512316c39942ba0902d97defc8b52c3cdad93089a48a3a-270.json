@@ -1,0 +1,967 @@
+{
+  "id": "doclaynet_33f061d3b5aebd1539512316c39942ba0902d97defc8b52c3cdad93089a48a3a",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 270,
+  "explicit_correction": true,
+  "variant": "v6_small",
+  "image_sha256": "49399933692d02f07c03bc74e9ebfce84fce9aa810e9a2a807ea58c2c5a69ec2",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "WO 2020/021001\nPCT/EP2019/070018\n7\nDVB-S2x specification, which is hereby incorporated by reference in its entirety: ETSI EN\n302 307-2 DVB “Second Generationframing structure, channel coding and modulation systems\nfor Broadcasting, interactive Services, news gathering and other broadband satellite applications,\nPart II: S2-Extensions\", www.etsi.org. The multiple carriers are supposed to be aligned in time.\n5\nFigure 1 illustrates the main steps of a method according to a preferred embodiment of the\ninvention. The method aims at generating reliable channel state information, CSI, in a wireless\nmulti-user MISO satellite communication system employing precoding. With reference to figure\n2a, a plurality of signals 1, ... , Nbeam is generated at one or at a plurality of gateway stations 10 in\n10\nthe communication system, which relay the signals to a broadband multi-beam satellite 20. Each of\nthe signals is due to be transmitted on one of the Nbeam beams the satellite is forming, and serves\nreceivers located within a corresponding ground spot, covered by said beam. In the non-limiting\nillustration, three beams are represented, but the invention extends of course to a different plurality\nof beams, for example up to tens or hundreds of beams. Beam 1 serves receivers in the first ground\n15\nspot, such as receiver 100, beam 2 serves receivers 100(2), beam i serves receivers 100(i), and so\non. The satellite may for example use aggressive frequency reuse on all its beams, so that the\nsignal actually received by a receiver suffers from both spatial and co-channel interference. For\nexample, the signal 110 received at receiver 100 not only comprises the reference waveform\ncomponent 1 that it wants to decode, but it also comprises interference from waveform components\n20\n2, .. i, ... Nbeam, that are transmitted on the same channel frequency.\nIn order to pre-empt this interference, the gateways 10 use a precoding technique. Precoding is as\nsuch known in the art and will not be explained in details in the context of the present invention.\nDetails may for example be found in patent document WO 2015/192995 Al, which is hereby\n25\nincorporated by reference in its entirety. In order to form the adequate precoding matrix that is\nmultiplying the data signals formed at the gateways, the latter have to know channel state\ninformation describing the behaviour of each one the communication channels formed by each of\nthe satellite's beams, as observed by the respective receivers.\n30\nAs illustrated in figure 2b, each of the waveform components 1. 2, ..., i, ..., Nbeam comprises a first\nfield Start(l), Start(i), ... that marks the start of a frame unit within the waveform component.\nFurther, each waveform component comprises a sequence of second fields, or pilot fields Pil(l),\nPil(i), ..., that comprise respective pilot sequences. At step a) as shown in Figure 1, the signal 110\ncomprising the plurality of waveform components is received at the receiver 100, for which only\n35\nthe reference waveform component 1 is intended. Of course the signal also comprises a data\npayload, which will however not be described in the context of the present invention.",
+    "lines": [
+      {
+        "box": [
+          [
+            148.0,
+            51.0
+          ],
+          [
+            276.0,
+            51.0
+          ],
+          [
+            276.0,
+            64.0
+          ],
+          [
+            148.0,
+            64.0
+          ]
+        ],
+        "text": "WO 2020/021001",
+        "score": 0.9758023023605347
+      },
+      {
+        "box": [
+          [
+            727.0,
+            51.0
+          ],
+          [
+            881.0,
+            51.0
+          ],
+          [
+            881.0,
+            64.0
+          ],
+          [
+            727.0,
+            64.0
+          ]
+        ],
+        "text": "PCT/EP2019/070018",
+        "score": 0.999908447265625
+      },
+      {
+        "box": [
+          [
+            518.0,
+            70.0
+          ],
+          [
+            531.0,
+            70.0
+          ],
+          [
+            531.0,
+            84.0
+          ],
+          [
+            518.0,
+            84.0
+          ]
+        ],
+        "text": "7",
+        "score": 0.9999278783798218
+      },
+      {
+        "box": [
+          [
+            145.0,
+            100.0
+          ],
+          [
+            836.0,
+            100.0
+          ],
+          [
+            836.0,
+            116.0
+          ],
+          [
+            145.0,
+            116.0
+          ]
+        ],
+        "text": "DVB-S2x specification, which is hereby incorporated by reference in its entirety: ETSI EN",
+        "score": 0.999150812625885
+      },
+      {
+        "box": [
+          [
+            145.0,
+            123.0
+          ],
+          [
+            879.0,
+            123.0
+          ],
+          [
+            879.0,
+            139.0
+          ],
+          [
+            145.0,
+            139.0
+          ]
+        ],
+        "text": "302 307-2 DVB “Second Generationframing structure, channel coding and modulation systems",
+        "score": 0.9854190349578857
+      },
+      {
+        "box": [
+          [
+            139.0,
+            148.0
+          ],
+          [
+            888.0,
+            148.0
+          ],
+          [
+            888.0,
+            161.0
+          ],
+          [
+            139.0,
+            161.0
+          ]
+        ],
+        "text": "for Broadcasting, interactive Services, news gathering and other broadband satellite applications,",
+        "score": 0.9936501383781433
+      },
+      {
+        "box": [
+          [
+            142.0,
+            168.0
+          ],
+          [
+            870.0,
+            169.0
+          ],
+          [
+            870.0,
+            185.0
+          ],
+          [
+            142.0,
+            184.0
+          ]
+        ],
+        "text": "Part II: S2-Extensions\", www.etsi.org. The multiple carriers are supposed to be aligned in time.",
+        "score": 0.9875046610832214
+      },
+      {
+        "box": [
+          [
+            103.0,
+            192.0
+          ],
+          [
+            117.0,
+            192.0
+          ],
+          [
+            117.0,
+            206.0
+          ],
+          [
+            103.0,
+            206.0
+          ]
+        ],
+        "text": "5",
+        "score": 0.9999901056289673
+      },
+      {
+        "box": [
+          [
+            145.0,
+            217.0
+          ],
+          [
+            830.0,
+            217.0
+          ],
+          [
+            830.0,
+            230.0
+          ],
+          [
+            145.0,
+            230.0
+          ]
+        ],
+        "text": "Figure 1 illustrates the main steps of a method according to a preferred embodiment of the",
+        "score": 0.9911643862724304
+      },
+      {
+        "box": [
+          [
+            143.0,
+            237.0
+          ],
+          [
+            862.0,
+            238.0
+          ],
+          [
+            862.0,
+            254.0
+          ],
+          [
+            143.0,
+            253.0
+          ]
+        ],
+        "text": "invention. The method aims at generating reliable channel state information, CSI, in a wireless",
+        "score": 0.991455614566803
+      },
+      {
+        "box": [
+          [
+            145.0,
+            261.0
+          ],
+          [
+            877.0,
+            261.0
+          ],
+          [
+            877.0,
+            277.0
+          ],
+          [
+            145.0,
+            277.0
+          ]
+        ],
+        "text": "multi-user MISO satellite communication system employing precoding. With reference to figure",
+        "score": 0.9918693900108337
+      },
+      {
+        "box": [
+          [
+            144.0,
+            284.0
+          ],
+          [
+            882.0,
+            284.0
+          ],
+          [
+            882.0,
+            303.0
+          ],
+          [
+            144.0,
+            303.0
+          ]
+        ],
+        "text": "2a, a plurality of signals 1, ... , Nbeam is generated at one or at a plurality of gateway stations 10 in",
+        "score": 0.9870107769966125
+      },
+      {
+        "box": [
+          [
+            94.0,
+            307.0
+          ],
+          [
+            119.0,
+            307.0
+          ],
+          [
+            119.0,
+            322.0
+          ],
+          [
+            94.0,
+            322.0
+          ]
+        ],
+        "text": "10",
+        "score": 0.9990072250366211
+      },
+      {
+        "box": [
+          [
+            144.0,
+            309.0
+          ],
+          [
+            899.0,
+            309.0
+          ],
+          [
+            899.0,
+            322.0
+          ],
+          [
+            144.0,
+            322.0
+          ]
+        ],
+        "text": "the communication system, which relay the signals to a broadband multi-beam satellite 20. Each of",
+        "score": 0.9937680959701538
+      },
+      {
+        "box": [
+          [
+            143.0,
+            329.0
+          ],
+          [
+            873.0,
+            329.0
+          ],
+          [
+            873.0,
+            349.0
+          ],
+          [
+            143.0,
+            349.0
+          ]
+        ],
+        "text": "the signals is due to be transmitted on one of the Nbeam beams the satellite is forming, and serves",
+        "score": 0.9933980107307434
+      },
+      {
+        "box": [
+          [
+            144.0,
+            353.0
+          ],
+          [
+            872.0,
+            353.0
+          ],
+          [
+            872.0,
+            369.0
+          ],
+          [
+            144.0,
+            369.0
+          ]
+        ],
+        "text": "receivers located within a corresponding ground spot, covered by said beam. In the non-limiting",
+        "score": 0.9895604252815247
+      },
+      {
+        "box": [
+          [
+            144.0,
+            375.0
+          ],
+          [
+            893.0,
+            377.0
+          ],
+          [
+            893.0,
+            393.0
+          ],
+          [
+            144.0,
+            391.0
+          ]
+        ],
+        "text": "illustration, three beams are represented, but the invention extends of course to a different plurality",
+        "score": 0.998388946056366
+      },
+      {
+        "box": [
+          [
+            144.0,
+            398.0
+          ],
+          [
+            896.0,
+            399.0
+          ],
+          [
+            896.0,
+            415.0
+          ],
+          [
+            144.0,
+            414.0
+          ]
+        ],
+        "text": "of beams, for example up to tens or hundreds of beams. Beam 1 serves receivers in the first ground",
+        "score": 0.9903119206428528
+      },
+      {
+        "box": [
+          [
+            93.0,
+            420.0
+          ],
+          [
+            119.0,
+            420.0
+          ],
+          [
+            119.0,
+            439.0
+          ],
+          [
+            93.0,
+            439.0
+          ]
+        ],
+        "text": "15",
+        "score": 0.9999779462814331
+      },
+      {
+        "box": [
+          [
+            144.0,
+            423.0
+          ],
+          [
+            883.0,
+            423.0
+          ],
+          [
+            883.0,
+            439.0
+          ],
+          [
+            144.0,
+            439.0
+          ]
+        ],
+        "text": "spot, such as receiver 100, beam 2 serves receivers 100(2), beam i serves receivers 100(i), and so",
+        "score": 0.9909771680831909
+      },
+      {
+        "box": [
+          [
+            144.0,
+            444.0
+          ],
+          [
+            851.0,
+            445.0
+          ],
+          [
+            851.0,
+            462.0
+          ],
+          [
+            144.0,
+            461.0
+          ]
+        ],
+        "text": "on. The satellite may for example use aggressive frequency reuse on all its beams, so that the",
+        "score": 0.9987967610359192
+      },
+      {
+        "box": [
+          [
+            145.0,
+            469.0
+          ],
+          [
+            870.0,
+            469.0
+          ],
+          [
+            870.0,
+            485.0
+          ],
+          [
+            145.0,
+            485.0
+          ]
+        ],
+        "text": "signal actually received by a receiver suffers from both spatial and co-channel interference. For",
+        "score": 0.9982970952987671
+      },
+      {
+        "box": [
+          [
+            146.0,
+            494.0
+          ],
+          [
+            843.0,
+            494.0
+          ],
+          [
+            843.0,
+            507.0
+          ],
+          [
+            146.0,
+            507.0
+          ]
+        ],
+        "text": "example, the signal 110 received at receiver 100 not only comprises the reference waveform",
+        "score": 0.9900205731391907
+      },
+      {
+        "box": [
+          [
+            145.0,
+            516.0
+          ],
+          [
+            898.0,
+            516.0
+          ],
+          [
+            898.0,
+            532.0
+          ],
+          [
+            145.0,
+            532.0
+          ]
+        ],
+        "text": "component 1 that it wants to decode, but it also comprises interference from waveform components",
+        "score": 0.995072603225708
+      },
+      {
+        "box": [
+          [
+            94.0,
+            539.0
+          ],
+          [
+            119.0,
+            539.0
+          ],
+          [
+            119.0,
+            555.0
+          ],
+          [
+            94.0,
+            555.0
+          ]
+        ],
+        "text": "20",
+        "score": 0.9999852180480957
+      },
+      {
+        "box": [
+          [
+            142.0,
+            539.0
+          ],
+          [
+            651.0,
+            539.0
+          ],
+          [
+            651.0,
+            555.0
+          ],
+          [
+            142.0,
+            555.0
+          ]
+        ],
+        "text": "2, .. i, ... Nbeam, that are transmitted on the same channel frequency.",
+        "score": 0.9820815324783325
+      },
+      {
+        "box": [
+          [
+            145.0,
+            587.0
+          ],
+          [
+            884.0,
+            587.0
+          ],
+          [
+            884.0,
+            600.0
+          ],
+          [
+            145.0,
+            600.0
+          ]
+        ],
+        "text": "In order to pre-empt this interference, the gateways 10 use a precoding technique. Precoding is as",
+        "score": 0.9946969747543335
+      },
+      {
+        "box": [
+          [
+            145.0,
+            609.0
+          ],
+          [
+            873.0,
+            609.0
+          ],
+          [
+            873.0,
+            622.0
+          ],
+          [
+            145.0,
+            622.0
+          ]
+        ],
+        "text": "such known in the art and will not be explained in details in the context of the present invention.",
+        "score": 0.9905040860176086
+      },
+      {
+        "box": [
+          [
+            145.0,
+            632.0
+          ],
+          [
+            849.0,
+            632.0
+          ],
+          [
+            849.0,
+            645.0
+          ],
+          [
+            145.0,
+            645.0
+          ]
+        ],
+        "text": "Details may for example be found in patent document WO 2015/192995 Al, which is hereby",
+        "score": 0.9893316030502319
+      },
+      {
+        "box": [
+          [
+            94.0,
+            654.0
+          ],
+          [
+            118.0,
+            654.0
+          ],
+          [
+            118.0,
+            670.0
+          ],
+          [
+            94.0,
+            670.0
+          ]
+        ],
+        "text": "25",
+        "score": 0.999997615814209
+      },
+      {
+        "box": [
+          [
+            145.0,
+            656.0
+          ],
+          [
+            862.0,
+            656.0
+          ],
+          [
+            862.0,
+            669.0
+          ],
+          [
+            145.0,
+            669.0
+          ]
+        ],
+        "text": "incorporated by reference in its entirety. In order to form the adequate precoding matrix that is",
+        "score": 0.9925580620765686
+      },
+      {
+        "box": [
+          [
+            145.0,
+            678.0
+          ],
+          [
+            824.0,
+            678.0
+          ],
+          [
+            824.0,
+            694.0
+          ],
+          [
+            145.0,
+            694.0
+          ]
+        ],
+        "text": "multiplying the data signals formed at the gateways, the latter have to know channel state",
+        "score": 0.9965599179267883
+      },
+      {
+        "box": [
+          [
+            144.0,
+            700.0
+          ],
+          [
+            887.0,
+            700.0
+          ],
+          [
+            887.0,
+            716.0
+          ],
+          [
+            144.0,
+            716.0
+          ]
+        ],
+        "text": "information describing the behaviour of each one the communication channels formed by each of",
+        "score": 0.9893013834953308
+      },
+      {
+        "box": [
+          [
+            143.0,
+            722.0
+          ],
+          [
+            607.0,
+            723.0
+          ],
+          [
+            607.0,
+            739.0
+          ],
+          [
+            143.0,
+            738.0
+          ]
+        ],
+        "text": "the satellite's beams, as observed by the respective receivers.",
+        "score": 0.9889800548553467
+      },
+      {
+        "box": [
+          [
+            94.0,
+            769.0
+          ],
+          [
+            119.0,
+            769.0
+          ],
+          [
+            119.0,
+            785.0
+          ],
+          [
+            94.0,
+            785.0
+          ]
+        ],
+        "text": "30",
+        "score": 0.9999216198921204
+      },
+      {
+        "box": [
+          [
+            143.0,
+            769.0
+          ],
+          [
+            885.0,
+            771.0
+          ],
+          [
+            885.0,
+            787.0
+          ],
+          [
+            143.0,
+            785.0
+          ]
+        ],
+        "text": "As illustrated in figure 2b, each of the waveform components 1. 2, ..., i, ..., Nbeam comprises a first",
+        "score": 0.9816479086875916
+      },
+      {
+        "box": [
+          [
+            143.0,
+            792.0
+          ],
+          [
+            849.0,
+            793.0
+          ],
+          [
+            849.0,
+            809.0
+          ],
+          [
+            143.0,
+            808.0
+          ]
+        ],
+        "text": "field Start(l), Start(i), ... that marks the start of a frame unit within the waveform component.",
+        "score": 0.9938033819198608
+      },
+      {
+        "box": [
+          [
+            143.0,
+            815.0
+          ],
+          [
+            870.0,
+            816.0
+          ],
+          [
+            870.0,
+            832.0
+          ],
+          [
+            143.0,
+            831.0
+          ]
+        ],
+        "text": "Further, each waveform component comprises a sequence of second fields, or pilot fields Pil(l),",
+        "score": 0.9926376938819885
+      },
+      {
+        "box": [
+          [
+            145.0,
+            841.0
+          ],
+          [
+            883.0,
+            841.0
+          ],
+          [
+            883.0,
+            854.0
+          ],
+          [
+            145.0,
+            854.0
+          ]
+        ],
+        "text": "Pil(i), ..., that comprise respective pilot sequences. At step a) as shown in Figure 1, the signal 110",
+        "score": 0.9802327156066895
+      },
+      {
+        "box": [
+          [
+            145.0,
+            862.0
+          ],
+          [
+            879.0,
+            862.0
+          ],
+          [
+            879.0,
+            878.0
+          ],
+          [
+            145.0,
+            878.0
+          ]
+        ],
+        "text": "comprising the plurality of waveform components is received at the receiver 100, for which only",
+        "score": 0.9966360926628113
+      },
+      {
+        "box": [
+          [
+            94.0,
+            885.0
+          ],
+          [
+            118.0,
+            885.0
+          ],
+          [
+            118.0,
+            900.0
+          ],
+          [
+            94.0,
+            900.0
+          ]
+        ],
+        "text": "35",
+        "score": 0.9999895095825195
+      },
+      {
+        "box": [
+          [
+            143.0,
+            886.0
+          ],
+          [
+            845.0,
+            886.0
+          ],
+          [
+            845.0,
+            902.0
+          ],
+          [
+            143.0,
+            902.0
+          ]
+        ],
+        "text": "the reference waveform component 1 is intended. Of course the signal also comprises a data",
+        "score": 0.9944179058074951
+      },
+      {
+        "box": [
+          [
+            145.0,
+            910.0
+          ],
+          [
+            788.0,
+            910.0
+          ],
+          [
+            788.0,
+            923.0
+          ],
+          [
+            145.0,
+            923.0
+          ]
+        ],
+        "text": "payload, which will however not be described in the context of the present invention.",
+        "score": 0.9994526505470276
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 90,
+    "processing_ms": 426.63,
+    "direction_stats": {},
+    "elapsed_ms": 426.64
+  }
+}

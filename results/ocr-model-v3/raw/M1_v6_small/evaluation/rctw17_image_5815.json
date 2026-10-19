@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_5815",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "08bcafac49bb608323634e01844a7a58eb836881fb8d303c24a7dce9ef301b9e",
+  "ok": true,
+  "result": {
+    "text": "请允许我\n笑一会",
+    "lines": [
+      {
+        "box": [
+          [
+            37.0,
+            101.0
+          ],
+          [
+            170.0,
+            101.0
+          ],
+          [
+            170.0,
+            142.0
+          ],
+          [
+            38.0,
+            142.0
+          ]
+        ],
+        "text": "请允许我",
+        "score": 0.9999350905418396
+      },
+      {
+        "box": [
+          [
+            36.0,
+            136.0
+          ],
+          [
+            144.0,
+            137.0
+          ],
+          [
+            144.0,
+            181.0
+          ],
+          [
+            36.0,
+            181.0
+          ]
+        ],
+        "text": "笑一会",
+        "score": 0.9996400475502014
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      181,
+      198,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 51.35
+  }
+}

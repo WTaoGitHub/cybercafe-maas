@@ -1,0 +1,65 @@
+{
+  "id": "rctw17_image_5074",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "d94e1b2d97e6cce9fe2c8b056d8d9447ae52f4f290f03b4d11782221003fa0b1",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "市\n大",
+    "lines": [
+      {
+        "box": [
+          [
+            594.0,
+            282.0
+          ],
+          [
+            424.0,
+            269.0
+          ],
+          [
+            432.0,
+            172.0
+          ],
+          [
+            602.0,
+            185.0
+          ]
+        ],
+        "text": "市",
+        "score": 0.5220479965209961
+      },
+      {
+        "box": [
+          [
+            598.0,
+            193.0
+          ],
+          [
+            423.0,
+            193.0
+          ],
+          [
+            423.0,
+            102.0
+          ],
+          [
+            598.0,
+            102.0
+          ]
+        ],
+        "text": "大",
+        "score": 0.5083693265914917
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 14.69,
+    "direction_stats": {},
+    "elapsed_ms": 14.69
+  }
+}

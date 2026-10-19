@@ -1,0 +1,1910 @@
+{
+  "id": "doclaynet_9f72a26a481c9f5dba977fb8b867f3fd5f9aa9843ef0d8ef191a3ed25695cbf8",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "Section23.4.4,\"ndb_mgmd—TheNDBClusterManagementServerDaemon\"\n--configinfo\nSection23.4.7,\"ndb_config—ExtractNDBClusterConfigurationInformation\"\n--connect\nSection23.4.23,\"ndb_restore—Restore anNDBClusterBackup\"\n--connect-delay\nSection 23.4.1,\"ndbd-\nTheNDBClusterDataNodeDaemon\"\n--connect-expired-password\nSection 4.5.1.1,\"mysql Client Options\"\nSection6.2.16,“ServerHandlingofExpiredPasswords\"\n--connect-retries\nCheckandRepairBLOBandTEXTcolumnsofNDBClusterTables\nSection23.4.6,\"ndb_blob_tool-\nSection 23.4.7,“ndb_config\nExtractNDBClusterConfigurationInformation\"\nSection23.4.8,\"ndb_delete_all\nDeleteAllRowsfromanNDBTable\"\nSection23.4.9,\"ndb_desc\nDescribeNDBTables\"\nDropIndexfromanNDBTable\"\nSection23.4.10,\"ndb_drop_index\nSection23.4.11,\"ndb_drop_table-\nDropanNDBTable\"\nImportCSVDataIntoNDB\"\nSection23.4.13,“ndb_import\nSection23.4.14,\"ndb_index_statNDBIndexStatisticsUtility\"\nSection 23.4.5,\"ndb_mgm-\nTheNDBClusterManagementClient\"\nSection23.4.4,\"ndb_mgmd\nTheNDBClusterManagementServerDaemon\"\nSection23.4.15,\"ndb_move_data\nNDBDataCopyUtility\"\nSection23.4.23,\"ndb_restore-\nRestoreanNDBClusterBackup\"\n,\"ndb_select_all-\nSection23.4.24,\nPrintRowsfromanNDBTable\"\nSection23.4.25,\n,\"ndb_select_count\nPrintRowCountsforNDBTables\"\nDisplayListofNDBTables\"\nSection23.4.27,\"ndb_show_tables\nSection23.4.30,“ndb_waiter\nWaitforNDBClustertoReachaGivenStatus\nSection 23.4.1,\"ndbd\nTheNDBClusterDataNodeDaemon\"\nSection23.4.2,\"ndbinfo_select_all—SelectFromndbinfoTables\"\n-connect-retry-delay\nCheckandRepairBLOBandTEXTcolumnsofNDBClusterTables\nSection23.4.6,\"ndb_blob_tool\nSection 23.4.7,\"ndb_config\nExtractNDBClusterConfigurationInformation\"\nSection23.4.8,\"ndb_delete_all—DeleteAllRowsfromanNDBTable\"\nSection23.4.9,\"ndb_desc-\nDescribeNDBTables\"\nSection23.4.10,“ndb_drop_index\nDropIndexfromanNDBTable\nDropanNDBTable\"\nSection23.4.11,\"ndb_drop_table\nImportCSVDataIntoNDB\nSection23.4.13,\n,\"ndb_import\nSection 23.4.14,“ndb_index_stat\nNDBIndexStatisticsUtility\"\nSection 23.4.5,\"ndb_mgm\nTheNDBClusterManagementClient\"\nSection23.4.4,\"ndb_mgmd\nTheNDBClusterManagementServerDaemon\"\n,\"ndb_move_data\nNDBDataCopyUtility\nSection23.4.15,\nSection 23.4.23,\n,\"ndb_restore\nRestoreanNDBClusterBackup\"\nPrintRowsfromanNDBTable\"\nSection23.4.24,\n,\"ndb_select_all\nSection23.4.25,\nPrintRowCountsforNDBTables\"\n,\"ndb_select_count\nSection23.4.27,\"ndb_show_tables\nDisplayListof NDBTables\"\nSection23.4.30,“ndb_waiter-\nWaitforNDBClustertoReachaGivenStatus\"\n5763",
+    "lines": [
+      {
+        "box": [
+          [
+            169.0,
+            89.0
+          ],
+          [
+            759.0,
+            90.0
+          ],
+          [
+            759.0,
+            110.0
+          ],
+          [
+            169.0,
+            109.0
+          ]
+        ],
+        "text": "Section23.4.4,\"ndb_mgmd—TheNDBClusterManagementServerDaemon\"",
+        "score": 0.9716463511188825
+      },
+      {
+        "box": [
+          [
+            167.0,
+            121.0
+          ],
+          [
+            305.0,
+            121.0
+          ],
+          [
+            305.0,
+            144.0
+          ],
+          [
+            167.0,
+            144.0
+          ]
+        ],
+        "text": "--configinfo",
+        "score": 0.9940150231122971
+      },
+      {
+        "box": [
+          [
+            169.0,
+            143.0
+          ],
+          [
+            751.0,
+            143.0
+          ],
+          [
+            751.0,
+            162.0
+          ],
+          [
+            169.0,
+            162.0
+          ]
+        ],
+        "text": "Section23.4.7,\"ndb_config—ExtractNDBClusterConfigurationInformation\"",
+        "score": 0.9786366048981162
+      },
+      {
+        "box": [
+          [
+            168.0,
+            176.0
+          ],
+          [
+            283.0,
+            174.0
+          ],
+          [
+            283.0,
+            194.0
+          ],
+          [
+            168.0,
+            196.0
+          ]
+        ],
+        "text": "--connect",
+        "score": 0.9946079982651604
+      },
+      {
+        "box": [
+          [
+            169.0,
+            194.0
+          ],
+          [
+            665.0,
+            194.0
+          ],
+          [
+            665.0,
+            213.0
+          ],
+          [
+            169.0,
+            213.0
+          ]
+        ],
+        "text": "Section23.4.23,\"ndb_restore—Restore anNDBClusterBackup\"",
+        "score": 0.9736858096989718
+      },
+      {
+        "box": [
+          [
+            169.0,
+            226.0
+          ],
+          [
+            350.0,
+            226.0
+          ],
+          [
+            350.0,
+            246.0
+          ],
+          [
+            169.0,
+            246.0
+          ]
+        ],
+        "text": "--connect-delay",
+        "score": 0.9962664445241293
+      },
+      {
+        "box": [
+          [
+            171.0,
+            247.0
+          ],
+          [
+            343.0,
+            247.0
+          ],
+          [
+            343.0,
+            264.0
+          ],
+          [
+            171.0,
+            264.0
+          ]
+        ],
+        "text": "Section 23.4.1,\"ndbd-",
+        "score": 0.9420148900577
+      },
+      {
+        "box": [
+          [
+            352.0,
+            247.0
+          ],
+          [
+            641.0,
+            247.0
+          ],
+          [
+            641.0,
+            264.0
+          ],
+          [
+            352.0,
+            264.0
+          ]
+        ],
+        "text": "TheNDBClusterDataNodeDaemon\"",
+        "score": 0.9912683644465038
+      },
+      {
+        "box": [
+          [
+            170.0,
+            278.0
+          ],
+          [
+            495.0,
+            278.0
+          ],
+          [
+            495.0,
+            298.0
+          ],
+          [
+            170.0,
+            298.0
+          ]
+        ],
+        "text": "--connect-expired-password",
+        "score": 0.9968341886997223
+      },
+      {
+        "box": [
+          [
+            169.0,
+            298.0
+          ],
+          [
+            458.0,
+            298.0
+          ],
+          [
+            458.0,
+            318.0
+          ],
+          [
+            169.0,
+            318.0
+          ]
+        ],
+        "text": "Section 4.5.1.1,\"mysql Client Options\"",
+        "score": 0.9443144625739047
+      },
+      {
+        "box": [
+          [
+            169.0,
+            313.0
+          ],
+          [
+            586.0,
+            313.0
+          ],
+          [
+            586.0,
+            333.0
+          ],
+          [
+            169.0,
+            333.0
+          ]
+        ],
+        "text": "Section6.2.16,“ServerHandlingofExpiredPasswords\"",
+        "score": 0.977402509500583
+      },
+      {
+        "box": [
+          [
+            169.0,
+            345.0
+          ],
+          [
+            363.0,
+            345.0
+          ],
+          [
+            363.0,
+            365.0
+          ],
+          [
+            169.0,
+            365.0
+          ]
+        ],
+        "text": "--connect-retries",
+        "score": 0.9963005711050594
+      },
+      {
+        "box": [
+          [
+            414.0,
+            364.0
+          ],
+          [
+            931.0,
+            364.0
+          ],
+          [
+            931.0,
+            383.0
+          ],
+          [
+            414.0,
+            383.0
+          ]
+        ],
+        "text": "CheckandRepairBLOBandTEXTcolumnsofNDBClusterTables",
+        "score": 0.9974846374988556
+      },
+      {
+        "box": [
+          [
+            169.0,
+            365.0
+          ],
+          [
+            406.0,
+            365.0
+          ],
+          [
+            406.0,
+            382.0
+          ],
+          [
+            169.0,
+            382.0
+          ]
+        ],
+        "text": "Section23.4.6,\"ndb_blob_tool-",
+        "score": 0.9605473629359541
+      },
+      {
+        "box": [
+          [
+            168.0,
+            379.0
+          ],
+          [
+            380.0,
+            380.0
+          ],
+          [
+            380.0,
+            400.0
+          ],
+          [
+            168.0,
+            399.0
+          ]
+        ],
+        "text": "Section 23.4.7,“ndb_config",
+        "score": 0.9535929079239185
+      },
+      {
+        "box": [
+          [
+            396.0,
+            379.0
+          ],
+          [
+            751.0,
+            380.0
+          ],
+          [
+            751.0,
+            400.0
+          ],
+          [
+            396.0,
+            399.0
+          ]
+        ],
+        "text": "ExtractNDBClusterConfigurationInformation\"",
+        "score": 0.9877521892388662
+      },
+      {
+        "box": [
+          [
+            169.0,
+            397.0
+          ],
+          [
+            406.0,
+            397.0
+          ],
+          [
+            406.0,
+            414.0
+          ],
+          [
+            169.0,
+            414.0
+          ]
+        ],
+        "text": "Section23.4.8,\"ndb_delete_all",
+        "score": 0.9758994353228602
+      },
+      {
+        "box": [
+          [
+            423.0,
+            397.0
+          ],
+          [
+            700.0,
+            397.0
+          ],
+          [
+            700.0,
+            414.0
+          ],
+          [
+            423.0,
+            414.0
+          ]
+        ],
+        "text": "DeleteAllRowsfromanNDBTable\"",
+        "score": 0.987134018114635
+      },
+      {
+        "box": [
+          [
+            170.0,
+            413.0
+          ],
+          [
+            370.0,
+            413.0
+          ],
+          [
+            370.0,
+            430.0
+          ],
+          [
+            170.0,
+            430.0
+          ]
+        ],
+        "text": "Section23.4.9,\"ndb_desc",
+        "score": 0.9701712079670118
+      },
+      {
+        "box": [
+          [
+            387.0,
+            413.0
+          ],
+          [
+            560.0,
+            413.0
+          ],
+          [
+            560.0,
+            430.0
+          ],
+          [
+            387.0,
+            430.0
+          ]
+        ],
+        "text": "DescribeNDBTables\"",
+        "score": 0.990228126446406
+      },
+      {
+        "box": [
+          [
+            441.0,
+            426.0
+          ],
+          [
+            685.0,
+            425.0
+          ],
+          [
+            685.0,
+            445.0
+          ],
+          [
+            441.0,
+            446.0
+          ]
+        ],
+        "text": "DropIndexfromanNDBTable\"",
+        "score": 0.9812779799103737
+      },
+      {
+        "box": [
+          [
+            169.0,
+            427.0
+          ],
+          [
+            427.0,
+            427.0
+          ],
+          [
+            427.0,
+            447.0
+          ],
+          [
+            169.0,
+            447.0
+          ]
+        ],
+        "text": "Section23.4.10,\"ndb_drop_index",
+        "score": 0.9693901797135671
+      },
+      {
+        "box": [
+          [
+            169.0,
+            442.0
+          ],
+          [
+            430.0,
+            442.0
+          ],
+          [
+            430.0,
+            462.0
+          ],
+          [
+            169.0,
+            462.0
+          ]
+        ],
+        "text": "Section23.4.11,\"ndb_drop_table-",
+        "score": 0.9805051818970711
+      },
+      {
+        "box": [
+          [
+            440.0,
+            444.0
+          ],
+          [
+            597.0,
+            444.0
+          ],
+          [
+            597.0,
+            461.0
+          ],
+          [
+            440.0,
+            461.0
+          ]
+        ],
+        "text": "DropanNDBTable\"",
+        "score": 0.9852574467658997
+      },
+      {
+        "box": [
+          [
+            406.0,
+            458.0
+          ],
+          [
+            618.0,
+            457.0
+          ],
+          [
+            618.0,
+            477.0
+          ],
+          [
+            406.0,
+            478.0
+          ]
+        ],
+        "text": "ImportCSVDataIntoNDB\"",
+        "score": 0.9565723084268116
+      },
+      {
+        "box": [
+          [
+            170.0,
+            460.0
+          ],
+          [
+            391.0,
+            460.0
+          ],
+          [
+            391.0,
+            477.0
+          ],
+          [
+            170.0,
+            477.0
+          ]
+        ],
+        "text": "Section23.4.13,“ndb_import",
+        "score": 0.9537170896163354
+      },
+      {
+        "box": [
+          [
+            169.0,
+            473.0
+          ],
+          [
+            647.0,
+            473.0
+          ],
+          [
+            647.0,
+            492.0
+          ],
+          [
+            169.0,
+            492.0
+          ]
+        ],
+        "text": "Section23.4.14,\"ndb_index_statNDBIndexStatisticsUtility\"",
+        "score": 0.9644395453589303
+      },
+      {
+        "box": [
+          [
+            168.0,
+            488.0
+          ],
+          [
+            374.0,
+            489.0
+          ],
+          [
+            374.0,
+            509.0
+          ],
+          [
+            168.0,
+            508.0
+          ]
+        ],
+        "text": "Section 23.4.5,\"ndb_mgm-",
+        "score": 0.9377887845039368
+      },
+      {
+        "box": [
+          [
+            388.0,
+            488.0
+          ],
+          [
+            678.0,
+            489.0
+          ],
+          [
+            678.0,
+            509.0
+          ],
+          [
+            388.0,
+            508.0
+          ]
+        ],
+        "text": "TheNDBClusterManagementClient\"",
+        "score": 0.9776269803444545
+      },
+      {
+        "box": [
+          [
+            169.0,
+            505.0
+          ],
+          [
+            384.0,
+            505.0
+          ],
+          [
+            384.0,
+            525.0
+          ],
+          [
+            169.0,
+            525.0
+          ]
+        ],
+        "text": "Section23.4.4,\"ndb_mgmd",
+        "score": 0.9718202508014181
+      },
+      {
+        "box": [
+          [
+            399.0,
+            506.0
+          ],
+          [
+            760.0,
+            506.0
+          ],
+          [
+            760.0,
+            523.0
+          ],
+          [
+            399.0,
+            523.0
+          ]
+        ],
+        "text": "TheNDBClusterManagementServerDaemon\"",
+        "score": 0.9915676199727588
+      },
+      {
+        "box": [
+          [
+            169.0,
+            520.0
+          ],
+          [
+            427.0,
+            520.0
+          ],
+          [
+            427.0,
+            537.0
+          ],
+          [
+            169.0,
+            537.0
+          ]
+        ],
+        "text": "Section23.4.15,\"ndb_move_data",
+        "score": 0.9709533966820816
+      },
+      {
+        "box": [
+          [
+            442.0,
+            520.0
+          ],
+          [
+            619.0,
+            520.0
+          ],
+          [
+            619.0,
+            540.0
+          ],
+          [
+            442.0,
+            540.0
+          ]
+        ],
+        "text": "NDBDataCopyUtility\"",
+        "score": 0.9672368670764723
+      },
+      {
+        "box": [
+          [
+            170.0,
+            537.0
+          ],
+          [
+            406.0,
+            537.0
+          ],
+          [
+            406.0,
+            554.0
+          ],
+          [
+            170.0,
+            554.0
+          ]
+        ],
+        "text": "Section23.4.23,\"ndb_restore-",
+        "score": 0.9651177993842533
+      },
+      {
+        "box": [
+          [
+            412.0,
+            537.0
+          ],
+          [
+            665.0,
+            537.0
+          ],
+          [
+            665.0,
+            554.0
+          ],
+          [
+            412.0,
+            554.0
+          ]
+        ],
+        "text": "RestoreanNDBClusterBackup\"",
+        "score": 0.9884101771391355
+      },
+      {
+        "box": [
+          [
+            285.0,
+            552.0
+          ],
+          [
+            416.0,
+            550.0
+          ],
+          [
+            416.0,
+            570.0
+          ],
+          [
+            285.0,
+            572.0
+          ]
+        ],
+        "text": ",\"ndb_select_all-",
+        "score": 0.8832795830333934
+      },
+      {
+        "box": [
+          [
+            170.0,
+            553.0
+          ],
+          [
+            295.0,
+            553.0
+          ],
+          [
+            295.0,
+            570.0
+          ],
+          [
+            170.0,
+            570.0
+          ]
+        ],
+        "text": "Section23.4.24,",
+        "score": 0.9816550135612487
+      },
+      {
+        "box": [
+          [
+            429.0,
+            553.0
+          ],
+          [
+            671.0,
+            553.0
+          ],
+          [
+            671.0,
+            570.0
+          ],
+          [
+            429.0,
+            570.0
+          ]
+        ],
+        "text": "PrintRowsfromanNDBTable\"",
+        "score": 0.9892033288876215
+      },
+      {
+        "box": [
+          [
+            170.0,
+            567.0
+          ],
+          [
+            295.0,
+            567.0
+          ],
+          [
+            295.0,
+            584.0
+          ],
+          [
+            170.0,
+            584.0
+          ]
+        ],
+        "text": "Section23.4.25,",
+        "score": 0.9738600492477417
+      },
+      {
+        "box": [
+          [
+            286.0,
+            567.0
+          ],
+          [
+            437.0,
+            567.0
+          ],
+          [
+            437.0,
+            584.0
+          ],
+          [
+            286.0,
+            584.0
+          ]
+        ],
+        "text": ",\"ndb_select_count",
+        "score": 0.9328732242186865
+      },
+      {
+        "box": [
+          [
+            456.0,
+            568.0
+          ],
+          [
+            714.0,
+            568.0
+          ],
+          [
+            714.0,
+            585.0
+          ],
+          [
+            456.0,
+            585.0
+          ]
+        ],
+        "text": "PrintRowCountsforNDBTables\"",
+        "score": 0.9820449109430667
+      },
+      {
+        "box": [
+          [
+            455.0,
+            582.0
+          ],
+          [
+            665.0,
+            582.0
+          ],
+          [
+            665.0,
+            602.0
+          ],
+          [
+            455.0,
+            602.0
+          ]
+        ],
+        "text": "DisplayListofNDBTables\"",
+        "score": 0.9780247600182242
+      },
+      {
+        "box": [
+          [
+            170.0,
+            584.0
+          ],
+          [
+            439.0,
+            584.0
+          ],
+          [
+            439.0,
+            601.0
+          ],
+          [
+            170.0,
+            601.0
+          ]
+        ],
+        "text": "Section23.4.27,\"ndb_show_tables",
+        "score": 0.9734874848396547
+      },
+      {
+        "box": [
+          [
+            170.0,
+            599.0
+          ],
+          [
+            405.0,
+            599.0
+          ],
+          [
+            405.0,
+            616.0
+          ],
+          [
+            170.0,
+            616.0
+          ]
+        ],
+        "text": "Section23.4.30,“ndb_waiter",
+        "score": 0.9673373401165009
+      },
+      {
+        "box": [
+          [
+            406.0,
+            599.0
+          ],
+          [
+            756.0,
+            599.0
+          ],
+          [
+            756.0,
+            616.0
+          ],
+          [
+            406.0,
+            616.0
+          ]
+        ],
+        "text": "WaitforNDBClustertoReachaGivenStatus",
+        "score": 0.9967702312601937
+      },
+      {
+        "box": [
+          [
+            170.0,
+            614.0
+          ],
+          [
+            335.0,
+            614.0
+          ],
+          [
+            335.0,
+            631.0
+          ],
+          [
+            170.0,
+            631.0
+          ]
+        ],
+        "text": "Section 23.4.1,\"ndbd",
+        "score": 0.9510009169578553
+      },
+      {
+        "box": [
+          [
+            352.0,
+            614.0
+          ],
+          [
+            642.0,
+            614.0
+          ],
+          [
+            642.0,
+            631.0
+          ],
+          [
+            352.0,
+            631.0
+          ]
+        ],
+        "text": "TheNDBClusterDataNodeDaemon\"",
+        "score": 0.9943718292883464
+      },
+      {
+        "box": [
+          [
+            169.0,
+            629.0
+          ],
+          [
+            665.0,
+            629.0
+          ],
+          [
+            665.0,
+            648.0
+          ],
+          [
+            169.0,
+            648.0
+          ]
+        ],
+        "text": "Section23.4.2,\"ndbinfo_select_all—SelectFromndbinfoTables\"",
+        "score": 0.9846789518306995
+      },
+      {
+        "box": [
+          [
+            172.0,
+            661.0
+          ],
+          [
+            412.0,
+            661.0
+          ],
+          [
+            412.0,
+            681.0
+          ],
+          [
+            172.0,
+            681.0
+          ]
+        ],
+        "text": "-connect-retry-delay",
+        "score": 0.9949267238378525
+      },
+      {
+        "box": [
+          [
+            420.0,
+            681.0
+          ],
+          [
+            932.0,
+            681.0
+          ],
+          [
+            932.0,
+            700.0
+          ],
+          [
+            420.0,
+            700.0
+          ]
+        ],
+        "text": "CheckandRepairBLOBandTEXTcolumnsofNDBClusterTables",
+        "score": 0.9956755530834198
+      },
+      {
+        "box": [
+          [
+            170.0,
+            682.0
+          ],
+          [
+            405.0,
+            682.0
+          ],
+          [
+            405.0,
+            699.0
+          ],
+          [
+            170.0,
+            699.0
+          ]
+        ],
+        "text": "Section23.4.6,\"ndb_blob_tool",
+        "score": 0.9791534010853086
+      },
+      {
+        "box": [
+          [
+            168.0,
+            695.0
+          ],
+          [
+            380.0,
+            696.0
+          ],
+          [
+            380.0,
+            716.0
+          ],
+          [
+            168.0,
+            715.0
+          ]
+        ],
+        "text": "Section 23.4.7,\"ndb_config",
+        "score": 0.9556451990054204
+      },
+      {
+        "box": [
+          [
+            387.0,
+            695.0
+          ],
+          [
+            752.0,
+            696.0
+          ],
+          [
+            752.0,
+            716.0
+          ],
+          [
+            387.0,
+            715.0
+          ]
+        ],
+        "text": "ExtractNDBClusterConfigurationInformation\"",
+        "score": 0.990007296914146
+      },
+      {
+        "box": [
+          [
+            169.0,
+            712.0
+          ],
+          [
+            701.0,
+            712.0
+          ],
+          [
+            701.0,
+            731.0
+          ],
+          [
+            169.0,
+            731.0
+          ]
+        ],
+        "text": "Section23.4.8,\"ndb_delete_all—DeleteAllRowsfromanNDBTable\"",
+        "score": 0.9813960040437764
+      },
+      {
+        "box": [
+          [
+            170.0,
+            729.0
+          ],
+          [
+            374.0,
+            729.0
+          ],
+          [
+            374.0,
+            746.0
+          ],
+          [
+            170.0,
+            746.0
+          ]
+        ],
+        "text": "Section23.4.9,\"ndb_desc-",
+        "score": 0.9612990617752075
+      },
+      {
+        "box": [
+          [
+            384.0,
+            729.0
+          ],
+          [
+            559.0,
+            729.0
+          ],
+          [
+            559.0,
+            746.0
+          ],
+          [
+            384.0,
+            746.0
+          ]
+        ],
+        "text": "DescribeNDBTables\"",
+        "score": 0.9908910195032755
+      },
+      {
+        "box": [
+          [
+            170.0,
+            744.0
+          ],
+          [
+            427.0,
+            744.0
+          ],
+          [
+            427.0,
+            761.0
+          ],
+          [
+            170.0,
+            761.0
+          ]
+        ],
+        "text": "Section23.4.10,“ndb_drop_index",
+        "score": 0.9638939619064331
+      },
+      {
+        "box": [
+          [
+            444.0,
+            744.0
+          ],
+          [
+            683.0,
+            744.0
+          ],
+          [
+            683.0,
+            761.0
+          ],
+          [
+            444.0,
+            761.0
+          ]
+        ],
+        "text": "DropIndexfromanNDBTable",
+        "score": 0.9959826417591261
+      },
+      {
+        "box": [
+          [
+            440.0,
+            758.0
+          ],
+          [
+            599.0,
+            757.0
+          ],
+          [
+            599.0,
+            777.0
+          ],
+          [
+            440.0,
+            778.0
+          ]
+        ],
+        "text": "DropanNDBTable\"",
+        "score": 0.9865807135899861
+      },
+      {
+        "box": [
+          [
+            170.0,
+            760.0
+          ],
+          [
+            424.0,
+            760.0
+          ],
+          [
+            424.0,
+            777.0
+          ],
+          [
+            170.0,
+            777.0
+          ]
+        ],
+        "text": "Section23.4.11,\"ndb_drop_table",
+        "score": 0.958528850475947
+      },
+      {
+        "box": [
+          [
+            403.0,
+            774.0
+          ],
+          [
+            616.0,
+            773.0
+          ],
+          [
+            616.0,
+            793.0
+          ],
+          [
+            403.0,
+            794.0
+          ]
+        ],
+        "text": "ImportCSVDataIntoNDB",
+        "score": 0.9689781069755554
+      },
+      {
+        "box": [
+          [
+            170.0,
+            775.0
+          ],
+          [
+            295.0,
+            775.0
+          ],
+          [
+            295.0,
+            792.0
+          ],
+          [
+            170.0,
+            792.0
+          ]
+        ],
+        "text": "Section23.4.13,",
+        "score": 0.9799607197443644
+      },
+      {
+        "box": [
+          [
+            287.0,
+            776.0
+          ],
+          [
+            391.0,
+            776.0
+          ],
+          [
+            391.0,
+            793.0
+          ],
+          [
+            287.0,
+            793.0
+          ]
+        ],
+        "text": ",\"ndb_import",
+        "score": 0.9222322677572569
+      },
+      {
+        "box": [
+          [
+            167.0,
+            788.0
+          ],
+          [
+            439.0,
+            789.0
+          ],
+          [
+            439.0,
+            809.0
+          ],
+          [
+            167.0,
+            808.0
+          ]
+        ],
+        "text": "Section 23.4.14,“ndb_index_stat",
+        "score": 0.9574815169457467
+      },
+      {
+        "box": [
+          [
+            435.0,
+            790.0
+          ],
+          [
+            647.0,
+            790.0
+          ],
+          [
+            647.0,
+            807.0
+          ],
+          [
+            435.0,
+            807.0
+          ]
+        ],
+        "text": "NDBIndexStatisticsUtility\"",
+        "score": 0.9861209644721105
+      },
+      {
+        "box": [
+          [
+            168.0,
+            803.0
+          ],
+          [
+            374.0,
+            805.0
+          ],
+          [
+            374.0,
+            826.0
+          ],
+          [
+            168.0,
+            824.0
+          ]
+        ],
+        "text": "Section 23.4.5,\"ndb_mgm",
+        "score": 0.9508343287136244
+      },
+      {
+        "box": [
+          [
+            390.0,
+            805.0
+          ],
+          [
+            677.0,
+            805.0
+          ],
+          [
+            677.0,
+            825.0
+          ],
+          [
+            390.0,
+            825.0
+          ]
+        ],
+        "text": "TheNDBClusterManagementClient\"",
+        "score": 0.976890633503596
+      },
+      {
+        "box": [
+          [
+            169.0,
+            821.0
+          ],
+          [
+            382.0,
+            821.0
+          ],
+          [
+            382.0,
+            841.0
+          ],
+          [
+            169.0,
+            841.0
+          ]
+        ],
+        "text": "Section23.4.4,\"ndb_mgmd",
+        "score": 0.9719007663104845
+      },
+      {
+        "box": [
+          [
+            400.0,
+            822.0
+          ],
+          [
+            760.0,
+            822.0
+          ],
+          [
+            760.0,
+            839.0
+          ],
+          [
+            400.0,
+            839.0
+          ]
+        ],
+        "text": "TheNDBClusterManagementServerDaemon\"",
+        "score": 0.9906820721096463
+      },
+      {
+        "box": [
+          [
+            287.0,
+            836.0
+          ],
+          [
+            427.0,
+            836.0
+          ],
+          [
+            427.0,
+            856.0
+          ],
+          [
+            287.0,
+            856.0
+          ]
+        ],
+        "text": ",\"ndb_move_data",
+        "score": 0.9694063623746236
+      },
+      {
+        "box": [
+          [
+            444.0,
+            836.0
+          ],
+          [
+            617.0,
+            836.0
+          ],
+          [
+            617.0,
+            856.0
+          ],
+          [
+            444.0,
+            856.0
+          ]
+        ],
+        "text": "NDBDataCopyUtility",
+        "score": 0.9749153587553236
+      },
+      {
+        "box": [
+          [
+            170.0,
+            837.0
+          ],
+          [
+            296.0,
+            837.0
+          ],
+          [
+            296.0,
+            854.0
+          ],
+          [
+            170.0,
+            854.0
+          ]
+        ],
+        "text": "Section23.4.15,",
+        "score": 0.9778953234354655
+      },
+      {
+        "box": [
+          [
+            168.0,
+            851.0
+          ],
+          [
+            295.0,
+            851.0
+          ],
+          [
+            295.0,
+            871.0
+          ],
+          [
+            168.0,
+            871.0
+          ]
+        ],
+        "text": "Section 23.4.23,",
+        "score": 0.9882858097553253
+      },
+      {
+        "box": [
+          [
+            287.0,
+            853.0
+          ],
+          [
+            395.0,
+            853.0
+          ],
+          [
+            395.0,
+            870.0
+          ],
+          [
+            287.0,
+            870.0
+          ]
+        ],
+        "text": ",\"ndb_restore",
+        "score": 0.9674488260195806
+      },
+      {
+        "box": [
+          [
+            416.0,
+            853.0
+          ],
+          [
+            665.0,
+            853.0
+          ],
+          [
+            665.0,
+            870.0
+          ],
+          [
+            416.0,
+            870.0
+          ]
+        ],
+        "text": "RestoreanNDBClusterBackup\"",
+        "score": 0.9929337249352381
+      },
+      {
+        "box": [
+          [
+            430.0,
+            867.0
+          ],
+          [
+            673.0,
+            867.0
+          ],
+          [
+            673.0,
+            887.0
+          ],
+          [
+            430.0,
+            887.0
+          ]
+        ],
+        "text": "PrintRowsfromanNDBTable\"",
+        "score": 0.9766869023442268
+      },
+      {
+        "box": [
+          [
+            169.0,
+            868.0
+          ],
+          [
+            294.0,
+            868.0
+          ],
+          [
+            294.0,
+            885.0
+          ],
+          [
+            169.0,
+            885.0
+          ]
+        ],
+        "text": "Section23.4.24,",
+        "score": 0.9831813931465149
+      },
+      {
+        "box": [
+          [
+            286.0,
+            869.0
+          ],
+          [
+            413.0,
+            869.0
+          ],
+          [
+            413.0,
+            886.0
+          ],
+          [
+            286.0,
+            886.0
+          ]
+        ],
+        "text": ",\"ndb_select_all",
+        "score": 0.9467438571155071
+      },
+      {
+        "box": [
+          [
+            170.0,
+            883.0
+          ],
+          [
+            294.0,
+            883.0
+          ],
+          [
+            294.0,
+            900.0
+          ],
+          [
+            170.0,
+            900.0
+          ]
+        ],
+        "text": "Section23.4.25,",
+        "score": 0.9752047975858052
+      },
+      {
+        "box": [
+          [
+            456.0,
+            883.0
+          ],
+          [
+            715.0,
+            883.0
+          ],
+          [
+            715.0,
+            900.0
+          ],
+          [
+            456.0,
+            900.0
+          ]
+        ],
+        "text": "PrintRowCountsforNDBTables\"",
+        "score": 0.9920207549024511
+      },
+      {
+        "box": [
+          [
+            286.0,
+            884.0
+          ],
+          [
+            438.0,
+            884.0
+          ],
+          [
+            438.0,
+            901.0
+          ],
+          [
+            286.0,
+            901.0
+          ]
+        ],
+        "text": ",\"ndb_select_count",
+        "score": 0.9390223125616709
+      },
+      {
+        "box": [
+          [
+            168.0,
+            897.0
+          ],
+          [
+            439.0,
+            898.0
+          ],
+          [
+            439.0,
+            918.0
+          ],
+          [
+            168.0,
+            917.0
+          ]
+        ],
+        "text": "Section23.4.27,\"ndb_show_tables",
+        "score": 0.9777165382139145
+      },
+      {
+        "box": [
+          [
+            454.0,
+            898.0
+          ],
+          [
+            665.0,
+            897.0
+          ],
+          [
+            665.0,
+            917.0
+          ],
+          [
+            454.0,
+            918.0
+          ]
+        ],
+        "text": "DisplayListof NDBTables\"",
+        "score": 0.9760546460747719
+      },
+      {
+        "box": [
+          [
+            170.0,
+            915.0
+          ],
+          [
+            403.0,
+            915.0
+          ],
+          [
+            403.0,
+            932.0
+          ],
+          [
+            170.0,
+            932.0
+          ]
+        ],
+        "text": "Section23.4.30,“ndb_waiter-",
+        "score": 0.9494789386237109
+      },
+      {
+        "box": [
+          [
+            406.0,
+            915.0
+          ],
+          [
+            757.0,
+            915.0
+          ],
+          [
+            757.0,
+            932.0
+          ],
+          [
+            406.0,
+            932.0
+          ]
+        ],
+        "text": "WaitforNDBClustertoReachaGivenStatus\"",
+        "score": 0.9904559850692749
+      },
+      {
+        "box": [
+          [
+            925.0,
+            961.0
+          ],
+          [
+            968.0,
+            961.0
+          ],
+          [
+            968.0,
+            979.0
+          ],
+          [
+            925.0,
+            979.0
+          ]
+        ],
+        "text": "5763",
+        "score": 0.9994575828313828
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 312,
+    "deduplicated": 226,
+    "elapsed_ms": 1233.9,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 1244.43
+}

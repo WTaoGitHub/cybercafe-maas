@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_6211",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "00534cb3dfd8f52a94bb479ba716ac726354b31039bda1ef208242a08949df13",
+  "ok": true,
+  "result": {
+    "text": "钟家庄派出所\n东谢匠社区警务室",
+    "lines": [
+      {
+        "box": [
+          [
+            74.0,
+            123.0
+          ],
+          [
+            273.0,
+            133.0
+          ],
+          [
+            271.0,
+            178.0
+          ],
+          [
+            72.0,
+            168.0
+          ]
+        ],
+        "text": "钟家庄派出所",
+        "score": 0.9962719082832336
+      },
+      {
+        "box": [
+          [
+            349.0,
+            137.0
+          ],
+          [
+            543.0,
+            145.0
+          ],
+          [
+            541.0,
+            186.0
+          ],
+          [
+            347.0,
+            178.0
+          ]
+        ],
+        "text": "东谢匠社区警务室",
+        "score": 0.9971975088119507
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      450,
+      600,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 73.7
+  }
+}

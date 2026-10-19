@@ -1,0 +1,1245 @@
+{
+  "id": "doclaynet_5f7e72458d2369892bd9621a22aab6567189a112b491f859bddcb13ff68f18c9",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "f48ecd5e4d85b5c701bd948ea8173a008a0cdb9959a6657812170c8bb32a488e",
+  "ok": true,
+  "result": {
+    "text": "by a single-channel model,\nh:2\nH = −\nψ∇2ψ+\ng\nψ+b+pψ − ψψ,\n(1)\n2m\n2\nwhere ψ is the field operator of Bose atoms in the open channel, the coupling constant is\ngiven by g = 4πh2as/m, and  is the chemical potential of atoms.\nIn the molecular-BEC state, atoms are paired into molecules and the off-diagonal long\nrange order (ODLRO) appears,∆≡ g<ψψ). Without losing any generality, ∆ ≥ 0 is\nassumed in the following. In the mean field,in addition to the pairing energy, both Hartree\nand Fock energies should be taken into account, and the mean-field Hamiltonian density is\ngiven by\nhd:2\nHp = Hp −\nψ†∇2ψ + (2gn − )xψψ+\n∆\n(2b+ψ++x)\n(2)\n2m\n2\nwhere the constant H0 is given by H0 = −(gn2 + ∆2/2g). In this mean-field approximation,\nthe pairing gap ∆ and Hartree-Fock energy are determined self-consistently, but the fluctua-\ntion and three-body effects are ignored. The mean-field theory provides a description about\nsingle-particle excitations, but it is incapable to describe collective excitations or few-body\nproperties such as Effimov effect. Nonetheless, the mean-field approximation can serve as a\nstarting point of the theoretical description for the molecular-BEC state.\nThe mean-field Hamiltonian can be diagonalized by Bogoliubov transformation,\nHp = ε0 + ∑ Ekαkαk,\n(3)\nk\nwhere αk = ukψk + vkψ−k is the annihilation operator of atomic quasi-particles, Ek =\n√(ϵk − ′)2 − ∆2 is the quasi-particle energy, and the transformation coefficients are given\nby uk = v2 +1 =[1 + (ck −′)/Ek]/2 with ck = h2k2/2m and ′ = −2gn. The energy\nconstant E0 is given by\nE0 =\n12\nc (cd:k − ek+ c)+ ,\n∆\nβEk\ncoth(\n) − gn2V ,\n2Ek\n2\nk\nwhere 1/β= kBT and V is the volume.\nThe order parameter ∆ can be determined self-consistently,\n∆ = −\n9\n∑dukvk[1 + 2fk],\nk\n3",
+    "lines": [
+      {
+        "box": [
+          [
+            119.0,
+            92.0
+          ],
+          [
+            346.0,
+            92.0
+          ],
+          [
+            346.0,
+            109.0
+          ],
+          [
+            119.0,
+            109.0
+          ]
+        ],
+        "text": "by a single-channel model,",
+        "score": 0.9734972715377808
+      },
+      {
+        "box": [
+          [
+            405.0,
+            119.0
+          ],
+          [
+            432.0,
+            119.0
+          ],
+          [
+            432.0,
+            140.0
+          ],
+          [
+            405.0,
+            140.0
+          ]
+        ],
+        "text": "h:2",
+        "score": 0.7249936461448669
+      },
+      {
+        "box": [
+          [
+            342.0,
+            130.0
+          ],
+          [
+            401.0,
+            132.0
+          ],
+          [
+            400.0,
+            152.0
+          ],
+          [
+            341.0,
+            150.0
+          ]
+        ],
+        "text": "H = −",
+        "score": 0.8903669118881226
+      },
+      {
+        "box": [
+          [
+            430.0,
+            127.0
+          ],
+          [
+            518.0,
+            129.0
+          ],
+          [
+            517.0,
+            153.0
+          ],
+          [
+            429.0,
+            151.0
+          ]
+        ],
+        "text": "ψ∇2ψ+",
+        "score": 0.9023557901382446
+      },
+      {
+        "box": [
+          [
+            517.0,
+            126.0
+          ],
+          [
+            533.0,
+            126.0
+          ],
+          [
+            533.0,
+            145.0
+          ],
+          [
+            517.0,
+            145.0
+          ]
+        ],
+        "text": "g",
+        "score": 0.9932230710983276
+      },
+      {
+        "box": [
+          [
+            528.0,
+            129.0
+          ],
+          [
+            678.0,
+            129.0
+          ],
+          [
+            678.0,
+            152.0
+          ],
+          [
+            528.0,
+            152.0
+          ]
+        ],
+        "text": "ψ+b+pψ − ψψ,",
+        "score": 0.6411635279655457
+      },
+      {
+        "box": [
+          [
+            872.0,
+            130.0
+          ],
+          [
+            905.0,
+            130.0
+          ],
+          [
+            905.0,
+            155.0
+          ],
+          [
+            872.0,
+            155.0
+          ]
+        ],
+        "text": "(1)",
+        "score": 0.9742276072502136
+      },
+      {
+        "box": [
+          [
+            404.0,
+            142.0
+          ],
+          [
+            436.0,
+            145.0
+          ],
+          [
+            434.0,
+            164.0
+          ],
+          [
+            402.0,
+            161.0
+          ]
+        ],
+        "text": "2m",
+        "score": 0.9957183003425598
+      },
+      {
+        "box": [
+          [
+            517.0,
+            143.0
+          ],
+          [
+            533.0,
+            143.0
+          ],
+          [
+            533.0,
+            161.0
+          ],
+          [
+            517.0,
+            161.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9958972930908203
+      },
+      {
+        "box": [
+          [
+            120.0,
+            177.0
+          ],
+          [
+            902.0,
+            177.0
+          ],
+          [
+            902.0,
+            193.0
+          ],
+          [
+            120.0,
+            193.0
+          ]
+        ],
+        "text": "where ψ is the field operator of Bose atoms in the open channel, the coupling constant is",
+        "score": 0.9640673398971558
+      },
+      {
+        "box": [
+          [
+            118.0,
+            202.0
+          ],
+          [
+            686.0,
+            200.0
+          ],
+          [
+            686.0,
+            220.0
+          ],
+          [
+            118.0,
+            222.0
+          ]
+        ],
+        "text": "given by g = 4πh2as/m, and  is the chemical potential of atoms.",
+        "score": 0.9482610821723938
+      },
+      {
+        "box": [
+          [
+            142.0,
+            227.0
+          ],
+          [
+            903.0,
+            229.0
+          ],
+          [
+            903.0,
+            249.0
+          ],
+          [
+            142.0,
+            247.0
+          ]
+        ],
+        "text": "In the molecular-BEC state, atoms are paired into molecules and the off-diagonal long",
+        "score": 0.9598173499107361
+      },
+      {
+        "box": [
+          [
+            119.0,
+            258.0
+          ],
+          [
+            902.0,
+            258.0
+          ],
+          [
+            902.0,
+            274.0
+          ],
+          [
+            119.0,
+            274.0
+          ]
+        ],
+        "text": "range order (ODLRO) appears,∆≡ g<ψψ). Without losing any generality, ∆ ≥ 0 is",
+        "score": 0.8992266058921814
+      },
+      {
+        "box": [
+          [
+            119.0,
+            284.0
+          ],
+          [
+            902.0,
+            284.0
+          ],
+          [
+            902.0,
+            300.0
+          ],
+          [
+            119.0,
+            300.0
+          ]
+        ],
+        "text": "assumed in the following. In the mean field,in addition to the pairing energy, both Hartree",
+        "score": 0.957273542881012
+      },
+      {
+        "box": [
+          [
+            119.0,
+            311.0
+          ],
+          [
+            902.0,
+            311.0
+          ],
+          [
+            902.0,
+            327.0
+          ],
+          [
+            119.0,
+            327.0
+          ]
+        ],
+        "text": "and Fock energies should be taken into account, and the mean-field Hamiltonian density is",
+        "score": 0.9690242409706116
+      },
+      {
+        "box": [
+          [
+            117.0,
+            337.0
+          ],
+          [
+            194.0,
+            337.0
+          ],
+          [
+            194.0,
+            357.0
+          ],
+          [
+            117.0,
+            357.0
+          ]
+        ],
+        "text": "given by",
+        "score": 0.9974323511123657
+      },
+      {
+        "box": [
+          [
+            367.0,
+            364.0
+          ],
+          [
+            396.0,
+            364.0
+          ],
+          [
+            396.0,
+            388.0
+          ],
+          [
+            367.0,
+            388.0
+          ]
+        ],
+        "text": "hd:2",
+        "score": 0.7319261431694031
+      },
+      {
+        "box": [
+          [
+            261.0,
+            375.0
+          ],
+          [
+            367.0,
+            375.0
+          ],
+          [
+            367.0,
+            402.0
+          ],
+          [
+            261.0,
+            402.0
+          ]
+        ],
+        "text": "Hp = Hp −",
+        "score": 0.9350490570068359
+      },
+      {
+        "box": [
+          [
+            394.0,
+            374.0
+          ],
+          [
+            622.0,
+            377.0
+          ],
+          [
+            621.0,
+            402.0
+          ],
+          [
+            393.0,
+            398.0
+          ]
+        ],
+        "text": "ψ†∇2ψ + (2gn − )xψψ+",
+        "score": 0.8294371366500854
+      },
+      {
+        "box": [
+          [
+            622.0,
+            367.0
+          ],
+          [
+            643.0,
+            367.0
+          ],
+          [
+            643.0,
+            389.0
+          ],
+          [
+            622.0,
+            389.0
+          ]
+        ],
+        "text": "∆",
+        "score": 0.6116125583648682
+      },
+      {
+        "box": [
+          [
+            640.0,
+            376.0
+          ],
+          [
+            757.0,
+            376.0
+          ],
+          [
+            757.0,
+            400.0
+          ],
+          [
+            640.0,
+            400.0
+          ]
+        ],
+        "text": "(2b+ψ++x)",
+        "score": 0.6145762205123901
+      },
+      {
+        "box": [
+          [
+            871.0,
+            375.0
+          ],
+          [
+            906.0,
+            375.0
+          ],
+          [
+            906.0,
+            403.0
+          ],
+          [
+            871.0,
+            403.0
+          ]
+        ],
+        "text": "(2)",
+        "score": 0.994881808757782
+      },
+      {
+        "box": [
+          [
+            366.0,
+            387.0
+          ],
+          [
+            399.0,
+            390.0
+          ],
+          [
+            397.0,
+            409.0
+          ],
+          [
+            364.0,
+            406.0
+          ]
+        ],
+        "text": "2m",
+        "score": 0.9948635101318359
+      },
+      {
+        "box": [
+          [
+            625.0,
+            390.0
+          ],
+          [
+            639.0,
+            390.0
+          ],
+          [
+            639.0,
+            405.0
+          ],
+          [
+            625.0,
+            405.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9995787739753723
+      },
+      {
+        "box": [
+          [
+            119.0,
+            420.0
+          ],
+          [
+            902.0,
+            420.0
+          ],
+          [
+            902.0,
+            440.0
+          ],
+          [
+            119.0,
+            440.0
+          ]
+        ],
+        "text": "where the constant H0 is given by H0 = −(gn2 + ∆2/2g). In this mean-field approximation,",
+        "score": 0.9614654779434204
+      },
+      {
+        "box": [
+          [
+            118.0,
+            449.0
+          ],
+          [
+            901.0,
+            448.0
+          ],
+          [
+            901.0,
+            465.0
+          ],
+          [
+            118.0,
+            466.0
+          ]
+        ],
+        "text": "the pairing gap ∆ and Hartree-Fock energy are determined self-consistently, but the fluctua-",
+        "score": 0.9730371236801147
+      },
+      {
+        "box": [
+          [
+            119.0,
+            476.0
+          ],
+          [
+            902.0,
+            476.0
+          ],
+          [
+            902.0,
+            492.0
+          ],
+          [
+            119.0,
+            492.0
+          ]
+        ],
+        "text": "tion and three-body effects are ignored. The mean-field theory provides a description about",
+        "score": 0.9753566980361938
+      },
+      {
+        "box": [
+          [
+            118.0,
+            501.0
+          ],
+          [
+            902.0,
+            501.0
+          ],
+          [
+            902.0,
+            521.0
+          ],
+          [
+            118.0,
+            521.0
+          ]
+        ],
+        "text": "single-particle excitations, but it is incapable to describe collective excitations or few-body",
+        "score": 0.9626636505126953
+      },
+      {
+        "box": [
+          [
+            118.0,
+            530.0
+          ],
+          [
+            904.0,
+            530.0
+          ],
+          [
+            904.0,
+            549.0
+          ],
+          [
+            118.0,
+            549.0
+          ]
+        ],
+        "text": "properties such as Effimov effect. Nonetheless, the mean-field approximation can serve as a",
+        "score": 0.9750504493713379
+      },
+      {
+        "box": [
+          [
+            118.0,
+            558.0
+          ],
+          [
+            746.0,
+            557.0
+          ],
+          [
+            746.0,
+            574.0
+          ],
+          [
+            118.0,
+            575.0
+          ]
+        ],
+        "text": "starting point of the theoretical description for the molecular-BEC state.",
+        "score": 0.980506181716919
+      },
+      {
+        "box": [
+          [
+            143.0,
+            584.0
+          ],
+          [
+            831.0,
+            584.0
+          ],
+          [
+            831.0,
+            603.0
+          ],
+          [
+            143.0,
+            603.0
+          ]
+        ],
+        "text": "The mean-field Hamiltonian can be diagonalized by Bogoliubov transformation,",
+        "score": 0.9785764813423157
+      },
+      {
+        "box": [
+          [
+            409.0,
+            621.0
+          ],
+          [
+            612.0,
+            621.0
+          ],
+          [
+            612.0,
+            647.0
+          ],
+          [
+            409.0,
+            647.0
+          ]
+        ],
+        "text": "Hp = ε0 + ∑ Ekαkαk,",
+        "score": 0.9047210216522217
+      },
+      {
+        "box": [
+          [
+            872.0,
+            623.0
+          ],
+          [
+            905.0,
+            623.0
+          ],
+          [
+            905.0,
+            648.0
+          ],
+          [
+            872.0,
+            648.0
+          ]
+        ],
+        "text": "(3)",
+        "score": 0.994642436504364
+      },
+      {
+        "box": [
+          [
+            511.0,
+            644.0
+          ],
+          [
+            529.0,
+            647.0
+          ],
+          [
+            526.0,
+            664.0
+          ],
+          [
+            508.0,
+            660.0
+          ]
+        ],
+        "text": "k",
+        "score": 0.9773044586181641
+      },
+      {
+        "box": [
+          [
+            119.0,
+            676.0
+          ],
+          [
+            901.0,
+            676.0
+          ],
+          [
+            901.0,
+            695.0
+          ],
+          [
+            119.0,
+            695.0
+          ]
+        ],
+        "text": "where αk = ukψk + vkψ−k is the annihilation operator of atomic quasi-particles, Ek =",
+        "score": 0.9457620978355408
+      },
+      {
+        "box": [
+          [
+            122.0,
+            704.0
+          ],
+          [
+            902.0,
+            704.0
+          ],
+          [
+            902.0,
+            723.0
+          ],
+          [
+            122.0,
+            723.0
+          ]
+        ],
+        "text": "√(ϵk − ′)2 − ∆2 is the quasi-particle energy, and the transformation coefficients are given",
+        "score": 0.9630617499351501
+      },
+      {
+        "box": [
+          [
+            118.0,
+            730.0
+          ],
+          [
+            901.0,
+            731.0
+          ],
+          [
+            901.0,
+            751.0
+          ],
+          [
+            118.0,
+            750.0
+          ]
+        ],
+        "text": "by uk = v2 +1 =[1 + (ck −′)/Ek]/2 with ck = h2k2/2m and ′ = −2gn. The energy",
+        "score": 0.8699502348899841
+      },
+      {
+        "box": [
+          [
+            119.0,
+            759.0
+          ],
+          [
+            315.0,
+            759.0
+          ],
+          [
+            315.0,
+            776.0
+          ],
+          [
+            119.0,
+            776.0
+          ]
+        ],
+        "text": "constant E0 is given by",
+        "score": 0.9078713059425354
+      },
+      {
+        "box": [
+          [
+            282.0,
+            792.0
+          ],
+          [
+            333.0,
+            795.0
+          ],
+          [
+            331.0,
+            824.0
+          ],
+          [
+            281.0,
+            821.0
+          ]
+        ],
+        "text": "E0 =",
+        "score": 0.8847211003303528
+      },
+      {
+        "box": [
+          [
+            329.0,
+            786.0
+          ],
+          [
+            348.0,
+            788.0
+          ],
+          [
+            345.0,
+            828.0
+          ],
+          [
+            326.0,
+            827.0
+          ]
+        ],
+        "text": "12",
+        "score": 0.9611606597900391
+      },
+      {
+        "box": [
+          [
+            340.0,
+            787.0
+          ],
+          [
+            525.0,
+            787.0
+          ],
+          [
+            525.0,
+            828.0
+          ],
+          [
+            340.0,
+            828.0
+          ]
+        ],
+        "text": "c (cd:k − ek+ c)+ ,",
+        "score": 0.5181168913841248
+      },
+      {
+        "box": [
+          [
+            519.0,
+            787.0
+          ],
+          [
+            554.0,
+            783.0
+          ],
+          [
+            557.0,
+            805.0
+          ],
+          [
+            522.0,
+            810.0
+          ]
+        ],
+        "text": "∆",
+        "score": 0.6041066646575928
+      },
+      {
+        "box": [
+          [
+            604.0,
+            783.0
+          ],
+          [
+            649.0,
+            787.0
+          ],
+          [
+            647.0,
+            813.0
+          ],
+          [
+            602.0,
+            808.0
+          ]
+        ],
+        "text": "βEk",
+        "score": 0.975214958190918
+      },
+      {
+        "box": [
+          [
+            555.0,
+            796.0
+          ],
+          [
+            610.0,
+            796.0
+          ],
+          [
+            610.0,
+            821.0
+          ],
+          [
+            555.0,
+            821.0
+          ]
+        ],
+        "text": "coth(",
+        "score": 0.7406656742095947
+      },
+      {
+        "box": [
+          [
+            637.0,
+            791.0
+          ],
+          [
+            740.0,
+            791.0
+          ],
+          [
+            740.0,
+            825.0
+          ],
+          [
+            637.0,
+            825.0
+          ]
+        ],
+        "text": ") − gn2V ,",
+        "score": 0.9298725128173828
+      },
+      {
+        "box": [
+          [
+            518.0,
+            804.0
+          ],
+          [
+            559.0,
+            810.0
+          ],
+          [
+            556.0,
+            833.0
+          ],
+          [
+            515.0,
+            827.0
+          ]
+        ],
+        "text": "2Ek",
+        "score": 0.999004065990448
+      },
+      {
+        "box": [
+          [
+            616.0,
+            811.0
+          ],
+          [
+            634.0,
+            811.0
+          ],
+          [
+            634.0,
+            827.0
+          ],
+          [
+            616.0,
+            827.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9994946718215942
+      },
+      {
+        "box": [
+          [
+            354.0,
+            822.0
+          ],
+          [
+            371.0,
+            822.0
+          ],
+          [
+            371.0,
+            835.0
+          ],
+          [
+            354.0,
+            835.0
+          ]
+        ],
+        "text": "k",
+        "score": 0.9898054599761963
+      },
+      {
+        "box": [
+          [
+            119.0,
+            848.0
+          ],
+          [
+            456.0,
+            847.0
+          ],
+          [
+            456.0,
+            864.0
+          ],
+          [
+            119.0,
+            865.0
+          ]
+        ],
+        "text": "where 1/β= kBT and V is the volume.",
+        "score": 0.944371223449707
+      },
+      {
+        "box": [
+          [
+            143.0,
+            874.0
+          ],
+          [
+            656.0,
+            875.0
+          ],
+          [
+            656.0,
+            892.0
+          ],
+          [
+            143.0,
+            891.0
+          ]
+        ],
+        "text": "The order parameter ∆ can be determined self-consistently,",
+        "score": 0.9604625701904297
+      },
+      {
+        "box": [
+          [
+            393.0,
+            913.0
+          ],
+          [
+            454.0,
+            913.0
+          ],
+          [
+            454.0,
+            937.0
+          ],
+          [
+            393.0,
+            937.0
+          ]
+        ],
+        "text": "∆ = −",
+        "score": 0.9262816309928894
+      },
+      {
+        "box": [
+          [
+            463.0,
+            905.0
+          ],
+          [
+            476.0,
+            918.0
+          ],
+          [
+            463.0,
+            931.0
+          ],
+          [
+            450.0,
+            918.0
+          ]
+        ],
+        "text": "9",
+        "score": 0.9353883862495422
+      },
+      {
+        "box": [
+          [
+            471.0,
+            911.0
+          ],
+          [
+            629.0,
+            911.0
+          ],
+          [
+            629.0,
+            941.0
+          ],
+          [
+            471.0,
+            941.0
+          ]
+        ],
+        "text": "∑dukvk[1 + 2fk],",
+        "score": 0.906851053237915
+      },
+      {
+        "box": [
+          [
+            484.0,
+            939.0
+          ],
+          [
+            498.0,
+            939.0
+          ],
+          [
+            498.0,
+            951.0
+          ],
+          [
+            484.0,
+            951.0
+          ]
+        ],
+        "text": "k",
+        "score": 0.9896368384361267
+      },
+      {
+        "box": [
+          [
+            491.0,
+            975.0
+          ],
+          [
+            509.0,
+            975.0
+          ],
+          [
+            509.0,
+            992.0
+          ],
+          [
+            491.0,
+            992.0
+          ]
+        ],
+        "text": "3",
+        "score": 0.9987334609031677
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 56,
+    "elapsed_ms": 400.57
+  }
+}

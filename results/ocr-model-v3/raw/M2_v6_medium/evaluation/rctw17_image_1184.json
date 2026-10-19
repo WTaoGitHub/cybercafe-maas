@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_1184",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "77f0d43332248d0b6407346d692f41581b9b19dfbe2e4d93d4d9aa7adbab345a",
+  "ok": true,
+  "result": {
+    "text": "养生棋牌\n三枪\nTHREEGUN LivingConcept",
+    "lines": [
+      {
+        "box": [
+          [
+            411.70212765957444,
+            1800.0
+          ],
+          [
+            1522.340425531915,
+            1788.7096774193546
+          ],
+          [
+            1523.936170212766,
+            1977.4193548387095
+          ],
+          [
+            413.2978723404255,
+            1988.7096774193546
+          ]
+        ],
+        "text": "养生棋牌",
+        "score": 0.9998436570167542
+      },
+      {
+        "box": [
+          [
+            963.8297872340426,
+            2122.5806451612902
+          ],
+          [
+            1934.0425531914893,
+            2117.7419354838707
+          ],
+          [
+            1935.6382978723404,
+            2556.451612903226
+          ],
+          [
+            965.4255319148936,
+            2561.290322580645
+          ]
+        ],
+        "text": "三枪",
+        "score": 0.9966061115264893
+      },
+      {
+        "box": [
+          [
+            38.29787234042553,
+            2519.354838709677
+          ],
+          [
+            1930.851063829787,
+            2522.5806451612902
+          ],
+          [
+            1930.851063829787,
+            2682.258064516129
+          ],
+          [
+            38.29787234042553,
+            2679.032258064516
+          ]
+        ],
+        "text": "THREEGUN LivingConcept",
+        "score": 0.9984962940216064
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 108.78
+  }
+}

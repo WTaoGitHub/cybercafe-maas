@@ -1,0 +1,39 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OCR 方向处理验证</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f3f6fa;color:#1d2939;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}header{background:#122b46;color:white;padding:34px max(24px,calc((100vw - 1160px)/2))}header strong{font-size:13px;letter-spacing:2px;color:#a8d6ec}header p{margin:6px 0 0;color:#c7d9e9}main{max-width:1160px;margin:28px auto;padding:0 24px 64px}article{background:white;padding:36px 40px;border:1px solid #e0e7ef;border-radius:14px}h1{font-size:30px;line-height:1.4;margin:0 0 16px;color:#122b46}h2{font-size:21px;margin:40px 0 16px;padding-top:16px;border-top:1px solid #e6edf4;scroll-margin-top:16px}p{margin:12px 0}a{color:#086a9a;text-underline-offset:3px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}.card{padding:20px 24px;background:#fff;border:1px solid #dce6ef;border-radius:12px}.card b{display:block;font-size:30px;color:#126a85;line-height:1.5}.card span{color:#52677c;font-size:13px}nav{padding:16px 20px;background:#eff5f9;border-radius:8px;margin:24px 0}nav a{display:inline-block;margin:4px 18px 4px 0;font-size:13px}.table-wrap{overflow:auto;margin:20px 0;border:1px solid #dce5ee;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}th{background:#eaf1f7;color:#284761;text-align:left}th,td{padding:12px 14px;border-bottom:1px solid #e8edf2}tbody tr:nth-child(even){background:#f7f9fc}tbody tr:last-child td{border:0}ul{padding-left:22px}li{margin:9px 0}.note{border-left:4px solid #d39b32;background:#fff8e9;padding:14px 18px;margin:20px 0}.footer{font-size:12px;color:#60758a;margin-top:24px}.actions{display:flex;gap:16px;flex-wrap:wrap;margin:18px 0}button{border:1px solid #bacbd9;background:white;color:#284761;padding:8px 14px;border-radius:6px;cursor:pointer;font:inherit} @media(max-width:700px){main{padding:0 12px 32px}article{padding:22px 18px}h1{font-size:24px}.cards{grid-template-columns:1fr}.card b{font-size:25px}header{padding:24px}.table-wrap{margin-left:-6px;margin-right:-6px}}@media print{body{background:white;font-size:11px}header,nav,.actions{display:none}main{max-width:none;margin:0;padding:0}article{border:0;padding:0}.cards{break-inside:avoid}.table-wrap{overflow:visible}table{white-space:normal;font-size:10px}th,td{padding:6px}h2{break-after:avoid}a{color:inherit}h1{font-size:24px}}</style></head><body><header><strong>CYBERCAFE · OCR / MAAS</strong><p>GPUStack 双节点验证报告 · 2026-10-19</p></header><main><article><div class="actions"><button type="button" onclick="window.print()">打印 / 保存 PDF</button><a href="REPORT.html">主报告</a><a href="DIRECTION.html">方向实验详情</a><a href="service-phases.csv">下载阶段指标 CSV</a></div><nav aria-label="报告目录"><a href="#section-1">方法</a><a href="#section-2">同一32张子集的角度对比</a><a href="#section-3">全量原方向评估集（160张）</a><a href="#section-4">显式旋转与坐标验证</a><a href="#section-5">使用建议</a></nav><h1>OCR 方向处理验证</h1>
+<p>日期：2026-10-19T17:17:15.025018+08:00</p>
+<p>结论：保护策略能避免旧方向分类器误旋转正常文字，并显著改善倒置文档；90°/270°仍存在明显退化。对于已知方向，显式纠正更可靠，不能把它当成已实现自动页面方向识别。</p>
+<h2 id="section-1">方法</h2>
+<ul>
+<li>从固定calibration/evaluation按来源抽取32张（每来源16），对原始像素数组无损旋转0/90/180/270度；预测框评分前映回原图坐标，保持原有空间分组CER口径。32张含12张校准和20张评估，不是新的独立测试集。</li>
+<li>4种模式×32张×4角度=512次；对upright/v6另做32×3×2=192次已知角度纠正；guarded原方向补齐全部200张另168次，共872次。</li>
+<li>guarded保留原始行先识别，对分类器判180°或识别分数&lt;0.5的行，再识别180°版本；倒置分数高出0.02才采用。比较的只是模型置信度，没有读取答案来选择方向；置信度不等于正确率。</li>
+</ul>
+<h2 id="section-2">同一32张子集的角度对比</h2>
+<p>下列为归一化空间分组CER（低更好）。子集难度与完整160张不同，不能跨表直接比较百分比。</p>
+<div class="table-wrap"><table><thead><tr><th>模式</th><th>来源</th><th>0°</th><th>90°</th><th>180°</th><th>270°</th></tr></thead><tbody>
+<tr><td>v4_legacy</td><td>doclaynet</td><td>7.21%</td><td>28.66%</td><td>24.04%</td><td>46.15%</td></tr>
+<tr><td>v4_legacy</td><td>rctw17</td><td>26.20%</td><td>45.45%</td><td>28.88%</td><td>47.33%</td></tr>
+<tr><td>v4_upright</td><td>doclaynet</td><td>3.53%</td><td>26.98%</td><td>97.81%</td><td>98.39%</td></tr>
+<tr><td>v4_upright</td><td>rctw17</td><td>26.20%</td><td>52.14%</td><td>99.73%</td><td>90.64%</td></tr>
+<tr><td>v4_guarded</td><td>doclaynet</td><td>3.41%</td><td>26.93%</td><td>5.12%</td><td>27.42%</td></tr>
+<tr><td>v4_guarded</td><td>rctw17</td><td>25.40%</td><td>45.45%</td><td>27.27%</td><td>45.45%</td></tr>
+<tr><td>v6_small</td><td>doclaynet</td><td>2.34%</td><td>2.46%</td><td>82.21%</td><td>80.57%</td></tr>
+<tr><td>v6_small</td><td>rctw17</td><td>17.65%</td><td>32.09%</td><td>80.21%</td><td>69.79%</td></tr>
+</tbody></table></div>
+<h2 id="section-3">全量原方向评估集（160张）</h2>
+<div class="table-wrap"><table><thead><tr><th>模式</th><th>英文文档CER</th><th>街景CER</th></tr></thead><tbody>
+<tr><td>旧v4自动旋转</td><td>14.74%</td><td>18.47%</td></tr>
+<tr><td>v4不做行分类</td><td>7.75%</td><td>18.55%</td></tr>
+<tr><td>v6 small</td><td>5.52%</td><td>18.84%</td></tr>
+<tr><td>v4方向保护（本轮）</td><td>7.71%</td><td>18.80%</td></tr>
+</tbody></table></div>
+<p>guarded的主要价值是兼顾正常与倒置输入，不是明显提高已经摆正文档的识别质量；相对直接upright会增加识别次数和处理时间。</p>
+<h2 id="section-4">显式旋转与坐标验证</h2>
+<p>192次显式纠正后的文字与各自原方向基线比较，不一致数量：0。像素旋转和坐标互逆另有单元测试，实际HTTP的PNG旋转纠正也单独验证。rotation_cw是调用方给出的顺时针纠正角度，不是服务自动预测。</p>
+<h2 id="section-5">使用建议</h2>
+<ul>
+<li>输入已摆正：v4_upright作为速度候选，v6_small作为文档质量候选。</li>
+<li>存在180°倒置风险：v4_guarded作为兼顾方向的候选；继续用实际业务图片验收置信度选择。</li>
+<li>90°/270°或已知拍摄方向：传入明确rotation_cw；如果要自动判断页面四方向，需另测页面级分类器，本轮没有实现。</li>
+<li>当前服务按原始像素方向处理，未新增EXIF自动转正。</li>
+<li>CER受PDF参考、公式和标注覆盖影响，不能直接换算成商业准确率。原服务配置保持不变。</li>
+</ul><div class="footer">由同目录 Markdown 报告生成；页面样式内嵌，无需联网。分享方向详情及原始指标时，请同时保留对应文件。</div></article></main></body></html>

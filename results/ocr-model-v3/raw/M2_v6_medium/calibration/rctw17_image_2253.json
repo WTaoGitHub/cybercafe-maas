@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_2253",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M2_v6_medium",
+  "image_sha256": "17bc848de046e5353698a8876a57f696ed5fcdc357e5baf44cd0f90837d643fa",
+  "ok": true,
+  "result": {
+    "text": "银泰·创意城\nINTIME CREATIVE CITY",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            548.9673913043478
+          ],
+          [
+            4208.0,
+            523.5326086956521
+          ],
+          [
+            4208.0,
+            1672.336956521739
+          ],
+          [
+            0.0,
+            1697.7717391304348
+          ]
+        ],
+        "text": "银泰·创意城",
+        "score": 0.9998560547828674
+      },
+      {
+        "box": [
+          [
+            186.6451612903226,
+            1555.7608695652173
+          ],
+          [
+            4208.0,
+            1540.9239130434783
+          ],
+          [
+            4208.0,
+            1848.2608695652173
+          ],
+          [
+            186.6451612903226,
+            1863.0978260869565
+          ]
+        ],
+        "text": "INTIME CREATIVE CITY",
+        "score": 0.9998084306716919
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1472,
+      1984,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 114.12
+  }
+}

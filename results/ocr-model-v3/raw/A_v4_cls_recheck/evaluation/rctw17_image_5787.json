@@ -1,0 +1,39 @@
+{
+  "id": "rctw17_image_5787",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "A_v4_cls_recheck",
+  "image_sha256": "822e95d58a57ae512f01e6f526f04daf0d14c0ef9c5f1b0a334a0997b1fd25df",
+  "ok": true,
+  "result": {
+    "text": "禁止酒后上岗",
+    "lines": [
+      {
+        "box": [
+          [
+            1051.5958251953125,
+            880.6451416015625
+          ],
+          [
+            1346.80859375,
+            900.0
+          ],
+          [
+            1340.425537109375,
+            1012.9032592773438
+          ],
+          [
+            1045.2127685546875,
+            993.5484008789062
+          ]
+        ],
+        "text": "禁止酒后上岗",
+        "score": 0.9969180126984915
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 110.88
+  }
+}

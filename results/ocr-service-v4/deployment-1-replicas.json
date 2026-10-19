@@ -1,0 +1,13 @@
+{
+  "replicas": 1,
+  "instances": [
+    {
+      "id": 10,
+      "worker_name": "XZ-31-002",
+      "state": "running",
+      "worker_ip": "10.11.31.2",
+      "port": 40024,
+      "backend_version": "0.1"
+    }
+  ]
+}

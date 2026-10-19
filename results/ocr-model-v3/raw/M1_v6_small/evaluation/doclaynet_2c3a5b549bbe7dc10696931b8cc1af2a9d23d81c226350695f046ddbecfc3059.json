@@ -1,0 +1,871 @@
+{
+  "id": "doclaynet_2c3a5b549bbe7dc10696931b8cc1af2a9d23d81c226350695f046ddbecfc3059",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "8799df7ebd88154605113ad071a29aa65218691499de6ca361fc9a5e9f4a1ff6",
+  "ok": true,
+  "result": {
+    "text": "Draft Document for Review February 7, 2020 3:15 pm\n8464ch09_Oper.fm\nV\nLogical WORM\nWhether LWORM is set for the DC. LWORM is the virtual equivalent of WORM tape\nmedia, which is achieved through software emulation. This setting is available only when\nall clusters in a grid operate at R1.6 and later. The following values are valid:\n– Yes: LWORM is set for the DC. Volumes belonging to the DC are defined as LWORM.\n– No: LWORM is not set. Volumes belonging to the DC are not defined as LWORM. This\nvalue is the default value for a new DC.\nUse the menu in the DCs table to add a DC, or modify or delete an existing DC.\nTip: The user can create up to 256 DCs per TS7700 grid.\n9.3.9 The Access icon\nThe topics in this section present information that is related to managing user access in a\nTS7700 subsystem.\nThe user can access the following options through the User Access (blue man icon) link, as\nshown in Figure 9-71.\nAccess\nSecurity Settings\nRoles & Permissions\nSSL Certificates\nInfoCenter Settings\nFigure 9-71\nThe Access Icon and options\nThe TS7700 management interface (MI) pages that are collected under the Access icon help\nthe user to view or change security settings, roles and permissions, passwords, and\ncertifications. The user can also update the IBM Knowledge Center (InfoCenter) files from this\nmenu. The following windows are available:\nSecurity Settings: Use this window to view security settings for a TS7700 grid. From this\nwindow, the user can also access other pages to add, modify, assign, test, and delete\nsecurity settings.\nRoles and Permissions: Use this window to set and control user roles and permissions for\na TS7700 grid.\nSSL Certificates: Use this window to view, import, or delete Secure Sockets Layer (SSL)\ncertificates to support connection to a Storage Authentication Service server from a\nTS7700 cluster.\nChapter 9. Configuring and operating the IBM TS7700\n463",
+    "lines": [
+      {
+        "box": [
+          [
+            107.0,
+            43.0
+          ],
+          [
+            466.0,
+            43.0
+          ],
+          [
+            466.0,
+            56.0
+          ],
+          [
+            107.0,
+            56.0
+          ]
+        ],
+        "text": "Draft Document for Review February 7, 2020 3:15 pm",
+        "score": 0.9852831959724426
+      },
+      {
+        "box": [
+          [
+            766.0,
+            40.0
+          ],
+          [
+            917.0,
+            41.0
+          ],
+          [
+            917.0,
+            57.0
+          ],
+          [
+            766.0,
+            56.0
+          ]
+        ],
+        "text": "8464ch09_Oper.fm",
+        "score": 0.9979653358459473
+      },
+      {
+        "box": [
+          [
+            229.0,
+            93.0
+          ],
+          [
+            243.0,
+            93.0
+          ],
+          [
+            243.0,
+            101.0
+          ],
+          [
+            229.0,
+            101.0
+          ]
+        ],
+        "text": "V",
+        "score": 0.8499357104301453
+      },
+      {
+        "box": [
+          [
+            248.0,
+            89.0
+          ],
+          [
+            367.0,
+            89.0
+          ],
+          [
+            367.0,
+            105.0
+          ],
+          [
+            248.0,
+            105.0
+          ]
+        ],
+        "text": "Logical WORM",
+        "score": 0.9963624477386475
+      },
+      {
+        "box": [
+          [
+            250.0,
+            110.0
+          ],
+          [
+            875.0,
+            110.0
+          ],
+          [
+            875.0,
+            126.0
+          ],
+          [
+            250.0,
+            126.0
+          ]
+        ],
+        "text": "Whether LWORM is set for the DC. LWORM is the virtual equivalent of WORM tape",
+        "score": 0.9867383241653442
+      },
+      {
+        "box": [
+          [
+            251.0,
+            126.0
+          ],
+          [
+            909.0,
+            126.0
+          ],
+          [
+            909.0,
+            142.0
+          ],
+          [
+            251.0,
+            142.0
+          ]
+        ],
+        "text": "media, which is achieved through software emulation. This setting is available only when",
+        "score": 0.9967978000640869
+      },
+      {
+        "box": [
+          [
+            251.0,
+            142.0
+          ],
+          [
+            821.0,
+            142.0
+          ],
+          [
+            821.0,
+            158.0
+          ],
+          [
+            251.0,
+            158.0
+          ]
+        ],
+        "text": "all clusters in a grid operate at R1.6 and later. The following values are valid:",
+        "score": 0.9971670508384705
+      },
+      {
+        "box": [
+          [
+            251.0,
+            163.0
+          ],
+          [
+            915.0,
+            163.0
+          ],
+          [
+            915.0,
+            179.0
+          ],
+          [
+            251.0,
+            179.0
+          ]
+        ],
+        "text": "– Yes: LWORM is set for the DC. Volumes belonging to the DC are defined as LWORM.",
+        "score": 0.9860248565673828
+      },
+      {
+        "box": [
+          [
+            252.0,
+            187.0
+          ],
+          [
+            912.0,
+            187.0
+          ],
+          [
+            912.0,
+            200.0
+          ],
+          [
+            252.0,
+            200.0
+          ]
+        ],
+        "text": "– No: LWORM is not set. Volumes belonging to the DC are not defined as LWORM. This",
+        "score": 0.9775556921958923
+      },
+      {
+        "box": [
+          [
+            273.0,
+            201.0
+          ],
+          [
+            568.0,
+            201.0
+          ],
+          [
+            568.0,
+            217.0
+          ],
+          [
+            273.0,
+            217.0
+          ]
+        ],
+        "text": "value is the default value for a new DC.",
+        "score": 0.9804686307907104
+      },
+      {
+        "box": [
+          [
+            225.0,
+            228.0
+          ],
+          [
+            817.0,
+            229.0
+          ],
+          [
+            817.0,
+            245.0
+          ],
+          [
+            225.0,
+            244.0
+          ]
+        ],
+        "text": "Use the menu in the DCs table to add a DC, or modify or delete an existing DC.",
+        "score": 0.9908061623573303
+      },
+      {
+        "box": [
+          [
+            232.0,
+            265.0
+          ],
+          [
+            665.0,
+            265.0
+          ],
+          [
+            665.0,
+            285.0
+          ],
+          [
+            232.0,
+            285.0
+          ]
+        ],
+        "text": "Tip: The user can create up to 256 DCs per TS7700 grid.",
+        "score": 0.9966654181480408
+      },
+      {
+        "box": [
+          [
+            106.0,
+            311.0
+          ],
+          [
+            341.0,
+            311.0
+          ],
+          [
+            341.0,
+            328.0
+          ],
+          [
+            106.0,
+            328.0
+          ]
+        ],
+        "text": "9.3.9 The Access icon",
+        "score": 0.9939509630203247
+      },
+      {
+        "box": [
+          [
+            226.0,
+            345.0
+          ],
+          [
+            889.0,
+            345.0
+          ],
+          [
+            889.0,
+            361.0
+          ],
+          [
+            226.0,
+            361.0
+          ]
+        ],
+        "text": "The topics in this section present information that is related to managing user access in a",
+        "score": 0.990906834602356
+      },
+      {
+        "box": [
+          [
+            225.0,
+            358.0
+          ],
+          [
+            378.0,
+            359.0
+          ],
+          [
+            378.0,
+            376.0
+          ],
+          [
+            225.0,
+            375.0
+          ]
+        ],
+        "text": "TS7700 subsystem.",
+        "score": 0.9995136260986328
+      },
+      {
+        "box": [
+          [
+            228.0,
+            390.0
+          ],
+          [
+            905.0,
+            390.0
+          ],
+          [
+            905.0,
+            403.0
+          ],
+          [
+            228.0,
+            403.0
+          ]
+        ],
+        "text": "The user can access the following options through the User Access (blue man icon) link, as",
+        "score": 0.9815788269042969
+      },
+      {
+        "box": [
+          [
+            227.0,
+            406.0
+          ],
+          [
+            390.0,
+            406.0
+          ],
+          [
+            390.0,
+            419.0
+          ],
+          [
+            227.0,
+            419.0
+          ]
+        ],
+        "text": "shown in Figure 9-71.",
+        "score": 0.999862015247345
+      },
+      {
+        "box": [
+          [
+            433.0,
+            517.0
+          ],
+          [
+            470.0,
+            517.0
+          ],
+          [
+            470.0,
+            528.0
+          ],
+          [
+            433.0,
+            528.0
+          ]
+        ],
+        "text": "Access",
+        "score": 0.9975707530975342
+      },
+      {
+        "box": [
+          [
+            369.0,
+            535.0
+          ],
+          [
+            453.0,
+            535.0
+          ],
+          [
+            453.0,
+            548.0
+          ],
+          [
+            369.0,
+            548.0
+          ]
+        ],
+        "text": "Security Settings",
+        "score": 0.9955669641494751
+      },
+      {
+        "box": [
+          [
+            368.0,
+            550.0
+          ],
+          [
+            471.0,
+            550.0
+          ],
+          [
+            471.0,
+            563.0
+          ],
+          [
+            368.0,
+            563.0
+          ]
+        ],
+        "text": "Roles & Permissions",
+        "score": 0.9689615368843079
+      },
+      {
+        "box": [
+          [
+            370.0,
+            567.0
+          ],
+          [
+            447.0,
+            567.0
+          ],
+          [
+            447.0,
+            577.0
+          ],
+          [
+            370.0,
+            577.0
+          ]
+        ],
+        "text": "SSL Certificates",
+        "score": 0.925931990146637
+      },
+      {
+        "box": [
+          [
+            370.0,
+            583.0
+          ],
+          [
+            463.0,
+            583.0
+          ],
+          [
+            463.0,
+            593.0
+          ],
+          [
+            370.0,
+            593.0
+          ]
+        ],
+        "text": "InfoCenter Settings",
+        "score": 0.9960073232650757
+      },
+      {
+        "box": [
+          [
+            228.0,
+            693.0
+          ],
+          [
+            308.0,
+            693.0
+          ],
+          [
+            308.0,
+            707.0
+          ],
+          [
+            228.0,
+            707.0
+          ]
+        ],
+        "text": "Figure 9-71",
+        "score": 0.9852359890937805
+      },
+      {
+        "box": [
+          [
+            314.0,
+            692.0
+          ],
+          [
+            514.0,
+            692.0
+          ],
+          [
+            514.0,
+            705.0
+          ],
+          [
+            314.0,
+            705.0
+          ]
+        ],
+        "text": "The Access Icon and options",
+        "score": 0.9985377192497253
+      },
+      {
+        "box": [
+          [
+            226.0,
+            724.0
+          ],
+          [
+            913.0,
+            725.0
+          ],
+          [
+            913.0,
+            742.0
+          ],
+          [
+            226.0,
+            741.0
+          ]
+        ],
+        "text": "The TS7700 management interface (MI) pages that are collected under the Access icon help",
+        "score": 0.9825479388237
+      },
+      {
+        "box": [
+          [
+            225.0,
+            741.0
+          ],
+          [
+            852.0,
+            740.0
+          ],
+          [
+            852.0,
+            757.0
+          ],
+          [
+            225.0,
+            758.0
+          ]
+        ],
+        "text": "the user to view or change security settings, roles and permissions, passwords, and",
+        "score": 0.9963975548744202
+      },
+      {
+        "box": [
+          [
+            227.0,
+            758.0
+          ],
+          [
+            913.0,
+            758.0
+          ],
+          [
+            913.0,
+            771.0
+          ],
+          [
+            227.0,
+            771.0
+          ]
+        ],
+        "text": "certifications. The user can also update the IBM Knowledge Center (InfoCenter) files from this",
+        "score": 0.9927219748497009
+      },
+      {
+        "box": [
+          [
+            226.0,
+            772.0
+          ],
+          [
+            554.0,
+            772.0
+          ],
+          [
+            554.0,
+            788.0
+          ],
+          [
+            226.0,
+            788.0
+          ]
+        ],
+        "text": "menu. The following windows are available:",
+        "score": 0.9982020854949951
+      },
+      {
+        "box": [
+          [
+            250.0,
+            796.0
+          ],
+          [
+            904.0,
+            796.0
+          ],
+          [
+            904.0,
+            809.0
+          ],
+          [
+            250.0,
+            809.0
+          ]
+        ],
+        "text": "Security Settings: Use this window to view security settings for a TS7700 grid. From this",
+        "score": 0.9896373152732849
+      },
+      {
+        "box": [
+          [
+            251.0,
+            811.0
+          ],
+          [
+            887.0,
+            811.0
+          ],
+          [
+            887.0,
+            824.0
+          ],
+          [
+            251.0,
+            824.0
+          ]
+        ],
+        "text": "window, the user can also access other pages to add, modify, assign, test, and delete",
+        "score": 0.9967666864395142
+      },
+      {
+        "box": [
+          [
+            250.0,
+            826.0
+          ],
+          [
+            378.0,
+            826.0
+          ],
+          [
+            378.0,
+            842.0
+          ],
+          [
+            250.0,
+            842.0
+          ]
+        ],
+        "text": "security settings.",
+        "score": 0.9996487498283386
+      },
+      {
+        "box": [
+          [
+            249.0,
+            847.0
+          ],
+          [
+            914.0,
+            847.0
+          ],
+          [
+            914.0,
+            863.0
+          ],
+          [
+            249.0,
+            863.0
+          ]
+        ],
+        "text": "Roles and Permissions: Use this window to set and control user roles and permissions for",
+        "score": 0.9960365295410156
+      },
+      {
+        "box": [
+          [
+            250.0,
+            862.0
+          ],
+          [
+            363.0,
+            862.0
+          ],
+          [
+            363.0,
+            878.0
+          ],
+          [
+            250.0,
+            878.0
+          ]
+        ],
+        "text": "a TS7700 grid.",
+        "score": 0.9995453953742981
+      },
+      {
+        "box": [
+          [
+            250.0,
+            885.0
+          ],
+          [
+            907.0,
+            885.0
+          ],
+          [
+            907.0,
+            901.0
+          ],
+          [
+            250.0,
+            901.0
+          ]
+        ],
+        "text": "SSL Certificates: Use this window to view, import, or delete Secure Sockets Layer (SSL)",
+        "score": 0.9980197548866272
+      },
+      {
+        "box": [
+          [
+            250.0,
+            900.0
+          ],
+          [
+            871.0,
+            900.0
+          ],
+          [
+            871.0,
+            916.0
+          ],
+          [
+            250.0,
+            916.0
+          ]
+        ],
+        "text": "certificates to support connection to a Storage Authentication Service server from a",
+        "score": 0.9859130382537842
+      },
+      {
+        "box": [
+          [
+            250.0,
+            915.0
+          ],
+          [
+            371.0,
+            915.0
+          ],
+          [
+            371.0,
+            931.0
+          ],
+          [
+            250.0,
+            931.0
+          ]
+        ],
+        "text": "TS7700 cluster.",
+        "score": 0.999891459941864
+      },
+      {
+        "box": [
+          [
+            500.0,
+            974.0
+          ],
+          [
+            867.0,
+            974.0
+          ],
+          [
+            867.0,
+            990.0
+          ],
+          [
+            500.0,
+            990.0
+          ]
+        ],
+        "text": "Chapter 9. Configuring and operating the IBM TS7700",
+        "score": 0.9872164130210876
+      },
+      {
+        "box": [
+          [
+            885.0,
+            973.0
+          ],
+          [
+            918.0,
+            973.0
+          ],
+          [
+            918.0,
+            988.0
+          ],
+          [
+            885.0,
+            988.0
+          ]
+        ],
+        "text": "463",
+        "score": 0.9999980330467224
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 39,
+    "elapsed_ms": 311.56
+  }
+}

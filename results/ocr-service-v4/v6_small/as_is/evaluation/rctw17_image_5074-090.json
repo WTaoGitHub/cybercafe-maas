@@ -1,0 +1,87 @@
+{
+  "id": "rctw17_image_5074",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 90,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "d94e1b2d97e6cce9fe2c8b056d8d9447ae52f4f290f03b4d11782221003fa0b1",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "复印\n装订\n论文",
+    "lines": [
+      {
+        "box": [
+          [
+            121.0,
+            246.0
+          ],
+          [
+            138.0,
+            56.0
+          ],
+          [
+            470.0,
+            85.0
+          ],
+          [
+            453.0,
+            275.0
+          ]
+        ],
+        "text": "复印",
+        "score": 0.9999596476554871
+      },
+      {
+        "box": [
+          [
+            415.0,
+            292.0
+          ],
+          [
+            405.0,
+            163.0
+          ],
+          [
+            599.0,
+            148.0
+          ],
+          [
+            609.0,
+            277.0
+          ]
+        ],
+        "text": "装订",
+        "score": 0.9994173645973206
+      },
+      {
+        "box": [
+          [
+            418.0,
+            190.0
+          ],
+          [
+            422.0,
+            97.0
+          ],
+          [
+            600.0,
+            104.0
+          ],
+          [
+            596.0,
+            197.0
+          ]
+        ],
+        "text": "论文",
+        "score": 0.999991238117218
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 34.32,
+    "direction_stats": {},
+    "elapsed_ms": 34.33
+  }
+}

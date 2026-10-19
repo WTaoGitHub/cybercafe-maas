@@ -1,0 +1,7 @@
+FROM cybercafe-ocr-model-benchmark:3.7.0
+ENV PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True MODEL_ROOT=/app/models PYTHONUNBUFFERED=1
+COPY service-validation/engine.py service-validation/validation_server.py /app/
+COPY gpu-ocr/ocr_protocol.py /app/ocr_protocol.py
+COPY model-benchmark/models/PP-OCRv6_small_det_onnx /app/models/PP-OCRv6_small_det_onnx
+COPY model-benchmark/models/PP-OCRv6_small_rec_onnx /app/models/PP-OCRv6_small_rec_onnx
+ENTRYPOINT ["python3", "/app/validation_server.py"]

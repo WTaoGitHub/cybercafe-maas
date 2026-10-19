@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_642",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "6ae0f871e7fe3770bf05dca806ec8d6b845b0f9a7cf9fb0cdc2f3943afe74668",
+  "ok": true,
+  "result": {
+    "text": "宝岛种苗",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            1808.0645161290322
+          ],
+          [
+            2400.0,
+            1822.5806451612902
+          ],
+          [
+            2400.0,
+            2604.838709677419
+          ],
+          [
+            0.0,
+            2590.322580645161
+          ]
+        ],
+        "text": "宝岛种苗",
+        "score": 0.9996604919433594
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 1,
+    "elapsed_ms": 106.76
+  }
+}

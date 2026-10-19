@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_1200",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "本瓶二楼",
+    "lines": [
+      {
+        "box": [
+          [
+            246.0,
+            244.0
+          ],
+          [
+            289.0,
+            244.0
+          ],
+          [
+            289.0,
+            259.0
+          ],
+          [
+            246.0,
+            259.0
+          ]
+        ],
+        "text": "本瓶二楼",
+        "score": 0.7875766642391682
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 110.2,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 112.19
+}

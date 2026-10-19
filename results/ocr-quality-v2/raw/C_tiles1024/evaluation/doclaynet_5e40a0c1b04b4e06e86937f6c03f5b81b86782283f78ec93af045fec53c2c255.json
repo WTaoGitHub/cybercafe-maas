@@ -1,0 +1,898 @@
+{
+  "id": "doclaynet_5e40a0c1b04b4e06e86937f6c03f5b81b86782283f78ec93af045fec53c2c255",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "8459ch02.fm\nDraft Document for Review December 11, 2019 1:55 pm\nContainerize the applications,alsocalled theVM-based lift andshift method.Whenyou\nExposeon-premisesassetsbyusingAPls\nTheuseofAPlsallowsnewapplicationstousetheexposedcapabilityinanaccessible\nstandardthatallowstheinterfacetobediscoveredandmanaged.\nRefactorthemonolithintomacroservices\nTransformyourmonolithapplicationtobecomecloud-native.Forexample:whereyoudeal\nwitha hugeJava or JavaScriptfiles and breakmonoliths intosmaller deployable\ncomponents.\nAddcapabilitiesasmicroservices\nEnrichyourapplicationwithnewbusinessfunctionsimplemented asmicroservices.Your\napplicationcanconsumeawidevarietyofservicesthatareavailableinthecloud,suchas\nAl, industry, and domain services.\nStranglethemonolith\nIncrementallywithdrawthemonolithfromservicebyreplacingfunctionswithnew\ncloud-nativeimplementations.\nTohelpyouonyourcloudjoumey,IBMintroducednewandbetterexperienceson\nmodernizationapproachessuchastheincrementallift-and-shifttocloud-native\nmicroservices.Youdonotneedtorewriteyourentireapplicationassetstomovetothecloud.\nWithacloud-nativemicroservicesapproach,youcancapitalizeonthescalabilityand\nflexibility that is inherent in any robust cloud infrastructure.\nTheDevOpsapproach\nDevOpsis about tools andtechniquesneededtobring theworldsofdevelopment and\noperationsclosertogether.Itisaboutthepracticesandautomationrequiredtoreliablyand\nrapidlydeploynewcodethroughthebuildandtestcyclestoproductionenvironments.\nassuranceteamscollaboratetocontinuouslydeliversoftware.Byfollowingthisapproach,\nreduce the time toincludecustomerfeedbackintheirproducts.DevOpsappliestoaging,\ntraditional,cloud-ready,andcloud-nativeapplications.\nimplyapplicationarchitecturesthatdecoupleservicesfromeachotherinacontinuous\ndevelopment anddeliverycycle,althoughensuringwell-performing interactionswithusers.\nInacloud-nativeenvironment,applicationsareviewedascollectionsofmicroserviceswith\nManuallydeployinganythingbecomesanunsustainableeffortpronetoerror,inconsistency,\nand delays.Automating continuous deliverypipelines isawaytohelpoperationsfrom\ndeployinganapplicationtheyhavelittleknowledgeofandrescuedevelopersfromcomplex\nconfigurationsanddeployments.Efficientdeliverymeansmoretimeforinnovation,enabling\nthebusinesstodisruptthemarketandcompetitors.\nWhethertheyareaccessingawebsiteoramobileapp,peoplehavehighexpectationsofthe\nappsthat theyregularlyuse.Asaresult,companiesmustcontinuouslydelivernewfeatures\n8Red Hat OpenShift and IBM CloudPaks on IBMPower Systems:Volume1",
+    "lines": [
+      {
+        "box": [
+          [
+            107.0,
+            43.0
+          ],
+          [
+            210.0,
+            43.0
+          ],
+          [
+            210.0,
+            59.0
+          ],
+          [
+            107.0,
+            59.0
+          ]
+        ],
+        "text": "8459ch02.fm",
+        "score": 0.9984164129603993
+      },
+      {
+        "box": [
+          [
+            539.0,
+            43.0
+          ],
+          [
+            918.0,
+            44.0
+          ],
+          [
+            918.0,
+            61.0
+          ],
+          [
+            539.0,
+            60.0
+          ]
+        ],
+        "text": "Draft Document for Review December 11, 2019 1:55 pm",
+        "score": 0.9825510931949989
+      },
+      {
+        "box": [
+          [
+            252.0,
+            90.0
+          ],
+          [
+            902.0,
+            90.0
+          ],
+          [
+            902.0,
+            109.0
+          ],
+          [
+            252.0,
+            109.0
+          ]
+        ],
+        "text": "Containerize the applications,alsocalled theVM-based lift andshift method.Whenyou",
+        "score": 0.9544961290594972
+      },
+      {
+        "box": [
+          [
+            227.0,
+            159.0
+          ],
+          [
+            569.0,
+            159.0
+          ],
+          [
+            569.0,
+            176.0
+          ],
+          [
+            227.0,
+            176.0
+          ]
+        ],
+        "text": "Exposeon-premisesassetsbyusingAPls",
+        "score": 0.9920366897302515
+      },
+      {
+        "box": [
+          [
+            250.0,
+            179.0
+          ],
+          [
+            899.0,
+            180.0
+          ],
+          [
+            899.0,
+            200.0
+          ],
+          [
+            250.0,
+            199.0
+          ]
+        ],
+        "text": "TheuseofAPlsallowsnewapplicationstousetheexposedcapabilityinanaccessible",
+        "score": 0.9914995746480094
+      },
+      {
+        "box": [
+          [
+            250.0,
+            210.0
+          ],
+          [
+            739.0,
+            212.0
+          ],
+          [
+            739.0,
+            231.0
+          ],
+          [
+            250.0,
+            229.0
+          ]
+        ],
+        "text": "standardthatallowstheinterfacetobediscoveredandmanaged.",
+        "score": 0.9974225293506276
+      },
+      {
+        "box": [
+          [
+            237.0,
+            235.0
+          ],
+          [
+            558.0,
+            235.0
+          ],
+          [
+            558.0,
+            252.0
+          ],
+          [
+            237.0,
+            252.0
+          ]
+        ],
+        "text": "Refactorthemonolithintomacroservices",
+        "score": 0.998368662264612
+      },
+      {
+        "box": [
+          [
+            251.0,
+            254.0
+          ],
+          [
+            914.0,
+            255.0
+          ],
+          [
+            914.0,
+            274.0
+          ],
+          [
+            251.0,
+            273.0
+          ]
+        ],
+        "text": "Transformyourmonolithapplicationtobecomecloud-native.Forexample:whereyoudeal",
+        "score": 0.9955808904610182
+      },
+      {
+        "box": [
+          [
+            251.0,
+            271.0
+          ],
+          [
+            850.0,
+            271.0
+          ],
+          [
+            850.0,
+            290.0
+          ],
+          [
+            251.0,
+            290.0
+          ]
+        ],
+        "text": "witha hugeJava or JavaScriptfiles and breakmonoliths intosmaller deployable",
+        "score": 0.9538134026527405
+      },
+      {
+        "box": [
+          [
+            253.0,
+            290.0
+          ],
+          [
+            350.0,
+            290.0
+          ],
+          [
+            350.0,
+            304.0
+          ],
+          [
+            253.0,
+            304.0
+          ]
+        ],
+        "text": "components.",
+        "score": 0.9985962184992704
+      },
+      {
+        "box": [
+          [
+            228.0,
+            309.0
+          ],
+          [
+            501.0,
+            309.0
+          ],
+          [
+            501.0,
+            326.0
+          ],
+          [
+            228.0,
+            326.0
+          ]
+        ],
+        "text": "Addcapabilitiesasmicroservices",
+        "score": 0.9950326005617778
+      },
+      {
+        "box": [
+          [
+            251.0,
+            330.0
+          ],
+          [
+            911.0,
+            330.0
+          ],
+          [
+            911.0,
+            349.0
+          ],
+          [
+            251.0,
+            349.0
+          ]
+        ],
+        "text": "Enrichyourapplicationwithnewbusinessfunctionsimplemented asmicroservices.Your",
+        "score": 0.9921803861469417
+      },
+      {
+        "box": [
+          [
+            251.0,
+            347.0
+          ],
+          [
+            915.0,
+            347.0
+          ],
+          [
+            915.0,
+            366.0
+          ],
+          [
+            251.0,
+            366.0
+          ]
+        ],
+        "text": "applicationcanconsumeawidevarietyofservicesthatareavailableinthecloud,suchas",
+        "score": 0.9916728021282899
+      },
+      {
+        "box": [
+          [
+            252.0,
+            363.0
+          ],
+          [
+            505.0,
+            363.0
+          ],
+          [
+            505.0,
+            380.0
+          ],
+          [
+            252.0,
+            380.0
+          ]
+        ],
+        "text": "Al, industry, and domain services.",
+        "score": 0.976263601990307
+      },
+      {
+        "box": [
+          [
+            227.0,
+            385.0
+          ],
+          [
+            414.0,
+            385.0
+          ],
+          [
+            414.0,
+            401.0
+          ],
+          [
+            227.0,
+            401.0
+          ]
+        ],
+        "text": "Stranglethemonolith",
+        "score": 0.9971804681577181
+      },
+      {
+        "box": [
+          [
+            251.0,
+            405.0
+          ],
+          [
+            853.0,
+            406.0
+          ],
+          [
+            853.0,
+            426.0
+          ],
+          [
+            251.0,
+            425.0
+          ]
+        ],
+        "text": "Incrementallywithdrawthemonolithfromservicebyreplacingfunctionswithnew",
+        "score": 0.9924511619976588
+      },
+      {
+        "box": [
+          [
+            252.0,
+            422.0
+          ],
+          [
+            476.0,
+            423.0
+          ],
+          [
+            476.0,
+            440.0
+          ],
+          [
+            252.0,
+            439.0
+          ]
+        ],
+        "text": "cloud-nativeimplementations.",
+        "score": 0.9974548029048103
+      },
+      {
+        "box": [
+          [
+            226.0,
+            448.0
+          ],
+          [
+            839.0,
+            450.0
+          ],
+          [
+            839.0,
+            470.0
+          ],
+          [
+            226.0,
+            468.0
+          ]
+        ],
+        "text": "Tohelpyouonyourcloudjoumey,IBMintroducednewandbetterexperienceson",
+        "score": 0.9821710930420802
+      },
+      {
+        "box": [
+          [
+            227.0,
+            465.0
+          ],
+          [
+            815.0,
+            465.0
+          ],
+          [
+            815.0,
+            484.0
+          ],
+          [
+            227.0,
+            484.0
+          ]
+        ],
+        "text": "modernizationapproachessuchastheincrementallift-and-shifttocloud-native",
+        "score": 0.9951024483626997
+      },
+      {
+        "box": [
+          [
+            227.0,
+            481.0
+          ],
+          [
+            913.0,
+            481.0
+          ],
+          [
+            913.0,
+            500.0
+          ],
+          [
+            227.0,
+            500.0
+          ]
+        ],
+        "text": "microservices.Youdonotneedtorewriteyourentireapplicationassetstomovetothecloud.",
+        "score": 0.9914391470860832
+      },
+      {
+        "box": [
+          [
+            226.0,
+            495.0
+          ],
+          [
+            859.0,
+            496.0
+          ],
+          [
+            859.0,
+            516.0
+          ],
+          [
+            226.0,
+            515.0
+          ]
+        ],
+        "text": "Withacloud-nativemicroservicesapproach,youcancapitalizeonthescalabilityand",
+        "score": 0.9849453077122972
+      },
+      {
+        "box": [
+          [
+            227.0,
+            512.0
+          ],
+          [
+            660.0,
+            512.0
+          ],
+          [
+            660.0,
+            531.0
+          ],
+          [
+            227.0,
+            531.0
+          ]
+        ],
+        "text": "flexibility that is inherent in any robust cloud infrastructure.",
+        "score": 0.9748077373951674
+      },
+      {
+        "box": [
+          [
+            228.0,
+            551.0
+          ],
+          [
+            445.0,
+            552.0
+          ],
+          [
+            445.0,
+            573.0
+          ],
+          [
+            228.0,
+            572.0
+          ]
+        ],
+        "text": "TheDevOpsapproach",
+        "score": 0.9961402170798358
+      },
+      {
+        "box": [
+          [
+            228.0,
+            571.0
+          ],
+          [
+            867.0,
+            570.0
+          ],
+          [
+            867.0,
+            590.0
+          ],
+          [
+            228.0,
+            591.0
+          ]
+        ],
+        "text": "DevOpsis about tools andtechniquesneededtobring theworldsofdevelopment and",
+        "score": 0.9665975635116165
+      },
+      {
+        "box": [
+          [
+            228.0,
+            587.0
+          ],
+          [
+            901.0,
+            587.0
+          ],
+          [
+            901.0,
+            606.0
+          ],
+          [
+            228.0,
+            606.0
+          ]
+        ],
+        "text": "operationsclosertogether.Itisaboutthepracticesandautomationrequiredtoreliablyand",
+        "score": 0.9955747567117215
+      },
+      {
+        "box": [
+          [
+            229.0,
+            605.0
+          ],
+          [
+            865.0,
+            605.0
+          ],
+          [
+            865.0,
+            621.0
+          ],
+          [
+            229.0,
+            621.0
+          ]
+        ],
+        "text": "rapidlydeploynewcodethroughthebuildandtestcyclestoproductionenvironments.",
+        "score": 0.9971609287066002
+      },
+      {
+        "box": [
+          [
+            227.0,
+            646.0
+          ],
+          [
+            891.0,
+            646.0
+          ],
+          [
+            891.0,
+            665.0
+          ],
+          [
+            227.0,
+            665.0
+          ]
+        ],
+        "text": "assuranceteamscollaboratetocontinuouslydeliversoftware.Byfollowingthisapproach,",
+        "score": 0.9940466164033624
+      },
+      {
+        "box": [
+          [
+            227.0,
+            676.0
+          ],
+          [
+            889.0,
+            678.0
+          ],
+          [
+            889.0,
+            698.0
+          ],
+          [
+            227.0,
+            696.0
+          ]
+        ],
+        "text": "reduce the time toincludecustomerfeedbackintheirproducts.DevOpsappliestoaging,",
+        "score": 0.9735036259278272
+      },
+      {
+        "box": [
+          [
+            227.0,
+            694.0
+          ],
+          [
+            629.0,
+            695.0
+          ],
+          [
+            629.0,
+            712.0
+          ],
+          [
+            227.0,
+            711.0
+          ]
+        ],
+        "text": "traditional,cloud-ready,andcloud-nativeapplications.",
+        "score": 0.9834527224302292
+      },
+      {
+        "box": [
+          [
+            229.0,
+            739.0
+          ],
+          [
+            866.0,
+            739.0
+          ],
+          [
+            866.0,
+            755.0
+          ],
+          [
+            229.0,
+            755.0
+          ]
+        ],
+        "text": "implyapplicationarchitecturesthatdecoupleservicesfromeachotherinacontinuous",
+        "score": 0.9960396846135458
+      },
+      {
+        "box": [
+          [
+            228.0,
+            754.0
+          ],
+          [
+            901.0,
+            754.0
+          ],
+          [
+            901.0,
+            773.0
+          ],
+          [
+            228.0,
+            773.0
+          ]
+        ],
+        "text": "development anddeliverycycle,althoughensuringwell-performing interactionswithusers.",
+        "score": 0.9866519627800907
+      },
+      {
+        "box": [
+          [
+            228.0,
+            781.0
+          ],
+          [
+            900.0,
+            781.0
+          ],
+          [
+            900.0,
+            800.0
+          ],
+          [
+            228.0,
+            800.0
+          ]
+        ],
+        "text": "Inacloud-nativeenvironment,applicationsareviewedascollectionsofmicroserviceswith",
+        "score": 0.9948570616543293
+      },
+      {
+        "box": [
+          [
+            227.0,
+            813.0
+          ],
+          [
+            909.0,
+            813.0
+          ],
+          [
+            909.0,
+            832.0
+          ],
+          [
+            227.0,
+            832.0
+          ]
+        ],
+        "text": "Manuallydeployinganythingbecomesanunsustainableeffortpronetoerror,inconsistency,",
+        "score": 0.9839286856353283
+      },
+      {
+        "box": [
+          [
+            228.0,
+            828.0
+          ],
+          [
+            867.0,
+            828.0
+          ],
+          [
+            867.0,
+            847.0
+          ],
+          [
+            228.0,
+            847.0
+          ]
+        ],
+        "text": "and delays.Automating continuous deliverypipelines isawaytohelpoperationsfrom",
+        "score": 0.968195069919933
+      },
+      {
+        "box": [
+          [
+            227.0,
+            843.0
+          ],
+          [
+            906.0,
+            842.0
+          ],
+          [
+            906.0,
+            862.0
+          ],
+          [
+            227.0,
+            863.0
+          ]
+        ],
+        "text": "deployinganapplicationtheyhavelittleknowledgeofandrescuedevelopersfromcomplex",
+        "score": 0.9941722727441168
+      },
+      {
+        "box": [
+          [
+            228.0,
+            860.0
+          ],
+          [
+            911.0,
+            860.0
+          ],
+          [
+            911.0,
+            879.0
+          ],
+          [
+            228.0,
+            879.0
+          ]
+        ],
+        "text": "configurationsanddeployments.Efficientdeliverymeansmoretimeforinnovation,enabling",
+        "score": 0.9803448518117269
+      },
+      {
+        "box": [
+          [
+            228.0,
+            876.0
+          ],
+          [
+            609.0,
+            876.0
+          ],
+          [
+            609.0,
+            893.0
+          ],
+          [
+            228.0,
+            893.0
+          ]
+        ],
+        "text": "thebusinesstodisruptthemarketandcompetitors.",
+        "score": 0.9950769733298909
+      },
+      {
+        "box": [
+          [
+            228.0,
+            903.0
+          ],
+          [
+            914.0,
+            903.0
+          ],
+          [
+            914.0,
+            923.0
+          ],
+          [
+            228.0,
+            923.0
+          ]
+        ],
+        "text": "Whethertheyareaccessingawebsiteoramobileapp,peoplehavehighexpectationsofthe",
+        "score": 0.9872408064206442
+      },
+      {
+        "box": [
+          [
+            228.0,
+            919.0
+          ],
+          [
+            909.0,
+            919.0
+          ],
+          [
+            909.0,
+            938.0
+          ],
+          [
+            228.0,
+            938.0
+          ]
+        ],
+        "text": "appsthat theyregularlyuse.Asaresult,companiesmustcontinuouslydelivernewfeatures",
+        "score": 0.9869519155236739
+      },
+      {
+        "box": [
+          [
+            103.0,
+            973.0
+          ],
+          [
+            670.0,
+            974.0
+          ],
+          [
+            670.0,
+            994.0
+          ],
+          [
+            103.0,
+            993.0
+          ]
+        ],
+        "text": "8Red Hat OpenShift and IBM CloudPaks on IBMPower Systems:Volume1",
+        "score": 0.961018000729382
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 133,
+    "deduplicated": 93,
+    "elapsed_ms": 860.39,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 870.72
+}

@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_1941",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "2e0739ebcb2ae909ee60bb4367ba744d9faae7a411ebdb0d170f4e908beda387",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "品",
+    "lines": [
+      {
+        "box": [
+          [
+            963.574462890625,
+            1143.38720703125
+          ],
+          [
+            563.1702880859375,
+            1135.161376953125
+          ],
+          [
+            569.680908203125,
+            778.161376953125
+          ],
+          [
+            970.0850830078125,
+            786.38720703125
+          ]
+        ],
+        "text": "品",
+        "score": 0.9436107277870178
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 110.05,
+    "direction_stats": {},
+    "elapsed_ms": 110.06
+  }
+}

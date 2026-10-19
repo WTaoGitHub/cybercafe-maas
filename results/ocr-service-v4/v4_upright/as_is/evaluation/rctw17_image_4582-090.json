@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_4582",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 90,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "fd00331ab00e8e60ae03111f1400047ca83b74050ad9fd24fb11f380dcad091e",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "秭归大酒店",
+    "lines": [
+      {
+        "box": [
+          [
+            119.68085479736328,
+            1248.3870849609375
+          ],
+          [
+            126.06383514404297,
+            856.45166015625
+          ],
+          [
+            1973.936279296875,
+            891.935546875
+          ],
+          [
+            1967.55322265625,
+            1283.8709716796875
+          ]
+        ],
+        "text": "秭归大酒店",
+        "score": 0.9720203518867493
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 114.2,
+    "direction_stats": {},
+    "elapsed_ms": 114.21
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_5074",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "d94e1b2d97e6cce9fe2c8b056d8d9447ae52f4f290f03b4d11782221003fa0b1",
+  "ok": true,
+  "result": {
+    "text": "复印\n论文\n装订",
+    "lines": [
+      {
+        "box": [
+          [
+            142.0,
+            61.0
+          ],
+          [
+            458.0,
+            87.0
+          ],
+          [
+            443.0,
+            265.0
+          ],
+          [
+            126.0,
+            239.0
+          ]
+        ],
+        "text": "复印",
+        "score": 0.99451744556427
+      },
+      {
+        "box": [
+          [
+            428.0,
+            93.0
+          ],
+          [
+            602.0,
+            106.0
+          ],
+          [
+            596.0,
+            191.0
+          ],
+          [
+            422.0,
+            178.0
+          ]
+        ],
+        "text": "论文",
+        "score": 0.9942183494567871
+      },
+      {
+        "box": [
+          [
+            425.0,
+            177.0
+          ],
+          [
+            600.0,
+            183.0
+          ],
+          [
+            597.0,
+            277.0
+          ],
+          [
+            422.0,
+            271.0
+          ]
+        ],
+        "text": "装订",
+        "score": 0.9860298037528992
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      533,
+      800,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 106.96
+  }
+}

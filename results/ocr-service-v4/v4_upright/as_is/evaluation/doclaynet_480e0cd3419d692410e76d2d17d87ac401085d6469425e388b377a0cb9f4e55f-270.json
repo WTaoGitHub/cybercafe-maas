@@ -1,0 +1,87 @@
+{
+  "id": "doclaynet_480e0cd3419d692410e76d2d17d87ac401085d6469425e388b377a0cb9f4e55f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "23c2ce9d2f325e563f5e293db8ccc8ce3dfe60b070a895dc51a5df38dbdcecba",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "s\n101\nAU",
+    "lines": [
+      {
+        "box": [
+          [
+            929.0,
+            590.0
+          ],
+          [
+            929.0,
+            610.0
+          ],
+          [
+            524.0,
+            610.0
+          ],
+          [
+            524.0,
+            590.0
+          ]
+        ],
+        "text": "s",
+        "score": 0.7320727109909058
+      },
+      {
+        "box": [
+          [
+            510.0,
+            932.0
+          ],
+          [
+            510.0,
+            939.0
+          ],
+          [
+            478.0,
+            939.0
+          ],
+          [
+            478.0,
+            932.0
+          ]
+        ],
+        "text": "101",
+        "score": 0.7831592957178751
+      },
+      {
+        "box": [
+          [
+            131.0,
+            488.0
+          ],
+          [
+            131.0,
+            499.0
+          ],
+          [
+            99.0,
+            499.0
+          ],
+          [
+            99.0,
+            488.0
+          ]
+        ],
+        "text": "AU",
+        "score": 0.5637800544500351
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 184.23,
+    "direction_stats": {},
+    "elapsed_ms": 184.24
+  }
+}

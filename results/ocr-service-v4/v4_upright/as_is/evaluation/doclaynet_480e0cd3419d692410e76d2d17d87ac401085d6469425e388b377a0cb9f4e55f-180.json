@@ -1,0 +1,109 @@
+{
+  "id": "doclaynet_480e0cd3419d692410e76d2d17d87ac401085d6469425e388b377a0cb9f4e55f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "23c2ce9d2f325e563f5e293db8ccc8ce3dfe60b070a895dc51a5df38dbdcecba",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "s\npoxy\ns\ns",
+    "lines": [
+      {
+        "box": [
+          [
+            927.0,
+            956.0
+          ],
+          [
+            138.0,
+            955.0
+          ],
+          [
+            138.0,
+            938.0
+          ],
+          [
+            927.0,
+            939.0
+          ]
+        ],
+        "text": "s",
+        "score": 0.6985863447189331
+      },
+      {
+        "box": [
+          [
+            180.0,
+            757.0
+          ],
+          [
+            138.0,
+            757.0
+          ],
+          [
+            138.0,
+            740.0
+          ],
+          [
+            180.0,
+            740.0
+          ]
+        ],
+        "text": "poxy",
+        "score": 0.5823443979024887
+      },
+      {
+        "box": [
+          [
+            926.0,
+            564.0
+          ],
+          [
+            138.0,
+            563.0
+          ],
+          [
+            138.0,
+            546.0
+          ],
+          [
+            926.0,
+            547.0
+          ]
+        ],
+        "text": "s",
+        "score": 0.5378187298774719
+      },
+      {
+        "box": [
+          [
+            782.0,
+            183.0
+          ],
+          [
+            138.0,
+            181.0
+          ],
+          [
+            138.0,
+            162.0
+          ],
+          [
+            782.0,
+            164.0
+          ]
+        ],
+        "text": "s",
+        "score": 0.5852317214012146
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 202.6,
+    "direction_stats": {},
+    "elapsed_ms": 202.61
+  }
+}

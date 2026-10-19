@@ -1,0 +1,136 @@
+OFDM symbol is given by [5]
+Φ$_{D}$(
+f$_{m}$
+=
+e
+$^{jφ}$ej
+,
+(1)
+H$_{m}$
+$^{)}$T$_{m}$
+where
+φ
+is a common phase error (CPE) noise owing to the phase noises that
+varies for different OFDM symbols. In (1) Φ$_{D}$(
+f$_{m}$
+) is the phase dispersion
+owing to CD and given by
+2
+−
+πcDLf
+m
+1
+m
+Φ$_{D}$(
+f$_{m}$
+) =
+,
+with
+f$_{m}$
+=
+.
+(2)
+2
+f
+t$_{s}$
+c
+where
+t$_{s}$
+is the actual time duration of one DFT-spread OFDM symbol not
+including the cyclic prefix;
+c
+is the speed of the light;
+D
+is the CD parameter
+in unit of ps/pm/km;
+L
+is the total length of the multi-span fiber link; and
+f$_{c}$
+is the carrier frequency of the laser.
+Here we assume that the periodic
+dispersion map is employed and the CD is completely compensated for at each
+span. Hence
+in (1) is the Jones matrix with the dispersion compensation
+T$_{m}$
+fiber (DCF) inserted at each stage, given by
+
+
+
+
+
+
+n$_{E}$
+jπ
+(
+f$_{c}$
++
+f$_{m}$
+)
+τ$_{l}$
+e
+0
+cos
+θ$_{l}$
+sin
+θ$_{l}$
+1
+0
+Φ
+(
+)
+f
+m
+D
+j
+−
+∏
+·
+·
+,
+=
+e
+T$_{m}$
+n
+
+
+
+
+
+
+E
+
+
+
+
+
+
+jπ
+(
+f$_{c}$
++
+f$_{m}$
+)
+τ$_{l}$
+−
+−
+0
+e
+sin
+θ$_{l}$
+cos
+θ$_{l}$
+0
+k$_{l}$
+l
+=1
+(3)
+where
+k$_{l}$
+denotes the attenuation factor of PDL;
+τ$_{l}$
+is the differential group de-
+lay (DGD);
+θ$_{l}$
+is the uniformly random rotation angle [6]. For each span, the
+DGD is a random variable following the Maxwellian distribution. However,
+6

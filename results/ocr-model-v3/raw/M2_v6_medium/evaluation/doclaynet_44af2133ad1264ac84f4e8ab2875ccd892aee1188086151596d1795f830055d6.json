@@ -1,0 +1,959 @@
+{
+  "id": "doclaynet_44af2133ad1264ac84f4e8ab2875ccd892aee1188086151596d1795f830055d6",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "fe818a610962970ec0f9e6ca0a03436f30e3b6ed3c3a27c426866801247fa147",
+  "ok": true,
+  "result": {
+    "text": "UNITED STATES\nSECURITIES AND EXCHANGE COMMISSION\nWASHINGTON. D. C. 20549\nFORM 10-K\n(Mark One)\n Annual Report Pursuant to Section 13 or 15(d) of the Securities Exchange Act of 1934\nFor the fiscal year ended December 31, 2o19\n Transition Report Pursuant to Section 13 or 15(d) of the Securities Exchange Act of 1934\nFor the transition period from to\nCommission file number 001-11294\nUnum Group\n(Exact name of registrant as specified in its charter)\nDelaware\n62-1598430\n(State or other jurisdiction of incorporation or organization)\n(I.R.S. Employer Identification No.)\n1 Fountain Square\nChattanooga, Tennessee\n37402\n(Address of principal executive offices)\n(Zip Code)\n(423)294-1011\n(Registrant's telephone number, including area code)\nSecurities registered pursuant to Section 12(b) of the Act:\nTitle of each class\nTrading Symbol\nName of each exchange on which registered\nCommon stock, s0.10 par value\nUNM\nUNMA\nNew York Stock Exchange\n6.250% Junior Subordinated Notes due 2058\nNew York Stock Exchange\nSecurities registered pursuant to Section 12(g) of the Act: None\nIndicate by check mark if the registrant is a well-known seasoned issuer as defined in Rule 405 of the Securities Act. Yes [X] No [ ]\nIndicate by check mark if the registrant is not required to file reports pursuant to Section 13 or Section 15(d) of the Act. Yes [ ] No [X]\nIndicate by check mark whether the registrant (1) has filed all reports required to be filed by Section 13 or 15(d) of the Securities Exchange Act of\n1934 during the preceding 12 months (or for such shorter period that the registrant was required to file such reports), and (2) has been subject to\nsuch filing requirements for the past 9o days. Yes [X] No []\nof Regulation S-T (§232.405 of this chapter) during the preceding 12 months (or for such shorter period that the registrant was required to submit\nIndicate by check mark whether the registrant has submitted electronically every Interactive Data File required to be submitted pursuant to Rule 405\nsuch files). Yes [X] No [ ]",
+    "lines": [
+      {
+        "box": [
+          [
+            443.0,
+            54.0
+          ],
+          [
+            578.0,
+            54.0
+          ],
+          [
+            578.0,
+            67.0
+          ],
+          [
+            443.0,
+            67.0
+          ]
+        ],
+        "text": "UNITED STATES",
+        "score": 0.9998312592506409
+      },
+      {
+        "box": [
+          [
+            335.0,
+            67.0
+          ],
+          [
+            686.0,
+            67.0
+          ],
+          [
+            686.0,
+            77.0
+          ],
+          [
+            335.0,
+            77.0
+          ]
+        ],
+        "text": "SECURITIES AND EXCHANGE COMMISSION",
+        "score": 0.9987735748291016
+      },
+      {
+        "box": [
+          [
+            412.0,
+            78.0
+          ],
+          [
+            609.0,
+            78.0
+          ],
+          [
+            609.0,
+            88.0
+          ],
+          [
+            412.0,
+            88.0
+          ]
+        ],
+        "text": "WASHINGTON. D. C. 20549",
+        "score": 0.9648495316505432
+      },
+      {
+        "box": [
+          [
+            451.0,
+            104.0
+          ],
+          [
+            571.0,
+            104.0
+          ],
+          [
+            571.0,
+            117.0
+          ],
+          [
+            451.0,
+            117.0
+          ]
+        ],
+        "text": "FORM 10-K",
+        "score": 0.9970294237136841
+      },
+      {
+        "box": [
+          [
+            23.0,
+            133.0
+          ],
+          [
+            96.0,
+            133.0
+          ],
+          [
+            96.0,
+            143.0
+          ],
+          [
+            23.0,
+            143.0
+          ]
+        ],
+        "text": "(Mark One)",
+        "score": 0.99951171875
+      },
+      {
+        "box": [
+          [
+            190.0,
+            157.0
+          ],
+          [
+            832.0,
+            157.0
+          ],
+          [
+            832.0,
+            167.0
+          ],
+          [
+            190.0,
+            167.0
+          ]
+        ],
+        "text": " Annual Report Pursuant to Section 13 or 15(d) of the Securities Exchange Act of 1934",
+        "score": 0.9829130172729492
+      },
+      {
+        "box": [
+          [
+            346.0,
+            169.0
+          ],
+          [
+            675.0,
+            169.0
+          ],
+          [
+            675.0,
+            179.0
+          ],
+          [
+            346.0,
+            179.0
+          ]
+        ],
+        "text": "For the fiscal year ended December 31, 2o19",
+        "score": 0.9864745140075684
+      },
+      {
+        "box": [
+          [
+            178.0,
+            193.0
+          ],
+          [
+            842.0,
+            193.0
+          ],
+          [
+            842.0,
+            203.0
+          ],
+          [
+            178.0,
+            203.0
+          ]
+        ],
+        "text": " Transition Report Pursuant to Section 13 or 15(d) of the Securities Exchange Act of 1934",
+        "score": 0.9916087985038757
+      },
+      {
+        "box": [
+          [
+            390.0,
+            205.0
+          ],
+          [
+            630.0,
+            205.0
+          ],
+          [
+            630.0,
+            215.0
+          ],
+          [
+            390.0,
+            215.0
+          ]
+        ],
+        "text": "For the transition period from to",
+        "score": 0.9998012781143188
+      },
+      {
+        "box": [
+          [
+            382.0,
+            229.0
+          ],
+          [
+            640.0,
+            229.0
+          ],
+          [
+            640.0,
+            239.0
+          ],
+          [
+            382.0,
+            239.0
+          ]
+        ],
+        "text": "Commission file number 001-11294",
+        "score": 0.995406985282898
+      },
+      {
+        "box": [
+          [
+            436.0,
+            253.0
+          ],
+          [
+            585.0,
+            254.0
+          ],
+          [
+            584.0,
+            271.0
+          ],
+          [
+            435.0,
+            270.0
+          ]
+        ],
+        "text": "Unum Group",
+        "score": 0.9998804330825806
+      },
+      {
+        "box": [
+          [
+            354.0,
+            272.0
+          ],
+          [
+            667.0,
+            272.0
+          ],
+          [
+            667.0,
+            285.0
+          ],
+          [
+            354.0,
+            285.0
+          ]
+        ],
+        "text": "(Exact name of registrant as specified in its charter)",
+        "score": 0.9999896287918091
+      },
+      {
+        "box": [
+          [
+            248.0,
+            287.0
+          ],
+          [
+            319.0,
+            287.0
+          ],
+          [
+            319.0,
+            300.0
+          ],
+          [
+            248.0,
+            300.0
+          ]
+        ],
+        "text": "Delaware",
+        "score": 0.9999924302101135
+      },
+      {
+        "box": [
+          [
+            693.0,
+            287.0
+          ],
+          [
+            782.0,
+            287.0
+          ],
+          [
+            782.0,
+            300.0
+          ],
+          [
+            693.0,
+            300.0
+          ]
+        ],
+        "text": "62-1598430",
+        "score": 0.999995231628418
+      },
+      {
+        "box": [
+          [
+            107.0,
+            301.0
+          ],
+          [
+            460.0,
+            301.0
+          ],
+          [
+            460.0,
+            311.0
+          ],
+          [
+            107.0,
+            311.0
+          ]
+        ],
+        "text": "(State or other jurisdiction of incorporation or organization)",
+        "score": 0.9996544122695923
+      },
+      {
+        "box": [
+          [
+            635.0,
+            301.0
+          ],
+          [
+            841.0,
+            301.0
+          ],
+          [
+            841.0,
+            311.0
+          ],
+          [
+            635.0,
+            311.0
+          ]
+        ],
+        "text": "(I.R.S. Employer Identification No.)",
+        "score": 0.9997369050979614
+      },
+      {
+        "box": [
+          [
+            215.0,
+            322.0
+          ],
+          [
+            351.0,
+            322.0
+          ],
+          [
+            351.0,
+            335.0
+          ],
+          [
+            215.0,
+            335.0
+          ]
+        ],
+        "text": "1 Fountain Square",
+        "score": 0.9999341368675232
+      },
+      {
+        "box": [
+          [
+            191.0,
+            332.0
+          ],
+          [
+            375.0,
+            333.0
+          ],
+          [
+            375.0,
+            346.0
+          ],
+          [
+            191.0,
+            345.0
+          ]
+        ],
+        "text": "Chattanooga, Tennessee",
+        "score": 0.9984786510467529
+      },
+      {
+        "box": [
+          [
+            713.0,
+            332.0
+          ],
+          [
+            762.0,
+            332.0
+          ],
+          [
+            762.0,
+            346.0
+          ],
+          [
+            713.0,
+            346.0
+          ]
+        ],
+        "text": "37402",
+        "score": 0.999995231628418
+      },
+      {
+        "box": [
+          [
+            165.0,
+            346.0
+          ],
+          [
+            400.0,
+            347.0
+          ],
+          [
+            400.0,
+            360.0
+          ],
+          [
+            165.0,
+            359.0
+          ]
+        ],
+        "text": "(Address of principal executive offices)",
+        "score": 0.9906657934188843
+      },
+      {
+        "box": [
+          [
+            703.0,
+            346.0
+          ],
+          [
+            773.0,
+            346.0
+          ],
+          [
+            773.0,
+            359.0
+          ],
+          [
+            703.0,
+            359.0
+          ]
+        ],
+        "text": "(Zip Code)",
+        "score": 0.9998990893363953
+      },
+      {
+        "box": [
+          [
+            456.0,
+            372.0
+          ],
+          [
+            564.0,
+            372.0
+          ],
+          [
+            564.0,
+            382.0
+          ],
+          [
+            456.0,
+            382.0
+          ]
+        ],
+        "text": "(423)294-1011",
+        "score": 0.9999816417694092
+      },
+      {
+        "box": [
+          [
+            350.0,
+            383.0
+          ],
+          [
+            671.0,
+            383.0
+          ],
+          [
+            671.0,
+            396.0
+          ],
+          [
+            350.0,
+            396.0
+          ]
+        ],
+        "text": "(Registrant's telephone number, including area code)",
+        "score": 0.9999791383743286
+      },
+      {
+        "box": [
+          [
+            296.0,
+            415.0
+          ],
+          [
+            723.0,
+            415.0
+          ],
+          [
+            723.0,
+            425.0
+          ],
+          [
+            296.0,
+            425.0
+          ]
+        ],
+        "text": "Securities registered pursuant to Section 12(b) of the Act:",
+        "score": 0.9922972917556763
+      },
+      {
+        "box": [
+          [
+            149.0,
+            443.0
+          ],
+          [
+            280.0,
+            443.0
+          ],
+          [
+            280.0,
+            453.0
+          ],
+          [
+            149.0,
+            453.0
+          ]
+        ],
+        "text": "Title of each class",
+        "score": 0.9996276497840881
+      },
+      {
+        "box": [
+          [
+            453.0,
+            443.0
+          ],
+          [
+            569.0,
+            443.0
+          ],
+          [
+            569.0,
+            453.0
+          ],
+          [
+            453.0,
+            453.0
+          ]
+        ],
+        "text": "Trading Symbol",
+        "score": 0.9980978965759277
+      },
+      {
+        "box": [
+          [
+            644.0,
+            443.0
+          ],
+          [
+            968.0,
+            443.0
+          ],
+          [
+            968.0,
+            453.0
+          ],
+          [
+            644.0,
+            453.0
+          ]
+        ],
+        "text": "Name of each exchange on which registered",
+        "score": 0.9997638463973999
+      },
+      {
+        "box": [
+          [
+            111.0,
+            457.0
+          ],
+          [
+            318.0,
+            457.0
+          ],
+          [
+            318.0,
+            467.0
+          ],
+          [
+            111.0,
+            467.0
+          ]
+        ],
+        "text": "Common stock, s0.10 par value",
+        "score": 0.9806405901908875
+      },
+      {
+        "box": [
+          [
+            493.0,
+            456.0
+          ],
+          [
+            528.0,
+            456.0
+          ],
+          [
+            528.0,
+            467.0
+          ],
+          [
+            493.0,
+            467.0
+          ]
+        ],
+        "text": "UNM",
+        "score": 0.9998947978019714
+      },
+      {
+        "box": [
+          [
+            489.0,
+            466.0
+          ],
+          [
+            533.0,
+            466.0
+          ],
+          [
+            533.0,
+            480.0
+          ],
+          [
+            489.0,
+            480.0
+          ]
+        ],
+        "text": "UNMA",
+        "score": 0.9999605417251587
+      },
+      {
+        "box": [
+          [
+            723.0,
+            457.0
+          ],
+          [
+            891.0,
+            457.0
+          ],
+          [
+            891.0,
+            467.0
+          ],
+          [
+            723.0,
+            467.0
+          ]
+        ],
+        "text": "New York Stock Exchange",
+        "score": 0.9995719790458679
+      },
+      {
+        "box": [
+          [
+            71.0,
+            468.0
+          ],
+          [
+            358.0,
+            468.0
+          ],
+          [
+            358.0,
+            478.0
+          ],
+          [
+            71.0,
+            478.0
+          ]
+        ],
+        "text": "6.250% Junior Subordinated Notes due 2058",
+        "score": 0.9948599338531494
+      },
+      {
+        "box": [
+          [
+            720.0,
+            467.0
+          ],
+          [
+            891.0,
+            467.0
+          ],
+          [
+            891.0,
+            480.0
+          ],
+          [
+            720.0,
+            480.0
+          ]
+        ],
+        "text": "New York Stock Exchange",
+        "score": 0.9999383091926575
+      },
+      {
+        "box": [
+          [
+            275.0,
+            499.0
+          ],
+          [
+            744.0,
+            499.0
+          ],
+          [
+            744.0,
+            509.0
+          ],
+          [
+            275.0,
+            509.0
+          ]
+        ],
+        "text": "Securities registered pursuant to Section 12(g) of the Act: None",
+        "score": 0.9911542534828186
+      },
+      {
+        "box": [
+          [
+            23.0,
+            522.0
+          ],
+          [
+            868.0,
+            522.0
+          ],
+          [
+            868.0,
+            535.0
+          ],
+          [
+            23.0,
+            535.0
+          ]
+        ],
+        "text": "Indicate by check mark if the registrant is a well-known seasoned issuer as defined in Rule 405 of the Securities Act. Yes [X] No [ ]",
+        "score": 0.9958493709564209
+      },
+      {
+        "box": [
+          [
+            24.0,
+            549.0
+          ],
+          [
+            888.0,
+            549.0
+          ],
+          [
+            888.0,
+            559.0
+          ],
+          [
+            24.0,
+            559.0
+          ]
+        ],
+        "text": "Indicate by check mark if the registrant is not required to file reports pursuant to Section 13 or Section 15(d) of the Act. Yes [ ] No [X]",
+        "score": 0.9950656890869141
+      },
+      {
+        "box": [
+          [
+            22.0,
+            572.0
+          ],
+          [
+            999.0,
+            572.0
+          ],
+          [
+            999.0,
+            585.0
+          ],
+          [
+            22.0,
+            585.0
+          ]
+        ],
+        "text": "Indicate by check mark whether the registrant (1) has filed all reports required to be filed by Section 13 or 15(d) of the Securities Exchange Act of",
+        "score": 0.9982665181159973
+      },
+      {
+        "box": [
+          [
+            24.0,
+            585.0
+          ],
+          [
+            998.0,
+            585.0
+          ],
+          [
+            998.0,
+            595.0
+          ],
+          [
+            24.0,
+            595.0
+          ]
+        ],
+        "text": "1934 during the preceding 12 months (or for such shorter period that the registrant was required to file such reports), and (2) has been subject to",
+        "score": 0.9954392910003662
+      },
+      {
+        "box": [
+          [
+            23.0,
+            595.0
+          ],
+          [
+            408.0,
+            595.0
+          ],
+          [
+            408.0,
+            605.0
+          ],
+          [
+            23.0,
+            605.0
+          ]
+        ],
+        "text": "such filing requirements for the past 9o days. Yes [X] No []",
+        "score": 0.9777346849441528
+      },
+      {
+        "box": [
+          [
+            22.0,
+            629.0
+          ],
+          [
+            998.0,
+            629.0
+          ],
+          [
+            998.0,
+            642.0
+          ],
+          [
+            22.0,
+            642.0
+          ]
+        ],
+        "text": "of Regulation S-T (§232.405 of this chapter) during the preceding 12 months (or for such shorter period that the registrant was required to submit",
+        "score": 0.9942478537559509
+      },
+      {
+        "box": [
+          [
+            23.0,
+            620.0
+          ],
+          [
+            997.0,
+            620.0
+          ],
+          [
+            997.0,
+            630.0
+          ],
+          [
+            23.0,
+            630.0
+          ]
+        ],
+        "text": "Indicate by check mark whether the registrant has submitted electronically every Interactive Data File required to be submitted pursuant to Rule 405",
+        "score": 0.9944686889648438
+      },
+      {
+        "box": [
+          [
+            23.0,
+            643.0
+          ],
+          [
+            184.0,
+            643.0
+          ],
+          [
+            184.0,
+            653.0
+          ],
+          [
+            23.0,
+            653.0
+          ]
+        ],
+        "text": "such files). Yes [X] No [ ]",
+        "score": 0.9938255548477173
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 42,
+    "elapsed_ms": 382.89
+  }
+}

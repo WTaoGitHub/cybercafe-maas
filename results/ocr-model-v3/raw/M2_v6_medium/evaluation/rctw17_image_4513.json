@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_4513",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "f373e7563fbc345167f2187a23234ccd09d0fb0daba462597e4de4cd6592ccfe",
+  "ok": true,
+  "result": {
+    "text": "绒\n毯",
+    "lines": [
+      {
+        "box": [
+          [
+            1843.9894153225807,
+            1829.5081967213114
+          ],
+          [
+            1964.906754032258,
+            1860.4764344262296
+          ],
+          [
+            1946.7691532258066,
+            1928.3683401639344
+          ],
+          [
+            1825.851814516129,
+            1897.4001024590164
+          ]
+        ],
+        "text": "绒",
+        "score": 0.9995504021644592
+      },
+      {
+        "box": [
+          [
+            1929.8407258064517,
+            1844.9923155737706
+          ],
+          [
+            2083.405745967742,
+            1874.7694672131147
+          ],
+          [
+            2065.2681451612902,
+            1967.674180327869
+          ],
+          [
+            1911.703125,
+            1937.8970286885246
+          ]
+        ],
+        "text": "毯",
+        "score": 0.9999397993087769
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1952,
+      1984,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 126.11
+  }
+}

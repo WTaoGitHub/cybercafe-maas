@@ -1,0 +1,47 @@
+{
+  "id": "rctw17_image_3925",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "529cc2ebdb94176971dfe53acdf9b19420e2be976c82b39c0349d5e1358894d5",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "梦幻指压",
+    "lines": [
+      {
+        "box": [
+          [
+            1610.9031982421875,
+            1363.928466796875
+          ],
+          [
+            2106.774169921875,
+            1357.142822265625
+          ],
+          [
+            2108.129150390625,
+            1482.0
+          ],
+          [
+            1612.258056640625,
+            1488.78564453125
+          ]
+        ],
+        "text": "梦幻指压",
+        "score": 0.986433282494545
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 99.02,
+    "direction_stats": {
+      "lines_tested_180": 0,
+      "lines_chosen_180": 0,
+      "recognized_lines": 1
+    },
+    "elapsed_ms": 99.03
+  }
+}

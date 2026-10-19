@@ -1,0 +1,65 @@
+{
+  "id": "rctw17_image_2207",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "5217699edfd080f2184e43435bc7270bb45aef271aa81528c8f666fdf113939c",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "新悦茶餐厅\nXINYUE RESTAURANT",
+    "lines": [
+      {
+        "box": [
+          [
+            717.2903225806452,
+            761.7446808510638
+          ],
+          [
+            2694.7741935483873,
+            815.4574468085107
+          ],
+          [
+            2683.2580645161293,
+            1243.5319148936169
+          ],
+          [
+            705.7741935483872,
+            1189.8191489361702
+          ]
+        ],
+        "text": "新悦茶餐厅",
+        "score": 0.9993732571601868
+      },
+      {
+        "box": [
+          [
+            760.0645161290323,
+            1140.9893617021276
+          ],
+          [
+            2681.612903225807,
+            1147.5
+          ],
+          [
+            2681.612903225807,
+            1373.7446808510638
+          ],
+          [
+            760.0645161290323,
+            1367.2340425531916
+          ]
+        ],
+        "text": "XINYUE RESTAURANT",
+        "score": 0.9931496977806091
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 81.47,
+    "direction_stats": {},
+    "elapsed_ms": 81.48
+  }
+}

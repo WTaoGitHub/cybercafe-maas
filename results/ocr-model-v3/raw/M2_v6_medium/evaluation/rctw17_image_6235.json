@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_6235",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "6edba4fdb12ad8d9e53a98199d4e2d3de82391deac4c891a041a24cceeacdad8",
+  "ok": true,
+  "result": {
+    "text": "遵德守礼\n——行路驾车不闯红灯",
+    "lines": [
+      {
+        "box": [
+          [
+            686.8723404255319,
+            1090.741935483871
+          ],
+          [
+            1373.7446808510638,
+            1052.9032258064517
+          ],
+          [
+            1385.1382978723404,
+            1256.9032258064517
+          ],
+          [
+            698.2659574468084,
+            1294.741935483871
+          ]
+        ],
+        "text": "遵德守礼",
+        "score": 0.999631404876709
+      },
+      {
+        "box": [
+          [
+            732.4468085106383,
+            1314.483870967742
+          ],
+          [
+            2055.7340425531916,
+            1232.225806451613
+          ],
+          [
+            2065.5,
+            1401.6774193548388
+          ],
+          [
+            742.2127659574468,
+            1483.9354838709678
+          ]
+        ],
+        "text": "——行路驾车不闯红灯",
+        "score": 0.999570369720459
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 105.31
+  }
+}

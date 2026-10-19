@@ -1,0 +1,79 @@
+MongoDB Documentation, Release 3.0.4
+db.inventory.find(
+{ quantity: { $gte: 100, $lte: 300 }, type: "food" }
+).hint({ type: 1, quantity: 1 }).explain("executionStats")
+The
+method returns the following output:
+explain()
+{
+"queryPlanner" : {
+...
+"winningPlan" : {
+"stage" : "FETCH",
+"inputStage" : {
+"stage" : "IXSCAN",
+"keyPattern" : {
+"type" : 1,
+"quantity" : 1
+},
+...
+}
+},
+"rejectedPlans" : [ ]
+},
+"executionStats" : {
+"executionSuccess" :
+,
+true
+"nReturned" : 2,
+"executionTimeMillis" : 0,
+"totalKeysExamined" : 2,
+"totalDocsExamined" : 2,
+"executionStages" : {
+...
+}
+},
+...
+}
+MongoDB scanned
+index keys (
+) to return
+matching documents
+2
+executionStats.totalKeysExamined
+2
+(
+).
+executionStats.nReturned
+For this example query, the compound index
+is more efficient than the com-
+{ type:
+1, quantity:
+1
+}
+pound index
+.
+{ quantity:
+1, type:
+1
+}
+See also:
+(page 65),
+(page 68),
+(page 216),
+Query Optimization
+Query Plans
+Optimize Query Performance
+Indexing Strategies
+(page 546)
+3.3.9
+Perform Two Phase Commits
+Synopsis
+This document provides a pattern for doing multi-document updates or “multi-document transactions” using a two-
+phase commit approach for writing data to multiple documents. Additionally, you can extend this process to provide
+a
+(page 120) functionality.
+rollback-like
+3.3.
+MongoDB CRUD Tutorials
+115

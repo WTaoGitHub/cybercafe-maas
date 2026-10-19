@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_539",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "柳暗花明又一村\nThere is/a way out",
+    "lines": [
+      {
+        "box": [
+          [
+            435.0,
+            1935.0
+          ],
+          [
+            755.0,
+            1998.0
+          ],
+          [
+            741.0,
+            2069.0
+          ],
+          [
+            421.0,
+            2006.0
+          ]
+        ],
+        "text": "柳暗花明又一村",
+        "score": 0.990118180002485
+      },
+      {
+        "box": [
+          [
+            431.0,
+            2010.0
+          ],
+          [
+            749.0,
+            2084.0
+          ],
+          [
+            737.0,
+            2133.0
+          ],
+          [
+            419.0,
+            2060.0
+          ]
+        ],
+        "text": "There is/a way out",
+        "score": 0.9133494595686594
+      }
+    ],
+    "engine_calls": 12,
+    "raw_line_count": 2,
+    "deduplicated": 0,
+    "elapsed_ms": 409.68,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 454.67
+}

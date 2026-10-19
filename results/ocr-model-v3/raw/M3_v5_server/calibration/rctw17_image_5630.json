@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_5630",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M3_v5_server",
+  "image_sha256": "9d472600e3bd02f7f47b7036e2f46f40f40560de7221364137b129bcaed76cd4",
+  "ok": true,
+  "result": {
+    "text": "粤式晚茶",
+    "lines": [
+      {
+        "box": [
+          [
+            457.97872340425533,
+            1972.5806451612902
+          ],
+          [
+            1578.191489361702,
+            1941.9354838709676
+          ],
+          [
+            1584.5744680851064,
+            2187.0967741935483
+          ],
+          [
+            464.36170212765956,
+            2217.7419354838707
+          ]
+        ],
+        "text": "粤式晚茶",
+        "score": 0.9840453863143921
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 5,
+    "elapsed_ms": 140.37
+  }
+}

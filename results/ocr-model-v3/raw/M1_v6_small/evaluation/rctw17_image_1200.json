@@ -1,0 +1,145 @@
+{
+  "id": "rctw17_image_1200",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "91fde211c291ec50ab03003a55bd3ff8fe7c557103e379b562a0c3cc8753ecb2",
+  "ok": true,
+  "result": {
+    "text": "Wemn\n星德数学\n快乐作文\n培训\n本临二楼",
+    "lines": [
+      {
+        "box": [
+          [
+            249.0,
+            110.0
+          ],
+          [
+            284.0,
+            110.0
+          ],
+          [
+            284.0,
+            123.0
+          ],
+          [
+            249.0,
+            123.0
+          ]
+        ],
+        "text": "Wemn",
+        "score": 0.5389268398284912
+      },
+      {
+        "box": [
+          [
+            240.0,
+            126.0
+          ],
+          [
+            265.0,
+            126.0
+          ],
+          [
+            265.0,
+            221.0
+          ],
+          [
+            240.0,
+            221.0
+          ]
+        ],
+        "text": "星德数学",
+        "score": 0.8574990034103394
+      },
+      {
+        "box": [
+          [
+            262.0,
+            127.0
+          ],
+          [
+            288.0,
+            127.0
+          ],
+          [
+            288.0,
+            224.0
+          ],
+          [
+            262.0,
+            224.0
+          ]
+        ],
+        "text": "快乐作文",
+        "score": 0.9655351042747498
+      },
+      {
+        "box": [
+          [
+            131.0,
+            139.0
+          ],
+          [
+            203.0,
+            137.0
+          ],
+          [
+            204.0,
+            175.0
+          ],
+          [
+            132.0,
+            177.0
+          ]
+        ],
+        "text": "培训",
+        "score": 0.9981163144111633
+      },
+      {
+        "box": [
+          [
+            244.0,
+            241.0
+          ],
+          [
+            288.0,
+            243.0
+          ],
+          [
+            287.0,
+            260.0
+          ],
+          [
+            243.0,
+            258.0
+          ]
+        ],
+        "text": "本临二楼",
+        "score": 0.7504300475120544
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      592,
+      503,
+      3
+    ],
+    "detected_boxes": 5,
+    "elapsed_ms": 54.25
+  }
+}

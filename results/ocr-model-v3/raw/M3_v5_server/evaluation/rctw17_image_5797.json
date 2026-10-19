@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_5797",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "a12feb93fbd2b6534df59f463c4ec56cdacccede9b470d1be0035a1f6accf311",
+  "ok": true,
+  "result": {
+    "text": "七彩饰尚",
+    "lines": [
+      {
+        "box": [
+          [
+            358.6451612903226,
+            1489.3085106382978
+          ],
+          [
+            2933.3225806451615,
+            1363.9787234042553
+          ],
+          [
+            2959.645161290323,
+            1901.1063829787233
+          ],
+          [
+            384.9677419354839,
+            2026.436170212766
+          ]
+        ],
+        "text": "七彩饰尚",
+        "score": 0.8850834369659424
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1504,
+      1984,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 153.57
+  }
+}

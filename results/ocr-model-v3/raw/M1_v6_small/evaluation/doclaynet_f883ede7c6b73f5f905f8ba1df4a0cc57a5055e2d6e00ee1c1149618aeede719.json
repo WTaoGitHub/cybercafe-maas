@@ -1,0 +1,233 @@
+{
+  "id": "doclaynet_f883ede7c6b73f5f905f8ba1df4a0cc57a5055e2d6e00ee1c1149618aeede719",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "4019b740e4525237629c042f5df864e2cce76618b0c996a6d15420f8e8fc5371",
+  "ok": true,
+  "result": {
+    "text": "ARA A N D AL SI TE\nTRADR R  R RERS\nAYI  H   N IR\nKSED\nWORADS SD G E S SD NCE\n3HE38\nHE AY\nPRI NSG  ISG S NILY\nAAND S ON U    SD AND",
+    "lines": [
+      {
+        "box": [
+          [
+            54.0,
+            281.0
+          ],
+          [
+            70.0,
+            281.0
+          ],
+          [
+            70.0,
+            540.0
+          ],
+          [
+            54.0,
+            540.0
+          ]
+        ],
+        "text": "ARA A N D AL SI TE",
+        "score": 0.5692830085754395
+      },
+      {
+        "box": [
+          [
+            69.0,
+            278.0
+          ],
+          [
+            86.0,
+            278.0
+          ],
+          [
+            85.0,
+            474.0
+          ],
+          [
+            68.0,
+            474.0
+          ]
+        ],
+        "text": "TRADR R  R RERS",
+        "score": 0.5950073599815369
+      },
+      {
+        "box": [
+          [
+            85.0,
+            439.0
+          ],
+          [
+            101.0,
+            439.0
+          ],
+          [
+            101.0,
+            693.0
+          ],
+          [
+            85.0,
+            693.0
+          ]
+        ],
+        "text": "AYI  H   N IR",
+        "score": 0.636138379573822
+      },
+      {
+        "box": [
+          [
+            70.0,
+            467.0
+          ],
+          [
+            84.0,
+            468.0
+          ],
+          [
+            83.0,
+            552.0
+          ],
+          [
+            69.0,
+            551.0
+          ]
+        ],
+        "text": "KSED",
+        "score": 0.766191840171814
+      },
+      {
+        "box": [
+          [
+            54.0,
+            534.0
+          ],
+          [
+            70.0,
+            534.0
+          ],
+          [
+            70.0,
+            745.0
+          ],
+          [
+            54.0,
+            745.0
+          ]
+        ],
+        "text": "WORADS SD G E S SD NCE",
+        "score": 0.6124348044395447
+      },
+      {
+        "box": [
+          [
+            72.0,
+            598.0
+          ],
+          [
+            83.0,
+            598.0
+          ],
+          [
+            83.0,
+            631.0
+          ],
+          [
+            72.0,
+            631.0
+          ]
+        ],
+        "text": "3HE38",
+        "score": 0.7580963373184204
+      },
+      {
+        "box": [
+          [
+            72.0,
+            630.0
+          ],
+          [
+            82.0,
+            630.0
+          ],
+          [
+            82.0,
+            683.0
+          ],
+          [
+            72.0,
+            683.0
+          ]
+        ],
+        "text": "HE AY",
+        "score": 0.7018200159072876
+      },
+      {
+        "box": [
+          [
+            83.0,
+            683.0
+          ],
+          [
+            100.0,
+            683.0
+          ],
+          [
+            100.0,
+            992.0
+          ],
+          [
+            83.0,
+            992.0
+          ]
+        ],
+        "text": "PRI NSG  ISG S NILY",
+        "score": 0.5093135833740234
+      },
+      {
+        "box": [
+          [
+            54.0,
+            740.0
+          ],
+          [
+            70.0,
+            740.0
+          ],
+          [
+            70.0,
+            990.0
+          ],
+          [
+            54.0,
+            990.0
+          ]
+        ],
+        "text": "AAND S ON U    SD AND",
+        "score": 0.5520736575126648
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 10,
+    "elapsed_ms": 97.17
+  }
+}

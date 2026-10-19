@@ -1,0 +1,58 @@
+{
+  "split": "calibration",
+  "concurrency": 1,
+  "retries": 0,
+  "model": "rapidocr-gpu",
+  "sources": {
+    "doclaynet": {
+      "total": 20,
+      "success": 20,
+      "client_p50_ms": 534.7,
+      "client_p95_ms": 716.46,
+      "server_p50_ms": 313.21,
+      "server_p95_ms": 418.57,
+      "strict_grouped_cer": 0.10284335572943719,
+      "normalized_grouped_cer": 0.07924037864680322,
+      "counts": {
+        "invalid_reference_regions": 16,
+        "reference_chars": 59683,
+        "strict_edits": 6138,
+        "normalized_reference_chars": 51552,
+        "normalized_edits": 4085,
+        "missing_regions": 199,
+        "reference_regions": 2402,
+        "unmatched_predictions": 10,
+        "ignored_predictions": 0
+      },
+      "nodes": {
+        "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6": 14,
+        "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c": 6
+      }
+    },
+    "rctw17": {
+      "total": 20,
+      "success": 20,
+      "client_p50_ms": 456.39,
+      "client_p95_ms": 960.29,
+      "server_p50_ms": 115.3,
+      "server_p95_ms": 154.35,
+      "strict_grouped_cer": 0.19662921348314608,
+      "normalized_grouped_cer": 0.1859799713876967,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 712,
+        "strict_edits": 140,
+        "normalized_reference_chars": 699,
+        "normalized_edits": 130,
+        "missing_regions": 23,
+        "reference_regions": 117,
+        "unmatched_predictions": 6,
+        "ignored_predictions": 6
+      },
+      "nodes": {
+        "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6": 10,
+        "GPU-cd838bc3-2b0e-9aaf-e04b-cd3ab24d837c": 10
+      }
+    }
+  }
+}

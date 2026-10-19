@@ -1,0 +1,1159 @@
+{
+  "id": "doclaynet_2dff7351eae3c7845a65c7c0cb30115839adcaf9ab7fcc202757809adcd1276f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "image_sha256": "519e484b370a6a09ad45c8ecdf92b5ab07ed76cd97f39411424ad8026f01aa3d",
+  "client_ms": 420.72,
+  "result": {
+    "text": "If thenodesgoofflineorthestorageateithersitegoesoffline,leavinganonlineand\nonline copy.TheHyperSwapfunction also automaticallyresynchronizes the two copieswhen\npossible.\nHyperSwapcapabilityenableseachvolumetobepresentedbytwo/Ogroups.The\nchoicesof hostmultipathing driverinteroperabilitythatareavailablefortheIBMStorwize.The\nRemoteMirroring licensingisarequirementforusingHyperSwap.\nTheHyperSwapfunctionusesahyperswap topologybyspreading the controlenclosureof\nthesystemacrosstwosites,withstorageata thirdsitethatactsasatie-breakingquorum\ndevice.Consider thefollowingpoints:\nTheHyperSwaptopologyrequiresatleastone controlenclosureineachmaindatasite.\nTherefore,togetavolumethatisresilientlystoredonbothsites,onecontrolenclosure\nwith the necessary storage capacityisrequired.\ncache oneachsite,whichprovidesfullperformance,evenif one siteis lost.\n(CLI).\nThehosts，StorwizeV5ooocontrolenclosures,andStorwizeV5ooostorageenclosures\nare inone of twofailure domains or sites.External virtualized storage capacity can also be\nused.\nVolumes arevisible as asingleobjectacrossbothsites(theStorwizeV5ooo control\nenclosure).\nAtleasttwocontrolenclosuresarerequiredforHyperSwap.Systemscalabilitydependson\nthehardware details,aslisted inTable 10-12.\nTable10-12HyperSwapsupport\nV5010\nV5020\nV5030\nV7000\nIBM SAN\nN5030F\nVolume\nController\nMaximum number of I/O groups\n1\n2\n4\n4\nSupportforHyperSwap\nNo\nNo\nYes\nYes\nYes\nSupportforStretched Cluster\nNo\nNo\nNo\nNo\nYes\nSo,aV5oooHyperSwapclusteris alwaysrestricted toa singlecontrolenclosurepersite.The\nStorwizeV7ooo and IBMSANVolumeController canprovidemorescalability andoffermore\nflexibility.\n594\nImplementing the IBM Storwize V50oo Gen2 with 1BM Spectrum Virtualize V8.2.1",
+    "lines": [
+      {
+        "box": [
+          [
+            227.0,
+            90.0
+          ],
+          [
+            854.0,
+            90.0
+          ],
+          [
+            854.0,
+            110.0
+          ],
+          [
+            227.0,
+            110.0
+          ]
+        ],
+        "text": "If thenodesgoofflineorthestorageateithersitegoesoffline,leavinganonlineand",
+        "score": 0.9771170624204584
+      },
+      {
+        "box": [
+          [
+            227.0,
+            121.0
+          ],
+          [
+            916.0,
+            121.0
+          ],
+          [
+            916.0,
+            140.0
+          ],
+          [
+            227.0,
+            140.0
+          ]
+        ],
+        "text": "online copy.TheHyperSwapfunction also automaticallyresynchronizes the two copieswhen",
+        "score": 0.9742409657864344
+      },
+      {
+        "box": [
+          [
+            227.0,
+            138.0
+          ],
+          [
+            295.0,
+            136.0
+          ],
+          [
+            295.0,
+            153.0
+          ],
+          [
+            228.0,
+            155.0
+          ]
+        ],
+        "text": "possible.",
+        "score": 0.9977643622292413
+      },
+      {
+        "box": [
+          [
+            227.0,
+            164.0
+          ],
+          [
+            851.0,
+            164.0
+          ],
+          [
+            851.0,
+            183.0
+          ],
+          [
+            227.0,
+            183.0
+          ]
+        ],
+        "text": "HyperSwapcapabilityenableseachvolumetobepresentedbytwo/Ogroups.The",
+        "score": 0.9892171251051354
+      },
+      {
+        "box": [
+          [
+            226.0,
+            196.0
+          ],
+          [
+            915.0,
+            196.0
+          ],
+          [
+            915.0,
+            215.0
+          ],
+          [
+            226.0,
+            215.0
+          ]
+        ],
+        "text": "choicesof hostmultipathing driverinteroperabilitythatareavailablefortheIBMStorwize.The",
+        "score": 0.9811090327972589
+      },
+      {
+        "box": [
+          [
+            236.0,
+            262.0
+          ],
+          [
+            728.0,
+            264.0
+          ],
+          [
+            728.0,
+            283.0
+          ],
+          [
+            236.0,
+            281.0
+          ]
+        ],
+        "text": "RemoteMirroring licensingisarequirementforusingHyperSwap.",
+        "score": 0.984697165196402
+      },
+      {
+        "box": [
+          [
+            226.0,
+            298.0
+          ],
+          [
+            902.0,
+            299.0
+          ],
+          [
+            902.0,
+            319.0
+          ],
+          [
+            226.0,
+            318.0
+          ]
+        ],
+        "text": "TheHyperSwapfunctionusesahyperswap topologybyspreading the controlenclosureof",
+        "score": 0.9807102680206299
+      },
+      {
+        "box": [
+          [
+            226.0,
+            316.0
+          ],
+          [
+            895.0,
+            316.0
+          ],
+          [
+            895.0,
+            336.0
+          ],
+          [
+            226.0,
+            336.0
+          ]
+        ],
+        "text": "thesystemacrosstwosites,withstorageata thirdsitethatactsasatie-breakingquorum",
+        "score": 0.9852997033627002
+      },
+      {
+        "box": [
+          [
+            228.0,
+            332.0
+          ],
+          [
+            507.0,
+            332.0
+          ],
+          [
+            507.0,
+            349.0
+          ],
+          [
+            228.0,
+            349.0
+          ]
+        ],
+        "text": "device.Consider thefollowingpoints:",
+        "score": 0.9792594177382333
+      },
+      {
+        "box": [
+          [
+            249.0,
+            353.0
+          ],
+          [
+            902.0,
+            353.0
+          ],
+          [
+            902.0,
+            373.0
+          ],
+          [
+            249.0,
+            373.0
+          ]
+        ],
+        "text": "TheHyperSwaptopologyrequiresatleastone controlenclosureineachmaindatasite.",
+        "score": 0.99079629778862
+      },
+      {
+        "box": [
+          [
+            252.0,
+            369.0
+          ],
+          [
+            897.0,
+            369.0
+          ],
+          [
+            897.0,
+            388.0
+          ],
+          [
+            252.0,
+            388.0
+          ]
+        ],
+        "text": "Therefore,togetavolumethatisresilientlystoredonbothsites,onecontrolenclosure",
+        "score": 0.9853925257921219
+      },
+      {
+        "box": [
+          [
+            250.0,
+            383.0
+          ],
+          [
+            607.0,
+            384.0
+          ],
+          [
+            607.0,
+            404.0
+          ],
+          [
+            250.0,
+            403.0
+          ]
+        ],
+        "text": "with the necessary storage capacityisrequired.",
+        "score": 0.9757462960222493
+      },
+      {
+        "box": [
+          [
+            251.0,
+            422.0
+          ],
+          [
+            813.0,
+            422.0
+          ],
+          [
+            813.0,
+            441.0
+          ],
+          [
+            251.0,
+            441.0
+          ]
+        ],
+        "text": "cache oneachsite,whichprovidesfullperformance,evenif one siteis lost.",
+        "score": 0.9675714857336404
+      },
+      {
+        "box": [
+          [
+            252.0,
+            460.0
+          ],
+          [
+            297.0,
+            460.0
+          ],
+          [
+            297.0,
+            477.0
+          ],
+          [
+            252.0,
+            477.0
+          ]
+        ],
+        "text": "(CLI).",
+        "score": 0.9907737274964651
+      },
+      {
+        "box": [
+          [
+            250.0,
+            481.0
+          ],
+          [
+            903.0,
+            481.0
+          ],
+          [
+            903.0,
+            500.0
+          ],
+          [
+            250.0,
+            500.0
+          ]
+        ],
+        "text": "Thehosts，StorwizeV5ooocontrolenclosures,andStorwizeV5ooostorageenclosures",
+        "score": 0.9610706543269223
+      },
+      {
+        "box": [
+          [
+            250.0,
+            497.0
+          ],
+          [
+            915.0,
+            497.0
+          ],
+          [
+            915.0,
+            517.0
+          ],
+          [
+            250.0,
+            517.0
+          ]
+        ],
+        "text": "are inone of twofailure domains or sites.External virtualized storage capacity can also be",
+        "score": 0.9527421964539422
+      },
+      {
+        "box": [
+          [
+            251.0,
+            514.0
+          ],
+          [
+            296.0,
+            514.0
+          ],
+          [
+            296.0,
+            531.0
+          ],
+          [
+            251.0,
+            531.0
+          ]
+        ],
+        "text": "used.",
+        "score": 0.9976431608200074
+      },
+      {
+        "box": [
+          [
+            250.0,
+            534.0
+          ],
+          [
+            875.0,
+            534.0
+          ],
+          [
+            875.0,
+            553.0
+          ],
+          [
+            250.0,
+            553.0
+          ]
+        ],
+        "text": "Volumes arevisible as asingleobjectacrossbothsites(theStorwizeV5ooo control",
+        "score": 0.9725494718551636
+      },
+      {
+        "box": [
+          [
+            252.0,
+            549.0
+          ],
+          [
+            337.0,
+            552.0
+          ],
+          [
+            337.0,
+            569.0
+          ],
+          [
+            251.0,
+            566.0
+          ]
+        ],
+        "text": "enclosure).",
+        "score": 0.9960489056327126
+      },
+      {
+        "box": [
+          [
+            228.0,
+            579.0
+          ],
+          [
+            904.0,
+            579.0
+          ],
+          [
+            904.0,
+            598.0
+          ],
+          [
+            228.0,
+            598.0
+          ]
+        ],
+        "text": "AtleasttwocontrolenclosuresarerequiredforHyperSwap.Systemscalabilitydependson",
+        "score": 0.9964710164379764
+      },
+      {
+        "box": [
+          [
+            227.0,
+            595.0
+          ],
+          [
+            569.0,
+            595.0
+          ],
+          [
+            569.0,
+            612.0
+          ],
+          [
+            227.0,
+            612.0
+          ]
+        ],
+        "text": "thehardware details,aslisted inTable 10-12.",
+        "score": 0.9698809967484585
+      },
+      {
+        "box": [
+          [
+            228.0,
+            622.0
+          ],
+          [
+            457.0,
+            623.0
+          ],
+          [
+            457.0,
+            640.0
+          ],
+          [
+            228.0,
+            639.0
+          ]
+        ],
+        "text": "Table10-12HyperSwapsupport",
+        "score": 0.9975290779884045
+      },
+      {
+        "box": [
+          [
+            507.0,
+            645.0
+          ],
+          [
+            558.0,
+            645.0
+          ],
+          [
+            558.0,
+            662.0
+          ],
+          [
+            507.0,
+            662.0
+          ]
+        ],
+        "text": "V5010",
+        "score": 0.9977545499801636
+      },
+      {
+        "box": [
+          [
+            576.0,
+            645.0
+          ],
+          [
+            627.0,
+            645.0
+          ],
+          [
+            627.0,
+            662.0
+          ],
+          [
+            576.0,
+            662.0
+          ]
+        ],
+        "text": "V5020",
+        "score": 0.9987646579742432
+      },
+      {
+        "box": [
+          [
+            641.0,
+            645.0
+          ],
+          [
+            692.0,
+            645.0
+          ],
+          [
+            692.0,
+            662.0
+          ],
+          [
+            641.0,
+            662.0
+          ]
+        ],
+        "text": "V5030",
+        "score": 0.9967251300811768
+      },
+      {
+        "box": [
+          [
+            718.0,
+            642.0
+          ],
+          [
+            769.0,
+            645.0
+          ],
+          [
+            768.0,
+            663.0
+          ],
+          [
+            717.0,
+            660.0
+          ]
+        ],
+        "text": "V7000",
+        "score": 0.9934606075286865
+      },
+      {
+        "box": [
+          [
+            783.0,
+            645.0
+          ],
+          [
+            853.0,
+            645.0
+          ],
+          [
+            853.0,
+            662.0
+          ],
+          [
+            783.0,
+            662.0
+          ]
+        ],
+        "text": "IBM SAN",
+        "score": 0.9786505954606193
+      },
+      {
+        "box": [
+          [
+            640.0,
+            659.0
+          ],
+          [
+            704.0,
+            659.0
+          ],
+          [
+            704.0,
+            676.0
+          ],
+          [
+            640.0,
+            676.0
+          ]
+        ],
+        "text": "N5030F",
+        "score": 0.9173176685969034
+      },
+      {
+        "box": [
+          [
+            784.0,
+            659.0
+          ],
+          [
+            845.0,
+            659.0
+          ],
+          [
+            845.0,
+            676.0
+          ],
+          [
+            784.0,
+            676.0
+          ]
+        ],
+        "text": "Volume",
+        "score": 0.993475983540217
+      },
+      {
+        "box": [
+          [
+            784.0,
+            674.0
+          ],
+          [
+            862.0,
+            674.0
+          ],
+          [
+            862.0,
+            691.0
+          ],
+          [
+            784.0,
+            691.0
+          ]
+        ],
+        "text": "Controller",
+        "score": 0.9982216358184814
+      },
+      {
+        "box": [
+          [
+            235.0,
+            698.0
+          ],
+          [
+            453.0,
+            699.0
+          ],
+          [
+            453.0,
+            716.0
+          ],
+          [
+            235.0,
+            715.0
+          ]
+        ],
+        "text": "Maximum number of I/O groups",
+        "score": 0.955010997397559
+      },
+      {
+        "box": [
+          [
+            576.0,
+            699.0
+          ],
+          [
+            591.0,
+            699.0
+          ],
+          [
+            591.0,
+            713.0
+          ],
+          [
+            576.0,
+            713.0
+          ]
+        ],
+        "text": "1",
+        "score": 0.9970636963844299
+      },
+      {
+        "box": [
+          [
+            639.0,
+            697.0
+          ],
+          [
+            657.0,
+            697.0
+          ],
+          [
+            657.0,
+            716.0
+          ],
+          [
+            639.0,
+            716.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9983720183372498
+      },
+      {
+        "box": [
+          [
+            718.0,
+            697.0
+          ],
+          [
+            735.0,
+            697.0
+          ],
+          [
+            735.0,
+            716.0
+          ],
+          [
+            718.0,
+            716.0
+          ]
+        ],
+        "text": "4",
+        "score": 0.9985190033912659
+      },
+      {
+        "box": [
+          [
+            783.0,
+            698.0
+          ],
+          [
+            800.0,
+            698.0
+          ],
+          [
+            800.0,
+            716.0
+          ],
+          [
+            783.0,
+            716.0
+          ]
+        ],
+        "text": "4",
+        "score": 0.9989386200904846
+      },
+      {
+        "box": [
+          [
+            237.0,
+            724.0
+          ],
+          [
+            397.0,
+            724.0
+          ],
+          [
+            397.0,
+            741.0
+          ],
+          [
+            237.0,
+            741.0
+          ]
+        ],
+        "text": "SupportforHyperSwap",
+        "score": 0.9992482756313524
+      },
+      {
+        "box": [
+          [
+            506.0,
+            722.0
+          ],
+          [
+            534.0,
+            722.0
+          ],
+          [
+            534.0,
+            741.0
+          ],
+          [
+            506.0,
+            741.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9990593791007996
+      },
+      {
+        "box": [
+          [
+            575.0,
+            722.0
+          ],
+          [
+            603.0,
+            722.0
+          ],
+          [
+            603.0,
+            741.0
+          ],
+          [
+            575.0,
+            741.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9990986287593842
+      },
+      {
+        "box": [
+          [
+            639.0,
+            722.0
+          ],
+          [
+            674.0,
+            722.0
+          ],
+          [
+            674.0,
+            741.0
+          ],
+          [
+            639.0,
+            741.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9981938401858012
+      },
+      {
+        "box": [
+          [
+            719.0,
+            722.0
+          ],
+          [
+            752.0,
+            722.0
+          ],
+          [
+            752.0,
+            741.0
+          ],
+          [
+            719.0,
+            741.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9982579747835795
+      },
+      {
+        "box": [
+          [
+            783.0,
+            722.0
+          ],
+          [
+            817.0,
+            722.0
+          ],
+          [
+            817.0,
+            741.0
+          ],
+          [
+            783.0,
+            741.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9981763164202372
+      },
+      {
+        "box": [
+          [
+            237.0,
+            747.0
+          ],
+          [
+            435.0,
+            747.0
+          ],
+          [
+            435.0,
+            764.0
+          ],
+          [
+            237.0,
+            764.0
+          ]
+        ],
+        "text": "SupportforStretched Cluster",
+        "score": 0.9830260298870228
+      },
+      {
+        "box": [
+          [
+            506.0,
+            744.0
+          ],
+          [
+            534.0,
+            747.0
+          ],
+          [
+            532.0,
+            765.0
+          ],
+          [
+            504.0,
+            762.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9958497285842896
+      },
+      {
+        "box": [
+          [
+            575.0,
+            746.0
+          ],
+          [
+            602.0,
+            746.0
+          ],
+          [
+            602.0,
+            765.0
+          ],
+          [
+            575.0,
+            765.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9986617863178253
+      },
+      {
+        "box": [
+          [
+            639.0,
+            746.0
+          ],
+          [
+            668.0,
+            746.0
+          ],
+          [
+            668.0,
+            765.0
+          ],
+          [
+            639.0,
+            765.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9984391927719116
+      },
+      {
+        "box": [
+          [
+            718.0,
+            746.0
+          ],
+          [
+            745.0,
+            746.0
+          ],
+          [
+            745.0,
+            765.0
+          ],
+          [
+            718.0,
+            765.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.998761922121048
+      },
+      {
+        "box": [
+          [
+            783.0,
+            744.0
+          ],
+          [
+            816.0,
+            747.0
+          ],
+          [
+            815.0,
+            765.0
+          ],
+          [
+            781.0,
+            762.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9939404726028442
+      },
+      {
+        "box": [
+          [
+            227.0,
+            786.0
+          ],
+          [
+            915.0,
+            786.0
+          ],
+          [
+            915.0,
+            805.0
+          ],
+          [
+            227.0,
+            805.0
+          ]
+        ],
+        "text": "So,aV5oooHyperSwapclusteris alwaysrestricted toa singlecontrolenclosurepersite.The",
+        "score": 0.9751019623221421
+      },
+      {
+        "box": [
+          [
+            227.0,
+            802.0
+          ],
+          [
+            915.0,
+            802.0
+          ],
+          [
+            915.0,
+            821.0
+          ],
+          [
+            227.0,
+            821.0
+          ]
+        ],
+        "text": "StorwizeV7ooo and IBMSANVolumeController canprovidemorescalability andoffermore",
+        "score": 0.9716306570210035
+      },
+      {
+        "box": [
+          [
+            227.0,
+            816.0
+          ],
+          [
+            298.0,
+            818.0
+          ],
+          [
+            298.0,
+            835.0
+          ],
+          [
+            226.0,
+            833.0
+          ]
+        ],
+        "text": "flexibility.",
+        "score": 0.9685704261064529
+      },
+      {
+        "box": [
+          [
+            107.0,
+            976.0
+          ],
+          [
+            139.0,
+            976.0
+          ],
+          [
+            139.0,
+            990.0
+          ],
+          [
+            107.0,
+            990.0
+          ]
+        ],
+        "text": "594",
+        "score": 0.9996590614318848
+      },
+      {
+        "box": [
+          [
+            163.0,
+            976.0
+          ],
+          [
+            730.0,
+            976.0
+          ],
+          [
+            730.0,
+            992.0
+          ],
+          [
+            163.0,
+            992.0
+          ]
+        ],
+        "text": "Implementing the IBM Storwize V50oo Gen2 with 1BM Spectrum Virtualize V8.2.1",
+        "score": 0.944770518102144
+      }
+    ],
+    "elapsed_ms": 213.6,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "ok": true
+}

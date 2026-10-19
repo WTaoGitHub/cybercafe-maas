@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_6932",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "ec3c0baf1c7b5ffaf2f173c4acc8ed780c6dad23512013ea399f01a3894d48d5",
+  "ok": true,
+  "result": {
+    "text": "三元桥分理处\nSANYUANQIAOBRANCH",
+    "lines": [
+      {
+        "box": [
+          [
+            511.0851063829787,
+            2492.4193548387098
+          ],
+          [
+            1066.1170212765958,
+            2500.645161290323
+          ],
+          [
+            1064.4893617021276,
+            2628.967741935484
+          ],
+          [
+            509.4574468085106,
+            2620.741935483871
+          ]
+        ],
+        "text": "三元桥分理处",
+        "score": 0.9997336268424988
+      },
+      {
+        "box": [
+          [
+            533.8723404255319,
+            2596.064516129032
+          ],
+          [
+            1057.9787234042553,
+            2607.5806451612902
+          ],
+          [
+            1057.9787234042553,
+            2656.935483870968
+          ],
+          [
+            533.8723404255319,
+            2645.4193548387098
+          ]
+        ],
+        "text": "SANYUANQIAOBRANCH",
+        "score": 0.9997200965881348
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 67.81
+  }
+}

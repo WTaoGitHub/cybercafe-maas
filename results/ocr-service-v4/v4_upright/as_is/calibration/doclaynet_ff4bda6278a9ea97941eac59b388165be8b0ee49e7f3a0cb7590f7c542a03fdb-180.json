@@ -1,0 +1,87 @@
+{
+  "id": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+  "source": "doclaynet",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "0caaf3bba6f4b66663319060b18d9e2df8735764c32abbd643e84d773f1b0899",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "Ss\npod :putx\nspod",
+    "lines": [
+      {
+        "box": [
+          [
+            372.0,
+            951.0
+          ],
+          [
+            219.0,
+            951.0
+          ],
+          [
+            219.0,
+            935.0
+          ],
+          [
+            372.0,
+            935.0
+          ]
+        ],
+        "text": "Ss",
+        "score": 0.5109828636050224
+      },
+      {
+        "box": [
+          [
+            222.0,
+            422.0
+          ],
+          [
+            133.0,
+            422.0
+          ],
+          [
+            133.0,
+            405.0
+          ],
+          [
+            222.0,
+            405.0
+          ]
+        ],
+        "text": "pod :putx",
+        "score": 0.7609912223286099
+      },
+      {
+        "box": [
+          [
+            179.0,
+            189.0
+          ],
+          [
+            122.0,
+            189.0
+          ],
+          [
+            122.0,
+            172.0
+          ],
+          [
+            179.0,
+            172.0
+          ]
+        ],
+        "text": "spod",
+        "score": 0.789921447634697
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 125.39,
+    "direction_stats": {},
+    "elapsed_ms": 125.4
+  }
+}

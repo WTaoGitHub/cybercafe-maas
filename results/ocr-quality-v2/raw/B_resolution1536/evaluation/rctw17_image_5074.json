@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_5074",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "复印染务\n装订",
+    "lines": [
+      {
+        "box": [
+          [
+            114.0,
+            39.0
+          ],
+          [
+            646.0,
+            65.0
+          ],
+          [
+            634.0,
+            307.0
+          ],
+          [
+            103.0,
+            281.0
+          ]
+        ],
+        "text": "复印染务",
+        "score": 0.8801325410604477
+      },
+      {
+        "box": [
+          [
+            413.0,
+            136.0
+          ],
+          [
+            611.0,
+            136.0
+          ],
+          [
+            611.0,
+            283.0
+          ],
+          [
+            413.0,
+            283.0
+          ]
+        ],
+        "text": "装订",
+        "score": 0.8914922177791595
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 2,
+    "deduplicated": 0,
+    "elapsed_ms": 129.66,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 135.48
+}

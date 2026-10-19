@@ -1,0 +1,2169 @@
+{
+  "id": "doclaynet_6c87b2cc9dfa9ecd31596223f86d965ee9d26272170a54394ee97213689d9704",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "283f6b1b743e34a331a7c1ee8467c1ecd5f6b6adfce897bd14ee84c62b8d587f",
+  "ok": true,
+  "result": {
+    "text": "airflow through the rotor disk, and the resulting AOA is so\nresult in a 10 percent loss in the engine's ability to produce\nhigh that even full down collective will not restore normal\nhorsepower, making recovery even slower and more difficult\nairflow. In the helicopter when the rotor stalls, it does not do\nthan it would otherwise be. With less power from the engine\nso symmetrically because any forward airspeed will produce\nand less lift from the decaying rotor rpm, the helicopter will\na higher airflow on the advancing side than on the retreating\nstart to settle. If the pilot raises the collective to stop the\nside. This causes the retreating blade to stall first, and its\nsettling, the situation will feed upon itself rapidly leading\nweight makes it descend as it moves aft while the advancing\nto rotor stall.\nblade is climbing as it goes forward. The resulting low aft\nblade and high forward blade become a rapid aft tilting of\nThere are a number of ways the pilot can recognize the low\nthe rotor disc sometimes referred to as rotor \"blow back\" or\nrotor rpm situation. Visually, the pilot can not only see the\n\"flap back.\" As the helicopter begins to descend, the upward\nrotor rpm indicator decrease but also the change in torque\nflow of air acting on the bottom surfaces of the tail boom\nwill produce a yaw; there will also be a noticeable decrease in\nand any horizontal stabilizers tend to pitch the aircraft nose\nengine noise, and at higher airspeeds or in turns, an increase in\ndown. These two effects, combined with any aft cyclic by\nvibration. Many helicopters have a low rpm warning system\nthe pilot attempting to keep the aircraft level, allow the rotor\nthat alerts the pilot to the low rotor rpm condition.\nblades to blow back and contact the tail boom, in some cases\nactually severing the tail boom. Since the tail rotor is geared\nTo recover from the low rotor rpm condition the pilot must\nto the main rotor, in many helicopters the loss of main rotor\nsimultaneously lower the collective, increase throttle if\nrpm also causes a significant loss of tail rotor thrust and a\navailable and apply aft cyclic to maintain a level attitude.\ncorresponding loss of directional control.\nAt higher airspeeds, additional aft cyclic may be used to\nhelp recover lost rpm. Recovery should be accomplished\nRotor stalls in helicopters are not recoverable. At low altitude,\nimmediately before investigating the problem and must be\nrotor stall will result in an accident with significant damage\npracticed to become a conditioned reflex.\nto the helicopter, and at altitudes above approximately 50\nfeet the accident will likely be fatal. Consequently, early\nrecognition of the low rotor rpm condition and proper\nSystem Malfunctions\nrecovery technique is imperative.\nBy following the manufacturer's recommendations regarding\nLow rotor rpm can occur during power-off and power-on\noperating limits and procedures and periodic maintenance\noperations. During power-off flight, a low rpm situation\nand inspections, many system and equipment failures can\ncan be caused by the failure to quickly lower the collective\nbe eliminated. Certain malfunctions or failures can be traced\nafter an engine failure or by raising the collective at too\nto some error on the part of the pilot; therefore, appropriate\ngreat a height above ground at the bottom of an autorotation.\nflying techniques and use of threat and error management\nHowever, more common are power-on rotor stall accidents.\nmay help to prevent an emergency\nThese occur when the engine is operating normally but the\npilot demands more power than is available by pulling up\nAntitorque System Failure\ntoo much on the collective. Known as “overpitching,\" this\nAntitorque failure usually falls into one of two categories.\ncan easily occur at higher density altitudes where the engine\nOne is failure of the power drive portion of the tail rotor disk\nis already producing its maximum horsepower and the pilot\nresulting in a complete loss of antitorque. The other category\nraises the collective. The corresponding increased AOA of\ncovers mechanical control failures prohibiting the pilot from\nthe blades requires more engine horsepower to maintain the\nchanging or controlling tail rotor thrust even though the tail\nspeed of the blades; however, the engine cannot produce any\nrotor may still be providing antitorque thrust.\nadditional horsepower, so the speed of the blades decreases.\nA similar situation can occur with a heavily loaded helicopter\nTail rotor drive system failures include driveshaft failures,\ntaking off from a confined area. Other causes of a power-on\ntail rotor gearbox failures, or a complete loss of the tail rotor\nlow rotor rpm condition include the pilot rolling the throttle\nitself. In any of these cases, the loss of antitorque normally\nthe wrong way in helicopters not equipped with a governor\nresults in an immediate spinning of the helicopter's nose. The\nor a governor failure in helicopters so equipped.\nhelicopter spins to the right in a counterclockwise rotor disk\nand to the left in a clockwise system. This discussion is for a\nAs the rpm decreases, the amount of horsepower the engine\nhelicopter with a counterclockwise rotor disk. The severity of\ncan produce also decreases. Engine horsepower is directly\nthe spin is proportionate to the amount of power being used\nproportional to its rpm, so a 10 percent loss in rpm due\nand the airspeed. An antitorque failure with a high-power\nto overpitching, or one of the other scenarios above, will\nsetting at a low airspeed results in a severe spinning to the\n11-16",
+    "lines": [
+      {
+        "box": [
+          [
+            60.0,
+            57.0
+          ],
+          [
+            471.0,
+            57.0
+          ],
+          [
+            471.0,
+            70.0
+          ],
+          [
+            60.0,
+            70.0
+          ]
+        ],
+        "text": "airflow through the rotor disk, and the resulting AOA is so",
+        "score": 0.9991033673286438
+      },
+      {
+        "box": [
+          [
+            489.0,
+            58.0
+          ],
+          [
+            901.0,
+            58.0
+          ],
+          [
+            901.0,
+            71.0
+          ],
+          [
+            489.0,
+            71.0
+          ]
+        ],
+        "text": "result in a 10 percent loss in the engine's ability to produce",
+        "score": 0.9863789677619934
+      },
+      {
+        "box": [
+          [
+            60.0,
+            74.0
+          ],
+          [
+            471.0,
+            74.0
+          ],
+          [
+            471.0,
+            87.0
+          ],
+          [
+            60.0,
+            87.0
+          ]
+        ],
+        "text": "high that even full down collective will not restore normal",
+        "score": 0.9939407706260681
+      },
+      {
+        "box": [
+          [
+            488.0,
+            74.0
+          ],
+          [
+            902.0,
+            74.0
+          ],
+          [
+            902.0,
+            87.0
+          ],
+          [
+            488.0,
+            87.0
+          ]
+        ],
+        "text": "horsepower, making recovery even slower and more difficult",
+        "score": 0.9921834468841553
+      },
+      {
+        "box": [
+          [
+            60.0,
+            90.0
+          ],
+          [
+            471.0,
+            90.0
+          ],
+          [
+            471.0,
+            103.0
+          ],
+          [
+            60.0,
+            103.0
+          ]
+        ],
+        "text": "airflow. In the helicopter when the rotor stalls, it does not do",
+        "score": 0.9930995106697083
+      },
+      {
+        "box": [
+          [
+            489.0,
+            90.0
+          ],
+          [
+            901.0,
+            90.0
+          ],
+          [
+            901.0,
+            103.0
+          ],
+          [
+            489.0,
+            103.0
+          ]
+        ],
+        "text": "than it would otherwise be. With less power from the engine",
+        "score": 0.9849904179573059
+      },
+      {
+        "box": [
+          [
+            60.0,
+            107.0
+          ],
+          [
+            471.0,
+            107.0
+          ],
+          [
+            471.0,
+            120.0
+          ],
+          [
+            60.0,
+            120.0
+          ]
+        ],
+        "text": "so symmetrically because any forward airspeed will produce",
+        "score": 0.9909775257110596
+      },
+      {
+        "box": [
+          [
+            489.0,
+            107.0
+          ],
+          [
+            901.0,
+            107.0
+          ],
+          [
+            901.0,
+            120.0
+          ],
+          [
+            489.0,
+            120.0
+          ]
+        ],
+        "text": "and less lift from the decaying rotor rpm, the helicopter will",
+        "score": 0.9939716458320618
+      },
+      {
+        "box": [
+          [
+            59.0,
+            122.0
+          ],
+          [
+            471.0,
+            123.0
+          ],
+          [
+            471.0,
+            137.0
+          ],
+          [
+            59.0,
+            136.0
+          ]
+        ],
+        "text": "a higher airflow on the advancing side than on the retreating",
+        "score": 0.9943607449531555
+      },
+      {
+        "box": [
+          [
+            488.0,
+            123.0
+          ],
+          [
+            901.0,
+            123.0
+          ],
+          [
+            901.0,
+            136.0
+          ],
+          [
+            488.0,
+            136.0
+          ]
+        ],
+        "text": "start to settle. If the pilot raises the collective to stop the",
+        "score": 0.9954918622970581
+      },
+      {
+        "box": [
+          [
+            60.0,
+            140.0
+          ],
+          [
+            471.0,
+            140.0
+          ],
+          [
+            471.0,
+            153.0
+          ],
+          [
+            60.0,
+            153.0
+          ]
+        ],
+        "text": "side. This causes the retreating blade to stall first, and its",
+        "score": 0.9843875765800476
+      },
+      {
+        "box": [
+          [
+            489.0,
+            140.0
+          ],
+          [
+            901.0,
+            140.0
+          ],
+          [
+            901.0,
+            153.0
+          ],
+          [
+            489.0,
+            153.0
+          ]
+        ],
+        "text": "settling, the situation will feed upon itself rapidly leading",
+        "score": 0.9912645220756531
+      },
+      {
+        "box": [
+          [
+            60.0,
+            157.0
+          ],
+          [
+            471.0,
+            157.0
+          ],
+          [
+            471.0,
+            170.0
+          ],
+          [
+            60.0,
+            170.0
+          ]
+        ],
+        "text": "weight makes it descend as it moves aft while the advancing",
+        "score": 0.9953747391700745
+      },
+      {
+        "box": [
+          [
+            488.0,
+            155.0
+          ],
+          [
+            580.0,
+            155.0
+          ],
+          [
+            580.0,
+            169.0
+          ],
+          [
+            488.0,
+            169.0
+          ]
+        ],
+        "text": "to rotor stall.",
+        "score": 0.9997746348381042
+      },
+      {
+        "box": [
+          [
+            60.0,
+            173.0
+          ],
+          [
+            472.0,
+            173.0
+          ],
+          [
+            472.0,
+            186.0
+          ],
+          [
+            60.0,
+            186.0
+          ]
+        ],
+        "text": "blade is climbing as it goes forward. The resulting low aft",
+        "score": 0.9968963861465454
+      },
+      {
+        "box": [
+          [
+            60.0,
+            189.0
+          ],
+          [
+            472.0,
+            189.0
+          ],
+          [
+            472.0,
+            202.0
+          ],
+          [
+            60.0,
+            202.0
+          ]
+        ],
+        "text": "blade and high forward blade become a rapid aft tilting of",
+        "score": 0.9989800453186035
+      },
+      {
+        "box": [
+          [
+            490.0,
+            190.0
+          ],
+          [
+            901.0,
+            190.0
+          ],
+          [
+            901.0,
+            203.0
+          ],
+          [
+            490.0,
+            203.0
+          ]
+        ],
+        "text": "There are a number of ways the pilot can recognize the low",
+        "score": 0.9962249398231506
+      },
+      {
+        "box": [
+          [
+            60.0,
+            206.0
+          ],
+          [
+            472.0,
+            206.0
+          ],
+          [
+            472.0,
+            219.0
+          ],
+          [
+            60.0,
+            219.0
+          ]
+        ],
+        "text": "the rotor disc sometimes referred to as rotor \"blow back\" or",
+        "score": 0.9900606274604797
+      },
+      {
+        "box": [
+          [
+            488.0,
+            205.0
+          ],
+          [
+            901.0,
+            204.0
+          ],
+          [
+            901.0,
+            220.0
+          ],
+          [
+            489.0,
+            221.0
+          ]
+        ],
+        "text": "rotor rpm situation. Visually, the pilot can not only see the",
+        "score": 0.996604323387146
+      },
+      {
+        "box": [
+          [
+            60.0,
+            221.0
+          ],
+          [
+            472.0,
+            221.0
+          ],
+          [
+            472.0,
+            237.0
+          ],
+          [
+            60.0,
+            237.0
+          ]
+        ],
+        "text": "\"flap back.\" As the helicopter begins to descend, the upward",
+        "score": 0.9886624217033386
+      },
+      {
+        "box": [
+          [
+            489.0,
+            223.0
+          ],
+          [
+            901.0,
+            223.0
+          ],
+          [
+            901.0,
+            236.0
+          ],
+          [
+            489.0,
+            236.0
+          ]
+        ],
+        "text": "rotor rpm indicator decrease but also the change in torque",
+        "score": 0.9966406226158142
+      },
+      {
+        "box": [
+          [
+            61.0,
+            239.0
+          ],
+          [
+            471.0,
+            239.0
+          ],
+          [
+            471.0,
+            252.0
+          ],
+          [
+            61.0,
+            252.0
+          ]
+        ],
+        "text": "flow of air acting on the bottom surfaces of the tail boom",
+        "score": 0.9929292798042297
+      },
+      {
+        "box": [
+          [
+            490.0,
+            240.0
+          ],
+          [
+            901.0,
+            240.0
+          ],
+          [
+            901.0,
+            253.0
+          ],
+          [
+            490.0,
+            253.0
+          ]
+        ],
+        "text": "will produce a yaw; there will also be a noticeable decrease in",
+        "score": 0.9963575601577759
+      },
+      {
+        "box": [
+          [
+            60.0,
+            256.0
+          ],
+          [
+            471.0,
+            256.0
+          ],
+          [
+            471.0,
+            269.0
+          ],
+          [
+            60.0,
+            269.0
+          ]
+        ],
+        "text": "and any horizontal stabilizers tend to pitch the aircraft nose",
+        "score": 0.99891597032547
+      },
+      {
+        "box": [
+          [
+            489.0,
+            256.0
+          ],
+          [
+            901.0,
+            256.0
+          ],
+          [
+            901.0,
+            269.0
+          ],
+          [
+            489.0,
+            269.0
+          ]
+        ],
+        "text": "engine noise, and at higher airspeeds or in turns, an increase in",
+        "score": 0.9946336150169373
+      },
+      {
+        "box": [
+          [
+            58.0,
+            270.0
+          ],
+          [
+            471.0,
+            271.0
+          ],
+          [
+            471.0,
+            287.0
+          ],
+          [
+            58.0,
+            286.0
+          ]
+        ],
+        "text": "down. These two effects, combined with any aft cyclic by",
+        "score": 0.9857139587402344
+      },
+      {
+        "box": [
+          [
+            489.0,
+            271.0
+          ],
+          [
+            901.0,
+            272.0
+          ],
+          [
+            901.0,
+            286.0
+          ],
+          [
+            489.0,
+            285.0
+          ]
+        ],
+        "text": "vibration. Many helicopters have a low rpm warning system",
+        "score": 0.9990533590316772
+      },
+      {
+        "box": [
+          [
+            60.0,
+            289.0
+          ],
+          [
+            471.0,
+            289.0
+          ],
+          [
+            471.0,
+            302.0
+          ],
+          [
+            60.0,
+            302.0
+          ]
+        ],
+        "text": "the pilot attempting to keep the aircraft level, allow the rotor",
+        "score": 0.992374062538147
+      },
+      {
+        "box": [
+          [
+            489.0,
+            289.0
+          ],
+          [
+            838.0,
+            289.0
+          ],
+          [
+            838.0,
+            302.0
+          ],
+          [
+            489.0,
+            302.0
+          ]
+        ],
+        "text": "that alerts the pilot to the low rotor rpm condition.",
+        "score": 0.9990511536598206
+      },
+      {
+        "box": [
+          [
+            59.0,
+            304.0
+          ],
+          [
+            471.0,
+            305.0
+          ],
+          [
+            471.0,
+            319.0
+          ],
+          [
+            59.0,
+            318.0
+          ]
+        ],
+        "text": "blades to blow back and contact the tail boom, in some cases",
+        "score": 0.9971208572387695
+      },
+      {
+        "box": [
+          [
+            60.0,
+            322.0
+          ],
+          [
+            471.0,
+            322.0
+          ],
+          [
+            471.0,
+            335.0
+          ],
+          [
+            60.0,
+            335.0
+          ]
+        ],
+        "text": "actually severing the tail boom. Since the tail rotor is geared",
+        "score": 0.9863892197608948
+      },
+      {
+        "box": [
+          [
+            490.0,
+            321.0
+          ],
+          [
+            902.0,
+            321.0
+          ],
+          [
+            902.0,
+            334.0
+          ],
+          [
+            490.0,
+            334.0
+          ]
+        ],
+        "text": "To recover from the low rotor rpm condition the pilot must",
+        "score": 0.999502956867218
+      },
+      {
+        "box": [
+          [
+            60.0,
+            339.0
+          ],
+          [
+            471.0,
+            339.0
+          ],
+          [
+            471.0,
+            352.0
+          ],
+          [
+            60.0,
+            352.0
+          ]
+        ],
+        "text": "to the main rotor, in many helicopters the loss of main rotor",
+        "score": 0.9967089295387268
+      },
+      {
+        "box": [
+          [
+            489.0,
+            339.0
+          ],
+          [
+            902.0,
+            339.0
+          ],
+          [
+            902.0,
+            352.0
+          ],
+          [
+            489.0,
+            352.0
+          ]
+        ],
+        "text": "simultaneously lower the collective, increase throttle if",
+        "score": 0.9959998726844788
+      },
+      {
+        "box": [
+          [
+            60.0,
+            355.0
+          ],
+          [
+            471.0,
+            355.0
+          ],
+          [
+            471.0,
+            368.0
+          ],
+          [
+            60.0,
+            368.0
+          ]
+        ],
+        "text": "rpm also causes a significant loss of tail rotor thrust and a",
+        "score": 0.9924736022949219
+      },
+      {
+        "box": [
+          [
+            489.0,
+            355.0
+          ],
+          [
+            901.0,
+            355.0
+          ],
+          [
+            901.0,
+            368.0
+          ],
+          [
+            489.0,
+            368.0
+          ]
+        ],
+        "text": "available and apply aft cyclic to maintain a level attitude.",
+        "score": 0.9983083605766296
+      },
+      {
+        "box": [
+          [
+            60.0,
+            371.0
+          ],
+          [
+            345.0,
+            371.0
+          ],
+          [
+            345.0,
+            384.0
+          ],
+          [
+            60.0,
+            384.0
+          ]
+        ],
+        "text": "corresponding loss of directional control.",
+        "score": 0.9944571256637573
+      },
+      {
+        "box": [
+          [
+            490.0,
+            371.0
+          ],
+          [
+            902.0,
+            371.0
+          ],
+          [
+            902.0,
+            384.0
+          ],
+          [
+            490.0,
+            384.0
+          ]
+        ],
+        "text": "At higher airspeeds, additional aft cyclic may be used to",
+        "score": 0.9956403970718384
+      },
+      {
+        "box": [
+          [
+            489.0,
+            388.0
+          ],
+          [
+            902.0,
+            388.0
+          ],
+          [
+            902.0,
+            401.0
+          ],
+          [
+            489.0,
+            401.0
+          ]
+        ],
+        "text": "help recover lost rpm. Recovery should be accomplished",
+        "score": 0.9914551377296448
+      },
+      {
+        "box": [
+          [
+            59.0,
+            403.0
+          ],
+          [
+            471.0,
+            403.0
+          ],
+          [
+            471.0,
+            419.0
+          ],
+          [
+            59.0,
+            419.0
+          ]
+        ],
+        "text": "Rotor stalls in helicopters are not recoverable. At low altitude,",
+        "score": 0.9976992011070251
+      },
+      {
+        "box": [
+          [
+            488.0,
+            403.0
+          ],
+          [
+            901.0,
+            404.0
+          ],
+          [
+            901.0,
+            418.0
+          ],
+          [
+            488.0,
+            417.0
+          ]
+        ],
+        "text": "immediately before investigating the problem and must be",
+        "score": 0.9990850687026978
+      },
+      {
+        "box": [
+          [
+            60.0,
+            421.0
+          ],
+          [
+            471.0,
+            421.0
+          ],
+          [
+            471.0,
+            434.0
+          ],
+          [
+            60.0,
+            434.0
+          ]
+        ],
+        "text": "rotor stall will result in an accident with significant damage",
+        "score": 0.9957773685455322
+      },
+      {
+        "box": [
+          [
+            488.0,
+            422.0
+          ],
+          [
+            777.0,
+            422.0
+          ],
+          [
+            777.0,
+            435.0
+          ],
+          [
+            488.0,
+            435.0
+          ]
+        ],
+        "text": "practiced to become a conditioned reflex.",
+        "score": 0.991586446762085
+      },
+      {
+        "box": [
+          [
+            60.0,
+            438.0
+          ],
+          [
+            471.0,
+            438.0
+          ],
+          [
+            471.0,
+            451.0
+          ],
+          [
+            60.0,
+            451.0
+          ]
+        ],
+        "text": "to the helicopter, and at altitudes above approximately 50",
+        "score": 0.9996916055679321
+      },
+      {
+        "box": [
+          [
+            60.0,
+            454.0
+          ],
+          [
+            470.0,
+            454.0
+          ],
+          [
+            470.0,
+            467.0
+          ],
+          [
+            60.0,
+            467.0
+          ]
+        ],
+        "text": "feet the accident will likely be fatal. Consequently, early",
+        "score": 0.9842112064361572
+      },
+      {
+        "box": [
+          [
+            58.0,
+            469.0
+          ],
+          [
+            472.0,
+            470.0
+          ],
+          [
+            472.0,
+            486.0
+          ],
+          [
+            58.0,
+            485.0
+          ]
+        ],
+        "text": "recognition of the low rotor rpm condition and proper",
+        "score": 0.990943431854248
+      },
+      {
+        "box": [
+          [
+            489.0,
+            473.0
+          ],
+          [
+            698.0,
+            473.0
+          ],
+          [
+            698.0,
+            489.0
+          ],
+          [
+            489.0,
+            489.0
+          ]
+        ],
+        "text": "System Malfunctions",
+        "score": 0.9995728731155396
+      },
+      {
+        "box": [
+          [
+            60.0,
+            488.0
+          ],
+          [
+            291.0,
+            488.0
+          ],
+          [
+            291.0,
+            501.0
+          ],
+          [
+            60.0,
+            501.0
+          ]
+        ],
+        "text": "recovery technique is imperative.",
+        "score": 0.9959450960159302
+      },
+      {
+        "box": [
+          [
+            489.0,
+            497.0
+          ],
+          [
+            902.0,
+            497.0
+          ],
+          [
+            902.0,
+            514.0
+          ],
+          [
+            489.0,
+            514.0
+          ]
+        ],
+        "text": "By following the manufacturer's recommendations regarding",
+        "score": 0.9979273676872253
+      },
+      {
+        "box": [
+          [
+            60.0,
+            522.0
+          ],
+          [
+            471.0,
+            522.0
+          ],
+          [
+            471.0,
+            535.0
+          ],
+          [
+            60.0,
+            535.0
+          ]
+        ],
+        "text": "Low rotor rpm can occur during power-off and power-on",
+        "score": 0.9992629289627075
+      },
+      {
+        "box": [
+          [
+            487.0,
+            514.0
+          ],
+          [
+            902.0,
+            512.0
+          ],
+          [
+            902.0,
+            529.0
+          ],
+          [
+            488.0,
+            530.0
+          ]
+        ],
+        "text": "operating limits and procedures and periodic maintenance",
+        "score": 0.9970788955688477
+      },
+      {
+        "box": [
+          [
+            60.0,
+            538.0
+          ],
+          [
+            472.0,
+            538.0
+          ],
+          [
+            472.0,
+            551.0
+          ],
+          [
+            60.0,
+            551.0
+          ]
+        ],
+        "text": "operations. During power-off flight, a low rpm situation",
+        "score": 0.9934424161911011
+      },
+      {
+        "box": [
+          [
+            488.0,
+            529.0
+          ],
+          [
+            902.0,
+            530.0
+          ],
+          [
+            902.0,
+            546.0
+          ],
+          [
+            487.0,
+            545.0
+          ]
+        ],
+        "text": "and inspections, many system and equipment failures can",
+        "score": 0.9966156482696533
+      },
+      {
+        "box": [
+          [
+            60.0,
+            554.0
+          ],
+          [
+            471.0,
+            554.0
+          ],
+          [
+            471.0,
+            567.0
+          ],
+          [
+            60.0,
+            567.0
+          ]
+        ],
+        "text": "can be caused by the failure to quickly lower the collective",
+        "score": 0.9938229322433472
+      },
+      {
+        "box": [
+          [
+            489.0,
+            548.0
+          ],
+          [
+            901.0,
+            548.0
+          ],
+          [
+            901.0,
+            561.0
+          ],
+          [
+            489.0,
+            561.0
+          ]
+        ],
+        "text": "be eliminated. Certain malfunctions or failures can be traced",
+        "score": 0.9915210604667664
+      },
+      {
+        "box": [
+          [
+            60.0,
+            571.0
+          ],
+          [
+            471.0,
+            571.0
+          ],
+          [
+            471.0,
+            584.0
+          ],
+          [
+            60.0,
+            584.0
+          ]
+        ],
+        "text": "after an engine failure or by raising the collective at too",
+        "score": 0.9930739402770996
+      },
+      {
+        "box": [
+          [
+            489.0,
+            565.0
+          ],
+          [
+            901.0,
+            565.0
+          ],
+          [
+            901.0,
+            578.0
+          ],
+          [
+            489.0,
+            578.0
+          ]
+        ],
+        "text": "to some error on the part of the pilot; therefore, appropriate",
+        "score": 0.9956908226013184
+      },
+      {
+        "box": [
+          [
+            59.0,
+            586.0
+          ],
+          [
+            472.0,
+            586.0
+          ],
+          [
+            472.0,
+            602.0
+          ],
+          [
+            59.0,
+            602.0
+          ]
+        ],
+        "text": "great a height above ground at the bottom of an autorotation.",
+        "score": 0.9876958727836609
+      },
+      {
+        "box": [
+          [
+            490.0,
+            581.0
+          ],
+          [
+            901.0,
+            581.0
+          ],
+          [
+            901.0,
+            594.0
+          ],
+          [
+            490.0,
+            594.0
+          ]
+        ],
+        "text": "flying techniques and use of threat and error management",
+        "score": 0.9909396767616272
+      },
+      {
+        "box": [
+          [
+            58.0,
+            601.0
+          ],
+          [
+            471.0,
+            602.0
+          ],
+          [
+            471.0,
+            618.0
+          ],
+          [
+            58.0,
+            617.0
+          ]
+        ],
+        "text": "However, more common are power-on rotor stall accidents.",
+        "score": 0.994708240032196
+      },
+      {
+        "box": [
+          [
+            489.0,
+            599.0
+          ],
+          [
+            730.0,
+            599.0
+          ],
+          [
+            730.0,
+            612.0
+          ],
+          [
+            489.0,
+            612.0
+          ]
+        ],
+        "text": "may help to prevent an emergency",
+        "score": 0.9992050528526306
+      },
+      {
+        "box": [
+          [
+            61.0,
+            621.0
+          ],
+          [
+            471.0,
+            621.0
+          ],
+          [
+            471.0,
+            634.0
+          ],
+          [
+            61.0,
+            634.0
+          ]
+        ],
+        "text": "These occur when the engine is operating normally but the",
+        "score": 0.9963366389274597
+      },
+      {
+        "box": [
+          [
+            58.0,
+            635.0
+          ],
+          [
+            472.0,
+            636.0
+          ],
+          [
+            472.0,
+            652.0
+          ],
+          [
+            58.0,
+            651.0
+          ]
+        ],
+        "text": "pilot demands more power than is available by pulling up",
+        "score": 0.9848683476448059
+      },
+      {
+        "box": [
+          [
+            490.0,
+            628.0
+          ],
+          [
+            708.0,
+            628.0
+          ],
+          [
+            708.0,
+            644.0
+          ],
+          [
+            490.0,
+            644.0
+          ]
+        ],
+        "text": "Antitorque System Failure",
+        "score": 0.9998891353607178
+      },
+      {
+        "box": [
+          [
+            59.0,
+            652.0
+          ],
+          [
+            472.0,
+            652.0
+          ],
+          [
+            472.0,
+            668.0
+          ],
+          [
+            59.0,
+            668.0
+          ]
+        ],
+        "text": "too much on the collective. Known as “overpitching,\" this",
+        "score": 0.9889402389526367
+      },
+      {
+        "box": [
+          [
+            490.0,
+            646.0
+          ],
+          [
+            901.0,
+            647.0
+          ],
+          [
+            901.0,
+            663.0
+          ],
+          [
+            489.0,
+            662.0
+          ]
+        ],
+        "text": "Antitorque failure usually falls into one of two categories.",
+        "score": 0.987643301486969
+      },
+      {
+        "box": [
+          [
+            59.0,
+            668.0
+          ],
+          [
+            471.0,
+            668.0
+          ],
+          [
+            471.0,
+            684.0
+          ],
+          [
+            59.0,
+            684.0
+          ]
+        ],
+        "text": "can easily occur at higher density altitudes where the engine",
+        "score": 0.9942553043365479
+      },
+      {
+        "box": [
+          [
+            488.0,
+            663.0
+          ],
+          [
+            902.0,
+            663.0
+          ],
+          [
+            902.0,
+            679.0
+          ],
+          [
+            488.0,
+            679.0
+          ]
+        ],
+        "text": "One is failure of the power drive portion of the tail rotor disk",
+        "score": 0.9931240081787109
+      },
+      {
+        "box": [
+          [
+            58.0,
+            685.0
+          ],
+          [
+            472.0,
+            684.0
+          ],
+          [
+            472.0,
+            700.0
+          ],
+          [
+            58.0,
+            701.0
+          ]
+        ],
+        "text": "is already producing its maximum horsepower and the pilot",
+        "score": 0.9992929697036743
+      },
+      {
+        "box": [
+          [
+            487.0,
+            679.0
+          ],
+          [
+            902.0,
+            680.0
+          ],
+          [
+            902.0,
+            696.0
+          ],
+          [
+            487.0,
+            695.0
+          ]
+        ],
+        "text": "resulting in a complete loss of antitorque. The other category",
+        "score": 0.9901610016822815
+      },
+      {
+        "box": [
+          [
+            59.0,
+            702.0
+          ],
+          [
+            473.0,
+            702.0
+          ],
+          [
+            473.0,
+            718.0
+          ],
+          [
+            59.0,
+            718.0
+          ]
+        ],
+        "text": "raises the collective. The corresponding increased AOA of",
+        "score": 0.9929946064949036
+      },
+      {
+        "box": [
+          [
+            489.0,
+            698.0
+          ],
+          [
+            901.0,
+            698.0
+          ],
+          [
+            901.0,
+            711.0
+          ],
+          [
+            489.0,
+            711.0
+          ]
+        ],
+        "text": "covers mechanical control failures prohibiting the pilot from",
+        "score": 0.9939247965812683
+      },
+      {
+        "box": [
+          [
+            60.0,
+            719.0
+          ],
+          [
+            470.0,
+            719.0
+          ],
+          [
+            470.0,
+            732.0
+          ],
+          [
+            60.0,
+            732.0
+          ]
+        ],
+        "text": "the blades requires more engine horsepower to maintain the",
+        "score": 0.9973511695861816
+      },
+      {
+        "box": [
+          [
+            488.0,
+            714.0
+          ],
+          [
+            901.0,
+            713.0
+          ],
+          [
+            901.0,
+            727.0
+          ],
+          [
+            488.0,
+            728.0
+          ]
+        ],
+        "text": "changing or controlling tail rotor thrust even though the tail",
+        "score": 0.9991916418075562
+      },
+      {
+        "box": [
+          [
+            59.0,
+            735.0
+          ],
+          [
+            471.0,
+            735.0
+          ],
+          [
+            471.0,
+            751.0
+          ],
+          [
+            59.0,
+            751.0
+          ]
+        ],
+        "text": "speed of the blades; however, the engine cannot produce any",
+        "score": 0.9989305734634399
+      },
+      {
+        "box": [
+          [
+            488.0,
+            731.0
+          ],
+          [
+            804.0,
+            731.0
+          ],
+          [
+            804.0,
+            744.0
+          ],
+          [
+            488.0,
+            744.0
+          ]
+        ],
+        "text": "rotor may still be providing antitorque thrust.",
+        "score": 0.999043881893158
+      },
+      {
+        "box": [
+          [
+            60.0,
+            753.0
+          ],
+          [
+            470.0,
+            753.0
+          ],
+          [
+            470.0,
+            766.0
+          ],
+          [
+            60.0,
+            766.0
+          ]
+        ],
+        "text": "additional horsepower, so the speed of the blades decreases.",
+        "score": 0.993793785572052
+      },
+      {
+        "box": [
+          [
+            59.0,
+            767.0
+          ],
+          [
+            472.0,
+            768.0
+          ],
+          [
+            472.0,
+            784.0
+          ],
+          [
+            59.0,
+            783.0
+          ]
+        ],
+        "text": "A similar situation can occur with a heavily loaded helicopter",
+        "score": 0.9907596707344055
+      },
+      {
+        "box": [
+          [
+            489.0,
+            761.0
+          ],
+          [
+            901.0,
+            762.0
+          ],
+          [
+            901.0,
+            778.0
+          ],
+          [
+            489.0,
+            777.0
+          ]
+        ],
+        "text": "Tail rotor drive system failures include driveshaft failures,",
+        "score": 0.9972950220108032
+      },
+      {
+        "box": [
+          [
+            60.0,
+            786.0
+          ],
+          [
+            471.0,
+            786.0
+          ],
+          [
+            471.0,
+            799.0
+          ],
+          [
+            60.0,
+            799.0
+          ]
+        ],
+        "text": "taking off from a confined area. Other causes of a power-on",
+        "score": 0.9825575947761536
+      },
+      {
+        "box": [
+          [
+            489.0,
+            780.0
+          ],
+          [
+            902.0,
+            780.0
+          ],
+          [
+            902.0,
+            793.0
+          ],
+          [
+            489.0,
+            793.0
+          ]
+        ],
+        "text": "tail rotor gearbox failures, or a complete loss of the tail rotor",
+        "score": 0.997322678565979
+      },
+      {
+        "box": [
+          [
+            60.0,
+            803.0
+          ],
+          [
+            470.0,
+            803.0
+          ],
+          [
+            470.0,
+            816.0
+          ],
+          [
+            60.0,
+            816.0
+          ]
+        ],
+        "text": "low rotor rpm condition include the pilot rolling the throttle",
+        "score": 0.9844468832015991
+      },
+      {
+        "box": [
+          [
+            489.0,
+            797.0
+          ],
+          [
+            901.0,
+            797.0
+          ],
+          [
+            901.0,
+            810.0
+          ],
+          [
+            489.0,
+            810.0
+          ]
+        ],
+        "text": "itself. In any of these cases, the loss of antitorque normally",
+        "score": 0.9879711270332336
+      },
+      {
+        "box": [
+          [
+            58.0,
+            817.0
+          ],
+          [
+            472.0,
+            818.0
+          ],
+          [
+            472.0,
+            834.0
+          ],
+          [
+            58.0,
+            833.0
+          ]
+        ],
+        "text": "the wrong way in helicopters not equipped with a governor",
+        "score": 0.9999185800552368
+      },
+      {
+        "box": [
+          [
+            488.0,
+            813.0
+          ],
+          [
+            901.0,
+            813.0
+          ],
+          [
+            901.0,
+            826.0
+          ],
+          [
+            488.0,
+            826.0
+          ]
+        ],
+        "text": "results in an immediate spinning of the helicopter's nose. The",
+        "score": 0.9984753727912903
+      },
+      {
+        "box": [
+          [
+            59.0,
+            833.0
+          ],
+          [
+            393.0,
+            834.0
+          ],
+          [
+            393.0,
+            850.0
+          ],
+          [
+            59.0,
+            849.0
+          ]
+        ],
+        "text": "or a governor failure in helicopters so equipped.",
+        "score": 0.9939679503440857
+      },
+      {
+        "box": [
+          [
+            488.0,
+            828.0
+          ],
+          [
+            902.0,
+            828.0
+          ],
+          [
+            902.0,
+            844.0
+          ],
+          [
+            488.0,
+            844.0
+          ]
+        ],
+        "text": "helicopter spins to the right in a counterclockwise rotor disk",
+        "score": 0.9996082186698914
+      },
+      {
+        "box": [
+          [
+            488.0,
+            846.0
+          ],
+          [
+            902.0,
+            845.0
+          ],
+          [
+            902.0,
+            859.0
+          ],
+          [
+            488.0,
+            860.0
+          ]
+        ],
+        "text": "and to the left in a clockwise system. This discussion is for a",
+        "score": 0.9914166331291199
+      },
+      {
+        "box": [
+          [
+            60.0,
+            867.0
+          ],
+          [
+            471.0,
+            868.0
+          ],
+          [
+            471.0,
+            882.0
+          ],
+          [
+            60.0,
+            881.0
+          ]
+        ],
+        "text": "As the rpm decreases, the amount of horsepower the engine",
+        "score": 0.9898058176040649
+      },
+      {
+        "box": [
+          [
+            489.0,
+            863.0
+          ],
+          [
+            902.0,
+            863.0
+          ],
+          [
+            902.0,
+            876.0
+          ],
+          [
+            489.0,
+            876.0
+          ]
+        ],
+        "text": "helicopter with a counterclockwise rotor disk. The severity of",
+        "score": 0.9969795942306519
+      },
+      {
+        "box": [
+          [
+            60.0,
+            886.0
+          ],
+          [
+            471.0,
+            886.0
+          ],
+          [
+            471.0,
+            899.0
+          ],
+          [
+            60.0,
+            899.0
+          ]
+        ],
+        "text": "can produce also decreases. Engine horsepower is directly",
+        "score": 0.9998562335968018
+      },
+      {
+        "box": [
+          [
+            489.0,
+            880.0
+          ],
+          [
+            902.0,
+            880.0
+          ],
+          [
+            902.0,
+            893.0
+          ],
+          [
+            489.0,
+            893.0
+          ]
+        ],
+        "text": "the spin is proportionate to the amount of power being used",
+        "score": 0.991676926612854
+      },
+      {
+        "box": [
+          [
+            58.0,
+            901.0
+          ],
+          [
+            472.0,
+            900.0
+          ],
+          [
+            472.0,
+            916.0
+          ],
+          [
+            58.0,
+            917.0
+          ]
+        ],
+        "text": "proportional to its rpm, so a 10 percent loss in rpm due",
+        "score": 0.9985234141349792
+      },
+      {
+        "box": [
+          [
+            487.0,
+            894.0
+          ],
+          [
+            903.0,
+            895.0
+          ],
+          [
+            903.0,
+            911.0
+          ],
+          [
+            487.0,
+            910.0
+          ]
+        ],
+        "text": "and the airspeed. An antitorque failure with a high-power",
+        "score": 0.9972419142723083
+      },
+      {
+        "box": [
+          [
+            60.0,
+            918.0
+          ],
+          [
+            471.0,
+            918.0
+          ],
+          [
+            471.0,
+            931.0
+          ],
+          [
+            60.0,
+            931.0
+          ]
+        ],
+        "text": "to overpitching, or one of the other scenarios above, will",
+        "score": 0.9994070529937744
+      },
+      {
+        "box": [
+          [
+            488.0,
+            911.0
+          ],
+          [
+            902.0,
+            911.0
+          ],
+          [
+            902.0,
+            927.0
+          ],
+          [
+            488.0,
+            927.0
+          ]
+        ],
+        "text": "setting at a low airspeed results in a severe spinning to the",
+        "score": 0.9928209781646729
+      },
+      {
+        "box": [
+          [
+            59.0,
+            963.0
+          ],
+          [
+            108.0,
+            963.0
+          ],
+          [
+            108.0,
+            980.0
+          ],
+          [
+            59.0,
+            980.0
+          ]
+        ],
+        "text": "11-16",
+        "score": 0.9999687075614929
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 97,
+    "elapsed_ms": 675.68
+  }
+}

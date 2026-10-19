@@ -1,0 +1,549 @@
+{
+  "id": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+  "source": "doclaynet",
+  "split": "calibration",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_legacy",
+  "image_sha256": "0caaf3bba6f4b66663319060b18d9e2df8735764c32abbd643e84d773f1b0899",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "point\ntutorials\n25\n$occreate-fapache.yml\nOnce the abovefile iscreated,itwillgenerate apod with the following command.\nimagePullPolicy:Always\ncontainerPort:7500\nports:\nimage:apache:8.0\nname:apache\ncontainers:\nspec:\nname:apache\nmetadata:\nkind: Pod\napiVersion: v1\nCreateitwithasimpleyamlfileasfollows.\nconfigurationymlfile.\nSingleContainerPod:ThesecanbeeasilycreatedwithOCcommandorbyabasic\npod to multi-container pod.\nPods\nPodsandServices\nTomcatandMongoDBinsideit.\nOpenShift",
+    "lines": [
+      {
+        "box": [
+          [
+            457.0,
+            953.0
+          ],
+          [
+            370.0,
+            953.0
+          ],
+          [
+            370.0,
+            933.0
+          ],
+          [
+            457.0,
+            933.0
+          ]
+        ],
+        "text": "point",
+        "score": 0.9907870769500733
+      },
+      {
+        "box": [
+          [
+            372.0,
+            951.0
+          ],
+          [
+            219.0,
+            951.0
+          ],
+          [
+            219.0,
+            935.0
+          ],
+          [
+            372.0,
+            935.0
+          ]
+        ],
+        "text": "tutorials",
+        "score": 0.9919992221726311
+      },
+      {
+        "box": [
+          [
+            902.0,
+            909.0
+          ],
+          [
+            879.0,
+            909.0
+          ],
+          [
+            879.0,
+            893.0
+          ],
+          [
+            902.0,
+            893.0
+          ]
+        ],
+        "text": "25",
+        "score": 0.9995043277740479
+      },
+      {
+        "box": [
+          [
+            372.0,
+            718.0
+          ],
+          [
+            133.0,
+            718.0
+          ],
+          [
+            133.0,
+            701.0
+          ],
+          [
+            372.0,
+            701.0
+          ]
+        ],
+        "text": "$occreate-fapache.yml",
+        "score": 0.9884030421574911
+      },
+      {
+        "box": [
+          [
+            833.0,
+            686.0
+          ],
+          [
+            122.0,
+            686.0
+          ],
+          [
+            122.0,
+            667.0
+          ],
+          [
+            833.0,
+            667.0
+          ]
+        ],
+        "text": "Once the abovefile iscreated,itwillgenerate apod with the following command.",
+        "score": 0.9533439200175436
+      },
+      {
+        "box": [
+          [
+            354.0,
+            628.0
+          ],
+          [
+            135.0,
+            628.0
+          ],
+          [
+            135.0,
+            611.0
+          ],
+          [
+            354.0,
+            611.0
+          ]
+        ],
+        "text": "imagePullPolicy:Always",
+        "score": 0.9808240830898285
+      },
+      {
+        "box": [
+          [
+            460.0,
+            604.0
+          ],
+          [
+            273.0,
+            604.0
+          ],
+          [
+            273.0,
+            588.0
+          ],
+          [
+            460.0,
+            588.0
+          ]
+        ],
+        "text": "containerPort:7500",
+        "score": 0.9800373382038541
+      },
+      {
+        "box": [
+          [
+            270.0,
+            583.0
+          ],
+          [
+            209.0,
+            584.0
+          ],
+          [
+            209.0,
+            566.0
+          ],
+          [
+            270.0,
+            564.0
+          ]
+        ],
+        "text": "ports:",
+        "score": 0.9873610238234202
+      },
+      {
+        "box": [
+          [
+            383.0,
+            560.0
+          ],
+          [
+            210.0,
+            560.0
+          ],
+          [
+            210.0,
+            543.0
+          ],
+          [
+            383.0,
+            543.0
+          ]
+        ],
+        "text": "image:apache:8.0",
+        "score": 0.9828248508274555
+      },
+      {
+        "box": [
+          [
+            345.0,
+            537.0
+          ],
+          [
+            226.0,
+            537.0
+          ],
+          [
+            226.0,
+            520.0
+          ],
+          [
+            345.0,
+            520.0
+          ]
+        ],
+        "text": "name:apache",
+        "score": 0.9881704178723422
+      },
+      {
+        "box": [
+          [
+            297.0,
+            514.0
+          ],
+          [
+            191.0,
+            514.0
+          ],
+          [
+            191.0,
+            497.0
+          ],
+          [
+            297.0,
+            497.0
+          ]
+        ],
+        "text": "containers:",
+        "score": 0.9917560544880953
+      },
+      {
+        "box": [
+          [
+            183.0,
+            492.0
+          ],
+          [
+            134.0,
+            492.0
+          ],
+          [
+            134.0,
+            475.0
+          ],
+          [
+            183.0,
+            475.0
+          ]
+        ],
+        "text": "spec:",
+        "score": 0.9695372700691223
+      },
+      {
+        "box": [
+          [
+            307.0,
+            468.0
+          ],
+          [
+            190.0,
+            468.0
+          ],
+          [
+            190.0,
+            452.0
+          ],
+          [
+            307.0,
+            452.0
+          ]
+        ],
+        "text": "name:apache",
+        "score": 0.9894570383158597
+      },
+      {
+        "box": [
+          [
+            221.0,
+            446.0
+          ],
+          [
+            132.0,
+            446.0
+          ],
+          [
+            132.0,
+            429.0
+          ],
+          [
+            221.0,
+            429.0
+          ]
+        ],
+        "text": "metadata:",
+        "score": 0.9880908528963724
+      },
+      {
+        "box": [
+          [
+            222.0,
+            422.0
+          ],
+          [
+            133.0,
+            422.0
+          ],
+          [
+            133.0,
+            405.0
+          ],
+          [
+            222.0,
+            405.0
+          ]
+        ],
+        "text": "kind: Pod",
+        "score": 0.9456408884790208
+      },
+      {
+        "box": [
+          [
+            269.0,
+            400.0
+          ],
+          [
+            134.0,
+            400.0
+          ],
+          [
+            134.0,
+            383.0
+          ],
+          [
+            269.0,
+            383.0
+          ]
+        ],
+        "text": "apiVersion: v1",
+        "score": 0.9755323444093976
+      },
+      {
+        "box": [
+          [
+            495.0,
+            367.0
+          ],
+          [
+            123.0,
+            367.0
+          ],
+          [
+            123.0,
+            350.0
+          ],
+          [
+            495.0,
+            350.0
+          ]
+        ],
+        "text": "Createitwithasimpleyamlfileasfollows.",
+        "score": 0.9928781809033574
+      },
+      {
+        "box": [
+          [
+            311.0,
+            287.0
+          ],
+          [
+            122.0,
+            287.0
+          ],
+          [
+            122.0,
+            271.0
+          ],
+          [
+            311.0,
+            271.0
+          ]
+        ],
+        "text": "configurationymlfile.",
+        "score": 0.9892174658321199
+      },
+      {
+        "box": [
+          [
+            903.0,
+            272.0
+          ],
+          [
+            121.0,
+            272.0
+          ],
+          [
+            121.0,
+            253.0
+          ],
+          [
+            903.0,
+            253.0
+          ]
+        ],
+        "text": "SingleContainerPod:ThesecanbeeasilycreatedwithOCcommandorbyabasic",
+        "score": 0.9919396354601934
+      },
+      {
+        "box": [
+          [
+            362.0,
+            247.0
+          ],
+          [
+            121.0,
+            247.0
+          ],
+          [
+            121.0,
+            227.0
+          ],
+          [
+            362.0,
+            227.0
+          ]
+        ],
+        "text": "pod to multi-container pod.",
+        "score": 0.9726700672396907
+      },
+      {
+        "box": [
+          [
+            179.0,
+            189.0
+          ],
+          [
+            122.0,
+            189.0
+          ],
+          [
+            122.0,
+            172.0
+          ],
+          [
+            179.0,
+            172.0
+          ]
+        ],
+        "text": "Pods",
+        "score": 0.9990250468254089
+      },
+      {
+        "box": [
+          [
+            334.0,
+            149.0
+          ],
+          [
+            124.0,
+            149.0
+          ],
+          [
+            124.0,
+            132.0
+          ],
+          [
+            334.0,
+            132.0
+          ]
+        ],
+        "text": "PodsandServices",
+        "score": 0.9927692294120789
+      },
+      {
+        "box": [
+          [
+            393.0,
+            107.0
+          ],
+          [
+            123.0,
+            107.0
+          ],
+          [
+            123.0,
+            91.0
+          ],
+          [
+            393.0,
+            91.0
+          ]
+        ],
+        "text": "TomcatandMongoDBinsideit.",
+        "score": 0.9929192638397217
+      },
+      {
+        "box": [
+          [
+            903.0,
+            59.0
+          ],
+          [
+            823.0,
+            61.0
+          ],
+          [
+            823.0,
+            44.0
+          ],
+          [
+            903.0,
+            42.0
+          ]
+        ],
+        "text": "OpenShift",
+        "score": 0.9994059933556451
+      }
+    ],
+    "variant": "v4_legacy",
+    "rotation_cw": 0,
+    "processing_ms": 176.94,
+    "direction_stats": {},
+    "elapsed_ms": 176.95
+  }
+}

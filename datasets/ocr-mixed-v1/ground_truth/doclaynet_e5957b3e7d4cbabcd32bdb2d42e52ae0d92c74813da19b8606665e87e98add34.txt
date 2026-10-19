@@ -1,0 +1,168 @@
+In the incoherent regime, the adiabatic elimination leads to the set of coupled dynamical
+equations:
+〈
+〉
+d
+a
+ˆ
+$^{†}$ˆ
+a
+−
+〈
+〉
+〈
+〉
+=
+(
+κ
++
+R
+)
+a
+ˆ
+$^{†}$ˆ
+a
++
+R
+σ$_{+}$
+ˆ
+σ$_{−}$
+ˆ
+dt
+〈
+〉
+d
+σ$_{+}$
+ˆ
+σ$_{−}$
+ˆ
+−
+〈
+〉
+〈
+〉
+=
+(
+γ
++
+R
+)
+σ$_{+}$
+ˆ
+σ$_{−}$
+ˆ
++
+R
+a
+ˆ
+$^{†}$ˆ
+a
+,
+(6)
+dt
+where we have introduced the quantity
+2
+1
+4
+g
+.
+(7)
+R
+=
+2
+∗
+κ
++
+γ
++
+γ
+)
+(
+2
+δ
+1
++
+∗
+κ
++
+γ
++
+γ
+As it was underlined in Ref. [11], the quantity
+R
+can be seen as an effective coupling rate
+between the atom and the cavity mode, i.e. the system is formally equivalent to two coupled
+boxes (as represented in Fig. 1b). The “atomic” box is initially charged with a quantum of
+energy that can escape in the environment at rate
+γ
+, or in the “cavity” box at rate
+R
+. In the
+same way, the cavity box can lose its excitation with a rate
+κ
+, or give it back to the atomic
+box with a probability per unit time
+R
+. The parameter
+R
+is also involved in the efficiency
+of the corresponding single photon source, which reads
+Rκ/
+(
+R
++
+κ
+)
+β
+=
+.
+(8)
+γ
++
+Rκ/
+(
+R
++
+κ
+)
+Seen from the atom point of view, the cavity mode appears as a further loss channel,
+whose effective rate is
+Rκ/
+(
+R
++
+κ
+) (see Fig.1c). This result could have been straightforwardly
+derived from the classical picture. Such an expression for
+β
+is valid in any regime, even out
+of the incoherent regime, the only one in which the adiabatic elimination is supposed to
+be valid. Thus, the effective coupling rate
+R
+appears as a key parameter, allowing us to
+revisit the notions of good and bad cavity regimes, respectively. The bad cavity regime is
+achieved when
+κ > R
+, namely when the cavity damping time is shorter than the typical
+atom-cavity coupling time. In this case, the quantum exits the cavity mode as soon as it is
+released from the emitter: the cavity behaves as a supplementary loss channel. This is the
+usual regime for single photon sources and it is studied in the next two sections. In the good
+cavity regime, which is achieved when
+R > κ
+, the quantum of energy is emitted by the atom
+and can stay in the cavity mode before being lost in the environment. We stress here that
+the good cavity regime, which at resonance is achieved when 2
+g >
+$^{√}$κ
+(
+κ
++
+γ
++
+γ
+$^{∗}$), is more
+∗
+demanding than the strong coupling regime if
+γ
+becomes non negligible (whereas again,
+6

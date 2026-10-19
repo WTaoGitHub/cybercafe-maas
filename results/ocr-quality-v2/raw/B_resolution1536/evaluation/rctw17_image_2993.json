@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_2993",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "你可真棒\n新闻哥",
+    "lines": [
+      {
+        "box": [
+          [
+            80.0,
+            333.0
+          ],
+          [
+            331.0,
+            333.0
+          ],
+          [
+            331.0,
+            411.0
+          ],
+          [
+            80.0,
+            411.0
+          ]
+        ],
+        "text": "你可真棒",
+        "score": 0.9927432090044022
+      },
+      {
+        "box": [
+          [
+            384.0,
+            410.0
+          ],
+          [
+            428.0,
+            410.0
+          ],
+          [
+            428.0,
+            426.0
+          ],
+          [
+            384.0,
+            426.0
+          ]
+        ],
+        "text": "新闻哥",
+        "score": 0.9992151061693827
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 2,
+    "deduplicated": 0,
+    "elapsed_ms": 78.7,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 79.93
+}

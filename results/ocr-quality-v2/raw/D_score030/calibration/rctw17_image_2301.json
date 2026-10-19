@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_2301",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "D_score030",
+  "ok": true,
+  "result": {
+    "text": "我的乖乖\n人都哪去了",
+    "lines": [
+      {
+        "box": [
+          [
+            13.0,
+            2.0
+          ],
+          [
+            128.0,
+            1.0
+          ],
+          [
+            129.0,
+            29.0
+          ],
+          [
+            13.0,
+            30.0
+          ]
+        ],
+        "text": "我的乖乖",
+        "score": 0.9976572543382645
+      },
+      {
+        "box": [
+          [
+            5.0,
+            76.0
+          ],
+          [
+            128.0,
+            76.0
+          ],
+          [
+            128.0,
+            114.0
+          ],
+          [
+            5.0,
+            114.0
+          ]
+        ],
+        "text": "人都哪去了",
+        "score": 0.9980679869651794
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 2,
+    "deduplicated": 0,
+    "elapsed_ms": 63.36,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 63.79
+}

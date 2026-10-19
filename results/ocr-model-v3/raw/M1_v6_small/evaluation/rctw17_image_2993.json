@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_2993",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "e9b571578155b86002877c4fa8834d4625046791dde3e1510365ab85c429c39c",
+  "ok": true,
+  "result": {
+    "text": "你可真棒\n新闻哥",
+    "lines": [
+      {
+        "box": [
+          [
+            82.0,
+            335.0
+          ],
+          [
+            327.0,
+            334.0
+          ],
+          [
+            327.0,
+            406.0
+          ],
+          [
+            82.0,
+            408.0
+          ]
+        ],
+        "text": "你可真棒",
+        "score": 0.9998675584793091
+      },
+      {
+        "box": [
+          [
+            381.0,
+            408.0
+          ],
+          [
+            429.0,
+            408.0
+          ],
+          [
+            429.0,
+            427.0
+          ],
+          [
+            381.0,
+            427.0
+          ]
+        ],
+        "text": "新闻哥",
+        "score": 0.9999911785125732
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      440,
+      440,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 51.01
+  }
+}

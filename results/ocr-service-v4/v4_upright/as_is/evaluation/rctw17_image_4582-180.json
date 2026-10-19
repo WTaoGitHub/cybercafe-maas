@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_4582",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "fd00331ab00e8e60ae03111f1400047ca83b74050ad9fd24fb11f380dcad091e",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "EOHININ",
+    "lines": [
+      {
+        "box": [
+          [
+            1634.0425415039062,
+            1324.1934814453125
+          ],
+          [
+            422.872314453125,
+            1287.0968017578125
+          ],
+          [
+            424.468017578125,
+            1219.3548583984375
+          ],
+          [
+            1635.6382446289062,
+            1256.4515380859375
+          ]
+        ],
+        "text": "EOHININ",
+        "score": 0.5048494956323079
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 109.03,
+    "direction_stats": {},
+    "elapsed_ms": 109.03
+  }
+}

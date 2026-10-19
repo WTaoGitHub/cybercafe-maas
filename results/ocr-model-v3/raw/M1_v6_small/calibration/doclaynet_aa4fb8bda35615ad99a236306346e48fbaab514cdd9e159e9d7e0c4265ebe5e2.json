@@ -1,0 +1,2235 @@
+{
+  "id": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "M1_v6_small",
+  "image_sha256": "243914f1b0a9db5fa1a4be0abb275ac2d56c44ef0cb92520e9dd928806dee12b",
+  "ok": true,
+  "result": {
+    "text": "Topological Majorana and Dirac zero modes in superconducting vortex cores\nRahul Roy\nRudolph Peierls Centre for Theoretical Physics,\n1 Keble Road, Oxford, OX1 3NP, UK\n(Dated: 13 January 2010)\nWe provide an argument based on flux insertion to show that certain superconductors with a\nnon-trivial topological invariant have protected zero modes in their vortex cores. This argument\nhas the flavor of a two dimensional index theorem and applies to disordered systems as well. It\nalso provides a new way of understanding the zero modes in the vortex cores of a spinless px + ipy\na1r1  10 [1X-.-] 10:00\nsuperconductor. Applying this approach to superconductors with and without time reversal and\nspin rotational symmetry, we predict the necessary and sufficient conditions for protected zero modes\nto exist in their vortices.\nFermionic zero energy modes are predicted to exist in\nstates.\ndefects in a variety of condensed matter systems from one\nUsing a flux insertion argument, we first show that a\ndimensional (1d) chains of polyacetylene to the vortices\ncertain class of insulators with π flux inserted through a\nof certain two dimensional (2d) superconductors 1 2.\nplaquette have exact zero energy eigenstates which are\nThese modes typically occur in systems with a bulk gap\ntopologically protected in the sense that their existence\nwhich are in a topologically non-trivial phase. The zero\nis connected to the Hall conductance of the insulator.\nenergy modes are often topologically protected in the\nWe then use these results to study superconductors with\nsense that their existence is only tied to the particular\nand without time reversal and spin rotational symmetry\ntopological phase of the system and to some global prop-\nand predict precisely which systems have protected zero\nerties of the system such as the winding number of the\nmodes.\nphase of the order parameter in a superconductor.\nThe insulator Hamiltonians studied below have the\nUnpaired fermionic zero energy modes which are lo-\nsame symmetries as the mean field Bogoliubov-de-\ncalized in the vortices of certain superconductors such\nGennes Hamiltonians of superconductors. Though such\nas a spinless px + ipy superconductor are of special in-\ninsulators are possibly of little physical significance by\nterest. These modes, also called Majorana modes, have\nthemselves, we study them since their spectra are identi-\nattracted a fair bit of recent theoretical attention due to\ncal to that of the BdG Hamiltonians of superconductors.\nthe fact that they can obey non-abelian statistics and\nFurther since they are insulators rather than supercon-\nhave potential applications in decoherence free quantum\nductors, they do not expel flux, making a flux insertion\ncomputation [3-6]. The existence of these modes has tra-\nargument possible. Consider a 2d tightbinding insulator\nditionally been demonstrated through explicit analytic\non a lattice with an even number of orbitals, 2s per site.\nsolutions of the Bogoliubov de-Gennes (BdG) equations\nThe basis states are written in the form |i, α) where i is\n四④7回.\nan index for the position and α for the orbital. We first\nIn 1d, Jackiw and Rebbi showed that the Dirac equa-\nstudy infinite sized systems where the energy of the topo-\ntion interacting with a scalar field with a topologically\nlogically protected vortex states is exactly zero and later\ninteresting configuration such as a soliton has zero energy\nconsider corrections that would occur in a finite sized\nsolutions whose number was related to an integer which\nsystem.\ncharacterizes the non-trivial topology 10. Similar zero\nThe Hamiltonian can be written in the form H =\nenergy states also occur in polyacetylene 2. Recently\nΣi,j Ψ† Hij Ψj where Hij is a 2s × 2s dimensional ma-\nmany works have attempted to explain the Majorana\ntrix and Ψj = (ψj,a)T , Ψ† = (ψt,a) where i, j are the\nmodes in 2d by reducing the problem to a 1d problem\nlattice position indices and α, β the orbital and spin in-\n113\ndices. The Fermi energy is set to zero and is assumed to\nSince the vortex zero energy states occur in 2d sys-\nlie in a gap.\ntems, a more general and inherently 2d explanation of\nIn the first instance, we study systems with neither\nthe Majorana zero modes is desirable. In the current\nspin rotational nor time reversal symmetry, though we\nwork, this is achieved through a flux insertion argument\nwill analyze systems with these symmetries later on. We\nsimilar to Laughlin's gauge argument [14. The argu-\nfurther restrict our study to Hamiltonians H which posses\nment is not tied to any particular model and also applies\na symmetry analogous to that of Bogoliubov de-Gennes\nto disordered systems where translational invariance is\nHamiltonians. In other words, we assume the existence\nbroken and is particularly useful in the context of recent\nof an anti-unitary operator, S, such that\nefforts to find Majorana modes in systems other than a\nPx + ipy superconductor 1518]. One of our main re-\nSHS−1 = −H.\n(1)\nsults is a prediction about precisely what systems in all\nthe different symmetry classes of the classification intro-\nFurther, we assume that S acting on single particle po-\nduced by Altland and Zirnbauer 19 support zero energy\nsition eigenkets in the Hilbert space produces a linear",
+    "lines": [
+      {
+        "box": [
+          [
+            135.0,
+            67.0
+          ],
+          [
+            897.0,
+            67.0
+          ],
+          [
+            897.0,
+            83.0
+          ],
+          [
+            135.0,
+            83.0
+          ]
+        ],
+        "text": "Topological Majorana and Dirac zero modes in superconducting vortex cores",
+        "score": 0.9931172132492065
+      },
+      {
+        "box": [
+          [
+            472.0,
+            100.0
+          ],
+          [
+            558.0,
+            100.0
+          ],
+          [
+            558.0,
+            113.0
+          ],
+          [
+            472.0,
+            113.0
+          ]
+        ],
+        "text": "Rahul Roy",
+        "score": 0.9913417100906372
+      },
+      {
+        "box": [
+          [
+            349.0,
+            113.0
+          ],
+          [
+            682.0,
+            113.0
+          ],
+          [
+            682.0,
+            126.0
+          ],
+          [
+            349.0,
+            126.0
+          ]
+        ],
+        "text": "Rudolph Peierls Centre for Theoretical Physics,",
+        "score": 0.9888889789581299
+      },
+      {
+        "box": [
+          [
+            379.0,
+            127.0
+          ],
+          [
+            654.0,
+            127.0
+          ],
+          [
+            654.0,
+            140.0
+          ],
+          [
+            379.0,
+            140.0
+          ]
+        ],
+        "text": "1 Keble Road, Oxford, OX1 3NP, UK",
+        "score": 0.9814018607139587
+      },
+      {
+        "box": [
+          [
+            427.0,
+            141.0
+          ],
+          [
+            604.0,
+            141.0
+          ],
+          [
+            604.0,
+            154.0
+          ],
+          [
+            427.0,
+            154.0
+          ]
+        ],
+        "text": "(Dated: 13 January 2010)",
+        "score": 0.9770547747612
+      },
+      {
+        "box": [
+          [
+            195.0,
+            163.0
+          ],
+          [
+            851.0,
+            163.0
+          ],
+          [
+            851.0,
+            176.0
+          ],
+          [
+            195.0,
+            176.0
+          ]
+        ],
+        "text": "We provide an argument based on flux insertion to show that certain superconductors with a",
+        "score": 0.9930456280708313
+      },
+      {
+        "box": [
+          [
+            180.0,
+            177.0
+          ],
+          [
+            850.0,
+            177.0
+          ],
+          [
+            850.0,
+            190.0
+          ],
+          [
+            180.0,
+            190.0
+          ]
+        ],
+        "text": "non-trivial topological invariant have protected zero modes in their vortex cores. This argument",
+        "score": 0.9909595847129822
+      },
+      {
+        "box": [
+          [
+            180.0,
+            190.0
+          ],
+          [
+            851.0,
+            190.0
+          ],
+          [
+            851.0,
+            203.0
+          ],
+          [
+            180.0,
+            203.0
+          ]
+        ],
+        "text": "has the flavor of a two dimensional index theorem and applies to disordered systems as well. It",
+        "score": 0.9952436685562134
+      },
+      {
+        "box": [
+          [
+            178.0,
+            202.0
+          ],
+          [
+            851.0,
+            203.0
+          ],
+          [
+            851.0,
+            219.0
+          ],
+          [
+            178.0,
+            218.0
+          ]
+        ],
+        "text": "also provides a new way of understanding the zero modes in the vortex cores of a spinless px + ipy",
+        "score": 0.9880297183990479
+      },
+      {
+        "box": [
+          [
+            23.0,
+            223.0
+          ],
+          [
+            60.0,
+            223.0
+          ],
+          [
+            61.0,
+            800.0
+          ],
+          [
+            24.0,
+            800.0
+          ]
+        ],
+        "text": "a1r1  10 [1X-.-] 10:00",
+        "score": 0.5806496739387512
+      },
+      {
+        "box": [
+          [
+            179.0,
+            217.0
+          ],
+          [
+            849.0,
+            217.0
+          ],
+          [
+            849.0,
+            230.0
+          ],
+          [
+            179.0,
+            230.0
+          ]
+        ],
+        "text": "superconductor. Applying this approach to superconductors with and without time reversal and",
+        "score": 0.9939554333686829
+      },
+      {
+        "box": [
+          [
+            179.0,
+            231.0
+          ],
+          [
+            849.0,
+            231.0
+          ],
+          [
+            849.0,
+            244.0
+          ],
+          [
+            179.0,
+            244.0
+          ]
+        ],
+        "text": "spin rotational symmetry, we predict the necessary and sufficient conditions for protected zero modes",
+        "score": 0.9973480105400085
+      },
+      {
+        "box": [
+          [
+            180.0,
+            244.0
+          ],
+          [
+            349.0,
+            244.0
+          ],
+          [
+            349.0,
+            257.0
+          ],
+          [
+            180.0,
+            257.0
+          ]
+        ],
+        "text": "to exist in their vortices.",
+        "score": 0.9991793036460876
+      },
+      {
+        "box": [
+          [
+            103.0,
+            279.0
+          ],
+          [
+            503.0,
+            280.0
+          ],
+          [
+            502.0,
+            296.0
+          ],
+          [
+            103.0,
+            295.0
+          ]
+        ],
+        "text": "Fermionic zero energy modes are predicted to exist in",
+        "score": 0.9988323450088501
+      },
+      {
+        "box": [
+          [
+            527.0,
+            281.0
+          ],
+          [
+            577.0,
+            281.0
+          ],
+          [
+            577.0,
+            294.0
+          ],
+          [
+            527.0,
+            294.0
+          ]
+        ],
+        "text": "states.",
+        "score": 0.9999822974205017
+      },
+      {
+        "box": [
+          [
+            88.0,
+            295.0
+          ],
+          [
+            502.0,
+            295.0
+          ],
+          [
+            502.0,
+            311.0
+          ],
+          [
+            88.0,
+            311.0
+          ]
+        ],
+        "text": "defects in a variety of condensed matter systems from one",
+        "score": 0.9977004528045654
+      },
+      {
+        "box": [
+          [
+            545.0,
+            294.0
+          ],
+          [
+            942.0,
+            295.0
+          ],
+          [
+            942.0,
+            311.0
+          ],
+          [
+            545.0,
+            310.0
+          ]
+        ],
+        "text": "Using a flux insertion argument, we first show that a",
+        "score": 0.9960219860076904
+      },
+      {
+        "box": [
+          [
+            88.0,
+            310.0
+          ],
+          [
+            502.0,
+            310.0
+          ],
+          [
+            502.0,
+            326.0
+          ],
+          [
+            88.0,
+            326.0
+          ]
+        ],
+        "text": "dimensional (1d) chains of polyacetylene to the vortices",
+        "score": 0.9867968559265137
+      },
+      {
+        "box": [
+          [
+            528.0,
+            311.0
+          ],
+          [
+            942.0,
+            311.0
+          ],
+          [
+            942.0,
+            324.0
+          ],
+          [
+            528.0,
+            324.0
+          ]
+        ],
+        "text": "certain class of insulators with π flux inserted through a",
+        "score": 0.9981631636619568
+      },
+      {
+        "box": [
+          [
+            88.0,
+            325.0
+          ],
+          [
+            501.0,
+            325.0
+          ],
+          [
+            501.0,
+            341.0
+          ],
+          [
+            88.0,
+            341.0
+          ]
+        ],
+        "text": "of certain two dimensional (2d) superconductors 1 2.",
+        "score": 0.9805326461791992
+      },
+      {
+        "box": [
+          [
+            529.0,
+            327.0
+          ],
+          [
+            942.0,
+            327.0
+          ],
+          [
+            942.0,
+            340.0
+          ],
+          [
+            529.0,
+            340.0
+          ]
+        ],
+        "text": "plaquette have exact zero energy eigenstates which are",
+        "score": 0.9998651146888733
+      },
+      {
+        "box": [
+          [
+            88.0,
+            340.0
+          ],
+          [
+            501.0,
+            340.0
+          ],
+          [
+            501.0,
+            356.0
+          ],
+          [
+            88.0,
+            356.0
+          ]
+        ],
+        "text": "These modes typically occur in systems with a bulk gap",
+        "score": 0.9935935735702515
+      },
+      {
+        "box": [
+          [
+            526.0,
+            340.0
+          ],
+          [
+            943.0,
+            339.0
+          ],
+          [
+            943.0,
+            355.0
+          ],
+          [
+            527.0,
+            356.0
+          ]
+        ],
+        "text": "topologically protected in the sense that their existence",
+        "score": 0.9975730776786804
+      },
+      {
+        "box": [
+          [
+            89.0,
+            356.0
+          ],
+          [
+            501.0,
+            356.0
+          ],
+          [
+            501.0,
+            369.0
+          ],
+          [
+            89.0,
+            369.0
+          ]
+        ],
+        "text": "which are in a topologically non-trivial phase. The zero",
+        "score": 0.9984108209609985
+      },
+      {
+        "box": [
+          [
+            529.0,
+            356.0
+          ],
+          [
+            941.0,
+            356.0
+          ],
+          [
+            941.0,
+            369.0
+          ],
+          [
+            529.0,
+            369.0
+          ]
+        ],
+        "text": "is connected to the Hall conductance of the insulator.",
+        "score": 0.9998413324356079
+      },
+      {
+        "box": [
+          [
+            86.0,
+            369.0
+          ],
+          [
+            501.0,
+            368.0
+          ],
+          [
+            502.0,
+            384.0
+          ],
+          [
+            86.0,
+            385.0
+          ]
+        ],
+        "text": "energy modes are often topologically protected in the",
+        "score": 0.9966141581535339
+      },
+      {
+        "box": [
+          [
+            531.0,
+            371.0
+          ],
+          [
+            942.0,
+            371.0
+          ],
+          [
+            942.0,
+            384.0
+          ],
+          [
+            531.0,
+            384.0
+          ]
+        ],
+        "text": "We then use these results to study superconductors with",
+        "score": 0.9988686442375183
+      },
+      {
+        "box": [
+          [
+            88.0,
+            385.0
+          ],
+          [
+            500.0,
+            385.0
+          ],
+          [
+            500.0,
+            398.0
+          ],
+          [
+            88.0,
+            398.0
+          ]
+        ],
+        "text": "sense that their existence is only tied to the particular",
+        "score": 0.9869260191917419
+      },
+      {
+        "box": [
+          [
+            527.0,
+            384.0
+          ],
+          [
+            942.0,
+            385.0
+          ],
+          [
+            942.0,
+            401.0
+          ],
+          [
+            526.0,
+            400.0
+          ]
+        ],
+        "text": "and without time reversal and spin rotational symmetry",
+        "score": 0.991070032119751
+      },
+      {
+        "box": [
+          [
+            88.0,
+            399.0
+          ],
+          [
+            501.0,
+            399.0
+          ],
+          [
+            501.0,
+            415.0
+          ],
+          [
+            88.0,
+            415.0
+          ]
+        ],
+        "text": "topological phase of the system and to some global prop-",
+        "score": 0.9996917843818665
+      },
+      {
+        "box": [
+          [
+            529.0,
+            401.0
+          ],
+          [
+            942.0,
+            401.0
+          ],
+          [
+            942.0,
+            414.0
+          ],
+          [
+            529.0,
+            414.0
+          ]
+        ],
+        "text": "and predict precisely which systems have protected zero",
+        "score": 0.9985111355781555
+      },
+      {
+        "box": [
+          [
+            89.0,
+            415.0
+          ],
+          [
+            500.0,
+            415.0
+          ],
+          [
+            500.0,
+            428.0
+          ],
+          [
+            89.0,
+            428.0
+          ]
+        ],
+        "text": "erties of the system such as the winding number of the",
+        "score": 0.9877714514732361
+      },
+      {
+        "box": [
+          [
+            529.0,
+            416.0
+          ],
+          [
+            582.0,
+            416.0
+          ],
+          [
+            582.0,
+            429.0
+          ],
+          [
+            529.0,
+            429.0
+          ]
+        ],
+        "text": "modes.",
+        "score": 0.9999729990959167
+      },
+      {
+        "box": [
+          [
+            88.0,
+            430.0
+          ],
+          [
+            457.0,
+            430.0
+          ],
+          [
+            457.0,
+            443.0
+          ],
+          [
+            88.0,
+            443.0
+          ]
+        ],
+        "text": "phase of the order parameter in a superconductor.",
+        "score": 0.9999064207077026
+      },
+      {
+        "box": [
+          [
+            546.0,
+            430.0
+          ],
+          [
+            942.0,
+            430.0
+          ],
+          [
+            942.0,
+            443.0
+          ],
+          [
+            546.0,
+            443.0
+          ]
+        ],
+        "text": "The insulator Hamiltonians studied below have the",
+        "score": 0.9891963005065918
+      },
+      {
+        "box": [
+          [
+            104.0,
+            445.0
+          ],
+          [
+            501.0,
+            445.0
+          ],
+          [
+            501.0,
+            461.0
+          ],
+          [
+            104.0,
+            461.0
+          ]
+        ],
+        "text": "Unpaired fermionic zero energy modes which are lo-",
+        "score": 0.995851993560791
+      },
+      {
+        "box": [
+          [
+            528.0,
+            444.0
+          ],
+          [
+            943.0,
+            444.0
+          ],
+          [
+            943.0,
+            460.0
+          ],
+          [
+            528.0,
+            460.0
+          ]
+        ],
+        "text": "same symmetries as the mean field Bogoliubov-de-",
+        "score": 0.9844492077827454
+      },
+      {
+        "box": [
+          [
+            86.0,
+            460.0
+          ],
+          [
+            501.0,
+            459.0
+          ],
+          [
+            502.0,
+            475.0
+          ],
+          [
+            86.0,
+            476.0
+          ]
+        ],
+        "text": "calized in the vortices of certain superconductors such",
+        "score": 0.9998905658721924
+      },
+      {
+        "box": [
+          [
+            529.0,
+            459.0
+          ],
+          [
+            942.0,
+            459.0
+          ],
+          [
+            942.0,
+            475.0
+          ],
+          [
+            529.0,
+            475.0
+          ]
+        ],
+        "text": "Gennes Hamiltonians of superconductors. Though such",
+        "score": 0.9953073859214783
+      },
+      {
+        "box": [
+          [
+            87.0,
+            475.0
+          ],
+          [
+            501.0,
+            475.0
+          ],
+          [
+            501.0,
+            491.0
+          ],
+          [
+            87.0,
+            491.0
+          ]
+        ],
+        "text": "as a spinless px + ipy superconductor are of special in-",
+        "score": 0.9899176359176636
+      },
+      {
+        "box": [
+          [
+            527.0,
+            474.0
+          ],
+          [
+            941.0,
+            474.0
+          ],
+          [
+            941.0,
+            490.0
+          ],
+          [
+            527.0,
+            490.0
+          ]
+        ],
+        "text": "insulators are possibly of little physical significance by",
+        "score": 0.9996278882026672
+      },
+      {
+        "box": [
+          [
+            89.0,
+            491.0
+          ],
+          [
+            501.0,
+            491.0
+          ],
+          [
+            501.0,
+            504.0
+          ],
+          [
+            89.0,
+            504.0
+          ]
+        ],
+        "text": "terest. These modes, also called Majorana modes, have",
+        "score": 0.9993994235992432
+      },
+      {
+        "box": [
+          [
+            528.0,
+            489.0
+          ],
+          [
+            942.0,
+            489.0
+          ],
+          [
+            942.0,
+            505.0
+          ],
+          [
+            528.0,
+            505.0
+          ]
+        ],
+        "text": "themselves, we study them since their spectra are identi-",
+        "score": 0.9887089729309082
+      },
+      {
+        "box": [
+          [
+            88.0,
+            506.0
+          ],
+          [
+            501.0,
+            506.0
+          ],
+          [
+            501.0,
+            520.0
+          ],
+          [
+            88.0,
+            520.0
+          ]
+        ],
+        "text": "attracted a fair bit of recent theoretical attention due to",
+        "score": 0.994049608707428
+      },
+      {
+        "box": [
+          [
+            529.0,
+            505.0
+          ],
+          [
+            941.0,
+            505.0
+          ],
+          [
+            941.0,
+            519.0
+          ],
+          [
+            529.0,
+            519.0
+          ]
+        ],
+        "text": "cal to that of the BdG Hamiltonians of superconductors.",
+        "score": 0.9930344223976135
+      },
+      {
+        "box": [
+          [
+            88.0,
+            521.0
+          ],
+          [
+            500.0,
+            521.0
+          ],
+          [
+            500.0,
+            534.0
+          ],
+          [
+            88.0,
+            534.0
+          ]
+        ],
+        "text": "the fact that they can obey non-abelian statistics and",
+        "score": 0.9891060590744019
+      },
+      {
+        "box": [
+          [
+            529.0,
+            521.0
+          ],
+          [
+            941.0,
+            521.0
+          ],
+          [
+            941.0,
+            534.0
+          ],
+          [
+            529.0,
+            534.0
+          ]
+        ],
+        "text": "Further since they are insulators rather than supercon-",
+        "score": 0.9860106110572815
+      },
+      {
+        "box": [
+          [
+            88.0,
+            536.0
+          ],
+          [
+            501.0,
+            536.0
+          ],
+          [
+            501.0,
+            549.0
+          ],
+          [
+            88.0,
+            549.0
+          ]
+        ],
+        "text": "have potential applications in decoherence free quantum",
+        "score": 0.9998632073402405
+      },
+      {
+        "box": [
+          [
+            530.0,
+            536.0
+          ],
+          [
+            941.0,
+            536.0
+          ],
+          [
+            941.0,
+            549.0
+          ],
+          [
+            530.0,
+            549.0
+          ]
+        ],
+        "text": "ductors, they do not expel flux, making a flux insertion",
+        "score": 0.9799744486808777
+      },
+      {
+        "box": [
+          [
+            88.0,
+            550.0
+          ],
+          [
+            501.0,
+            550.0
+          ],
+          [
+            501.0,
+            566.0
+          ],
+          [
+            88.0,
+            566.0
+          ]
+        ],
+        "text": "computation [3-6]. The existence of these modes has tra-",
+        "score": 0.9853962063789368
+      },
+      {
+        "box": [
+          [
+            528.0,
+            550.0
+          ],
+          [
+            942.0,
+            550.0
+          ],
+          [
+            942.0,
+            566.0
+          ],
+          [
+            528.0,
+            566.0
+          ]
+        ],
+        "text": "argument possible. Consider a 2d tightbinding insulator",
+        "score": 0.9990515112876892
+      },
+      {
+        "box": [
+          [
+            87.0,
+            563.0
+          ],
+          [
+            502.0,
+            564.0
+          ],
+          [
+            501.0,
+            580.0
+          ],
+          [
+            87.0,
+            579.0
+          ]
+        ],
+        "text": "ditionally been demonstrated through explicit analytic",
+        "score": 0.9963716864585876
+      },
+      {
+        "box": [
+          [
+            529.0,
+            566.0
+          ],
+          [
+            941.0,
+            566.0
+          ],
+          [
+            941.0,
+            579.0
+          ],
+          [
+            529.0,
+            579.0
+          ]
+        ],
+        "text": "on a lattice with an even number of orbitals, 2s per site.",
+        "score": 0.9910742044448853
+      },
+      {
+        "box": [
+          [
+            87.0,
+            579.0
+          ],
+          [
+            502.0,
+            579.0
+          ],
+          [
+            502.0,
+            595.0
+          ],
+          [
+            87.0,
+            595.0
+          ]
+        ],
+        "text": "solutions of the Bogoliubov de-Gennes (BdG) equations",
+        "score": 0.9947200417518616
+      },
+      {
+        "box": [
+          [
+            528.0,
+            577.0
+          ],
+          [
+            943.0,
+            578.0
+          ],
+          [
+            943.0,
+            594.0
+          ],
+          [
+            527.0,
+            593.0
+          ]
+        ],
+        "text": "The basis states are written in the form |i, α) where i is",
+        "score": 0.9951918125152588
+      },
+      {
+        "box": [
+          [
+            91.0,
+            595.0
+          ],
+          [
+            166.0,
+            595.0
+          ],
+          [
+            166.0,
+            609.0
+          ],
+          [
+            91.0,
+            609.0
+          ]
+        ],
+        "text": "四④7回.",
+        "score": 0.6138350963592529
+      },
+      {
+        "box": [
+          [
+            528.0,
+            594.0
+          ],
+          [
+            940.0,
+            594.0
+          ],
+          [
+            940.0,
+            607.0
+          ],
+          [
+            528.0,
+            607.0
+          ]
+        ],
+        "text": "an index for the position and α for the orbital. We first",
+        "score": 0.9990020990371704
+      },
+      {
+        "box": [
+          [
+            102.0,
+            610.0
+          ],
+          [
+            502.0,
+            611.0
+          ],
+          [
+            501.0,
+            627.0
+          ],
+          [
+            102.0,
+            626.0
+          ]
+        ],
+        "text": "In 1d, Jackiw and Rebbi showed that the Dirac equa-",
+        "score": 0.9994139075279236
+      },
+      {
+        "box": [
+          [
+            528.0,
+            608.0
+          ],
+          [
+            941.0,
+            609.0
+          ],
+          [
+            941.0,
+            623.0
+          ],
+          [
+            528.0,
+            622.0
+          ]
+        ],
+        "text": "study infinite sized systems where the energy of the topo-",
+        "score": 0.9931519627571106
+      },
+      {
+        "box": [
+          [
+            87.0,
+            625.0
+          ],
+          [
+            501.0,
+            626.0
+          ],
+          [
+            500.0,
+            642.0
+          ],
+          [
+            87.0,
+            641.0
+          ]
+        ],
+        "text": "tion interacting with a scalar field with a topologically",
+        "score": 0.9968167543411255
+      },
+      {
+        "box": [
+          [
+            528.0,
+            623.0
+          ],
+          [
+            943.0,
+            623.0
+          ],
+          [
+            943.0,
+            639.0
+          ],
+          [
+            528.0,
+            639.0
+          ]
+        ],
+        "text": "logically protected vortex states is exactly zero and later",
+        "score": 0.9983632564544678
+      },
+      {
+        "box": [
+          [
+            86.0,
+            640.0
+          ],
+          [
+            502.0,
+            641.0
+          ],
+          [
+            501.0,
+            657.0
+          ],
+          [
+            86.0,
+            656.0
+          ]
+        ],
+        "text": "interesting configuration such as a soliton has zero energy",
+        "score": 0.9837844967842102
+      },
+      {
+        "box": [
+          [
+            528.0,
+            638.0
+          ],
+          [
+            943.0,
+            638.0
+          ],
+          [
+            943.0,
+            654.0
+          ],
+          [
+            528.0,
+            654.0
+          ]
+        ],
+        "text": "consider corrections that would occur in a finite sized",
+        "score": 0.9992852210998535
+      },
+      {
+        "box": [
+          [
+            87.0,
+            655.0
+          ],
+          [
+            501.0,
+            655.0
+          ],
+          [
+            501.0,
+            671.0
+          ],
+          [
+            87.0,
+            671.0
+          ]
+        ],
+        "text": "solutions whose number was related to an integer which",
+        "score": 0.9935470819473267
+      },
+      {
+        "box": [
+          [
+            529.0,
+            655.0
+          ],
+          [
+            586.0,
+            655.0
+          ],
+          [
+            586.0,
+            668.0
+          ],
+          [
+            529.0,
+            668.0
+          ]
+        ],
+        "text": "system.",
+        "score": 0.9999595880508423
+      },
+      {
+        "box": [
+          [
+            89.0,
+            671.0
+          ],
+          [
+            501.0,
+            671.0
+          ],
+          [
+            501.0,
+            684.0
+          ],
+          [
+            89.0,
+            684.0
+          ]
+        ],
+        "text": "characterizes the non-trivial topology 10. Similar zero",
+        "score": 0.9852238297462463
+      },
+      {
+        "box": [
+          [
+            544.0,
+            667.0
+          ],
+          [
+            941.0,
+            667.0
+          ],
+          [
+            941.0,
+            683.0
+          ],
+          [
+            544.0,
+            683.0
+          ]
+        ],
+        "text": "The Hamiltonian can be written in the form H =",
+        "score": 0.9956611394882202
+      },
+      {
+        "box": [
+          [
+            88.0,
+            686.0
+          ],
+          [
+            500.0,
+            686.0
+          ],
+          [
+            500.0,
+            699.0
+          ],
+          [
+            88.0,
+            699.0
+          ]
+        ],
+        "text": "energy states also occur in polyacetylene 2. Recently",
+        "score": 0.9968474507331848
+      },
+      {
+        "box": [
+          [
+            528.0,
+            682.0
+          ],
+          [
+            943.0,
+            682.0
+          ],
+          [
+            943.0,
+            702.0
+          ],
+          [
+            528.0,
+            702.0
+          ]
+        ],
+        "text": "Σi,j Ψ† Hij Ψj where Hij is a 2s × 2s dimensional ma-",
+        "score": 0.963936448097229
+      },
+      {
+        "box": [
+          [
+            88.0,
+            701.0
+          ],
+          [
+            500.0,
+            701.0
+          ],
+          [
+            500.0,
+            714.0
+          ],
+          [
+            88.0,
+            714.0
+          ]
+        ],
+        "text": "many works have attempted to explain the Majorana",
+        "score": 0.9995216727256775
+      },
+      {
+        "box": [
+          [
+            525.0,
+            696.0
+          ],
+          [
+            947.0,
+            696.0
+          ],
+          [
+            947.0,
+            725.0
+          ],
+          [
+            525.0,
+            725.0
+          ]
+        ],
+        "text": "trix and Ψj = (ψj,a)T , Ψ† = (ψt,a) where i, j are the",
+        "score": 0.8673316240310669
+      },
+      {
+        "box": [
+          [
+            87.0,
+            714.0
+          ],
+          [
+            501.0,
+            714.0
+          ],
+          [
+            501.0,
+            730.0
+          ],
+          [
+            87.0,
+            730.0
+          ]
+        ],
+        "text": "modes in 2d by reducing the problem to a 1d problem",
+        "score": 0.989924430847168
+      },
+      {
+        "box": [
+          [
+            528.0,
+            717.0
+          ],
+          [
+            943.0,
+            717.0
+          ],
+          [
+            943.0,
+            733.0
+          ],
+          [
+            528.0,
+            733.0
+          ]
+        ],
+        "text": "lattice position indices and α, β the orbital and spin in-",
+        "score": 0.9983699917793274
+      },
+      {
+        "box": [
+          [
+            90.0,
+            730.0
+          ],
+          [
+            144.0,
+            730.0
+          ],
+          [
+            144.0,
+            744.0
+          ],
+          [
+            90.0,
+            744.0
+          ]
+        ],
+        "text": "113",
+        "score": 0.7864847183227539
+      },
+      {
+        "box": [
+          [
+            529.0,
+            732.0
+          ],
+          [
+            943.0,
+            732.0
+          ],
+          [
+            943.0,
+            748.0
+          ],
+          [
+            529.0,
+            748.0
+          ]
+        ],
+        "text": "dices. The Fermi energy is set to zero and is assumed to",
+        "score": 0.9980316758155823
+      },
+      {
+        "box": [
+          [
+            104.0,
+            746.0
+          ],
+          [
+            501.0,
+            746.0
+          ],
+          [
+            501.0,
+            762.0
+          ],
+          [
+            104.0,
+            762.0
+          ]
+        ],
+        "text": "Since the vortex zero energy states occur in 2d sys-",
+        "score": 0.9983481168746948
+      },
+      {
+        "box": [
+          [
+            528.0,
+            747.0
+          ],
+          [
+            618.0,
+            749.0
+          ],
+          [
+            617.0,
+            762.0
+          ],
+          [
+            527.0,
+            760.0
+          ]
+        ],
+        "text": "lie in a gap.",
+        "score": 0.9988065958023071
+      },
+      {
+        "box": [
+          [
+            86.0,
+            761.0
+          ],
+          [
+            503.0,
+            760.0
+          ],
+          [
+            504.0,
+            776.0
+          ],
+          [
+            86.0,
+            777.0
+          ]
+        ],
+        "text": "tems, a more general and inherently 2d explanation of",
+        "score": 0.9918375015258789
+      },
+      {
+        "box": [
+          [
+            545.0,
+            763.0
+          ],
+          [
+            941.0,
+            763.0
+          ],
+          [
+            941.0,
+            776.0
+          ],
+          [
+            545.0,
+            776.0
+          ]
+        ],
+        "text": "In the first instance, we study systems with neither",
+        "score": 0.9932152628898621
+      },
+      {
+        "box": [
+          [
+            89.0,
+            777.0
+          ],
+          [
+            501.0,
+            777.0
+          ],
+          [
+            501.0,
+            790.0
+          ],
+          [
+            89.0,
+            790.0
+          ]
+        ],
+        "text": "the Majorana zero modes is desirable. In the current",
+        "score": 0.992976725101471
+      },
+      {
+        "box": [
+          [
+            529.0,
+            778.0
+          ],
+          [
+            942.0,
+            778.0
+          ],
+          [
+            942.0,
+            791.0
+          ],
+          [
+            529.0,
+            791.0
+          ]
+        ],
+        "text": "spin rotational nor time reversal symmetry, though we",
+        "score": 0.9895070791244507
+      },
+      {
+        "box": [
+          [
+            89.0,
+            792.0
+          ],
+          [
+            501.0,
+            792.0
+          ],
+          [
+            501.0,
+            805.0
+          ],
+          [
+            89.0,
+            805.0
+          ]
+        ],
+        "text": "work, this is achieved through a flux insertion argument",
+        "score": 0.9928699135780334
+      },
+      {
+        "box": [
+          [
+            530.0,
+            793.0
+          ],
+          [
+            942.0,
+            793.0
+          ],
+          [
+            942.0,
+            806.0
+          ],
+          [
+            530.0,
+            806.0
+          ]
+        ],
+        "text": "will analyze systems with these symmetries later on. We",
+        "score": 0.9979690313339233
+      },
+      {
+        "box": [
+          [
+            87.0,
+            805.0
+          ],
+          [
+            501.0,
+            805.0
+          ],
+          [
+            501.0,
+            821.0
+          ],
+          [
+            87.0,
+            821.0
+          ]
+        ],
+        "text": "similar to Laughlin's gauge argument [14. The argu-",
+        "score": 0.9772464632987976
+      },
+      {
+        "box": [
+          [
+            529.0,
+            808.0
+          ],
+          [
+            942.0,
+            808.0
+          ],
+          [
+            942.0,
+            821.0
+          ],
+          [
+            529.0,
+            821.0
+          ]
+        ],
+        "text": "further restrict our study to Hamiltonians H which posses",
+        "score": 0.9963530898094177
+      },
+      {
+        "box": [
+          [
+            88.0,
+            821.0
+          ],
+          [
+            501.0,
+            821.0
+          ],
+          [
+            501.0,
+            834.0
+          ],
+          [
+            88.0,
+            834.0
+          ]
+        ],
+        "text": "ment is not tied to any particular model and also applies",
+        "score": 0.9968624711036682
+      },
+      {
+        "box": [
+          [
+            529.0,
+            823.0
+          ],
+          [
+            942.0,
+            823.0
+          ],
+          [
+            942.0,
+            836.0
+          ],
+          [
+            529.0,
+            836.0
+          ]
+        ],
+        "text": "a symmetry analogous to that of Bogoliubov de-Gennes",
+        "score": 0.9921027421951294
+      },
+      {
+        "box": [
+          [
+            88.0,
+            836.0
+          ],
+          [
+            501.0,
+            836.0
+          ],
+          [
+            501.0,
+            849.0
+          ],
+          [
+            88.0,
+            849.0
+          ]
+        ],
+        "text": "to disordered systems where translational invariance is",
+        "score": 0.9939872026443481
+      },
+      {
+        "box": [
+          [
+            528.0,
+            835.0
+          ],
+          [
+            942.0,
+            836.0
+          ],
+          [
+            942.0,
+            852.0
+          ],
+          [
+            527.0,
+            851.0
+          ]
+        ],
+        "text": "Hamiltonians. In other words, we assume the existence",
+        "score": 0.9995560646057129
+      },
+      {
+        "box": [
+          [
+            87.0,
+            848.0
+          ],
+          [
+            502.0,
+            849.0
+          ],
+          [
+            501.0,
+            865.0
+          ],
+          [
+            87.0,
+            864.0
+          ]
+        ],
+        "text": "broken and is particularly useful in the context of recent",
+        "score": 0.9992959499359131
+      },
+      {
+        "box": [
+          [
+            527.0,
+            852.0
+          ],
+          [
+            828.0,
+            851.0
+          ],
+          [
+            828.0,
+            865.0
+          ],
+          [
+            528.0,
+            866.0
+          ]
+        ],
+        "text": "of an anti-unitary operator, S, such that",
+        "score": 0.9926967024803162
+      },
+      {
+        "box": [
+          [
+            88.0,
+            864.0
+          ],
+          [
+            502.0,
+            864.0
+          ],
+          [
+            502.0,
+            880.0
+          ],
+          [
+            88.0,
+            880.0
+          ]
+        ],
+        "text": "efforts to find Majorana modes in systems other than a",
+        "score": 0.9889833927154541
+      },
+      {
+        "box": [
+          [
+            86.0,
+            879.0
+          ],
+          [
+            502.0,
+            878.0
+          ],
+          [
+            503.0,
+            895.0
+          ],
+          [
+            86.0,
+            896.0
+          ]
+        ],
+        "text": "Px + ipy superconductor 1518]. One of our main re-",
+        "score": 0.9726502299308777
+      },
+      {
+        "box": [
+          [
+            680.0,
+            879.0
+          ],
+          [
+            791.0,
+            879.0
+          ],
+          [
+            791.0,
+            895.0
+          ],
+          [
+            680.0,
+            895.0
+          ]
+        ],
+        "text": "SHS−1 = −H.",
+        "score": 0.9286830425262451
+      },
+      {
+        "box": [
+          [
+            916.0,
+            879.0
+          ],
+          [
+            944.0,
+            879.0
+          ],
+          [
+            944.0,
+            898.0
+          ],
+          [
+            916.0,
+            898.0
+          ]
+        ],
+        "text": "(1)",
+        "score": 0.9997749328613281
+      },
+      {
+        "box": [
+          [
+            86.0,
+            894.0
+          ],
+          [
+            502.0,
+            893.0
+          ],
+          [
+            503.0,
+            909.0
+          ],
+          [
+            86.0,
+            910.0
+          ]
+        ],
+        "text": "sults is a prediction about precisely what systems in all",
+        "score": 0.9951450228691101
+      },
+      {
+        "box": [
+          [
+            89.0,
+            910.0
+          ],
+          [
+            501.0,
+            910.0
+          ],
+          [
+            501.0,
+            923.0
+          ],
+          [
+            89.0,
+            923.0
+          ]
+        ],
+        "text": "the different symmetry classes of the classification intro-",
+        "score": 0.9976407885551453
+      },
+      {
+        "box": [
+          [
+            529.0,
+            909.0
+          ],
+          [
+            941.0,
+            910.0
+          ],
+          [
+            941.0,
+            924.0
+          ],
+          [
+            529.0,
+            923.0
+          ]
+        ],
+        "text": "Further, we assume that S acting on single particle po-",
+        "score": 0.996098518371582
+      },
+      {
+        "box": [
+          [
+            87.0,
+            923.0
+          ],
+          [
+            502.0,
+            924.0
+          ],
+          [
+            501.0,
+            940.0
+          ],
+          [
+            87.0,
+            939.0
+          ]
+        ],
+        "text": "duced by Altland and Zirnbauer 19 support zero energy",
+        "score": 0.9819841384887695
+      },
+      {
+        "box": [
+          [
+            528.0,
+            924.0
+          ],
+          [
+            942.0,
+            925.0
+          ],
+          [
+            942.0,
+            939.0
+          ],
+          [
+            527.0,
+            938.0
+          ]
+        ],
+        "text": "sition eigenkets in the Hilbert space produces a linear",
+        "score": 0.9896767139434814
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 100,
+    "elapsed_ms": 675.75
+  }
+}

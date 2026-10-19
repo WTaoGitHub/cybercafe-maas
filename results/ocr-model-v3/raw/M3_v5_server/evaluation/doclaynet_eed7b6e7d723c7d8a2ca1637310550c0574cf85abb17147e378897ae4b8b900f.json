@@ -1,0 +1,101 @@
+{
+  "id": "doclaynet_eed7b6e7d723c7d8a2ca1637310550c0574cf85abb17147e378897ae4b8b900f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "c069f129d51344576da02f94bff84d26a483f4efef87b5200ec62eed0194fb13",
+  "ok": true,
+  "result": {
+    "text": "Figure 1: Snapshot of a freely diffusing chucker (left), and a chucker close to a hard-planar surface\n(right).\n21",
+    "lines": [
+      {
+        "box": [
+          [
+            122.0,
+            345.0
+          ],
+          [
+            926.0,
+            345.0
+          ],
+          [
+            926.0,
+            361.0
+          ],
+          [
+            122.0,
+            361.0
+          ]
+        ],
+        "text": "Figure 1: Snapshot of a freely diffusing chucker (left), and a chucker close to a hard-planar surface",
+        "score": 0.9396998286247253
+      },
+      {
+        "box": [
+          [
+            120.0,
+            368.0
+          ],
+          [
+            186.0,
+            368.0
+          ],
+          [
+            186.0,
+            392.0
+          ],
+          [
+            120.0,
+            392.0
+          ]
+        ],
+        "text": "(right).",
+        "score": 0.9930791854858398
+      },
+      {
+        "box": [
+          [
+            500.0,
+            916.0
+          ],
+          [
+            528.0,
+            916.0
+          ],
+          [
+            528.0,
+            935.0
+          ],
+          [
+            500.0,
+            935.0
+          ]
+        ],
+        "text": "21",
+        "score": 0.9988312721252441
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 84.82
+  }
+}

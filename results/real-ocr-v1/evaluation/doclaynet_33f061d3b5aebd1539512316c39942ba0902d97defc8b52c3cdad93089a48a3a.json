@@ -1,0 +1,961 @@
+{
+  "id": "doclaynet_33f061d3b5aebd1539512316c39942ba0902d97defc8b52c3cdad93089a48a3a",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "image_sha256": "49399933692d02f07c03bc74e9ebfce84fce9aa810e9a2a807ea58c2c5a69ec2",
+  "client_ms": 502.09,
+  "result": {
+    "text": "WO2020/021001\nPCT/EP2019/070018\n7\n302307-2DVB“SecondGenerationframingstructure,channelcodingandmodulationsystems\nforBroadcasting.interactiveServices，newsgatheringandotherbroadbandsatelliteapplications,\n5\nFigure 1illustrates the main steps of a method according to a preferred embodiment of the\ninvention. The method aims at generating reliable channel state information, CSI, in a wireless\nmulti-user MISO satellite communicationsystememployingprecoding.Withreference tofigure\n2a, a plurality of signals 1, ., Np\n10\nsignals to a broadbandmulti-beamsatellite2o.Eachof\nthe signals is due to be transmitted on one of the N\nbeams the satellite is forming, and serves\nreceiverslocatedwithin a corresp\nground spot, covered by said beam.In the non-limiting\nillustration,three beams are\nof beams,for example up to tens or hundreds of beams. Beam 1 serves receivers in the first ground\n15\nspot, such as receiver 100, beam 2 serves receivers 100(2),beam i serves receivers 100(i), and so\non. The satellite may for example use aggressive frequency reuse on all its beams, so that the\nsignalactuallyreceivedby a receiver suffers from bothspatialand co-channelinterference.For\nexample,the signal110 received atreceiver 100 not only comprises the reference waveform\ncomponent1 that itwants to decode,butit also comprisesinterference from waveformcomponents\n20\n2, .. i, ..Nbeam. that are transmitted on the same channel frequency.\nIn order to pre-empt this interference, the gateways 10 use a precoding technique.Precoding is as\nsuch known in the art and will not be explained in details in the context of the present invention.\nDetails may for example be found in patent document WO 2015/192995 Al, which is hereby\n25\nincorporated by reference in its entirety.In order to form the adequate precoding matrix that is\nmultiplying the data signals formed at thegateways,the latter have toknow channel state\ninformationdescribing thebehaviour ofeach one thecommunicationchannelsformedbyeachof\nthe satellite's beams,as observed by the respective receivers.\n30\nAs illustrated in figure 2b, each of the waveform components 1. 2, ., i, .,Nbeam comprises a first\nfield Start(l), Start(i), .. that marks the start of a frame unit within the waveform component.\nFurther, each waveform component comprises a sequence of second fields, or pilot fields Pil(l),\nPil(i), ., that comprise respective pilot sequences. At step a) as shown in Figure 1, the signal 110\ncomprising the plurality of waveform components is received at the receiver 1oo,for which only\n35\nthe reference waveform component 1is intended. Of course the signal also comprises a data\npayload,which will however not be described in the context of the present invention.",
+    "lines": [
+      {
+        "box": [
+          [
+            149.0,
+            51.0
+          ],
+          [
+            277.0,
+            51.0
+          ],
+          [
+            277.0,
+            67.0
+          ],
+          [
+            149.0,
+            67.0
+          ]
+        ],
+        "text": "WO2020/021001",
+        "score": 0.9980610838303199
+      },
+      {
+        "box": [
+          [
+            727.0,
+            51.0
+          ],
+          [
+            881.0,
+            51.0
+          ],
+          [
+            881.0,
+            67.0
+          ],
+          [
+            727.0,
+            67.0
+          ]
+        ],
+        "text": "PCT/EP2019/070018",
+        "score": 0.9991260416367475
+      },
+      {
+        "box": [
+          [
+            521.0,
+            74.0
+          ],
+          [
+            530.0,
+            74.0
+          ],
+          [
+            530.0,
+            84.0
+          ],
+          [
+            521.0,
+            84.0
+          ]
+        ],
+        "text": "7",
+        "score": 0.9964229464530945
+      },
+      {
+        "box": [
+          [
+            146.0,
+            123.0
+          ],
+          [
+            880.0,
+            123.0
+          ],
+          [
+            880.0,
+            142.0
+          ],
+          [
+            146.0,
+            142.0
+          ]
+        ],
+        "text": "302307-2DVB“SecondGenerationframingstructure,channelcodingandmodulationsystems",
+        "score": 0.9759152332941691
+      },
+      {
+        "box": [
+          [
+            139.0,
+            147.0
+          ],
+          [
+            890.0,
+            147.0
+          ],
+          [
+            890.0,
+            166.0
+          ],
+          [
+            139.0,
+            166.0
+          ]
+        ],
+        "text": "forBroadcasting.interactiveServices，newsgatheringandotherbroadbandsatelliteapplications,",
+        "score": 0.9856586286967451
+      },
+      {
+        "box": [
+          [
+            105.0,
+            195.0
+          ],
+          [
+            119.0,
+            195.0
+          ],
+          [
+            119.0,
+            207.0
+          ],
+          [
+            105.0,
+            207.0
+          ]
+        ],
+        "text": "5",
+        "score": 0.9989200830459595
+      },
+      {
+        "box": [
+          [
+            145.0,
+            216.0
+          ],
+          [
+            832.0,
+            216.0
+          ],
+          [
+            832.0,
+            235.0
+          ],
+          [
+            145.0,
+            235.0
+          ]
+        ],
+        "text": "Figure 1illustrates the main steps of a method according to a preferred embodiment of the",
+        "score": 0.9846477629093642
+      },
+      {
+        "box": [
+          [
+            145.0,
+            239.0
+          ],
+          [
+            864.0,
+            239.0
+          ],
+          [
+            864.0,
+            258.0
+          ],
+          [
+            145.0,
+            258.0
+          ]
+        ],
+        "text": "invention. The method aims at generating reliable channel state information, CSI, in a wireless",
+        "score": 0.9671404992279253
+      },
+      {
+        "box": [
+          [
+            146.0,
+            263.0
+          ],
+          [
+            878.0,
+            263.0
+          ],
+          [
+            878.0,
+            279.0
+          ],
+          [
+            146.0,
+            279.0
+          ]
+        ],
+        "text": "multi-user MISO satellite communicationsystememployingprecoding.Withreference tofigure",
+        "score": 0.9757664203643799
+      },
+      {
+        "box": [
+          [
+            146.0,
+            285.0
+          ],
+          [
+            401.0,
+            287.0
+          ],
+          [
+            401.0,
+            304.0
+          ],
+          [
+            146.0,
+            302.0
+          ]
+        ],
+        "text": "2a, a plurality of signals 1, ., Np",
+        "score": 0.9167686990329198
+      },
+      {
+        "box": [
+          [
+            96.0,
+            309.0
+          ],
+          [
+            118.0,
+            309.0
+          ],
+          [
+            118.0,
+            324.0
+          ],
+          [
+            96.0,
+            324.0
+          ]
+        ],
+        "text": "10",
+        "score": 0.9983212053775787
+      },
+      {
+        "box": [
+          [
+            471.0,
+            309.0
+          ],
+          [
+            899.0,
+            309.0
+          ],
+          [
+            899.0,
+            325.0
+          ],
+          [
+            471.0,
+            325.0
+          ]
+        ],
+        "text": "signals to a broadbandmulti-beamsatellite2o.Eachof",
+        "score": 0.9547014951705932
+      },
+      {
+        "box": [
+          [
+            146.0,
+            332.0
+          ],
+          [
+            532.0,
+            332.0
+          ],
+          [
+            532.0,
+            348.0
+          ],
+          [
+            146.0,
+            348.0
+          ]
+        ],
+        "text": "the signals is due to be transmitted on one of the N",
+        "score": 0.9527115798913516
+      },
+      {
+        "box": [
+          [
+            556.0,
+            332.0
+          ],
+          [
+            873.0,
+            332.0
+          ],
+          [
+            873.0,
+            349.0
+          ],
+          [
+            556.0,
+            349.0
+          ]
+        ],
+        "text": "beams the satellite is forming, and serves",
+        "score": 0.9458108445008596
+      },
+      {
+        "box": [
+          [
+            146.0,
+            355.0
+          ],
+          [
+            401.0,
+            355.0
+          ],
+          [
+            401.0,
+            371.0
+          ],
+          [
+            146.0,
+            371.0
+          ]
+        ],
+        "text": "receiverslocatedwithin a corresp",
+        "score": 0.9724892098456621
+      },
+      {
+        "box": [
+          [
+            455.0,
+            352.0
+          ],
+          [
+            874.0,
+            355.0
+          ],
+          [
+            874.0,
+            372.0
+          ],
+          [
+            454.0,
+            369.0
+          ]
+        ],
+        "text": "ground spot, covered by said beam.In the non-limiting",
+        "score": 0.9709343527847866
+      },
+      {
+        "box": [
+          [
+            147.0,
+            378.0
+          ],
+          [
+            357.0,
+            378.0
+          ],
+          [
+            357.0,
+            394.0
+          ],
+          [
+            147.0,
+            394.0
+          ]
+        ],
+        "text": "illustration,three beams are",
+        "score": 0.9778069917644773
+      },
+      {
+        "box": [
+          [
+            146.0,
+            401.0
+          ],
+          [
+            897.0,
+            401.0
+          ],
+          [
+            897.0,
+            417.0
+          ],
+          [
+            146.0,
+            417.0
+          ]
+        ],
+        "text": "of beams,for example up to tens or hundreds of beams. Beam 1 serves receivers in the first ground",
+        "score": 0.9703744613018233
+      },
+      {
+        "box": [
+          [
+            96.0,
+            424.0
+          ],
+          [
+            117.0,
+            424.0
+          ],
+          [
+            117.0,
+            439.0
+          ],
+          [
+            96.0,
+            439.0
+          ]
+        ],
+        "text": "15",
+        "score": 0.9995532631874084
+      },
+      {
+        "box": [
+          [
+            147.0,
+            425.0
+          ],
+          [
+            883.0,
+            425.0
+          ],
+          [
+            883.0,
+            441.0
+          ],
+          [
+            147.0,
+            441.0
+          ]
+        ],
+        "text": "spot, such as receiver 100, beam 2 serves receivers 100(2),beam i serves receivers 100(i), and so",
+        "score": 0.9390357702048784
+      },
+      {
+        "box": [
+          [
+            145.0,
+            446.0
+          ],
+          [
+            853.0,
+            446.0
+          ],
+          [
+            853.0,
+            465.0
+          ],
+          [
+            145.0,
+            465.0
+          ]
+        ],
+        "text": "on. The satellite may for example use aggressive frequency reuse on all its beams, so that the",
+        "score": 0.9772061952885162
+      },
+      {
+        "box": [
+          [
+            147.0,
+            470.0
+          ],
+          [
+            870.0,
+            470.0
+          ],
+          [
+            870.0,
+            486.0
+          ],
+          [
+            147.0,
+            486.0
+          ]
+        ],
+        "text": "signalactuallyreceivedby a receiver suffers from bothspatialand co-channelinterference.For",
+        "score": 0.9696318374739753
+      },
+      {
+        "box": [
+          [
+            147.0,
+            493.0
+          ],
+          [
+            846.0,
+            493.0
+          ],
+          [
+            846.0,
+            512.0
+          ],
+          [
+            147.0,
+            512.0
+          ]
+        ],
+        "text": "example,the signal110 received atreceiver 100 not only comprises the reference waveform",
+        "score": 0.9476240612994665
+      },
+      {
+        "box": [
+          [
+            146.0,
+            518.0
+          ],
+          [
+            898.0,
+            518.0
+          ],
+          [
+            898.0,
+            534.0
+          ],
+          [
+            146.0,
+            534.0
+          ]
+        ],
+        "text": "component1 that itwants to decode,butit also comprisesinterference from waveformcomponents",
+        "score": 0.9564026958412595
+      },
+      {
+        "box": [
+          [
+            96.0,
+            541.0
+          ],
+          [
+            118.0,
+            541.0
+          ],
+          [
+            118.0,
+            556.0
+          ],
+          [
+            96.0,
+            556.0
+          ]
+        ],
+        "text": "20",
+        "score": 0.9952329397201538
+      },
+      {
+        "box": [
+          [
+            144.0,
+            539.0
+          ],
+          [
+            652.0,
+            540.0
+          ],
+          [
+            652.0,
+            560.0
+          ],
+          [
+            144.0,
+            559.0
+          ]
+        ],
+        "text": "2, .. i, ..Nbeam. that are transmitted on the same channel frequency.",
+        "score": 0.9549361290275187
+      },
+      {
+        "box": [
+          [
+            146.0,
+            586.0
+          ],
+          [
+            886.0,
+            586.0
+          ],
+          [
+            886.0,
+            605.0
+          ],
+          [
+            146.0,
+            605.0
+          ]
+        ],
+        "text": "In order to pre-empt this interference, the gateways 10 use a precoding technique.Precoding is as",
+        "score": 0.9663992100155231
+      },
+      {
+        "box": [
+          [
+            145.0,
+            607.0
+          ],
+          [
+            875.0,
+            608.0
+          ],
+          [
+            875.0,
+            628.0
+          ],
+          [
+            145.0,
+            627.0
+          ]
+        ],
+        "text": "such known in the art and will not be explained in details in the context of the present invention.",
+        "score": 0.9829040091447155
+      },
+      {
+        "box": [
+          [
+            145.0,
+            630.0
+          ],
+          [
+            851.0,
+            632.0
+          ],
+          [
+            851.0,
+            651.0
+          ],
+          [
+            145.0,
+            649.0
+          ]
+        ],
+        "text": "Details may for example be found in patent document WO 2015/192995 Al, which is hereby",
+        "score": 0.9756980621537497
+      },
+      {
+        "box": [
+          [
+            96.0,
+            656.0
+          ],
+          [
+            117.0,
+            656.0
+          ],
+          [
+            117.0,
+            671.0
+          ],
+          [
+            96.0,
+            671.0
+          ]
+        ],
+        "text": "25",
+        "score": 0.9996790289878845
+      },
+      {
+        "box": [
+          [
+            145.0,
+            655.0
+          ],
+          [
+            865.0,
+            655.0
+          ],
+          [
+            865.0,
+            674.0
+          ],
+          [
+            145.0,
+            674.0
+          ]
+        ],
+        "text": "incorporated by reference in its entirety.In order to form the adequate precoding matrix that is",
+        "score": 0.9700334202498198
+      },
+      {
+        "box": [
+          [
+            146.0,
+            679.0
+          ],
+          [
+            824.0,
+            679.0
+          ],
+          [
+            824.0,
+            695.0
+          ],
+          [
+            146.0,
+            695.0
+          ]
+        ],
+        "text": "multiplying the data signals formed at thegateways,the latter have toknow channel state",
+        "score": 0.9451215027392595
+      },
+      {
+        "box": [
+          [
+            145.0,
+            701.0
+          ],
+          [
+            888.0,
+            701.0
+          ],
+          [
+            888.0,
+            720.0
+          ],
+          [
+            145.0,
+            720.0
+          ]
+        ],
+        "text": "informationdescribing thebehaviour ofeach one thecommunicationchannelsformedbyeachof",
+        "score": 0.9793838191600073
+      },
+      {
+        "box": [
+          [
+            144.0,
+            724.0
+          ],
+          [
+            605.0,
+            725.0
+          ],
+          [
+            605.0,
+            742.0
+          ],
+          [
+            144.0,
+            741.0
+          ]
+        ],
+        "text": "the satellite's beams,as observed by the respective receivers.",
+        "score": 0.9535045767984083
+      },
+      {
+        "box": [
+          [
+            96.0,
+            772.0
+          ],
+          [
+            118.0,
+            772.0
+          ],
+          [
+            118.0,
+            787.0
+          ],
+          [
+            96.0,
+            787.0
+          ]
+        ],
+        "text": "30",
+        "score": 0.9956960380077362
+      },
+      {
+        "box": [
+          [
+            144.0,
+            769.0
+          ],
+          [
+            887.0,
+            770.0
+          ],
+          [
+            887.0,
+            790.0
+          ],
+          [
+            144.0,
+            789.0
+          ]
+        ],
+        "text": "As illustrated in figure 2b, each of the waveform components 1. 2, ., i, .,Nbeam comprises a first",
+        "score": 0.9492615452226327
+      },
+      {
+        "box": [
+          [
+            145.0,
+            792.0
+          ],
+          [
+            851.0,
+            794.0
+          ],
+          [
+            851.0,
+            813.0
+          ],
+          [
+            145.0,
+            811.0
+          ]
+        ],
+        "text": "field Start(l), Start(i), .. that marks the start of a frame unit within the waveform component.",
+        "score": 0.9557640822604299
+      },
+      {
+        "box": [
+          [
+            144.0,
+            815.0
+          ],
+          [
+            871.0,
+            816.0
+          ],
+          [
+            871.0,
+            836.0
+          ],
+          [
+            144.0,
+            835.0
+          ]
+        ],
+        "text": "Further, each waveform component comprises a sequence of second fields, or pilot fields Pil(l),",
+        "score": 0.9873569093252483
+      },
+      {
+        "box": [
+          [
+            144.0,
+            838.0
+          ],
+          [
+            886.0,
+            839.0
+          ],
+          [
+            886.0,
+            859.0
+          ],
+          [
+            144.0,
+            858.0
+          ]
+        ],
+        "text": "Pil(i), ., that comprise respective pilot sequences. At step a) as shown in Figure 1, the signal 110",
+        "score": 0.9891873955726623
+      },
+      {
+        "box": [
+          [
+            144.0,
+            862.0
+          ],
+          [
+            879.0,
+            861.0
+          ],
+          [
+            879.0,
+            881.0
+          ],
+          [
+            144.0,
+            882.0
+          ]
+        ],
+        "text": "comprising the plurality of waveform components is received at the receiver 1oo,for which only",
+        "score": 0.9691294501436517
+      },
+      {
+        "box": [
+          [
+            96.0,
+            887.0
+          ],
+          [
+            117.0,
+            887.0
+          ],
+          [
+            117.0,
+            902.0
+          ],
+          [
+            96.0,
+            902.0
+          ]
+        ],
+        "text": "35",
+        "score": 0.9996798932552338
+      },
+      {
+        "box": [
+          [
+            145.0,
+            886.0
+          ],
+          [
+            847.0,
+            886.0
+          ],
+          [
+            847.0,
+            905.0
+          ],
+          [
+            145.0,
+            905.0
+          ]
+        ],
+        "text": "the reference waveform component 1is intended. Of course the signal also comprises a data",
+        "score": 0.9605768235881676
+      },
+      {
+        "box": [
+          [
+            145.0,
+            909.0
+          ],
+          [
+            789.0,
+            908.0
+          ],
+          [
+            789.0,
+            927.0
+          ],
+          [
+            145.0,
+            928.0
+          ]
+        ],
+        "text": "payload,which will however not be described in the context of the present invention.",
+        "score": 0.9648532136565163
+      }
+    ],
+    "elapsed_ms": 279.34,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "ok": true
+}

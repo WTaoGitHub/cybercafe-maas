@@ -1,0 +1,26 @@
+9.3.7
+Physical icon
+The topics in this section present information that is related to monitoring and manipulating 
+physical volumes in the TS7740 and TS7720T clusters. To view or modify settings for physical 
+volume pools to manage the physical volumes that are used by the tape-attached clusters, 
+use the window that is shown in Figure 9-57.
+Figure 9-57
+Physical icon
+Physical Volume Pools
+The Physical Volume Pools properties table displays the media properties and encryption 
+settings for every physical volume pool that is defined for a specific TS7700T cluster in the 
+grid. This table contains these tabs: 
+Pool Properties
+GLYPH<SM590000>
+Encryption Settings
+GLYPH<SM590000>
+Tip:
+ Pools 1 - 32 are preinstalled and initially set to default attributes. Pool 1 functions as 
+the default pool and is used if no other pool is selected. 
+Figure 9-58 on page 429 show an example of the Physical Volume Pools window. There is a 
+link that is available for a tutorial showing how to modify pool encryption settings. Click the link 
+to see the tutorial material. This window is visible but disabled on the TS7700 MI if the grid 
+possesses a physical library, but the selected cluster does not. This message is displayed:
+The cluster is not attached to a physical tape library.
+428 
+IBM TS7700 Release 4.2 Guide

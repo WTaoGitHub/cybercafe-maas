@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_5630",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "粤式晚茶",
+    "lines": [
+      {
+        "box": [
+          [
+            472.3404541015625,
+            1980.6451416015625
+          ],
+          [
+            1575.0,
+            1953.225830078125
+          ],
+          [
+            1579.7872314453125,
+            2179.0322265625
+          ],
+          [
+            477.127685546875,
+            2206.45166015625
+          ]
+        ],
+        "text": "粤式晚茶",
+        "score": 0.9967664629220963
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 117.31,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 171.0
+}

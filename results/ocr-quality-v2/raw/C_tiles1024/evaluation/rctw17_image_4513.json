@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_4513",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "珊瑚绒毯",
+    "lines": [
+      {
+        "box": [
+          [
+            1643.0,
+            1776.0
+          ],
+          [
+            2073.0,
+            1888.0
+          ],
+          [
+            2052.0,
+            1968.0
+          ],
+          [
+            1622.0,
+            1856.0
+          ]
+        ],
+        "text": "珊瑚绒毯",
+        "score": 0.9982041716575623
+      }
+    ],
+    "engine_calls": 9,
+    "raw_line_count": 4,
+    "deduplicated": 3,
+    "elapsed_ms": 193.18,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 228.61
+}

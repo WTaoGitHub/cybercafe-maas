@@ -1,0 +1,87 @@
+{
+  "id": "rctw17_image_5446",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 90,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "ff4ecc9208d06b93230c928453b6b5119bb68b02bb3d07cba23f9f4c49fcf3ca",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "赴新疆县级团\n品业\n201",
+    "lines": [
+      {
+        "box": [
+          [
+            198.0,
+            113.0
+          ],
+          [
+            198.0,
+            89.0
+          ],
+          [
+            328.0,
+            89.0
+          ],
+          [
+            328.0,
+            113.0
+          ]
+        ],
+        "text": "赴新疆县级团",
+        "score": 0.9999420046806335
+      },
+      {
+        "box": [
+          [
+            469.0,
+            115.0
+          ],
+          [
+            469.0,
+            90.0
+          ],
+          [
+            500.0,
+            90.0
+          ],
+          [
+            500.0,
+            115.0
+          ]
+        ],
+        "text": "品业",
+        "score": 0.8526190519332886
+      },
+      {
+        "box": [
+          [
+            476.0,
+            89.0
+          ],
+          [
+            476.0,
+            76.0
+          ],
+          [
+            498.0,
+            76.0
+          ],
+          [
+            498.0,
+            89.0
+          ]
+        ],
+        "text": "201",
+        "score": 0.9999911189079285
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 58.37,
+    "direction_stats": {},
+    "elapsed_ms": 58.38
+  }
+}

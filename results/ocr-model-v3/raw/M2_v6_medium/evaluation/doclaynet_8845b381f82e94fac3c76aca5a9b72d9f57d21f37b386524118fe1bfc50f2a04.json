@@ -1,0 +1,673 @@
+{
+  "id": "doclaynet_8845b381f82e94fac3c76aca5a9b72d9f57d21f37b386524118fe1bfc50f2a04",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "b8dc89df227c8d2ee6eafdb4c3e80c1364ee7f78ce7440df56b9319ea0a096fe",
+  "ok": true,
+  "result": {
+    "text": "9.3.7 Physical icon\nThe topics in this section present information that is related to monitoring and manipulating\nphysical volumes in the TS7740 and TS7720T clusters. To view or modify settings for physical\nvolume pools to manage the physical volumes that are used by the tape-attached clusters,\nuse the window that is shown in Figure 9-57.\nhone\nAD0001(0)\nPhysical\nPhyeical Volume Poole\nww\nPhysical Volumes\nPliysical Tape Drives\nPhysical Media Inventory\nFigure 9-57 Physical icon\nPhysical Volume Pools\nThe Physical Volume Pools properties table displays the media properties and encryption\nsettings for every physical volume pool that is defined for a specific TS77ooT cluster in the\ngrid. This table contains these tabs:\nPool Properties\nEncryption Settings\nTip: Pools 1 - 32 are preinstalled and initially set to default attributes. Pool 1 functions as\nthe default pool and is used if no other pool is selected.\nFigure 9-58 on page 429 show an example of the Physical Volume Pools window. There is a\nlink that is available for a tutorial showing how to modify pool encryption settings. Click the link\nto see the tutorial material. This window is visible but disabled on the TS77oo MI if the grid\npossesses a physical library, but the selected cluster does not. This message is displayed:\nThe cluster is not attached to a physical tape library.\n428\nIBM TS7700 Release 4.2 Guide",
+    "lines": [
+      {
+        "box": [
+          [
+            106.0,
+            89.0
+          ],
+          [
+            308.0,
+            89.0
+          ],
+          [
+            308.0,
+            106.0
+          ],
+          [
+            106.0,
+            106.0
+          ]
+        ],
+        "text": "9.3.7 Physical icon",
+        "score": 0.983579158782959
+      },
+      {
+        "box": [
+          [
+            226.0,
+            121.0
+          ],
+          [
+            900.0,
+            122.0
+          ],
+          [
+            900.0,
+            138.0
+          ],
+          [
+            226.0,
+            137.0
+          ]
+        ],
+        "text": "The topics in this section present information that is related to monitoring and manipulating",
+        "score": 0.9999566078186035
+      },
+      {
+        "box": [
+          [
+            227.0,
+            137.0
+          ],
+          [
+            914.0,
+            137.0
+          ],
+          [
+            914.0,
+            153.0
+          ],
+          [
+            227.0,
+            153.0
+          ]
+        ],
+        "text": "physical volumes in the TS7740 and TS7720T clusters. To view or modify settings for physical",
+        "score": 0.9996590614318848
+      },
+      {
+        "box": [
+          [
+            226.0,
+            153.0
+          ],
+          [
+            900.0,
+            153.0
+          ],
+          [
+            900.0,
+            169.0
+          ],
+          [
+            226.0,
+            169.0
+          ]
+        ],
+        "text": "volume pools to manage the physical volumes that are used by the tape-attached clusters,",
+        "score": 0.9891607165336609
+      },
+      {
+        "box": [
+          [
+            227.0,
+            170.0
+          ],
+          [
+            560.0,
+            170.0
+          ],
+          [
+            560.0,
+            183.0
+          ],
+          [
+            227.0,
+            183.0
+          ]
+        ],
+        "text": "use the window that is shown in Figure 9-57.",
+        "score": 0.9998594522476196
+      },
+      {
+        "box": [
+          [
+            250.0,
+            300.0
+          ],
+          [
+            281.0,
+            300.0
+          ],
+          [
+            281.0,
+            307.0
+          ],
+          [
+            250.0,
+            307.0
+          ]
+        ],
+        "text": "hone",
+        "score": 0.5227634906768799
+      },
+      {
+        "box": [
+          [
+            499.0,
+            298.0
+          ],
+          [
+            566.0,
+            298.0
+          ],
+          [
+            566.0,
+            311.0
+          ],
+          [
+            499.0,
+            311.0
+          ]
+        ],
+        "text": "AD0001(0)",
+        "score": 0.8994433879852295
+      },
+      {
+        "box": [
+          [
+            430.0,
+            320.0
+          ],
+          [
+            474.0,
+            320.0
+          ],
+          [
+            474.0,
+            333.0
+          ],
+          [
+            430.0,
+            333.0
+          ]
+        ],
+        "text": "Physical",
+        "score": 0.9611215591430664
+      },
+      {
+        "box": [
+          [
+            369.0,
+            341.0
+          ],
+          [
+            477.0,
+            341.0
+          ],
+          [
+            477.0,
+            351.0
+          ],
+          [
+            369.0,
+            351.0
+          ]
+        ],
+        "text": "Phyeical Volume Poole",
+        "score": 0.9653964042663574
+      },
+      {
+        "box": [
+          [
+            253.0,
+            353.0
+          ],
+          [
+            307.0,
+            357.0
+          ],
+          [
+            306.0,
+            370.0
+          ],
+          [
+            252.0,
+            366.0
+          ]
+        ],
+        "text": "ww",
+        "score": 0.5233763456344604
+      },
+      {
+        "box": [
+          [
+            370.0,
+            356.0
+          ],
+          [
+            455.0,
+            356.0
+          ],
+          [
+            455.0,
+            366.0
+          ],
+          [
+            370.0,
+            366.0
+          ]
+        ],
+        "text": "Physical Volumes",
+        "score": 0.9654026031494141
+      },
+      {
+        "box": [
+          [
+            369.0,
+            372.0
+          ],
+          [
+            467.0,
+            372.0
+          ],
+          [
+            467.0,
+            382.0
+          ],
+          [
+            369.0,
+            382.0
+          ]
+        ],
+        "text": "Pliysical Tape Drives",
+        "score": 0.967528760433197
+      },
+      {
+        "box": [
+          [
+            370.0,
+            387.0
+          ],
+          [
+            486.0,
+            387.0
+          ],
+          [
+            486.0,
+            397.0
+          ],
+          [
+            370.0,
+            397.0
+          ]
+        ],
+        "text": "Physical Media Inventory",
+        "score": 0.9812111854553223
+      },
+      {
+        "box": [
+          [
+            228.0,
+            531.0
+          ],
+          [
+            408.0,
+            531.0
+          ],
+          [
+            408.0,
+            547.0
+          ],
+          [
+            228.0,
+            547.0
+          ]
+        ],
+        "text": "Figure 9-57 Physical icon",
+        "score": 0.9871412515640259
+      },
+      {
+        "box": [
+          [
+            227.0,
+            566.0
+          ],
+          [
+            449.0,
+            566.0
+          ],
+          [
+            449.0,
+            582.0
+          ],
+          [
+            227.0,
+            582.0
+          ]
+        ],
+        "text": "Physical Volume Pools",
+        "score": 0.9991286396980286
+      },
+      {
+        "box": [
+          [
+            227.0,
+            585.0
+          ],
+          [
+            891.0,
+            585.0
+          ],
+          [
+            891.0,
+            601.0
+          ],
+          [
+            227.0,
+            601.0
+          ]
+        ],
+        "text": "The Physical Volume Pools properties table displays the media properties and encryption",
+        "score": 0.997456431388855
+      },
+      {
+        "box": [
+          [
+            225.0,
+            600.0
+          ],
+          [
+            898.0,
+            599.0
+          ],
+          [
+            898.0,
+            615.0
+          ],
+          [
+            225.0,
+            616.0
+          ]
+        ],
+        "text": "settings for every physical volume pool that is defined for a specific TS77ooT cluster in the",
+        "score": 0.9917035698890686
+      },
+      {
+        "box": [
+          [
+            226.0,
+            616.0
+          ],
+          [
+            493.0,
+            616.0
+          ],
+          [
+            493.0,
+            632.0
+          ],
+          [
+            226.0,
+            632.0
+          ]
+        ],
+        "text": "grid. This table contains these tabs:",
+        "score": 0.9998174905776978
+      },
+      {
+        "box": [
+          [
+            249.0,
+            638.0
+          ],
+          [
+            368.0,
+            638.0
+          ],
+          [
+            368.0,
+            654.0
+          ],
+          [
+            249.0,
+            654.0
+          ]
+        ],
+        "text": "Pool Properties",
+        "score": 0.999987006187439
+      },
+      {
+        "box": [
+          [
+            250.0,
+            653.0
+          ],
+          [
+            398.0,
+            653.0
+          ],
+          [
+            398.0,
+            669.0
+          ],
+          [
+            250.0,
+            669.0
+          ]
+        ],
+        "text": "Encryption Settings",
+        "score": 0.9999826550483704
+      },
+      {
+        "box": [
+          [
+            238.0,
+            684.0
+          ],
+          [
+            895.0,
+            684.0
+          ],
+          [
+            895.0,
+            697.0
+          ],
+          [
+            238.0,
+            697.0
+          ]
+        ],
+        "text": "Tip: Pools 1 - 32 are preinstalled and initially set to default attributes. Pool 1 functions as",
+        "score": 0.9917323589324951
+      },
+      {
+        "box": [
+          [
+            237.0,
+            700.0
+          ],
+          [
+            648.0,
+            700.0
+          ],
+          [
+            648.0,
+            713.0
+          ],
+          [
+            237.0,
+            713.0
+          ]
+        ],
+        "text": "the default pool and is used if no other pool is selected.",
+        "score": 0.9970949292182922
+      },
+      {
+        "box": [
+          [
+            228.0,
+            737.0
+          ],
+          [
+            912.0,
+            737.0
+          ],
+          [
+            912.0,
+            750.0
+          ],
+          [
+            228.0,
+            750.0
+          ]
+        ],
+        "text": "Figure 9-58 on page 429 show an example of the Physical Volume Pools window. There is a",
+        "score": 0.9935217499732971
+      },
+      {
+        "box": [
+          [
+            226.0,
+            752.0
+          ],
+          [
+            914.0,
+            752.0
+          ],
+          [
+            914.0,
+            768.0
+          ],
+          [
+            226.0,
+            768.0
+          ]
+        ],
+        "text": "link that is available for a tutorial showing how to modify pool encryption settings. Click the link",
+        "score": 0.9977613687515259
+      },
+      {
+        "box": [
+          [
+            227.0,
+            769.0
+          ],
+          [
+            896.0,
+            769.0
+          ],
+          [
+            896.0,
+            782.0
+          ],
+          [
+            227.0,
+            782.0
+          ]
+        ],
+        "text": "to see the tutorial material. This window is visible but disabled on the TS77oo MI if the grid",
+        "score": 0.986649751663208
+      },
+      {
+        "box": [
+          [
+            226.0,
+            783.0
+          ],
+          [
+            899.0,
+            783.0
+          ],
+          [
+            899.0,
+            799.0
+          ],
+          [
+            226.0,
+            799.0
+          ]
+        ],
+        "text": "possesses a physical library, but the selected cluster does not. This message is displayed:",
+        "score": 0.9911987781524658
+      },
+      {
+        "box": [
+          [
+            226.0,
+            804.0
+          ],
+          [
+            689.0,
+            805.0
+          ],
+          [
+            689.0,
+            821.0
+          ],
+          [
+            226.0,
+            820.0
+          ]
+        ],
+        "text": "The cluster is not attached to a physical tape library.",
+        "score": 0.9961408376693726
+      },
+      {
+        "box": [
+          [
+            105.0,
+            973.0
+          ],
+          [
+            138.0,
+            973.0
+          ],
+          [
+            138.0,
+            988.0
+          ],
+          [
+            105.0,
+            988.0
+          ]
+        ],
+        "text": "428",
+        "score": 0.9999985098838806
+      },
+      {
+        "box": [
+          [
+            163.0,
+            975.0
+          ],
+          [
+            386.0,
+            975.0
+          ],
+          [
+            386.0,
+            988.0
+          ],
+          [
+            163.0,
+            988.0
+          ]
+        ],
+        "text": "IBM TS7700 Release 4.2 Guide",
+        "score": 0.9978929162025452
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 29,
+    "elapsed_ms": 250.47
+  }
+}

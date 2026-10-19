@@ -1,0 +1,43 @@
+{
+  "id": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+  "source": "doclaynet",
+  "split": "calibration",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "00f723c55e1a5ac94ba1e1557e20e6933846ce87552ec0a6eb10c4b4c2e6212c",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "uds sudu o pue i h  on z pue o u sipio isy on o suog o pusos ou",
+    "lines": [
+      {
+        "box": [
+          [
+            905.0,
+            484.0
+          ],
+          [
+            905.0,
+            514.0
+          ],
+          [
+            131.0,
+            514.0
+          ],
+          [
+            131.0,
+            484.0
+          ]
+        ],
+        "text": "uds sudu o pue i h  on z pue o u sipio isy on o suog o pusos ou",
+        "score": 0.6048375221471938
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 104.88,
+    "direction_stats": {},
+    "elapsed_ms": 104.88
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_7475",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "20ea912199b3fea419f611dbc391fa7a90c305f80b10a9d6544bebb31e9af45a",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "营业中\n1",
+    "lines": [
+      {
+        "box": [
+          [
+            1037.4892578125,
+            813.5322265625
+          ],
+          [
+            1216.5797119140625,
+            807.290283203125
+          ],
+          [
+            1235.1063232421875,
+            1371.1451416015625
+          ],
+          [
+            1056.015869140625,
+            1377.3870849609375
+          ]
+        ],
+        "text": "营业中",
+        "score": 0.7981362541516622
+      },
+      {
+        "box": [
+          [
+            1222.7552490234375,
+            1577.1290283203125
+          ],
+          [
+            1321.563720703125,
+            1577.1290283203125
+          ],
+          [
+            1321.563720703125,
+            1662.4354248046875
+          ],
+          [
+            1222.7552490234375,
+            1662.4354248046875
+          ]
+        ],
+        "text": "1",
+        "score": 0.5097618699073792
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 161.08,
+    "direction_stats": {
+      "lines_tested_180": 5,
+      "lines_chosen_180": 2,
+      "recognized_lines": 7
+    },
+    "elapsed_ms": 161.09
+  }
+}

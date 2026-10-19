@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_5216",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "7501aa808a36318bef19150e00913c668c32e634b279a78e0cf7d5671d6f2b94",
+  "ok": true,
+  "result": {
+    "text": "中国地质大学出版社有限责任会司",
+    "lines": [
+      {
+        "box": [
+          [
+            1320.0319148936169,
+            732.0967741935484
+          ],
+          [
+            1518.6063829787233,
+            733.741935483871
+          ],
+          [
+            1497.4468085106382,
+            2768.8064516129034
+          ],
+          [
+            1298.8723404255318,
+            2767.161290322581
+          ]
+        ],
+        "text": "中国地质大学出版社有限责任会司",
+        "score": 0.8949207663536072
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 1,
+    "elapsed_ms": 141.23
+  }
+}

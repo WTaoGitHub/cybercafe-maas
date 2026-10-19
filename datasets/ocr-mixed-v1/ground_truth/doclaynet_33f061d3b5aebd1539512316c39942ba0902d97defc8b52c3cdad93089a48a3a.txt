@@ -1,0 +1,44 @@
+DVB-S2x specification, which is hereby incorporated by reference in its entirety: ETSI EN
+Second Generationframing structure, channel coding and modulation systems
+302 307-2 DVB “
+for Broadcasting, interactive Services, news gathering and other broadband satellite applications,
+Part II: S2-Extensions"
+, www.etsi.org. The multiple carriers are supposed to be aligned in time.
+Figure 1 illustrates the main steps of a method according to a preferred embodiment of the
+invention. The method aims at generating reliable channel state information, CSI, in a wireless
+multi-user MISO satellite communication system employing precoding. With reference to figure
+N$_{beam}$
+2a, a plurality of signals 1, ... ,
+generated at one or at a plurality of gateway stations 10 in
+the communication system, which relay the signals to a broadband multi-beam satellite 20. Each of
+N$_{beam}$
+the signals is due to be transmitted on one of the
+beams the satellite is forming, and serves
+receivers located within a corresponding ground spot, covered by said beam. In the non-limiting
+illustration, three beams are represented, but the invention extends of course to a different plurality
+of beams, for example up to tens or hundreds of beams. Beam 1 serves receivers in the first ground
+i
+spot, such as receiver 100, beam 2 serves receivers 100(2), beam
+serves receivers l00(i), and so
+on. The satellite may for example use aggressive frequency reuse on all its beams, so that the
+signal actually received by a receiver suffers from both spatial and co-channel interference. For
+example, the signal 110 received at receiver 100 not only comprises the reference waveform
+component 1 that it wants to decode, but it also comprises interference from waveform components
+2, .. i, ... N$_{beam}$, that are transmitted on the same channel frequency.
+In order to pre-empt this interference, the gateways 10 use a precoding technique. Precoding is as
+such known in the art and will not be explained in details in the context of the present invention.
+Details may for example be found in patent document WO 2015/192995 Al, which is hereby
+incorporated by reference in its entirety. In order to form the adequate precoding matrix that is
+multiplying the data signals formed at the gateways, the latter have to know channel state
+information describing the behaviour of each one the communication channels formed by each of
+the satellite’s
+beams, as observed by the respective receivers.
+N$_{beam}$
+As illustrated in figure 2b, each of the waveform components 1, 2, ..., i, ...,
+comprises a first
+field Start(l), Start(i), ... that marks the start of a frame unit within the waveform component.
+Further, each waveform component comprises a sequence of second fields, or pilot fields Pil(l),
+Pil(i), ..., that comprise respective pilot sequences. At step a) as shown in Figure 1, the signal 110
+comprising the plurality of waveform components is received at the receiver 100, for which only
+the reference waveform component 1 is intended. Of course the signal also comprises a data
+payload, which will however not be described in the context of the present invention.

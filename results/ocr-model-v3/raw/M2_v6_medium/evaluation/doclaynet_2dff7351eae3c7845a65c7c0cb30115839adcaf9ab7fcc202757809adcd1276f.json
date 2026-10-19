@@ -1,0 +1,1333 @@
+{
+  "id": "doclaynet_2dff7351eae3c7845a65c7c0cb30115839adcaf9ab7fcc202757809adcd1276f",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "519e484b370a6a09ad45c8ecdf92b5ab07ed76cd97f39411424ad8026f01aa3d",
+  "ok": true,
+  "result": {
+    "text": "If the nodes go offline or the storage at either site goes offline, leaving an online and\naccessible up-to-date copy, the HyperSwap function can automatically fail over access to the\nonline copy. The HyperSwap function also automatically resynchronizes the two copies when\npossible.\nHyperSwap capability enables each volume to be presented by two I/O groups. The\nconfiguration tolerates combinations of node and site failures, by using the same flexible\nchoices of host multipathing driver interoperability that are available for the IBM Storwize. The\nuse of FlashCopy helps maintain a golden image during automatic resynchronization.\nImportant: Because Remote Mirroring is used to support the HyperSwap capability,\nRemote Mirroring licensing is a requirement for using HyperSwap.\nThe HyperSwap function uses a hyperswap topology by spreading the control enclosure of\nthe system across two sites, with storage at a third site that acts as a tie-breaking quorum\ndevice. Consider the following points:\nThe HyperSwap topology requires at least one control enclosure in each main data site.\nTherefore, to get a volume that is resiliently stored on both sites, one control enclosure\nwith the necessary storage capacity is required.\nThe HyperSwap topology uses more system resources to support a fully independent\ncache on each site, which provides full performance, even if one site is lost.\nThe HyperSwap function can be configured by using the GUI or command-line interface\n(CLI).\nThe hosts, Storwize V5000 control enclosures, and Storwize V5000 storage enclosures\nare in one of two failure domains or sites. External virtualized storage capacity can also be\nused.\nVolumes are visible as a single object across both sites (the Storwize V5oo0 control\nenclosure).\nAt least two control enclosures are required for HyperSwap. System scalability depends on\nthe hardware details, as listed in Table 10-12.\nTable 10-12 HyperSwap support\nV5010\nV5020\nV5030\nV7000\nIBM SAN\nV5030F\nVolume\nController\nMaximum number of I/O groups\n1\n1\n2\n4\n4\nSupport for HyperSwap\nNo\nNo\nYes\nYes\nYes\nSupport for Stretched Cluster\nNo\nNo\nNo\nNo\nYes\nSo, a V5ooo HyperSwap cluster is always restricted to a single control enclosure per site. The\nStorwize V7oo0 and IBM SAN Volume Controller can provide more scalability and offer more\nflexibility.\n594\nImplementing the IBM Storwize V5000 Gen2 with IBM Spectrum Virtualize V8.2.1",
+    "lines": [
+      {
+        "box": [
+          [
+            227.0,
+            88.0
+          ],
+          [
+            852.0,
+            88.0
+          ],
+          [
+            852.0,
+            104.0
+          ],
+          [
+            227.0,
+            104.0
+          ]
+        ],
+        "text": "If the nodes go offline or the storage at either site goes offline, leaving an online and",
+        "score": 0.9999581575393677
+      },
+      {
+        "box": [
+          [
+            227.0,
+            105.0
+          ],
+          [
+            912.0,
+            105.0
+          ],
+          [
+            912.0,
+            118.0
+          ],
+          [
+            227.0,
+            118.0
+          ]
+        ],
+        "text": "accessible up-to-date copy, the HyperSwap function can automatically fail over access to the",
+        "score": 0.9998632669448853
+      },
+      {
+        "box": [
+          [
+            227.0,
+            121.0
+          ],
+          [
+            913.0,
+            121.0
+          ],
+          [
+            913.0,
+            134.0
+          ],
+          [
+            227.0,
+            134.0
+          ]
+        ],
+        "text": "online copy. The HyperSwap function also automatically resynchronizes the two copies when",
+        "score": 0.9949610233306885
+      },
+      {
+        "box": [
+          [
+            227.0,
+            136.0
+          ],
+          [
+            296.0,
+            136.0
+          ],
+          [
+            296.0,
+            150.0
+          ],
+          [
+            227.0,
+            150.0
+          ]
+        ],
+        "text": "possible.",
+        "score": 0.999993622303009
+      },
+      {
+        "box": [
+          [
+            227.0,
+            163.0
+          ],
+          [
+            849.0,
+            163.0
+          ],
+          [
+            849.0,
+            179.0
+          ],
+          [
+            227.0,
+            179.0
+          ]
+        ],
+        "text": "HyperSwap capability enables each volume to be presented by two I/O groups. The",
+        "score": 0.9998368620872498
+      },
+      {
+        "box": [
+          [
+            225.0,
+            179.0
+          ],
+          [
+            882.0,
+            178.0
+          ],
+          [
+            882.0,
+            194.0
+          ],
+          [
+            225.0,
+            195.0
+          ]
+        ],
+        "text": "configuration tolerates combinations of node and site failures, by using the same flexible",
+        "score": 0.9964222311973572
+      },
+      {
+        "box": [
+          [
+            227.0,
+            196.0
+          ],
+          [
+            912.0,
+            196.0
+          ],
+          [
+            912.0,
+            209.0
+          ],
+          [
+            227.0,
+            209.0
+          ]
+        ],
+        "text": "choices of host multipathing driver interoperability that are available for the IBM Storwize. The",
+        "score": 0.9997615814208984
+      },
+      {
+        "box": [
+          [
+            227.0,
+            211.0
+          ],
+          [
+            860.0,
+            211.0
+          ],
+          [
+            860.0,
+            224.0
+          ],
+          [
+            227.0,
+            224.0
+          ]
+        ],
+        "text": "use of FlashCopy helps maintain a golden image during automatic resynchronization.",
+        "score": 0.9958678483963013
+      },
+      {
+        "box": [
+          [
+            236.0,
+            246.0
+          ],
+          [
+            861.0,
+            246.0
+          ],
+          [
+            861.0,
+            262.0
+          ],
+          [
+            236.0,
+            262.0
+          ]
+        ],
+        "text": "Important: Because Remote Mirroring is used to support the HyperSwap capability,",
+        "score": 0.9932832717895508
+      },
+      {
+        "box": [
+          [
+            236.0,
+            262.0
+          ],
+          [
+            729.0,
+            262.0
+          ],
+          [
+            729.0,
+            278.0
+          ],
+          [
+            236.0,
+            278.0
+          ]
+        ],
+        "text": "Remote Mirroring licensing is a requirement for using HyperSwap.",
+        "score": 0.992830753326416
+      },
+      {
+        "box": [
+          [
+            227.0,
+            299.0
+          ],
+          [
+            900.0,
+            299.0
+          ],
+          [
+            900.0,
+            315.0
+          ],
+          [
+            227.0,
+            315.0
+          ]
+        ],
+        "text": "The HyperSwap function uses a hyperswap topology by spreading the control enclosure of",
+        "score": 0.9959861636161804
+      },
+      {
+        "box": [
+          [
+            225.0,
+            314.0
+          ],
+          [
+            893.0,
+            315.0
+          ],
+          [
+            893.0,
+            331.0
+          ],
+          [
+            225.0,
+            330.0
+          ]
+        ],
+        "text": "the system across two sites, with storage at a third site that acts as a tie-breaking quorum",
+        "score": 0.9867231249809265
+      },
+      {
+        "box": [
+          [
+            227.0,
+            331.0
+          ],
+          [
+            505.0,
+            331.0
+          ],
+          [
+            505.0,
+            344.0
+          ],
+          [
+            227.0,
+            344.0
+          ]
+        ],
+        "text": "device. Consider the following points:",
+        "score": 0.9993112683296204
+      },
+      {
+        "box": [
+          [
+            250.0,
+            352.0
+          ],
+          [
+            903.0,
+            352.0
+          ],
+          [
+            903.0,
+            368.0
+          ],
+          [
+            250.0,
+            368.0
+          ]
+        ],
+        "text": "The HyperSwap topology requires at least one control enclosure in each main data site.",
+        "score": 0.9926204085350037
+      },
+      {
+        "box": [
+          [
+            251.0,
+            369.0
+          ],
+          [
+            894.0,
+            369.0
+          ],
+          [
+            894.0,
+            382.0
+          ],
+          [
+            251.0,
+            382.0
+          ]
+        ],
+        "text": "Therefore, to get a volume that is resiliently stored on both sites, one control enclosure",
+        "score": 0.9979954361915588
+      },
+      {
+        "box": [
+          [
+            250.0,
+            383.0
+          ],
+          [
+            607.0,
+            383.0
+          ],
+          [
+            607.0,
+            399.0
+          ],
+          [
+            250.0,
+            399.0
+          ]
+        ],
+        "text": "with the necessary storage capacity is required.",
+        "score": 0.999666690826416
+      },
+      {
+        "box": [
+          [
+            250.0,
+            405.0
+          ],
+          [
+            885.0,
+            405.0
+          ],
+          [
+            885.0,
+            421.0
+          ],
+          [
+            250.0,
+            421.0
+          ]
+        ],
+        "text": "The HyperSwap topology uses more system resources to support a fully independent",
+        "score": 0.9985224008560181
+      },
+      {
+        "box": [
+          [
+            249.0,
+            421.0
+          ],
+          [
+            813.0,
+            420.0
+          ],
+          [
+            813.0,
+            436.0
+          ],
+          [
+            249.0,
+            437.0
+          ]
+        ],
+        "text": "cache on each site, which provides full performance, even if one site is lost.",
+        "score": 0.9949577450752258
+      },
+      {
+        "box": [
+          [
+            250.0,
+            442.0
+          ],
+          [
+            903.0,
+            442.0
+          ],
+          [
+            903.0,
+            458.0
+          ],
+          [
+            250.0,
+            458.0
+          ]
+        ],
+        "text": "The HyperSwap function can be configured by using the GUI or command-line interface",
+        "score": 0.9949854612350464
+      },
+      {
+        "box": [
+          [
+            250.0,
+            458.0
+          ],
+          [
+            296.0,
+            458.0
+          ],
+          [
+            296.0,
+            475.0
+          ],
+          [
+            250.0,
+            475.0
+          ]
+        ],
+        "text": "(CLI).",
+        "score": 0.9995145797729492
+      },
+      {
+        "box": [
+          [
+            250.0,
+            480.0
+          ],
+          [
+            900.0,
+            480.0
+          ],
+          [
+            900.0,
+            496.0
+          ],
+          [
+            250.0,
+            496.0
+          ]
+        ],
+        "text": "The hosts, Storwize V5000 control enclosures, and Storwize V5000 storage enclosures",
+        "score": 0.9891456961631775
+      },
+      {
+        "box": [
+          [
+            251.0,
+            497.0
+          ],
+          [
+            912.0,
+            497.0
+          ],
+          [
+            912.0,
+            510.0
+          ],
+          [
+            251.0,
+            510.0
+          ]
+        ],
+        "text": "are in one of two failure domains or sites. External virtualized storage capacity can also be",
+        "score": 0.99349445104599
+      },
+      {
+        "box": [
+          [
+            250.0,
+            512.0
+          ],
+          [
+            294.0,
+            512.0
+          ],
+          [
+            294.0,
+            527.0
+          ],
+          [
+            250.0,
+            527.0
+          ]
+        ],
+        "text": "used.",
+        "score": 0.9999957084655762
+      },
+      {
+        "box": [
+          [
+            249.0,
+            533.0
+          ],
+          [
+            874.0,
+            533.0
+          ],
+          [
+            874.0,
+            549.0
+          ],
+          [
+            249.0,
+            549.0
+          ]
+        ],
+        "text": "Volumes are visible as a single object across both sites (the Storwize V5oo0 control",
+        "score": 0.9929078221321106
+      },
+      {
+        "box": [
+          [
+            251.0,
+            551.0
+          ],
+          [
+            336.0,
+            551.0
+          ],
+          [
+            336.0,
+            565.0
+          ],
+          [
+            251.0,
+            565.0
+          ]
+        ],
+        "text": "enclosure).",
+        "score": 0.9999920129776001
+      },
+      {
+        "box": [
+          [
+            227.0,
+            577.0
+          ],
+          [
+            900.0,
+            577.0
+          ],
+          [
+            900.0,
+            593.0
+          ],
+          [
+            227.0,
+            593.0
+          ]
+        ],
+        "text": "At least two control enclosures are required for HyperSwap. System scalability depends on",
+        "score": 0.9987300634384155
+      },
+      {
+        "box": [
+          [
+            227.0,
+            595.0
+          ],
+          [
+            567.0,
+            595.0
+          ],
+          [
+            567.0,
+            608.0
+          ],
+          [
+            227.0,
+            608.0
+          ]
+        ],
+        "text": "the hardware details, as listed in Table 10-12.",
+        "score": 0.999928891658783
+      },
+      {
+        "box": [
+          [
+            229.0,
+            623.0
+          ],
+          [
+            456.0,
+            623.0
+          ],
+          [
+            456.0,
+            636.0
+          ],
+          [
+            229.0,
+            636.0
+          ]
+        ],
+        "text": "Table 10-12 HyperSwap support",
+        "score": 0.9955998063087463
+      },
+      {
+        "box": [
+          [
+            506.0,
+            643.0
+          ],
+          [
+            557.0,
+            643.0
+          ],
+          [
+            557.0,
+            660.0
+          ],
+          [
+            506.0,
+            660.0
+          ]
+        ],
+        "text": "V5010",
+        "score": 0.9997948408126831
+      },
+      {
+        "box": [
+          [
+            576.0,
+            643.0
+          ],
+          [
+            626.0,
+            643.0
+          ],
+          [
+            626.0,
+            660.0
+          ],
+          [
+            576.0,
+            660.0
+          ]
+        ],
+        "text": "V5020",
+        "score": 0.9997784495353699
+      },
+      {
+        "box": [
+          [
+            642.0,
+            644.0
+          ],
+          [
+            690.0,
+            644.0
+          ],
+          [
+            690.0,
+            658.0
+          ],
+          [
+            642.0,
+            658.0
+          ]
+        ],
+        "text": "V5030",
+        "score": 0.9996762275695801
+      },
+      {
+        "box": [
+          [
+            719.0,
+            643.0
+          ],
+          [
+            768.0,
+            643.0
+          ],
+          [
+            768.0,
+            660.0
+          ],
+          [
+            719.0,
+            660.0
+          ]
+        ],
+        "text": "V7000",
+        "score": 0.9961744546890259
+      },
+      {
+        "box": [
+          [
+            784.0,
+            644.0
+          ],
+          [
+            851.0,
+            644.0
+          ],
+          [
+            851.0,
+            658.0
+          ],
+          [
+            784.0,
+            658.0
+          ]
+        ],
+        "text": "IBM SAN",
+        "score": 0.999465823173523
+      },
+      {
+        "box": [
+          [
+            641.0,
+            658.0
+          ],
+          [
+            703.0,
+            658.0
+          ],
+          [
+            703.0,
+            672.0
+          ],
+          [
+            641.0,
+            672.0
+          ]
+        ],
+        "text": "V5030F",
+        "score": 0.922599732875824
+      },
+      {
+        "box": [
+          [
+            784.0,
+            659.0
+          ],
+          [
+            843.0,
+            659.0
+          ],
+          [
+            843.0,
+            673.0
+          ],
+          [
+            784.0,
+            673.0
+          ]
+        ],
+        "text": "Volume",
+        "score": 0.9999678730964661
+      },
+      {
+        "box": [
+          [
+            785.0,
+            673.0
+          ],
+          [
+            860.0,
+            673.0
+          ],
+          [
+            860.0,
+            686.0
+          ],
+          [
+            785.0,
+            686.0
+          ]
+        ],
+        "text": "Controller",
+        "score": 0.9999940991401672
+      },
+      {
+        "box": [
+          [
+            236.0,
+            696.0
+          ],
+          [
+            451.0,
+            697.0
+          ],
+          [
+            451.0,
+            713.0
+          ],
+          [
+            236.0,
+            712.0
+          ]
+        ],
+        "text": "Maximum number of I/O groups",
+        "score": 0.9992890357971191
+      },
+      {
+        "box": [
+          [
+            507.0,
+            698.0
+          ],
+          [
+            521.0,
+            698.0
+          ],
+          [
+            521.0,
+            712.0
+          ],
+          [
+            507.0,
+            712.0
+          ]
+        ],
+        "text": "1",
+        "score": 0.9999818801879883
+      },
+      {
+        "box": [
+          [
+            577.0,
+            698.0
+          ],
+          [
+            590.0,
+            698.0
+          ],
+          [
+            590.0,
+            712.0
+          ],
+          [
+            577.0,
+            712.0
+          ]
+        ],
+        "text": "1",
+        "score": 0.99997878074646
+      },
+      {
+        "box": [
+          [
+            640.0,
+            696.0
+          ],
+          [
+            657.0,
+            696.0
+          ],
+          [
+            657.0,
+            714.0
+          ],
+          [
+            640.0,
+            714.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9999908208847046
+      },
+      {
+        "box": [
+          [
+            719.0,
+            698.0
+          ],
+          [
+            733.0,
+            698.0
+          ],
+          [
+            733.0,
+            712.0
+          ],
+          [
+            719.0,
+            712.0
+          ]
+        ],
+        "text": "4",
+        "score": 0.999991774559021
+      },
+      {
+        "box": [
+          [
+            782.0,
+            696.0
+          ],
+          [
+            799.0,
+            696.0
+          ],
+          [
+            799.0,
+            713.0
+          ],
+          [
+            782.0,
+            713.0
+          ]
+        ],
+        "text": "4",
+        "score": 0.9999922513961792
+      },
+      {
+        "box": [
+          [
+            238.0,
+            723.0
+          ],
+          [
+            395.0,
+            723.0
+          ],
+          [
+            395.0,
+            736.0
+          ],
+          [
+            238.0,
+            736.0
+          ]
+        ],
+        "text": "Support for HyperSwap",
+        "score": 0.9999821782112122
+      },
+      {
+        "box": [
+          [
+            505.0,
+            720.0
+          ],
+          [
+            533.0,
+            720.0
+          ],
+          [
+            533.0,
+            739.0
+          ],
+          [
+            505.0,
+            739.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9999799132347107
+      },
+      {
+        "box": [
+          [
+            576.0,
+            721.0
+          ],
+          [
+            601.0,
+            721.0
+          ],
+          [
+            601.0,
+            737.0
+          ],
+          [
+            576.0,
+            737.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9999696612358093
+      },
+      {
+        "box": [
+          [
+            640.0,
+            720.0
+          ],
+          [
+            673.0,
+            720.0
+          ],
+          [
+            673.0,
+            738.0
+          ],
+          [
+            640.0,
+            738.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9999955296516418
+      },
+      {
+        "box": [
+          [
+            718.0,
+            720.0
+          ],
+          [
+            751.0,
+            720.0
+          ],
+          [
+            751.0,
+            738.0
+          ],
+          [
+            718.0,
+            738.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9999960064888
+      },
+      {
+        "box": [
+          [
+            783.0,
+            720.0
+          ],
+          [
+            816.0,
+            720.0
+          ],
+          [
+            816.0,
+            738.0
+          ],
+          [
+            783.0,
+            738.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9999957084655762
+      },
+      {
+        "box": [
+          [
+            237.0,
+            747.0
+          ],
+          [
+            434.0,
+            747.0
+          ],
+          [
+            434.0,
+            760.0
+          ],
+          [
+            237.0,
+            760.0
+          ]
+        ],
+        "text": "Support for Stretched Cluster",
+        "score": 0.9999622702598572
+      },
+      {
+        "box": [
+          [
+            505.0,
+            744.0
+          ],
+          [
+            533.0,
+            744.0
+          ],
+          [
+            533.0,
+            763.0
+          ],
+          [
+            505.0,
+            763.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9999797344207764
+      },
+      {
+        "box": [
+          [
+            575.0,
+            744.0
+          ],
+          [
+            602.0,
+            744.0
+          ],
+          [
+            602.0,
+            763.0
+          ],
+          [
+            575.0,
+            763.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9999774098396301
+      },
+      {
+        "box": [
+          [
+            640.0,
+            744.0
+          ],
+          [
+            667.0,
+            744.0
+          ],
+          [
+            667.0,
+            763.0
+          ],
+          [
+            640.0,
+            763.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.99997878074646
+      },
+      {
+        "box": [
+          [
+            717.0,
+            744.0
+          ],
+          [
+            745.0,
+            744.0
+          ],
+          [
+            745.0,
+            763.0
+          ],
+          [
+            717.0,
+            763.0
+          ]
+        ],
+        "text": "No",
+        "score": 0.9999788999557495
+      },
+      {
+        "box": [
+          [
+            782.0,
+            742.0
+          ],
+          [
+            816.0,
+            745.0
+          ],
+          [
+            815.0,
+            763.0
+          ],
+          [
+            780.0,
+            760.0
+          ]
+        ],
+        "text": "Yes",
+        "score": 0.9999929070472717
+      },
+      {
+        "box": [
+          [
+            228.0,
+            786.0
+          ],
+          [
+            912.0,
+            786.0
+          ],
+          [
+            912.0,
+            799.0
+          ],
+          [
+            228.0,
+            799.0
+          ]
+        ],
+        "text": "So, a V5ooo HyperSwap cluster is always restricted to a single control enclosure per site. The",
+        "score": 0.9856134653091431
+      },
+      {
+        "box": [
+          [
+            227.0,
+            802.0
+          ],
+          [
+            912.0,
+            802.0
+          ],
+          [
+            912.0,
+            815.0
+          ],
+          [
+            227.0,
+            815.0
+          ]
+        ],
+        "text": "Storwize V7oo0 and IBM SAN Volume Controller can provide more scalability and offer more",
+        "score": 0.989998996257782
+      },
+      {
+        "box": [
+          [
+            227.0,
+            817.0
+          ],
+          [
+            297.0,
+            817.0
+          ],
+          [
+            297.0,
+            831.0
+          ],
+          [
+            227.0,
+            831.0
+          ]
+        ],
+        "text": "flexibility.",
+        "score": 0.9999914169311523
+      },
+      {
+        "box": [
+          [
+            105.0,
+            973.0
+          ],
+          [
+            138.0,
+            973.0
+          ],
+          [
+            138.0,
+            988.0
+          ],
+          [
+            105.0,
+            988.0
+          ]
+        ],
+        "text": "594",
+        "score": 0.9999988675117493
+      },
+      {
+        "box": [
+          [
+            163.0,
+            975.0
+          ],
+          [
+            728.0,
+            975.0
+          ],
+          [
+            728.0,
+            988.0
+          ],
+          [
+            163.0,
+            988.0
+          ]
+        ],
+        "text": "Implementing the IBM Storwize V5000 Gen2 with IBM Spectrum Virtualize V8.2.1",
+        "score": 0.9856472015380859
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 59,
+    "elapsed_ms": 399.71
+  }
+}

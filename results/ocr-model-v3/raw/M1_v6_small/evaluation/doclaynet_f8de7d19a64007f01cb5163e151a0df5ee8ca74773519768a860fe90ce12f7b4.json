@@ -1,0 +1,761 @@
+{
+  "id": "doclaynet_f8de7d19a64007f01cb5163e151a0df5ee8ca74773519768a860fe90ce12f7b4",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "b697be94127afd4a3e9581d6e233d79078c69c0b0094d39edf51c8524420a646",
+  "ok": true,
+  "result": {
+    "text": "Chapter 5: pQCD vs. AdS/CFT\n130\n0.8\npQCD Rad+EI, PHOBOS\n- pQCD Rad+EI, KLN\n· pQCD Rad, q = 40\n-- pQCD Rad, ą = 100\n-AdS Drag D = 3, PHOBOS\nAdS Drag D = 3, KLN\n- AdS Drag D = 1, PHOBOS\n0.4\n- AdS Drag D = 1, KLN\nAdS Drag\nAdS Drag λ = 5.5, PHOBOS\nAdS Drag λ = 5.5, KLN\n0.2\n8\n50\n100\n150\nPτ(GeV)\nFigure 5.3: The double ratio of RcAA(pT) to RbAA(pT) predictions for LHC using\nEq. (5.1) for AdS/CFT and WHDG [152] for pQCD with a wide range of input\nparameters. The generic difference between the pQCD results tending to unity con-\ntrasted to the much smaller and nearly pT-independent results from AdS/CFT can\nbe easily distinguished at LHc. The \"(\" and \"J\" denote momenta after which pos-\nsible string theoretic corrections may need to be considered; the curves' increasing\ntransparency from \"(\" to “]\" is meant to additionally emphasize this, see text.\nκL2q log(pT/MQ)/pT, with κ a proportionality constant and q = µ2/λg. The\nmost important feature in pQCD relative to AdS/CFT is that ¯pQcD → 0\nasymptotically at high-pT while ξAds remains constant. nQ(pT) is a slowly\nincreases with pT\nwhich shows representative predictions from the full numerical calculations of",
+    "lines": [
+      {
+        "box": [
+          [
+            180.0,
+            120.0
+          ],
+          [
+            460.0,
+            120.0
+          ],
+          [
+            460.0,
+            137.0
+          ],
+          [
+            180.0,
+            137.0
+          ]
+        ],
+        "text": "Chapter 5: pQCD vs. AdS/CFT",
+        "score": 0.9976000189781189
+      },
+      {
+        "box": [
+          [
+            811.0,
+            119.0
+          ],
+          [
+            847.0,
+            119.0
+          ],
+          [
+            847.0,
+            138.0
+          ],
+          [
+            811.0,
+            138.0
+          ]
+        ],
+        "text": "130",
+        "score": 0.9999947547912598
+      },
+      {
+        "box": [
+          [
+            225.0,
+            214.0
+          ],
+          [
+            254.0,
+            214.0
+          ],
+          [
+            254.0,
+            234.0
+          ],
+          [
+            225.0,
+            234.0
+          ]
+        ],
+        "text": "0.8",
+        "score": 0.9999902844429016
+      },
+      {
+        "box": [
+          [
+            630.0,
+            219.0
+          ],
+          [
+            806.0,
+            218.0
+          ],
+          [
+            806.0,
+            234.0
+          ],
+          [
+            630.0,
+            235.0
+          ]
+        ],
+        "text": "pQCD Rad+EI, PHOBOS",
+        "score": 0.9897783398628235
+      },
+      {
+        "box": [
+          [
+            620.0,
+            232.0
+          ],
+          [
+            771.0,
+            232.0
+          ],
+          [
+            771.0,
+            248.0
+          ],
+          [
+            620.0,
+            248.0
+          ]
+        ],
+        "text": "- pQCD Rad+EI, KLN",
+        "score": 0.9594496488571167
+      },
+      {
+        "box": [
+          [
+            629.0,
+            246.0
+          ],
+          [
+            765.0,
+            246.0
+          ],
+          [
+            765.0,
+            262.0
+          ],
+          [
+            629.0,
+            262.0
+          ]
+        ],
+        "text": "· pQCD Rad, q = 40",
+        "score": 0.9566132426261902
+      },
+      {
+        "box": [
+          [
+            620.0,
+            260.0
+          ],
+          [
+            771.0,
+            260.0
+          ],
+          [
+            771.0,
+            276.0
+          ],
+          [
+            620.0,
+            276.0
+          ]
+        ],
+        "text": "-- pQCD Rad, ą = 100",
+        "score": 0.9336845278739929
+      },
+      {
+        "box": [
+          [
+            629.0,
+            273.0
+          ],
+          [
+            816.0,
+            272.0
+          ],
+          [
+            816.0,
+            289.0
+          ],
+          [
+            629.0,
+            290.0
+          ]
+        ],
+        "text": "-AdS Drag D = 3, PHOBOS",
+        "score": 0.9638909697532654
+      },
+      {
+        "box": [
+          [
+            624.0,
+            288.0
+          ],
+          [
+            782.0,
+            286.0
+          ],
+          [
+            782.0,
+            302.0
+          ],
+          [
+            624.0,
+            304.0
+          ]
+        ],
+        "text": "AdS Drag D = 3, KLN",
+        "score": 0.9712637066841125
+      },
+      {
+        "box": [
+          [
+            620.0,
+            301.0
+          ],
+          [
+            816.0,
+            301.0
+          ],
+          [
+            816.0,
+            317.0
+          ],
+          [
+            620.0,
+            317.0
+          ]
+        ],
+        "text": "- AdS Drag D = 1, PHOBOS",
+        "score": 0.9588181376457214
+      },
+      {
+        "box": [
+          [
+            228.0,
+            311.0
+          ],
+          [
+            253.0,
+            311.0
+          ],
+          [
+            253.0,
+            327.0
+          ],
+          [
+            228.0,
+            327.0
+          ]
+        ],
+        "text": "0.4",
+        "score": 0.9999668598175049
+      },
+      {
+        "box": [
+          [
+            620.0,
+            314.0
+          ],
+          [
+            783.0,
+            314.0
+          ],
+          [
+            783.0,
+            330.0
+          ],
+          [
+            620.0,
+            330.0
+          ]
+        ],
+        "text": "- AdS Drag D = 1, KLN",
+        "score": 0.9479803442955017
+      },
+      {
+        "box": [
+          [
+            434.0,
+            325.0
+          ],
+          [
+            518.0,
+            327.0
+          ],
+          [
+            517.0,
+            348.0
+          ],
+          [
+            433.0,
+            345.0
+          ]
+        ],
+        "text": "AdS Drag",
+        "score": 0.9978684186935425
+      },
+      {
+        "box": [
+          [
+            631.0,
+            329.0
+          ],
+          [
+            825.0,
+            329.0
+          ],
+          [
+            825.0,
+            345.0
+          ],
+          [
+            631.0,
+            345.0
+          ]
+        ],
+        "text": "AdS Drag λ = 5.5, PHOBOS",
+        "score": 0.9778406023979187
+      },
+      {
+        "box": [
+          [
+            629.0,
+            343.0
+          ],
+          [
+            792.0,
+            343.0
+          ],
+          [
+            792.0,
+            359.0
+          ],
+          [
+            629.0,
+            359.0
+          ]
+        ],
+        "text": "AdS Drag λ = 5.5, KLN",
+        "score": 0.9596760869026184
+      },
+      {
+        "box": [
+          [
+            224.0,
+            355.0
+          ],
+          [
+            254.0,
+            355.0
+          ],
+          [
+            254.0,
+            374.0
+          ],
+          [
+            224.0,
+            374.0
+          ]
+        ],
+        "text": "0.2",
+        "score": 0.9999834895133972
+      },
+      {
+        "box": [
+          [
+            248.0,
+            398.0
+          ],
+          [
+            269.0,
+            419.0
+          ],
+          [
+            254.0,
+            433.0
+          ],
+          [
+            233.0,
+            412.0
+          ]
+        ],
+        "text": "8",
+        "score": 0.9772233366966248
+      },
+      {
+        "box": [
+          [
+            352.0,
+            411.0
+          ],
+          [
+            376.0,
+            411.0
+          ],
+          [
+            376.0,
+            429.0
+          ],
+          [
+            352.0,
+            429.0
+          ]
+        ],
+        "text": "50",
+        "score": 0.9999910593032837
+      },
+      {
+        "box": [
+          [
+            456.0,
+            411.0
+          ],
+          [
+            490.0,
+            411.0
+          ],
+          [
+            490.0,
+            429.0
+          ],
+          [
+            456.0,
+            429.0
+          ]
+        ],
+        "text": "100",
+        "score": 0.9999688267707825
+      },
+      {
+        "box": [
+          [
+            564.0,
+            410.0
+          ],
+          [
+            599.0,
+            410.0
+          ],
+          [
+            599.0,
+            429.0
+          ],
+          [
+            564.0,
+            429.0
+          ]
+        ],
+        "text": "150",
+        "score": 0.9998577237129211
+      },
+      {
+        "box": [
+          [
+            379.0,
+            425.0
+          ],
+          [
+            455.0,
+            422.0
+          ],
+          [
+            456.0,
+            443.0
+          ],
+          [
+            380.0,
+            446.0
+          ]
+        ],
+        "text": "Pτ(GeV)",
+        "score": 0.9630516171455383
+      },
+      {
+        "box": [
+          [
+            179.0,
+            462.0
+          ],
+          [
+            846.0,
+            462.0
+          ],
+          [
+            846.0,
+            481.0
+          ],
+          [
+            179.0,
+            481.0
+          ]
+        ],
+        "text": "Figure 5.3: The double ratio of RcAA(pT) to RbAA(pT) predictions for LHC using",
+        "score": 0.9805154204368591
+      },
+      {
+        "box": [
+          [
+            179.0,
+            491.0
+          ],
+          [
+            846.0,
+            491.0
+          ],
+          [
+            846.0,
+            510.0
+          ],
+          [
+            179.0,
+            510.0
+          ]
+        ],
+        "text": "Eq. (5.1) for AdS/CFT and WHDG [152] for pQCD with a wide range of input",
+        "score": 0.9853798747062683
+      },
+      {
+        "box": [
+          [
+            178.0,
+            521.0
+          ],
+          [
+            845.0,
+            521.0
+          ],
+          [
+            845.0,
+            540.0
+          ],
+          [
+            178.0,
+            540.0
+          ]
+        ],
+        "text": "parameters. The generic difference between the pQCD results tending to unity con-",
+        "score": 0.9960760474205017
+      },
+      {
+        "box": [
+          [
+            179.0,
+            551.0
+          ],
+          [
+            845.0,
+            551.0
+          ],
+          [
+            845.0,
+            567.0
+          ],
+          [
+            179.0,
+            567.0
+          ]
+        ],
+        "text": "trasted to the much smaller and nearly pT-independent results from AdS/CFT can",
+        "score": 0.9994040131568909
+      },
+      {
+        "box": [
+          [
+            179.0,
+            580.0
+          ],
+          [
+            844.0,
+            580.0
+          ],
+          [
+            844.0,
+            596.0
+          ],
+          [
+            179.0,
+            596.0
+          ]
+        ],
+        "text": "be easily distinguished at LHc. The \"(\" and \"J\" denote momenta after which pos-",
+        "score": 0.9588596224784851
+      },
+      {
+        "box": [
+          [
+            178.0,
+            608.0
+          ],
+          [
+            846.0,
+            608.0
+          ],
+          [
+            846.0,
+            627.0
+          ],
+          [
+            178.0,
+            627.0
+          ]
+        ],
+        "text": "sible string theoretic corrections may need to be considered; the curves' increasing",
+        "score": 0.980937659740448
+      },
+      {
+        "box": [
+          [
+            180.0,
+            638.0
+          ],
+          [
+            808.0,
+            638.0
+          ],
+          [
+            808.0,
+            654.0
+          ],
+          [
+            180.0,
+            654.0
+          ]
+        ],
+        "text": "transparency from \"(\" to “]\" is meant to additionally emphasize this, see text.",
+        "score": 0.9814107418060303
+      },
+      {
+        "box": [
+          [
+            179.0,
+            686.0
+          ],
+          [
+            846.0,
+            686.0
+          ],
+          [
+            846.0,
+            706.0
+          ],
+          [
+            179.0,
+            706.0
+          ]
+        ],
+        "text": "κL2q log(pT/MQ)/pT, with κ a proportionality constant and q = µ2/λg. The",
+        "score": 0.9805251359939575
+      },
+      {
+        "box": [
+          [
+            178.0,
+            717.0
+          ],
+          [
+            846.0,
+            717.0
+          ],
+          [
+            846.0,
+            737.0
+          ],
+          [
+            178.0,
+            737.0
+          ]
+        ],
+        "text": "most important feature in pQCD relative to AdS/CFT is that ¯pQcD → 0",
+        "score": 0.9701735377311707
+      },
+      {
+        "box": [
+          [
+            178.0,
+            748.0
+          ],
+          [
+            844.0,
+            748.0
+          ],
+          [
+            844.0,
+            767.0
+          ],
+          [
+            178.0,
+            767.0
+          ]
+        ],
+        "text": "asymptotically at high-pT while ξAds remains constant. nQ(pT) is a slowly",
+        "score": 0.9789087772369385
+      },
+      {
+        "box": [
+          [
+            687.0,
+            781.0
+          ],
+          [
+            844.0,
+            781.0
+          ],
+          [
+            844.0,
+            798.0
+          ],
+          [
+            687.0,
+            798.0
+          ]
+        ],
+        "text": "increases with pT",
+        "score": 0.9711779356002808
+      },
+      {
+        "box": [
+          [
+            178.0,
+            841.0
+          ],
+          [
+            847.0,
+            841.0
+          ],
+          [
+            847.0,
+            860.0
+          ],
+          [
+            178.0,
+            860.0
+          ]
+        ],
+        "text": "which shows representative predictions from the full numerical calculations of",
+        "score": 0.9944775104522705
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 33,
+    "elapsed_ms": 232.28
+  }
+}

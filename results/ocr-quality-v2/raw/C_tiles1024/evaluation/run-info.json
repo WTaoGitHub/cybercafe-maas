@@ -1,0 +1,25 @@
+{
+  "variant": "C_tiles1024",
+  "parameters": {
+    "tile_size": 1024,
+    "tile_overlap": 192
+  },
+  "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+  "providers": {
+    "text_det": [
+      "CUDAExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "text_cls": [
+      "CUDAExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "text_rec": [
+      "CUDAExecutionProvider",
+      "CPUExecutionProvider"
+    ]
+  },
+  "image_count": 160,
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, 535.274.02",
+  "started_at": "2026-10-19T07:49:04Z"
+}

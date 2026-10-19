@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_3988",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "07cf2db847bba71504cf81aa7d65b25f13179721b8ccd3f747a3e4785a15a231",
+  "ok": true,
+  "result": {
+    "text": "用宫品前\nRelacolol",
+    "lines": [
+      {
+        "box": [
+          [
+            81.0,
+            174.0
+          ],
+          [
+            917.0,
+            161.0
+          ],
+          [
+            921.0,
+            439.0
+          ],
+          [
+            85.0,
+            452.0
+          ]
+        ],
+        "text": "用宫品前",
+        "score": 0.9908363223075867
+      },
+      {
+        "box": [
+          [
+            0.0,
+            1143.0
+          ],
+          [
+            471.0,
+            1152.0
+          ],
+          [
+            469.0,
+            1248.0
+          ],
+          [
+            0.0,
+            1248.0
+          ]
+        ],
+        "text": "Relacolol",
+        "score": 0.7577785849571228
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1248,
+      926,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 58.51
+  }
+}

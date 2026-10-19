@@ -1,0 +1,470 @@
+{
+  "A_default/calibration": {
+    "doclaynet": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.07924037864680322,
+      "strict_cer": 0.10284335572943719,
+      "inference_p50_ms": 306.49,
+      "inference_p95_ms": 404.04,
+      "mean_ms": 271.48,
+      "counts": {
+        "invalid_reference_regions": 16,
+        "reference_chars": 59683,
+        "strict_edits": 6138,
+        "normalized_reference_chars": 51552,
+        "normalized_edits": 4085,
+        "missing_regions": 199,
+        "reference_regions": 2402,
+        "unmatched_predictions": 10,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 297,
+        "normalized_deletions": 3639,
+        "normalized_insertions": 149
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    },
+    "rctw17": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.1859799713876967,
+      "strict_cer": 0.19662921348314608,
+      "inference_p50_ms": 110.88,
+      "inference_p95_ms": 148.95,
+      "mean_ms": 107.9,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 712,
+        "strict_edits": 140,
+        "normalized_reference_chars": 699,
+        "normalized_edits": 130,
+        "missing_regions": 23,
+        "reference_regions": 117,
+        "unmatched_predictions": 6,
+        "ignored_predictions": 6,
+        "normalized_substitutions": 9,
+        "normalized_deletions": 100,
+        "normalized_insertions": 21
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    }
+  },
+  "A_default/evaluation": {
+    "doclaynet": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.14741298636871006,
+      "strict_cer": 0.1751796389694857,
+      "inference_p50_ms": 236.24,
+      "inference_p95_ms": 376.71,
+      "mean_ms": 243.76,
+      "counts": {
+        "invalid_reference_regions": 10,
+        "reference_chars": 205412,
+        "strict_edits": 35984,
+        "normalized_reference_chars": 177386,
+        "normalized_edits": 26149,
+        "missing_regions": 990,
+        "reference_regions": 8086,
+        "unmatched_predictions": 143,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 1484,
+        "normalized_deletions": 22821,
+        "normalized_insertions": 1844
+      },
+      "engine_calls": 80,
+      "deduplicated": 0
+    },
+    "rctw17": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.18467336683417085,
+      "strict_cer": 0.19154228855721392,
+      "inference_p50_ms": 114.59,
+      "inference_p95_ms": 161.75,
+      "mean_ms": 114.61,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 2412,
+        "strict_edits": 462,
+        "normalized_reference_chars": 2388,
+        "normalized_edits": 441,
+        "missing_regions": 65,
+        "reference_regions": 376,
+        "unmatched_predictions": 13,
+        "ignored_predictions": 17,
+        "normalized_substitutions": 42,
+        "normalized_deletions": 320,
+        "normalized_insertions": 79
+      },
+      "engine_calls": 80,
+      "deduplicated": 0
+    }
+  },
+  "B_resolution1536/calibration": {
+    "doclaynet": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.07766914959652389,
+      "strict_cer": 0.10312819395807851,
+      "inference_p50_ms": 340.23,
+      "inference_p95_ms": 481.49,
+      "mean_ms": 325.76,
+      "counts": {
+        "invalid_reference_regions": 16,
+        "reference_chars": 59683,
+        "strict_edits": 6155,
+        "normalized_reference_chars": 51552,
+        "normalized_edits": 4004,
+        "missing_regions": 135,
+        "reference_regions": 2402,
+        "unmatched_predictions": 10,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 365,
+        "normalized_deletions": 3452,
+        "normalized_insertions": 187
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    },
+    "rctw17": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.1888412017167382,
+      "strict_cer": 0.19241573033707865,
+      "inference_p50_ms": 140.06,
+      "inference_p95_ms": 195.68,
+      "mean_ms": 146.0,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 712,
+        "strict_edits": 137,
+        "normalized_reference_chars": 699,
+        "normalized_edits": 132,
+        "missing_regions": 26,
+        "reference_regions": 117,
+        "unmatched_predictions": 4,
+        "ignored_predictions": 5,
+        "normalized_substitutions": 5,
+        "normalized_deletions": 106,
+        "normalized_insertions": 21
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    }
+  },
+  "B_resolution1536/evaluation": {
+    "doclaynet": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.13118848161636207,
+      "strict_cer": 0.16505851654236364,
+      "inference_p50_ms": 284.95,
+      "inference_p95_ms": 469.96,
+      "mean_ms": 302.09,
+      "counts": {
+        "invalid_reference_regions": 10,
+        "reference_chars": 205412,
+        "strict_edits": 33905,
+        "normalized_reference_chars": 177386,
+        "normalized_edits": 23271,
+        "missing_regions": 836,
+        "reference_regions": 8086,
+        "unmatched_predictions": 156,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 1514,
+        "normalized_deletions": 19742,
+        "normalized_insertions": 2015
+      },
+      "engine_calls": 80,
+      "deduplicated": 0
+    },
+    "rctw17": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.2051926298157454,
+      "strict_cer": 0.21061359867330018,
+      "inference_p50_ms": 124.87,
+      "inference_p95_ms": 181.98,
+      "mean_ms": 133.24,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 2412,
+        "strict_edits": 508,
+        "normalized_reference_chars": 2388,
+        "normalized_edits": 490,
+        "missing_regions": 73,
+        "reference_regions": 376,
+        "unmatched_predictions": 13,
+        "ignored_predictions": 18,
+        "normalized_substitutions": 77,
+        "normalized_deletions": 334,
+        "normalized_insertions": 79
+      },
+      "engine_calls": 80,
+      "deduplicated": 0
+    }
+  },
+  "C_tiles1024/calibration": {
+    "doclaynet": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.058717411545623835,
+      "strict_cer": 0.08206692022854079,
+      "inference_p50_ms": 1221.26,
+      "inference_p95_ms": 1624.77,
+      "mean_ms": 1105.64,
+      "counts": {
+        "invalid_reference_regions": 16,
+        "reference_chars": 59683,
+        "strict_edits": 4898,
+        "normalized_reference_chars": 51552,
+        "normalized_edits": 3027,
+        "missing_regions": 141,
+        "reference_regions": 2402,
+        "unmatched_predictions": 17,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 331,
+        "normalized_deletions": 2469,
+        "normalized_insertions": 227
+      },
+      "engine_calls": 80,
+      "deduplicated": 4278
+    },
+    "rctw17": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.25178826895565093,
+      "strict_cer": 0.2598314606741573,
+      "inference_p50_ms": 344.14,
+      "inference_p95_ms": 770.2,
+      "mean_ms": 340.12,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 712,
+        "strict_edits": 185,
+        "normalized_reference_chars": 699,
+        "normalized_edits": 176,
+        "missing_regions": 13,
+        "reference_regions": 117,
+        "unmatched_predictions": 8,
+        "ignored_predictions": 6,
+        "normalized_substitutions": 16,
+        "normalized_deletions": 82,
+        "normalized_insertions": 78
+      },
+      "engine_calls": 167,
+      "deduplicated": 74
+    }
+  },
+  "C_tiles1024/evaluation": {
+    "doclaynet": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.10131577463835928,
+      "strict_cer": 0.13286954997760597,
+      "inference_p50_ms": 901.36,
+      "inference_p95_ms": 1549.04,
+      "mean_ms": 975.99,
+      "counts": {
+        "invalid_reference_regions": 10,
+        "reference_chars": 205412,
+        "strict_edits": 27293,
+        "normalized_reference_chars": 177386,
+        "normalized_edits": 17972,
+        "missing_regions": 663,
+        "reference_regions": 8086,
+        "unmatched_predictions": 191,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 1499,
+        "normalized_deletions": 13988,
+        "normalized_insertions": 2485
+      },
+      "engine_calls": 320,
+      "deduplicated": 14209
+    },
+    "rctw17": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.39824120603015073,
+      "strict_cer": 0.40422885572139305,
+      "inference_p50_ms": 425.62,
+      "inference_p95_ms": 640.97,
+      "mean_ms": 393.71,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 2412,
+        "strict_edits": 975,
+        "normalized_reference_chars": 2388,
+        "normalized_edits": 951,
+        "missing_regions": 44,
+        "reference_regions": 376,
+        "unmatched_predictions": 54,
+        "ignored_predictions": 41,
+        "normalized_substitutions": 73,
+        "normalized_deletions": 392,
+        "normalized_insertions": 486
+      },
+      "engine_calls": 827,
+      "deduplicated": 258
+    }
+  },
+  "D_score030/calibration": {
+    "doclaynet": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.07784373060211049,
+      "strict_cer": 0.10120134711726958,
+      "inference_p50_ms": 293.16,
+      "inference_p95_ms": 389.63,
+      "mean_ms": 262.4,
+      "counts": {
+        "invalid_reference_regions": 16,
+        "reference_chars": 59683,
+        "strict_edits": 6040,
+        "normalized_reference_chars": 51552,
+        "normalized_edits": 4013,
+        "missing_regions": 157,
+        "reference_regions": 2402,
+        "unmatched_predictions": 12,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 371,
+        "normalized_deletions": 3487,
+        "normalized_insertions": 155
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    },
+    "rctw17": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.1888412017167382,
+      "strict_cer": 0.199438202247191,
+      "inference_p50_ms": 111.37,
+      "inference_p95_ms": 150.07,
+      "mean_ms": 108.75,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 712,
+        "strict_edits": 142,
+        "normalized_reference_chars": 699,
+        "normalized_edits": 132,
+        "missing_regions": 18,
+        "reference_regions": 117,
+        "unmatched_predictions": 10,
+        "ignored_predictions": 7,
+        "normalized_substitutions": 20,
+        "normalized_deletions": 86,
+        "normalized_insertions": 26
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    }
+  },
+  "D_score030/evaluation": {
+    "doclaynet": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.14652791088360975,
+      "strict_cer": 0.17397717757482523,
+      "inference_p50_ms": 226.37,
+      "inference_p95_ms": 371.77,
+      "mean_ms": 234.7,
+      "counts": {
+        "invalid_reference_regions": 10,
+        "reference_chars": 205412,
+        "strict_edits": 35737,
+        "normalized_reference_chars": 177386,
+        "normalized_edits": 25992,
+        "missing_regions": 870,
+        "reference_regions": 8086,
+        "unmatched_predictions": 151,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 1592,
+        "normalized_deletions": 22533,
+        "normalized_insertions": 1867
+      },
+      "engine_calls": 80,
+      "deduplicated": 0
+    },
+    "rctw17": {
+      "total": 80,
+      "success": 80,
+      "normalized_cer": 0.19472361809045227,
+      "strict_cer": 0.20149253731343283,
+      "inference_p50_ms": 115.17,
+      "inference_p95_ms": 162.8,
+      "mean_ms": 114.75,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 2412,
+        "strict_edits": 486,
+        "normalized_reference_chars": 2388,
+        "normalized_edits": 465,
+        "missing_regions": 63,
+        "reference_regions": 376,
+        "unmatched_predictions": 26,
+        "ignored_predictions": 21,
+        "normalized_substitutions": 47,
+        "normalized_deletions": 309,
+        "normalized_insertions": 109
+      },
+      "engine_calls": 80,
+      "deduplicated": 0
+    }
+  },
+  "E_rotate90/calibration": {
+    "doclaynet": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.4797486033519553,
+      "strict_cer": 0.4936916709950907,
+      "inference_p50_ms": 214.25,
+      "inference_p95_ms": 348.91,
+      "mean_ms": 226.59,
+      "counts": {
+        "invalid_reference_regions": 16,
+        "reference_chars": 59683,
+        "strict_edits": 29465,
+        "normalized_reference_chars": 51552,
+        "normalized_edits": 24732,
+        "missing_regions": 1048,
+        "reference_regions": 2402,
+        "unmatched_predictions": 15,
+        "ignored_predictions": 0,
+        "normalized_substitutions": 540,
+        "normalized_deletions": 23981,
+        "normalized_insertions": 211
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    },
+    "rctw17": {
+      "total": 20,
+      "success": 20,
+      "normalized_cer": 0.22603719599427755,
+      "strict_cer": 0.2401685393258427,
+      "inference_p50_ms": 137.27,
+      "inference_p95_ms": 201.71,
+      "mean_ms": 135.99,
+      "counts": {
+        "invalid_reference_regions": 0,
+        "reference_chars": 712,
+        "strict_edits": 171,
+        "normalized_reference_chars": 699,
+        "normalized_edits": 158,
+        "missing_regions": 30,
+        "reference_regions": 117,
+        "unmatched_predictions": 2,
+        "ignored_predictions": 2,
+        "normalized_substitutions": 8,
+        "normalized_deletions": 138,
+        "normalized_insertions": 12
+      },
+      "engine_calls": 20,
+      "deduplicated": 0
+    }
+  }
+}

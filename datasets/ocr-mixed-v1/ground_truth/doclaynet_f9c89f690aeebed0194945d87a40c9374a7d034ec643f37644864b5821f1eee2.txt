@@ -1,0 +1,32 @@
+7
+Field notes on modernization for 
+Chapter 7.
+application integration 
+In this chapter, we explore various guidance points for customers who plan to modernize their 
+application integration landscape. The target audience for this chapter is individuals who are 
+already skilled in IBM App Connect (or its predecessors such as IBM Integration Bus, 
+WebSphere Message Broker). We explore at a product level what it means to move to a more 
+agile integration style. For example, such a move includes a move to container technology, 
+refactoring to more fine-grained deployment, and automation of build pipelines. 
+This chapter has the following sections:
+IBM App Connect adoption paths
+GLYPH<SM590000>
+Splitting up the ESB: Grouping integrations in a containerized environment
+GLYPH<SM590000>
+When does IBM App Connect need a local MQ server?
+GLYPH<SM590000>
+Mapping images to helm charts
+GLYPH<SM590000>
+Continuous Integration and Continuous Delivery Pipeline using IBM App Connect V11 
+GLYPH<SM590000>
+architecture
+Continuous Adoption for IBM App Connect
+GLYPH<SM590000>
+High Availability and Scaling considerations for IBM App Connect in containers
+GLYPH<SM590000>
+Migrating centralized ESB to IBM App Connect on containers
+GLYPH<SM590000>
+Splitting an integration across on-premises and cloud
+GLYPH<SM590000>
+433
+' Copyright IBM Corp. 2 020. All rights reserved.

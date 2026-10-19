@@ -1,0 +1,55 @@
+8459ch02.fm
+Draft Document for Review December 11, 2019 1:55 pm
+Containerize the applications, also called the VM-based 
+lift and shift
+ method. When you 
+containerize an application, you reduce future costs, simplify operations, and cloud 
+migration to a common Kubernetes platform. You also focus on a single operational model 
+that can be used by both new cloud-native applications and traditional applications. 
+Expose on-premises assets by using APIs
+GLYPH<SM590000>
+The use of APIs allows new applications to use the exposed capability in an accessible 
+way. Typically, this connection is made by way of The OpenAPI Specification (OAS) REST 
+standard that allows the interface to be discovered and managed. 
+Refactor the monolith into macroservices
+GLYPH<SM590000>
+Transform your monolith application to become cloud-native. For example: where you deal 
+with a huge Java or JavaScript files and break monoliths into smaller deployable 
+components. 
+Add capabilities as microservices
+GLYPH<SM590000>
+Enrich your application with new business functions implemented as microservices. Your 
+application can consume a wide variety of services that are available in the cloud, such as 
+AI, industry, and domain services.
+Strangle the monolith
+GLYPH<SM590000>
+Incrementally withdraw the monolith from service by replacing functions with new 
+cloud-native implementations.
+To help you on your cloud journey, IBM introduced new and better experiences on 
+modernization approaches such as the incremental lift-and-shift to cloud-native 
+microservices. You do not need to rewrite your entire application assets to move to the cloud. 
+With a cloud-native microservices approach, you can capitalize on the scalability and 
+flexibility that is inherent in any robust cloud infrastructure. 
+The DevOps approach
+DevOps is about tools and techniques needed to bring the worlds of development and 
+operations closer together. It is about the practices and automation required to reliably and 
+rapidly deploy new code through the build and test cycles to production environments.
+DevOps is an approach where companies and their development, operations, and quality 
+assurance teams collaborate to continuously deliver software. By following this approach, 
+which is based on lean and agile principles, enterprises can seize market opportunities and 
+reduce the time to include customer feedback in their products. DevOps applies to aging, 
+traditional, cloud-ready, and cloud-native applications.
+Failing fast and iterating quickly are DevOps requirements for competitive app delivery. They 
+imply application architectures that decouple services from each other in a continuous 
+development and delivery cycle, although ensuring well-performing interactions with users.
+In a cloud-native environment, applications are viewed as collections of microservices with 
+many deployable components that deploy at various speeds and independently of each other. 
+Manually deploying anything becomes an unsustainable effort prone to error, inconsistency, 
+and delays. Automating continuous delivery pipelines is a way to help operations from 
+deploying an application they have little knowledge of and rescue developers from complex 
+configurations and deployments. Efficient delivery means more time for innovation, enabling 
+the business to disrupt the market and competitors.
+Whether they are accessing a website or a mobile app, people have high expectations of the 
+apps that they regularly use. As a result, companies must continuously deliver new features 
+8 
+Red Hat OpenShift and IBM Cloud Paks on IBM Power Systems: Volume 1

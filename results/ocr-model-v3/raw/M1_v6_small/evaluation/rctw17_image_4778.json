@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_4778",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "d6d46073a8d5cd7fc3ac005ecbf89da113b1522c957396721a3b4b7e6d48810c",
+  "ok": true,
+  "result": {
+    "text": "女人魅力密码\n养护·调整型内衣",
+    "lines": [
+      {
+        "box": [
+          [
+            1894.1489361702127,
+            1440.3225806451612
+          ],
+          [
+            2197.3404255319147,
+            1424.1935483870966
+          ],
+          [
+            2265.9574468085107,
+            2679.032258064516
+          ],
+          [
+            1962.7659574468084,
+            2695.1612903225805
+          ]
+        ],
+        "text": "女人魅力密码",
+        "score": 0.9928839206695557
+      },
+      {
+        "box": [
+          [
+            2184.574468085106,
+            1856.4516129032256
+          ],
+          [
+            2400.0,
+            1856.4516129032256
+          ],
+          [
+            2400.0,
+            2950.0
+          ],
+          [
+            2184.574468085106,
+            2950.0
+          ]
+        ],
+        "text": "养护·调整型内衣",
+        "score": 0.9941003918647766
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 79.45
+  }
+}

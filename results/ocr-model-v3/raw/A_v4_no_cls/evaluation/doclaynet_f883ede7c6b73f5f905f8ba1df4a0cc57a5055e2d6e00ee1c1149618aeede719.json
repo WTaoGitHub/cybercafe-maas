@@ -1,0 +1,61 @@
+{
+  "id": "doclaynet_f883ede7c6b73f5f905f8ba1df4a0cc57a5055e2d6e00ee1c1149618aeede719",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "A_v4_no_cls",
+  "image_sha256": "4019b740e4525237629c042f5df864e2cce76618b0c996a6d15420f8e8fc5371",
+  "ok": true,
+  "result": {
+    "text": "E\nSIHDIH",
+    "lines": [
+      {
+        "box": [
+          [
+            87.0,
+            440.0
+          ],
+          [
+            100.0,
+            440.0
+          ],
+          [
+            100.0,
+            567.0
+          ],
+          [
+            87.0,
+            567.0
+          ]
+        ],
+        "text": "E",
+        "score": 0.5600459575653076
+      },
+      {
+        "box": [
+          [
+            45.0,
+            738.0
+          ],
+          [
+            55.0,
+            738.0
+          ],
+          [
+            55.0,
+            773.0
+          ],
+          [
+            45.0,
+            773.0
+          ]
+        ],
+        "text": "SIHDIH",
+        "score": 0.5845342253645261
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 54.62
+  }
+}

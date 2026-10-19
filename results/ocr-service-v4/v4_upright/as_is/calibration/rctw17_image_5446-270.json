@@ -1,0 +1,87 @@
+{
+  "id": "rctw17_image_5446",
+  "source": "rctw17",
+  "split": "calibration",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "ff4ecc9208d06b93230c928453b6b5119bb68b02bb3d07cba23f9f4c49fcf3ca",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "N\n吉\n12",
+    "lines": [
+      {
+        "box": [
+          [
+            499.0,
+            95.0
+          ],
+          [
+            499.0,
+            110.0
+          ],
+          [
+            486.0,
+            110.0
+          ],
+          [
+            486.0,
+            95.0
+          ]
+        ],
+        "text": "N",
+        "score": 0.5004737377166748
+      },
+      {
+        "box": [
+          [
+            486.0,
+            93.0
+          ],
+          [
+            486.0,
+            111.0
+          ],
+          [
+            472.0,
+            111.0
+          ],
+          [
+            472.0,
+            93.0
+          ]
+        ],
+        "text": "吉",
+        "score": 0.9768086671829224
+      },
+      {
+        "box": [
+          [
+            50.0,
+            77.0
+          ],
+          [
+            50.0,
+            110.0
+          ],
+          [
+            23.0,
+            110.0
+          ],
+          [
+            23.0,
+            77.0
+          ]
+        ],
+        "text": "12",
+        "score": 0.5711342394351959
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 51.83,
+    "direction_stats": {},
+    "elapsed_ms": 51.84
+  }
+}

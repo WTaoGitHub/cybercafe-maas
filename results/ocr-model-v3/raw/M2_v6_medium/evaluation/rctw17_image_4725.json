@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_4725",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "751d79750e521609495fb8bd0ad2b5ce3c932e49058e50e428444d85b9df2899",
+  "ok": true,
+  "result": {
+    "text": "保持清洁",
+    "lines": [
+      {
+        "box": [
+          [
+            590.4255319148936,
+            630.6451612903226
+          ],
+          [
+            730.8510638297872,
+            662.9032258064516
+          ],
+          [
+            628.7234042553191,
+            1129.032258064516
+          ],
+          [
+            488.2978723404255,
+            1096.774193548387
+          ]
+        ],
+        "text": "保持清洁",
+        "score": 0.9990827441215515
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 1,
+    "elapsed_ms": 108.82
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_5801",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M2_v6_medium",
+  "image_sha256": "d0126cbb240c19b6cf5e7f0e9fe0294f8160a124f1f4b826217b83f638b58d86",
+  "ok": true,
+  "result": {
+    "text": "做文明市民\n文明城",
+    "lines": [
+      {
+        "box": [
+          [
+            136.0,
+            220.0
+          ],
+          [
+            492.0,
+            225.0
+          ],
+          [
+            489.0,
+            352.0
+          ],
+          [
+            134.0,
+            346.0
+          ]
+        ],
+        "text": "做文明市民",
+        "score": 0.9999597668647766
+      },
+      {
+        "box": [
+          [
+            525.0,
+            255.0
+          ],
+          [
+            658.0,
+            260.0
+          ],
+          [
+            655.0,
+            338.0
+          ],
+          [
+            522.0,
+            333.0
+          ]
+        ],
+        "text": "文明城",
+        "score": 0.9999547004699707
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      491,
+      715,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 76.86
+  }
+}

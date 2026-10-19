@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_6964",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "017d67fb785d64d17eb89d51d70a75e96c7809bebbb714592c5cce9215549a1f",
+  "ok": true,
+  "result": {
+    "text": "酒香不怕巷子深\nWew s not araid of all deep",
+    "lines": [
+      {
+        "box": [
+          [
+            937.531914893617,
+            1743.8709677419356
+          ],
+          [
+            1593.4787234042553,
+            1743.8709677419356
+          ],
+          [
+            1593.4787234042553,
+            1918.2580645161293
+          ],
+          [
+            937.531914893617,
+            1918.2580645161293
+          ]
+        ],
+        "text": "酒香不怕巷子深",
+        "score": 0.9943638443946838
+      },
+      {
+        "box": [
+          [
+            974.968085106383,
+            1842.5806451612905
+          ],
+          [
+            1611.3829787234042,
+            1870.5483870967744
+          ],
+          [
+            1606.5,
+            1998.8709677419356
+          ],
+          [
+            970.0851063829787,
+            1970.9032258064517
+          ]
+        ],
+        "text": "Wew s not araid of all deep",
+        "score": 0.7047904133796692
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 65.58
+  }
+}

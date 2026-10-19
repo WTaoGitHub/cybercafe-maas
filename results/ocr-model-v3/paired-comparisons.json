@@ -1,0 +1,116 @@
+{
+  "M1_v6_small/doclaynet": {
+    "delta_pp": -9.223952284847735,
+    "bootstrap95_pp": [
+      -11.934301346338026,
+      -6.812915103478172
+    ],
+    "paired_counts": {
+      "better": 74,
+      "worse": 4,
+      "same": 2
+    }
+  },
+  "M1_v6_small/rctw17": {
+    "delta_pp": 0.3768844221105544,
+    "bootstrap95_pp": [
+      -4.657994125052455,
+      5.924170616113744
+    ],
+    "paired_counts": {
+      "worse": 23,
+      "same": 34,
+      "better": 23
+    }
+  },
+  "M2_v6_medium/doclaynet": {
+    "delta_pp": -9.155175718489621,
+    "bootstrap95_pp": [
+      -11.91314374965681,
+      -6.756776792112481
+    ],
+    "paired_counts": {
+      "better": 74,
+      "worse": 3,
+      "same": 3
+    }
+  },
+  "M2_v6_medium/rctw17": {
+    "delta_pp": -0.6700167504187587,
+    "bootstrap95_pp": [
+      -6.072026800670017,
+      5.7683433317951085
+    ],
+    "paired_counts": {
+      "same": 38,
+      "better": 27,
+      "worse": 15
+    }
+  },
+  "M3_v5_server/doclaynet": {
+    "delta_pp": -8.550843922293756,
+    "bootstrap95_pp": [
+      -11.292806423585104,
+      -6.111297961614167
+    ],
+    "paired_counts": {
+      "better": 69,
+      "worse": 9,
+      "same": 2
+    }
+  },
+  "M3_v5_server/rctw17": {
+    "delta_pp": -2.931323283082077,
+    "bootstrap95_pp": [
+      -7.682060390763765,
+      1.7684887459807075
+    ],
+    "paired_counts": {
+      "same": 36,
+      "better": 29,
+      "worse": 15
+    }
+  },
+  "vs_v4_no_cls/M1_v6_small/doclaynet": {
+    "delta_pp": -2.2374933760274205,
+    "bootstrap95_pp": [
+      -4.250302364546231,
+      -1.0658303772622852
+    ]
+  },
+  "vs_v4_no_cls/M1_v6_small/rctw17": {
+    "delta_pp": 0.2931323283082099,
+    "bootstrap95_pp": [
+      -4.82584976919849,
+      5.818334030975303
+    ]
+  },
+  "vs_v4_no_cls/M2_v6_medium/doclaynet": {
+    "delta_pp": -2.1687168096693084,
+    "bootstrap95_pp": [
+      -4.260363241067866,
+      -0.9421309894592168
+    ]
+  },
+  "vs_v4_no_cls/M2_v6_medium/rctw17": {
+    "delta_pp": -0.7537688442211032,
+    "bootstrap95_pp": [
+      -6.195099398982894,
+      5.686746987951807
+    ]
+  },
+  "vs_v4_no_cls/M3_v5_server/doclaynet": {
+    "delta_pp": -1.5643850134734418,
+    "bootstrap95_pp": [
+      -3.6437416833499165,
+      -0.24970058527105507
+    ]
+  },
+  "vs_v4_no_cls/M3_v5_server/rctw17": {
+    "delta_pp": -3.0150753768844214,
+    "bootstrap95_pp": [
+      -7.751605995717345,
+      1.6819012797074955
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_3756",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "86177feb6a111b11ea41facf9a70139264989768f52542501d314289f439cd70",
+  "ok": true,
+  "result": {
+    "text": "一直在装逼\n从未被打死",
+    "lines": [
+      {
+        "box": [
+          [
+            82.0,
+            330.0
+          ],
+          [
+            342.0,
+            330.0
+          ],
+          [
+            342.0,
+            407.0
+          ],
+          [
+            82.0,
+            407.0
+          ]
+        ],
+        "text": "一直在装逼",
+        "score": 0.9964612722396851
+      },
+      {
+        "box": [
+          [
+            81.0,
+            406.0
+          ],
+          [
+            336.0,
+            407.0
+          ],
+          [
+            335.0,
+            463.0
+          ],
+          [
+            80.0,
+            463.0
+          ]
+        ],
+        "text": "从未被打死",
+        "score": 0.9976439476013184
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      463,
+      435,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 100.25
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "id": "rctw17_image_6109",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M1_v6_small",
+  "image_sha256": "3f010ae28bbff4ec7bedacf42ed8aebf6c0ddea07825b2e7804bcea39893c564",
+  "ok": true,
+  "result": {
+    "text": "米\n畅爽怡神\n就要\n可口可乐",
+    "lines": [
+      {
+        "box": [
+          [
+            280.0,
+            236.0
+          ],
+          [
+            294.0,
+            236.0
+          ],
+          [
+            294.0,
+            247.0
+          ],
+          [
+            280.0,
+            247.0
+          ]
+        ],
+        "text": "米",
+        "score": 0.5994494557380676
+      },
+      {
+        "box": [
+          [
+            188.0,
+            246.0
+          ],
+          [
+            649.0,
+            264.0
+          ],
+          [
+            645.0,
+            371.0
+          ],
+          [
+            184.0,
+            354.0
+          ]
+        ],
+        "text": "畅爽怡神",
+        "score": 0.9999514818191528
+      },
+      {
+        "box": [
+          [
+            647.0,
+            274.0
+          ],
+          [
+            708.0,
+            268.0
+          ],
+          [
+            717.0,
+            365.0
+          ],
+          [
+            655.0,
+            371.0
+          ]
+        ],
+        "text": "就要",
+        "score": 0.9993590712547302
+      },
+      {
+        "box": [
+          [
+            756.0,
+            309.0
+          ],
+          [
+            871.0,
+            316.0
+          ],
+          [
+            869.0,
+            354.0
+          ],
+          [
+            754.0,
+            347.0
+          ]
+        ],
+        "text": "可口可乐",
+        "score": 0.9963028430938721
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      666,
+      1000,
+      3
+    ],
+    "detected_boxes": 5,
+    "elapsed_ms": 56.26
+  }
+}

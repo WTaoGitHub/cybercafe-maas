@@ -1,0 +1,16 @@
+.venv/
+.gpustack-api-key
+.gpustack-password
+__pycache__/
+**/__pycache__/
+# Downloaded datasets are local artifacts, not source code.
+datasets/raw/
+datasets/sources/
+datasets/ocr-mixed-v1/images/
+
+# Version-pinned model weights retained locally for experiments.
+model-benchmark/models/
+
+service-validation/build-context.tar.gz
+**/.benchmark-key
+service-validation/wheels/

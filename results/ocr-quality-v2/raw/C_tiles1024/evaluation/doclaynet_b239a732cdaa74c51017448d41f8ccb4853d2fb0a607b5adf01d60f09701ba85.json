@@ -1,0 +1,986 @@
+{
+  "id": "doclaynet_b239a732cdaa74c51017448d41f8ccb4853d2fb0a607b5adf01d60f09701ba85",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "10\nSince the proof of the diagonalization is somewhat technical, we will proceed in reverse\norder,first defining the three sectors of the model,together with the conditions that the\ncorresponding wave-functions have to satisfy, then show how the three sectors are derived\nby the request of diagonalizing the KK expanded Lagrangian.The three sectors are:\n·A left charged sector coming from the expansion of the (Wl.2)x fields and the brane\npseudo-scalars π1.2. The explicit form of the expansion is\nWL²(x,y)=\nn=0\nW(x,y) =gl(y) G2(m)(x),\n(14)\n0\nπ1.2(x)=\nc²G（n)(x).\n>\nn=0\nThe wave-functions of the vector fields satisfy the equation of motion:\n(15)\nwhere we defined the differential operator:\nD = 0,(b(y)ay()),\n(16)\nand the set of BCs:\n0yfL2 = 0\n(17)\nat y = 0,\n(0-b(πR) m²n+²）fl²=0\nat y = πR.\n(18)\nThe pseudo-scalar profiles are fixed by the conditions:\nfLalπR\n1\nOyfL2\nU\n1,2\n(19)\n9Ln\n2mLn\nmLn\nNote that in this sector no massless solution is allowed; in fact, eq. (5) together with\nthe Neumann BC at y =07 imply that a massless mode must have a constant\nprofile, and a constant, massless solution cannot satisfy the BC at y = πR I8. Also\nnote that eq. 5 and the BCs 7 and I8 are diagonal in the isospin index, so we\n15\nhavefln=f²n",
+    "lines": [
+      {
+        "box": [
+          [
+            882.0,
+            48.0
+          ],
+          [
+            904.0,
+            48.0
+          ],
+          [
+            904.0,
+            64.0
+          ],
+          [
+            882.0,
+            64.0
+          ]
+        ],
+        "text": "10",
+        "score": 0.999469667673111
+      },
+      {
+        "box": [
+          [
+            143.0,
+            90.0
+          ],
+          [
+            904.0,
+            90.0
+          ],
+          [
+            904.0,
+            113.0
+          ],
+          [
+            143.0,
+            113.0
+          ]
+        ],
+        "text": "Since the proof of the diagonalization is somewhat technical, we will proceed in reverse",
+        "score": 0.9854461401700974
+      },
+      {
+        "box": [
+          [
+            119.0,
+            119.0
+          ],
+          [
+            904.0,
+            119.0
+          ],
+          [
+            904.0,
+            138.0
+          ],
+          [
+            119.0,
+            138.0
+          ]
+        ],
+        "text": "order,first defining the three sectors of the model,together with the conditions that the",
+        "score": 0.9584109019697382
+      },
+      {
+        "box": [
+          [
+            118.0,
+            145.0
+          ],
+          [
+            904.0,
+            144.0
+          ],
+          [
+            904.0,
+            167.0
+          ],
+          [
+            118.0,
+            168.0
+          ]
+        ],
+        "text": "corresponding wave-functions have to satisfy, then show how the three sectors are derived",
+        "score": 0.9847629652934128
+      },
+      {
+        "box": [
+          [
+            120.0,
+            174.0
+          ],
+          [
+            849.0,
+            174.0
+          ],
+          [
+            849.0,
+            194.0
+          ],
+          [
+            120.0,
+            194.0
+          ]
+        ],
+        "text": "by the request of diagonalizing the KK expanded Lagrangian.The three sectors are:",
+        "score": 0.974630954824848
+      },
+      {
+        "box": [
+          [
+            148.0,
+            210.0
+          ],
+          [
+            906.0,
+            208.0
+          ],
+          [
+            906.0,
+            234.0
+          ],
+          [
+            148.0,
+            236.0
+          ]
+        ],
+        "text": "·A left charged sector coming from the expansion of the (Wl.2)x fields and the brane",
+        "score": 0.9531312311689059
+      },
+      {
+        "box": [
+          [
+            167.0,
+            239.0
+          ],
+          [
+            666.0,
+            238.0
+          ],
+          [
+            666.0,
+            261.0
+          ],
+          [
+            167.0,
+            262.0
+          ]
+        ],
+        "text": "pseudo-scalars π1.2. The explicit form of the expansion is",
+        "score": 0.9561646570419443
+      },
+      {
+        "box": [
+          [
+            385.0,
+            279.0
+          ],
+          [
+            497.0,
+            284.0
+          ],
+          [
+            496.0,
+            309.0
+          ],
+          [
+            384.0,
+            304.0
+          ]
+        ],
+        "text": "WL²(x,y)=",
+        "score": 0.7870939671993256
+      },
+      {
+        "box": [
+          [
+            498.0,
+            308.0
+          ],
+          [
+            529.0,
+            306.0
+          ],
+          [
+            530.0,
+            320.0
+          ],
+          [
+            499.0,
+            322.0
+          ]
+        ],
+        "text": "n=0",
+        "score": 0.980361799399058
+      },
+      {
+        "box": [
+          [
+            382.0,
+            329.0
+          ],
+          [
+            681.0,
+            326.0
+          ],
+          [
+            681.0,
+            359.0
+          ],
+          [
+            382.0,
+            362.0
+          ]
+        ],
+        "text": "W(x,y) =gl(y) G2(m)(x),",
+        "score": 0.8318382508080938
+      },
+      {
+        "box": [
+          [
+            866.0,
+            336.0
+          ],
+          [
+            903.0,
+            336.0
+          ],
+          [
+            903.0,
+            355.0
+          ],
+          [
+            866.0,
+            355.0
+          ]
+        ],
+        "text": "(14)",
+        "score": 0.9990562349557877
+      },
+      {
+        "box": [
+          [
+            509.0,
+            359.0
+          ],
+          [
+            527.0,
+            359.0
+          ],
+          [
+            527.0,
+            370.0
+          ],
+          [
+            509.0,
+            370.0
+          ]
+        ],
+        "text": "0",
+        "score": 0.9577354192733765
+      },
+      {
+        "box": [
+          [
+            387.0,
+            380.0
+          ],
+          [
+            456.0,
+            384.0
+          ],
+          [
+            455.0,
+            405.0
+          ],
+          [
+            386.0,
+            401.0
+          ]
+        ],
+        "text": "π1.2(x)=",
+        "score": 0.8085522279143333
+      },
+      {
+        "box": [
+          [
+            493.0,
+            380.0
+          ],
+          [
+            600.0,
+            383.0
+          ],
+          [
+            600.0,
+            406.0
+          ],
+          [
+            493.0,
+            403.0
+          ]
+        ],
+        "text": "c²G（n)(x).",
+        "score": 0.6988261997699737
+      },
+      {
+        "box": [
+          [
+            472.0,
+            387.0
+          ],
+          [
+            486.0,
+            387.0
+          ],
+          [
+            486.0,
+            401.0
+          ],
+          [
+            472.0,
+            401.0
+          ]
+        ],
+        "text": ">",
+        "score": 0.795276939868927
+      },
+      {
+        "box": [
+          [
+            470.0,
+            408.0
+          ],
+          [
+            500.0,
+            408.0
+          ],
+          [
+            500.0,
+            423.0
+          ],
+          [
+            470.0,
+            423.0
+          ]
+        ],
+        "text": "n=0",
+        "score": 0.9890017906824747
+      },
+      {
+        "box": [
+          [
+            168.0,
+            430.0
+          ],
+          [
+            772.0,
+            432.0
+          ],
+          [
+            772.0,
+            452.0
+          ],
+          [
+            168.0,
+            450.0
+          ]
+        ],
+        "text": "The wave-functions of the vector fields satisfy the equation of motion:",
+        "score": 0.9808956821199873
+      },
+      {
+        "box": [
+          [
+            864.0,
+            474.0
+          ],
+          [
+            905.0,
+            474.0
+          ],
+          [
+            905.0,
+            496.0
+          ],
+          [
+            864.0,
+            496.0
+          ]
+        ],
+        "text": "(15)",
+        "score": 0.9986063539981842
+      },
+      {
+        "box": [
+          [
+            170.0,
+            516.0
+          ],
+          [
+            535.0,
+            516.0
+          ],
+          [
+            535.0,
+            536.0
+          ],
+          [
+            170.0,
+            536.0
+          ]
+        ],
+        "text": "where we defined the differential operator:",
+        "score": 0.9597722929577495
+      },
+      {
+        "box": [
+          [
+            457.0,
+            555.0
+          ],
+          [
+            616.0,
+            559.0
+          ],
+          [
+            616.0,
+            583.0
+          ],
+          [
+            457.0,
+            579.0
+          ]
+        ],
+        "text": "D = 0,(b(y)ay()),",
+        "score": 0.8058352505459505
+      },
+      {
+        "box": [
+          [
+            865.0,
+            558.0
+          ],
+          [
+            904.0,
+            558.0
+          ],
+          [
+            904.0,
+            580.0
+          ],
+          [
+            865.0,
+            580.0
+          ]
+        ],
+        "text": "(16)",
+        "score": 0.9991009682416916
+      },
+      {
+        "box": [
+          [
+            169.0,
+            603.0
+          ],
+          [
+            337.0,
+            603.0
+          ],
+          [
+            337.0,
+            620.0
+          ],
+          [
+            169.0,
+            620.0
+          ]
+        ],
+        "text": "and the set of BCs:",
+        "score": 0.9891530212603117
+      },
+      {
+        "box": [
+          [
+            269.0,
+            640.0
+          ],
+          [
+            363.0,
+            640.0
+          ],
+          [
+            363.0,
+            667.0
+          ],
+          [
+            269.0,
+            667.0
+          ]
+        ],
+        "text": "0yfL2 = 0",
+        "score": 0.8094471229447259
+      },
+      {
+        "box": [
+          [
+            865.0,
+            643.0
+          ],
+          [
+            905.0,
+            643.0
+          ],
+          [
+            905.0,
+            666.0
+          ],
+          [
+            865.0,
+            666.0
+          ]
+        ],
+        "text": "(17)",
+        "score": 0.9988928586244583
+      },
+      {
+        "box": [
+          [
+            724.0,
+            644.0
+          ],
+          [
+            805.0,
+            644.0
+          ],
+          [
+            805.0,
+            665.0
+          ],
+          [
+            724.0,
+            665.0
+          ]
+        ],
+        "text": "at y = 0,",
+        "score": 0.9505956239170499
+      },
+      {
+        "box": [
+          [
+            259.0,
+            669.0
+          ],
+          [
+            570.0,
+            669.0
+          ],
+          [
+            570.0,
+            699.0
+          ],
+          [
+            259.0,
+            699.0
+          ]
+        ],
+        "text": "(0-b(πR) m²n+²）fl²=0",
+        "score": 0.7695254683494568
+      },
+      {
+        "box": [
+          [
+            723.0,
+            674.0
+          ],
+          [
+            822.0,
+            674.0
+          ],
+          [
+            822.0,
+            697.0
+          ],
+          [
+            723.0,
+            697.0
+          ]
+        ],
+        "text": "at y = πR.",
+        "score": 0.950695139169693
+      },
+      {
+        "box": [
+          [
+            864.0,
+            675.0
+          ],
+          [
+            905.0,
+            675.0
+          ],
+          [
+            905.0,
+            697.0
+          ],
+          [
+            864.0,
+            697.0
+          ]
+        ],
+        "text": "(18)",
+        "score": 0.9989625215530396
+      },
+      {
+        "box": [
+          [
+            170.0,
+            721.0
+          ],
+          [
+            635.0,
+            721.0
+          ],
+          [
+            635.0,
+            741.0
+          ],
+          [
+            170.0,
+            741.0
+          ]
+        ],
+        "text": "The pseudo-scalar profiles are fixed by the conditions:",
+        "score": 0.9883940328251232
+      },
+      {
+        "box": [
+          [
+            563.0,
+            758.0
+          ],
+          [
+            647.0,
+            764.0
+          ],
+          [
+            644.0,
+            797.0
+          ],
+          [
+            560.0,
+            791.0
+          ]
+        ],
+        "text": "fLalπR",
+        "score": 0.667147770524025
+      },
+      {
+        "box": [
+          [
+            345.0,
+            760.0
+          ],
+          [
+            358.0,
+            760.0
+          ],
+          [
+            358.0,
+            775.0
+          ],
+          [
+            345.0,
+            775.0
+          ]
+        ],
+        "text": "1",
+        "score": 0.999395489692688
+      },
+      {
+        "box": [
+          [
+            363.0,
+            760.0
+          ],
+          [
+            433.0,
+            760.0
+          ],
+          [
+            433.0,
+            796.0
+          ],
+          [
+            363.0,
+            796.0
+          ]
+        ],
+        "text": "OyfL2",
+        "score": 0.6802765011787415
+      },
+      {
+        "box": [
+          [
+            547.0,
+            762.0
+          ],
+          [
+            562.0,
+            762.0
+          ],
+          [
+            562.0,
+            776.0
+          ],
+          [
+            547.0,
+            776.0
+          ]
+        ],
+        "text": "U",
+        "score": 0.7416873574256897
+      },
+      {
+        "box": [
+          [
+            277.0,
+            765.0
+          ],
+          [
+            305.0,
+            765.0
+          ],
+          [
+            305.0,
+            780.0
+          ],
+          [
+            277.0,
+            780.0
+          ]
+        ],
+        "text": "1,2",
+        "score": 0.9191198746363322
+      },
+      {
+        "box": [
+          [
+            864.0,
+            767.0
+          ],
+          [
+            904.0,
+            767.0
+          ],
+          [
+            904.0,
+            789.0
+          ],
+          [
+            864.0,
+            789.0
+          ]
+        ],
+        "text": "(19)",
+        "score": 0.99916872382164
+      },
+      {
+        "box": [
+          [
+            271.0,
+            769.0
+          ],
+          [
+            307.0,
+            775.0
+          ],
+          [
+            304.0,
+            794.0
+          ],
+          [
+            268.0,
+            788.0
+          ]
+        ],
+        "text": "9Ln",
+        "score": 0.9032284617424011
+      },
+      {
+        "box": [
+          [
+            526.0,
+            779.0
+          ],
+          [
+            576.0,
+            782.0
+          ],
+          [
+            575.0,
+            799.0
+          ],
+          [
+            525.0,
+            796.0
+          ]
+        ],
+        "text": "2mLn",
+        "score": 0.9779800921678543
+      },
+      {
+        "box": [
+          [
+            329.0,
+            782.0
+          ],
+          [
+            372.0,
+            782.0
+          ],
+          [
+            372.0,
+            800.0
+          ],
+          [
+            329.0,
+            800.0
+          ]
+        ],
+        "text": "mLn",
+        "score": 0.948456327120463
+      },
+      {
+        "box": [
+          [
+            168.0,
+            811.0
+          ],
+          [
+            903.0,
+            811.0
+          ],
+          [
+            903.0,
+            831.0
+          ],
+          [
+            168.0,
+            831.0
+          ]
+        ],
+        "text": "Note that in this sector no massless solution is allowed; in fact, eq. (5) together with",
+        "score": 0.9829274094240232
+      },
+      {
+        "box": [
+          [
+            169.0,
+            838.0
+          ],
+          [
+            905.0,
+            838.0
+          ],
+          [
+            905.0,
+            858.0
+          ],
+          [
+            169.0,
+            858.0
+          ]
+        ],
+        "text": "the Neumann BC at y =07 imply that a massless mode must have a constant",
+        "score": 0.924097630339609
+      },
+      {
+        "box": [
+          [
+            167.0,
+            864.0
+          ],
+          [
+            904.0,
+            862.0
+          ],
+          [
+            904.0,
+            885.0
+          ],
+          [
+            167.0,
+            887.0
+          ]
+        ],
+        "text": "profile, and a constant, massless solution cannot satisfy the BC at y = πR I8. Also",
+        "score": 0.9678238077336047
+      },
+      {
+        "box": [
+          [
+            168.0,
+            891.0
+          ],
+          [
+            904.0,
+            891.0
+          ],
+          [
+            904.0,
+            914.0
+          ],
+          [
+            168.0,
+            914.0
+          ]
+        ],
+        "text": "note that eq. 5 and the BCs 7 and I8 are diagonal in the isospin index, so we",
+        "score": 0.9687823684184582
+      },
+      {
+        "box": [
+          [
+            290.0,
+            895.0
+          ],
+          [
+            324.0,
+            895.0
+          ],
+          [
+            324.0,
+            910.0
+          ],
+          [
+            290.0,
+            910.0
+          ]
+        ],
+        "text": "15",
+        "score": 0.9868806004524231
+      },
+      {
+        "box": [
+          [
+            169.0,
+            915.0
+          ],
+          [
+            308.0,
+            919.0
+          ],
+          [
+            307.0,
+            943.0
+          ],
+          [
+            168.0,
+            939.0
+          ]
+        ],
+        "text": "havefln=f²n",
+        "score": 0.8966515226797624
+      }
+    ],
+    "engine_calls": 4,
+    "raw_line_count": 156,
+    "deduplicated": 112,
+    "elapsed_ms": 632.39,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 641.29
+}

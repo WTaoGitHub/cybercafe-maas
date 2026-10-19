@@ -1,0 +1,40 @@
+{
+  "id": "doclaynet_f883ede7c6b73f5f905f8ba1df4a0cc57a5055e2d6e00ee1c1149618aeede719",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "@2005 ALEXANDRIA REAL ESTATE EQUITIES, INC.ALL RIGHTS RESERVED.ALEXANDRIA, THE ALEXANDRIA LOGO, ALEXANDRIA REAL ESTATE EQUITIES, ARE, LABSPACE,",
+    "lines": [
+      {
+        "box": [
+          [
+            40.0,
+            310.0
+          ],
+          [
+            57.0,
+            310.0
+          ],
+          [
+            57.0,
+            994.0
+          ],
+          [
+            40.0,
+            994.0
+          ]
+        ],
+        "text": "@2005 ALEXANDRIA REAL ESTATE EQUITIES, INC.ALL RIGHTS RESERVED.ALEXANDRIA, THE ALEXANDRIA LOGO, ALEXANDRIA REAL ESTATE EQUITIES, ARE, LABSPACE,",
+        "score": 0.9643219100845444
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 99.19,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 108.6
+}

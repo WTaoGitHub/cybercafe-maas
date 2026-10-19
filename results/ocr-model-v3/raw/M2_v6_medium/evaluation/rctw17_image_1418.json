@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_1418",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "e27619d22b00c22c0a89bff0a9fb971de3bf6e17f2dc4b4af023ff42001cc87d",
+  "ok": true,
+  "result": {
+    "text": "面止租\n13881693405",
+    "lines": [
+      {
+        "box": [
+          [
+            1119.8297872340427,
+            1190.1290322580644
+          ],
+          [
+            2338.468085106383,
+            1133.9516129032259
+          ],
+          [
+            2359.053191489362,
+            1593.774193548387
+          ],
+          [
+            1140.4148936170213,
+            1649.9516129032259
+          ]
+        ],
+        "text": "面止租",
+        "score": 0.9901292324066162
+      },
+      {
+        "box": [
+          [
+            1235.1063829787233,
+            1608.3387096774193
+          ],
+          [
+            2081.154255319149,
+            1600.016129032258
+          ],
+          [
+            2081.154255319149,
+            1681.1612903225805
+          ],
+          [
+            1235.1063829787233,
+            1689.483870967742
+          ]
+        ],
+        "text": "13881693405",
+        "score": 0.937387228012085
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 112.47
+  }
+}

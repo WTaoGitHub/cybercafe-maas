@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "images": 200,
+  "source_counts": {
+    "doclaynet": 100,
+    "rctw17": 100
+  },
+  "unique_sha256": 200,
+  "calibration": 40,
+  "evaluation": 160,
+  "limits": "all files <=10MB, decoded image <=20MP",
+  "note": "integrity only; reference text not manually audited"
+}

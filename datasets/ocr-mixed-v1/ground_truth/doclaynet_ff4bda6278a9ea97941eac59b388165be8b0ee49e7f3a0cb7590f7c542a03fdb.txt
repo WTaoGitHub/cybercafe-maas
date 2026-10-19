@@ -1,0 +1,27 @@
+OpenShift 
+In the above configuration, we have defined a multi-container pod with two images of 
+Tomcat and MongoDB inside it. 
+PodsandServices 
+Pods 
+Pod can be defined as a collection of container and its storage inside a node of OpenShift 
+(Kubernetes) cluster. In general, we have two types of pod starting from a single container 
+pod to multi-container pod. 
+Single Container Pod:
+These can be easily created with OC command or by a basic 
+configuration yml file. 
+$ oc run <name of pod> --image=<name of the image from registry> 
+Create it with a simple yaml file as follows. 
+apiVersion: v1
+kind: Pod
+metadata:
+name: apache 
+spec:
+containers:
+- name: apache 
+image: apache: 8.0
+ports:
+- containerPort: 7500
+imagePullPolicy: Always 
+Once the above file is created, it will generate a pod with the following command. 
+$ oc create –f apache.yml 
+25 

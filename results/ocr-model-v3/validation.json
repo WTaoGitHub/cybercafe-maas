@@ -1,0 +1,66 @@
+{
+  "new_image_runs": 1000,
+  "historical_reference_image_runs": 200,
+  "checks": {
+    "A_v4_cls_recheck/calibration": {
+      "total": 40,
+      "success": 40,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "A_v4_cls_recheck/evaluation": {
+      "total": 160,
+      "success": 160,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "A_v4_no_cls/calibration": {
+      "total": 40,
+      "success": 40,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "A_v4_no_cls/evaluation": {
+      "total": 160,
+      "success": 160,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "M1_v6_small/calibration": {
+      "total": 40,
+      "success": 40,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "M1_v6_small/evaluation": {
+      "total": 160,
+      "success": 160,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "M2_v6_medium/calibration": {
+      "total": 40,
+      "success": 40,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "M2_v6_medium/evaluation": {
+      "total": 160,
+      "success": 160,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "M3_v5_server/calibration": {
+      "total": 40,
+      "success": 40,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    },
+    "M3_v5_server/evaluation": {
+      "total": 160,
+      "success": 160,
+      "cuda_providers_verified": true,
+      "coordinates_in_bounds": true
+    }
+  }
+}

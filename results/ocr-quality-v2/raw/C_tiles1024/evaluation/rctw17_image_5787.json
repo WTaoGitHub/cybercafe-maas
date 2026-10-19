@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_5787",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "C_tiles1024",
+  "ok": true,
+  "result": {
+    "text": "禁止酒后上岗",
+    "lines": [
+      {
+        "box": [
+          [
+            1055.0,
+            887.0
+          ],
+          [
+            1342.0,
+            906.0
+          ],
+          [
+            1335.0,
+            1007.0
+          ],
+          [
+            1048.0,
+            988.0
+          ]
+        ],
+        "text": "禁止酒后上岗",
+        "score": 0.9957688848177592
+      }
+    ],
+    "engine_calls": 12,
+    "raw_line_count": 2,
+    "deduplicated": 1,
+    "elapsed_ms": 473.12,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 516.87
+}

@@ -1,0 +1,78 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OCR 方向修正、服务吞吐与 GPU 电费验证</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f3f6fa;color:#1d2939;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}header{background:#122b46;color:white;padding:34px max(24px,calc((100vw - 1160px)/2))}header strong{font-size:13px;letter-spacing:2px;color:#a8d6ec}header p{margin:6px 0 0;color:#c7d9e9}main{max-width:1160px;margin:28px auto;padding:0 24px 64px}article{background:white;padding:36px 40px;border:1px solid #e0e7ef;border-radius:14px}h1{font-size:30px;line-height:1.4;margin:0 0 16px;color:#122b46}h2{font-size:21px;margin:40px 0 16px;padding-top:16px;border-top:1px solid #e6edf4;scroll-margin-top:16px}p{margin:12px 0}a{color:#086a9a;text-underline-offset:3px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}.card{padding:20px 24px;background:#fff;border:1px solid #dce6ef;border-radius:12px}.card b{display:block;font-size:30px;color:#126a85;line-height:1.5}.card span{color:#52677c;font-size:13px}nav{padding:16px 20px;background:#eff5f9;border-radius:8px;margin:24px 0}nav a{display:inline-block;margin:4px 18px 4px 0;font-size:13px}.table-wrap{overflow:auto;margin:20px 0;border:1px solid #dce5ee;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}th{background:#eaf1f7;color:#284761;text-align:left}th,td{padding:12px 14px;border-bottom:1px solid #e8edf2}tbody tr:nth-child(even){background:#f7f9fc}tbody tr:last-child td{border:0}ul{padding-left:22px}li{margin:9px 0}.note{border-left:4px solid #d39b32;background:#fff8e9;padding:14px 18px;margin:20px 0}.footer{font-size:12px;color:#60758a;margin-top:24px}.actions{display:flex;gap:16px;flex-wrap:wrap;margin:18px 0}button{border:1px solid #bacbd9;background:white;color:#284761;padding:8px 14px;border-radius:6px;cursor:pointer;font:inherit} @media(max-width:700px){main{padding:0 12px 32px}article{padding:22px 18px}h1{font-size:24px}.cards{grid-template-columns:1fr}.card b{font-size:25px}header{padding:24px}.table-wrap{margin-left:-6px;margin-right:-6px}}@media print{body{background:white;font-size:11px}header,nav,.actions{display:none}main{max-width:none;margin:0;padding:0}article{border:0;padding:0}.cards{break-inside:avoid}.table-wrap{overflow:visible}table{white-space:normal;font-size:10px}th,td{padding:6px}h2{break-after:avoid}a{color:inherit}h1{font-size:24px}}</style></head><body><header><strong>CYBERCAFE · OCR / MAAS</strong><p>GPUStack 双节点验证报告 · 2026-10-19</p></header><main><div class="cards"><div class="card"><span>方向与质量测试</span><b>872 次</b><span>含 192 次显式方向纠正</span></div><div class="card"><span>计时 HTTP 请求</span><b>9,799 / 9,799</b><span>全部成功；不代表识别准确率</span></div><div class="card"><span>已摆正模式持续吞吐</span><b>15.11 张/秒</b><span>两台 GPU · 四副本 · 并发 8</span></div></div><article><div class="actions"><button type="button" onclick="window.print()">打印 / 保存 PDF</button><a href="REPORT.html">主报告</a><a href="DIRECTION.html">方向实验详情</a><a href="service-phases.csv">下载阶段指标 CSV</a></div><div class="note">成本按 1 元/kWh、每天可用 8 小时，仅计 GPU 电费。日处理量为短时实测的满负载理论外推。</div><nav aria-label="报告目录"><a href="#section-1">结论</a><a href="#section-2">持续混合负载结果</a><a href="#section-3">每台每天8小时的理论外推</a><a href="#section-4">全部持续负载对照</a><a href="#section-5">分来源并发矩阵</a><a href="#section-6">方向修正验证</a><a href="#section-7">能耗与成本算法</a><a href="#section-8">GPUStack、显存与服务边界</a><a href="#section-9">验证、清理与复现</a><a href="#section-10">下一步建议</a></nav><h1>OCR 方向修正、服务吞吐与 GPU 电费验证</h1>
+<p>生成时间：2026-10-19T17:36:56.994057+08:00（上海）</p>
+<h2 id="section-1">结论</h2>
+<p>完成872次方向/质量图像处理，以及9799次计时HTTP请求，其中9799次成功。测试经过实际GPUStack统一入口；原有rapidocr-gpu路由和模型配置保持不变。</p>
+<p>方向保护解决了旧分类器误旋转正常文字的重要问题，并改善180°倒置文档；90°/270°仍需明确纠正参数或另行验证页面方向分类。多节点和每卡多副本能增加吞吐，单纯增大单实例HTTP并发主要增加排队。</p>
+<p>成本按用户指定1元/kWh、每台每天8小时，仅计NVIDIA-SMI GPU功耗读数对应的电费。下表日处理量是满负载理论外推，不能当作订单量或完整服务成本。</p>
+<h2 id="section-2">持续混合负载结果</h2>
+<p>每轮目标120秒，最后等待在途请求完成，实际窗口略长；输入为选定20张英文文档与20张中文/混合街景，按约1:1请求数交替。输入预加载并预热模型，但每次请求都会实际推理，没有识别结果缓存。</p>
+<p>下表在已测持续配置中，选出吞吐达到本模式最高值95%以上、且副本数/并发较低的一组；这是容量和延迟的折中规则，不是盈利最优解。</p>
+<div class="table-wrap"><table><thead><tr><th>模式</th><th>物理GPU/总副本</th><th>并发</th><th>成功/请求</th><th>张/秒</th><th>P50/P95 ms</th><th>两卡平均GPU功耗W</th><th>GPU元/千张</th></tr></thead><tbody>
+<tr><td>v4已摆正模式</td><td>2/4</td><td>8</td><td>1826/1826</td><td>15.11</td><td>464.13/1034.91</td><td>321.5</td><td>0.00591</td></tr>
+<tr><td>v4方向保护</td><td>2/4</td><td>16</td><td>1730/1730</td><td>14.26</td><td>948.66/2501.85</td><td>309.1</td><td>0.00602</td></tr>
+<tr><td>v6 small文档候选</td><td>2/4</td><td>8</td><td>1101/1101</td><td>9.02</td><td>739.4/2023.41</td><td>211.3</td><td>0.00650</td></tr>
+</tbody></table></div>
+<h2 id="section-3">每台每天8小时的理论外推</h2>
+<p>假定两节点闲置时段重合、控制端持续可用、连续有足量请求，输入难度与本次相近。吞吐和功率已经合计两张卡，因此只乘8小时，不再额外乘2。未验证8小时耐久运行、Windows切换或实际业务利用率。</p>
+<div class="table-wrap"><table><thead><tr><th>模式</th><th>总副本/并发</th><th>8小时理论图片数</th><th>两卡8小时GPU电费元</th></tr></thead><tbody>
+<tr><td>v4已摆正模式</td><td>4/8</td><td>435,200</td><td>2.57</td></tr>
+<tr><td>v4方向保护</td><td>4/16</td><td>410,727</td><td>2.47</td></tr>
+<tr><td>v6 small文档候选</td><td>4/8</td><td>259,862</td><td>1.69</td></tr>
+</tbody></table></div>
+<h2 id="section-4">全部持续负载对照</h2>
+<div class="table-wrap"><table><thead><tr><th>模式</th><th>副本</th><th>并发</th><th>实际秒数</th><th>请求数</th><th>张/秒</th><th>P95 ms</th><th>GPU元/千张</th></tr></thead><tbody>
+<tr><td>v4方向保护</td><td>4</td><td>8</td><td>120.59</td><td>1473</td><td>12.21</td><td>1341.87</td><td>0.00667</td></tr>
+<tr><td>v4方向保护</td><td>4</td><td>16</td><td>121.31</td><td>1730</td><td>14.26</td><td>2501.85</td><td>0.00602</td></tr>
+<tr><td>v4已摆正模式</td><td>2</td><td>8</td><td>121.37</td><td>1189</td><td>9.80</td><td>1451.12</td><td>0.00607</td></tr>
+<tr><td>v4已摆正模式</td><td>4</td><td>8</td><td>120.84</td><td>1826</td><td>15.11</td><td>1034.91</td><td>0.00591</td></tr>
+<tr><td>v6 small文档候选</td><td>4</td><td>8</td><td>122.02</td><td>1101</td><td>9.02</td><td>2023.41</td><td>0.00650</td></tr>
+</tbody></table></div>
+<p>相同v4已摆正模式和并发8下，总副本由2增至4，混合吞吐从9.80升至15.11张/秒，约1.54倍；GPU单位电费从0.00607变为0.00591元/千张。</p>
+<p>方向保护模式并发8与16对照：吞吐12.21/14.26张/秒，P95为1342/2502ms。应按业务延迟要求选择，增加排队不是免费增加容量。</p>
+<h2 id="section-5">分来源并发矩阵</h2>
+<p>单元格为“张/秒（并发）”，每阶段40请求、每来源20张各重复2次；选择达到该组最高吞吐95%以上的最低并发。短批次会受请求分配、尾部在途请求、时钟/功耗采样与混合负载互补性影响，不用短批次估计代替持续实测。</p>
+<div class="table-wrap"><table><thead><tr><th>模式</th><th>来源</th><th>1GPU/1副本</th><th>2GPU/2副本</th><th>2GPU/4副本</th></tr></thead><tbody>
+<tr><td>旧v4自动旋转</td><td>doclaynet</td><td>3.37（2）</td><td>未测</td><td>未测</td></tr>
+<tr><td>旧v4自动旋转</td><td>rctw17</td><td>7.76（4）</td><td>未测</td><td>未测</td></tr>
+<tr><td>v4已摆正模式</td><td>doclaynet</td><td>4.14（2）</td><td>7.78（8）</td><td>未测</td></tr>
+<tr><td>v4已摆正模式</td><td>rctw17</td><td>8.96（4）</td><td>13.83（8）</td><td>未测</td></tr>
+<tr><td>v4方向保护</td><td>doclaynet</td><td>3.21（2）</td><td>6.28（8）</td><td>8.23（16）</td></tr>
+<tr><td>v4方向保护</td><td>rctw17</td><td>7.43（4）</td><td>12.33（4）</td><td>18.40（8）</td></tr>
+<tr><td>v6 small文档候选</td><td>doclaynet</td><td>2.22（2）</td><td>4.10（4）</td><td>5.78（8）</td></tr>
+<tr><td>v6 small文档候选</td><td>rctw17</td><td>10.70（4）</td><td>16.52（8）</td><td>26.55（16）</td></tr>
+</tbody></table></div>
+<h2 id="section-6">方向修正验证</h2>
+<p>完整方向实验见<a href="DIRECTION.html">DIRECTION.md</a>。对同一32张图片做无损像素旋转，并把预测坐标映回原图后按冻结规则评分，避免阅读顺序旋转本身造成评分变化。</p>
+<div class="table-wrap"><table><thead><tr><th>方向策略</th><th>子集英文0°CER</th><th>子集英文180°CER</th></tr></thead><tbody>
+<tr><td>旧v4自动旋转</td><td>7.21%</td><td>24.04%</td></tr>
+<tr><td>v4已摆正模式</td><td>3.53%</td><td>97.81%</td></tr>
+<tr><td>v4方向保护</td><td>3.41%</td><td>5.12%</td></tr>
+<tr><td>v6 small文档候选</td><td>2.34%</td><td>82.21%</td></tr>
+</tbody></table></div>
+<p>方向保护在完整160张原方向评估集上的分组CER：英文7.71%、街景18.80%；与直接关闭分类的v4相比，正常方向质量接近，主要价值在处理倒置风险。v6 small的5.52%英文CER来自上一轮相同模型/主要参数的完整评估。</p>
+<p>192次已知角度显式纠正后的文字全部恢复到各自原方向输出。HTTP层另通过真实PNG旋转检查。rotation_cw是调用方提供的纠正角度，不是自动方向预测；本轮未新增EXIF自动转正。</p>
+<p>CER沿用空间连通分组、NFKC+casefold+去空白规则，受PDF参考、公式、忽略区域和未标注背景文字影响，不能直接用1−CER对外承诺准确率。</p>
+<h2 id="section-7">能耗与成本算法</h2>
+<ul>
+<li>主机每0.5秒采集GPU功耗、利用率与显存；健康检查确认时钟差在毫秒级，积分时做近似校正，按每个实际请求窗口对两张GPU功率进行梯形积分。</li>
+<li>主成本为两张卡总GPU电费。单工作节点测试仍计入控制机GPU的闲置功耗，另在JSON中保留实际工作GPU及相对空闲基线增量值。</li>
+<li>每千张GPU电费 = 总GPU平均功率(W) ÷ 吞吐(张/秒) ÷ 3600 × 电价(元/kWh)。日电费 = 总GPU平均功率 × 8 ÷ 1000 × 电价。</li>
+<li>只计GPU；不含CPU、主板、电源损耗、制冷、网络、硬件折旧与人工。未给出收入或利润预测。</li>
+<li>单位和积分通过恒定功率、部分区间线性插值、千张换算及缺失覆盖拒绝测试。短矩阵阶段电费仅供诊断，主要成本判断采用约120秒持续负载。</li>
+</ul>
+<h2 id="section-8">GPUStack、显存与服务边界</h2>
+<ul>
+<li>原有控制端+worker在001，002为worker；临时模型先固定002单副本，再扩为两节点各1副本，最后各2副本。部署快照记录实际worker、实例ID和端口。</li>
+<li>服务内锁保护共享OCR对象和方向状态，所以单实例提高HTTP并发会形成队列；多个独立实例能利用并行余量。这里验证的是调度、路由与运行能力，不是GPU硬隔离。</li>
+<li>测试实例同时加载v4与v6，便于公平切换，显存高于专用单模型容器；6GiB排程声明是估计，不是硬限。每卡2副本只对本批输入验证，不代表最大或任意输入下的安全容量。</li>
+<li>客户端在控制机，经GPUStack HTTP网关到两worker，含服务解码、路由、内部网络与排队；不含客户外网上传时间。输入预加载，未测文件读取性能。</li>
+<li>原有服务共存但未接入压力流量；本轮没有再测节点掉线、重试、持久队列或Windows/Ubuntu切换。</li>
+<li>期间遇到SSH MaxStartups管理连接限制，HTTP控制服务仍正常。通过已验证主机密钥的内网跳转与复用连接继续；等待区间不计入负载窗口。未修改SSH配置或重启主机。</li>
+</ul>
+<h2 id="section-9">验证、清理与复现</h2>
+<p>8项单元测试（方向4项、能耗4项）通过；HTTP模式选择、显式纠正、SSE/非流式一致、缺图400通过。具体请求计数、坐标/结果一致性与功耗覆盖见validation.json；清理结果见cleanup.json。</p>
+<p>测试后撤销推理专用key、删除临时模型/路由/后端并停止功耗采样；模型镜像、数据、脚本及原始结果保留。原rapidocr-gpu配置校验不变，并做调用复查。</p>
+<p>实现及复现见<a href="../../service-validation/README.md">service-validation/README.md</a>。service-summary.json为完整统计，service-phases.csv为全部阶段指标，load-results保留逐请求记录；direction-scored.jsonl保留方向评分。reproducibility.json记录脚本和输入清单校验和。</p>
+<h2 id="section-10">下一步建议</h2>
+<p>先按业务选择接口策略：已摆正输入使用upright以降低成本；文档质量优先选v6 small并接受显式方向；180°风险使用guarded候选；90°/270°自动处理需要单独验证页面级方向模型。</p>
+<p>在真实业务图片和明确延迟目标下确认默认配置，再以专用单模型镜像验证更长时间负载和每卡实例数。本轮暂不增加PaddleOCR-VL。</p><div class="footer">由同目录 Markdown 报告生成；页面样式内嵌，无需联网。分享方向详情及原始指标时，请同时保留对应文件。</div></article></main></body></html>

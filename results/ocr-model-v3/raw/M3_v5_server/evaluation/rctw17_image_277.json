@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_277",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "6ffef3523298531bc4836cd17dd8bd528ac44f9291f2728cb874ae9754ce721b",
+  "ok": true,
+  "result": {
+    "text": "可回收物\nRECYCLABLE",
+    "lines": [
+      {
+        "box": [
+          [
+            615.2553191489361,
+            1495.4516129032259
+          ],
+          [
+            1634.1702127659573,
+            1439.516129032258
+          ],
+          [
+            1643.936170212766,
+            1615.5483870967744
+          ],
+          [
+            625.0212765957447,
+            1671.483870967742
+          ]
+        ],
+        "text": "可回收物",
+        "score": 0.9964444041252136
+      },
+      {
+        "box": [
+          [
+            664.0851063829787,
+            1671.483870967742
+          ],
+          [
+            1613.0106382978722,
+            1622.1290322580646
+          ],
+          [
+            1617.8936170212767,
+            1725.7741935483873
+          ],
+          [
+            668.968085106383,
+            1775.1290322580646
+          ]
+        ],
+        "text": "RECYCLABLE",
+        "score": 0.9919530749320984
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 130.29
+  }
+}

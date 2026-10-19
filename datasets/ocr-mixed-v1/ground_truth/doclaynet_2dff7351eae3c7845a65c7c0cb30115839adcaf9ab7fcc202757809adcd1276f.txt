@@ -1,0 +1,66 @@
+If the nodes go offline or the storage at either site goes offline, leaving an online and 
+accessible up-to-date copy, the HyperSwap function can automatically fail over access to the 
+online copy. The HyperSwap function also automatically resynchronizes the two copies when 
+possible.
+HyperSwap capability enables each volume to be presented by two I/O groups. The 
+configuration tolerates combinations of node and site failures, by using the same flexible 
+choices of host multipathing driver interoperability that are available for the IBM Storwize. The 
+use of FlashCopy helps maintain a golden image during automatic resynchronization.
+Important:
+ Because Remote Mirroring is used to support the HyperSwap capability, 
+Remote Mirroring licensing is a requirement for using HyperSwap.
+The HyperSwap function uses a hyperswap topology by spreading the control enclosure of 
+the system across two sites, with storage at a third site that acts as a tie-breaking quorum 
+device. Consider the following points:
+The HyperSwap topology requires at least one control enclosure in each main data site. 
+GLYPH<SM590000>
+Therefore, to get a volume that is resiliently stored on both sites, one control enclosure 
+with the necessary storage capacity is required.
+The HyperSwap topology uses more system resources to support a fully independent 
+GLYPH<SM590000>
+cache on each site, which provides full performance, even if one site is lost. 
+The HyperSwap function can be configured by using the GUI or command-line interface 
+GLYPH<SM590000>
+(CLI). 
+The hosts, Storwize V5000 control enclosures, and Storwize V5000 storage enclosures 
+GLYPH<SM590000>
+are in one of two failure domains or sites. External virtualized storage capacity can also be 
+used.
+Volumes are visible as a single object across both sites (the Storwize V5000 control 
+GLYPH<SM590000>
+enclosure).
+At least two control enclosures are required for HyperSwap. System scalability depends on 
+the hardware details, as listed in Table 10-12.
+Table 10-12
+HyperSwap support 
+V5010
+V5020
+V5030 
+V7000
+IBM SAN 
+/V5030F
+Volume 
+Controller
+Maximum number of I/O groups
+1
+1
+2
+4
+4
+Support for HyperSwap
+No
+No
+Yes
+Yes
+Yes
+Support for Stretched Cluster
+No
+No
+No
+No
+Yes
+So, a V5000 HyperSwap cluster is always restricted to a single control enclosure per site. The 
+Storwize V7000 and IBM SAN Volume Controller can provide more scalability and offer more 
+flexibility.
+594 
+Implementing the IBM Storwize V5000 Gen2 with IBM Spectrum Virtualize V8.2.1

@@ -1,0 +1,519 @@
+{
+  "id": "doclaynet_f9c89f690aeebed0194945d87a40c9374a7d034ec643f37644864b5821f1eee2",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "96111b5f876bf2d2e0c740a48ddd046058fa303cf4a4cf90a7f588262f5764b9",
+  "ok": true,
+  "result": {
+    "text": "7\nField notes on modernization for\napplication integration\nIn this chapter, we explore various guidance points for customers who plan to modernize their\napplication integration landscape. The target audience for this chapter is individuals who are\nalready skilled in IBM App Connect (or its predecessors such as IBM Integration Bus,\nWebSphere Message Broker). We explore at a product level what it means to move to a more\nagile integration style. For example, such a move includes a move to container technology,\nrefactoring to more fine-grained deployment, and automation of build pipelines.\nThis chapter has the following sections:\nIBM App Connect adoption paths\nSplitting up the ESB: Grouping integrations in a containerized environment\nWhen does IBM App Connect need a local MQ server?\nMapping images to helm charts\nContinuous Integration and Continuous Delivery Pipeline using IBM App Connect V11\narchitecture\nContinuous Adoption for IBM App Connect\nHigh Availability and Scaling considerations for IBM App Connect in containers\nMigrating centralized ESB to IBM App Connect on containers\nSplitting an integration across on-premises and cloud\n© Copyright IBM Corp. 2020. All rights reserved.\n433",
+    "lines": [
+      {
+        "box": [
+          [
+            829.0,
+            111.0
+          ],
+          [
+            882.0,
+            111.0
+          ],
+          [
+            882.0,
+            166.0
+          ],
+          [
+            829.0,
+            166.0
+          ]
+        ],
+        "text": "7",
+        "score": 0.9999700784683228
+      },
+      {
+        "box": [
+          [
+            229.0,
+            325.0
+          ],
+          [
+            905.0,
+            325.0
+          ],
+          [
+            905.0,
+            355.0
+          ],
+          [
+            229.0,
+            355.0
+          ]
+        ],
+        "text": "Field notes on modernization for",
+        "score": 0.9997074604034424
+      },
+      {
+        "box": [
+          [
+            225.0,
+            365.0
+          ],
+          [
+            697.0,
+            363.0
+          ],
+          [
+            697.0,
+            399.0
+          ],
+          [
+            225.0,
+            401.0
+          ]
+        ],
+        "text": "application integration",
+        "score": 0.9999551177024841
+      },
+      {
+        "box": [
+          [
+            227.0,
+            447.0
+          ],
+          [
+            914.0,
+            447.0
+          ],
+          [
+            914.0,
+            463.0
+          ],
+          [
+            227.0,
+            463.0
+          ]
+        ],
+        "text": "In this chapter, we explore various guidance points for customers who plan to modernize their",
+        "score": 0.9975367188453674
+      },
+      {
+        "box": [
+          [
+            226.0,
+            462.0
+          ],
+          [
+            912.0,
+            461.0
+          ],
+          [
+            912.0,
+            478.0
+          ],
+          [
+            226.0,
+            479.0
+          ]
+        ],
+        "text": "application integration landscape. The target audience for this chapter is individuals who are",
+        "score": 0.9959680438041687
+      },
+      {
+        "box": [
+          [
+            226.0,
+            478.0
+          ],
+          [
+            861.0,
+            478.0
+          ],
+          [
+            861.0,
+            494.0
+          ],
+          [
+            226.0,
+            494.0
+          ]
+        ],
+        "text": "already skilled in IBM App Connect (or its predecessors such as IBM Integration Bus,",
+        "score": 0.9968233704566956
+      },
+      {
+        "box": [
+          [
+            228.0,
+            495.0
+          ],
+          [
+            913.0,
+            495.0
+          ],
+          [
+            913.0,
+            508.0
+          ],
+          [
+            228.0,
+            508.0
+          ]
+        ],
+        "text": "WebSphere Message Broker). We explore at a product level what it means to move to a more",
+        "score": 0.9918845891952515
+      },
+      {
+        "box": [
+          [
+            227.0,
+            509.0
+          ],
+          [
+            902.0,
+            509.0
+          ],
+          [
+            902.0,
+            526.0
+          ],
+          [
+            227.0,
+            526.0
+          ]
+        ],
+        "text": "agile integration style. For example, such a move includes a move to container technology,",
+        "score": 0.9925854206085205
+      },
+      {
+        "box": [
+          [
+            227.0,
+            527.0
+          ],
+          [
+            813.0,
+            527.0
+          ],
+          [
+            813.0,
+            540.0
+          ],
+          [
+            227.0,
+            540.0
+          ]
+        ],
+        "text": "refactoring to more fine-grained deployment, and automation of build pipelines.",
+        "score": 0.9998568892478943
+      },
+      {
+        "box": [
+          [
+            227.0,
+            554.0
+          ],
+          [
+            523.0,
+            554.0
+          ],
+          [
+            523.0,
+            570.0
+          ],
+          [
+            227.0,
+            570.0
+          ]
+        ],
+        "text": "This chapter has the following sections:",
+        "score": 0.9999786615371704
+      },
+      {
+        "box": [
+          [
+            251.0,
+            577.0
+          ],
+          [
+            498.0,
+            577.0
+          ],
+          [
+            498.0,
+            590.0
+          ],
+          [
+            251.0,
+            590.0
+          ]
+        ],
+        "text": "IBM App Connect adoption paths",
+        "score": 0.9944732785224915
+      },
+      {
+        "box": [
+          [
+            250.0,
+            591.0
+          ],
+          [
+            806.0,
+            591.0
+          ],
+          [
+            806.0,
+            607.0
+          ],
+          [
+            250.0,
+            607.0
+          ]
+        ],
+        "text": "Splitting up the ESB: Grouping integrations in a containerized environment",
+        "score": 0.9994096755981445
+      },
+      {
+        "box": [
+          [
+            250.0,
+            607.0
+          ],
+          [
+            661.0,
+            607.0
+          ],
+          [
+            661.0,
+            623.0
+          ],
+          [
+            250.0,
+            623.0
+          ]
+        ],
+        "text": "When does IBM App Connect need a local MQ server?",
+        "score": 0.9942083358764648
+      },
+      {
+        "box": [
+          [
+            250.0,
+            622.0
+          ],
+          [
+            487.0,
+            622.0
+          ],
+          [
+            487.0,
+            638.0
+          ],
+          [
+            250.0,
+            638.0
+          ]
+        ],
+        "text": "Mapping images to helm charts",
+        "score": 0.988445520401001
+      },
+      {
+        "box": [
+          [
+            250.0,
+            638.0
+          ],
+          [
+            887.0,
+            638.0
+          ],
+          [
+            887.0,
+            654.0
+          ],
+          [
+            250.0,
+            654.0
+          ]
+        ],
+        "text": "Continuous Integration and Continuous Delivery Pipeline using IBM App Connect V11",
+        "score": 0.9970581531524658
+      },
+      {
+        "box": [
+          [
+            251.0,
+            655.0
+          ],
+          [
+            341.0,
+            655.0
+          ],
+          [
+            341.0,
+            669.0
+          ],
+          [
+            251.0,
+            669.0
+          ]
+        ],
+        "text": "architecture",
+        "score": 0.9999971985816956
+      },
+      {
+        "box": [
+          [
+            251.0,
+            670.0
+          ],
+          [
+            570.0,
+            670.0
+          ],
+          [
+            570.0,
+            683.0
+          ],
+          [
+            251.0,
+            683.0
+          ]
+        ],
+        "text": "Continuous Adoption for IBM App Connect",
+        "score": 0.9978338479995728
+      },
+      {
+        "box": [
+          [
+            251.0,
+            686.0
+          ],
+          [
+            835.0,
+            686.0
+          ],
+          [
+            835.0,
+            699.0
+          ],
+          [
+            251.0,
+            699.0
+          ]
+        ],
+        "text": "High Availability and Scaling considerations for IBM App Connect in containers",
+        "score": 0.9932594299316406
+      },
+      {
+        "box": [
+          [
+            250.0,
+            700.0
+          ],
+          [
+            707.0,
+            700.0
+          ],
+          [
+            707.0,
+            716.0
+          ],
+          [
+            250.0,
+            716.0
+          ]
+        ],
+        "text": "Migrating centralized ESB to IBM App Connect on containers",
+        "score": 0.9999703168869019
+      },
+      {
+        "box": [
+          [
+            252.0,
+            717.0
+          ],
+          [
+            648.0,
+            717.0
+          ],
+          [
+            648.0,
+            730.0
+          ],
+          [
+            252.0,
+            730.0
+          ]
+        ],
+        "text": "Splitting an integration across on-premises and cloud",
+        "score": 0.9998170137405396
+      },
+      {
+        "box": [
+          [
+            106.0,
+            975.0
+          ],
+          [
+            430.0,
+            975.0
+          ],
+          [
+            430.0,
+            988.0
+          ],
+          [
+            106.0,
+            988.0
+          ]
+        ],
+        "text": "© Copyright IBM Corp. 2020. All rights reserved.",
+        "score": 0.9991782307624817
+      },
+      {
+        "box": [
+          [
+            886.0,
+            973.0
+          ],
+          [
+            918.0,
+            973.0
+          ],
+          [
+            918.0,
+            988.0
+          ],
+          [
+            886.0,
+            988.0
+          ]
+        ],
+        "text": "433",
+        "score": 0.9999958872795105
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 22,
+    "elapsed_ms": 220.73
+  }
+}

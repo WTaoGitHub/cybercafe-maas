@@ -1,0 +1,612 @@
+{
+  "id": "doclaynet_8845b381f82e94fac3c76aca5a9b72d9f57d21f37b386524118fe1bfc50f2a04",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "9.3.7Physicalicon\nThe topicsin thissectionpresentinformationthatisrelated tomonitoring andmanipulating\nphysicalvolumes in theTS7740 and TS7720Tclusters.To view or modify settings forphysical\nvolumepoolstomanagethephysicalvolumesthatareusedbythetape-attachedclusters,\nusethewindowthatisshowninFigure9-57.\n[00001 (0]\nPhysical\nPheyeical Volume Poole\nPhyaical olumes\nPlysical TopeDriwes\nPhysical Modia Inventory\nFigure9-57Physicalicon\nPhysicalVolumePools\nThePhysicalVolumePoolspropertiestabledisplaysthemediapropertiesandencryption\nsettingsforeveryphysicalvolumepoolthatisdefinedforaspecificTS77ooTclusterinthe\ngrid.Thistablecontains these tabs:\nPoolProperties\nEncryptionSettings\nTip:Pools1-32arepreinstalledandinitiallysettodefaultattributes.Pool1functionsas\nthedefaultpoolandisusedifnootherpoolisselected.\nFigure9-58onpage429showanexampleofthePhysicalVolumePoolswindow.Thereisa\nlinkthatis availablefora tutorial showing how tomodifypool encryptionsettings.Click the link\ntosee thetutorialmaterial.Thiswindowisvisiblebutdisabledon theTS77ooMlif thegrid\npossessesaphysicallibrary,but theselectedclusterdoesnot.Thismessageisdisplayed:\nThe cluster is not attached to a physical tape library.\n428\nIBMTS7700Release4.2Guide",
+    "lines": [
+      {
+        "box": [
+          [
+            109.0,
+            91.0
+          ],
+          [
+            308.0,
+            91.0
+          ],
+          [
+            308.0,
+            109.0
+          ],
+          [
+            109.0,
+            109.0
+          ]
+        ],
+        "text": "9.3.7Physicalicon",
+        "score": 0.9919665525941288
+      },
+      {
+        "box": [
+          [
+            228.0,
+            122.0
+          ],
+          [
+            900.0,
+            123.0
+          ],
+          [
+            900.0,
+            141.0
+          ],
+          [
+            228.0,
+            139.0
+          ]
+        ],
+        "text": "The topicsin thissectionpresentinformationthatisrelated tomonitoring andmanipulating",
+        "score": 0.9790210220075789
+      },
+      {
+        "box": [
+          [
+            228.0,
+            139.0
+          ],
+          [
+            914.0,
+            138.0
+          ],
+          [
+            914.0,
+            155.0
+          ],
+          [
+            228.0,
+            156.0
+          ]
+        ],
+        "text": "physicalvolumes in theTS7740 and TS7720Tclusters.To view or modify settings forphysical",
+        "score": 0.9587996149885243
+      },
+      {
+        "box": [
+          [
+            228.0,
+            153.0
+          ],
+          [
+            900.0,
+            155.0
+          ],
+          [
+            900.0,
+            172.0
+          ],
+          [
+            228.0,
+            171.0
+          ]
+        ],
+        "text": "volumepoolstomanagethephysicalvolumesthatareusedbythetape-attachedclusters,",
+        "score": 0.9947222057978312
+      },
+      {
+        "box": [
+          [
+            229.0,
+            172.0
+          ],
+          [
+            558.0,
+            172.0
+          ],
+          [
+            558.0,
+            185.0
+          ],
+          [
+            229.0,
+            185.0
+          ]
+        ],
+        "text": "usethewindowthatisshowninFigure9-57.",
+        "score": 0.9839939110808902
+      },
+      {
+        "box": [
+          [
+            500.0,
+            300.0
+          ],
+          [
+            567.0,
+            300.0
+          ],
+          [
+            567.0,
+            313.0
+          ],
+          [
+            500.0,
+            313.0
+          ]
+        ],
+        "text": "[00001 (0]",
+        "score": 0.8899715065956115
+      },
+      {
+        "box": [
+          [
+            432.0,
+            322.0
+          ],
+          [
+            474.0,
+            322.0
+          ],
+          [
+            474.0,
+            334.0
+          ],
+          [
+            432.0,
+            334.0
+          ]
+        ],
+        "text": "Physical",
+        "score": 0.9329730197787285
+      },
+      {
+        "box": [
+          [
+            371.0,
+            342.0
+          ],
+          [
+            478.0,
+            342.0
+          ],
+          [
+            478.0,
+            353.0
+          ],
+          [
+            371.0,
+            353.0
+          ]
+        ],
+        "text": "Pheyeical Volume Poole",
+        "score": 0.8882851803844626
+      },
+      {
+        "box": [
+          [
+            370.0,
+            358.0
+          ],
+          [
+            456.0,
+            358.0
+          ],
+          [
+            456.0,
+            369.0
+          ],
+          [
+            370.0,
+            369.0
+          ]
+        ],
+        "text": "Phyaical olumes",
+        "score": 0.9355750521024068
+      },
+      {
+        "box": [
+          [
+            370.0,
+            373.0
+          ],
+          [
+            468.0,
+            373.0
+          ],
+          [
+            468.0,
+            384.0
+          ],
+          [
+            370.0,
+            384.0
+          ]
+        ],
+        "text": "Plysical TopeDriwes",
+        "score": 0.8881902788814745
+      },
+      {
+        "box": [
+          [
+            370.0,
+            388.0
+          ],
+          [
+            489.0,
+            389.0
+          ],
+          [
+            489.0,
+            400.0
+          ],
+          [
+            370.0,
+            399.0
+          ]
+        ],
+        "text": "Physical Modia Inventory",
+        "score": 0.8535884544253349
+      },
+      {
+        "box": [
+          [
+            230.0,
+            533.0
+          ],
+          [
+            408.0,
+            533.0
+          ],
+          [
+            408.0,
+            549.0
+          ],
+          [
+            230.0,
+            549.0
+          ]
+        ],
+        "text": "Figure9-57Physicalicon",
+        "score": 0.9950735975395549
+      },
+      {
+        "box": [
+          [
+            230.0,
+            567.0
+          ],
+          [
+            450.0,
+            567.0
+          ],
+          [
+            450.0,
+            584.0
+          ],
+          [
+            230.0,
+            584.0
+          ]
+        ],
+        "text": "PhysicalVolumePools",
+        "score": 0.9953264217627676
+      },
+      {
+        "box": [
+          [
+            230.0,
+            587.0
+          ],
+          [
+            890.0,
+            587.0
+          ],
+          [
+            890.0,
+            602.0
+          ],
+          [
+            230.0,
+            602.0
+          ]
+        ],
+        "text": "ThePhysicalVolumePoolspropertiestabledisplaysthemediapropertiesandencryption",
+        "score": 0.9941251528890509
+      },
+      {
+        "box": [
+          [
+            228.0,
+            601.0
+          ],
+          [
+            898.0,
+            601.0
+          ],
+          [
+            898.0,
+            619.0
+          ],
+          [
+            228.0,
+            619.0
+          ]
+        ],
+        "text": "settingsforeveryphysicalvolumepoolthatisdefinedforaspecificTS77ooTclusterinthe",
+        "score": 0.9915996255018772
+      },
+      {
+        "box": [
+          [
+            227.0,
+            617.0
+          ],
+          [
+            494.0,
+            615.0
+          ],
+          [
+            495.0,
+            633.0
+          ],
+          [
+            227.0,
+            634.0
+          ]
+        ],
+        "text": "grid.Thistablecontains these tabs:",
+        "score": 0.9683524457847371
+      },
+      {
+        "box": [
+          [
+            227.0,
+            639.0
+          ],
+          [
+            368.0,
+            639.0
+          ],
+          [
+            368.0,
+            655.0
+          ],
+          [
+            227.0,
+            655.0
+          ]
+        ],
+        "text": "PoolProperties",
+        "score": 0.9982489219733647
+      },
+      {
+        "box": [
+          [
+            252.0,
+            654.0
+          ],
+          [
+            398.0,
+            655.0
+          ],
+          [
+            398.0,
+            671.0
+          ],
+          [
+            252.0,
+            669.0
+          ]
+        ],
+        "text": "EncryptionSettings",
+        "score": 0.9980328414175246
+      },
+      {
+        "box": [
+          [
+            239.0,
+            684.0
+          ],
+          [
+            897.0,
+            684.0
+          ],
+          [
+            897.0,
+            699.0
+          ],
+          [
+            239.0,
+            699.0
+          ]
+        ],
+        "text": "Tip:Pools1-32arepreinstalledandinitiallysettodefaultattributes.Pool1functionsas",
+        "score": 0.9919617085517207
+      },
+      {
+        "box": [
+          [
+            239.0,
+            701.0
+          ],
+          [
+            648.0,
+            701.0
+          ],
+          [
+            648.0,
+            715.0
+          ],
+          [
+            239.0,
+            715.0
+          ]
+        ],
+        "text": "thedefaultpoolandisusedifnootherpoolisselected.",
+        "score": 0.9951254268910023
+      },
+      {
+        "box": [
+          [
+            229.0,
+            737.0
+          ],
+          [
+            912.0,
+            737.0
+          ],
+          [
+            912.0,
+            752.0
+          ],
+          [
+            229.0,
+            752.0
+          ]
+        ],
+        "text": "Figure9-58onpage429showanexampleofthePhysicalVolumePoolswindow.Thereisa",
+        "score": 0.9968277635708661
+      },
+      {
+        "box": [
+          [
+            228.0,
+            753.0
+          ],
+          [
+            915.0,
+            753.0
+          ],
+          [
+            915.0,
+            770.0
+          ],
+          [
+            228.0,
+            770.0
+          ]
+        ],
+        "text": "linkthatis availablefora tutorial showing how tomodifypool encryptionsettings.Click the link",
+        "score": 0.9641602557638417
+      },
+      {
+        "box": [
+          [
+            228.0,
+            769.0
+          ],
+          [
+            899.0,
+            769.0
+          ],
+          [
+            899.0,
+            785.0
+          ],
+          [
+            228.0,
+            785.0
+          ]
+        ],
+        "text": "tosee thetutorialmaterial.Thiswindowisvisiblebutdisabledon theTS77ooMlif thegrid",
+        "score": 0.9728713504970073
+      },
+      {
+        "box": [
+          [
+            229.0,
+            785.0
+          ],
+          [
+            899.0,
+            785.0
+          ],
+          [
+            899.0,
+            800.0
+          ],
+          [
+            229.0,
+            800.0
+          ]
+        ],
+        "text": "possessesaphysicallibrary,but theselectedclusterdoesnot.Thismessageisdisplayed:",
+        "score": 0.9827731802493711
+      },
+      {
+        "box": [
+          [
+            228.0,
+            804.0
+          ],
+          [
+            690.0,
+            806.0
+          ],
+          [
+            690.0,
+            823.0
+          ],
+          [
+            228.0,
+            821.0
+          ]
+        ],
+        "text": "The cluster is not attached to a physical tape library.",
+        "score": 0.9309112711386247
+      },
+      {
+        "box": [
+          [
+            107.0,
+            975.0
+          ],
+          [
+            138.0,
+            975.0
+          ],
+          [
+            138.0,
+            990.0
+          ],
+          [
+            107.0,
+            990.0
+          ]
+        ],
+        "text": "428",
+        "score": 0.999573548634847
+      },
+      {
+        "box": [
+          [
+            163.0,
+            974.0
+          ],
+          [
+            387.0,
+            975.0
+          ],
+          [
+            387.0,
+            990.0
+          ],
+          [
+            163.0,
+            990.0
+          ]
+        ],
+        "text": "IBMTS7700Release4.2Guide",
+        "score": 0.986232357720534
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 27,
+    "deduplicated": 0,
+    "elapsed_ms": 216.31,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 226.01
+}

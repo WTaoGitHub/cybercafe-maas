@@ -1,0 +1,1553 @@
+{
+  "id": "doclaynet_6e68cf1d74ea159c0de05d8d4e4dc225eca69be8666bf2f8d3e963439ae68011",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "24bc22d66bb3401676c7183b64f51c5c5010a186698579071d90a16a36518848",
+  "ok": true,
+  "result": {
+    "text": "part and a part arising from the diffusion. Since the hydrodynamic variables are simply\ntaken over from the Cahn-Hilliard level,the appropriate hydrodynamic elements of the new\nfriction matrix are the same as in\n2.7\n.The diffusive part, on the other hand,is related to\nthe configurational variable c, and the ensemble averaging must be performed in a similar\nway as for the Poisson operator in Section\nIID\nFor the analvtical derivation of the coarse-\ngrained friction matrix M(2)′di,in analogy to Eq.\n3.11),one starts from\nM(2)cidi (y) )=\nδI (x)\nT\n · M (1),dif (x) ·\nδI (x)\n(3.19)\nδx\nδx\nand then employs similar procedure and approximations as in the derivation of the elements\nof the Poisson matrix L(2)(see Appendix A). For example, the relaxation of the Doi-Ohta\nvariable Q could be expressed as an irreversible part of the GENERIC time evolution equa-\ntion\n3.18\nas\n∂Q(r1)\n= l(r1)\nd3r2 M (2′,dif(r1, r2)\n1\nT (r2) \n(3.20)\n∂t\nirrev\nwhere we have used the approximation (∂Q(r)/∂t)lirrev ≈ l(r) (∂P(r)/∂t)|irrew, since the\ninterfacial width l does not change much, compared to the other two configurational vari-\nables. Using the entropy functional derivative\n[3.10\nwith λ = 0, results in the matrix\nelement M (2)′,dif\nbeing the only relevant term for the variable P which is left after the av-\nPε\neraging\n3.19\nThen, putting the equation\n3.20\ninthe Doi-Ohta equation (1.7a\nfor the\nrelaxation of Q in a homogeneous case gives the following expression for the relaxation time\n1\n2κEMl\n(id: ρ(Q,q)[c] c:B\n∂\n(∂2c(r)(cicd:1)2\nVQ\n(3.21)\nτdo,1\n[\n∂r2\nwhere V is the volume of the system. Details of the calculation are given in Appendix B.\nSimilar expression could be obtained for the relaxation time τdo,2. The above formula, gives\nthe expression for the Doi-Ohta relaxation time do,1 calculated from the transformation\nof the element of the friction matrix M(1),dif containing the relaxation parameters of the\nCahn-Hilliard level at any time t. This is the result of the presented systematic coarse-\ngraining procedure developed within the GENERIC formalism which shows in which way\nthe Doi-Ohta relaxation times can be obtained from the more detailed level of description.\nHowever, the above relation is difficult to express analytically in form of the variables of\nthe Doi-Ohta level, due to the diffusive terms coming from the Cahn-Hilliard level. On the\nother hand, the above expression could,in principle, be calculated numerically using short\n22",
+    "lines": [
+      {
+        "box": [
+          [
+            118.0,
+            92.0
+          ],
+          [
+            900.0,
+            91.0
+          ],
+          [
+            900.0,
+            108.0
+          ],
+          [
+            118.0,
+            109.0
+          ]
+        ],
+        "text": "part and a part arising from the diffusion. Since the hydrodynamic variables are simply",
+        "score": 0.9584006071090698
+      },
+      {
+        "box": [
+          [
+            119.0,
+            119.0
+          ],
+          [
+            901.0,
+            119.0
+          ],
+          [
+            901.0,
+            135.0
+          ],
+          [
+            119.0,
+            135.0
+          ]
+        ],
+        "text": "taken over from the Cahn-Hilliard level,the appropriate hydrodynamic elements of the new",
+        "score": 0.964838445186615
+      },
+      {
+        "box": [
+          [
+            119.0,
+            146.0
+          ],
+          [
+            410.0,
+            146.0
+          ],
+          [
+            410.0,
+            162.0
+          ],
+          [
+            119.0,
+            162.0
+          ]
+        ],
+        "text": "friction matrix are the same as in",
+        "score": 0.9642512202262878
+      },
+      {
+        "box": [
+          [
+            415.0,
+            147.0
+          ],
+          [
+            450.0,
+            147.0
+          ],
+          [
+            450.0,
+            162.0
+          ],
+          [
+            415.0,
+            162.0
+          ]
+        ],
+        "text": "2.7",
+        "score": 0.9987792372703552
+      },
+      {
+        "box": [
+          [
+            455.0,
+            146.0
+          ],
+          [
+            901.0,
+            146.0
+          ],
+          [
+            901.0,
+            162.0
+          ],
+          [
+            455.0,
+            162.0
+          ]
+        ],
+        "text": ".The diffusive part, on the other hand,is related to",
+        "score": 0.9444650411605835
+      },
+      {
+        "box": [
+          [
+            119.0,
+            173.0
+          ],
+          [
+            901.0,
+            173.0
+          ],
+          [
+            901.0,
+            189.0
+          ],
+          [
+            119.0,
+            189.0
+          ]
+        ],
+        "text": "the configurational variable c, and the ensemble averaging must be performed in a similar",
+        "score": 0.9628695249557495
+      },
+      {
+        "box": [
+          [
+            119.0,
+            200.0
+          ],
+          [
+            481.0,
+            200.0
+          ],
+          [
+            481.0,
+            216.0
+          ],
+          [
+            119.0,
+            216.0
+          ]
+        ],
+        "text": "way as for the Poisson operator in Section",
+        "score": 0.9791596531867981
+      },
+      {
+        "box": [
+          [
+            478.0,
+            201.0
+          ],
+          [
+            530.0,
+            201.0
+          ],
+          [
+            530.0,
+            215.0
+          ],
+          [
+            478.0,
+            215.0
+          ]
+        ],
+        "text": "IID",
+        "score": 0.6356495022773743
+      },
+      {
+        "box": [
+          [
+            536.0,
+            201.0
+          ],
+          [
+            900.0,
+            201.0
+          ],
+          [
+            900.0,
+            214.0
+          ],
+          [
+            536.0,
+            214.0
+          ]
+        ],
+        "text": "For the analvtical derivation of the coarse-",
+        "score": 0.9562156200408936
+      },
+      {
+        "box": [
+          [
+            116.0,
+            224.0
+          ],
+          [
+            564.0,
+            223.0
+          ],
+          [
+            564.0,
+            246.0
+          ],
+          [
+            116.0,
+            247.0
+          ]
+        ],
+        "text": "grained friction matrix M(2)′di,in analogy to Eq.",
+        "score": 0.9350906014442444
+      },
+      {
+        "box": [
+          [
+            555.0,
+            227.0
+          ],
+          [
+            750.0,
+            227.0
+          ],
+          [
+            750.0,
+            244.0
+          ],
+          [
+            555.0,
+            244.0
+          ]
+        ],
+        "text": "3.11),one starts from",
+        "score": 0.9397099018096924
+      },
+      {
+        "box": [
+          [
+            268.0,
+            263.0
+          ],
+          [
+            394.0,
+            268.0
+          ],
+          [
+            393.0,
+            299.0
+          ],
+          [
+            267.0,
+            294.0
+          ]
+        ],
+        "text": "M(2)cidi (y) )=",
+        "score": 0.6468756794929504
+      },
+      {
+        "box": [
+          [
+            420.0,
+            259.0
+          ],
+          [
+            486.0,
+            262.0
+          ],
+          [
+            485.0,
+            287.0
+          ],
+          [
+            419.0,
+            284.0
+          ]
+        ],
+        "text": "δI (x)",
+        "score": 0.8046668171882629
+      },
+      {
+        "box": [
+          [
+            494.0,
+            259.0
+          ],
+          [
+            510.0,
+            259.0
+          ],
+          [
+            510.0,
+            272.0
+          ],
+          [
+            494.0,
+            272.0
+          ]
+        ],
+        "text": "T",
+        "score": 0.9986912608146667
+      },
+      {
+        "box": [
+          [
+            507.0,
+            264.0
+          ],
+          [
+            631.0,
+            268.0
+          ],
+          [
+            630.0,
+            298.0
+          ],
+          [
+            506.0,
+            294.0
+          ]
+        ],
+        "text": " · M (1),dif (x) ·",
+        "score": 0.8639215230941772
+      },
+      {
+        "box": [
+          [
+            639.0,
+            261.0
+          ],
+          [
+            703.0,
+            261.0
+          ],
+          [
+            703.0,
+            285.0
+          ],
+          [
+            639.0,
+            285.0
+          ]
+        ],
+        "text": "δI (x)",
+        "score": 0.8194929957389832
+      },
+      {
+        "box": [
+          [
+            849.0,
+            273.0
+          ],
+          [
+            903.0,
+            273.0
+          ],
+          [
+            903.0,
+            295.0
+          ],
+          [
+            849.0,
+            295.0
+          ]
+        ],
+        "text": "(3.19)",
+        "score": 0.9997087121009827
+      },
+      {
+        "box": [
+          [
+            439.0,
+            285.0
+          ],
+          [
+            465.0,
+            285.0
+          ],
+          [
+            465.0,
+            301.0
+          ],
+          [
+            439.0,
+            301.0
+          ]
+        ],
+        "text": "δx",
+        "score": 0.9711657166481018
+      },
+      {
+        "box": [
+          [
+            657.0,
+            284.0
+          ],
+          [
+            686.0,
+            284.0
+          ],
+          [
+            686.0,
+            303.0
+          ],
+          [
+            657.0,
+            303.0
+          ]
+        ],
+        "text": "δx",
+        "score": 0.9700298309326172
+      },
+      {
+        "box": [
+          [
+            119.0,
+            325.0
+          ],
+          [
+            902.0,
+            325.0
+          ],
+          [
+            902.0,
+            341.0
+          ],
+          [
+            119.0,
+            341.0
+          ]
+        ],
+        "text": "and then employs similar procedure and approximations as in the derivation of the elements",
+        "score": 0.9794268012046814
+      },
+      {
+        "box": [
+          [
+            118.0,
+            349.0
+          ],
+          [
+            903.0,
+            350.0
+          ],
+          [
+            903.0,
+            369.0
+          ],
+          [
+            118.0,
+            368.0
+          ]
+        ],
+        "text": "of the Poisson matrix L(2)(see Appendix A). For example, the relaxation of the Doi-Ohta",
+        "score": 0.9486275911331177
+      },
+      {
+        "box": [
+          [
+            118.0,
+            376.0
+          ],
+          [
+            901.0,
+            378.0
+          ],
+          [
+            901.0,
+            397.0
+          ],
+          [
+            118.0,
+            395.0
+          ]
+        ],
+        "text": "variable Q could be expressed as an irreversible part of the GENERIC time evolution equa-",
+        "score": 0.9785684943199158
+      },
+      {
+        "box": [
+          [
+            117.0,
+            405.0
+          ],
+          [
+            157.0,
+            405.0
+          ],
+          [
+            157.0,
+            422.0
+          ],
+          [
+            117.0,
+            422.0
+          ]
+        ],
+        "text": "tion",
+        "score": 0.9993151426315308
+      },
+      {
+        "box": [
+          [
+            162.0,
+            405.0
+          ],
+          [
+            208.0,
+            405.0
+          ],
+          [
+            208.0,
+            423.0
+          ],
+          [
+            162.0,
+            423.0
+          ]
+        ],
+        "text": "3.18",
+        "score": 0.9978058338165283
+      },
+      {
+        "box": [
+          [
+            214.0,
+            409.0
+          ],
+          [
+            236.0,
+            409.0
+          ],
+          [
+            236.0,
+            421.0
+          ],
+          [
+            214.0,
+            421.0
+          ]
+        ],
+        "text": "as",
+        "score": 0.9902687072753906
+      },
+      {
+        "box": [
+          [
+            304.0,
+            420.0
+          ],
+          [
+            369.0,
+            420.0
+          ],
+          [
+            369.0,
+            441.0
+          ],
+          [
+            304.0,
+            441.0
+          ]
+        ],
+        "text": "∂Q(r1)",
+        "score": 0.9859409928321838
+      },
+      {
+        "box": [
+          [
+            407.0,
+            424.0
+          ],
+          [
+            476.0,
+            429.0
+          ],
+          [
+            474.0,
+            457.0
+          ],
+          [
+            405.0,
+            452.0
+          ]
+        ],
+        "text": "= l(r1)",
+        "score": 0.8828164339065552
+      },
+      {
+        "box": [
+          [
+            492.0,
+            423.0
+          ],
+          [
+            670.0,
+            423.0
+          ],
+          [
+            670.0,
+            457.0
+          ],
+          [
+            492.0,
+            457.0
+          ]
+        ],
+        "text": "d3r2 M (2′,dif(r1, r2)",
+        "score": 0.8331315517425537
+      },
+      {
+        "box": [
+          [
+            684.0,
+            422.0
+          ],
+          [
+            698.0,
+            422.0
+          ],
+          [
+            698.0,
+            437.0
+          ],
+          [
+            684.0,
+            437.0
+          ]
+        ],
+        "text": "1",
+        "score": 0.9990378618240356
+      },
+      {
+        "box": [
+          [
+            664.0,
+            438.0
+          ],
+          [
+            721.0,
+            441.0
+          ],
+          [
+            720.0,
+            466.0
+          ],
+          [
+            663.0,
+            463.0
+          ]
+        ],
+        "text": "T (r2) ",
+        "score": 0.7762160301208496
+      },
+      {
+        "box": [
+          [
+            847.0,
+            429.0
+          ],
+          [
+            905.0,
+            429.0
+          ],
+          [
+            905.0,
+            454.0
+          ],
+          [
+            847.0,
+            454.0
+          ]
+        ],
+        "text": "(3.20)",
+        "score": 0.9995988011360168
+      },
+      {
+        "box": [
+          [
+            325.0,
+            443.0
+          ],
+          [
+            349.0,
+            443.0
+          ],
+          [
+            349.0,
+            461.0
+          ],
+          [
+            325.0,
+            461.0
+          ]
+        ],
+        "text": "∂t",
+        "score": 0.998234212398529
+      },
+      {
+        "box": [
+          [
+            373.0,
+            451.0
+          ],
+          [
+            406.0,
+            454.0
+          ],
+          [
+            405.0,
+            465.0
+          ],
+          [
+            372.0,
+            462.0
+          ]
+        ],
+        "text": "irrev",
+        "score": 0.9773023724555969
+      },
+      {
+        "box": [
+          [
+            118.0,
+            467.0
+          ],
+          [
+            902.0,
+            467.0
+          ],
+          [
+            902.0,
+            487.0
+          ],
+          [
+            118.0,
+            487.0
+          ]
+        ],
+        "text": "where we have used the approximation (∂Q(r)/∂t)lirrev ≈ l(r) (∂P(r)/∂t)|irrew, since the",
+        "score": 0.9200121164321899
+      },
+      {
+        "box": [
+          [
+            119.0,
+            495.0
+          ],
+          [
+            902.0,
+            495.0
+          ],
+          [
+            902.0,
+            511.0
+          ],
+          [
+            119.0,
+            511.0
+          ]
+        ],
+        "text": "interfacial width l does not change much, compared to the other two configurational vari-",
+        "score": 0.9589841365814209
+      },
+      {
+        "box": [
+          [
+            119.0,
+            523.0
+          ],
+          [
+            532.0,
+            523.0
+          ],
+          [
+            532.0,
+            539.0
+          ],
+          [
+            119.0,
+            539.0
+          ]
+        ],
+        "text": "ables. Using the entropy functional derivative",
+        "score": 0.960767388343811
+      },
+      {
+        "box": [
+          [
+            540.0,
+            523.0
+          ],
+          [
+            586.0,
+            523.0
+          ],
+          [
+            586.0,
+            540.0
+          ],
+          [
+            540.0,
+            540.0
+          ]
+        ],
+        "text": "[3.10",
+        "score": 0.902784526348114
+      },
+      {
+        "box": [
+          [
+            594.0,
+            523.0
+          ],
+          [
+            902.0,
+            523.0
+          ],
+          [
+            902.0,
+            539.0
+          ],
+          [
+            594.0,
+            539.0
+          ]
+        ],
+        "text": "with λ = 0, results in the matrix",
+        "score": 0.9138038754463196
+      },
+      {
+        "box": [
+          [
+            117.0,
+            549.0
+          ],
+          [
+            262.0,
+            542.0
+          ],
+          [
+            263.0,
+            562.0
+          ],
+          [
+            118.0,
+            569.0
+          ]
+        ],
+        "text": "element M (2)′,dif",
+        "score": 0.8351890444755554
+      },
+      {
+        "box": [
+          [
+            260.0,
+            546.0
+          ],
+          [
+            903.0,
+            548.0
+          ],
+          [
+            903.0,
+            568.0
+          ],
+          [
+            260.0,
+            566.0
+          ]
+        ],
+        "text": "being the only relevant term for the variable P which is left after the av-",
+        "score": 0.956371545791626
+      },
+      {
+        "box": [
+          [
+            212.0,
+            558.0
+          ],
+          [
+            230.0,
+            558.0
+          ],
+          [
+            230.0,
+            569.0
+          ],
+          [
+            212.0,
+            569.0
+          ]
+        ],
+        "text": "Pε",
+        "score": 0.7152878046035767
+      },
+      {
+        "box": [
+          [
+            117.0,
+            577.0
+          ],
+          [
+            186.0,
+            577.0
+          ],
+          [
+            186.0,
+            597.0
+          ],
+          [
+            117.0,
+            597.0
+          ]
+        ],
+        "text": "eraging",
+        "score": 0.9995598196983337
+      },
+      {
+        "box": [
+          [
+            191.0,
+            577.0
+          ],
+          [
+            238.0,
+            577.0
+          ],
+          [
+            238.0,
+            594.0
+          ],
+          [
+            191.0,
+            594.0
+          ]
+        ],
+        "text": "3.19",
+        "score": 0.9978753328323364
+      },
+      {
+        "box": [
+          [
+            254.0,
+            578.0
+          ],
+          [
+            496.0,
+            578.0
+          ],
+          [
+            496.0,
+            594.0
+          ],
+          [
+            254.0,
+            594.0
+          ]
+        ],
+        "text": "Then, putting the equation",
+        "score": 0.9929071664810181
+      },
+      {
+        "box": [
+          [
+            502.0,
+            579.0
+          ],
+          [
+            551.0,
+            579.0
+          ],
+          [
+            551.0,
+            593.0
+          ],
+          [
+            502.0,
+            593.0
+          ]
+        ],
+        "text": "3.20",
+        "score": 0.9923348426818848
+      },
+      {
+        "box": [
+          [
+            547.0,
+            578.0
+          ],
+          [
+            833.0,
+            578.0
+          ],
+          [
+            833.0,
+            594.0
+          ],
+          [
+            547.0,
+            594.0
+          ]
+        ],
+        "text": "inthe Doi-Ohta equation (1.7a",
+        "score": 0.9323108196258545
+      },
+      {
+        "box": [
+          [
+            841.0,
+            579.0
+          ],
+          [
+            902.0,
+            579.0
+          ],
+          [
+            902.0,
+            593.0
+          ],
+          [
+            841.0,
+            593.0
+          ]
+        ],
+        "text": "for the",
+        "score": 0.9888288378715515
+      },
+      {
+        "box": [
+          [
+            118.0,
+            604.0
+          ],
+          [
+            902.0,
+            605.0
+          ],
+          [
+            902.0,
+            622.0
+          ],
+          [
+            118.0,
+            621.0
+          ]
+        ],
+        "text": "relaxation of Q in a homogeneous case gives the following expression for the relaxation time",
+        "score": 0.9678061008453369
+      },
+      {
+        "box": [
+          [
+            282.0,
+            638.0
+          ],
+          [
+            299.0,
+            638.0
+          ],
+          [
+            299.0,
+            655.0
+          ],
+          [
+            282.0,
+            655.0
+          ]
+        ],
+        "text": "1",
+        "score": 0.999062716960907
+      },
+      {
+        "box": [
+          [
+            343.0,
+            637.0
+          ],
+          [
+            409.0,
+            637.0
+          ],
+          [
+            409.0,
+            657.0
+          ],
+          [
+            343.0,
+            657.0
+          ]
+        ],
+        "text": "2κEMl",
+        "score": 0.9880069494247437
+      },
+      {
+        "box": [
+          [
+            411.0,
+            636.0
+          ],
+          [
+            603.0,
+            636.0
+          ],
+          [
+            603.0,
+            680.0
+          ],
+          [
+            411.0,
+            680.0
+          ]
+        ],
+        "text": "(id: ρ(Q,q)[c] c:B",
+        "score": 0.6061296463012695
+      },
+      {
+        "box": [
+          [
+            608.0,
+            639.0
+          ],
+          [
+            633.0,
+            639.0
+          ],
+          [
+            633.0,
+            654.0
+          ],
+          [
+            608.0,
+            654.0
+          ]
+        ],
+        "text": "∂",
+        "score": 0.8770428895950317
+      },
+      {
+        "box": [
+          [
+            647.0,
+            635.0
+          ],
+          [
+            747.0,
+            627.0
+          ],
+          [
+            749.0,
+            655.0
+          ],
+          [
+            649.0,
+            663.0
+          ]
+        ],
+        "text": "(∂2c(r)(cicd:1)2",
+        "score": 0.5835331678390503
+      },
+      {
+        "box": [
+          [
+            357.0,
+            654.0
+          ],
+          [
+            398.0,
+            657.0
+          ],
+          [
+            396.0,
+            679.0
+          ],
+          [
+            356.0,
+            676.0
+          ]
+        ],
+        "text": "VQ",
+        "score": 0.9968562722206116
+      },
+      {
+        "box": [
+          [
+            848.0,
+            646.0
+          ],
+          [
+            905.0,
+            646.0
+          ],
+          [
+            905.0,
+            671.0
+          ],
+          [
+            848.0,
+            671.0
+          ]
+        ],
+        "text": "(3.21)",
+        "score": 0.9996111392974854
+      },
+      {
+        "box": [
+          [
+            270.0,
+            658.0
+          ],
+          [
+            311.0,
+            662.0
+          ],
+          [
+            309.0,
+            681.0
+          ],
+          [
+            268.0,
+            677.0
+          ]
+        ],
+        "text": "τdo,1",
+        "score": 0.9579787254333496
+      },
+      {
+        "box": [
+          [
+            598.0,
+            656.0
+          ],
+          [
+            655.0,
+            656.0
+          ],
+          [
+            655.0,
+            677.0
+          ],
+          [
+            598.0,
+            677.0
+          ]
+        ],
+        "text": "[",
+        "score": 0.778314471244812
+      },
+      {
+        "box": [
+          [
+            660.0,
+            656.0
+          ],
+          [
+            706.0,
+            656.0
+          ],
+          [
+            706.0,
+            677.0
+          ],
+          [
+            660.0,
+            677.0
+          ]
+        ],
+        "text": "∂r2",
+        "score": 0.9521229267120361
+      },
+      {
+        "box": [
+          [
+            118.0,
+            691.0
+          ],
+          [
+            902.0,
+            692.0
+          ],
+          [
+            902.0,
+            709.0
+          ],
+          [
+            118.0,
+            708.0
+          ]
+        ],
+        "text": "where V is the volume of the system. Details of the calculation are given in Appendix B.",
+        "score": 0.9596078991889954
+      },
+      {
+        "box": [
+          [
+            118.0,
+            718.0
+          ],
+          [
+            902.0,
+            719.0
+          ],
+          [
+            902.0,
+            736.0
+          ],
+          [
+            118.0,
+            735.0
+          ]
+        ],
+        "text": "Similar expression could be obtained for the relaxation time τdo,2. The above formula, gives",
+        "score": 0.9678827524185181
+      },
+      {
+        "box": [
+          [
+            119.0,
+            747.0
+          ],
+          [
+            902.0,
+            747.0
+          ],
+          [
+            902.0,
+            763.0
+          ],
+          [
+            119.0,
+            763.0
+          ]
+        ],
+        "text": "the expression for the Doi-Ohta relaxation time do,1 calculated from the transformation",
+        "score": 0.9774583578109741
+      },
+      {
+        "box": [
+          [
+            117.0,
+            770.0
+          ],
+          [
+            902.0,
+            771.0
+          ],
+          [
+            902.0,
+            791.0
+          ],
+          [
+            117.0,
+            790.0
+          ]
+        ],
+        "text": "of the element of the friction matrix M(1),dif containing the relaxation parameters of the",
+        "score": 0.9555260539054871
+      },
+      {
+        "box": [
+          [
+            118.0,
+            799.0
+          ],
+          [
+            901.0,
+            801.0
+          ],
+          [
+            901.0,
+            817.0
+          ],
+          [
+            118.0,
+            815.0
+          ]
+        ],
+        "text": "Cahn-Hilliard level at any time t. This is the result of the presented systematic coarse-",
+        "score": 0.9459320902824402
+      },
+      {
+        "box": [
+          [
+            119.0,
+            828.0
+          ],
+          [
+            902.0,
+            828.0
+          ],
+          [
+            902.0,
+            844.0
+          ],
+          [
+            119.0,
+            844.0
+          ]
+        ],
+        "text": "graining procedure developed within the GENERIC formalism which shows in which way",
+        "score": 0.9580365419387817
+      },
+      {
+        "box": [
+          [
+            119.0,
+            854.0
+          ],
+          [
+            901.0,
+            854.0
+          ],
+          [
+            901.0,
+            870.0
+          ],
+          [
+            119.0,
+            870.0
+          ]
+        ],
+        "text": "the Doi-Ohta relaxation times can be obtained from the more detailed level of description.",
+        "score": 0.9694318175315857
+      },
+      {
+        "box": [
+          [
+            118.0,
+            880.0
+          ],
+          [
+            903.0,
+            881.0
+          ],
+          [
+            903.0,
+            898.0
+          ],
+          [
+            118.0,
+            897.0
+          ]
+        ],
+        "text": "However, the above relation is difficult to express analytically in form of the variables of",
+        "score": 0.9663710594177246
+      },
+      {
+        "box": [
+          [
+            119.0,
+            908.0
+          ],
+          [
+            902.0,
+            908.0
+          ],
+          [
+            902.0,
+            924.0
+          ],
+          [
+            119.0,
+            924.0
+          ]
+        ],
+        "text": "the Doi-Ohta level, due to the diffusive terms coming from the Cahn-Hilliard level. On the",
+        "score": 0.958285927772522
+      },
+      {
+        "box": [
+          [
+            119.0,
+            935.0
+          ],
+          [
+            902.0,
+            935.0
+          ],
+          [
+            902.0,
+            951.0
+          ],
+          [
+            119.0,
+            951.0
+          ]
+        ],
+        "text": "other hand, the above expression could,in principle, be calculated numerically using short",
+        "score": 0.972726583480835
+      },
+      {
+        "box": [
+          [
+            487.0,
+            974.0
+          ],
+          [
+            514.0,
+            974.0
+          ],
+          [
+            514.0,
+            993.0
+          ],
+          [
+            487.0,
+            993.0
+          ]
+        ],
+        "text": "22",
+        "score": 0.9999171495437622
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 72,
+    "elapsed_ms": 501.5
+  }
+}

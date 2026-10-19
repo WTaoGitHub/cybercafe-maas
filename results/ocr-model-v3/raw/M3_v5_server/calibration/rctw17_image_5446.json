@@ -1,0 +1,123 @@
+{
+  "id": "rctw17_image_5446",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M3_v5_server",
+  "image_sha256": "ff4ecc9208d06b93230c928453b6b5119bb68b02bb3d07cba23f9f4c49fcf3ca",
+  "ok": true,
+  "result": {
+    "text": "201\n20\n赴新疆县级团\n吉会",
+    "lines": [
+      {
+        "box": [
+          [
+            475.0,
+            75.0
+          ],
+          [
+            498.0,
+            75.0
+          ],
+          [
+            498.0,
+            89.0
+          ],
+          [
+            475.0,
+            89.0
+          ]
+        ],
+        "text": "201",
+        "score": 0.9963817596435547
+      },
+      {
+        "box": [
+          [
+            22.0,
+            88.0
+          ],
+          [
+            49.0,
+            88.0
+          ],
+          [
+            49.0,
+            110.0
+          ],
+          [
+            22.0,
+            110.0
+          ]
+        ],
+        "text": "20",
+        "score": 0.9993959665298462
+      },
+      {
+        "box": [
+          [
+            195.0,
+            90.0
+          ],
+          [
+            327.0,
+            90.0
+          ],
+          [
+            327.0,
+            110.0
+          ],
+          [
+            195.0,
+            110.0
+          ]
+        ],
+        "text": "赴新疆县级团",
+        "score": 0.9962933659553528
+      },
+      {
+        "box": [
+          [
+            470.0,
+            90.0
+          ],
+          [
+            500.0,
+            89.0
+          ],
+          [
+            500.0,
+            113.0
+          ],
+          [
+            470.0,
+            113.0
+          ]
+        ],
+        "text": "吉会",
+        "score": 0.9560248851776123
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      250,
+      500,
+      3
+    ],
+    "detected_boxes": 5,
+    "elapsed_ms": 111.35
+  }
+}

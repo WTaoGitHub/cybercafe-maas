@@ -1,0 +1,192 @@
+part and a part arising from the diffusion.
+Since the hydrodynamic variables are simply
+taken over from the Cahn-Hilliard level, the appropriate hydrodynamic elements of the new
+friction matrix are the same as in (2.7). The diffusive part, on the other hand, is related to
+the configurational variable
+c
+, and the ensemble averaging must be performed in a similar
+way as for the Poisson operator in Section III D. For the analytical derivation of the coarse-
+(2)
+$^{′}$,
+grained friction matrix
+M
+$^{dif}$, in analogy to Eq. (3.11), one starts from
+〈
+〉$_{y}$
+T
+(
+)
+(
+)
+δ
+Π (
+x
+)
+δ
+Π (
+x
+)
+(2)
+$^{′}$,
+dif
+(1)
+,
+dif
+M
+(
+y
+) =
+·
+M
+(
+x
+)
+·
+,
+(3.19)
+δx
+δx
+and then employs similar procedure and approximations as in the derivation of the elements
+(2)
+of the Poisson matrix
+L
+(see Appendix A). For example, the relaxation of the Doi-Ohta
+variable
+Q
+could be expressed as an irreversible part of the GENERIC time evolution equa-
+tion (3.18) as
+∣
+∂Q
+(
+)
+1
+∫
+r$_{1}$
+(2)
+$^{′}$,
+dif
+,
+(3.20)
+=
+l
+(
+)
+d
+$^{3}$r$_{2}$
+M
+(
+,
+)
+r$_{1}$
+r$_{1}$
+r$_{2}$
+P ε
+∂t
+T
+(
+)
+r$_{2}$
+V
+irrev
+where we have used the approximation (
+∂Q
+(
+)
+/∂t
+)
+|$_{irrev}$
+≈
+l
+(
+) (
+∂P
+(
+)
+/∂t
+)
+|$_{irrev}$
+, since the
+r
+r
+r
+interfacial width
+l
+does not change much, compared to the other two configurational vari-
+ables.
+Using the entropy functional derivative (3.10) with
+=
+, results in the matrix
+0
+λ
+(2)
+$^{′}$,
+dif
+element
+M
+being the only relevant term for the variable
+P
+which is left after the av-
+P ε
+eraging (3.19). Then, putting the equation (3.20) in the Doi-Ohta equation (1.7a) for the
+relaxation of
+Q
+in a homogeneous case gives the following expression for the relaxation time
+2
+(
+[
+)]
+2
+κ$_{E}$Ml
+∂
+$^{2}$c
+(
+)
+∂
+1
+∫
+∫
+r
+=
+D
+c ρ$_{(}$$_{Q,}$$_{q}$$_{)}$
+[
+c
+]
+d
+$^{3}$r
+,
+(3.21)
+2
+τ$_{do}$$_{,}$$_{1}$
+V
+Q
+∂
+∂
+r
+r
+V
+where
+V
+is the volume of the system. Details of the calculation are given in Appendix B.
+Similar expression could be obtained for the relaxation time
+τ$_{do}$$_{,}$$_{2}$
+. The above formula, gives
+the expression for the Doi-Ohta relaxation time
+τ$_{do}$$_{,}$$_{1}$
+calculated from the transformation
+(1)
+,
+dif
+of the element of the friction matrix
+M
+containing the relaxation parameters of the
+Cahn-Hilliard level at any time
+t
+.
+This is the result of the presented systematic coarse-
+graining procedure developed within the GENERIC formalism which shows in which way
+the Doi-Ohta relaxation times can be obtained from the more detailed level of description.
+However, the above relation is difficult to express analytically in form of the variables of
+the Doi-Ohta level, due to the diffusive terms coming from the Cahn-Hilliard level. On the
+other hand, the above expression could, in principle, be calculated numerically using short
+22

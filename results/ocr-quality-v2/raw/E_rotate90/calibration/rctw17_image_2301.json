@@ -1,0 +1,62 @@
+{
+  "id": "rctw17_image_2301",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "E_rotate90",
+  "ok": true,
+  "result": {
+    "text": "我的乖乖\n都哪去了",
+    "lines": [
+      {
+        "box": [
+          [
+            128.0,
+            0.0
+          ],
+          [
+            128.0,
+            32.0
+          ],
+          [
+            9.0,
+            32.0
+          ],
+          [
+            9.0,
+            0.0
+          ]
+        ],
+        "text": "我的乖乖",
+        "score": 0.9980672746896744
+      },
+      {
+        "box": [
+          [
+            128.0,
+            73.0
+          ],
+          [
+            129.0,
+            114.0
+          ],
+          [
+            22.0,
+            114.0
+          ],
+          [
+            21.0,
+            75.0
+          ]
+        ],
+        "text": "都哪去了",
+        "score": 0.9971475899219513
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 2,
+    "deduplicated": 0,
+    "elapsed_ms": 63.31,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 63.72
+}

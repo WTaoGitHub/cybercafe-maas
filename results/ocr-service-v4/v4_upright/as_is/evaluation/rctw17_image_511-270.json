@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_511",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "487853caa84679b61cc0c0551b0ef9529e88907ccb5a07cb4f74f4cf6b1e5177",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "uo!",
+    "lines": [
+      {
+        "box": [
+          [
+            1002.1275634765625,
+            767.741943359375
+          ],
+          [
+            1006.914794921875,
+            820.9677734375
+          ],
+          [
+            880.85107421875,
+            830.6451416015625
+          ],
+          [
+            876.0638427734375,
+            777.4193725585938
+          ]
+        ],
+        "text": "uo!",
+        "score": 0.8110729853312174
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 80.02,
+    "direction_stats": {},
+    "elapsed_ms": 80.02
+  }
+}

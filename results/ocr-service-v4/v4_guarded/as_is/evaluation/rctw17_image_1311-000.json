@@ -1,0 +1,69 @@
+{
+  "id": "rctw17_image_1311",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 0,
+  "explicit_correction": false,
+  "variant": "v4_guarded",
+  "image_sha256": "a8c0b3274e2690649d75bc3ae2c600c03f8f1420f86b86d7d27c26d8e54523af",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "二\n皇蜜布艺",
+    "lines": [
+      {
+        "box": [
+          [
+            1632.4468994140625,
+            30.645160675048828
+          ],
+          [
+            1921.276611328125,
+            37.09677505493164
+          ],
+          [
+            1911.7021484375,
+            441.93548583984375
+          ],
+          [
+            1622.8724365234375,
+            435.48388671875
+          ]
+        ],
+        "text": "二",
+        "score": 0.9652764797210693
+      },
+      {
+        "box": [
+          [
+            1003.7234497070312,
+            679.0322875976562
+          ],
+          [
+            2111.170166015625,
+            580.6451416015625
+          ],
+          [
+            2138.2978515625,
+            901.6129150390625
+          ],
+          [
+            1030.85107421875,
+            1000.0
+          ]
+        ],
+        "text": "皇蜜布艺",
+        "score": 0.8424752876162529
+      }
+    ],
+    "variant": "v4_guarded",
+    "rotation_cw": 0,
+    "processing_ms": 171.03,
+    "direction_stats": {
+      "lines_tested_180": 5,
+      "lines_chosen_180": 1,
+      "recognized_lines": 7
+    },
+    "elapsed_ms": 171.04
+  }
+}

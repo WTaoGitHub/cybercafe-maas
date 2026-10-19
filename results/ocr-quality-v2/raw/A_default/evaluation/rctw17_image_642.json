@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_642",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "A_default",
+  "ok": true,
+  "result": {
+    "text": "宝岛种苗",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            1830.6451416015625
+          ],
+          [
+            2398.404296875,
+            1850.0
+          ],
+          [
+            2398.404296875,
+            2580.645263671875
+          ],
+          [
+            0.0,
+            2561.290283203125
+          ]
+        ],
+        "text": "宝岛种苗",
+        "score": 0.9986281991004944
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 117.76,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 162.64
+}

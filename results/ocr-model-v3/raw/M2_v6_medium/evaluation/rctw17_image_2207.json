@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_2207",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "5217699edfd080f2184e43435bc7270bb45aef271aa81528c8f666fdf113939c",
+  "ok": true,
+  "result": {
+    "text": "新悦茶餐厅\nXINYUE RESTAURANT",
+    "lines": [
+      {
+        "box": [
+          [
+            720.5806451612904,
+            765.0
+          ],
+          [
+            2706.2903225806454,
+            799.1808510638298
+          ],
+          [
+            2699.709677419355,
+            1235.3936170212767
+          ],
+          [
+            714.0,
+            1201.212765957447
+          ]
+        ],
+        "text": "新悦茶餐厅",
+        "score": 0.9971315264701843
+      },
+      {
+        "box": [
+          [
+            771.5806451612904,
+            1158.8936170212767
+          ],
+          [
+            2671.741935483871,
+            1176.7978723404256
+          ],
+          [
+            2670.0967741935488,
+            1375.3723404255318
+          ],
+          [
+            769.9354838709678,
+            1357.468085106383
+          ]
+        ],
+        "text": "XINYUE RESTAURANT",
+        "score": 0.9999834895133972
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1504,
+      1984,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 112.79
+  }
+}

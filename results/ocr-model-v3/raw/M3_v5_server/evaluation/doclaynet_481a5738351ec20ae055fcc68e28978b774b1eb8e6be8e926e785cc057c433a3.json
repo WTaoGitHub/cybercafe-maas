@@ -1,0 +1,1399 @@
+{
+  "id": "doclaynet_481a5738351ec20ae055fcc68e28978b774b1eb8e6be8e926e785cc057c433a3",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "ac6e826765bebdc55db2c3c05e1a624d5fa74fc24bcff54a9035354df90eee8a",
+  "ok": true,
+  "result": {
+    "text": "1.1 Storage virtualization terminology\nStorage virtualization is a term that is used extensively throughout the storage industry. It can\nbe applied to various technologies and underlying capabilities. In reality, most storage devices\ntechnically can claim to be virtualized in one form or another. Therefore, this chapter starts by\ndefining the concept of storage virtualization as it is used in this book.\nIBM describes storage virtualization in the following way:\nStorage virtualization is a technology that makes one set of resources resemble another\nset of resources, preferably with more desirable characteristics.\nIt is a logical representation of resources that is not constrained by physical limitations and\nhides part of the complexity of those resources. It also adds or integrates new functions\nwith existing services, and can be nested or applied to multiple layers of a system.\nStorage virtualization is also defined in the Storage Networking Industry Association's (SNiA)\nshared storage model version 2, shown in Figure 1-1.\nSNIA shared storage model, v2\nApplication\nManagement\napplication\nFile/record/namespace\nvirtualization\n(opsona)\nDiscovery\nFile/record subsystem\nMonitoring\nDatabase\nFile system\nSMI-S, SNMP, etc.\nConfiguration\nInstrumentation\nSecurity\nFrameworks\nAudiding\nBlock\nHost\nBilling\nNetwork\nRedundancy\nDevice\nVirtualization\nBackup\nCapacity\nBlock subsystem\nRetention\nStorage devices (disks, etc.)\nCompliance\nData\nManagement\nFigure 1-1 SNiA shared storage model,version 2\nThe model consists of the following layers:\nApplication: the user of the storage domain\nStorage domain, which is split into:\nFilelrecord/namespace virtualization and Filelrecord subsystem\nBlock Virtualization\nBlock subsystem\nApplications typically read and write data as vectors of bytes or records. Alternatively, storage\npresents data as vectors of blocks of a constant size (512 bytes or, in newer devices, 4096\nbytes per block). The Filelrecord/namespace virtualization and File/record subsystem layers\nconvert records or files required by applications to vectors of blocks, which are the language\nof the Block Virtualization layer. The Block Virtualization layer in turn maps requests of the\nhigher layers to physical storage blocks, provided by Storage devices in the Block subsystem.\n1 Source: Storage Networking Industry Association.\n2\nImplementing the IBM System Storage SAN Volume Controller with IBM Spectrum Virtualize V8.2.1",
+    "lines": [
+      {
+        "box": [
+          [
+            106.0,
+            89.0
+          ],
+          [
+            595.0,
+            91.0
+          ],
+          [
+            595.0,
+            117.0
+          ],
+          [
+            106.0,
+            115.0
+          ]
+        ],
+        "text": "1.1 Storage virtualization terminology",
+        "score": 0.9877222180366516
+      },
+      {
+        "box": [
+          [
+            227.0,
+            133.0
+          ],
+          [
+            912.0,
+            133.0
+          ],
+          [
+            912.0,
+            149.0
+          ],
+          [
+            227.0,
+            149.0
+          ]
+        ],
+        "text": "Storage virtualization is a term that is used extensively throughout the storage industry. It can",
+        "score": 0.9627183675765991
+      },
+      {
+        "box": [
+          [
+            227.0,
+            149.0
+          ],
+          [
+            913.0,
+            149.0
+          ],
+          [
+            913.0,
+            165.0
+          ],
+          [
+            227.0,
+            165.0
+          ]
+        ],
+        "text": "be applied to various technologies and underlying capabilities. In reality, most storage devices",
+        "score": 0.9690249562263489
+      },
+      {
+        "box": [
+          [
+            226.0,
+            165.0
+          ],
+          [
+            912.0,
+            165.0
+          ],
+          [
+            912.0,
+            181.0
+          ],
+          [
+            226.0,
+            181.0
+          ]
+        ],
+        "text": "technically can claim to be virtualized in one form or another. Therefore, this chapter starts by",
+        "score": 0.9588513970375061
+      },
+      {
+        "box": [
+          [
+            228.0,
+            181.0
+          ],
+          [
+            742.0,
+            181.0
+          ],
+          [
+            742.0,
+            194.0
+          ],
+          [
+            228.0,
+            194.0
+          ]
+        ],
+        "text": "defining the concept of storage virtualization as it is used in this book.",
+        "score": 0.9726971983909607
+      },
+      {
+        "box": [
+          [
+            226.0,
+            207.0
+          ],
+          [
+            649.0,
+            209.0
+          ],
+          [
+            649.0,
+            225.0
+          ],
+          [
+            226.0,
+            223.0
+          ]
+        ],
+        "text": "IBM describes storage virtualization in the following way:",
+        "score": 0.9811872839927673
+      },
+      {
+        "box": [
+          [
+            252.0,
+            232.0
+          ],
+          [
+            904.0,
+            232.0
+          ],
+          [
+            904.0,
+            245.0
+          ],
+          [
+            252.0,
+            245.0
+          ]
+        ],
+        "text": "Storage virtualization is a technology that makes one set of resources resemble another",
+        "score": 0.9829267263412476
+      },
+      {
+        "box": [
+          [
+            251.0,
+            247.0
+          ],
+          [
+            721.0,
+            247.0
+          ],
+          [
+            721.0,
+            260.0
+          ],
+          [
+            251.0,
+            260.0
+          ]
+        ],
+        "text": "set of resources, preferably with more desirable characteristics.",
+        "score": 0.9568748474121094
+      },
+      {
+        "box": [
+          [
+            249.0,
+            268.0
+          ],
+          [
+            913.0,
+            268.0
+          ],
+          [
+            913.0,
+            284.0
+          ],
+          [
+            249.0,
+            284.0
+          ]
+        ],
+        "text": "It is a logical representation of resources that is not constrained by physical limitations and",
+        "score": 0.9739277362823486
+      },
+      {
+        "box": [
+          [
+            250.0,
+            284.0
+          ],
+          [
+            899.0,
+            284.0
+          ],
+          [
+            899.0,
+            300.0
+          ],
+          [
+            250.0,
+            300.0
+          ]
+        ],
+        "text": "hides part of the complexity of those resources. It also adds or integrates new functions",
+        "score": 0.9749326109886169
+      },
+      {
+        "box": [
+          [
+            250.0,
+            299.0
+          ],
+          [
+            861.0,
+            299.0
+          ],
+          [
+            861.0,
+            315.0
+          ],
+          [
+            250.0,
+            315.0
+          ]
+        ],
+        "text": "with existing services, and can be nested or applied to multiple layers of a system.",
+        "score": 0.9712055921554565
+      },
+      {
+        "box": [
+          [
+            228.0,
+            329.0
+          ],
+          [
+            911.0,
+            329.0
+          ],
+          [
+            911.0,
+            342.0
+          ],
+          [
+            228.0,
+            342.0
+          ]
+        ],
+        "text": "Storage virtualization is also defined in the Storage Networking Industry Association's (SNiA)",
+        "score": 0.9654920101165771
+      },
+      {
+        "box": [
+          [
+            228.0,
+            344.0
+          ],
+          [
+            624.0,
+            344.0
+          ],
+          [
+            624.0,
+            357.0
+          ],
+          [
+            228.0,
+            357.0
+          ]
+        ],
+        "text": "shared storage model version 2, shown in Figure 1-1.",
+        "score": 0.9502660036087036
+      },
+      {
+        "box": [
+          [
+            371.0,
+            380.0
+          ],
+          [
+            602.0,
+            380.0
+          ],
+          [
+            602.0,
+            396.0
+          ],
+          [
+            371.0,
+            396.0
+          ]
+        ],
+        "text": "SNIA shared storage model, v2",
+        "score": 0.9572696685791016
+      },
+      {
+        "box": [
+          [
+            391.0,
+            420.0
+          ],
+          [
+            467.0,
+            420.0
+          ],
+          [
+            467.0,
+            437.0
+          ],
+          [
+            391.0,
+            437.0
+          ]
+        ],
+        "text": "Application",
+        "score": 0.9976138472557068
+      },
+      {
+        "box": [
+          [
+            627.0,
+            413.0
+          ],
+          [
+            717.0,
+            413.0
+          ],
+          [
+            717.0,
+            430.0
+          ],
+          [
+            627.0,
+            430.0
+          ]
+        ],
+        "text": "Management",
+        "score": 0.9981383085250854
+      },
+      {
+        "box": [
+          [
+            634.0,
+            427.0
+          ],
+          [
+            710.0,
+            427.0
+          ],
+          [
+            710.0,
+            444.0
+          ],
+          [
+            634.0,
+            444.0
+          ]
+        ],
+        "text": "application",
+        "score": 0.996768057346344
+      },
+      {
+        "box": [
+          [
+            367.0,
+            467.0
+          ],
+          [
+            488.0,
+            467.0
+          ],
+          [
+            488.0,
+            480.0
+          ],
+          [
+            367.0,
+            480.0
+          ]
+        ],
+        "text": "File/record/namespace",
+        "score": 0.9672109484672546
+      },
+      {
+        "box": [
+          [
+            392.0,
+            477.0
+          ],
+          [
+            466.0,
+            477.0
+          ],
+          [
+            466.0,
+            490.0
+          ],
+          [
+            392.0,
+            490.0
+          ]
+        ],
+        "text": "virtualization",
+        "score": 0.9836693406105042
+      },
+      {
+        "box": [
+          [
+            492.0,
+            482.0
+          ],
+          [
+            528.0,
+            482.0
+          ],
+          [
+            528.0,
+            492.0
+          ],
+          [
+            492.0,
+            492.0
+          ]
+        ],
+        "text": "(opsona)",
+        "score": 0.7840055227279663
+      },
+      {
+        "box": [
+          [
+            658.0,
+            474.0
+          ],
+          [
+            709.0,
+            478.0
+          ],
+          [
+            708.0,
+            492.0
+          ],
+          [
+            657.0,
+            488.0
+          ]
+        ],
+        "text": "Discovery",
+        "score": 0.9892892837524414
+      },
+      {
+        "box": [
+          [
+            372.0,
+            495.0
+          ],
+          [
+            507.0,
+            497.0
+          ],
+          [
+            506.0,
+            511.0
+          ],
+          [
+            372.0,
+            509.0
+          ]
+        ],
+        "text": "File/record subsystem",
+        "score": 0.9779446125030518
+      },
+      {
+        "box": [
+          [
+            657.0,
+            490.0
+          ],
+          [
+            713.0,
+            490.0
+          ],
+          [
+            713.0,
+            504.0
+          ],
+          [
+            657.0,
+            504.0
+          ]
+        ],
+        "text": "Monitoring",
+        "score": 0.9806283116340637
+      },
+      {
+        "box": [
+          [
+            344.0,
+            513.0
+          ],
+          [
+            408.0,
+            516.0
+          ],
+          [
+            407.0,
+            533.0
+          ],
+          [
+            343.0,
+            530.0
+          ]
+        ],
+        "text": "Database",
+        "score": 0.997783899307251
+      },
+      {
+        "box": [
+          [
+            448.0,
+            513.0
+          ],
+          [
+            517.0,
+            517.0
+          ],
+          [
+            516.0,
+            534.0
+          ],
+          [
+            447.0,
+            530.0
+          ]
+        ],
+        "text": "File system",
+        "score": 0.9637426733970642
+      },
+      {
+        "box": [
+          [
+            586.0,
+            507.0
+          ],
+          [
+            600.0,
+            507.0
+          ],
+          [
+            600.0,
+            571.0
+          ],
+          [
+            586.0,
+            571.0
+          ]
+        ],
+        "text": "SMI-S, SNMP, etc.",
+        "score": 0.9175738096237183
+      },
+      {
+        "box": [
+          [
+            650.0,
+            504.0
+          ],
+          [
+            716.0,
+            504.0
+          ],
+          [
+            716.0,
+            519.0
+          ],
+          [
+            650.0,
+            519.0
+          ]
+        ],
+        "text": "Configuration",
+        "score": 0.9616587162017822
+      },
+      {
+        "box": [
+          [
+            558.0,
+            521.0
+          ],
+          [
+            572.0,
+            522.0
+          ],
+          [
+            569.0,
+            593.0
+          ],
+          [
+            555.0,
+            592.0
+          ]
+        ],
+        "text": "Instrumentation",
+        "score": 0.9905422329902649
+      },
+      {
+        "box": [
+          [
+            661.0,
+            519.0
+          ],
+          [
+            705.0,
+            519.0
+          ],
+          [
+            705.0,
+            536.0
+          ],
+          [
+            661.0,
+            536.0
+          ]
+        ],
+        "text": "Security",
+        "score": 0.9471094608306885
+      },
+      {
+        "box": [
+          [
+            620.0,
+            529.0
+          ],
+          [
+            634.0,
+            529.0
+          ],
+          [
+            634.0,
+            583.0
+          ],
+          [
+            620.0,
+            583.0
+          ]
+        ],
+        "text": "Frameworks",
+        "score": 0.9964712858200073
+      },
+      {
+        "box": [
+          [
+            660.0,
+            532.0
+          ],
+          [
+            706.0,
+            535.0
+          ],
+          [
+            705.0,
+            549.0
+          ],
+          [
+            659.0,
+            546.0
+          ]
+        ],
+        "text": "Audiding",
+        "score": 0.8640569448471069
+      },
+      {
+        "box": [
+          [
+            335.0,
+            554.0
+          ],
+          [
+            376.0,
+            554.0
+          ],
+          [
+            376.0,
+            571.0
+          ],
+          [
+            335.0,
+            571.0
+          ]
+        ],
+        "text": "Block",
+        "score": 0.9972348213195801
+      },
+      {
+        "box": [
+          [
+            498.0,
+            551.0
+          ],
+          [
+            530.0,
+            551.0
+          ],
+          [
+            530.0,
+            566.0
+          ],
+          [
+            498.0,
+            566.0
+          ]
+        ],
+        "text": "Host",
+        "score": 0.9868943691253662
+      },
+      {
+        "box": [
+          [
+            666.0,
+            546.0
+          ],
+          [
+            701.0,
+            549.0
+          ],
+          [
+            700.0,
+            564.0
+          ],
+          [
+            665.0,
+            561.0
+          ]
+        ],
+        "text": "Billing",
+        "score": 0.9414972066879272
+      },
+      {
+        "box": [
+          [
+            412.0,
+            566.0
+          ],
+          [
+            460.0,
+            566.0
+          ],
+          [
+            460.0,
+            580.0
+          ],
+          [
+            412.0,
+            580.0
+          ]
+        ],
+        "text": "Network",
+        "score": 0.9951516389846802
+      },
+      {
+        "box": [
+          [
+            652.0,
+            561.0
+          ],
+          [
+            713.0,
+            564.0
+          ],
+          [
+            712.0,
+            578.0
+          ],
+          [
+            651.0,
+            575.0
+          ]
+        ],
+        "text": "Redundancy",
+        "score": 0.9904068112373352
+      },
+      {
+        "box": [
+          [
+            333.0,
+            580.0
+          ],
+          [
+            372.0,
+            580.0
+          ],
+          [
+            372.0,
+            594.0
+          ],
+          [
+            333.0,
+            594.0
+          ]
+        ],
+        "text": "Device",
+        "score": 0.9944857954978943
+      },
+      {
+        "box": [
+          [
+            440.0,
+            581.0
+          ],
+          [
+            526.0,
+            581.0
+          ],
+          [
+            526.0,
+            595.0
+          ],
+          [
+            440.0,
+            595.0
+          ]
+        ],
+        "text": "Virtualization",
+        "score": 0.9958325028419495
+      },
+      {
+        "box": [
+          [
+            663.0,
+            573.0
+          ],
+          [
+            704.0,
+            577.0
+          ],
+          [
+            703.0,
+            594.0
+          ],
+          [
+            661.0,
+            590.0
+          ]
+        ],
+        "text": "Backup",
+        "score": 0.9878306984901428
+      },
+      {
+        "box": [
+          [
+            661.0,
+            591.0
+          ],
+          [
+            706.0,
+            591.0
+          ],
+          [
+            706.0,
+            608.0
+          ],
+          [
+            661.0,
+            608.0
+          ]
+        ],
+        "text": "Capacity",
+        "score": 0.9895014762878418
+      },
+      {
+        "box": [
+          [
+            390.0,
+            608.0
+          ],
+          [
+            493.0,
+            608.0
+          ],
+          [
+            493.0,
+            624.0
+          ],
+          [
+            390.0,
+            624.0
+          ]
+        ],
+        "text": "Block subsystem",
+        "score": 0.989687979221344
+      },
+      {
+        "box": [
+          [
+            658.0,
+            607.0
+          ],
+          [
+            709.0,
+            607.0
+          ],
+          [
+            709.0,
+            620.0
+          ],
+          [
+            658.0,
+            620.0
+          ]
+        ],
+        "text": "Retention",
+        "score": 0.9843620657920837
+      },
+      {
+        "box": [
+          [
+            358.0,
+            628.0
+          ],
+          [
+            501.0,
+            628.0
+          ],
+          [
+            501.0,
+            641.0
+          ],
+          [
+            358.0,
+            641.0
+          ]
+        ],
+        "text": "Storage devices (disks, etc.)",
+        "score": 0.933905839920044
+      },
+      {
+        "box": [
+          [
+            655.0,
+            621.0
+          ],
+          [
+            713.0,
+            621.0
+          ],
+          [
+            713.0,
+            634.0
+          ],
+          [
+            655.0,
+            634.0
+          ]
+        ],
+        "text": "Compliance",
+        "score": 0.9935466647148132
+      },
+      {
+        "box": [
+          [
+            418.0,
+            646.0
+          ],
+          [
+            456.0,
+            649.0
+          ],
+          [
+            455.0,
+            667.0
+          ],
+          [
+            417.0,
+            664.0
+          ]
+        ],
+        "text": "Data",
+        "score": 0.9983883500099182
+      },
+      {
+        "box": [
+          [
+            631.0,
+            651.0
+          ],
+          [
+            712.0,
+            651.0
+          ],
+          [
+            712.0,
+            665.0
+          ],
+          [
+            631.0,
+            665.0
+          ]
+        ],
+        "text": "Management",
+        "score": 0.9966951608657837
+      },
+      {
+        "box": [
+          [
+            229.0,
+            675.0
+          ],
+          [
+            570.0,
+            675.0
+          ],
+          [
+            570.0,
+            688.0
+          ],
+          [
+            229.0,
+            688.0
+          ]
+        ],
+        "text": "Figure 1-1 SNiA shared storage model,version 2",
+        "score": 0.9347739815711975
+      },
+      {
+        "box": [
+          [
+            227.0,
+            709.0
+          ],
+          [
+            545.0,
+            709.0
+          ],
+          [
+            545.0,
+            725.0
+          ],
+          [
+            227.0,
+            725.0
+          ]
+        ],
+        "text": "The model consists of the following layers:",
+        "score": 0.9729518294334412
+      },
+      {
+        "box": [
+          [
+            249.0,
+            730.0
+          ],
+          [
+            576.0,
+            730.0
+          ],
+          [
+            576.0,
+            746.0
+          ],
+          [
+            249.0,
+            746.0
+          ]
+        ],
+        "text": "Application: the user of the storage domain",
+        "score": 0.9694527983665466
+      },
+      {
+        "box": [
+          [
+            249.0,
+            751.0
+          ],
+          [
+            510.0,
+            751.0
+          ],
+          [
+            510.0,
+            767.0
+          ],
+          [
+            249.0,
+            767.0
+          ]
+        ],
+        "text": "Storage domain, which is split into:",
+        "score": 0.9532248973846436
+      },
+      {
+        "box": [
+          [
+            274.0,
+            772.0
+          ],
+          [
+            750.0,
+            774.0
+          ],
+          [
+            750.0,
+            790.0
+          ],
+          [
+            274.0,
+            788.0
+          ]
+        ],
+        "text": "Filelrecord/namespace virtualization and Filelrecord subsystem",
+        "score": 0.9738048315048218
+      },
+      {
+        "box": [
+          [
+            274.0,
+            789.0
+          ],
+          [
+            425.0,
+            789.0
+          ],
+          [
+            425.0,
+            805.0
+          ],
+          [
+            274.0,
+            805.0
+          ]
+        ],
+        "text": "Block Virtualization",
+        "score": 0.9911578297615051
+      },
+      {
+        "box": [
+          [
+            273.0,
+            804.0
+          ],
+          [
+            399.0,
+            805.0
+          ],
+          [
+            399.0,
+            822.0
+          ],
+          [
+            273.0,
+            821.0
+          ]
+        ],
+        "text": "Block subsystem",
+        "score": 0.9673997163772583
+      },
+      {
+        "box": [
+          [
+            227.0,
+            832.0
+          ],
+          [
+            913.0,
+            833.0
+          ],
+          [
+            913.0,
+            850.0
+          ],
+          [
+            227.0,
+            849.0
+          ]
+        ],
+        "text": "Applications typically read and write data as vectors of bytes or records. Alternatively, storage",
+        "score": 0.9700316786766052
+      },
+      {
+        "box": [
+          [
+            227.0,
+            849.0
+          ],
+          [
+            901.0,
+            849.0
+          ],
+          [
+            901.0,
+            865.0
+          ],
+          [
+            227.0,
+            865.0
+          ]
+        ],
+        "text": "presents data as vectors of blocks of a constant size (512 bytes or, in newer devices, 4096",
+        "score": 0.9682722687721252
+      },
+      {
+        "box": [
+          [
+            226.0,
+            863.0
+          ],
+          [
+            912.0,
+            864.0
+          ],
+          [
+            912.0,
+            881.0
+          ],
+          [
+            226.0,
+            880.0
+          ]
+        ],
+        "text": "bytes per block). The Filelrecord/namespace virtualization and File/record subsystem layers",
+        "score": 0.9710503220558167
+      },
+      {
+        "box": [
+          [
+            227.0,
+            880.0
+          ],
+          [
+            909.0,
+            880.0
+          ],
+          [
+            909.0,
+            896.0
+          ],
+          [
+            227.0,
+            896.0
+          ]
+        ],
+        "text": "convert records or files required by applications to vectors of blocks, which are the language",
+        "score": 0.9565391540527344
+      },
+      {
+        "box": [
+          [
+            226.0,
+            894.0
+          ],
+          [
+            909.0,
+            895.0
+          ],
+          [
+            909.0,
+            912.0
+          ],
+          [
+            226.0,
+            911.0
+          ]
+        ],
+        "text": "of the Block Virtualization layer. The Block Virtualization layer in turn maps requests of the",
+        "score": 0.9711748361587524
+      },
+      {
+        "box": [
+          [
+            226.0,
+            910.0
+          ],
+          [
+            914.0,
+            911.0
+          ],
+          [
+            914.0,
+            928.0
+          ],
+          [
+            226.0,
+            927.0
+          ]
+        ],
+        "text": "higher layers to physical storage blocks, provided by Storage devices in the Block subsystem.",
+        "score": 0.9771882891654968
+      },
+      {
+        "box": [
+          [
+            227.0,
+            936.0
+          ],
+          [
+            537.0,
+            936.0
+          ],
+          [
+            537.0,
+            952.0
+          ],
+          [
+            227.0,
+            952.0
+          ]
+        ],
+        "text": "1 Source: Storage Networking Industry Association.",
+        "score": 0.9558212161064148
+      },
+      {
+        "box": [
+          [
+            105.0,
+            973.0
+          ],
+          [
+            120.0,
+            973.0
+          ],
+          [
+            120.0,
+            987.0
+          ],
+          [
+            105.0,
+            987.0
+          ]
+        ],
+        "text": "2",
+        "score": 0.9996434450149536
+      },
+      {
+        "box": [
+          [
+            145.0,
+            973.0
+          ],
+          [
+            836.0,
+            973.0
+          ],
+          [
+            836.0,
+            989.0
+          ],
+          [
+            145.0,
+            989.0
+          ]
+        ],
+        "text": "Implementing the IBM System Storage SAN Volume Controller with IBM Spectrum Virtualize V8.2.1",
+        "score": 0.9786586761474609
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 65,
+    "elapsed_ms": 462.7
+  }
+}

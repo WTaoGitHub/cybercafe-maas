@@ -1,0 +1,175 @@
+Topological Majorana and Dirac zero modes in superconducting vortex cores
+Rahul Roy
+Rudolph Peierls Centre for Theoretical Physics,
+1
+Keble Road, Oxford, OX1 3NP, UK
+(Dated: 13 January 2010)
+We provide an argument based on flux insertion to show that certain superconductors with a
+non-trivial topological invariant have protected zero modes in their vortex cores. This argument
+has the flavor of a two dimensional index theorem and applies to disordered systems as well.
+It
+also provides a new way of understanding the zero modes in the vortex cores of a spinless
+p$_{x}$
++
+ip$_{y}$
+superconductor. Applying this approach to superconductors with and without time reversal and
+arXiv:1001.2571v1 [cond-mat.supr-con] 14 Jan 2010
+spin rotational symmetry, we predict the necessary and sufficient conditions for protected zero modes
+to exist in their vortices.
+states.
+Fermionic zero energy modes are predicted to exist in
+defects in a variety of condensed matter systems from one
+Using a flux insertion argument, we first show that a
+dimensional (1d) chains of polyacetylene to the vortices
+certain class of insulators with
+π
+flux inserted through a
+of certain two dimensional (2d) superconductors [1, 2].
+plaquette have exact zero energy eigenstates which are
+These modes typically occur in systems with a bulk gap
+topologically protected in the sense that their existence
+which are in a topologically non-trivial phase. The zero
+is connected to the Hall conductance of the insulator.
+energy modes are often topologically protected in the
+We then use these results to study superconductors with
+sense that their existence is only tied to the particular
+and without time reversal and spin rotational symmetry
+topological phase of the system and to some global prop-
+and predict precisely which systems have protected zero
+erties of the system such as the winding number of the
+modes.
+phase of the order parameter in a superconductor.
+The insulator Hamiltonians studied below have the
+same
+symmetries
+as
+the
+mean
+field
+Bogoliubov-de-
+Unpaired fermionic zero energy modes which are lo-
+Gennes Hamiltonians of superconductors. Though such
+calized in the vortices of certain superconductors such
+insulators are possibly of little physical significance by
+as a spinless
+p$_{x}$
++
+ip$_{y}$
+superconductor are of special in-
+themselves, we study them since their spectra are identi-
+terest. These modes, also called Majorana modes, have
+cal to that of the BdG Hamiltonians of superconductors.
+attracted a fair bit of recent theoretical attention due to
+Further since they are insulators rather than supercon-
+the fact that they can obey non-abelian statistics and
+ductors, they do not expel flux, making a flux insertion
+have potential applications in decoherence free quantum
+argument possible. Consider a 2d tightbinding insulator
+computation [3–6]. The existence of these modes has tra-
+on a lattice with an even number of orbitals, 2
+s
+per site.
+ditionally been demonstrated through explicit analytic
+|
+〉
+The basis states are written in the form
+i, α
+where
+i
+is
+solutions of the Bogoliubov de-Gennes (BdG) equations
+an index for the position and
+α
+for the orbital. We first
+[1, 4, 7–9].
+study infinite sized systems where the energy of the topo-
+In 1d, Jackiw and Rebbi showed that the Dirac equa-
+logically protected vortex states is exactly zero and later
+tion interacting with a scalar field with a topologically
+consider corrections that would occur in a finite sized
+interesting configuration such as a soliton has zero energy
+system.
+solutions whose number was related to an integer which
+H
+The Hamiltonian can be written in the form
+=
+characterizes the non-trivial topology [10]. Similar zero
+†
+∑
+×
+Ψ
+$_{i}$H$_{ij}$
+Ψ$_{j}$ where
+H$_{ij}$
+is a 2
+s
+2
+s
+dimensional ma-
+energy states also occur in polyacetylene [2].
+Recently
+i,j
+†
+†
+many works have attempted to explain the Majorana
+trix and Ψ$_{j}$ = (
+ψ$_{j,α}$
+)
+$^{T}$,
+Ψ
+= (
+ψ
+$_{j,β}$) where
+i, j
+are the
+i
+modes in 2d by reducing the problem to a 1d problem
+lattice position indices and
+α, β
+the orbital and spin in-
+[11–13].
+dices. The Fermi energy is set to zero and is assumed to
+Since the vortex zero energy states occur in 2d sys-
+lie in a gap.
+tems, a more general and inherently 2d explanation of
+In the first instance, we study systems with neither
+the Majorana zero modes is desirable.
+In the current
+spin rotational nor time reversal symmetry, though we
+work, this is achieved through a flux insertion argument
+will analyze systems with these symmetries later on. We
+similar to Laughlin’s gauge argument [14].
+The argu-
+H
+further restrict our study to Hamiltonians
+which posses
+ment is not tied to any particular model and also applies
+a symmetry analogous to that of Bogoliubov de-Gennes
+to disordered systems where translational invariance is
+Hamiltonians. In other words, we assume the existence
+broken and is particularly useful in the context of recent
+of an anti-unitary operator,
+S
+, such that
+efforts to find Majorana modes in systems other than a
+−
+1
+p$_{x}$
++
+ip$_{y}$
+superconductor [15–18].
+One of our main re-
+H
+−H
+S
+S
+=
+.
+(1)
+sults is a prediction about precisely what systems in all
+Further, we assume that
+S
+acting on single particle po-
+the different symmetry classes of the classification intro-
+sition eigenkets in the Hilbert space produces a linear
+duced by Altland and Zirnbauer[19] support zero energy

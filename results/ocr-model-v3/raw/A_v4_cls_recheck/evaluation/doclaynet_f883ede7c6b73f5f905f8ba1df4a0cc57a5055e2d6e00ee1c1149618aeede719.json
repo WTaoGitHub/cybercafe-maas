@@ -1,0 +1,171 @@
+{
+  "id": "doclaynet_f883ede7c6b73f5f905f8ba1df4a0cc57a5055e2d6e00ee1c1149618aeede719",
+  "source": "doclaynet",
+  "split": "evaluation",
+  "variant": "A_v4_cls_recheck",
+  "image_sha256": "4019b740e4525237629c042f5df864e2cce76618b0c996a6d15420f8e8fc5371",
+  "ok": true,
+  "result": {
+    "text": "ESTATE\nMARKS OF THEIR RESPECTIVE OWNERS\nXANDRIA REAL ESTATE EQUITIES, ARE, LABSPACE,\nTOGRAPHERPETER GREGOIRE\nPRINTING COLORGRAPHICS DESIGN OPTO CONSULTING DESIGNERS\nSIHDIH\n@2005 ALEXANDRIA REAL ESTATE EQUITIES, INC. ALLI",
+    "lines": [
+      {
+        "box": [
+          [
+            57.0,
+            286.0
+          ],
+          [
+            72.0,
+            286.0
+          ],
+          [
+            72.0,
+            316.0
+          ],
+          [
+            57.0,
+            316.0
+          ]
+        ],
+        "text": "ESTATE",
+        "score": 0.9663455684979757
+      },
+      {
+        "box": [
+          [
+            71.0,
+            283.0
+          ],
+          [
+            88.0,
+            283.0
+          ],
+          [
+            88.0,
+            444.0
+          ],
+          [
+            71.0,
+            444.0
+          ]
+        ],
+        "text": "MARKS OF THEIR RESPECTIVE OWNERS",
+        "score": 0.9684538915753365
+      },
+      {
+        "box": [
+          [
+            41.0,
+            311.0
+          ],
+          [
+            57.0,
+            311.0
+          ],
+          [
+            57.0,
+            516.0
+          ],
+          [
+            41.0,
+            516.0
+          ]
+        ],
+        "text": "XANDRIA REAL ESTATE EQUITIES, ARE, LABSPACE,",
+        "score": 0.9648438637906854
+      },
+      {
+        "box": [
+          [
+            87.0,
+            440.0
+          ],
+          [
+            100.0,
+            440.0
+          ],
+          [
+            100.0,
+            567.0
+          ],
+          [
+            87.0,
+            567.0
+          ]
+        ],
+        "text": "TOGRAPHERPETER GREGOIRE",
+        "score": 0.9737136908199476
+      },
+      {
+        "box": [
+          [
+            85.0,
+            712.0
+          ],
+          [
+            101.0,
+            712.0
+          ],
+          [
+            101.0,
+            993.0
+          ],
+          [
+            85.0,
+            993.0
+          ]
+        ],
+        "text": "PRINTING COLORGRAPHICS DESIGN OPTO CONSULTING DESIGNERS",
+        "score": 0.9696493668989702
+      },
+      {
+        "box": [
+          [
+            45.0,
+            738.0
+          ],
+          [
+            55.0,
+            738.0
+          ],
+          [
+            55.0,
+            773.0
+          ],
+          [
+            45.0,
+            773.0
+          ]
+        ],
+        "text": "SIHDIH",
+        "score": 0.5845342253645261
+      },
+      {
+        "box": [
+          [
+            41.0,
+            768.0
+          ],
+          [
+            57.0,
+            768.0
+          ],
+          [
+            57.0,
+            991.0
+          ],
+          [
+            41.0,
+            991.0
+          ]
+        ],
+        "text": "@2005 ALEXANDRIA REAL ESTATE EQUITIES, INC. ALLI",
+        "score": 0.9549778830260038
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 100.74
+  }
+}

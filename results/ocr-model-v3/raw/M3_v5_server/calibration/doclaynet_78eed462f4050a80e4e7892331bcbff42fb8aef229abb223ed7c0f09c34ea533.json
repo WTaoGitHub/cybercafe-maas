@@ -1,0 +1,145 @@
+{
+  "id": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+  "source": "doclaynet",
+  "split": "calibration",
+  "variant": "M3_v5_server",
+  "image_sha256": "d10d041eebb3a2814ef74f4dc11cdfe5fa839c659fb5b4822334a5b8ce05f75e",
+  "ok": true,
+  "result": {
+    "text": "8.\nDetermining the Performance of Small Unmanned Aircraft\nThis page intentionally left blank.\nRemote Pilot – Small Unmanned Aircraft Systems Study Guide\n44",
+    "lines": [
+      {
+        "box": [
+          [
+            86.0,
+            35.0
+          ],
+          [
+            108.0,
+            35.0
+          ],
+          [
+            108.0,
+            51.0
+          ],
+          [
+            86.0,
+            51.0
+          ]
+        ],
+        "text": "8.",
+        "score": 0.9923604726791382
+      },
+      {
+        "box": [
+          [
+            125.0,
+            35.0
+          ],
+          [
+            558.0,
+            35.0
+          ],
+          [
+            558.0,
+            51.0
+          ],
+          [
+            125.0,
+            51.0
+          ]
+        ],
+        "text": "Determining the Performance of Small Unmanned Aircraft",
+        "score": 0.9676825404167175
+      },
+      {
+        "box": [
+          [
+            387.0,
+            91.0
+          ],
+          [
+            636.0,
+            91.0
+          ],
+          [
+            636.0,
+            107.0
+          ],
+          [
+            387.0,
+            107.0
+          ]
+        ],
+        "text": "This page intentionally left blank.",
+        "score": 0.9571308493614197
+      },
+      {
+        "box": [
+          [
+            88.0,
+            965.0
+          ],
+          [
+            591.0,
+            965.0
+          ],
+          [
+            591.0,
+            984.0
+          ],
+          [
+            88.0,
+            984.0
+          ]
+        ],
+        "text": "Remote Pilot – Small Unmanned Aircraft Systems Study Guide",
+        "score": 0.9609679579734802
+      },
+      {
+        "box": [
+          [
+            909.0,
+            964.0
+          ],
+          [
+            938.0,
+            964.0
+          ],
+          [
+            938.0,
+            984.0
+          ],
+          [
+            909.0,
+            984.0
+          ]
+        ],
+        "text": "44",
+        "score": 0.9991639256477356
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1025,
+      1025,
+      3
+    ],
+    "detected_boxes": 5,
+    "elapsed_ms": 83.47
+  }
+}

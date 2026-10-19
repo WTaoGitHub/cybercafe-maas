@@ -1,0 +1,123 @@
+{
+  "id": "rctw17_image_3988",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "07cf2db847bba71504cf81aa7d65b25f13179721b8ccd3f747a3e4785a15a231",
+  "ok": true,
+  "result": {
+    "text": "用宫品前\ncola\n-olorsa=gos\nRcacolon",
+    "lines": [
+      {
+        "box": [
+          [
+            91.0,
+            178.0
+          ],
+          [
+            908.0,
+            169.0
+          ],
+          [
+            911.0,
+            431.0
+          ],
+          [
+            94.0,
+            440.0
+          ]
+        ],
+        "text": "用宫品前",
+        "score": 0.999815821647644
+      },
+      {
+        "box": [
+          [
+            0.0,
+            1032.0
+          ],
+          [
+            197.0,
+            992.0
+          ],
+          [
+            226.0,
+            1152.0
+          ],
+          [
+            0.0,
+            1192.0
+          ]
+        ],
+        "text": "cola",
+        "score": 0.869702935218811
+      },
+      {
+        "box": [
+          [
+            101.0,
+            1066.0
+          ],
+          [
+            596.0,
+            1015.0
+          ],
+          [
+            613.0,
+            1185.0
+          ],
+          [
+            118.0,
+            1236.0
+          ]
+        ],
+        "text": "-olorsa=gos",
+        "score": 0.7353492975234985
+      },
+      {
+        "box": [
+          [
+            1.0,
+            1167.0
+          ],
+          [
+            522.0,
+            1169.0
+          ],
+          [
+            522.0,
+            1248.0
+          ],
+          [
+            1.0,
+            1247.0
+          ]
+        ],
+        "text": "Rcacolon",
+        "score": 0.7175889015197754
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1248,
+      926,
+      3
+    ],
+    "detected_boxes": 4,
+    "elapsed_ms": 88.3
+  }
+}

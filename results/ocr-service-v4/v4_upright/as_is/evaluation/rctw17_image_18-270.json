@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_18",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 270,
+  "explicit_correction": false,
+  "variant": "v4_upright",
+  "image_sha256": "4c47d7a7b1cce41cf2a723257fd38bad7a3cc4e6f51d384524b1669a878eccc0",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "口",
+    "lines": [
+      {
+        "box": [
+          [
+            1925.5213012695312,
+            126.67742156982422
+          ],
+          [
+            1959.7021179199219,
+            419.51611328125
+          ],
+          [
+            1642.3085327148438,
+            457.3548278808594
+          ],
+          [
+            1608.127685546875,
+            164.51612854003906
+          ]
+        ],
+        "text": "口",
+        "score": 0.5696748495101929
+      }
+    ],
+    "variant": "v4_upright",
+    "rotation_cw": 0,
+    "processing_ms": 80.67,
+    "direction_stats": {},
+    "elapsed_ms": 80.67
+  }
+}

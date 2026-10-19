@@ -1,0 +1,40 @@
+8464ch09_Oper.fm
+Draft Document for Review February 7, 2020 3:15 pm
+Logical WORM
+GLYPH<SM590000>
+Whether LWORM is set for the DC. LWORM is the virtual equivalent of WORM tape 
+media, which is achieved through software emulation. This setting is available only when 
+all clusters in a grid operate at R1.6 and later. The following values are valid:
+–
+Yes: LWORM is set for the DC. Volumes belonging to the DC are defined as LWORM.
+–
+No: LWORM is not set. Volumes belonging to the DC are not defined as LWORM. This 
+value is the default value for a new DC.
+Use the menu in the DCs table to add a DC, or modify or delete an existing DC.
+Tip:
+ The user can create up to 256 DCs per TS7700 grid.
+9.3.9
+The Access icon 
+The topics in this section present information that is related to managing user access in a 
+TS7700 subsystem.
+The user can access the following options through the User Access (blue man icon) link, as 
+shown in Figure 9-71.
+Figure 9-71
+The Access Icon and options
+The TS7700 management interface (MI) pages that are collected under the Access icon help 
+the user to view or change security settings, roles and permissions, passwords, and 
+certifications. The user can also update the IBM Knowledge Center (InfoCenter) files from this 
+menu. The following windows are available:
+Security Settings: Use this window to view security settings for a TS7700 grid. From this 
+GLYPH<SM590000>
+window, the user can also access other pages to add, modify, assign, test, and delete 
+security settings.
+Roles and Permissions: Use this window to set and control user roles and permissions for 
+GLYPH<SM590000>
+a TS7700 grid.
+SSL Certificates: Use this window to view, import, or delete Secure Sockets Layer (SSL) 
+GLYPH<SM590000>
+certificates to support connection to a Storage Authentication Service server from a 
+TS7700 cluster.
+463
+Chapter 9. Configuring and operating the IBM TS7700 

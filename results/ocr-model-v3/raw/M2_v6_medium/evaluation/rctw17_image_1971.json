@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_1971",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "ca9673b5b3b572052ac6e2fa16591e8283c1a3384a9a339c79b825abaaff0306",
+  "ok": true,
+  "result": {
+    "text": "I·FREE爱无季\n中国中",
+    "lines": [
+      {
+        "box": [
+          [
+            267.241935483871,
+            1263.2608695652173
+          ],
+          [
+            3402.032258064516,
+            1057.6630434782608
+          ],
+          [
+            3442.3306451612907,
+            1680.8152173913043
+          ],
+          [
+            307.5403225806452,
+            1886.4130434782608
+          ]
+        ],
+        "text": "I·FREE爱无季",
+        "score": 0.9624201655387878
+      },
+      {
+        "box": [
+          [
+            3357.491935483871,
+            2999.1847826086955
+          ],
+          [
+            3703.209677419355,
+            2950.4347826086955
+          ],
+          [
+            3715.935483870968,
+            3037.336956521739
+          ],
+          [
+            3370.217741935484,
+            3086.086956521739
+          ]
+        ],
+        "text": "中国中",
+        "score": 0.9086871147155762
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1472,
+      1984,
+      3
+    ],
+    "detected_boxes": 3,
+    "elapsed_ms": 87.74
+  }
+}

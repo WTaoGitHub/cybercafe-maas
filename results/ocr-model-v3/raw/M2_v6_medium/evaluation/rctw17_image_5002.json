@@ -1,0 +1,101 @@
+{
+  "id": "rctw17_image_5002",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M2_v6_medium",
+  "image_sha256": "e9f8cca67ef126cc0b7707a387e4fccb4105e765801a8f381d9a4571a1582c0c",
+  "ok": true,
+  "result": {
+    "text": "ristmas\n欢迎光临\n小白",
+    "lines": [
+      {
+        "box": [
+          [
+            0.0,
+            605.4193548387098
+          ],
+          [
+            340.1808510638298,
+            592.258064516129
+          ],
+          [
+            345.06382978723406,
+            714.0
+          ],
+          [
+            0.0,
+            727.1612903225807
+          ]
+        ],
+        "text": "ristmas",
+        "score": 0.9994302988052368
+      },
+      {
+        "box": [
+          [
+            240.89361702127658,
+            1479.0
+          ],
+          [
+            1907.6170212765958,
+            1462.5483870967744
+          ],
+          [
+            1912.5,
+            1947.8709677419356
+          ],
+          [
+            245.77659574468083,
+            1964.3225806451615
+          ]
+        ],
+        "text": "欢迎光临",
+        "score": 0.9999971389770508
+      },
+      {
+        "box": [
+          [
+            0.0,
+            1775.1290322580646
+          ],
+          [
+            226.24468085106383,
+            1775.1290322580646
+          ],
+          [
+            226.24468085106383,
+            1880.4193548387098
+          ],
+          [
+            0.0,
+            1880.4193548387098
+          ]
+        ],
+        "text": "小白",
+        "score": 0.9991377592086792
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 4,
+    "elapsed_ms": 112.46
+  }
+}

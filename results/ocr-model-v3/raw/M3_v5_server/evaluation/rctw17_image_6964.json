@@ -1,0 +1,79 @@
+{
+  "id": "rctw17_image_6964",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "M3_v5_server",
+  "image_sha256": "017d67fb785d64d17eb89d51d70a75e96c7809bebbb714592c5cce9215549a1f",
+  "ok": true,
+  "result": {
+    "text": "酒香不怕巷子深\nWineisnoaoaye",
+    "lines": [
+      {
+        "box": [
+          [
+            952.1808510638298,
+            1766.9032258064517
+          ],
+          [
+            1573.9468085106382,
+            1766.9032258064517
+          ],
+          [
+            1573.9468085106382,
+            1895.225806451613
+          ],
+          [
+            952.1808510638298,
+            1895.225806451613
+          ]
+        ],
+        "text": "酒香不怕巷子深",
+        "score": 0.9913138151168823
+      },
+      {
+        "box": [
+          [
+            978.2234042553191,
+            1878.7741935483873
+          ],
+          [
+            1595.1063829787233,
+            1887.0
+          ],
+          [
+            1593.4787234042553,
+            1985.7096774193549
+          ],
+          [
+            976.595744680851,
+            1977.483870967742
+          ]
+        ],
+        "text": "Wineisnoaoaye",
+        "score": 0.6671736240386963
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 2,
+    "elapsed_ms": 128.06
+  }
+}

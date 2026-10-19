@@ -1,0 +1,57 @@
+{
+  "id": "rctw17_image_2345",
+  "source": "rctw17",
+  "split": "calibration",
+  "variant": "M1_v6_small",
+  "image_sha256": "5bdbb8cbe608bcf8e0c674023cb3921a05b71c6139f35c659c8746b947828bfa",
+  "ok": true,
+  "result": {
+    "text": "热烈庆祝武职大益爱心茶室开业庆典",
+    "lines": [
+      {
+        "box": [
+          [
+            711.7021276595744,
+            930.6451612903226
+          ],
+          [
+            1830.3191489361702,
+            879.0322580645161
+          ],
+          [
+            1835.1063829787233,
+            1006.4516129032257
+          ],
+          [
+            716.4893617021277,
+            1058.0645161290322
+          ]
+        ],
+        "text": "热烈庆祝武职大益爱心茶室开业庆典",
+        "score": 0.9997597932815552
+      }
+    ],
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+    "engine_calls": 1,
+    "deduplicated": 0,
+    "effective_text_det_params": {
+      "limit_side_len": 736,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.5,
+      "unclip_ratio": 1.6
+    },
+    "model_settings": {
+      "use_doc_preprocessor": false,
+      "use_textline_orientation": false
+    },
+    "pre_resize_shape": [
+      1984,
+      1504,
+      3
+    ],
+    "detected_boxes": 1,
+    "elapsed_ms": 63.63
+  }
+}

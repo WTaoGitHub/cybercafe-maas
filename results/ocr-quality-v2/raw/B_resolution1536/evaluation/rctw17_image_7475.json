@@ -1,0 +1,40 @@
+{
+  "id": "rctw17_image_7475",
+  "source": "rctw17",
+  "split": "evaluation",
+  "variant": "B_resolution1536",
+  "ok": true,
+  "result": {
+    "text": "营业中",
+    "lines": [
+      {
+        "box": [
+          [
+            1039.5478515625,
+            805.2096557617188
+          ],
+          [
+            1226.872314453125,
+            801.04833984375
+          ],
+          [
+            1239.223388671875,
+            1377.3870849609375
+          ],
+          [
+            1051.89892578125,
+            1381.54833984375
+          ]
+        ],
+        "text": "营业中",
+        "score": 0.7479948401451111
+      }
+    ],
+    "engine_calls": 1,
+    "raw_line_count": 1,
+    "deduplicated": 0,
+    "elapsed_ms": 116.43,
+    "node": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6"
+  },
+  "total_ms": 226.46
+}

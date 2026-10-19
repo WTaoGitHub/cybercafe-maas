@@ -1,0 +1,43 @@
+{
+  "id": "rctw17_image_4513",
+  "source": "rctw17",
+  "split": "evaluation",
+  "input_rotation_cw": 180,
+  "explicit_correction": false,
+  "variant": "v6_small",
+  "image_sha256": "f373e7563fbc345167f2187a23234ccd09d0fb0daba462597e4de4cd6592ccfe",
+  "ok": true,
+  "score_coordinate_frame": "original",
+  "result": {
+    "text": "胶",
+    "lines": [
+      {
+        "box": [
+          [
+            2070.1048387096776,
+            2004.5978483606557
+          ],
+          [
+            1593.6905241935483,
+            1875.9605532786886
+          ],
+          [
+            1628.7565524193546,
+            1750.8965163934427
+          ],
+          [
+            2105.170866935484,
+            1879.53381147541
+          ]
+        ],
+        "text": "胶",
+        "score": 0.5611691474914551
+      }
+    ],
+    "variant": "v6_small",
+    "rotation_cw": 0,
+    "processing_ms": 57.16,
+    "direction_stats": {},
+    "elapsed_ms": 57.17
+  }
+}
