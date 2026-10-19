@@ -23,7 +23,7 @@ ssh -p 2023 -i ~/.ssh/id_ed25519 root@111.4.255.126 'cat /root/wtaobj/gpustack-s
 在终端 B：
 
 ```sh
-cd /Users/4paradigm/dev/cybercafe/wtaobj
+cd /Users/4paradigm/dev/cybercafe-maas
 python3 ocr_client.py /absolute/path/to/image.jpg --username admin --output results/manual-ocr.json
 ```
 
