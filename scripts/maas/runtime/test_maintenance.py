@@ -2,7 +2,7 @@
 
 No worker, Docker daemon, model, firewall or original ingress changes.
 """
-import argparse,base64,json,os,shutil,socket,subprocess,sys,time,urllib.request,urllib.error
+import argparse,base64,json,os,shutil,socket,subprocess,sys,time,urllib.request,urllib.error,uuid
 from pathlib import Path
 ROOT=Path('/root/wtaobj/maas-framework');WORK=Path('/root/wtaobj/maas-p3-maintenance')
 PRIVATE=ROOT/'.secrets/maintenance';DB='maas_maintenance_test';API='wta-maas-maintenance-api'
@@ -17,18 +17,28 @@ def write(path,value):
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--edge',action='store_true');options=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--edge',action='store_true');parser.add_argument('--node-maintenance',action='store_true');options=parser.parse_args()
     if socket.gethostname()!='XZ-31-001':raise RuntimeError('Controller 001 only')
     if PRIVATE.exists():raise RuntimeError('Prior private acceptance state exists; inspect before reuse')
     probe=socket.socket();probe.bind(('127.0.0.1',18830));probe.close()
     PRIVATE.mkdir(mode=0o700,parents=True);WORK.mkdir(mode=0o700,exist_ok=True)
-    report={'scope':'temporary managed ingress only','original_ingress_modified':False,'through_nginx':options.edge};res=Resources();created_db=False
+    report={'scope':'temporary managed ingress and existing node002 maintenance' if options.node_maintenance else 'temporary managed ingress only',
+        'original_ingress_modified':False,'through_nginx':options.edge};res=Resources();created_db=False;operator=None
+    watchdog='maas-controller-recover-'+uuid.uuid4().hex[:8]
     def snapshot():
-        health=json.loads(Path('/root/wtaobj/maas-runtime/health.json').read_text());assert health['ok']
+        deadline=time.monotonic()+180
+        while True:
+            health=json.loads(Path('/root/wtaobj/maas-runtime/health.json').read_text())
+            if health['ok']:break
+            if time.monotonic()>deadline:raise RuntimeError('Resident collector did not recover')
+            time.sleep(1)
         for name in ('pin.json','preflight.json'):shutil.copyfile(Path('/root/wtaobj/maas-runtime')/name,WORK/name)
     def args():return ['docker','run','--rm','--network','host','--env-file',str(PRIVATE/'app.env'),'-v',str(ROOT)+':/work',
         '-v',str(WORK)+':/trusted:ro','-v','/root/wtaobj/service-validation/fixtures/upright.png:/probe.png:ro','-w','/work','python:3.11-slim']
     def cli(*command):return json.loads(run(*args(),'/work/.venv/bin/python','-m','maas_platform.cli',*command))
+    def control(command):
+        return json.loads(subprocess.check_output(['python3',str(ROOT/'scripts/maas/runtime/maintenance_control.py'),'--config',str(operator),command],
+            text=True,stderr=subprocess.PIPE,timeout=420))
     def sql(query):return run('docker','exec','wta-maas-p1-test-db','psql','-U','maas','-d',DB,'-tAc',query).strip()
     def request(path,body=None,media='application/json',idem=None):
         raw=json.dumps(body).encode() if isinstance(body,dict) else body
@@ -81,7 +91,7 @@ def main():
         snapshot();code,value=request('/v1/chat/completions',body);assert code==200
         report['sync_baseline']={'status':code,'lines':len(json.loads(value['choices'][0]['message']['content'])['lines'])};assert report['sync_baseline']['lines']==46
         code,artifact=request('/maas/v1/artifacts',image,'image/png');assert code==201
-        task_body={'model':'ocr.default','input':{'image':{'artifact_id':artifact['id']}},'timeout_seconds':180}
+        task_body={'model':'ocr.default','input':{'image':{'artifact_id':artifact['id']}},'timeout_seconds':600 if options.node_maintenance else 180}
         code,task=request('/maas/v1/tasks',task_body,idem='baseline');assert code==202
         snapshot();assert execute();_,done=request('/maas/v1/tasks/'+task['id']);assert done['state']=='SUCCEEDED'
         cli('pause','--reason','P3 controlled ingress acceptance')
@@ -95,16 +105,59 @@ def main():
         except subprocess.CalledProcessError:pass
         else:raise RuntimeError('Unverified resume unexpectedly passed')
         assert cli('drain-status')['paused'];report['unverified_resume_rejected']=True
-        snapshot();report['resume']=cli('resume','--credential-id','maintenance','--probe-image','/probe.png')
+        if options.node_maintenance:
+            operator=PRIVATE/'operator.json'
+            journal=WORK/('node-session-'+uuid.uuid4().hex[:8]+'.json')
+            node_ssh=['ssh','-F','/dev/null','-i','/root/wtaobj/maas-maintenance-access/id_ed25519',
+                '-o','IdentitiesOnly=yes','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+                '-o','UserKnownHostsFile=/root/wtaobj/maas-maintenance-access/known_hosts','-o','ConnectTimeout=5',
+                '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','RequestTTY=no','root@10.11.31.2']
+            write(operator,json.dumps({'journal':str(journal),'worker_id':2,'model_ids':[1,9],'credential_id':'maintenance','probe_image':'/probe.png',
+                'task_cli':args()+['/work/.venv/bin/python','-m','maas_platform.cli'],'node_ssh':node_ssh,'wait_seconds':180}))
+            run('systemd-run','--quiet','--unit',watchdog,'--on-active=480s','/usr/bin/python3',str(ROOT/'scripts/maas/runtime/maintenance_control.py'),'--config',str(operator),'recover')
+            report['node_begin']=control('begin')
+            report['node_stopped']=control('stop')
+            assert report['node_stopped']['stop_evidence']['backend_stop_observed']
+            time.sleep(10)
+            proof=json.loads(run(*node_ssh,'status'));assert proof['backend_stop_observed']
+            report['node_stopped_hold_10s']=proof
+            code,value=request('/v1/chat/completions',body);assert code==503
+            report['node_stop_sync_rejected']={'status':code,'code':value['error']['code']}
+            native={**body,'model':pin['route_name']}
+            try:
+                with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:18080/v1/chat/completions',data=json.dumps(native).encode(),
+                    headers={'Content-Type':'application/json','Authorization':'Bearer '+key}),timeout=5) as response:native_code=response.status
+            except urllib.error.HTTPError as exc:native_code=exc.code
+            except OSError:native_code='transport_unavailable'
+            assert native_code!=200;report['native_inference_while_stopped']=native_code
+            report['node_recovered']=control('recover');snapshot()
+            final=control('resume');report['node_final']=final;report['resume']=final['recovery_probe']
+            assert final['phase']=='RESUMED'
+        else:
+            snapshot();report['resume']=cli('resume','--credential-id','maintenance','--probe-image','/probe.png')
         assert not report['resume']['maintenance']['paused'] and report['resume']['probes'][0]['lines']==46
         snapshot();assert execute();_,row=request('/maas/v1/tasks/'+queued['id']);assert row['state']=='SUCCEEDED'
         report['queued_task_after_resume']={'state':row['state'],'attempts':row['attempts']}
         report['metrics']=cli('status');assert report['metrics']['successful_tasks']==2
         report['sync_activity_states']=json.loads(sql("SELECT json_object_agg(state,n) FROM (SELECT state,count(*) n FROM sync_activity GROUP BY state) q"))
         assert report['sync_activity_states']=={'COMPLETED':2}
-        report['maintenance_audit']=json.loads(sql("SELECT json_agg(action ORDER BY id) FROM maintenance_events"));assert report['maintenance_audit']==['pause','verified-resume']
+        report['maintenance_audit']=json.loads(sql("SELECT json_agg(action ORDER BY id) FROM maintenance_events"))
+        assert report['maintenance_audit']==(['pause','pause','verified-resume'] if options.node_maintenance else ['pause','verified-resume'])
         report['ok']=True
     finally:
+        if operator is not None and operator.exists():
+            try:
+                session=control('status')
+                if session['phase']!='RESUMED':
+                    control('recover')
+                    status=cli('drain-status')
+                    if status['backend_activity'] or status['sync_activity']:raise RuntimeError('Unresolved activity requires inspection')
+                    cfg=json.loads(operator.read_text());run(*cfg['node_ssh'],'disarm')
+                subprocess.run(['systemctl','stop',watchdog+'.timer'],capture_output=True)
+            except Exception:
+                report['cleanup_deferred_for_recovery']=True
+                write(WORK/'acceptance.json',json.dumps(report,indent=2)+'\n')
+                raise RuntimeError('Recovery incomplete; private config/API/database preserved for operator recovery') from None
         subprocess.run(['docker','rm','-f',API],capture_output=True)
         report['resources_removed']=res.cleanup();report['cleanup_failures']=res.failures
         if created_db:run('docker','exec','wta-maas-p1-test-db','psql','-U','maas','-d','postgres','-c','DROP DATABASE '+DB)

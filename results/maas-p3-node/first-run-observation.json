@@ -1,0 +1,513 @@
+{
+  "scope": "temporary managed ingress and existing node002 maintenance",
+  "original_ingress_modified": false,
+  "through_nginx": true,
+  "edge_denied_paths": {
+    "/": 404,
+    "/docs": 404,
+    "/v2/models": 404,
+    "/token-auth": 404,
+    "/healthz": 404,
+    "/maas/v1/admin": 404,
+    "/v1/models": 404,
+    "missing-key": 401,
+    "query-string": 400,
+    "write-method": 403
+  },
+  "sync_baseline": {
+    "status": 200,
+    "lines": 46
+  },
+  "paused": {
+    "paused": true,
+    "generation": 1,
+    "reason": "P3 controlled ingress acceptance",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": true,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "sync_paused": {
+    "status": 503,
+    "code": "MAINTENANCE_PAUSED"
+  },
+  "stored_result_during_pause": {
+    "status": 200,
+    "lines": 46
+  },
+  "unverified_resume_rejected": true,
+  "node_begin": {
+    "session": "5208bbe1d5d14ea58cd1c0937ae42418",
+    "phase": "MAINTENANCE_ENABLED",
+    "cluster_id": 1,
+    "events": [
+      {
+        "phase": "PAUSED",
+        "at": 1792497222.558565
+      },
+      {
+        "phase": "ARMED",
+        "at": 1792497224.2536113
+      },
+      {
+        "phase": "MAINTENANCE_ENABLED",
+        "at": 1792497224.3264542
+      }
+    ],
+    "maintenance_value": {
+      "enabled": true,
+      "message": "maas:5208bbe1d5d14ea58cd1c0937ae42418:planned 002 maintenance"
+    },
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "labels": {
+        "os": "linux",
+        "arch": "amd64",
+        "worker-name": "XZ-31-002"
+      },
+      "maintenance": null
+    },
+    "models": [
+      {
+        "id": 9,
+        "name": "maas-ocr-p2-r2",
+        "replicas": 2,
+        "sha256": "23c0dda88436934123af14a2e1bd70a23c5423a433fac4ef89fbe5e0946ee47f"
+      },
+      {
+        "id": 1,
+        "name": "rapidocr-gpu",
+        "replicas": 2,
+        "sha256": "36f9b78dd6a8dedd6f491e132e7d4e8c818a0c94c9d1443f94e3626846b8ca3f"
+      }
+    ],
+    "generation": 2,
+    "instances_after_maintenance": {
+      "9": [
+        {
+          "id": 36,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 33,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ],
+      "1": [
+        {
+          "id": 35,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 34,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ]
+    }
+  },
+  "node_stopped": {
+    "session": "5208bbe1d5d14ea58cd1c0937ae42418",
+    "phase": "STOPPED",
+    "cluster_id": 1,
+    "events": [
+      {
+        "phase": "PAUSED",
+        "at": 1792497222.558565
+      },
+      {
+        "phase": "ARMED",
+        "at": 1792497224.2536113
+      },
+      {
+        "phase": "MAINTENANCE_ENABLED",
+        "at": 1792497224.3264542
+      },
+      {
+        "phase": "SCALING_DOWN",
+        "at": 1792497225.108795
+      },
+      {
+        "phase": "REPLICAS_ZERO",
+        "at": 1792497226.5974855
+      },
+      {
+        "phase": "STOPPED",
+        "at": 1792497234.022536
+      }
+    ],
+    "maintenance_value": {
+      "enabled": true,
+      "message": "maas:5208bbe1d5d14ea58cd1c0937ae42418:planned 002 maintenance"
+    },
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "labels": {
+        "os": "linux",
+        "arch": "amd64",
+        "worker-name": "XZ-31-002"
+      },
+      "maintenance": null
+    },
+    "models": [
+      {
+        "id": 9,
+        "name": "maas-ocr-p2-r2",
+        "replicas": 2,
+        "sha256": "23c0dda88436934123af14a2e1bd70a23c5423a433fac4ef89fbe5e0946ee47f"
+      },
+      {
+        "id": 1,
+        "name": "rapidocr-gpu",
+        "replicas": 2,
+        "sha256": "36f9b78dd6a8dedd6f491e132e7d4e8c818a0c94c9d1443f94e3626846b8ca3f"
+      }
+    ],
+    "generation": 2,
+    "instances_after_maintenance": {
+      "9": [
+        {
+          "id": 36,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 33,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ],
+      "1": [
+        {
+          "id": 35,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 34,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ]
+    },
+    "stop_evidence": {
+      "worker": "XZ-31-002",
+      "observed_at": 1792497233.9983876,
+      "running_worker_containers": [],
+      "running_workload_containers": [],
+      "gpu_compute_processes": [],
+      "backend_stop_observed": true,
+      "safe_to_poweroff": false,
+      "scope": "Docker workloads and NVIDIA compute processes only; host workers, external admission and control plane require separate verification",
+      "worker_id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "legacy_agent_active": false,
+      "node_management_ssh_preserved": true,
+      "vm_powered_off": false
+    }
+  },
+  "node_stopped_hold_10s": {
+    "worker": "XZ-31-002",
+    "observed_at": 1792497244.3647509,
+    "running_worker_containers": [],
+    "running_workload_containers": [],
+    "gpu_compute_processes": [],
+    "backend_stop_observed": true,
+    "safe_to_poweroff": false,
+    "scope": "Docker workloads and NVIDIA compute processes only; host workers, external admission and control plane require separate verification"
+  },
+  "node_stop_sync_rejected": {
+    "status": 503,
+    "code": "PREFLIGHT_STALE"
+  },
+  "native_inference_while_stopped": 404,
+  "node_recovered": {
+    "session": "5208bbe1d5d14ea58cd1c0937ae42418",
+    "phase": "RECOVERED",
+    "cluster_id": 1,
+    "events": [
+      {
+        "phase": "PAUSED",
+        "at": 1792497222.558565
+      },
+      {
+        "phase": "ARMED",
+        "at": 1792497224.2536113
+      },
+      {
+        "phase": "MAINTENANCE_ENABLED",
+        "at": 1792497224.3264542
+      },
+      {
+        "phase": "SCALING_DOWN",
+        "at": 1792497225.108795
+      },
+      {
+        "phase": "REPLICAS_ZERO",
+        "at": 1792497226.5974855
+      },
+      {
+        "phase": "STOPPED",
+        "at": 1792497234.022536
+      },
+      {
+        "phase": "RECOVERING",
+        "at": 1792497245.3077826
+      },
+      {
+        "phase": "RECOVERED",
+        "at": 1792497272.7598755
+      }
+    ],
+    "maintenance_value": {
+      "enabled": true,
+      "message": "maas:5208bbe1d5d14ea58cd1c0937ae42418:planned 002 maintenance"
+    },
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "labels": {
+        "os": "linux",
+        "arch": "amd64",
+        "worker-name": "XZ-31-002"
+      },
+      "maintenance": null
+    },
+    "models": [
+      {
+        "id": 9,
+        "name": "maas-ocr-p2-r2",
+        "replicas": 2,
+        "sha256": "23c0dda88436934123af14a2e1bd70a23c5423a433fac4ef89fbe5e0946ee47f"
+      },
+      {
+        "id": 1,
+        "name": "rapidocr-gpu",
+        "replicas": 2,
+        "sha256": "36f9b78dd6a8dedd6f491e132e7d4e8c818a0c94c9d1443f94e3626846b8ca3f"
+      }
+    ],
+    "generation": 2,
+    "instances_after_maintenance": {
+      "9": [
+        {
+          "id": 36,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 33,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ],
+      "1": [
+        {
+          "id": 35,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 34,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ]
+    },
+    "stop_evidence": {
+      "worker": "XZ-31-002",
+      "observed_at": 1792497233.9983876,
+      "running_worker_containers": [],
+      "running_workload_containers": [],
+      "gpu_compute_processes": [],
+      "backend_stop_observed": true,
+      "safe_to_poweroff": false,
+      "scope": "Docker workloads and NVIDIA compute processes only; host workers, external admission and control plane require separate verification",
+      "worker_id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "legacy_agent_active": false,
+      "node_management_ssh_preserved": true,
+      "vm_powered_off": false
+    }
+  },
+  "node_final": {
+    "session": "5208bbe1d5d14ea58cd1c0937ae42418",
+    "phase": "RESUMED",
+    "cluster_id": 1,
+    "events": [
+      {
+        "phase": "PAUSED",
+        "at": 1792497222.558565
+      },
+      {
+        "phase": "ARMED",
+        "at": 1792497224.2536113
+      },
+      {
+        "phase": "MAINTENANCE_ENABLED",
+        "at": 1792497224.3264542
+      },
+      {
+        "phase": "SCALING_DOWN",
+        "at": 1792497225.108795
+      },
+      {
+        "phase": "REPLICAS_ZERO",
+        "at": 1792497226.5974855
+      },
+      {
+        "phase": "STOPPED",
+        "at": 1792497234.022536
+      },
+      {
+        "phase": "RECOVERING",
+        "at": 1792497245.3077826
+      },
+      {
+        "phase": "RECOVERED",
+        "at": 1792497272.7598755
+      },
+      {
+        "phase": "RESUMED",
+        "at": 1792497373.5970333
+      }
+    ],
+    "maintenance_value": {
+      "enabled": true,
+      "message": "maas:5208bbe1d5d14ea58cd1c0937ae42418:planned 002 maintenance"
+    },
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "labels": {
+        "os": "linux",
+        "arch": "amd64",
+        "worker-name": "XZ-31-002"
+      },
+      "maintenance": null
+    },
+    "models": [
+      {
+        "id": 9,
+        "name": "maas-ocr-p2-r2",
+        "replicas": 2,
+        "sha256": "23c0dda88436934123af14a2e1bd70a23c5423a433fac4ef89fbe5e0946ee47f"
+      },
+      {
+        "id": 1,
+        "name": "rapidocr-gpu",
+        "replicas": 2,
+        "sha256": "36f9b78dd6a8dedd6f491e132e7d4e8c818a0c94c9d1443f94e3626846b8ca3f"
+      }
+    ],
+    "generation": 2,
+    "instances_after_maintenance": {
+      "9": [
+        {
+          "id": 36,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 33,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ],
+      "1": [
+        {
+          "id": 35,
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "id": 34,
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ]
+    },
+    "stop_evidence": {
+      "worker": "XZ-31-002",
+      "observed_at": 1792497233.9983876,
+      "running_worker_containers": [],
+      "running_workload_containers": [],
+      "gpu_compute_processes": [],
+      "backend_stop_observed": true,
+      "safe_to_poweroff": false,
+      "scope": "Docker workloads and NVIDIA compute processes only; host workers, external admission and control plane require separate verification",
+      "worker_id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "legacy_agent_active": false,
+      "node_management_ssh_preserved": true,
+      "vm_powered_off": false
+    },
+    "recovery_probe": {
+      "maintenance": {
+        "paused": false,
+        "generation": 3,
+        "reason": "planned 002 maintenance",
+        "active_tasks": [],
+        "backend_activity": [],
+        "sync_activity": [],
+        "managed_requests_drained": false,
+        "safe_to_poweroff": false,
+        "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+      },
+      "probes": [
+        {
+          "model": "ocr.default",
+          "revision": "ocr-p2-r2",
+          "lines": 46
+        }
+      ]
+    }
+  },
+  "resume": {
+    "maintenance": {
+      "paused": false,
+      "generation": 3,
+      "reason": "planned 002 maintenance",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-p2-r2",
+        "lines": 46
+      }
+    ]
+  },
+  "queued_task_after_resume": {
+    "state": "SUCCEEDED",
+    "attempts": 1
+  },
+  "metrics": {
+    "tasks": {
+      "SUCCEEDED": 2
+    },
+    "successful_tasks": 2,
+    "dispatch_paused": false,
+    "unknown_backend_activity": 0,
+    "unknown_sync_activity": 0
+  },
+  "sync_activity_states": {
+    "COMPLETED": 2
+  },
+  "maintenance_audit": [
+    "pause",
+    "pause",
+    "verified-resume"
+  ],
+  "resources_removed": true,
+  "cleanup_failures": []
+}
