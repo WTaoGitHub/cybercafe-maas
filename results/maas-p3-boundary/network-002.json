@@ -1,0 +1,82 @@
+{
+  "node": "XZ-31-002",
+  "no_new_worker_or_daemon": true,
+  "applied": {
+    "active": true,
+    "confirmed": false,
+    "rules_ok": true,
+    "inventory_matches": true,
+    "inventory": {
+      "node": "XZ-31-002",
+      "ip": "10.11.31.2",
+      "interface": "enp3s0",
+      "destinations": [
+        {
+          "name": "cybercafe-ocr",
+          "ip": "172.17.0.2",
+          "port": 8820
+        },
+        {
+          "name": "cybercafe-h3",
+          "ip": "172.17.0.3",
+          "port": 11435
+        }
+      ],
+      "trusted_bridge": []
+    },
+    "rules": {
+      "4/MAAS-P3-HOST": "-N MAAS-P3-HOST\n-A MAAS-P3-HOST -i lo -j RETURN\n-A MAAS-P3-HOST -s 10.11.31.1/32 -i enp3s0 -j RETURN\n-A MAAS-P3-HOST -s 10.11.31.2/32 -i enp3s0 -j RETURN\n-A MAAS-P3-HOST -p tcp -j REJECT --reject-with tcp-reset\n",
+      "4/MAAS-P3-DOCKER": "-N MAAS-P3-DOCKER\n-A MAAS-P3-DOCKER -s 10.11.31.1/32 -i enp3s0 -j RETURN\n-A MAAS-P3-DOCKER -s 10.11.31.2/32 -i enp3s0 -j RETURN\n-A MAAS-P3-DOCKER -p tcp -j REJECT --reject-with tcp-reset\n",
+      "6/MAAS-P3-HOST": "-N MAAS-P3-HOST\n-A MAAS-P3-HOST -i lo -j RETURN\n-A MAAS-P3-HOST -p tcp -j REJECT --reject-with tcp-reset\n"
+    },
+    "scope": "network clients only; trusted nodes, loopback and existing local tunnels are operator paths",
+    "safe_to_poweroff": false
+  },
+  "probes": [
+    {
+      "kind": "model",
+      "host": "10.11.31.2",
+      "port": 40019,
+      "before": true,
+      "after": false
+    },
+    {
+      "kind": "model",
+      "host": "10.11.31.2",
+      "port": 40063,
+      "before": true,
+      "after": false
+    },
+    {
+      "kind": "legacy-dnat",
+      "host": "10.11.31.2",
+      "port": 8820,
+      "before": true,
+      "after": false
+    },
+    {
+      "kind": "direct-container",
+      "host": "172.17.0.2",
+      "port": 8820,
+      "before": false,
+      "after": false
+    },
+    {
+      "kind": "direct-container",
+      "host": "172.17.0.3",
+      "port": 11435,
+      "before": false,
+      "after": false
+    },
+    {
+      "kind": "ipv6-host",
+      "host": "fd42:223::1",
+      "port": 40062,
+      "before": true,
+      "after": false
+    }
+  ],
+  "ssh_reachable_after": true,
+  "ok": true,
+  "test_namespace_removed": true
+}
