@@ -1,0 +1,394 @@
+{
+  "phase": "inflight-partition",
+  "target": "XZ-31-002",
+  "existing_worker": true,
+  "management_ssh_preserved": true,
+  "baseline": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "unreachable": false
+    },
+    "collector": {
+      "ok": true,
+      "observed_at": 1792488405.1554775,
+      "updated_at": 1792488405.9275305
+    },
+    "test_instances": [
+      {
+        "id": 38,
+        "name": "maas-ocr-002-offline-7l6c5",
+        "state": "running",
+        "worker_name": "XZ-31-002",
+        "port": 40044
+      }
+    ]
+  },
+  "snapshot": {
+    "snapshot_valid": true,
+    "worker": "XZ-31-002",
+    "image_id": "sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5"
+  },
+  "armed": {
+    "armed": true,
+    "state": {
+      "active": true,
+      "action": "partition",
+      "worker": {
+        "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+        "running": true,
+        "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+      },
+      "paused": [
+        "maas-ocr-002-offline-7l6c5-run-0"
+      ],
+      "armed_at": 1792488407.7379231,
+      "timer": "maas-002-restore-f4c0e51ec4"
+    }
+  },
+  "dispatch_observed": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "unreachable": false
+    },
+    "collector": {
+      "ok": true,
+      "observed_at": 1792488405.1554775,
+      "updated_at": 1792488405.9275305
+    },
+    "test_instances": [
+      {
+        "id": 38,
+        "name": "maas-ocr-002-offline-7l6c5",
+        "state": "running",
+        "worker_name": "XZ-31-002",
+        "port": 40044
+      }
+    ],
+    "task": {
+      "id": "task_7aa7357a5d164410bb14907c23a1c795",
+      "state": "RUNNING",
+      "error_code": null,
+      "attempts": 1,
+      "result_artifact_id": null
+    },
+    "backend_activity": [
+      {
+        "token": "7ec7b59aa6df43e6841c633a77a8c388",
+        "state": "DISPATCHING"
+      }
+    ]
+  },
+  "fault": {
+    "applied": "partition",
+    "worker": {
+      "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "running": true,
+      "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+    },
+    "scoped_containers": [
+      "maas-ocr-002-offline-7l6c5-run-0"
+    ]
+  },
+  "outcome": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "unreachable": false
+    },
+    "collector": {
+      "ok": true,
+      "observed_at": 1792488410.9294236,
+      "updated_at": 1792488411.707433
+    },
+    "test_instances": [
+      {
+        "id": 38,
+        "name": "maas-ocr-002-offline-7l6c5",
+        "state": "error",
+        "worker_name": "XZ-31-002",
+        "port": 40044
+      }
+    ],
+    "task": {
+      "id": "task_7aa7357a5d164410bb14907c23a1c795",
+      "state": "FAILED",
+      "error_code": "UNKNOWN_BACKEND_ACTIVITY",
+      "attempts": 1,
+      "result_artifact_id": null
+    },
+    "backend_activity": [
+      {
+        "token": "7ec7b59aa6df43e6841c633a77a8c388",
+        "state": "UNKNOWN"
+      }
+    ]
+  },
+  "offline": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "unreachable",
+      "unreachable": true
+    },
+    "collector": {
+      "ok": false,
+      "code": "WORKER_UNAVAILABLE",
+      "updated_at": 1792488434.675911
+    },
+    "test_instances": [
+      {
+        "id": 38,
+        "name": "maas-ocr-002-offline-7l6c5",
+        "state": "error",
+        "worker_name": "XZ-31-002",
+        "port": 40044
+      }
+    ]
+  },
+  "offline_after_s": 25.31,
+  "node_offline": {
+    "worker": {
+      "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "running": true,
+      "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+    },
+    "scoped_containers": [
+      "maas-ocr-002-offline-7l6c5-run-0"
+    ],
+    "fault_chain_present": true,
+    "active": {
+      "active": true,
+      "action": "partition",
+      "worker": {
+        "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+        "running": true,
+        "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+      },
+      "paused": [
+        "maas-ocr-002-offline-7l6c5-run-0"
+      ],
+      "armed_at": 1792488407.7379231,
+      "timer": "maas-002-restore-f4c0e51ec4",
+      "applied_at": 1792488410.2171373
+    }
+  },
+  "offline_probe": {
+    "worker_port_reachable": false,
+    "original_sync_ocr": {
+      "status": 200,
+      "lines": 46
+    },
+    "test_route": {
+      "name": "ai-route-route-13.internal",
+      "namespace": "higress-system",
+      "policies": {
+        "higress.io/destination": "",
+        "higress.io/proxy-next-upstream": "error,timeout,http_503,http_502,non_idempotent",
+        "higress.io/proxy-next-upstream-tries": "2",
+        "higress.io/rewrite-target": "/$1$3"
+      },
+      "paths": [
+        "/(v1)(-openai)?(/chat/completions)",
+        "/(v1)(-openai)?(/completions)",
+        "/(v1)(-openai)?(/responses)",
+        "/(v1)(-openai)?(/embeddings)",
+        "/(v1)(-openai)?(/audio/transcriptions)",
+        "/(v1)(-openai)?(/audio/speech)",
+        "/(v1)(-openai)?(/images/generations)",
+        "/(v1)(-openai)?(/images/edits)",
+        "/(v1)()(/audio/translations)",
+        "/(v1)()(/images/variations)",
+        "/(v1)()(/moderations)",
+        "/(v1)()(/score)",
+        "/(v1)()(/rerank)",
+        "/(v2)()(/rerank)",
+        "/(v1)()(/messages)",
+        "/(v1)()(/messages/count_tokens)",
+        "/(v1)()(/complete)"
+      ]
+    }
+  },
+  "stored_result": {
+    "download_status": 200,
+    "lines": 46,
+    "revision": "ocr-002-offline-r1"
+  },
+  "blocked": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "unreachable",
+      "unreachable": true
+    },
+    "collector": {
+      "ok": false,
+      "code": "WORKER_UNAVAILABLE",
+      "updated_at": 1792488434.675911
+    },
+    "test_instances": [
+      {
+        "id": 38,
+        "name": "maas-ocr-002-offline-7l6c5",
+        "state": "error",
+        "worker_name": "XZ-31-002",
+        "port": 40044
+      }
+    ],
+    "task": {
+      "id": "task_75053439a43f4816b2bd6caa87a92ac6",
+      "state": "QUEUED",
+      "error_code": null,
+      "attempts": 0,
+      "result_artifact_id": null
+    },
+    "backend_activity": []
+  },
+  "termination_evidence": {
+    "worker_stopped": true,
+    "test_backend_processes_removed": [
+      "maas-ocr-002-offline-7l6c5-run-0"
+    ],
+    "remaining_test_backends": []
+  },
+  "resolution": {
+    "resolved": true
+  },
+  "resumed_pending": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "unreachable",
+      "unreachable": true
+    },
+    "collector": {
+      "ok": false,
+      "code": "WORKER_UNAVAILABLE",
+      "updated_at": 1792488440.4705167
+    },
+    "test_instances": [],
+    "task": {
+      "id": "task_75053439a43f4816b2bd6caa87a92ac6",
+      "state": "SUCCEEDED",
+      "error_code": null,
+      "attempts": 1,
+      "result_artifact_id": "art_c6dbb7c7605f4d2fbae03510ecca0500"
+    },
+    "backend_activity": []
+  },
+  "restored": {
+    "restored": true,
+    "worker": {
+      "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "running": true,
+      "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+    },
+    "state": {
+      "active": false,
+      "action": "partition",
+      "worker": {
+        "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+        "running": true,
+        "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+      },
+      "paused": [
+        "maas-ocr-002-offline-7l6c5-run-0"
+      ],
+      "armed_at": 1792488407.7379231,
+      "timer": "maas-002-restore-f4c0e51ec4",
+      "applied_at": 1792488410.2171373,
+      "restored_at": 1792488446.548374
+    }
+  },
+  "recovered": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "unreachable": false
+    },
+    "collector": {
+      "ok": true,
+      "observed_at": 1792488485.7351844,
+      "updated_at": 1792488486.4012663
+    },
+    "test_instances": [
+      {
+        "id": 39,
+        "name": "maas-ocr-002-offline-14r2r",
+        "state": "running",
+        "worker_name": "XZ-31-002",
+        "port": 40009
+      }
+    ]
+  },
+  "recovery_task": {
+    "worker": {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "unreachable": false
+    },
+    "collector": {
+      "ok": true,
+      "observed_at": 1792488491.4031372,
+      "updated_at": 1792488492.167728
+    },
+    "test_instances": [
+      {
+        "id": 39,
+        "name": "maas-ocr-002-offline-14r2r",
+        "state": "running",
+        "worker_name": "XZ-31-002",
+        "port": 40009
+      }
+    ],
+    "task": {
+      "id": "task_a7075350c7e543ae8a9caf358b63301f",
+      "state": "SUCCEEDED",
+      "error_code": null,
+      "attempts": 1,
+      "result_artifact_id": "art_2d8042039bf24ea58f5a28b889d6d91d"
+    },
+    "backend_activity": [
+      {
+        "token": "009c475afe374945aa83395214739b92",
+        "state": "COMPLETED"
+      }
+    ]
+  },
+  "recovery_result": {
+    "download_status": 200,
+    "lines": 46,
+    "revision": "ocr-002-offline-r1"
+  },
+  "ok": true,
+  "final_node_restore": {
+    "restored": true,
+    "worker": {
+      "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "running": true,
+      "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+    },
+    "state": {
+      "active": false,
+      "action": "partition",
+      "worker": {
+        "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+        "running": true,
+        "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+      },
+      "paused": [
+        "maas-ocr-002-offline-7l6c5-run-0"
+      ],
+      "armed_at": 1792488407.7379231,
+      "timer": "maas-002-restore-f4c0e51ec4",
+      "applied_at": 1792488410.2171373,
+      "restored_at": 1792488496.2776992
+    }
+  }
+}
