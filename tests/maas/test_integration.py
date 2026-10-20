@@ -544,3 +544,25 @@ def test_maintenance_recovery_probe_failure_generation_and_active_task(env):
     assert exc.value.code=='MAINTENANCE_CHANGED' and m.status()['paused']
     assert not m.resume(lambda:None)['paused']
     assert Worker(s).run_once()
+
+
+def test_recovery_runs_real_transport_validates_output_and_keeps_gate_closed(env,monkeypatch,tmp_path):
+    from maas_platform.maintenance import Maintenance
+    from maas_platform.recovery import probe_registered_models
+    valid={'text':'ok','lines':[],'elapsed_ms':1,'node':'002'}
+    calls=[]
+    def reply(request):
+        calls.append(request)
+        assert Maintenance(s).status()['paused']
+        return httpx.Response(200,json={'choices':[{'message':{'content':json.dumps(valid)}}]})
+    client,s,_=sync_setup(env,monkeypatch,reply)
+    monkeypatch.setattr('maas_platform.recovery.SyncIngress',lambda service:client.app.state.sync_ingress)
+    image=tmp_path/'probe.png';image.write_bytes(b'\x89PNG\r\n\x1a\nfixture')
+    s.pause(True,'recovery window')
+    with pytest.raises(ValueError):Maintenance(s).resume(lambda:probe_registered_models(s,None,None))
+    assert Maintenance(s).status()['paused'] and not calls
+    Maintenance(s).resume(lambda:probe_registered_models(s,'a',image))
+    assert len(calls)==1 and not Maintenance(s).status()['paused']
+    s.pause(True,'invalid probe output');valid.clear()
+    with pytest.raises(ServiceError):Maintenance(s).resume(lambda:probe_registered_models(s,'a',image))
+    assert Maintenance(s).status()['paused']

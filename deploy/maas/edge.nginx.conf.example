@@ -1,0 +1,20 @@
+# Future external ingress. TLS certificate and network policy are deployment
+# prerequisites; this template does not close existing GPUStack/worker ports.
+# GPUStack UI/Playground must remain on an operator-only network/SSH tunnel.
+server {
+    listen 127.0.0.1:18831;
+    server_name _;
+    client_max_body_size 20m;
+    location /maas/v1/ {
+        proxy_pass http://127.0.0.1:18830;
+        proxy_read_timeout 125s;
+        proxy_set_header Authorization $http_authorization;
+    }
+    location = /v1/chat/completions {
+        proxy_pass http://127.0.0.1:18830;
+        proxy_read_timeout 125s;
+        proxy_next_upstream off;
+        proxy_set_header Authorization $http_authorization;
+    }
+    location / { return 404; }
+}
