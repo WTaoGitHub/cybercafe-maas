@@ -370,3 +370,25 @@ def test_expired_remote_attempt_is_never_automatically_replayed(env,completed):
     assert s.metrics()['unknown_backend_activity']==(0 if completed else 1)
     assert not s.finish(attempt,output={'late':True})
     assert s.metrics()['successful_tasks']==0
+
+
+def _exit_after_dispatch(service,task):
+    service.begin_backend(task)
+    os._exit(74)
+
+
+def test_executor_process_exit_after_remote_dispatch_intent_preserves_quarantine(env):
+    import multiprocessing
+    client,s,settings,auth,_=env
+    ident=submit(client).json()['id'];attempt=s.claim()
+    child=multiprocessing.get_context('fork').Process(target=_exit_after_dispatch,args=(s,attempt))
+    child.start();child.join(10)
+    if child.is_alive():child.kill();child.join();pytest.fail('Dispatch child hung')
+    assert child.exitcode==74
+    with s.db.transaction() as c:
+        c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE id=%s",(ident,))
+    assert s.recover()==1
+    assert s.metrics()['unknown_backend_activity']==1
+    assert submit(client,'pending').status_code==202 and s.claim() is None
+    row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
+    assert row['state']=='FAILED' and row['error_code']=='UNKNOWN_BACKEND_ACTIVITY'

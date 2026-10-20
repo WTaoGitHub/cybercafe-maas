@@ -1,4 +1,5 @@
 """Synchronous OCR over the authenticated GPUStack gateway, one client send only."""
+import asyncio
 import base64
 from datetime import datetime, timezone
 import json
@@ -86,26 +87,8 @@ class OCRAdapter:
             {'type':'image_url','image_url':{'url':'data:'+media+';base64,'+base64.b64encode(data).decode()}}]}]}
         # No redirects, proxy environment, cookie jar or client-side transport retries.
         # Higress may still try up to three backends; no application replay after send.
-        with httpx.Client(timeout=httpx.Timeout(remaining, connect=min(5,remaining)),
-                          trust_env=False, follow_redirects=False) as client:
-            ctx.service.begin_backend(ctx.task)
-            try:
-                with client.stream('POST', ctx.service.settings.gpustack_url+'/v1/chat/completions',
-                                   headers={'Authorization':'Bearer '+key}, json=body) as response:
-                    raw = bytearray()
-                    for chunk in response.iter_bytes(chunk_size=65536):
-                        if len(raw)+len(chunk)>ctx.service.settings.max_output_bytes:
-                            raise ServiceError('OUTPUT_SIZE', 'Inference response exceeds configured limit')
-                        raw.extend(chunk)
-                        if time.monotonic()>=ctx.deadline:
-                            raise ServiceError('RUNTIME_EXCEEDED', 'Inference response exceeded runtime')
-                    if response.status_code not in (200,400,401,403,404,413,415,422):
-                        raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Gateway completion is unconfirmed')
-                    ctx.service.complete_backend(ctx.task)
-                    if response.status_code != 200:
-                        raise ServiceError('UPSTREAM_REJECTED', 'Inference request rejected', 422)
-            except httpx.HTTPError:
-                raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined') from None
+        ctx.service.begin_backend(ctx.task)
+        raw = asyncio.run(self._infer(ctx, key, body, remaining))
         ctx.check()
         try:
             envelope = json.loads(raw)
@@ -113,3 +96,28 @@ class OCRAdapter:
             return OCRResult.model_validate(value).model_dump()
         except (ValueError, KeyError, IndexError, TypeError, ValidationError):
             raise ServiceError('OUTPUT_INVALID', 'OCR response does not match the approved schema') from None
+
+    async def _infer(self, ctx, key, body, remaining):
+        # asyncio.timeout is a wall-clock deadline, including slow/trickling bodies.
+        budget = min(remaining, ctx.deadline-time.monotonic())
+        try:
+            async with asyncio.timeout(max(0, budget)):
+                async with httpx.AsyncClient(timeout=httpx.Timeout(max(.001,budget), connect=min(5,max(.001,budget))),
+                                             trust_env=False, follow_redirects=False) as client:
+                    async with client.stream('POST', ctx.service.settings.gpustack_url+'/v1/chat/completions',
+                                             headers={'Authorization':'Bearer '+key,'Accept-Encoding':'identity'}, json=body) as response:
+                        if response.headers.get('content-encoding','identity') != 'identity':
+                            raise ServiceError('OUTPUT_ENCODING', 'Compressed inference responses are unsupported')
+                        raw = bytearray()
+                        async for chunk in response.aiter_bytes():
+                            if len(raw)+len(chunk)>ctx.service.settings.max_output_bytes:
+                                raise ServiceError('OUTPUT_SIZE', 'Inference response exceeds configured limit')
+                            raw.extend(chunk)
+                        if response.status_code not in (200,400,401,403,404,413,415,422):
+                            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Gateway completion is unconfirmed')
+                        ctx.service.complete_backend(ctx.task)
+                        if response.status_code != 200:
+                            raise ServiceError('UPSTREAM_REJECTED', 'Inference request rejected', 422)
+                        return raw
+        except (httpx.HTTPError, TimeoutError):
+            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined') from None

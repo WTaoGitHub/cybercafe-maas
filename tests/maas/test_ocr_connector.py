@@ -36,7 +36,7 @@ def test_preflight_fails_closed(tmp_path,change):
 @pytest.mark.parametrize('case',['success','timeout','503','malformed','oversize','denied'])
 def test_ocr_sends_once_and_only_proven_completion_releases_activity(tmp_path,monkeypatch,case):
     model,_=target(tmp_path);events=[];requests=[]
-    client_class=httpx.Client
+    client_class=httpx.AsyncClient
     def transport(request):
         requests.append(request)
         if case=='timeout':raise httpx.ReadTimeout('secret must not leak',request=request)
@@ -45,7 +45,7 @@ def test_ocr_sends_once_and_only_proven_completion_releases_activity(tmp_path,mo
         if case=='oversize':return httpx.Response(200,content=b'x'*2000)
         value={'text':'hello','lines':[],'elapsed_ms':1,'node':'001'}
         return httpx.Response(200,json={'choices':[{'message':{'content':'invalid' if case=='malformed' else json.dumps(value)}}]})
-    monkeypatch.setattr('maas_platform.ocr_connector.httpx.Client',lambda **kw:client_class(transport=httpx.MockTransport(transport),**kw))
+    monkeypatch.setattr('maas_platform.ocr_connector.httpx.AsyncClient',lambda **kw:client_class(transport=httpx.MockTransport(transport),**kw))
     task={'deadline':datetime.now(timezone.utc)+timedelta(seconds=10)}
     service=SimpleNamespace(settings=SimpleNamespace(gpustack_url='http://gateway.test',max_output_bytes=1000),
         auth=SimpleNamespace(key_for=lambda _: 'registered-key'),begin_backend=lambda _:events.append('begin'),
@@ -61,3 +61,24 @@ def test_ocr_sends_once_and_only_proven_completion_releases_activity(tmp_path,mo
     assert requests[0].headers['authorization']=='Bearer registered-key'
     body=json.loads(requests[0].content)
     assert body['model']=='ocr-p2' and body['stream'] is False
+
+
+def test_slow_trickling_response_obeys_absolute_deadline(monkeypatch):
+    import asyncio
+    closed=[]
+    class Trickling(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            while True:
+                await asyncio.sleep(.01)
+                yield b' '
+        async def aclose(self):closed.append(True)
+    original=httpx.AsyncClient
+    monkeypatch.setattr('maas_platform.ocr_connector.httpx.AsyncClient',lambda **kw:original(
+        transport=httpx.MockTransport(lambda request:httpx.Response(200,stream=Trickling())),**kw))
+    ctx=SimpleNamespace(deadline=time.monotonic()+.1,service=SimpleNamespace(
+        settings=SimpleNamespace(gpustack_url='http://gateway.test',max_output_bytes=10000),
+        complete_backend=lambda _:pytest.fail('Incomplete stream cannot prove completion')))
+    started=time.monotonic()
+    with pytest.raises(ServiceError) as exc:asyncio.run(OCRAdapter()._infer(ctx,'key',{},.1))
+    assert exc.value.code=='UNKNOWN_BACKEND_ACTIVITY'
+    assert time.monotonic()-started<1 and closed
