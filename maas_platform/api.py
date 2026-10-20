@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
 from .limits import JsonBodyLimit
-from .schemas import MockInput
+from .adapters import adapter_for
 from .auth import AuthConnector
 from .config import Settings
 from .errors import ServiceError
@@ -80,6 +80,6 @@ def create_app(settings=None, auth=None):
     @app.get('/maas/v1/models/{name}/capabilities')
     def capability(name:str,who=Depends(identity)):
         model=service.model(name);service.auth.authorize(who,name,model)
-        return {'model':name,'revision':model['revision'],'execution_modes':['async'],'max_runtime_s':model['max_runtime_s'],'input_schema':MockInput.model_json_schema()}
+        return {'model':name,'revision':model['revision'],'execution_modes':['async'],'max_runtime_s':model['max_runtime_s'],'input_schema':adapter_for(model['driver']).input_schema.model_json_schema(),'parameters_schema':adapter_for(model['driver']).parameter_schema.model_json_schema()}
 
     return app

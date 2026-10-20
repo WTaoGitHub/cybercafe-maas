@@ -80,7 +80,7 @@ class AuthConnector:
             raise ServiceError('MODEL_FORBIDDEN', 'Model not allowed for this credential', 403)
         key = self.key_for(identity)
         # A local mock capability is explicitly granted by the binding, not a GPUStack model.
-        if model['driver'] != 'mock':
+        if model.get('upstream_model'):
             self._request('/token-auth', key, model['upstream_model'])
 
     def for_task(self, credential_id, project):

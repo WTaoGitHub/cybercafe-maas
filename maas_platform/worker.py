@@ -1,5 +1,6 @@
 import json, logging, signal, threading, time
 from .auth import AuthConnector
+from .adapters import adapter_for, ExecutionContext
 from .config import Settings
 from .errors import ServiceError
 from .service import TaskService, fingerprint
@@ -29,22 +30,11 @@ class Worker:
             self.service.auth.authorize(identity, task['model'], model)
             if fingerprint(model) != task['model_fingerprint']:
                 raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed')
-            started = time.monotonic()
-            runtime_deadline = started + model['max_runtime_s']
-            end = started + task['parameters']['delay_seconds']
-            while time.monotonic() < end:
-                if time.monotonic() >= runtime_deadline:
-                    raise ServiceError('RUNTIME_EXCEEDED', 'Model execution runtime limit reached')
-                if self.service.cancelled(task): raise ServiceError('INTERRUPTED', 'Mock execution interrupted')
-                stop.wait(min(.1, max(0, end-time.monotonic())))
-            if task['attempts'] <= task['parameters']['fail_first_attempts']:
-                raise ServiceError('MOCK_TRANSIENT', 'Injected recoverable failure', 503, True)
-            artifact = None
-            if task['input_artifact_id']:
-                data, media = self.service.read_task_input(task)
-                artifact = {'bytes': len(data), 'media_type': media}
-            output = {'outputs': {'text': task['input']['text'], 'input_artifact': artifact},
-                      'model_revision': task['revision'], 'attempt': task['attempts'], 'usage': {'unit':'task','quantity':1}}
+            ctx = ExecutionContext(task, self.service, stop, time.monotonic() + model['max_runtime_s'])
+            outputs = adapter_for(model['driver']).execute(ctx)
+            ctx.check()
+            output = {'outputs': outputs, 'model_revision': task['revision'],
+                      'attempt': task['attempts'], 'usage': {'unit':'task','quantity':1}}
             self.service.finish(task, output=output)
         except ServiceError as exc:
             self.service.finish(task, error=exc)

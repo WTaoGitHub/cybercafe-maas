@@ -1,7 +1,8 @@
 """Export public request/response schemas without reading secrets or connecting to a DB."""
 import json,sys
 from pathlib import Path
-from maas_platform.schemas import TaskCreate,TaskView,ApiError,MockInput,MockParameters
+from maas_platform.schemas import TaskCreate,TaskView,ApiError
+from maas_platform.adapters import MockInput,MockParameters
 output={'protocol':'maas-task-v1','status':'P0 engineering baseline',
         'task_request':TaskCreate.model_json_schema(),'task_response':TaskView.model_json_schema(),
         'error':ApiError.model_json_schema(),'mock_input':MockInput.model_json_schema(),

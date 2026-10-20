@@ -217,3 +217,27 @@ def test_running_cancellation_with_worker_heartbeat(env):
     thread.join(timeout=5);assert not thread.is_alive()
     assert client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()['state']=='CANCELLED'
     assert s.metrics()['successful_tasks']==0
+
+
+def test_second_adapter_has_independent_payload_and_capabilities(env):
+    import hashlib
+    client,s,settings,auth,_=env
+    catalog=json.loads(settings.catalog_file.read_text())
+    catalog['digest']={'driver':'local.sha256','revision':'digest-1','max_runtime_s':5}
+    settings.catalog_file.write_text(json.dumps(catalog))
+    bindings=json.loads(settings.bindings_file.read_text())
+    bindings['credentials'][0]['models'].append('digest')
+    settings.bindings_file.write_text(json.dumps(bindings))
+    cap=client.get('/maas/v1/models/digest/capabilities',headers=headers()).json()
+    assert 'source_artifact' in cap['input_schema']['required']
+    assert 'text' not in cap['input_schema']['properties']
+    assert submit(client,'wrong',model='digest').status_code==422
+    uploaded=client.post('/maas/v1/artifacts',headers={**headers(),'Content-Type':'text/plain'},content=b'digest me').json()
+    task=submit(client,'digest',model='digest',input={'source_artifact':uploaded['id']})
+    assert task.status_code==202
+    assert Worker(s).run_once()
+    row=client.get('/maas/v1/tasks/'+task.json()['id'],headers=headers()).json()
+    assert row['state']=='SUCCEEDED'
+    result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).json()
+    assert result['outputs']['sha256']==hashlib.sha256(b'digest me').hexdigest()
+    assert result['model_revision']=='digest-1'

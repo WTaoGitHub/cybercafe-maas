@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from .artifacts import ArtifactStore
 from .db import Database
 from .errors import ServiceError
-from .schemas import MockInput, MockParameters
+from .adapters import adapter_for
 
 ACTIVE = ('QUEUED', 'RETRY_WAIT', 'RUNNING', 'CANCEL_REQUESTED')
 
@@ -49,8 +49,7 @@ class TaskService:
             raise ServiceError('IDEMPOTENCY_REQUIRED', 'Supply Idempotency-Key (1..128 characters)')
         model = self.model(body.model); self.auth.authorize(identity, body.model, model)
         try:
-            inp = MockInput.model_validate(body.input).model_dump()
-            params = MockParameters.model_validate(body.parameters).model_dump()
+            inp, params, art_id = adapter_for(model['driver']).validate(body.input, body.parameters)
         except ValidationError:
             raise ServiceError('INPUT_INVALID', 'Input or parameters do not match model schema', 422)
         request_hash = fingerprint(body.model_dump())
@@ -66,7 +65,6 @@ class TaskService:
             own = c.execute("SELECT count(*) AS n FROM tasks WHERE project=%s AND state IN ('QUEUED','RETRY_WAIT')", (identity.project,)).fetchone()['n']
             if total >= self.settings.max_queued or own >= self.settings.max_project_queued:
                 raise ServiceError('QUEUE_FULL', 'Task queue capacity reached', 429, True)
-            art_id = inp.get('artifact_id')
             if art_id:
                 row = c.execute('SELECT * FROM artifacts WHERE id=%s AND project=%s AND kind=\'input\' AND deleted_at IS NULL AND expires_at>now() FOR UPDATE', (art_id, identity.project)).fetchone()
                 if not row:

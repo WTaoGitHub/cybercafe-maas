@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 import json, math, os, stat
+from .adapters import adapter_for
 
 
 def private_text(path):
@@ -67,8 +68,7 @@ class Settings:
     def catalog(self):
         data = json.loads(self.catalog_file.read_text())
         for name, model in data.items():
-            if model['driver'] not in ('mock',):
-                raise ValueError('Only the mock driver is enabled in P1; real connectors require P2 verification')
+            adapter_for(model['driver'])
             if (not isinstance(model.get('revision'), str) or not model['revision']
                     or not isinstance(model.get('max_runtime_s'), (int,float))
                     or not math.isfinite(model['max_runtime_s']) or not 0<model['max_runtime_s']<=3600):
