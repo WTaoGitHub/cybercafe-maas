@@ -645,3 +645,20 @@ def test_sync_usage_exactly_once_probe_and_failure_exclusion(env,monkeypatch):
         assert c.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n']==1
         assert c.execute('SELECT outcome FROM sync_activity WHERE token=%s',(rejected,)).fetchone()['outcome']=='REJECTED'
 
+
+def test_private_metrics_and_actionable_alerts(env):
+    from maas_platform.observability import snapshot,alerts,prometheus
+    client,s,settings,auth,_=env
+    submit(client)
+    with s.db.transaction() as c:c.execute("UPDATE tasks SET created_at=now()-interval '301 seconds'")
+    data=snapshot(s);assert data['oldest_queue_seconds']>=300
+    assert 'QUEUE_WAIT' in {a['code'] for a in alerts(s,data)}
+    s.pause(True);data=snapshot(s)
+    assert 'MAINTENANCE_PAUSED' in {a['code'] for a in alerts(s,data)}
+    metrics=prometheus(data)
+    assert 'maas_dispatch_paused 1' in metrics
+    assert 'gpustack_registered' not in metrics and 'project=' not in metrics
+    assert client.get('/metrics',headers=headers()).status_code==404
+    s.store.min_free_bytes=0
+    settings.min_free_bytes=10**30
+    assert 'DISK_LOW' in {a['code'] for a in alerts(s,snapshot(s))}

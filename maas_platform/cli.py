@@ -7,8 +7,14 @@ from .maintenance import Maintenance
 from .recovery import probe_registered_models
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('command',choices=['migrate','pause','resume','status','drain-status','cleanup','resolve-backend','resolve-sync']);p.add_argument('--reason',default='');p.add_argument('--token');p.add_argument('--credential-id');p.add_argument('--probe-image');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('command',choices=['migrate','pause','resume','status','drain-status','cleanup','resolve-backend','resolve-sync','metrics','alerts']);p.add_argument('--reason',default='');p.add_argument('--token');p.add_argument('--credential-id');p.add_argument('--probe-image');a=p.parse_args()
     s=Settings.from_env();v=TaskService(s,AuthConnector(s));v.db.migrate()
+    if a.command in ('metrics','alerts'):
+        from .observability import snapshot,alerts,prometheus
+        data=snapshot(v)
+        if a.command=='metrics':print(prometheus(data),end='')
+        else:print(json.dumps({'alerts':alerts(v,data),'usage':{'sync':data['sync_usage'],'tasks':data['task_usage']}},default=str))
+        return
     if a.command in ('resolve-backend','resolve-sync'):
         if not a.token:p.error('--token is required')
         resolver=v.resolve_backend if a.command=='resolve-backend' else Maintenance(v).resolve_sync
