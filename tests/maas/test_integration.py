@@ -306,3 +306,33 @@ def test_upload_commit_ack_loss_keeps_referenced_file(env):
     s.db.transaction=original
     with original() as c:row=c.execute("SELECT * FROM artifacts WHERE kind='input'").fetchone()
     assert s.store.path(row['id']).read_bytes()==b'committed'
+
+
+def test_real_postgres_interruption(env):
+    marker=os.environ.get('MAAS_DB_FAULT_MARKER')
+    if not marker:pytest.skip('Requires the isolated host-side database interruption harness')
+    marker=Path(marker)
+    def wait(name):
+        deadline=time.monotonic()+25
+        while not marker.with_suffix('.'+name).exists():
+            if time.monotonic()>deadline:pytest.fail('Database harness timed out: '+name)
+            time.sleep(.1)
+    client,s,settings,auth,_=env
+    ident=submit(client,'survive-db').json()['id'];old=s.claim()
+    marker.with_suffix('.ready').touch();wait('stopped')
+    assert client.get('/maas/v1/tasks/'+ident,headers=headers()).status_code==503
+    assert submit(client,'during-db-outage').status_code==503
+    with pytest.raises(Exception):s.heartbeat(old)
+    marker.with_suffix('.observed').touch();wait('restarted')
+    row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
+    assert row['state']=='RUNNING'
+    with s.db.transaction() as c:
+        assert c.execute('SELECT count(*) n FROM tasks').fetchone()['n']==1
+        c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE id=%s",(ident,))
+    assert s.recover()==1
+    assert Worker(s).run_once()
+    row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
+    assert row['state']=='SUCCEEDED' and row['attempts']==2
+    assert not s.finish(old,output={'stale':True})
+    with s.db.transaction() as c:
+        assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==1
