@@ -1,0 +1,38 @@
+flowchart TB
+    client[客户 / SDK]
+    admin[本地 Mac 管理员]
+    subgraph control[001 常在线控制端 · 同时保留 GPU worker]
+        gateway[客户网关 · HTTPS / 限制]
+        api[框架 API · 鉴权 / 目录 / 幂等 / 查询]
+        executor[执行器 · 租约 / 并发槽 / 适配器调用]
+        coordinator[协调器 · 回收 / 重试 / 排空 / 清理]
+        connector[GPUStack connector · 实例发现 / 调用]
+        db[(PostgreSQL · 任务 / 租约 / 目录 / 用量)]
+        store[(ArtifactStore · 输入 / 权威结果)]
+        gs[现有 GPUStack 控制端 · GPU 放置 / 模型部署 / 副本]
+        observe[日志 / 指标 / 告警]
+    end
+    subgraph pool[GPU worker 资源池]
+        w1[001 worker · 模型适配器 / GPU 实例 / 临时缓存]
+        w2[002 worker · 模型适配器 / GPU 实例 / 临时缓存]
+        more[后续 worker]
+    end
+    client --> gateway --> api
+    api --> db
+    api --> store
+    executor <--> db
+    executor --> connector
+    executor --> store
+    coordinator <--> db
+    coordinator --> connector
+    connector -.实例发现.-> gs
+    connector -->|定向推理 / 返回结果| w1
+    connector -->|定向推理 / 返回结果| w2
+    gs -.部署与生命周期.-> w1
+    gs -.部署与生命周期.-> w2
+    gs -.部署与生命周期.-> more
+    admin -->|私有管理访问| api
+    admin -->|现有管理 / Playground| gs
+    api -.-> observe
+    executor -.-> observe
+    coordinator -.-> observe

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>网吧闲置 GPU MaaS：目标、方案与计划</title>
+<style>:root{color-scheme:light}body{margin:0;background:#f3f5f8;color:#243047;font:16px/1.8 system-ui,-apple-system,"PingFang SC",sans-serif}main{max-width:1040px;margin:40px auto;padding:48px;background:white;border-radius:18px}h1{font-size:32px;line-height:1.4}h2{margin-top:38px;border-bottom:1px solid #dde4ed;padding-bottom:8px;color:#174c77}h3{font-size:18px}p{margin:12px 0}.meta{color:#68768a;font-size:14px}.lead{background:#edf5ff;border-left:4px solid #2876bd;padding:18px 22px}.architecture{white-space:pre-wrap;background:#15263d;color:#e4efff;padding:24px;border-radius:10px;font:14px/1.9 ui-monospace,monospace}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;border-bottom:1px solid #dde4ed;padding:12px;vertical-align:top}th{background:#edf3f8}a{color:#1765a5}code{background:#edf1f5;padding:2px 5px;border-radius:4px}li{margin:8px 0}.note{color:#626f81;font-size:14px}@media(max-width:700px){main{margin:0;padding:24px;border-radius:0}h1{font-size:26px}table{display:block;overflow-x:auto}}@media print{body{background:white}main{margin:0;padding:0}h2{break-after:avoid}tr{break-inside:avoid}}</style>
+<main><div class="meta">项目规划与验证进展 · 整理日期：2026-10-19 · 基于本地部署及测试记录</div>
+<h1>网吧闲置 GPU MaaS<br>目标、解决方案与实施计划</h1>
+<p class="lead">利用网吧空闲时段的 NVIDIA GPU，通过 GPUStack 统一部署和路由模型服务，优先提供普通中英文 OCR 文字提取。当前阶段验证识别质量、多节点吞吐和运行成本，为后续商业服务及更多模型类型提供依据。</p>
+<h2>一、目标与范围</h2>
+<ul><li><strong>长期目标：</strong>把分散的闲置显卡组织为可运营的推理资源池，向客户提供模型 API，提升设备利用率并探索盈利。</li><li><strong>近期目标：</strong>以两台服务器完成 GPU OCR 小规模验证，确定可用的模型、接口、部署方式、容量和成本边界。</li><li><strong>首期业务：</strong>普通中英文图片文字提取，返回文字、位置和置信度；暂不以复杂文档理解、表格结构还原为主。</li><li><strong>后续业务：</strong>text-to-image、text-to-video 等模型服务，待 OCR 链路和运营能力成熟后再扩展。</li></ul>
+<h2>二、解决方案</h2>
+<div class="architecture">本地 Mac：管理、开发、测试
+    │ SSH 隧道（本地无需对外提供入站访问）
+    ▼
+XZ-31-001：GPUStack 控制端 / 统一 API + GPU worker
+    │ 内网调度与请求路由
+    ├── 001：OCR 实例 → RTX 4080 SUPER 16GB
+    └── XZ-31-002：GPU worker → OCR 实例 → RTX 4080 SUPER 16GB
+
+结果：暂由执行 worker 保留；持久任务与统一结果管理待建设</div>
+<p>GPUStack 负责节点、后端、模型副本的管理以及统一入口路由。自定义 OCR 适配层使用 RapidOCR 和 ONNX Runtime GPU 执行识别，通过 OpenAI 兼容的 chat 接口接入 GPUStack 与 Playground；此处协议兼容不表示使用大语言模型，也不产生可计费的真实 token。</p>
+<p>001 同时承担控制端和 worker，当前验证表明两种角色可以共存。它是现阶段的控制单点，必须保持 Ubuntu 在线。本地通过 SSH 隧道访问管理/API，当前没有直接开放公网商业入口。</p>
+<p>长期设想为 Windows 服务网吧用户、Ubuntu 提供 MaaS。双系统启动属于节点可用性切换，不能实现同时使用；切换、任务排空及磁盘持久性仍需实测。此阶段没有计费软件，不引入 MQTT。后续若需要自动调度，可增加节点状态上报和上线/下线控制。</p>
+<h2>三、实施计划与现状</h2>
+<table><thead><tr><th>阶段</th><th>交付目标</th><th>当前状态</th></tr></thead><tbody>
+<tr><td>1 · 基础资源</td><td>两节点 SSH、GPU、容器和内网互通；001 控制端兼 worker</td><td>已完成基础验证；实际检测为两张 RTX 4080 SUPER 16GB。</td></tr>
+<tr><td>2 · OCR 接入</td><td>GPU OCR、自定义后端、统一模型路由、手动调用及 Playground</td><td>已完成；线上 rapidocr-gpu 共两个副本，已升级 0.3 方向保护；保留非流式 JSON 与 SSE 兼容。</td></tr>
+<tr><td>3 · 数据与质量</td><td>准备真实中英文样本，比较配置和模型</td><td>已准备 200 张：DocLayNet 100、RCTW-17 100；校准 40、评估 160。已完成基线、配置、新模型及方向实验。</td></tr>
+<tr><td>4 · 容量与成本</td><td>比较单/多节点、每卡副本数、并发、延迟和功耗</td><td>已完成短时矩阵及约 120 秒持续混合负载；四副本为实验配置，未作为线上默认。</td></tr>
+<tr><td>5 · 业务可用性</td><td>长时运行、离线恢复、排空、持久任务与结果保留</td><td>部分验证。历史离线实验发生 503；持久队列、重试、幂等及操作系统切换待实现和验收。</td></tr>
+<tr><td>6 · 商业验证</td><td>真实客户样本、SLA、定价、整机成本与订单验证</td><td>待开展；尚未证明盈利。</td></tr>
+<tr><td>7 · 扩展</td><td>更多 worker、镜像分发及绘图/视频服务</td><td>后续阶段。</td></tr>
+</tbody></table>
+<h2>四、已经取得的证据</h2>
+<h3>多节点与多副本能提高吞吐</h3>
+<p>早期合成英文样本上，GPUStack 单副本约 7.38 张/秒，双副本约 11.90 张/秒。后续真实混合图片测试中，相同已摆正模式、并发 8 下，两卡总副本从 2 增至 4，吞吐从 9.80 增至 15.11 张/秒，约为 1.54 倍。不同阶段输入与配置不同，不能直接横向比较。</p>
+<table><thead><tr><th>持续混合负载模式</th><th>两卡总副本 / 并发</th><th>吞吐</th><th>P95 延迟</th><th>仅 GPU 电费 / 千张</th></tr></thead><tbody>
+<tr><td>v4 已摆正</td><td>4 / 8</td><td>15.11 张/秒</td><td>1.035 秒</td><td>0.00591 元</td></tr>
+<tr><td>v4 方向保护</td><td>4 / 16</td><td>14.26 张/秒</td><td>2.502 秒</td><td>0.00602 元</td></tr>
+<tr><td>v6 small 文档候选</td><td>4 / 8</td><td>9.02 张/秒</td><td>2.023 秒</td><td>0.00650 元</td></tr>
+</tbody></table>
+<p class="note">来源：ocr-service-v4。每轮约 120 秒，20 张英文文档与 20 张中文/混合街景交替请求，预加载输入但不缓存识别结果。该轮共 9799 次计时 HTTP 请求全部成功；不等于长时 SLA。电价按 1 元/kWh，仅计两卡 NVIDIA-SMI 功率，不含 CPU、整机、电源损耗、制冷、带宽、折旧和人工。</p>
+<h3>质量需要按场景和方向选择策略</h3>
+<p>旧 v4 方向分类器会误旋转部分正常文字。0.3 方向保护保留原方向识别结果，仅在倒置候选的识别分数明显改善时采用。完整 160 张评估集的空间分组 CER 为英文 7.71%、街景 18.80%；v6 small 文档候选的英文 CER 为 5.52%。这些是特定公开数据和评分规则下的诊断指标，不能用 1−CER 直接对外承诺准确率。</p>
+<p>方向保护主要覆盖 180° 风险，当前线上未增加 90°/270° 自动识别。实验接口的显式纠正角度来自调用方，并不属于自动方向预测。线上默认仍是 v4 方向保护，v6 为候选。</p>
+<h3>已知可靠性和运维边界</h3>
+<ul><li>历史停止 002 的实验中，60 次采样有 19 次 503，最后失败约在采样开始后 32 秒；GPUStack 本身尚不能保证任务无损切换。</li><li>单实例推理锁会使并发请求排队；独立副本有助于利用 GPU 余量，但显存调度申报并非硬隔离。</li><li>当前镜像依赖节点预加载；新增节点前需准备统一可访问的镜像仓库。</li><li>识别完成后才发送 SSE 文本；Playground 可用不等于逐字实时 OCR。</li><li>尚未验证连续 8 小时负载、Windows/Ubuntu 切换、商业订单或完整单位利润。</li></ul>
+<h2>五、下一步：按业务验收收敛</h2>
+<ol><li><strong>明确客户输入和验收线：</strong>收集有代表性的实际图片，约定清晰度、方向、图片大小、文字类型、可接受错误和 P95 延迟。确认公开数据授权；RCTW-17 的商业使用条件仍需核实。</li>
+<li><strong>确定产品默认策略：</strong>正常摆正输入优先评估 upright；存在倒置风险采用 guarded；英文文档质量优先评估 v6 small。保持独立评估集，避免用校准结果代替验收。</li>
+<li><strong>收敛专用镜像与容量：</strong>使用专用单模型容器，以真实输入复测每卡 1/2 副本和并发，记录显存峰值、P50/P95、失败率及吞吐；不直接照搬临时双模型实验容量。</li>
+<li><strong>验证完整闲置时段：</strong>开展至少覆盖计划工作窗口的耐久运行，补测节点断连、恢复、任务排空、双系统切换与持久存储；001 控制端保持在线。</li>
+<li><strong>补齐服务能力：</strong>增加持久任务队列、超时重试、幂等任务 ID、结果查询与过期清理；再配置外部网关、鉴权、限流、配额、按图片/任务统计和监控告警。</li>
+<li><strong>完成经营核算：</strong>测插座整机功耗与实际闲置时长，计入网络、折旧、维护、失败重试及客户利用率，再用真实付费试单确定价格和毛利。</li>
+<li><strong>扩大资源池：</strong>先验证更多 worker 的稳定加入、退出与镜像分发，再逐步增加绘图、视频服务。</li></ol>
+<h2>六、相关材料</h2>
+<ul><li><a href="README.md">部署与项目说明</a> · <a href="MANUAL-OCR.md">手动调用 OCR</a> · <a href="STREAMING-STATUS.md">Playground 适配状态</a></li>
+<li><a href="results/ocr-service-v4/REPORT.html">方向、服务吞吐与 GPU 电费报告</a></li>
+<li><a href="results/ocr-model-v3/REPORT.md">模型比较报告</a> · <a href="results/ocr-model-v3/DECISION.md">模型选择记录</a></li>
+<li><a href="datasets/ocr-mixed-v1/README.md">200 张混合测试集说明</a></li>
+</ul><p class="note">本页是项目规划和已有证据的归档，不包含密钥。状态依据截至整理日期的本地记录，未在生成本页时重新探测远端在线状态。测试结果和实验候选不等于线上默认配置。</p></main></html>
