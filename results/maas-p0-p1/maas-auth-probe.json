@@ -1,0 +1,39 @@
+{
+  "checks": {
+    "valid": {
+      "status": 200,
+      "consumer_present": false
+    },
+    "model_allowed": {
+      "status": 200,
+      "consumer_present": true
+    },
+    "model_denied": {
+      "status": 404,
+      "consumer_present": false
+    },
+    "management_denied": {
+      "status": 403,
+      "consumer_present": false
+    },
+    "forged_cache": {
+      "status": 200,
+      "consumer_present": true
+    },
+    "existing_model_whitelist_denied": {
+      "status": 403
+    },
+    "invalid_with_forged_cache": {
+      "status": 401
+    },
+    "invalid": {
+      "status": 401
+    },
+    "immediate_after_key_delete": {
+      "status": 401
+    }
+  },
+  "original_service_mutated": false,
+  "non_admin": true,
+  "temporary_identity_deleted": true
+}

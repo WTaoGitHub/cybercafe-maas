@@ -1,0 +1,38 @@
+{
+  "checked_unix": 1792474810.1806314,
+  "kind": "read-only-baseline",
+  "models": [
+    {
+      "id": 1,
+      "name": "rapidocr-gpu",
+      "backend": "RapidOCR-custom",
+      "backend_version": "0.3",
+      "replicas": 2,
+      "ready_replicas": 2,
+      "generic_proxy": false
+    }
+  ],
+  "routes": [
+    {
+      "id": 1,
+      "name": "rapidocr-gpu",
+      "generic_proxy": false,
+      "access_policy": "authed",
+      "ready_targets": 1
+    }
+  ],
+  "wta-gpustack-server": {
+    "image": "quay.io/gpustack/gpustack:v2.2.3",
+    "image_id": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+  },
+  "wta-gpustack-worker": {
+    "image": "quay.io/gpustack/gpustack:v2.2.3",
+    "image_id": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+  },
+  "health_status": 200,
+  "version": {
+    "version": "v2.2.3",
+    "git_commit": "1cfcbbf"
+  },
+  "postgres_cached": true
+}
