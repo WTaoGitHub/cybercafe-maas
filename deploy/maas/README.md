@@ -105,4 +105,4 @@ MAAS_TEST_DATABASE_URL=postgresql://.../maas_test python -m pytest tests/maas -q
 
 `POST /v1/chat/completions`仅支持目录中的OCR逻辑模型名（例如`ocr.default`）和`stream=false`；凭据绑定也使用逻辑模型名，原生GPUStack模型ACL仍会验证。请求不能直接传原路由名绕过绑定。该入口需要与异步执行器共享维护数据库；超时等未知执行会同时隔离同步和异步派发。
 
-新增数据库迁移只作用于独立任务库。受限Nginx入口模板为 `edge.nginx.conf.example`，尚未上线；不能将它视为已封锁现网旁路。现有Playground继续走原GPUStack运维入口，不支持直接迁移到当前非流式试点入口。
+新增数据库迁移只作用于独立任务库。实际Nginx配置为 `edge.nginx.conf`，已部署到001私有18831入口并通过真实OCR验收；`edge.nginx.conf.example`为历史示例。两节点另已应用运行期网络策略，范围和回退见 [边界说明](../../docs/framework/P3-BOUNDARY.md)。现有Playground保留SSH运维访问，不支持直接迁移到当前非流式试点入口。原H3隧道仍不经过MaaS门禁；尚不能宣称整机全局维护或安全关机。任务API/执行器仍未常驻发布。

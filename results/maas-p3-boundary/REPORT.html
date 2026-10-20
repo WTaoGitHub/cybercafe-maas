@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>P3 Ingress Boundary Acceptance</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f2f6fa;color:#20364a;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1380px;margin:0 auto;padding:32px 24px 70px}h1{font-size:32px;line-height:1.4}h2{margin-top:30px;border-bottom:1px solid #dce6ef;padding-bottom:12px}h3{margin-top:26px}a{color:#126d99}nav{display:flex;gap:20px;flex-wrap:wrap}section,.diagram{background:white;border:1px solid #dce6ef;border-radius:12px;padding:26px;margin:24px 0}.diagram svg{display:block;width:100%;height:auto}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2eaf1;vertical-align:top;min-width:110px}th{background:#eaf2f8}pre{white-space:pre-wrap;background:#eff4f8;padding:20px;border-radius:8px}code{font-size:13px;overflow-wrap:anywhere}.notice,blockquote{border-left:4px solid #b48b34;padding:14px 18px;background:#fff7e4;margin:18px 0}.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0}.phase{background:#e2edf7;padding:15px;border-radius:8px;font-size:13px}.phase b{display:block;font-size:22px}button{font:inherit;padding:6px 14px;background:white;border:1px solid #bdcfdd;border-radius:6px;cursor:pointer}@media(max-width:700px){main{padding:18px 12px}section,.diagram{padding:16px}.phases{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.diagram{overflow:auto}.diagram svg{min-width:1000px}}@media print{body{background:white;font-size:11px}main{max-width:none;padding:0}nav,button{display:none}section,.diagram{border:0;padding:0}.diagram{break-inside:avoid}.table{overflow:visible}th,td{padding:6px;min-width:0}h2,h3{break-after:avoid}}</style></head><body><main><section><h2>P3 私有入口与网络旁路验收报告</h2>
+<p>2026-10-20 · GPUStack v2.2.3 · 既有001/002节点。</p>
+<h3>结论</h3>
+<p>私有Nginx已部署，两个节点指定端口的运行期网络隔离已应用并确认，网络客户端探针及经过Nginx的真实OCR维护闭环通过。回归101项通过、1项跳过。</p>
+<p><strong>W6仍未整体完成。</strong> 本轮未停止旧H3服务或其Cloudflare隧道，未演练完整节点停止/恢复，不新增安全关机或自动切系统承诺。规则尚未做启动持久化和Docker重启后的自动重建；公网TLS与常驻任务层尚未发布。</p>
+<h3>已部署内容</h3>
+<div class="table"><table><thead><tr><th>组件</th><th>状态</th></tr></thead><tbody>
+<tr><td>001 Nginx</td><td>maas-edge.service，active且enabled；固定缓存镜像内容ID，非root、只读、无额外capability；配置测试通过</td></tr>
+<tr><td>私有入口</td><td>127.0.0.1:18831及[::1]:18831；允许任务/结果/能力和受控非流式chat；其余路径拒绝</td></tr>
+<tr><td>001/002网络策略</td><td>IPv4/IPv6宿主机保护端口、Docker DNAT及直接容器目标；仅自有链和hook，可独立回退</td></tr>
+<tr><td>原服务</td><td>两worker ready，collector正常；原OCR与P2试点四个实例分别返回HTTP200、46行</td></tr>
+</tbody></table></div>
+<p>应用策略前设置180秒自动回退定时器；实测及服务核对通过后confirm撤销定时器。未改动全局默认策略、Docker网桥或daemon，没有创建额外GPUStack worker。状态检查还验证hook优先级，前置ACCEPT/RETURN导致检查失败。</p>
+<h3>网络实测</h3>
+<p>使用一次性network namespace和独立veth作为未受信任客户端，测试前后对比，不把宿主机回环访问当作隔离客户端。</p>
+<div class="table"><table><thead><tr><th>探针</th><th>应用前</th><th>应用后</th></tr></thead><tbody>
+<tr><td>001模型40009/40032</td><td>可连接</td><td>不可连接</td></tr>
+<tr><td>002模型40019/40063</td><td>可连接</td><td>不可连接</td></tr>
+<tr><td>两节点旧OCR映射8820</td><td>可连接</td><td>不可连接</td></tr>
+<tr><td>001 GPUStack映射18080</td><td>可连接</td><td>不可连接</td></tr>
+<tr><td>两节点临时IPv6监听40062</td><td>可连接</td><td>不可连接</td></tr>
+<tr><td>两节点SSH22</td><td>可连接</td><td>仍可连接</td></tr>
+<tr><td>Docker内部容器地址</td><td>已不可连接</td><td>仍不可连接</td></tr>
+</tbody></table></div>
+<p>最后一项原本已被Docker保护，不能归功于新策略；新增目标规则提供额外覆盖。IPv6测试是临时TCP监听，不冒充GPUStack已有IPv6推理服务。当前Docker未启用IPv6容器地址；若未来启用，脚本会拒绝应用，需先补充转发策略。</p>
+<p>测试后network namespace、veth及临时监听已删除。上述结果覆盖当前VM及已测试来源，不代表已从真实公网、所有上游网络设备或恶意IP伪造场景完成渗透验证。</p>
+<h3>经Nginx的真实链路</h3>
+<ul>
+<li>同步OCR HTTP200、46行；异步基线任务成功。</li>
+<li>暂停后同步请求503 / MAINTENANCE_PAUSED，异步任务保持排队；历史结果HTTP200、46行。</li>
+<li>缺少恢复探针参数的resume被拒；真实探针46行后才恢复，排队任务成功。</li>
+<li>两个成功异步任务对应两条成功计量，同步基线与恢复探针对应两条COMPLETED活动。</li>
+<li>根路径、文档、管理接口、token-auth、模型列表等7个非白名单路径404；缺少key请求401，查询串400，PUT方法403。</li>
+</ul>
+<p>验收使用独立临时API、数据库及用户/key，收尾全部清理。Nginx保留常驻，但其任务后端仍未常驻发布；允许路径在后端停止后返回502，不能把Nginx已运行理解为对外MaaS服务已发布。</p>
+<h3>回归与已知边界</h3>
+<p>101项通过、1项跳过。跳过项为宿主机编排的数据库实际停启专项，此前已独立验证，本轮未重复；有一条Starlette依赖弃用警告。</p>
+<p>网络策略允许回环、可信节点及001 GPUStack服务容器，以维持控制/推理通信。SSH运维隧道和可信节点内的直接调用仍可绕过任务门禁。已有两条Cloudflare隧道指向127.0.0.1:11435的旧H3服务，本轮保留；它们不经过MaaS门禁，仍可能产生整机GPU活动。因此safe_to_poweroff保持false。</p>
+<p>规则目前只保证本次运行期的已验证状态。重启、重置防火墙、容器IP或端口变化后，必须暂停并重新核对/应用；不承诺持续自动修复。P4对外发布前必须补齐启动持久性、漂移封锁、TLS及真实外部访问测试。</p>
+<h3>下一步</h3>
+<p>继续W6：明确独立H3服务的维护处理，接入GPUStack maintenance/期望副本控制，确认后端实际停止且不能重建，再做完整节点停止恢复演练。随后W7完善限额、清理、计量与告警，W8/P4常驻发布、备份恢复和8小时耐久。</p>
+<h3>证据与操作说明</h3>
+<ul>
+<li><a href="network-001.json">001网络探针</a>、<a href="network-002.json">002网络探针</a></li>
+<li><a href="final-policy-001.json">最终001策略</a>、<a href="final-policy-002.json">最终002策略</a>、<a href="final-verification.json">原服务复核</a></li>
+<li><a href="edge-deployment.json">Nginx部署</a>、<a href="edge-acceptance.json">Nginx链路验收</a></li>
+<li><a href="regression.log">回归日志</a>、<a href="regression.xml">JUnit记录</a>、<a href="cleanup.json">001收尾检查</a>、<a href="cleanup-002.json">002收尾检查</a></li>
+<li><a href="../../docs/framework/P3-BOUNDARY.md">网络检查与回退手册</a></li>
+</ul></section></main></body></html>
