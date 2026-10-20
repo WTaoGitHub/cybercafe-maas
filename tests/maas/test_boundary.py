@@ -21,3 +21,11 @@ def test_only_explicit_trusted_interfaces_return_before_reject():
     assert v6==['-A MAAS-P3-HOST -i lo -j RETURN','-A MAAS-P3-HOST -p tcp -j REJECT --reject-with tcp-reset']
     for r in v4:
         if '-j RETURN' in r:assert '-i lo ' in r or ('-s ' in r and '-i ' in r)
+
+
+def test_prior_accept_or_return_invalidates_existing_hooks():
+    owned='-A INPUT -p tcp -j MAAS-P3-HOST\n'
+    assert mod.hooks_first('-P INPUT ACCEPT\n'+owned,1,mod.HOST)
+    assert not mod.hooks_first('-A INPUT -j ACCEPT\n'+owned,1,mod.HOST)
+    assert not mod.hooks_first('-A INPUT -j MAAS-P3-HOST-OTHER\n'+owned,1,mod.HOST)
+    assert not mod.hooks_first('-A DOCKER-USER -j RETURN\n-A DOCKER-USER -j MAAS-P3-DOCKER',1,mod.DOCKER)

@@ -78,6 +78,11 @@ def hooks(inv,family):
 def exists(binary,rule):return run([binary,'-w','3','-C',*rule],False).returncode==0
 
 
+def hooks_first(text,count,target):
+    rules=[r for r in text.splitlines() if r.startswith('-A ')]
+    return len(rules)>=count and all(r.split()[-2:]==['-j',target] for r in rules[:count])
+
+
 def restore():
     if not STATE.exists():return {'restored':True,'no_state':True}
     state=json.loads(STATE.read_text())
@@ -123,6 +128,12 @@ def status():
     for family in (4,6):
         binary='iptables' if family==4 else 'ip6tables'
         for rule in state['hooks'][str(family)]:rules_ok=exists(binary,rule) and rules_ok
+        # A newly inserted ACCEPT/RETURN before our hooks can bypass otherwise
+        # intact chains. Presence alone is not a boundary attestation.
+        for parent,target in ([('INPUT',HOST),('DOCKER-USER',DOCKER)] if family==4 else [('INPUT',HOST)]):
+            count=sum(r[0]==parent for r in state['hooks'][str(family)])
+            listing=run([binary,'-w','3','-S',parent],False)
+            rules_ok=listing.returncode==0 and hooks_first(listing.stdout,count,target) and rules_ok
         for chain in ([HOST,DOCKER] if family==4 else [HOST]):
             found=run([binary,'-w','3','-S',chain],False);observed[str(family)+'/'+chain]=found.stdout
             expected=[r for r in chain_rules(state['inventory'],family) if r.split()[1]==chain]
