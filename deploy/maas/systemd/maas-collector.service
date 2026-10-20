@@ -1,0 +1,24 @@
+[Unit]
+Description=MaaS trusted GPUStack version and runtime inventory collector
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/wtaobj/maas-framework
+ExecStart=/usr/bin/python3 -m maas_platform.collector --config /root/wtaobj/maas-runtime/collector.json
+Restart=always
+RestartSec=3
+TimeoutStopSec=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/wtaobj/maas-runtime
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

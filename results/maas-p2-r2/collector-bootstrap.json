@@ -1,0 +1,52 @@
+{
+  "service_active": "active",
+  "service_enabled": "enabled",
+  "health": {
+    "ok": true,
+    "observed_at": 1792481051.045834,
+    "updated_at": 1792481051.8497849
+  },
+  "pin": {
+    "schema_version": 1,
+    "revision": "ocr-p2-r2",
+    "gpustack_version": "v2.2.3",
+    "route_id": 11,
+    "route_name": "maas-ocr-p2-r2",
+    "model_id": 9,
+    "backend_name": "MaaS-OCR-P2-R2-custom",
+    "backend_version": "p2-r2",
+    "image_name": "quay.io/cybercafe-maas-ocr:p2-r1",
+    "image_id": "sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5",
+    "worker_names": [
+      "XZ-31-001",
+      "XZ-31-002"
+    ],
+    "weights_policy": "image-contained",
+    "configuration_sha256": "ff44c0dca379671ff3bdf9486a0151b4a2b4fc481a142d8bc45df6ddc5f17fe3"
+  },
+  "inventory": {
+    "XZ-31-001": {
+      "worker": "XZ-31-001",
+      "image_name": "quay.io/cybercafe-maas-ocr:p2-r1",
+      "image_id": "sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5",
+      "running_image_ids": [
+        "sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5"
+      ],
+      "paused": false,
+      "observed_at": 1792481051.1216764
+    },
+    "XZ-31-002": {
+      "worker": "XZ-31-002",
+      "image_name": "quay.io/cybercafe-maas-ocr:p2-r1",
+      "image_id": "sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5",
+      "running_image_ids": [
+        "sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5"
+      ],
+      "paused": false,
+      "observed_at": 1792481051.4484136
+    }
+  },
+  "private_key_mode": "0o600",
+  "restricted_command_rejected": true,
+  "controller_only_collection": true
+}
