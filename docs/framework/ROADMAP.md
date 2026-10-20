@@ -65,7 +65,7 @@
 P0、P1已通过对应范围验收；P2常驻collector、专用只读节点清单、权限撤销/配置漂移和OCR容器重建均已验证，82项回归通过。见 [操作手册](P2-COLLECTOR.md)及 [本轮报告](../../results/maas-p2-r2/REPORT.html)。
 
 1. P2既有002离线测试已完成：空闲停止、在途强停、001↔002网络隔离与恢复；历史结果可读，UNKNOWN阻塞后续派发，取得后端停止证据后人工解除。见 [报告](../../results/maas-worker-offline/REPORT.html)。
-2. P3/W6已完成受控暂停、非流式同步入口、活动核对及探针；后续私有Nginx上线、两节点指定端口运行期网络隔离和实机验收也已完成。见 [维护手册](P3-MAINTENANCE.md)及 [网络边界报告](../../results/maas-p3-boundary/REPORT.html)。下一批落实GPUStack维护/副本控制、独立H3服务的维护边界与完整停止恢复演练，再开展配额、TTL和指标。规则启动持久性和公网TLS属于P4发布前置；当前尚不承诺异步任务自动降级到001。
+2. P3/W6已完成受控暂停、非流式同步入口、活动核对及探针；后续私有Nginx上线、两节点指定端口运行期网络隔离和实机验收也已完成。见 [维护手册](P3-MAINTENANCE.md)及 [网络边界报告](../../results/maas-p3-boundary/REPORT.html)。独立H3及隧道已按用户要求停用，资源保留，见 [记录](../../results/h3-parked/README.md)。下一批落实GPUStack维护/副本控制与完整停止恢复演练，再开展配额、TTL和指标。规则启动持久性和公网TLS属于P4发布前置；当前尚不承诺异步任务自动降级到001。
 3. P4再做常驻任务服务发布、HTTPS、备份恢复和8小时验收；真实整机断电、Windows/Ubuntu切换仍需后续环境验证。
 
 保留001常驻collector和两节点专用P2试点模型。本轮未增加worker或Docker daemon；临时任务服务、身份、数据库、artifact和专用测试模型已清理，故障规则与恢复定时器已撤销，原OCR和P2试点四个实例均实测返回46行。过去两次追加worker/daemon实验的影响与恢复记录仍保留在历史报告中。
