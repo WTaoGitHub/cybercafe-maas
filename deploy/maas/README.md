@@ -108,3 +108,7 @@ MAAS_TEST_DATABASE_URL=postgresql://.../maas_test python -m pytest tests/maas -q
 新增数据库迁移只作用于独立任务库。实际Nginx配置为 `edge.nginx.conf`，已部署到001私有18831入口并通过真实OCR验收；`edge.nginx.conf.example`为历史示例。两节点另已应用运行期网络策略，范围和回退见 [边界说明](../../docs/framework/P3-BOUNDARY.md)。现有Playground保留SSH运维访问，不支持直接迁移到当前非流式试点入口。原H3隧道仍不经过MaaS门禁；尚不能宣称整机全局维护或安全关机。任务API/执行器仍未常驻发布。
 
 最新维护状态：H3/隧道已停用；全局副本降0、002原worker及GPU进程停止/恢复的私有控制工具和演练已通过，见 [节点维护手册](../../docs/framework/P3-NODE-MAINTENANCE.md)。VM和SSH始终保留，不做自动关机；当前优先进入W7运营能力，P4再做常驻发布和耐久验证。
+
+### P3/W7 运营控制
+
+同步与异步共享并发配额；新增全局/项目存储配额、孤儿宽限期和单轮清理数量。Compose 的 observer 将私有指标和告警状态写入共享 artifact 卷下 `.observability/`，不开放 HTTP 端口。完整配置、计量口径及处置步骤见 [P3-OPERATIONS.md](../../docs/framework/P3-OPERATIONS.md)。本轮仅完成模板和临时验收，尚未常驻部署；目标主机缺少 Compose 插件，未执行 Compose 启动验证，P4 发布前需解决。

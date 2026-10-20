@@ -1,0 +1,22 @@
+# TYPE maas_successful_tasks_total counter
+maas_successful_tasks_total 2
+# TYPE maas_successful_sync_requests_total counter
+maas_successful_sync_requests_total 1
+# TYPE maas_dispatch_paused gauge
+maas_dispatch_paused 0
+# TYPE maas_unknown_backend_activity gauge
+maas_unknown_backend_activity 0
+# TYPE maas_unknown_sync_activity gauge
+maas_unknown_sync_activity 0
+# TYPE maas_artifact_live_bytes gauge
+maas_artifact_live_bytes 540227
+# TYPE maas_artifact_free_bytes gauge
+maas_artifact_free_bytes 420034879488
+# TYPE maas_oldest_queue_seconds gauge
+maas_oldest_queue_seconds 0.0
+# TYPE maas_sync_completed_duration_seconds_sum gauge
+maas_sync_completed_duration_seconds_sum 2.422217
+# TYPE maas_sync_completed_duration_seconds_count gauge
+maas_sync_completed_duration_seconds_count 3
+maas_tasks{state="SUCCEEDED"} 2
+maas_sync_requests{state="COMPLETED"} 3
