@@ -1,0 +1,37 @@
+{
+  "checks": {
+    "unchanged_real_control_records": {
+      "verified": true,
+      "revision": "p0-r1",
+      "configuration_sha256": "35953098935bfb87bf62e6c9171162b2eefb437fabec65933a4f958e51ca3c1f"
+    },
+    "actual_deployment_change_rejected": {
+      "code": "MODEL_REVISION_CHANGED"
+    },
+    "tag_reuse_rejected": {
+      "code": "MODEL_IMAGE_CHANGED"
+    }
+  },
+  "production_models_mutated": false,
+  "pin": {
+    "schema_version": 1,
+    "revision": "p0-r1",
+    "gpustack_version": "v2.2.3",
+    "route_id": 7,
+    "route_name": "maas-p0-8a095815",
+    "model_id": 6,
+    "backend_name": "maas-p0-8a095815-custom",
+    "backend_version": "p0-r1",
+    "image_name": "quay.io/cybercafe-maas-p0:0.1",
+    "image_id": "sha256:e9f98bfa496f27ae5ca6ee59bfb73efc63f427c14c5f937a3146c1377cd6846c",
+    "worker_names": [
+      "XZ-31-001",
+      "XZ-31-002"
+    ],
+    "weights_policy": "image-contained",
+    "configuration_sha256": "35953098935bfb87bf62e6c9171162b2eefb437fabec65933a4f958e51ca3c1f"
+  },
+  "ok": true,
+  "cleanup_ok": true,
+  "cleanup_failures": []
+}
