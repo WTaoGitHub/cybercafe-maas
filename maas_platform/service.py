@@ -41,7 +41,10 @@ class TaskService:
                 c.execute("INSERT INTO artifacts(id,project,kind,media_type,size,sha256,expires_at) VALUES(%s,%s,'input',%s,%s,%s,now()+%s*interval '1 second')",
                           (record['id'], identity.project, media_type, record['size'], record['sha256'], self.settings.input_ttl_seconds))
         except Exception:
-            self.store.remove(record['id']); raise
+            # Commit acknowledgement can be lost after PostgreSQL committed. Keep the
+            # durable file rather than delete an input that may already be referenced.
+            # Unreferenced files are reconciled by the later orphan-cleanup work.
+            raise
         return record
 
     def submit(self, identity, body, idem):
@@ -155,7 +158,7 @@ class TaskService:
             if len(data) > self.settings.max_output_bytes:
                 error = ServiceError('OUTPUT_SIZE', 'Output too large')
             else: result = self.store.put(data)
-        committed = False
+        preserve_result_file = False
         try:
             with self.db.transaction() as c:
                 row = c.execute('SELECT * FROM tasks WHERE id=%s FOR UPDATE', (task['id'],)).fetchone()
@@ -174,13 +177,13 @@ class TaskService:
                 else: code = 'NO_RESULT'
                 c.execute("UPDATE tasks SET state=%s,error_code=%s,result_artifact_id=%s,lease_until=NULL,token=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state, code, result_id, min(2**row['attempts'],30), row['id']))
                 c.execute('UPDATE task_attempts SET state=%s,error_code=%s,ended_at=now() WHERE token=%s', (state, code, row['token']))
-                committed = result_id is not None
+                preserve_result_file = result_id is not None
             return True
         finally:
-            if result and not committed: self.store.remove(result['id'])
+            if result and not preserve_result_file: self.store.remove(result['id'])
 
     def recover(self):
-        # P1 only has cancellable local mock work. Real HTTP backends need P2 unknown-activity isolation.
+        # P1 only has replayable local adapters. Real HTTP backends need P2 unknown-activity isolation.
         with self.db.transaction() as c:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             rows = c.execute("SELECT * FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until<=now() FOR UPDATE SKIP LOCKED").fetchall()

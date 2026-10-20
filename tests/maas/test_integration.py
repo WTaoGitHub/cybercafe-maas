@@ -241,3 +241,68 @@ def test_second_adapter_has_independent_payload_and_capabilities(env):
     result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).json()
     assert result['outputs']['sha256']==hashlib.sha256(b'digest me').hexdigest()
     assert result['model_revision']=='digest-1'
+
+
+def _crash_finisher(service, task, window):
+    """Fault injection stays in the child test process, never in production config."""
+    from contextlib import contextmanager
+    if window=='file':
+        original=service.store.put
+        def put(data):
+            original(data)
+            os._exit(71)
+        service.store.put=put
+    else:
+        original=service.db.transaction
+        @contextmanager
+        def transaction():
+            with original() as c:
+                yield c
+                if window=='before_commit': os._exit(72)
+            os._exit(73)
+        service.db.transaction=transaction
+    service.finish(task,output={'outputs':{'text':'durable'}})
+
+
+@pytest.mark.parametrize('window',['file','before_commit','after_commit'])
+def test_result_process_crash_windows(env,window):
+    import multiprocessing
+    client,s,settings,auth,_=env
+    task_id=submit(client).json()['id'];task=s.claim()
+    child=multiprocessing.get_context('fork').Process(target=_crash_finisher,args=(s,task,window))
+    child.start();child.join(10)
+    if child.is_alive():child.kill();child.join();pytest.fail('Fault child hung')
+    assert child.exitcode in (71,72,73)
+    row=s.get(auth.authenticate('gpustack_registered_a'),task_id)
+    with s.db.transaction() as c:
+        count=c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']
+        if window!='after_commit':
+            assert row['state']=='RUNNING' and count==0
+            c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE id=%s",(task_id,))
+        else:
+            assert row['state']=='SUCCEEDED' and count==1
+    if window!='after_commit':
+        assert s.recover()==1
+        assert Worker(s).run_once()
+    identity=auth.authenticate('gpustack_registered_a')
+    row=s.get(identity,task_id)
+    assert row['state']=='SUCCEEDED'
+    data,_=s.artifact(identity,row['result_artifact_id']);assert json.loads(data)['outputs']['text'] in ('hello','durable')
+    assert s.finish(task,output={'stale':True}) is False
+    with s.db.transaction() as c:
+        assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==1
+
+
+def test_upload_commit_ack_loss_keeps_referenced_file(env):
+    from contextlib import contextmanager
+    client,s,settings,auth,_=env
+    original=s.db.transaction
+    @contextmanager
+    def lost_ack():
+        with original() as c:yield c
+        raise ConnectionError('Simulated lost commit acknowledgement')
+    s.db.transaction=lost_ack
+    with pytest.raises(ConnectionError):s.upload(auth.authenticate('gpustack_registered_a'),b'committed','text/plain')
+    s.db.transaction=original
+    with original() as c:row=c.execute("SELECT * FROM artifacts WHERE kind='input'").fetchone()
+    assert s.store.path(row['id']).read_bytes()==b'committed'
