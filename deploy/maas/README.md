@@ -67,10 +67,12 @@ with httpx.Client(base_url="http://127.0.0.1:18830", headers=headers) as client:
 ```sh
 docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api python -m maas_platform.cli status
 docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api python -m maas_platform.cli pause --reason maintenance
-docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api python -m maas_platform.cli resume
+docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api python -m maas_platform.cli drain-status
+# resume needs a registered credential ID and a read-only mounted probe image:
+# ... exec api python -m maas_platform.cli resume --credential-id pilot --probe-image /probe.png
 ```
 
-`pause` **仅停止本任务服务派发**，不停止直接GPUStack/Playground请求，不能作为安全切换Windows的证明。完整全局维护属于P3。
+`pause` 同时停止本任务服务派发与新增受控同步入口的准入；`drain-status`核对在途/UNKNOWN，`resume`要求真实探针。它不停止直接GPUStack/Playground请求，不能作为安全切换Windows的证明。完整流程与尚未落地的旁路边界见 [P3维护手册](../../docs/framework/P3-MAINTENANCE.md)。
 
 输入默认24小时TTL，活动任务引用期间保留；结果默认24小时，过期下载410。执行器每分钟清理已登记的过期artifact。崩溃留下的未登记孤儿文件自动巡检/回收仍待P3补齐，当前保留供诊断；磁盘余量检查会阻止继续接单。
 
@@ -97,4 +99,10 @@ MAAS_TEST_DATABASE_URL=postgresql://.../maas_test python -m pytest tests/maas -q
 
 ## 常驻collector（P2收尾）
 
-001已启用 `maas-collector.service`，002使用固定命令只读SSH清单。操作说明见 [P2-COLLECTOR.md](../../docs/framework/P2-COLLECTOR.md)。任务API/执行器仍是临时验收服务；worker离线用例因缺独立VM按用户要求暂缓。不得在现有两节点追加GPUStack worker或Docker daemon做故障实验；本轮已验证这种方式会影响原workload与网桥。
+001已启用 `maas-collector.service`，002使用固定命令只读SSH清单。操作说明见 [P2-COLLECTOR.md](../../docs/framework/P2-COLLECTOR.md)。任务API/执行器仍是临时验收服务；用户授权后已完成既有002停止、强停和保留SSH网络隔离测试，见 [离线报告](../../results/maas-worker-offline/REPORT.html)。不得在现有两节点追加GPUStack worker或Docker daemon做故障实验。
+
+## 受控同步入口（P3首批）
+
+`POST /v1/chat/completions`仅支持目录中的OCR逻辑模型名（例如`ocr.default`）和`stream=false`；凭据绑定也使用逻辑模型名，原生GPUStack模型ACL仍会验证。请求不能直接传原路由名绕过绑定。该入口需要与异步执行器共享维护数据库；超时等未知执行会同时隔离同步和异步派发。
+
+新增数据库迁移只作用于独立任务库。受限Nginx入口模板为 `edge.nginx.conf.example`，尚未上线；不能将它视为已封锁现网旁路。现有Playground继续走原GPUStack运维入口，不支持直接迁移到当前非流式试点入口。

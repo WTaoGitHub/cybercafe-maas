@@ -169,7 +169,9 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>每阶段产出代码、必要测试、配置示例和可重现记录。最终交付包含当前架构、实际组件清单、限制、运维与恢复手册。未通过身份桥接/跨project验证时不得开放多租户；未通过未知后端活动处理时不得承诺自动安全切系统。</p>
 <h3>2026-10-20 P2首批进展</h3>
 <p>固定版本OCR connector、两节点同内容镜像、受信任预检、未知执行隔离与人工解除已实现并实机验证。64项回归通过，数据库中断专项1项通过。详见 <a href="../../results/maas-p2/REPORT.html">P2报告</a>与 <a href="P2-OCR.md">接入说明</a>。</p>
-<p>W4/W5最新进展：常驻collector、专用只读清单通道、权限/配置漂移及容器重建已验证（82项回归通过）。后续用户明确允许中断既有002服务，已完成空闲停止、在途强停、保留SSH的节点间网络隔离及恢复；P2按该范围通过，整机断电/双系统切换未验证。本轮回归82通过、1项跳过（数据库实际停启专项未重复）。当前未常驻发布任务端点。见 <a href="../../results/maas-worker-offline/REPORT.html">离线报告</a>。下一步W6全局维护及同步旁路控制，再做W7运营限制和W8发布耐久。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p>W4/W5最新进展：常驻collector、专用只读清单通道、权限/配置漂移及容器重建已验证（82项回归通过）。后续用户明确允许中断既有002服务，已完成空闲停止、在途强停、保留SSH的节点间网络隔离及恢复；P2按该范围通过，整机断电/双系统切换未验证。本轮回归82通过、1项跳过（数据库实际停启专项未重复）。当前未常驻发布任务端点。见 <a href="../../results/maas-worker-offline/REPORT.html">离线报告</a>。下一步W6全局维护及同步旁路控制，再做W7运营限制和W8发布耐久。</p>
+<h3>2026-10-20 P3/W6首批进展</h3>
+<p>受控暂停与发送前竞态保护、持久同步准入、活动排空核对、真实恢复探针、维护generation及审计、只读节点停止检查已实现，98项回归通过，临时两节点OCR实机验收通过。见 <a href="../../results/maas-p3-maintenance/REPORT.html">报告</a>与 <a href="P3-MAINTENANCE.md">操作手册</a>。W6仍未整体完成：原GPUStack/Playground/worker旁路未封锁，Nginx模板未上线，未实施完整GPUStack maintenance/副本停止恢复演练；没有自动关机或切系统。任务API/执行器仍未常驻发布。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
 <h3>1. 总体路径</h3>
@@ -212,7 +214,7 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>P0、P1已通过对应范围验收；P2常驻collector、专用只读节点清单、权限撤销/配置漂移和OCR容器重建均已验证，82项回归通过。见 <a href="P2-COLLECTOR.md">操作手册</a>及 <a href="../../results/maas-p2-r2/REPORT.html">本轮报告</a>。</p>
 <ol>
 <li>P2既有002离线测试已完成：空闲停止、在途强停、001↔002网络隔离与恢复；历史结果可读，UNKNOWN阻塞后续派发，取得后端停止证据后人工解除。见 <a href="../../results/maas-worker-offline/REPORT.html">报告</a>。</li>
-<li>下一步进入P3/W6：实现全局暂停派发、同步旁路限制、在途/UNKNOWN核对及恢复探测，再开展配额、TTL和指标。当前两节点collector在任一节点离线时会拒绝新OCR，尚不承诺异步任务自动降级到001。</li>
+<li>P3/W6首批已完成受控暂停、非流式同步入口、在途/UNKNOWN核对、恢复探针和只读节点检查（98项回归与实机验收通过）；见 <a href="P3-MAINTENANCE.md">维护手册</a>。下一批落实真实旁路封锁、GPUStack维护/副本控制与完整停止恢复演练，再开展配额、TTL和指标。当前两节点collector在任一节点离线时会拒绝新OCR，尚不承诺异步任务自动降级到001。</li>
 <li>P4再做常驻任务服务发布、HTTPS、备份恢复和8小时验收；真实整机断电、Windows/Ubuntu切换仍需后续环境验证。</li>
 </ol>
 <p>保留001常驻collector和两节点专用P2试点模型。本轮未增加worker或Docker daemon；临时任务服务、身份、数据库、artifact和专用测试模型已清理，故障规则与恢复定时器已撤销，原OCR和P2试点四个实例均实测返回46行。过去两次追加worker/daemon实验的影响与恢复记录仍保留在历史报告中。</p></section></main></body></html>

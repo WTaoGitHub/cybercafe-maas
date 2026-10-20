@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>P3 Maintenance Acceptance</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f2f6fa;color:#20364a;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1380px;margin:0 auto;padding:32px 24px 70px}h1{font-size:32px;line-height:1.4}h2{margin-top:30px;border-bottom:1px solid #dce6ef;padding-bottom:12px}h3{margin-top:26px}a{color:#126d99}nav{display:flex;gap:20px;flex-wrap:wrap}section,.diagram{background:white;border:1px solid #dce6ef;border-radius:12px;padding:26px;margin:24px 0}.diagram svg{display:block;width:100%;height:auto}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2eaf1;vertical-align:top;min-width:110px}th{background:#eaf2f8}pre{white-space:pre-wrap;background:#eff4f8;padding:20px;border-radius:8px}code{font-size:13px;overflow-wrap:anywhere}.notice,blockquote{border-left:4px solid #b48b34;padding:14px 18px;background:#fff7e4;margin:18px 0}.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0}.phase{background:#e2edf7;padding:15px;border-radius:8px;font-size:13px}.phase b{display:block;font-size:22px}button{font:inherit;padding:6px 14px;background:white;border:1px solid #bdcfdd;border-radius:6px;cursor:pointer}@media(max-width:700px){main{padding:18px 12px}section,.diagram{padding:16px}.phases{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.diagram{overflow:auto}.diagram svg{min-width:1000px}}@media print{body{background:white;font-size:11px}main{max-width:none;padding:0}nav,button{display:none}section,.diagram{border:0;padding:0}.diagram{break-inside:avoid}.table{overflow:visible}th,td{padding:6px;min-width:0}h2,h3{break-after:avoid}}</style></head><body><main><section><h2>P3 受控维护首批实现与验收</h2>
+<p>2026-10-20 · GPUStack v2.2.3 · 001控制端 + 001/002 worker。</p>
+<h3>结果</h3>
+<p>已实现受控入口暂停、发送前竞态保护、持久同步活动核对及真实恢复探针。<strong>98项回归通过、1项跳过；临时两节点OCR实机验收通过。</strong> 原服务正常，测试资源已清理。</p>
+<p>W6整体仍在进行：原GPUStack/Playground/worker推理旁路尚未封锁，未进行完整节点停止与GPUStack维护恢复演练。本轮不执行自动关机或系统切换，也未将任务服务常驻发布。</p>
+<h3>已交付功能</h3>
+<div class="table"><table><thead><tr><th>功能</th><th>实现与验证</th></tr></thead><tbody>
+<tr><td>受控暂停</td><td>领取、发送前登记和同步准入共享维护行锁；已领取但未发送的OCR退回队列，保留DEFERRED记录，不消耗执行重试预算</td></tr>
+<tr><td>同步入口</td><td>新增POST /v1/chat/completions，逻辑模型名、登记key、原生模型ACL、版本预检；当前只支持OCR及stream=false</td></tr>
+<tr><td>活动追踪</td><td>同步请求发送前持久登记；不确定完成保留UNKNOWN，异常退出的过期活动也转UNKNOWN；阻止同步及异步派发</td></tr>
+<tr><td>排空核对</td><td>私有drain-status列出活动任务、异步后台活动和同步活动；排空只覆盖受控请求，不等于GPU空闲</td></tr>
+<tr><td>验证恢复</td><td>resume要求全部网络模型真实探针；失败保持暂停；维护generation变化拒绝旧探针结果</td></tr>
+<tr><td>节点观察</td><td>只读检查Docker worker、推理/GPU容器和NVIDIA计算进程，读取失败不当作空闲；不执行停止或关机</td></tr>
+<tr><td>运维记录</td><td>维护事件审计、同步UNKNOWN人工解除、受限Nginx入口模板与操作手册</td></tr>
+</tbody></table></div>
+<h3>实机验收</h3>
+<p>临时任务库、API和用户/key使用既有P2试点模型，两个真实worker保持在线；未新增worker、Docker daemon或模型，未修改原入口或防火墙。</p>
+<ol>
+<li>受控同步OCR基线HTTP200、46行；异步基线任务完成。</li>
+<li>暂停后受控同步请求HTTP503 / MAINTENANCE_PAUSED；新异步任务留在QUEUED，没有领取执行。</li>
+<li>暂停期间历史结果仍HTTP200、46行；状态为managed_requests_drained=true、safe_to_poweroff=false。</li>
+<li>不提供真实探针的resume被拒绝，仍保持暂停。</li>
+<li>指定登记凭据与图片后，真实恢复探针返回46行，才解除暂停；原排队任务随后成功，attempts=1。</li>
+<li>两个成功异步任务对应两条成功计量；同步基线与恢复探针各一条COMPLETED活动；维护审计为pause → verified-resume。</li>
+</ol>
+<p>节点只读检查发现：001/002各有原worker、模型/GPU容器和两个GPU计算进程。两节点均正确报告backend_stop_observed=false、safe_to_poweroff=false。没有把“请求排空”误报为“进程已经停止”。</p>
+<h3>回归与收尾</h3>
+<p>回归98 passed、1 skipped，10.72秒。覆盖发送前暂停/退回、旧token、取消、未知活动隔离、同步容量/权限、上游异常状态/超限/压缩错误、进程异常退出、恢复探针失败、维护generation竞态和节点观察。跳过项为独立宿主机编排的数据库实际停启专项；本轮未重复，历史P2已有通过记录。另有一条Starlette依赖弃用警告。</p>
+<p>临时API、身份/key、独立验收库、artifact及私密配置已清理，测试数据库容器已停止。原rapidocr-gpu与保留的maas-ocr-p2-r2四个实例逐一请求均HTTP200、46行；两worker ready，常驻collector正常。</p>
+<h3>当前边界与下一步</h3>
+<p>所有safe_to_poweroff固定为false。节点工具仅观察Docker和GPU计算进程，不能证明非Docker worker已停、控制面不会重建模型或外部旁路已关闭；人工UNKNOWN解除仍依赖运维人员实际停止证据。</p>
+<p>当前同步入口不支持SSE，也不是全部GPUStack协议的通用代理；现有Playground保留原运维入口。应用不自动重发，但GPUStack/Higress可能透明重试，不能承诺GPU只执行一次。同步容量独立于异步容量计数，尚未实现跨入口统一项目配额；该项属于W7。</p>
+<p>Nginx文件是未上线模板，未做实际Nginx运行验收。下一批W6落实统一入口的实际旁路策略、GPUStack maintenance/副本停止与恢复流程，并完成一次完整演练；再进入W7限额/TTL/指标与W8发布、备份和8小时耐久。</p>
+<h3>材料</h3>
+<ul>
+<li><a href="acceptance.json">实机验收</a>、<a href="regression.log">回归日志</a>、<a href="regression.xml">JUnit记录</a></li>
+<li><a href="inspection-001.json">001节点观察</a>、<a href="inspection-002.json">002节点观察</a>、<a href="final-verification.json">原服务复核</a>、<a href="cleanup.json">资源清理</a></li>
+<li><a href="../../docs/framework/P3-MAINTENANCE.md">维护操作手册</a>、<a href="../../docs/framework/ROADMAP.html">路线图</a></li>
+<li><a href="../../scripts/maas/runtime/test_maintenance.py">实机验收脚本</a>、<a href="../../scripts/maas/runtime/inspect_stop.py">只读节点工具</a></li>
+</ul></section></main></body></html>
