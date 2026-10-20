@@ -37,7 +37,10 @@ class Worker:
                       'attempt': task['attempts'], 'usage': {'unit':'task','quantity':1}}
             self.service.finish(task, output=output)
         except ServiceError as exc:
-            self.service.finish(task, error=exc)
+            if exc.code == 'MAINTENANCE_PAUSED':
+                self.service.defer_dispatch(task)
+            else:
+                self.service.finish(task, error=exc)
         except Exception:
             # Keep lease for recovery rather than releasing an uncommitted/unknown attempt.
             log.exception('attempt_failed task=%s attempt=%s', task['id'], task['attempts'])

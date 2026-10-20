@@ -145,7 +145,9 @@ class TaskService:
     def begin_backend(self, task):
         """Persist intent before sending bytes; an uncertain commit never permits a send."""
         with self.db.transaction() as c:
-            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+            maintenance = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
+            if maintenance['paused']:
+                raise ServiceError('MAINTENANCE_PAUSED', 'Inference dispatch is paused', 503)
             if c.execute("SELECT 1 FROM backend_activity WHERE state='UNKNOWN' LIMIT 1").fetchone():
                 raise ServiceError('BACKEND_QUARANTINED', 'Unresolved backend activity blocks dispatch', 503)
             row = c.execute("SELECT id FROM tasks WHERE id=%s AND token=%s AND state='RUNNING' AND lease_until>now() AND deadline>now() FOR UPDATE", (task['id'], task['token'])).fetchone()
@@ -157,6 +159,19 @@ class TaskService:
         # Only a fully received successful inference response proves remote completion.
         with self.db.transaction() as c:
             c.execute("UPDATE backend_activity SET state='COMPLETED',updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN')", (task['token'],))
+
+    def defer_dispatch(self, task):
+        """Return an unsent attempt to the queue without spending an execution retry."""
+        with self.db.transaction() as c:
+            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+            row = c.execute("SELECT * FROM tasks WHERE id=%s AND token=%s AND state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until>now() FOR UPDATE", (task['id'],task['token'])).fetchone()
+            if not row or c.execute('SELECT 1 FROM backend_activity WHERE token=%s', (task['token'],)).fetchone():
+                return False
+            state = 'CANCELLED' if row['state']=='CANCEL_REQUESTED' else ('FAILED' if row['deadline']<=datetime.now(timezone.utc) else 'QUEUED')
+            code = 'DEADLINE_EXCEEDED' if state=='FAILED' else None
+            c.execute("UPDATE task_attempts SET state='DEFERRED',error_code='MAINTENANCE_PAUSED',ended_at=now() WHERE token=%s", (task['token'],))
+            c.execute('UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now(),updated_at=now() WHERE id=%s', (state,code,row['id']))
+            return True
 
     def resolve_backend(self, token, reason):
         if len(reason.strip()) < 10:
@@ -200,7 +215,8 @@ class TaskService:
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): code = 'DEADLINE_EXCEEDED'
                 elif error:
-                    if error.retryable and row['attempts'] < row['max_attempts']: state = 'RETRY_WAIT'
+                    used = c.execute("SELECT count(*) n FROM task_attempts WHERE task_id=%s AND state!='DEFERRED'", (row['id'],)).fetchone()['n']
+                    if error.retryable and used < row['max_attempts']: state = 'RETRY_WAIT'
                 elif result:
                     state, result_id = 'SUCCEEDED', result['id']
                     c.execute("INSERT INTO artifacts(id,project,kind,media_type,size,sha256,expires_at) VALUES(%s,%s,'result','application/json',%s,%s,now()+%s*interval '1 second')", (result_id, row['project'], result['size'], result['sha256'], self.settings.result_ttl_seconds))
@@ -226,7 +242,7 @@ class TaskService:
                 elif activity and activity['state']=='COMPLETED': state, code = 'FAILED', 'RESULT_NOT_COMMITTED'
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): state, code = 'FAILED', 'DEADLINE_EXCEEDED'
-                elif row['attempts'] >= row['max_attempts']: state, code = 'FAILED', 'ATTEMPTS_EXHAUSTED'
+                elif c.execute("SELECT count(*) n FROM task_attempts WHERE task_id=%s AND state!='DEFERRED'", (row['id'],)).fetchone()['n'] >= row['max_attempts']: state, code = 'FAILED', 'ATTEMPTS_EXHAUSTED'
                 else: state, code = 'RETRY_WAIT', 'LEASE_EXPIRED'
                 c.execute("UPDATE task_attempts SET state='LEASE_EXPIRED',error_code=%s,ended_at=now() WHERE token=%s", (code, row['token']))
                 c.execute('UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now(),updated_at=now() WHERE id=%s', (state, code, row['id']))

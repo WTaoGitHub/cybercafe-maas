@@ -425,3 +425,35 @@ def test_quarantine_commit_serializes_with_other_remote_dispatch(env):
     assert errors==['BACKEND_QUARANTINED']
     with original() as c:
         assert c.execute('SELECT count(*) n FROM backend_activity').fetchone()['n']==1
+
+
+def test_pause_after_claim_defers_unsent_attempt_without_spending_retry(env):
+    client,s,_,_,_=env
+    ident=submit(client,max_attempts=1).json()['id'];attempt=s.claim()
+    s.pause(True,'maintenance window')
+    with pytest.raises(ServiceError,match='paused') as exc:s.begin_backend(attempt)
+    assert exc.value.code=='MAINTENANCE_PAUSED'
+    assert s.defer_dispatch(attempt)
+    assert not s.finish(attempt,output={'late':True})
+    assert s.claim() is None
+    with s.db.transaction() as c:
+        assert c.execute('SELECT count(*) n FROM backend_activity').fetchone()['n']==0
+        assert c.execute('SELECT state FROM task_attempts').fetchone()['state']=='DEFERRED'
+    s.pause(False);next_attempt=s.claim()
+    assert next_attempt['attempts']==2
+    # One real failed execution exhausts max_attempts=1, despite the deferred claim.
+    assert s.finish(next_attempt,error=ServiceError('TRANSIENT','retryable',503,True))
+    assert s.get(s.auth.authenticate('gpustack_registered_a'),ident)['state']=='FAILED'
+
+
+def test_deferral_never_erases_dispatch_intent_and_honors_cancellation(env):
+    client,s,_,auth,_=env
+    first=submit(client).json();attempt=s.claim();s.begin_backend(attempt)
+    s.pause(True,'pause after dispatch');assert not s.defer_dispatch(attempt)
+    s.finish(attempt,error=ServiceError('TIMEOUT','uncertain'))
+    assert s.metrics()['unknown_backend_activity']==1
+    assert s.resolve_backend(attempt['token'],'Confirmed the test backend process is terminated')
+    s.pause(False);second=submit(client,'second').json();pending=s.claim()
+    s.pause(True);s.cancel(auth.authenticate('gpustack_registered_a'),second['id'])
+    assert s.defer_dispatch(pending)
+    assert s.get(auth.authenticate('gpustack_registered_a'),second['id'])['state']=='CANCELLED'
