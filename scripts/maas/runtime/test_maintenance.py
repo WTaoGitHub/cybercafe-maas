@@ -2,7 +2,7 @@
 
 No worker, Docker daemon, model, firewall or original ingress changes.
 """
-import base64,json,os,shutil,socket,subprocess,sys,time,urllib.request,urllib.error
+import argparse,base64,json,os,shutil,socket,subprocess,sys,time,urllib.request,urllib.error
 from pathlib import Path
 ROOT=Path('/root/wtaobj/maas-framework');WORK=Path('/root/wtaobj/maas-p3-maintenance')
 PRIVATE=ROOT/'.secrets/maintenance';DB='maas_maintenance_test';API='wta-maas-maintenance-api'
@@ -17,11 +17,12 @@ def write(path,value):
 
 
 def main():
+    parser=argparse.ArgumentParser();parser.add_argument('--edge',action='store_true');options=parser.parse_args()
     if socket.gethostname()!='XZ-31-001':raise RuntimeError('Controller 001 only')
     if PRIVATE.exists():raise RuntimeError('Prior private acceptance state exists; inspect before reuse')
     probe=socket.socket();probe.bind(('127.0.0.1',18830));probe.close()
     PRIVATE.mkdir(mode=0o700,parents=True);WORK.mkdir(mode=0o700,exist_ok=True)
-    report={'scope':'temporary managed ingress only','original_ingress_modified':False};res=Resources();created_db=False
+    report={'scope':'temporary managed ingress only','original_ingress_modified':False,'through_nginx':options.edge};res=Resources();created_db=False
     def snapshot():
         health=json.loads(Path('/root/wtaobj/maas-runtime/health.json').read_text());assert health['ok']
         for name in ('pin.json','preflight.json'):shutil.copyfile(Path('/root/wtaobj/maas-runtime')/name,WORK/name)
@@ -34,7 +35,8 @@ def main():
         headers={'Authorization':'Bearer '+key,'Content-Type':media}
         if idem:headers['Idempotency-Key']=idem
         try:
-            with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:18830'+path,data=raw,headers=headers),timeout=40) as response:
+            port=18831 if options.edge and path!='/healthz' else 18830
+            with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:'+str(port)+path,data=raw,headers=headers),timeout=40) as response:
                 return response.status,json.load(response)
         except urllib.error.HTTPError as exc:return exc.code,json.load(exc)
     def execute():
@@ -58,6 +60,22 @@ def main():
             except OSError:pass
             time.sleep(.2)
         else:raise RuntimeError('Temporary maintenance API not ready')
+        if options.edge:
+            denied={}
+            for path in ('/','/docs','/v2/models','/token-auth','/healthz','/maas/v1/admin','/v1/models'):
+                try:
+                    with urllib.request.urlopen('http://127.0.0.1:18831'+path,timeout=3) as response:code=response.status
+                except urllib.error.HTTPError as exc:code=exc.code
+                denied[path]=code;assert code==404
+            report['edge_denied_paths']=denied
+            for label,req,expected in (
+                ('missing-key',urllib.request.Request('http://127.0.0.1:18831/maas/v1/tasks',data=b'{}',headers={'Content-Type':'application/json'}),401),
+                ('query-string',urllib.request.Request('http://127.0.0.1:18831/maas/v1/tasks?x=1'),400),
+                ('write-method',urllib.request.Request('http://127.0.0.1:18831/maas/v1/tasks',method='PUT'),403)):
+                try:
+                    with urllib.request.urlopen(req,timeout=3) as response:code=response.status
+                except urllib.error.HTTPError as exc:code=exc.code
+                denied[label]=code;assert code==expected
         image=Path('/root/wtaobj/service-validation/fixtures/upright.png').read_bytes()
         body={'model':'ocr.default','stream':False,'messages':[{'role':'user','content':[{'type':'image_url','image_url':{'url':'data:image/png;base64,'+base64.b64encode(image).decode()}}]}]}
         snapshot();code,value=request('/v1/chat/completions',body);assert code==200
