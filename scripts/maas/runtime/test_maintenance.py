@@ -17,7 +17,11 @@ def write(path,value):
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--edge',action='store_true');parser.add_argument('--node-maintenance',action='store_true');options=parser.parse_args()
+    global WORK
+    parser=argparse.ArgumentParser();parser.add_argument('--edge',action='store_true');parser.add_argument('--node-maintenance',action='store_true');parser.add_argument('--operations',action='store_true');options=parser.parse_args()
+    if options.operations:
+        if options.node_maintenance:parser.error('operations acceptance does not stop workers')
+        WORK=Path('/root/wtaobj/maas-p3-operations')
     if socket.gethostname()!='XZ-31-001':raise RuntimeError('Controller 001 only')
     if PRIVATE.exists():raise RuntimeError('Prior private acceptance state exists; inspect before reuse')
     probe=socket.socket();probe.bind(('127.0.0.1',18830));probe.close()
@@ -93,6 +97,14 @@ def main():
         code,artifact=request('/maas/v1/artifacts',image,'image/png');assert code==201
         task_body={'model':'ocr.default','input':{'image':{'artifact_id':artifact['id']}},'timeout_seconds':600 if options.node_maintenance else 180}
         code,task=request('/maas/v1/tasks',task_body,idem='baseline');assert code==202
+        if options.operations:
+            reserve="from maas_platform.config import Settings;from maas_platform.auth import AuthConnector;from maas_platform.service import TaskService;from maas_platform.sync_ingress import SyncIngress;s=Settings.from_env();v=TaskService(s,AuthConnector(s));print(SyncIngress(v).begin(v.auth.for_task('maintenance','maintenance'),'ocr.default',60))"
+            token=run(*args(),'/work/.venv/bin/python','-c',reserve).strip()
+            code,value=request('/v1/chat/completions',body);assert code==429 and value['error']['code']=='SYNC_CAPACITY'
+            assert not execute()
+            release="from maas_platform.config import Settings;from maas_platform.auth import AuthConnector;from maas_platform.service import TaskService;from maas_platform.sync_ingress import SyncIngress;s=Settings.from_env();v=TaskService(s,AuthConnector(s));SyncIngress(v).finish("+repr(token)+",True)"
+            run(*args(),'/work/.venv/bin/python','-c',release)
+            report['unified_quota']={'sync_status':code,'async_waited':True,'reservation_only_no_backend_send':True}
         snapshot();assert execute();_,done=request('/maas/v1/tasks/'+task['id']);assert done['state']=='SUCCEEDED'
         cli('pause','--reason','P3 controlled ingress acceptance')
         report['paused']=cli('drain-status');assert report['paused']['managed_requests_drained'] and not report['paused']['safe_to_poweroff']
@@ -140,9 +152,30 @@ def main():
         report['queued_task_after_resume']={'state':row['state'],'attempts':row['attempts']}
         report['metrics']=cli('status');assert report['metrics']['successful_tasks']==2
         report['sync_activity_states']=json.loads(sql("SELECT json_object_agg(state,n) FROM (SELECT state,count(*) n FROM sync_activity GROUP BY state) q"))
-        assert report['sync_activity_states']=={'COMPLETED':2}
+        assert report['sync_activity_states']=={'COMPLETED':3 if options.operations else 2}
         report['maintenance_audit']=json.loads(sql("SELECT json_agg(action ORDER BY id) FROM maintenance_events"))
         assert report['maintenance_audit']==(['pause','pause','verified-resume'] if options.node_maintenance else ['pause','verified-resume'])
+        if options.operations:
+            verify_code="""import json,os,time
+from maas_platform.config import Settings
+from maas_platform.auth import AuthConnector
+from maas_platform.service import TaskService
+from maas_platform.observability import snapshot,alerts
+s=Settings.from_env();v=TaskService(s,AuthConnector(s));who=v.auth.for_task('maintenance','maintenance')
+a=v.upload(who,b'expired input','text/plain')
+with v.db.transaction() as c:c.execute("UPDATE artifacts SET expires_at=now()-interval '1 second' WHERE id=%s",(a['id'],))
+expired=v.cleanup();assert expired==1
+orphan=v.store.put(b'uncommitted test file');old=time.time()-s.orphan_grace_seconds-10;os.utime(v.store.path(orphan['id']),(old,old))
+fresh=v.store.put(b'fresh uncommitted file');removed=v.cleanup_orphans();assert removed==1 and v.store.path(fresh['id']).exists();v.store.remove(fresh['id'])
+data=snapshot(v);assert sum(x['quantity'] for x in data['sync_usage'])==1 and sum(x['quantity'] for x in data['task_usage'])==2
+assert not alerts(v,data)
+print(json.dumps({'expired_removed':expired,'orphans_removed':removed,'fresh_retained':True,'metrics':data,'alerts':alerts(v,data)},default=str))
+"""
+            report['operations']=json.loads(run(*args(),'/work/.venv/bin/python','-c',verify_code))
+            metrics=run(*args(),'/work/.venv/bin/python','-m','maas_platform.cli','metrics')
+            write(WORK/'metrics.prom',metrics)
+            report['metrics_cli_verified']='maas_successful_sync_requests_total 1' in metrics
+            assert report['metrics_cli_verified']
         report['ok']=True
     finally:
         if operator is not None and operator.exists():
