@@ -1,4 +1,4 @@
-"""Explicit local adapter registry. Network connectors require separate P2 validation."""
+"""Explicit local adapter registry. Network connectors require trusted P2 version preflight."""
 import hashlib
 import time
 from dataclasses import dataclass
@@ -33,6 +33,8 @@ class ExecutionContext:
     service: object
     stop: object
     deadline: float
+    model: dict | None = None
+    identity: object = None
 
     def check(self):
         if time.monotonic() >= self.deadline:
@@ -87,7 +89,9 @@ class DigestAdapter(LocalAdapter):
         return {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data), 'media_type': media}
 
 
-_REGISTRY = {'mock': EchoAdapter(), 'local.sha256': DigestAdapter()}
+from .ocr_connector import OCRAdapter
+
+_REGISTRY = {'mock': EchoAdapter(), 'local.sha256': DigestAdapter(), 'gpustack.ocr': OCRAdapter()}
 
 
 def adapter_for(driver):

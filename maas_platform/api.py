@@ -50,7 +50,7 @@ def create_app(settings=None, auth=None):
     @app.get('/healthz')
     def health():
         with service.db.transaction() as c: c.execute('SELECT 1')
-        return {'ok':True,'version':'0.1.0','stage':'P1-mock-only'}
+        return {'ok':True,'version':'0.1.0','stage':'P2-pinned-ocr-pilot'}
 
     @app.post('/maas/v1/artifacts', status_code=201)
     async def upload(request: Request, who=Depends(identity)):

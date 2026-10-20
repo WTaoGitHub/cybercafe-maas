@@ -30,7 +30,7 @@ class Worker:
             self.service.auth.authorize(identity, task['model'], model)
             if fingerprint(model) != task['model_fingerprint']:
                 raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed')
-            ctx = ExecutionContext(task, self.service, stop, time.monotonic() + model['max_runtime_s'])
+            ctx = ExecutionContext(task, self.service, stop, time.monotonic() + model['max_runtime_s'], model, identity)
             outputs = adapter_for(model['driver']).execute(ctx)
             ctx.check()
             output = {'outputs': outputs, 'model_revision': task['revision'],
