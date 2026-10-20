@@ -1,0 +1,44 @@
+{
+  "checks": {
+    "host_collector_real_task_success": true,
+    "queued_permission_revocation": {
+      "state": "FAILED",
+      "error_code": "AUTH_DENIED",
+      "backend_dispatches": 0
+    },
+    "queued_binding_revocation": {
+      "state": "FAILED",
+      "error_code": "AUTH_REVOKED",
+      "backend_dispatches": 0
+    },
+    "actual_deployment_drift": {
+      "state": "FAILED",
+      "error_code": "PREFLIGHT_UNAVAILABLE",
+      "backend_dispatches": 0
+    },
+    "restored_spec_recovers_without_repin": true,
+    "stopped_collector_expiry": {
+      "state": "FAILED",
+      "error_code": "PREFLIGHT_STALE",
+      "backend_dispatches": 0
+    },
+    "dedicated_instance_rebuilt": {
+      "old_instance": 31,
+      "new_instance": 31,
+      "new_container_id": true,
+      "direct_ocr_lines": 46
+    },
+    "old_result_available_after_rebuild": true,
+    "queued_upstream_key_deleted": {
+      "state": "FAILED",
+      "error_code": "AUTH_DENIED",
+      "backend_dispatches": 0
+    }
+  },
+  "original_workers_stopped": false,
+  "successful_events": 2,
+  "unknown_activities": 0,
+  "ok": true,
+  "temporary_identity_cleanup": true,
+  "cleanup_failures": []
+}
