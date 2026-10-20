@@ -10,7 +10,7 @@ Python **3.11**、PostgreSQL 16。Mac现有Python3.9不能直接运行本包，�
 
 复用GPUStack inference key，不提供新密码/用户注册。管理员将一个已有、限定模型的非管理员key以600权限保存；按bindings.example.json登记project映射及该服务允许的能力。**mock.echo是本地受控验证能力，其授权由登记文件明确授予，不代表GPUStack实际部署了mock模型。**
 
-每次请求在本地匹配已登记key后，仍调用GPUStack `/v1/models`校验有效性；不接受客户身份头，不信任客户携带的auth cache。未登记/本地禁用的key拒绝访问。真实模型的`/token-auth`权限验证已做现网探针，P1运行本地适配器；P2首批固定版本OCR推理及未知执行隔离已实机验证，完整故障矩阵与常驻collector仍待收尾。
+每次请求在本地匹配已登记key后，仍调用GPUStack `/v1/models`校验有效性；不接受客户身份头，不信任客户携带的auth cache。未登记/本地禁用的key拒绝访问。P2固定版本OCR、未知执行隔离、常驻collector和权限/漂移/容器重建均已实机验证；worker离线按用户要求暂缓，P2未完整验收。
 
 三个secret文件：
 
@@ -93,4 +93,8 @@ MAAS_TEST_DATABASE_URL=postgresql://.../maas_test python -m pytest tests/maas -q
 
 ## P2 首批 OCR
 
-[接入与隔离操作说明](../../docs/framework/P2-OCR.md) · [实机报告](../../results/maas-p2/REPORT.html)。驱动 `gpustack.ocr` 只使用已上传的PNG/JPEG artifact，通过GPUStack入口推理，必须配置pin和新鲜的受信任预检文件。测试服务已清理；常驻collector完成前不要将本轮脚本当作长期发布包。
+[接入与隔离操作说明](../../docs/framework/P2-OCR.md) · [首批实机报告](../../results/maas-p2/REPORT.html)。驱动 `gpustack.ocr` 只使用已上传的PNG/JPEG artifact，通过GPUStack入口推理，必须配置pin和新鲜的受信任预检文件。常驻collector已补齐，但任务API/执行器还未常驻发布，首批测试脚本不是长期发布包。
+
+## 常驻collector（P2收尾）
+
+001已启用 `maas-collector.service`，002使用固定命令只读SSH清单。操作说明见 [P2-COLLECTOR.md](../../docs/framework/P2-COLLECTOR.md)。任务API/执行器仍是临时验收服务；worker离线用例因缺独立VM按用户要求暂缓。不得在现有两节点追加GPUStack worker或Docker daemon做故障实验；本轮已验证这种方式会影响原workload与网桥。

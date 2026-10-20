@@ -168,7 +168,7 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
 <h3>1. 总体路径</h3>
 <p><strong>P0 复用与协议确认 → P1 最小持久任务闭环 → P2 真实模型与恢复 → P3 受控维护与运营边界 → P4 发布和长时验收。</strong></p>
-<p>本路线编号P0–P4代表阶段，不是任务优先级；工作包优先级见PLAN。2026-10-20进展：<strong>P0已通过受控试点范围验收</strong>，入口/重试/用量、generic、真实多组织权限、版本预检和协议参数均已验证或固定，累计42项测试通过。P1已通过本地适配器范围验收：47项回归及1项数据库中断专项通过。<a href="../../results/maas-p1/REPORT.html">P1收尾报告</a>。P2首批固定版本OCR及未知执行隔离已通过实机验证，64项回归及1项数据库中断专项通过；<a href="../../results/maas-p2/REPORT.html">P2实机报告</a>。P2整体仍待故障矩阵与常驻采集收尾，P3–P4未完成。证据见 <a href="../../results/maas-p0/REPORT.md">P0验收报告</a>及 <a href="../../results/maas-p0-p1/REPORT.md">首批P1报告</a>。</p>
+<p>P0、P1已通过对应范围验收；P2常驻采集、权限/漂移与容器重建已补齐，82项回归通过。worker离线缺独立VM并按用户要求暂缓，P2未完整验收，P3–P4未完成。见 [最新报告](../../results/maas-p2-r2/REPORT.html)。</p>
 <div class="table"><table><thead><tr><th>阶段</th><th>目标与分类任务</th><th>交付物</th><th>阶段门槛</th><th>依赖</th><th>初步工程量</th></tr></thead><tbody>
 <tr><td>P0 · 基线与协议</td><td>版本/入口核对；鉴权绑定探针；模型授权、generic和usage/retry；API/schema/状态机；存储容量</td><td>v2.2.3能力矩阵、身份方案实测、接口/迁移草案</td><td>非管理员inference key可安全复用；新API与上游管理入口隔离；重试和版本固定路径明确</td><td>现有两节点</td><td>3–4人日</td></tr>
 <tr><td>P1 · 持久任务闭环</td><td>任务API、PostgreSQL、artifact卷、模拟后端、执行器、幂等/租约/取消</td><td>可运行的上传→202→执行→持久结果→查询</td><td>重复提交一个任务；重启不丢记录；结果先持久后成功；跨project拒绝</td><td>P0通过</td><td>4–6人日</td></tr>
@@ -202,4 +202,4 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <li>新模型类别（绘图、视频），逐类验证输入输出、运行时长、取消与结果获取。</li>
 <li>GPUStack升级：单独评估，不能把main能力混入v2.2.3首期交付。</li>
 </ul>
-<h3>4. 下一批可以开始的任务</h3><p>P0、P1已验收；P2首批OCR接入及未知执行隔离已验证。<a href="P2-OCR.md">接入与操作说明</a>。</p><ol><li>将受信任collector放到常在线控制端，建立最小权限节点清单通道。</li><li>补真实worker离线/实例重建，以及权限撤销和版本漂移的真实任务故障矩阵。</li><li>P2验收后实施P3维护与运营边界，再进入P4发布与8小时验收。</li></ol><p>本轮测试资源已清理，原同步OCR保持运行，专用同内容镜像保留。当前没有新增长期任务端点，P2整体尚未验收。</p></section></main></body></html>
+<h3>4. 下一批可以开始的任务</h3><p>常驻collector及权限/漂移/容器重建已验证，82项回归通过。<a href="P2-COLLECTOR.md">操作手册</a> · <a href="../../results/maas-p2-r2/REPORT.html">本轮报告及恢复记录</a>。</p><ol><li>worker离线需独立可销毁VM，按用户要求暂缓。禁止在001/002追加worker或daemon做离线注入，P2不标记完整验收通过。</li><li>可先准备P3维护与运营边界；未知活动仍必须取得后端停止证明。</li><li>P4发布常驻任务服务、HTTPS、备份恢复和8小时验收。</li></ol><p>保留001常驻collector及专用双节点试点模型；临时任务服务、身份、验收数据库和实验资源已清理。原OCR已恢复并重新验证。</p></section></main></body></html>

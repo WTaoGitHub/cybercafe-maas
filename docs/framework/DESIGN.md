@@ -163,3 +163,9 @@ v2.2.3 maintenance阻止新部署，不保证已有实例停止接推理；经�
 首期验收：同key身份复用、两个project隔离；两个后端接入不改任务核心；202后重启任务可恢复；旧attempt提交被拒；结果在002离线后可读；排空过程不把maintenance误当作已完成；8小时运行无无法解释的任务遗失或重复成功计量。
 
 后续才考虑精确逐节点drain、自动双系统agent、S3对象存储、独立消息队列、独立常在线控制端、商业账本与绘图/视频。固定v2.2.3不阻止任务层独立演进；升级GPUStack另做隔离回归，不绑定首期关键路径。
+
+## 2026-10-20 补充：常驻清单与worker宿主机边界
+
+001已部署常驻collector，002通过专用forced-command SSH只读清单提供内容和运行状态；失败时撤销旧预检，不自动重新登记pin。详见 [操作手册](P2-COLLECTOR.md)。
+
+每个Docker引擎只允许一个GPUStack worker控制者。v2.2.3的WorkloadCleaner不以cluster名称隔离同引擎容器；不同daemon ID也不证明宿主机网络/containerd隔离。实际实验造成001原OCR容器清理及docker0丢失，均已恢复并记录。后续离线注入必须使用独立可销毁VM，当前按用户要求暂缓。此限制不禁止001兼任server、单个GPUStack worker、collector与任务executor。

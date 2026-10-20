@@ -1,6 +1,6 @@
 # P2 首批：固定版本 OCR connector 与未知执行隔离
 
-2026-10-20。实现及受控实机验证完成；P2 整体仍在进行。
+2026-10-20。常驻采集和权限/漂移/容器重建已补齐。worker离线按用户要求暂缓，P2未完整验收。最新操作见 [P2-COLLECTOR.md](P2-COLLECTOR.md)。
 
 报告：[HTML](../../results/maas-p2/REPORT.html) / [Markdown](../../results/maas-p2/REPORT.md)。
 
@@ -26,8 +26,8 @@
 {
   "ocr.default": {
     "driver": "gpustack.ocr",
-    "revision": "ocr-p2-r1",
-    "upstream_model": "maas-ocr-p2-r1",
+    "revision": "ocr-p2-r2",
+    "upstream_model": "maas-ocr-p2-r2",
     "max_runtime_s": 25,
     "pin_file": "/trusted/pin.json",
     "preflight_file": "/trusted/preflight.json"
@@ -45,7 +45,7 @@
 - 控制面快照最多 30 秒，镜像观察最多 60 秒；缺失、过期、漂移、非批准节点集合或非批准网关策略均阻止发起推理。
 - 这是有界新鲜度预检，仍有观察到发送之间的竞态窗口，并非 GPUStack 提供了原子的不可变部署。运维修改须先暂停派发，禁止在请求中静默重绑版本。
 
-本轮 `refresh_preflight.py --loop` 是本地临时测试 collector，退出后文件会过期。当前没有交付常驻 collector 或长期开放的 OCR 任务服务；常在线控制端采集及最小权限节点清单通道是下一批部署前置。
+首批本地collector已被001的常驻 `maas-collector.service` 替代，专用只读SSH通道已验证。最新试点目标为 `maas-ocr-p2-r2` / revision `ocr-p2-r2`；任务API端点尚未常驻发布。
 
 ## 执行与隔离语义
 
@@ -73,4 +73,4 @@ CLI 使用相同私密配置，要求明确原因并记录到数据库，只解�
 
 `scripts/maas/p2/` 中包含镜像一次性 LAN 传输、独立测试部署、受信任快照、双节点暂停故障测试和清理工具。均针对本轮两个节点的受控环境，不能当作生产部署器直接复用。`prepare_target.py` 拒绝覆盖已有登记；本轮清理后旧 pin/target 文件仅作为证据，不能重新绑定新部署继续使用。
 
-下一批：真实 GPUStack worker 离线/实例重建故障矩阵；任务链路中的权限撤销和部署漂移实机验证；把 collector 放到常在线控制端并收紧节点清单访问权限。之后进入 P3 维护与运营边界，P4 再做发布、备份恢复和 8 小时耐久。
+权限撤销、部署漂移、实例容器重建和常驻collector已验证。worker离线需独立VM，按用户要求暂缓；后续P3/P4不将此标为已通过。详见 [最新报告](../../results/maas-p2-r2/REPORT.html)。
