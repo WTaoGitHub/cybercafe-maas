@@ -1,8 +1,8 @@
-import hashlib, json, uuid
+import hashlib, json, uuid, time, re, stat
 from datetime import datetime, timezone
 from psycopg.types.json import Jsonb
 from pydantic import ValidationError
-from .artifacts import ArtifactStore
+from .artifacts import ArtifactStore, serialized_artifacts
 from .db import Database
 from .errors import ServiceError
 from .adapters import adapter_for
@@ -30,14 +30,22 @@ class TaskService:
             raise ServiceError('MODEL_NOT_FOUND', 'Model capability not registered', 404)
         return value
 
+    def check_storage(self, c, project, size):
+        # Called under the cross-process artifact lifecycle lock, including commit.
+        row=c.execute("SELECT coalesce(sum(size),0) total, coalesce(sum(size) FILTER (WHERE project=%s),0) own FROM artifacts WHERE deleted_at IS NULL",(project,)).fetchone()
+        if row['total']+size>self.settings.max_storage_bytes or row['own']+size>self.settings.max_project_storage_bytes:
+            raise ServiceError('STORAGE_QUOTA','Artifact storage quota reached; clean expired files or raise quota',429,True)
+
+    @serialized_artifacts
     def upload(self, identity, data, media_type):
         if not data or len(data) > self.settings.max_input_bytes:
             raise ServiceError('INPUT_SIZE', 'Empty or oversized input', 413)
         if media_type not in ('image/png', 'image/jpeg', 'text/plain', 'application/json', 'application/octet-stream'):
             raise ServiceError('MEDIA_TYPE', 'Unsupported upload media type', 415)
-        record = self.store.put(data)
         try:
             with self.db.transaction() as c:
+                self.check_storage(c, identity.project, len(data))
+                record = self.store.put(data)
                 c.execute("INSERT INTO artifacts(id,project,kind,media_type,size,sha256,expires_at) VALUES(%s,%s,'input',%s,%s,%s,now()+%s*interval '1 second')",
                           (record['id'], identity.project, media_type, record['size'], record['sha256'], self.settings.input_ttl_seconds))
         except Exception:
@@ -191,16 +199,19 @@ class TaskService:
             return (not row or row['token'] != task['token'] or row['state'] != 'RUNNING'
                     or row['deadline'] <= datetime.now(timezone.utc) or row['lease_until'] <= datetime.now(timezone.utc))
 
+    @serialized_artifacts
     def finish(self, task, output=None, error=None):
         result = None
-        if output is not None:
-            data = canonical(output).encode()
-            if len(data) > self.settings.max_output_bytes:
-                error = ServiceError('OUTPUT_SIZE', 'Output too large')
-            else: result = self.store.put(data)
         preserve_result_file = False
         try:
             with self.db.transaction() as c:
+                if output is not None:
+                    data=canonical(output).encode()
+                    if len(data)>self.settings.max_output_bytes:
+                        error=ServiceError('OUTPUT_SIZE','Output too large')
+                    else:
+                        self.check_storage(c,task['project'],len(data))
+                        result=self.store.put(data)
                 # Serialize quarantine visibility with claim/begin_backend decisions.
                 c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
                 row = c.execute('SELECT * FROM tasks WHERE id=%s FOR UPDATE', (task['id'],)).fetchone()
@@ -250,14 +261,31 @@ class TaskService:
                 c.execute('UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now(),updated_at=now() WHERE id=%s', (state, code, row['id']))
             return len(rows)
 
+    @serialized_artifacts
     def cleanup(self):
         with self.db.transaction() as c:
             rows = c.execute("""SELECT * FROM artifacts a WHERE a.expires_at<=now() AND a.deleted_at IS NULL
-                AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.input_artifact_id=a.id AND t.state IN ('QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED')) FOR UPDATE OF a SKIP LOCKED""").fetchall()
+                AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.input_artifact_id=a.id AND t.state IN ('QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED')) ORDER BY a.expires_at LIMIT %s FOR UPDATE OF a SKIP LOCKED""",(self.settings.cleanup_batch_size,)).fetchall()
             for row in rows:
                 self.store.remove(row['id'])
                 c.execute('UPDATE artifacts SET deleted_at=now() WHERE id=%s', (row['id'],))
             return len(rows)
+
+    @serialized_artifacts
+    def cleanup_orphans(self):
+        """Bounded GC of old, owned-format regular files only; never follows symlinks."""
+        removed=0
+        cutoff=time.time()-self.settings.orphan_grace_seconds
+        with self.db.transaction() as c:
+            for path in self.store.root.iterdir():
+                if removed>=self.settings.cleanup_batch_size:break
+                if not re.fullmatch(r'\.?art_[0-9a-f]{32}',path.name):continue
+                info=path.lstat()
+                if not stat.S_ISREG(info.st_mode) or info.st_mtime>cutoff:continue
+                ident=path.name.lstrip('.')
+                if c.execute('SELECT 1 FROM artifacts WHERE id=%s AND deleted_at IS NULL',(ident,)).fetchone():continue
+                path.unlink();removed+=1
+        return removed
 
     def pause(self, paused, reason=''):
         with self.db.transaction() as c:

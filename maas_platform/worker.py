@@ -59,7 +59,7 @@ def main():
         try:
             worked = Worker(service).run_once()
             if time.monotonic()-last_clean > 60:
-                service.cleanup(); last_clean=time.monotonic()
+                service.cleanup(); service.cleanup_orphans(); last_clean=time.monotonic()
             if not worked: stop.wait(.5)
         except Exception:
             log.exception('worker_loop_unavailable'); stop.wait(2)

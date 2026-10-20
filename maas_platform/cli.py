@@ -20,6 +20,6 @@ def main():
         print(json.dumps({'maintenance':Maintenance(v).resume(probe),'probes':probes}));return
     if a.command in ('pause','drain-status'):
         print(json.dumps(Maintenance(v).status()));return
-    if a.command=='cleanup':print(json.dumps({'expired_artifacts':v.cleanup()}))
+    if a.command=='cleanup':print(json.dumps({'expired_artifacts':v.cleanup(),'orphan_files':v.cleanup_orphans()}))
     else:print(json.dumps(v.metrics()))
 if __name__=='__main__':main()

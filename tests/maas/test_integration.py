@@ -585,3 +585,44 @@ def test_cross_channel_project_and_global_capacity(env):
     with pytest.raises(ServiceError):ingress.begin(a,'mock.echo',30)
     s.finish(task,output={'ok':True})
     assert ingress.begin(a,'mock.echo',30)
+
+
+def test_storage_quota_ttl_orphans_and_active_input(env):
+    client,s,settings,auth,_=env
+    a=auth.authenticate('gpustack_registered_a');b=auth.authenticate('gpustack_registered_b')
+    settings.max_storage_bytes=8;settings.max_project_storage_bytes=5
+    first=s.upload(a,b'12345','text/plain')
+    with pytest.raises(ServiceError) as exc:s.upload(a,b'x','text/plain')
+    assert exc.value.code=='STORAGE_QUOTA'
+    s.upload(b,b'123','text/plain')
+    with pytest.raises(ServiceError):s.upload(b,b'x','text/plain')
+    with s.db.transaction() as c:c.execute("UPDATE artifacts SET expires_at=now()-interval '1 second'")
+    assert s.cleanup()==2
+    s.upload(a,b'12345','text/plain')
+    orphan=s.store.put(b'lost');old=time.time()-settings.orphan_grace_seconds-10
+    os.utime(s.store.path(orphan['id']),(old,old))
+    os.utime(s.store.path(first['id']),(old,old)) if s.store.path(first['id']).exists() else None
+    foreign=settings.artifact_root/'keep.txt';foreign.write_text('keep')
+    link=settings.artifact_root/('art_'+'f'*32);link.symlink_to(foreign)
+    assert s.cleanup_orphans()==1
+    assert foreign.exists() and link.is_symlink()
+    assert not s.store.path(orphan['id']).exists()
+    assert s.cleanup_orphans()==0
+
+
+def test_orphan_gc_waits_for_upload_commit(env,monkeypatch):
+    client,s,settings,auth,_=env
+    a=auth.authenticate('gpustack_registered_a')
+    settings.orphan_grace_seconds=1
+    original=s.store.put;written=threading.Event();release=threading.Event()
+    def delayed(data):
+        result=original(data);old=time.time()-10
+        os.utime(s.store.path(result['id']),(old,old));written.set()
+        assert release.wait(3)
+        return result
+    monkeypatch.setattr(s.store,'put',delayed)
+    with ThreadPoolExecutor(2) as pool:
+        upload=pool.submit(s.upload,a,b'ok','text/plain');assert written.wait(3)
+        gc=pool.submit(s.cleanup_orphans);time.sleep(.1);assert not gc.done()
+        release.set();record=upload.result();assert gc.result()==0
+    assert s.store.path(record['id']).read_bytes()==b'ok'

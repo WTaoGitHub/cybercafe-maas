@@ -1,5 +1,22 @@
 from pathlib import Path
-import hashlib, os, shutil, uuid
+import hashlib, os, shutil, uuid, fcntl
+from functools import wraps
+
+
+def serialized_artifacts(method):
+    """One shared POSIX volume: hold across file writes AND metadata commit.
+
+    All API/executor/GC processes must mount the same artifact root. The lock
+    file is never removed. A process death releases flock automatically.
+    """
+    @wraps(method)
+    def locked(self,*args,**kwargs):
+        with (self.store.root / ".lifecycle.lock").open("a+b") as lock:
+            os.chmod(lock.fileno(),0o600)
+            fcntl.flock(lock,fcntl.LOCK_EX)
+            return method(self,*args,**kwargs)
+    return locked
+
 from .errors import ServiceError
 
 

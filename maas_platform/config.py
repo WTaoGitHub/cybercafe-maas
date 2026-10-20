@@ -29,6 +29,10 @@ class Settings:
     heartbeat_seconds: float = 5
     result_ttl_seconds: int = 86400
     input_ttl_seconds: int = 86400
+    max_storage_bytes: int = 10 * 1024**3
+    max_project_storage_bytes: int = 2 * 1024**3
+    orphan_grace_seconds: int = 3600
+    cleanup_batch_size: int = 200
     min_free_bytes: int = 2 * 1024 * 1024 * 1024
 
     @classmethod
@@ -36,7 +40,7 @@ class Settings:
         values = {}
         integers = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
                     'max_running','max_project_running','lease_seconds','result_ttl_seconds',
-                    'input_ttl_seconds','min_free_bytes')
+                    'input_ttl_seconds','min_free_bytes','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size')
         for name in integers:
             value = os.getenv('MAAS_' + name.upper())
             if value is not None:
@@ -55,13 +59,15 @@ class Settings:
 
     def __post_init__(self):
         positive = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
-                    'max_running','max_project_running','lease_seconds','result_ttl_seconds','input_ttl_seconds')
+                    'max_running','max_project_running','lease_seconds','result_ttl_seconds','input_ttl_seconds','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size')
         if any(not isinstance(getattr(self,name),int) or getattr(self,name)<=0 for name in positive):
             raise ValueError('Limits and retention periods must be positive integers')
         if not math.isfinite(self.heartbeat_seconds) or not 0<self.heartbeat_seconds<self.lease_seconds/2:
             raise ValueError('Heartbeat must be positive and less than half of the lease duration')
         if self.max_project_queued>self.max_queued or self.max_project_running>self.max_running:
             raise ValueError('Project limits must not exceed global limits')
+        if self.max_project_storage_bytes>self.max_storage_bytes:
+            raise ValueError('Project storage must not exceed global storage')
         if self.min_free_bytes<0:
             raise ValueError('Minimum free storage cannot be negative')
 
