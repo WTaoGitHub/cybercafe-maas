@@ -1,0 +1,7 @@
+Waiting for isolated probe backend: ['analyzing', 'scheduled']
+chat_usage {'status': 200, 'backend_invocations': 1, 'content_type': 'application/json', 'usage_api_requests_delta': 1}
+chat_no_usage {'status': 200, 'backend_invocations': 1, 'content_type': 'application/json', 'usage_api_requests_delta': 1}
+chat_sse {'status': 200, 'backend_invocations': 1, 'content_type': 'text/event-stream', 'usage_api_requests_delta': 1}
+native_generic {'status': 200, 'backend_invocations': 1, 'content_type': 'application/json', 'usage_api_requests_delta': 0}
+post_503 {'status': 503, 'backend_invocations': 3, 'content_type': 'application/json', 'usage_api_requests_delta': 1}
+{"ok": true, "cleanup_ok": true, "original_model_unchanged": true}

@@ -1,0 +1,358 @@
+{
+  "checks": {
+    "chat_usage": {
+      "status": 200,
+      "backend_invocations": 1,
+      "content_type": "application/json",
+      "usage_api_requests_delta": 1,
+      "usage_snapshot": {
+        "summary": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "input_cached_tokens": 0,
+          "total_tokens": 0,
+          "api_requests": 2,
+          "models_called": 1
+        },
+        "items": [
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "maas-p0-bd3dc58c"
+                },
+                "current": {
+                  "route_id": 4
+                }
+              },
+              "label": "maas-p0-bd3dc58c",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 2,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          }
+        ]
+      }
+    },
+    "chat_no_usage": {
+      "status": 200,
+      "backend_invocations": 1,
+      "content_type": "application/json",
+      "usage_api_requests_delta": 1,
+      "usage_snapshot": {
+        "summary": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "input_cached_tokens": 0,
+          "total_tokens": 0,
+          "api_requests": 3,
+          "models_called": 1
+        },
+        "items": [
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "maas-p0-bd3dc58c"
+                },
+                "current": {
+                  "route_id": 4
+                }
+              },
+              "label": "maas-p0-bd3dc58c",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 3,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          }
+        ]
+      }
+    },
+    "chat_sse": {
+      "status": 200,
+      "backend_invocations": 1,
+      "content_type": "text/event-stream",
+      "usage_api_requests_delta": 1,
+      "usage_snapshot": {
+        "summary": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "input_cached_tokens": 0,
+          "total_tokens": 0,
+          "api_requests": 4,
+          "models_called": 1
+        },
+        "items": [
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "maas-p0-bd3dc58c"
+                },
+                "current": {
+                  "route_id": 4
+                }
+              },
+              "label": "maas-p0-bd3dc58c",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 4,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          }
+        ]
+      }
+    },
+    "native_generic": {
+      "status": 200,
+      "backend_invocations": 1,
+      "content_type": "application/json",
+      "usage_api_requests_delta": 0,
+      "usage_snapshot": {
+        "summary": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "input_cached_tokens": 0,
+          "total_tokens": 0,
+          "api_requests": 4,
+          "models_called": 1
+        },
+        "items": [
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "maas-p0-bd3dc58c"
+                },
+                "current": {
+                  "route_id": 4
+                }
+              },
+              "label": "maas-p0-bd3dc58c",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 4,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          }
+        ]
+      }
+    },
+    "post_503": {
+      "status": 503,
+      "backend_invocations": 3,
+      "content_type": "application/json",
+      "usage_api_requests_delta": 1,
+      "usage_snapshot": {
+        "summary": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "input_cached_tokens": 0,
+          "total_tokens": 0,
+          "api_requests": 5,
+          "models_called": 1
+        },
+        "items": [
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "maas-p0-bd3dc58c"
+                },
+                "current": {
+                  "route_id": 4
+                }
+              },
+              "label": "maas-p0-bd3dc58c",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 5,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          }
+        ]
+      }
+    },
+    "generic_unauthenticated": {
+      "status": 401
+    },
+    "ocr_json": {
+      "status": 200,
+      "usage_api_requests_delta": 1,
+      "usage_snapshot": {
+        "summary": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "input_cached_tokens": 0,
+          "total_tokens": 0,
+          "api_requests": 6,
+          "models_called": 2
+        },
+        "items": [
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "maas-p0-bd3dc58c"
+                },
+                "current": {
+                  "route_id": 4
+                }
+              },
+              "label": "maas-p0-bd3dc58c",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 5,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          },
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "rapidocr-gpu"
+                },
+                "current": {
+                  "route_id": 1
+                }
+              },
+              "label": "rapidocr-gpu",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 1,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          }
+        ]
+      }
+    },
+    "ocr_sse": {
+      "status": 200,
+      "usage_api_requests_delta": 1,
+      "usage_snapshot": {
+        "summary": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "input_cached_tokens": 0,
+          "total_tokens": 0,
+          "api_requests": 7,
+          "models_called": 2
+        },
+        "items": [
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "maas-p0-bd3dc58c"
+                },
+                "current": {
+                  "route_id": 4
+                }
+              },
+              "label": "maas-p0-bd3dc58c",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 5,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          },
+          {
+            "route": {
+              "identity": {
+                "value": {
+                  "route_name": "rapidocr-gpu"
+                },
+                "current": {
+                  "route_id": 1
+                }
+              },
+              "label": "rapidocr-gpu",
+              "deleted": false
+            },
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "input_cached_tokens": 0,
+            "total_tokens": 0,
+            "api_requests": 2,
+            "avg_tokens_per_request": 0.0,
+            "models_called": 1,
+            "api_keys_used": 1,
+            "last_active": "2026-10-20"
+          }
+        ]
+      }
+    }
+  },
+  "production_models_mutated": false,
+  "synthetic_zero_token_fixture": true,
+  "probe_ids": {
+    "model": 5,
+    "route": 4,
+    "backend": 16
+  },
+  "usage_baseline": {
+    "summary": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "input_cached_tokens": 0,
+      "total_tokens": 0,
+      "api_requests": 0,
+      "models_called": 0
+    },
+    "items": []
+  },
+  "ok": true,
+  "cleanup_ok": true,
+  "cleanup_failures": [],
+  "original_model_unchanged": true
+}
