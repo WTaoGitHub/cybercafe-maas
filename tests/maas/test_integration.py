@@ -662,3 +662,28 @@ def test_private_metrics_and_actionable_alerts(env):
     s.store.min_free_bytes=0
     settings.min_free_bytes=10**30
     assert 'DISK_LOW' in {a['code'] for a in alerts(s,snapshot(s))}
+
+
+def test_observer_files_and_metrics_failure_redaction(env,tmp_path,monkeypatch,caplog):
+    from maas_platform.observe import collect
+    client,s,*_=env;dest=tmp_path/'monitor'
+    assert collect(s,dest)==set()
+    assert (dest/'metrics.prom').stat().st_mode & 0o077==0
+    assert json.loads((dest/'status.json').read_text())['ok']
+    def unavailable(_):raise RuntimeError('secret-database-password')
+    monkeypatch.setattr('maas_platform.observe.snapshot',unavailable)
+    codes=collect(s,dest,set());assert codes=={'OBSERVABILITY_UNAVAILABLE'}
+    assert not (dest/'metrics.prom').exists()
+    state=(dest/'status.json').read_text();assert 'secret-database-password' not in state+caplog.text
+    assert not json.loads(state)['ok']
+
+
+def test_result_quota_failure_has_no_success_usage(env):
+    client,s,settings,auth,_=env
+    assert submit(client).status_code==202
+    settings.max_project_storage_bytes=1
+    assert Worker(s).run_once()
+    with s.db.transaction() as c:
+        row=c.execute('SELECT * FROM tasks').fetchone();assert row['state']=='RETRY_WAIT' and row['error_code']=='STORAGE_QUOTA'
+        assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==0
+    assert not list(s.store.root.glob('art_*'))

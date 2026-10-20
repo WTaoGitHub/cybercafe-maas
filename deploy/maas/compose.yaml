@@ -23,6 +23,10 @@ x-app: &app
     MAAS_HEARTBEAT_SECONDS: ${MAAS_HEARTBEAT_SECONDS:-5}
     MAAS_RESULT_TTL_SECONDS: ${MAAS_RESULT_TTL_SECONDS:-86400}
     MAAS_INPUT_TTL_SECONDS: ${MAAS_INPUT_TTL_SECONDS:-86400}
+    MAAS_MAX_STORAGE_BYTES: ${MAAS_MAX_STORAGE_BYTES:-10737418240}
+    MAAS_MAX_PROJECT_STORAGE_BYTES: ${MAAS_MAX_PROJECT_STORAGE_BYTES:-2147483648}
+    MAAS_ORPHAN_GRACE_SECONDS: ${MAAS_ORPHAN_GRACE_SECONDS:-3600}
+    MAAS_CLEANUP_BATCH_SIZE: ${MAAS_CLEANUP_BATCH_SIZE:-200}
     MAAS_MIN_FREE_BYTES: ${MAAS_MIN_FREE_BYTES:-2147483648}
   volumes:
     - ${MAAS_SECRET_DIR:?set private secret directory}:/run/secrets:ro
@@ -52,6 +56,9 @@ services:
   executor:
     <<: *app
     command: [python, -m, maas_platform.worker]
+  observer:
+    <<: *app
+    command: [python, -m, maas_platform.observe, --loop, --output, /var/lib/maas/artifacts/.observability]
 volumes:
   postgres:
   artifacts:

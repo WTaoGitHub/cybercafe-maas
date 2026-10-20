@@ -19,7 +19,8 @@ def test_configurable_pilot_limits(monkeypatch,tmp_path):
 @pytest.mark.parametrize('name,value',[
  ('MAAS_MAX_RUNNING','0'),('MAAS_MAX_QUEUED','-1'),('MAAS_HEARTBEAT_SECONDS','nan'),
  ('MAAS_HEARTBEAT_SECONDS','30'),('MAAS_MAX_PROJECT_RUNNING','3'),('MAAS_MAX_INPUT_BYTES','bad'),
- ('MAAS_MIN_FREE_BYTES','-1'),('MAAS_RESULT_TTL_SECONDS','0')])
+ ('MAAS_MIN_FREE_BYTES','-1'),('MAAS_RESULT_TTL_SECONDS','0'),('MAAS_MAX_STORAGE_BYTES','0'),
+ ('MAAS_MAX_PROJECT_STORAGE_BYTES','999999999999'),('MAAS_ORPHAN_GRACE_SECONDS','0'),('MAAS_CLEANUP_BATCH_SIZE','0')])
 def test_invalid_limits_rejected(monkeypatch,tmp_path,name,value):
  env(monkeypatch,tmp_path);monkeypatch.setenv(name,value)
  with pytest.raises(ValueError):Settings.from_env()
