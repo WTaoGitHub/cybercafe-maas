@@ -58,3 +58,15 @@ def test_registry_error_and_world_readable_secret_fail_closed(tmp_path):
  key.chmod(0o644)
  with pytest.raises(ServiceError) as error:auth.bindings()
  assert error.value.code=='BINDING_INVALID'
+
+
+def test_upstream_cookie_jar_cannot_supply_another_identity(tmp_path):
+ cfg,_,key=configured(tmp_path);observed=[]
+ def upstream(request):
+  observed.append(dict(request.headers))
+  return httpx.Response(200,json={'data':[]},headers={'set-cookie':'session=another-user; Path=/'})
+ client=httpx.Client(transport=httpx.MockTransport(upstream),cookies={'session':'privileged-session'})
+ auth=AuthConnector(cfg,client)
+ identity=auth.authenticate(key.read_text())
+ auth.authorize(identity,'ocr',{'driver':'gpustack','upstream_model':'ocr-r03'})
+ assert len(observed)==2 and all('cookie' not in headers for headers in observed)

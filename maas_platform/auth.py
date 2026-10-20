@@ -49,7 +49,9 @@ class AuthConnector:
         if model:
             headers['x-higress-llm-model'] = model
         try:
-            response = self.client.get(self.base + path, headers=headers)
+            # Build a fresh request instead of merging the shared client's cookie jar.
+            # Credential A must never authenticate through an ambient session from B.
+            response = self.client.send(httpx.Request('GET', self.base + path, headers=headers))
         except httpx.HTTPError:
             raise ServiceError('AUTH_UNAVAILABLE', 'Upstream authentication unavailable', 503, True)
         if response.status_code in (401, 403, 404):
