@@ -28,12 +28,14 @@ class SyncIngress:
             if total>=self.service.settings.max_running or own>=self.service.settings.max_project_running:
                 raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
             token=uuid.uuid4().hex
-            c.execute("INSERT INTO sync_activity(token,project,model,state,deadline) VALUES(%s,%s,%s,'DISPATCHING',now()+%s*interval '1 second')",(token,who.project,name,runtime))
+            c.execute("INSERT INTO sync_activity(token,project,model,state,deadline,is_probe) VALUES(%s,%s,%s,'DISPATCHING',now()+%s*interval '1 second',%s)",(token,who.project,name,runtime,probe))
             return token
 
-    def finish(self,token,confirmed):
+    def finish(self,token,confirmed,successful=False):
         with self.service.db.transaction() as c:
-            c.execute("UPDATE sync_activity SET state=%s,updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN')",('COMPLETED' if confirmed else 'UNKNOWN',token))
+            row=c.execute("UPDATE sync_activity SET state=%s,outcome=%s,finished_at=now(),updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING *",('COMPLETED' if confirmed else 'UNKNOWN','SUCCEEDED' if confirmed and successful else ('REJECTED' if confirmed else 'UNKNOWN'),token)).fetchone()
+            if row and confirmed and successful and not row['is_probe']:
+                c.execute('INSERT INTO sync_usage_events(token,project,model) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING',(token,row['project'],row['model']))
 
     async def infer(self,who,body,probe=False):
         if not isinstance(body,dict) or not isinstance(body.get('model'),str) or body.get('stream',False) is not False:
@@ -46,7 +48,7 @@ class SyncIngress:
         key=self.service.auth.key_for(who)
         runtime=min(model['max_runtime_s'],120)
         token=self.begin(who,name,runtime,probe)
-        confirmed=False
+        confirmed=False;successful=False
         try:
             async with asyncio.timeout(runtime):
                 async with self.client_factory(trust_env=False,follow_redirects=False,timeout=httpx.Timeout(runtime,connect=min(5,runtime))) as client:
@@ -66,10 +68,11 @@ class SyncIngress:
                             raise ServiceError('UPSTREAM_REJECTED','Inference rejected by upstream',response.status_code)
                         try:json.loads(raw)
                         except ValueError:raise ServiceError('OUTPUT_INVALID','Upstream returned invalid JSON',502) from None
+                        successful=True
                         return Response(bytes(raw),media_type='application/json',headers={'Cache-Control':'no-store'})
         except (httpx.HTTPError,TimeoutError):
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY','Inference transport failed; admission quarantined',503) from None
         finally:
             # A crashed process may not reach this write. Its expired DISPATCHING
             # record becomes UNKNOWN on the next admission/status inspection.
-            self.finish(token,confirmed)
+            self.finish(token,confirmed,successful)

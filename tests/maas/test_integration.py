@@ -626,3 +626,22 @@ def test_orphan_gc_waits_for_upload_commit(env,monkeypatch):
         gc=pool.submit(s.cleanup_orphans);time.sleep(.1);assert not gc.done()
         release.set();record=upload.result();assert gc.result()==0
     assert s.store.path(record['id']).read_bytes()==b'ok'
+
+
+def test_sync_usage_exactly_once_probe_and_failure_exclusion(env,monkeypatch):
+    def ok(request):return httpx.Response(200,json={'choices':[]})
+    client,s,_=sync_setup(env,monkeypatch,ok)
+    assert client.post('/v1/chat/completions',headers=headers(),json={'model':'ocr.default'}).status_code==200
+    ingress=client.app.state.sync_ingress;a=s.auth.authenticate('gpustack_registered_a')
+    with s.db.transaction() as c:
+        row=c.execute('SELECT * FROM sync_activity').fetchone()
+        assert row['outcome']=='SUCCEEDED'
+    ingress.finish(row['token'],True,True)
+    s.pause(True)
+    token=ingress.begin(a,'ocr.default',10,probe=True);ingress.finish(token,True,True)
+    s.pause(False)
+    rejected=ingress.begin(a,'ocr.default',10);ingress.finish(rejected,True,False)
+    with s.db.transaction() as c:
+        assert c.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n']==1
+        assert c.execute('SELECT outcome FROM sync_activity WHERE token=%s',(rejected,)).fetchone()['outcome']=='REJECTED'
+
