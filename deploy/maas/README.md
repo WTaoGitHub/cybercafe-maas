@@ -10,7 +10,7 @@ Python **3.11**、PostgreSQL 16。Mac现有Python3.9不能直接运行本包，�
 
 复用GPUStack inference key，不提供新密码/用户注册。管理员将一个已有、限定模型的非管理员key以600权限保存；按bindings.example.json登记project映射及该服务允许的能力。**mock.echo是本地受控验证能力，其授权由登记文件明确授予，不代表GPUStack实际部署了mock模型。**
 
-每次请求在本地匹配已登记key后，仍调用GPUStack `/v1/models`校验有效性；不接受客户身份头，不信任客户携带的auth cache。未登记/本地禁用的key拒绝访问。真实模型的`/token-auth`权限验证已做现网探针，但P1仅运行本地适配器（mock及local.sha256）；P2必须再验证实际推理、版本固定及重试。
+每次请求在本地匹配已登记key后，仍调用GPUStack `/v1/models`校验有效性；不接受客户身份头，不信任客户携带的auth cache。未登记/本地禁用的key拒绝访问。真实模型的`/token-auth`权限验证已做现网探针，P1运行本地适配器；P2首批固定版本OCR推理及未知执行隔离已实机验证，完整故障矩阵与常驻collector仍待收尾。
 
 三个secret文件：
 
@@ -90,3 +90,7 @@ MAAS_TEST_DATABASE_URL=postgresql://.../maas_test python -m pytest tests/maas -q
 [验收报告](../../results/maas-p1/REPORT.md)：47项回归与1项真实数据库停机/恢复专项通过。适配器注册表位于 `maas_platform/adapters.py`；模型目录 driver 可选 `mock` 或 `local.sha256`，摘要模型输入为 `{"source_artifact":"art_..."}`，参数为空。注册摘要模型时还需将逻辑模型名加入对应 credential 的 models 允许清单。
 
 数据库中断专项由 `scripts/maas/test_db_interruption.py` 在控制端运行，仅操作指定标签的独立测试容器。测试会重建测试库 schema，不可用于业务库。测试结束后可停止测试数据库，不影响现有GPUStack。
+
+## P2 首批 OCR
+
+[接入与隔离操作说明](../../docs/framework/P2-OCR.md) · [实机报告](../../results/maas-p2/REPORT.html)。驱动 `gpustack.ocr` 只使用已上传的PNG/JPEG artifact，通过GPUStack入口推理，必须配置pin和新鲜的受信任预检文件。测试服务已清理；常驻collector完成前不要将本轮脚本当作长期发布包。

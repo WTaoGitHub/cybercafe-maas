@@ -1,0 +1,25 @@
+{
+  "stage": "P2-first-real-OCR",
+  "checks": {
+    "idempotent_acceptance": true,
+    "cross_project_denied": true,
+    "real_ocr_upload_task_download": {
+      "lines": 46,
+      "attempts": 1,
+      "revision": "ocr-p2-r1"
+    },
+    "successful_event_and_proven_completion_unique": true,
+    "second_model_same_api": true,
+    "backend_offline_no_application_replay": {
+      "attempts": 1,
+      "error_code": "UNKNOWN_BACKEND_ACTIVITY"
+    },
+    "stored_result_available_with_backends_offline": true,
+    "unknown_activity_blocks_new_dispatch": true,
+    "evidence_based_resolution_resumes_dispatch": true,
+    "result_available_after_both_dedicated_backends_removed": true
+  },
+  "production_models_mutated": false,
+  "ok": true,
+  "temporary_credentials_removed": true
+}
