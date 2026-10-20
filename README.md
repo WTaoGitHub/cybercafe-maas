@@ -138,3 +138,11 @@ CPU 原服务未调优，CPU/GPU 两环境依赖和线程设置不完全相同�
 脚本保存旧版本配置、逐个替换实例并检查健康状态；旧镜像和0.2后端配置保留。
 回退命令：`python3 /root/wtaobj/upgrade_ocr_guard.py --rollback`。
 部署及验证记录见 `results/ocr-guard-v1/`；该升级保留原有总计两个副本，未采用压测中的四副本。
+
+## 统一模型服务任务层（P0/P1）
+
+已新增独立任务API、PostgreSQL持久队列、执行器与结果存储。当前仅启用mock后端；真实GPUStack key鉴权、15项PostgreSQL集成测试及独立进程SIGKILL恢复验证通过。既有同步OCR不变。
+
+- [运行与测试说明](deploy/maas/README.md)
+- [实施报告与证据](results/maas-p0-p1/REPORT.md)
+- [当前设计与路线图](docs/framework/ROADMAP.html)

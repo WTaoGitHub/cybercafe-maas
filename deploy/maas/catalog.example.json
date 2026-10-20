@@ -1,0 +1,9 @@
+{
+  "mock.echo": {
+    "driver": "mock",
+    "revision": "mock-echo-1",
+    "max_runtime_s": 30,
+    "execution_modes": ["async"],
+    "description": "P1 task framework verification only; no GPU inference"
+  }
+}

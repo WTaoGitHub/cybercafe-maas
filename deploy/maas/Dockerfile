@@ -1,0 +1,8 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements-maas.txt /app/
+RUN pip install --no-cache-dir -r requirements-maas.txt
+COPY maas_platform /app/maas_platform
+RUN useradd --uid 10001 --create-home maas && mkdir -p /var/lib/maas/artifacts && chown -R maas /var/lib/maas
+USER 10001
+CMD ["uvicorn", "maas_platform.api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8080"]

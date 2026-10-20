@@ -1,0 +1,11 @@
+{
+  "credentials": [
+    {
+      "id": "pilot-key-1",
+      "project": "pilot",
+      "enabled": true,
+      "secret_file": "/run/secrets/pilot-key",
+      "models": ["mock.echo"]
+    }
+  ]
+}

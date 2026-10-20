@@ -14,3 +14,10 @@ model-benchmark/models/
 service-validation/build-context.tar.gz
 **/.benchmark-key
 service-validation/wheels/
+
+# MaaS task service runtime / private credentials.
+.venv-maas/
+.maas/
+deploy/maas/secrets/
+deploy/maas/.env
+service-validation/*.sock

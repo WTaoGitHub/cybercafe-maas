@@ -1,0 +1,14 @@
+{
+  "stage": "P1",
+  "real_gpustack_auth": true,
+  "mock_inference_only": true,
+  "checks": {
+    "accepted_and_persisted": true,
+    "api_restart_keeps_accepted_task": true,
+    "worker_sigkill_lease_recovery": true,
+    "durable_result_download": true,
+    "openapi_export": true
+  },
+  "attempts": 2,
+  "temporary_credentials_and_smoke_containers_removed": true
+}

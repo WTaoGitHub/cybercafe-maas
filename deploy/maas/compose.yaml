@@ -1,0 +1,46 @@
+# Run from repository root: docker compose --env-file <private-env> -f deploy/maas/compose.yaml up -d
+name: maas-tasks
+x-app: &app
+  image: cybercafe-maas-tasks:0.1.0
+  build:
+    context: ../..
+    dockerfile: deploy/maas/Dockerfile
+  restart: unless-stopped
+  environment:
+    MAAS_DATABASE_URL: postgresql://maas:${MAAS_DB_PASSWORD:?set private environment}@db:5432/maas
+    MAAS_GPUSTACK_URL: ${MAAS_GPUSTACK_URL:?set reachable internal GPUStack URL}
+    MAAS_ARTIFACT_ROOT: /var/lib/maas/artifacts
+    MAAS_BINDINGS_FILE: /run/secrets/bindings.json
+    MAAS_CATALOG_FILE: /app/catalog.json
+    MAAS_PEPPER_FILE: /run/secrets/pepper
+  volumes:
+    - ${MAAS_SECRET_DIR:?set private secret directory}:/run/secrets:ro
+    - ./catalog.example.json:/app/catalog.json:ro
+    - artifacts:/var/lib/maas/artifacts
+  depends_on:
+    db:
+      condition: service_healthy
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: maas
+      POSTGRES_DB: maas
+      POSTGRES_PASSWORD: ${MAAS_DB_PASSWORD:?set private environment}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U maas -d maas]
+      interval: 3s
+      retries: 20
+  api:
+    <<: *app
+    ports:
+      - 127.0.0.1:18830:8080
+  executor:
+    <<: *app
+    command: [python, -m, maas_platform.worker]
+volumes:
+  postgres:
+  artifacts:
