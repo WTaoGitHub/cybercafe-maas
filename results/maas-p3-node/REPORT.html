@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>P3 Node Maintenance Acceptance</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f2f6fa;color:#20364a;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1380px;margin:0 auto;padding:32px 24px 70px}h1{font-size:32px;line-height:1.4}h2{margin-top:30px;border-bottom:1px solid #dce6ef;padding-bottom:12px}h3{margin-top:26px}a{color:#126d99}nav{display:flex;gap:20px;flex-wrap:wrap}section,.diagram{background:white;border:1px solid #dce6ef;border-radius:12px;padding:26px;margin:24px 0}.diagram svg{display:block;width:100%;height:auto}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2eaf1;vertical-align:top;min-width:110px}th{background:#eaf2f8}pre{white-space:pre-wrap;background:#eff4f8;padding:20px;border-radius:8px}code{font-size:13px;overflow-wrap:anywhere}.notice,blockquote{border-left:4px solid #b48b34;padding:14px 18px;background:#fff7e4;margin:18px 0}.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0}.phase{background:#e2edf7;padding:15px;border-radius:8px;font-size:13px}.phase b{display:block;font-size:22px}button{font:inherit;padding:6px 14px;background:white;border:1px solid #bdcfdd;border-radius:6px;cursor:pointer}@media(max-width:700px){main{padding:18px 12px}section,.diagram{padding:16px}.phases{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.diagram{overflow:auto}.diagram svg{min-width:1000px}}@media print{body{background:white;font-size:11px}main{max-width:none;padding:0}nav,button{display:none}section,.diagram{border:0;padding:0}.diagram{break-inside:avoid}.table{overflow:visible}th,td{padding:6px;min-width:0}h2,h3{break-after:avoid}}</style></head><body><main><section><h2>P3 节点维护、全局副本停止与恢复验收</h2>
+<p>2026-10-20 · GPUStack v2.2.3 · 001控制端，002维护目标。</p>
+<h3>结论</h3>
+<p><strong>受控进程级停止和恢复演练通过，113项回归通过、1项跳过。</strong> 原worker容器、maintenance值、副本数、模型配置及两节点分布已恢复；真实OCR探针和排队任务均成功。H3及对应隧道保持停用。</p>
+<p>本轮保持VM和SSH在线，未做实际关机、开机或双系统切换，不提供自动安全关机结论。W6按该受控范围验收；P3的W7运营限制仍待完善，P4发布/耐久尚未完成。</p>
+<h3>演练流程与证据</h3>
+<div class="table"><table><thead><tr><th>阶段</th><th>实测结果</th></tr></thead><tbody>
+<tr><td>暂停与核对</td><td>受控入口暂停，异步任务保持QUEUED；历史结果在暂停期间仍HTTP200、46行</td></tr>
+<tr><td>启用maintenance</td><td>002状态进入maintenance，但原4个模型实例仍running，验证maintenance不等于停止</td></tr>
+<tr><td>副本停止</td><td>rapidocr-gpu与maas-ocr-p2-r2均由2降为0；同时暂停001上的GPU推理，控制服务保持在线</td></tr>
+<tr><td>002停止</td><td>原worker停止并临时关闭自动重启；旧Agent停止；GPU工作负载容器与NVIDIA计算进程均为空</td></tr>
+<tr><td>保持停止10秒</td><td>复核仍为空，没有推理工作负载重新出现；VM、SSH保留</td></tr>
+<tr><td>请求行为</td><td>新受控同步请求503；原生GPUStack入口的试点请求404，没有继续推理</td></tr>
+<tr><td>恢复部署</td><td>原worker容器ID不变；maintenance恢复null，原副本数及配置指纹恢复</td></tr>
+<tr><td>恢复分布</td><td>自动通过GPUStack API纠正2个过量节点实例，最终两模型均各节点一个副本</td></tr>
+<tr><td>验证恢复</td><td>collector正常，真实OCR恢复探针46行后resume；排队任务成功，attempts=1</td></tr>
+</tbody></table></div>
+<p>成功演练的时间（单次观测，不是SLA）：暂停到停止证明15.45秒，停止到验证恢复51.50秒，整个维护窗口66.94秒，包含10秒停止保持和副本分布纠偏。</p>
+<p>002停止证明包含：原worker ID <code>6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066</code>、空容器列表、空GPU计算进程列表、legacy_agent_active=false、vm_powered_off=false。<code>safe_to_poweroff</code>仍为false，不能将这一观察直接当作完整断电授权。</p>
+<h3>发现与修正</h3>
+<p>首轮中，GPUStack的spread策略将试点的两个恢复副本放在001，导致collector拒绝恢复。经一次人工重建纠正后探针成功；旧验收断言还未计入第二次pause而误判失败。首轮记录保留，未计为最终验收通过。</p>
+<p>随后在控制器中补齐：记录原分布，有限预算内通过GPUStack实例API重建过量节点实例，等待分布恢复再允许resume；修正审计期望后，第二轮完整自动流程通过。没有修改selector、镜像或模型固定版本，也没有直接删除模型Docker容器。</p>
+<h3>已交付实现</h3>
+<ul>
+<li>私有维护协调器与持久journal：模型范围、版本/配置/副本漂移检查，维护generation与会话防覆盖。</li>
+<li>002限定动作代理：只操作原worker，H3必须已停；停止Agent及worker后独立核对GPU进程，保留SSH。</li>
+<li>001私有CLI与专用固定命令SSH key：不向客户接口或任务容器提供管理密钥；任意命令拒绝实测通过。</li>
+<li>001/002两层best-effort恢复定时器；恢复失败保留诊断配置，恢复不自动解除UNKNOWN或恢复派发。</li>
+<li>全流程验收脚本和单元/集成回归，覆盖UNKNOWN拒绝、配置/副本/maintenance所有权漂移、部分失败恢复、分布纠偏和探针失败保持暂停。</li>
+</ul>
+<h3>收尾</h3>
+<ul>
+<li>原模型及P2试点共4个实例逐一请求HTTP200、46行；两worker ready，collector和私有Nginx正常。</li>
+<li>maintenance、worker labels、模型配置SHA及副本数与维护前一致；原worker restart policy和旧Agent状态恢复。</li>
+<li>两节点H3及cloudflared仍停止，Docker restart=no，模型资源未删除。</li>
+<li>两个成功异步任务对应两条成功计量，异步/同步UNKNOWN均0；维护审计pause → pause → verified-resume。</li>
+<li>临时API、用户/key、数据库、artifact及私密验收配置已清理；测试数据库容器停止；控制端与节点恢复定时器均0。</li>
+</ul>
+<p>113 passed、1 skipped，9.39秒。跳过项为需单独宿主机编排的数据库停启专项，历史已有通过记录，本轮未重复；另有一条Starlette依赖弃用警告。</p>
+<h3>限定与后续</h3>
+<p>这是全局GPU推理暂停，不能不停001推理就精确排空002。可信运维直连不纳入任务台账，可能被停副本中断；没有承诺所有旁路请求无损结束。旧Agent在退出维护后恢复，仍须避免从旧管理端重新部署H3。</p>
+<p>维护日志和超时恢复不等同于控制端高可用。网络策略持久化、启动窗口验证、常驻任务层、HTTPS、备份和8小时负载仍属P4；实际VM电源与双系统切换仍待验证。下一批P3/W7完善跨入口配额、TTL/孤儿清理、计量与告警。</p>
+<h3>材料</h3>
+<ul>
+<li><a href="acceptance.json">最终验收记录</a>、<a href="first-run-observation.json">首轮观察记录</a></li>
+<li><a href="final-verification.json">原服务复核</a>、<a href="platform-status.json">配置复核</a>、<a href="controller-cleanup.json">控制端清理</a>、<a href="node-cleanup.json">节点恢复复核</a></li>
+<li><a href="regression.log">回归日志</a>、<a href="regression.xml">JUnit记录</a></li>
+<li><a href="../../docs/framework/P3-NODE-MAINTENANCE.md">维护操作手册</a></li>
+</ul></section></main></body></html>

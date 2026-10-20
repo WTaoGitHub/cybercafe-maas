@@ -4,6 +4,8 @@
 
 最新更新：按用户要求，两节点H3容器与对应Cloudflare隧道均已停止并关闭Docker自动重启，镜像、容器和模型卷保留；网络库存已刷新，OCR复核通过。见 [停用记录](../../results/h3-parked/README.md)。下文关于旧H3公网通道的描述是停用前背景，恢复该服务时仍需重新纳入维护边界。
 
+后续W6进程级维护已通过：GPUStack maintenance、全局副本停止、002 worker/GPU进程停止及真实探针恢复已验收。见 [节点维护手册](P3-NODE-MAINTENANCE.md)。实际VM关机/系统切换、规则持久化与公开发布仍未验收。
+
 ## 当前部署
 
 - 001已启用 `maas-edge.service`，使用本机缓存的Nginx镜像内容ID固定版本，非root、只读文件系统、无额外capability；配置源为 `deploy/maas/edge.nginx.conf`。

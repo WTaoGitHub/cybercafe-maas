@@ -94,3 +94,7 @@ W4/W5最新进展：常驻collector、专用只读清单通道、权限/配置�
 ## 2026-10-20 P3/W6网络边界进展
 
 私有Nginx已上线；两节点IPv4/IPv6宿主机、Docker DNAT及容器目标规则已应用，隔离客户端实测通过，经过Nginx的真实OCR维护闭环通过。当前仅运行期规则，运维回环/可信节点及独立H3隧道仍有明确边界；W6剩余GPUStack maintenance/副本控制与完整节点维护演练，P4补规则持久性、启动窗口及公网TLS。见 [报告](../../results/maas-p3-boundary/REPORT.html)。
+
+## 2026-10-20 P3/W6进程级维护验收
+
+后续已停用H3及隧道，并完成GPUStack maintenance、全局副本归零、002原worker及GPU进程停止/恢复演练。模型原配置、maintenance、worker容器身份和副本分布均恢复，真实探针后恢复派发；113项回归通过。W6按可信两节点的受控进程级维护范围验收，未关闭VM或切系统，未承诺无损逐节点drain。见 [报告](../../results/maas-p3-node/REPORT.html)。下一批W7运营限制；P4常驻发布、网络启动持久性、HTTPS、备份与8小时耐久仍待完成。

@@ -8,6 +8,8 @@
 
 后续更新：已部署私有Nginx统一入口，并对两节点指定端口完成运行期网络客户端隔离及实测。运维回环/可信节点与原H3隧道仍在边界之外，完整节点停止演练未完成；当前状态以 [P3网络边界说明](P3-BOUNDARY.md) 为准。
 
+最新验收：H3及隧道已停用；GPUStack maintenance、全局副本归零和002原worker/GPU进程停止、配置及分布恢复、真实探针resume已通过，113项回归通过。VM/SSH保留，实际电源或系统切换未做。当前完整步骤见 [节点维护手册](P3-NODE-MAINTENANCE.md)。
+
 - `pause` 与领取、实际发送前登记、同步准入使用同一PostgreSQL维护行锁。已经登记的请求视为在途，暂停不强杀它；尚未登记的已领取OCR任务退回队列。
 - 退回记录保留为DEFERRED；attempt编号继续递增以防旧token提交，DEFERRED不消耗真实执行重试额度。
 - `drain-status` 核对RUNNING/CANCEL_REQUESTED任务、DISPATCHING/UNKNOWN后台活动和同步活动。只有暂停且三类均空时，`managed_requests_drained=true`；排队任务可以保留。
@@ -52,7 +54,7 @@ python3 scripts/maas/runtime/inspect_stop.py
 5. 只有实际停止且不能重新拉起的证据成立后，才可私有执行 `resolve-backend --token ... --reason ...` 或 `resolve-sync --token ... --reason ...`。reason是运维人员的证据说明，当前不自动验证说明真实性。不要解除仍在途/仍可能执行的活动。
 6. 恢复节点、模型、路由和collector，执行带真实探针的resume。001兼任控制端，不能随着普通worker切系统。
 
-这些节点级停止、控制面维护与旁路关闭步骤尚未做成自动执行工具，不能把本批代码当作完整安全关机程序。
+首批时这些节点级步骤尚未自动实现；后续私有工具已完成限定002和全局副本暂停的执行与验收，见最新手册。它仍不是完整安全关机或双系统切换程序。
 
 ## 入口落地与下一步
 
