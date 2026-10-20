@@ -336,3 +336,37 @@ def test_real_postgres_interruption(env):
     assert not s.finish(old,output={'stale':True})
     with s.db.transaction() as c:
         assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==1
+
+
+@pytest.mark.parametrize('cancel',[False,True])
+def test_remote_uncertainty_quarantines_dispatch_and_requires_evidence(env,cancel):
+    client,s,settings,auth,_=env
+    task=submit(client).json();attempt=s.claim();s.begin_backend(attempt)
+    if cancel:s.cancel(auth.authenticate('gpustack_registered_a'),task['id'])
+    s.finish(attempt,error=ServiceError('TIMEOUT','Transport unavailable',503,True))
+    row=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()
+    assert row['state']=='FAILED' and row['error_code']=='UNKNOWN_BACKEND_ACTIVITY'
+    assert s.metrics()['unknown_backend_activity']==1
+    assert submit(client,'waiting').status_code==202
+    assert s.claim() is None
+    s.pause(False,'resume must not release unknown work');assert s.claim() is None
+    with pytest.raises(ValueError):s.resolve_backend(attempt['token'],'trust me')
+    assert s.resolve_backend(attempt['token'],'Confirmed all dedicated backend processes have terminated')
+    assert Worker(s).run_once()
+    assert s.metrics()['successful_tasks']==1
+
+
+@pytest.mark.parametrize('completed',[False,True])
+def test_expired_remote_attempt_is_never_automatically_replayed(env,completed):
+    client,s,settings,auth,_=env
+    ident=submit(client).json()['id'];attempt=s.claim();s.begin_backend(attempt)
+    if completed:s.complete_backend(attempt)
+    with s.db.transaction() as c:
+        c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE id=%s",(ident,))
+    assert s.recover()==1
+    row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
+    assert row['state']=='FAILED' and row['attempts']==1
+    assert row['error_code']==('RESULT_NOT_COMMITTED' if completed else 'UNKNOWN_BACKEND_ACTIVITY')
+    assert s.metrics()['unknown_backend_activity']==(0 if completed else 1)
+    assert not s.finish(attempt,output={'late':True})
+    assert s.metrics()['successful_tasks']==0

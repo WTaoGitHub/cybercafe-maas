@@ -129,6 +129,7 @@ class TaskService:
         with self.db.transaction() as c:
             maintenance = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
             if maintenance['paused']: return None
+            if c.execute("SELECT 1 FROM backend_activity WHERE state='UNKNOWN' LIMIT 1").fetchone(): return None
             c.execute("UPDATE tasks SET state='FAILED',error_code='DEADLINE_EXCEEDED',updated_at=now() WHERE state IN ('QUEUED','RETRY_WAIT') AND deadline<=now()")
             running = c.execute("SELECT count(*) AS n FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')").fetchone()['n']
             if running >= self.settings.max_running: return None
@@ -140,6 +141,28 @@ class TaskService:
             row = c.execute("UPDATE tasks SET state='RUNNING',attempts=attempts+1,token=%s,lease_until=now()+%s*interval '1 second',updated_at=now() WHERE id=%s RETURNING *", (token, self.settings.lease_seconds, row['id'])).fetchone()
             c.execute("INSERT INTO task_attempts(token,task_id,attempt,state) VALUES(%s,%s,%s,'RUNNING')", (token, row['id'], row['attempts']))
             return row
+
+    def begin_backend(self, task):
+        """Persist intent before sending bytes; an uncertain commit never permits a send."""
+        with self.db.transaction() as c:
+            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+            if c.execute("SELECT 1 FROM backend_activity WHERE state='UNKNOWN' LIMIT 1").fetchone():
+                raise ServiceError('BACKEND_QUARANTINED', 'Unresolved backend activity blocks dispatch', 503)
+            row = c.execute("SELECT id FROM tasks WHERE id=%s AND token=%s AND state='RUNNING' AND lease_until>now() AND deadline>now() FOR UPDATE", (task['id'], task['token'])).fetchone()
+            if not row:
+                raise ServiceError('INTERRUPTED', 'Attempt is no longer eligible for dispatch')
+            c.execute("INSERT INTO backend_activity(token,task_id,state) VALUES(%s,%s,'DISPATCHING')", (task['token'],task['id']))
+
+    def complete_backend(self, task):
+        # Only a fully received successful inference response proves remote completion.
+        with self.db.transaction() as c:
+            c.execute("UPDATE backend_activity SET state='COMPLETED',updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN')", (task['token'],))
+
+    def resolve_backend(self, token, reason):
+        if len(reason.strip()) < 10:
+            raise ValueError('Provide evidence of backend termination (at least 10 characters)')
+        with self.db.transaction() as c:
+            return bool(c.execute("UPDATE backend_activity SET state='RESOLVED',resolution_reason=%s,updated_at=now() WHERE token=%s AND state='UNKNOWN' RETURNING token", (reason,token)).fetchone())
 
     def heartbeat(self, task):
         with self.db.transaction() as c:
@@ -165,8 +188,14 @@ class TaskService:
                 if (not row or row['token'] != task['token'] or row['state'] not in ('RUNNING','CANCEL_REQUESTED')
                         or row['lease_until'] <= datetime.now(timezone.utc)):
                     return False
+                activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (task['token'],)).fetchone()
+                if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
+                    c.execute("UPDATE backend_activity SET state='UNKNOWN',updated_at=now() WHERE token=%s", (task['token'],))
+                    error = ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Remote completion is unconfirmed; dispatch quarantined')
                 state, code, result_id = 'FAILED', error.code if error else None, None
-                if row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
+                if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
+                    state, code = 'FAILED', 'UNKNOWN_BACKEND_ACTIVITY'
+                elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): code = 'DEADLINE_EXCEEDED'
                 elif error:
                     if error.retryable and row['attempts'] < row['max_attempts']: state = 'RETRY_WAIT'
@@ -183,12 +212,17 @@ class TaskService:
             if result and not preserve_result_file: self.store.remove(result['id'])
 
     def recover(self):
-        # P1 only has replayable local adapters. Real HTTP backends need P2 unknown-activity isolation.
+        # Durable dispatch intent fences remote work; local pre-dispatch work may retry.
         with self.db.transaction() as c:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             rows = c.execute("SELECT * FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until<=now() FOR UPDATE SKIP LOCKED").fetchall()
             for row in rows:
-                if row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
+                activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (row['token'],)).fetchone()
+                if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
+                    c.execute("UPDATE backend_activity SET state='UNKNOWN',updated_at=now() WHERE token=%s", (row['token'],))
+                    state, code = 'FAILED', 'UNKNOWN_BACKEND_ACTIVITY'
+                elif activity and activity['state']=='COMPLETED': state, code = 'FAILED', 'RESULT_NOT_COMMITTED'
+                elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): state, code = 'FAILED', 'DEADLINE_EXCEEDED'
                 elif row['attempts'] >= row['max_attempts']: state, code = 'FAILED', 'ATTEMPTS_EXHAUSTED'
                 else: state, code = 'RETRY_WAIT', 'LEASE_EXPIRED'
@@ -214,4 +248,5 @@ class TaskService:
             rows = c.execute('SELECT state,count(*) AS n FROM tasks GROUP BY state').fetchall()
             events = c.execute('SELECT count(*) AS n FROM task_usage_events').fetchone()['n']
             paused = c.execute('SELECT paused FROM maintenance WHERE id=1').fetchone()['paused']
-        return {'tasks': {r['state']:r['n'] for r in rows}, 'successful_tasks': events, 'dispatch_paused': paused}
+            unknown = c.execute("SELECT count(*) n FROM backend_activity WHERE state='UNKNOWN'").fetchone()['n']
+        return {'tasks': {r['state']:r['n'] for r in rows}, 'successful_tasks': events, 'dispatch_paused': paused, 'unknown_backend_activity': unknown}
