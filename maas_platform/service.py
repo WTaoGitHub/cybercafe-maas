@@ -132,10 +132,10 @@ class TaskService:
             self.expire_sync(c)
             if self.has_unknown(c): return None
             c.execute("UPDATE tasks SET state='FAILED',error_code='DEADLINE_EXCEEDED',updated_at=now() WHERE state IN ('QUEUED','RETRY_WAIT') AND deadline<=now()")
-            running = c.execute("SELECT count(*) AS n FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')").fetchone()['n']
+            running = c.execute("SELECT (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') AS n").fetchone()['n']
             if running >= self.settings.max_running: return None
             row = c.execute("""SELECT * FROM tasks t WHERE state IN ('QUEUED','RETRY_WAIT') AND next_run<=now() AND deadline>now()
-                AND (SELECT count(*) FROM tasks r WHERE r.project=t.project AND r.state IN ('RUNNING','CANCEL_REQUESTED')) < %s
+                AND (SELECT count(*) FROM tasks r WHERE r.project=t.project AND r.state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity s WHERE s.project=t.project AND s.state='DISPATCHING') < %s
                 ORDER BY created_at FOR UPDATE OF t SKIP LOCKED LIMIT 1""", (self.settings.max_project_running,)).fetchone()
             if not row: return None
             token = uuid.uuid4().hex

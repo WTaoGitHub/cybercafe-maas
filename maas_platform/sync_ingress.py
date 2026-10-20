@@ -23,8 +23,8 @@ class SyncIngress:
                 raise ServiceError('MAINTENANCE_PAUSED','Inference admission is paused or probe window is closed',503)
             if self.service.has_unknown(c):
                 raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks inference',503)
-            total=c.execute("SELECT count(*) n FROM sync_activity WHERE state='DISPATCHING'").fetchone()['n']
-            own=c.execute("SELECT count(*) n FROM sync_activity WHERE state='DISPATCHING' AND project=%s",(who.project,)).fetchone()['n']
+            total=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) n").fetchone()['n']
+            own=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING' AND project=%s) + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND project=%s) n",(who.project,who.project)).fetchone()['n']
             if total>=self.service.settings.max_running or own>=self.service.settings.max_project_running:
                 raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
             token=uuid.uuid4().hex

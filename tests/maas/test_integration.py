@@ -566,3 +566,22 @@ def test_recovery_runs_real_transport_validates_output_and_keeps_gate_closed(env
     s.pause(True,'invalid probe output');valid.clear()
     with pytest.raises(ServiceError):Maintenance(s).resume(lambda:probe_registered_models(s,'a',image))
     assert Maintenance(s).status()['paused']
+
+
+def test_cross_channel_project_and_global_capacity(env):
+    from maas_platform.sync_ingress import SyncIngress
+    client,s,settings,auth,_=env
+    ingress=SyncIngress(s);a=auth.authenticate('gpustack_registered_a');b=auth.authenticate('gpustack_registered_b')
+    assert submit(client).status_code==202
+    token=ingress.begin(a,'mock.echo',30)
+    assert s.claim() is None  # project a already occupies its single slot
+    other=ingress.begin(b,'mock.echo',30)
+    assert s.claim() is None  # global two slots exhausted
+    ingress.finish(token,True)
+    task=s.claim();assert task
+    with pytest.raises(ServiceError) as exc:ingress.begin(a,'mock.echo',30)
+    assert exc.value.code=='SYNC_CAPACITY'
+    ingress.finish(other,True)
+    with pytest.raises(ServiceError):ingress.begin(a,'mock.echo',30)
+    s.finish(task,output={'ok':True})
+    assert ingress.begin(a,'mock.echo',30)
