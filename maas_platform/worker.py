@@ -43,7 +43,7 @@ class Worker:
                 self.service.finish(task, error=exc)
         except Exception:
             # Keep lease for recovery rather than releasing an uncommitted/unknown attempt.
-            log.exception('attempt_failed task=%s attempt=%s', task['id'], task['attempts'])
+            log.error('attempt_failed task=%s attempt=%s', task['id'], task['attempts'])
         finally:
             stop.set(); thread.join(timeout=10)
         return True
@@ -62,6 +62,6 @@ def main():
                 service.cleanup(); service.cleanup_orphans(); last_clean=time.monotonic()
             if not worked: stop.wait(.5)
         except Exception:
-            log.exception('worker_loop_unavailable'); stop.wait(2)
+            log.error('worker_loop_unavailable'); stop.wait(2)
 
 if __name__ == '__main__': main()

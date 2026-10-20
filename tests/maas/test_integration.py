@@ -687,3 +687,14 @@ def test_result_quota_failure_has_no_success_usage(env):
         row=c.execute('SELECT * FROM tasks').fetchone();assert row['state']=='RETRY_WAIT' and row['error_code']=='STORAGE_QUOTA'
         assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==0
     assert not list(s.store.root.glob('art_*'))
+
+
+def test_worker_unexpected_exception_is_redacted(env,monkeypatch,caplog):
+    from maas_platform.adapters import adapter_for
+    client,s,*_=env
+    submit(client)
+    def fail(_):raise RuntimeError('canary-private-key-and-document-text')
+    monkeypatch.setattr(adapter_for('mock'),'execute',fail)
+    assert Worker(s).run_once()
+    assert 'attempt_failed' in caplog.text
+    assert 'canary-private-key' not in caplog.text and 'Traceback' not in caplog.text
