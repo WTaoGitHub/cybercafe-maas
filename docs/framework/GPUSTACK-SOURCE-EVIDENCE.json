@@ -1,0 +1,973 @@
+{
+  "repository": "/Users/4paradigm/dev/gpustack",
+  "fetched": false,
+  "refs": {
+    "v2.2.3": [
+      "1cfcbbff02aacdb51f0a390378dd7bcddd9bf365",
+      "2026-07-28T10:22:42+08:00",
+      "fix: fork ai-proxy plugin to translation from anthropic to openai"
+    ],
+    "main": [
+      "c18f7fabc6e0fc5c7d0237bb799247ab1a02de3b",
+      "2026-10-19T21:52:03+08:00",
+      "docs: simplify documentation guidance"
+    ]
+  },
+  "evidence": {
+    "v2.2.3:auth-key": {
+      "path": "gpustack/schemas/api_keys.py",
+      "matches": [
+        {
+          "line": 49,
+          "text": "\nclass ApiKey(ApiKeyBase, BaseModelMixin, table=True):\n    __tablename__ = 'api_keys'\n    __table_args__ = (\n        UniqueConstraint(\n            'user_id', 'owner_principal_id', 'name', name='uix_user_org_name'\n        ),\n    )\n    id: Optional[int] = Field(default=None, primary_key=True)\n    access_key: str = Field(unique=True, index=True)"
+        },
+        {
+          "line": 53,
+          "text": "        UniqueConstraint(\n            'user_id', 'owner_principal_id', 'name', name='uix_user_org_name'\n        ),\n    )\n    id: Optional[int] = Field(default=None, primary_key=True)\n    access_key: str = Field(unique=True, index=True)\n    hashed_secret_key: str = Field(unique=True)\n    user_id: int = Field(foreign_key='principals.id', nullable=False)\n    # ``owner_principal_id`` is the tenant the key acts as. Nullable\n    # because an admin-created \"All\" mode key (no Org context) must"
+        },
+        {
+          "line": 58,
+          "text": "    access_key: str = Field(unique=True, index=True)\n    hashed_secret_key: str = Field(unique=True)\n    user_id: int = Field(foreign_key='principals.id', nullable=False)\n    # ``owner_principal_id`` is the tenant the key acts as. Nullable\n    # because an admin-created \"All\" mode key (no Org context) must\n    # fall through to ``bypass_tenant_filter`` — pinning such keys to\n    # any specific principal would leave USER-personal and cross-Org\n    # resources outside their reach. ``_resolve_requested_principal_id``\n    # only consumes this when non-None, so NULL keys inherit the\n    # caller's user-based resolution (admin → None → bypass)."
+        },
+        {
+          "line": 60,
+          "text": "    user_id: int = Field(foreign_key='principals.id', nullable=False)\n    # ``owner_principal_id`` is the tenant the key acts as. Nullable\n    # because an admin-created \"All\" mode key (no Org context) must\n    # fall through to ``bypass_tenant_filter`` — pinning such keys to\n    # any specific principal would leave USER-personal and cross-Org\n    # resources outside their reach. ``_resolve_requested_principal_id``\n    # only consumes this when non-None, so NULL keys inherit the\n    # caller's user-based resolution (admin → None → bypass).\n    owner_principal_id: Optional[int] = Field(\n        default=None,"
+        },
+        {
+          "line": 67,
+          "text": "    # caller's user-based resolution (admin → None → bypass).\n    owner_principal_id: Optional[int] = Field(\n        default=None,\n        sa_column=Column(\n            Integer,\n            ForeignKey(\"principals.id\", ondelete=\"CASCADE\"),\n            nullable=True,\n        ),\n    )\n    expires_at: Optional[datetime] = Field(sa_column=Column(UTCDateTime), default=None)"
+        },
+        {
+          "line": 115,
+          "text": "    # Organizations\".\n    owner_principal_id: Optional[int] = None\n    created_at: datetime\n    updated_at: datetime\n    expires_at: Optional[datetime] = None\n\n\nApiKeysPublic = PaginatedList[ApiKeyPublic]"
+        }
+      ]
+    },
+    "v2.2.3:auth-scope": {
+      "path": "gpustack/api/auth.py",
+      "matches": [
+        {
+          "line": 142,
+          "text": "\nasync def authenticate_request(\n    request: Request,\n    basic_credentials: Optional[HTTPBasicCredentials] = None,\n    bearer_token: Optional[HTTPAuthorizationCredentials] = None,\n    x_api_key: Optional[str] = None,\n    cookie_token: Optional[str] = None,\n    session: Optional[AsyncSession] = None,\n) -> User:\n    if hasattr(request.state, \"user\"):"
+        },
+        {
+          "line": 457,
+          "text": "\ndef inference_scope(\n    request: Request, _current_user: Annotated[User, Depends(get_current_user)]\n):\n    scopes = get_scopes(request, _current_user)\n    if PermissionScope.ALL not in scopes and PermissionScope.INFERENCE not in scopes:\n        raise ForbiddenException(\n            message=\"API key does not have permission to access inference features\"\n        )\n"
+        },
+        {
+          "line": 467,
+          "text": "\ndef management_scope(\n    request: Request, _current_user: Annotated[User, Depends(get_current_user)]\n):\n    scopes = get_scopes(request, _current_user)\n    if PermissionScope.ALL not in scopes and PermissionScope.MANAGEMENT not in scopes:\n        raise ForbiddenException(\n            message=\"API key does not have permission to access management features\"\n        )\n"
+        }
+      ]
+    },
+    "v2.2.3:org-isolation": {
+      "path": "gpustack/api/tenant.py",
+      "matches": [
+        {
+          "line": 295,
+          "text": "\nasync def resolve_tenant_context(\n    request: Request,\n    user: User,\n    x_organization_id: Optional[str] = None,\n    session: Optional[AsyncSession] = None,\n) -> TenantContext:\n    \"\"\"Resolve the per-request TenantContext.\n\n    Result is cached on `request.state.tenant_context` so multiple downstream"
+        },
+        {
+          "line": 496,
+          "text": "\ndef tenant_list_conditions(\n    ctx: TenantContext,\n    model: Any,\n) -> List[Any]:\n    \"\"\"Build SQLAlchemy WHERE clauses to scope a list query to the caller.\n\n    Visibility model:\n    - System principals (workers / cluster service accounts) and\n      platform admin without org context see everything — returns no"
+        },
+        {
+          "line": 708,
+          "text": "\ndef assert_resource_visible(\n    ctx: TenantContext,\n    resource: Any,\n    *,\n    not_found_message: str = \"Resource not found\",\n) -> None:\n    \"\"\"Raise 404 if the caller is not allowed to see ``resource``.\n\n    Mirrors the semantics of ``tenant_list_conditions`` for single-item"
+        }
+      ]
+    },
+    "v2.2.3:routes": {
+      "path": "gpustack/schemas/model_routes.py",
+      "matches": [
+        {
+          "line": 204,
+          "text": "class ModelRouteTargetCreate(ModelRouteTargetUpdate):\n    fallback_status_codes: Optional[List[str]] = Field(\n        default=None,\n        sa_column=Column(\n            JSON,\n            nullable=True,\n        ),\n    )\n\n    @field_validator(\"fallback_status_codes\", mode=\"before\")"
+        },
+        {
+          "line": 212,
+          "text": "\n    @field_validator(\"fallback_status_codes\", mode=\"before\")\n    def validate_fallback_status_codes(cls, v):\n        if v is None:\n            return v\n        deduped: Set[str] = set(v)\n        for status in deduped:\n            if status not in [\n                FallbackStatusEnum.ERROR_400,\n                FallbackStatusEnum.ERROR_500,"
+        },
+        {
+          "line": 213,
+          "text": "    @field_validator(\"fallback_status_codes\", mode=\"before\")\n    def validate_fallback_status_codes(cls, v):\n        if v is None:\n            return v\n        deduped: Set[str] = set(v)\n        for status in deduped:\n            if status not in [\n                FallbackStatusEnum.ERROR_400,\n                FallbackStatusEnum.ERROR_500,\n            ]:"
+        },
+        {
+          "line": 300,
+          "text": "    categories: List[str] = Field(sa_type=JSON, default=[])\n    meta: Optional[Dict[str, Any]] = Field(sa_type=JSON, default={})\n    generic_proxy: Optional[bool] = Field(default=False)\n\n    @field_validator(\"categories\", mode=\"before\")\n    def validate_categories(cls, v):\n        if v is None:\n            return v\n        for category in v:\n            if category not in ["
+        },
+        {
+          "line": 301,
+          "text": "    meta: Optional[Dict[str, Any]] = Field(sa_type=JSON, default={})\n    generic_proxy: Optional[bool] = Field(default=False)\n\n    @field_validator(\"categories\", mode=\"before\")\n    def validate_categories(cls, v):\n        if v is None:\n            return v\n        for category in v:\n            if category not in [\n                \"llm\","
+        },
+        {
+          "line": 349,
+          "text": "\nclass ModelRouteBase(ModelRouteUpdateBase):\n    # NULL for hand-created routes.\n    created_model_id: Optional[int] = Field(default=None, nullable=True)\n    targets: int = Field(default=0, nullable=False, ge=0)\n    ready_targets: int = Field(default=0, nullable=False, ge=0)\n    access_policy: AccessPolicyEnum = Field(default=AccessPolicyEnum.AUTHED)\n    owner_principal_id: int = Field(\n        default_factory=_platform_principal_id,\n        foreign_key=\"principals.id\","
+        },
+        {
+          "line": 407,
+          "text": "class SetFallbackTargetInput(BaseModel):\n    fallback_status_codes: Optional[List[str]] = Field(\n        default=None,\n        sa_column=Column(\n            JSON,\n            nullable=True,\n        ),\n    )\n\n    @field_validator(\"fallback_status_codes\", mode=\"before\")"
+        },
+        {
+          "line": 415,
+          "text": "\n    @field_validator(\"fallback_status_codes\", mode=\"before\")\n    def validate_fallback_status_codes(cls, v):\n        if v is None:\n            return v\n        deduped: Set[FallbackStatusEnum] = set(v)\n        for status in deduped:\n            if status not in [\n                FallbackStatusEnum.ERROR_400,\n                FallbackStatusEnum.ERROR_500,"
+        },
+        {
+          "line": 416,
+          "text": "    @field_validator(\"fallback_status_codes\", mode=\"before\")\n    def validate_fallback_status_codes(cls, v):\n        if v is None:\n            return v\n        deduped: Set[FallbackStatusEnum] = set(v)\n        for status in deduped:\n            if status not in [\n                FallbackStatusEnum.ERROR_400,\n                FallbackStatusEnum.ERROR_500,\n            ]:"
+        }
+      ]
+    },
+    "v2.2.3:backend": {
+      "path": "gpustack/schemas/inference_backend.py",
+      "matches": [
+        {
+          "line": 32,
+          "text": "\nclass VersionConfig(BaseModel):\n    \"\"\"\n    Configuration for a specific version of an inference backend.\n\n    Attributes:\n        image_name: Docker image name for this version\n        run_command: Command to run the inference server (Optional, uses default if not specified)\n        entrypoint: Container entrypoint command that overrides the default image entrypoint. (Optional)\n        built_in_frameworks: Only built-in backend will return this field, sourced from gpustack-runner configuration. (Optional)"
+        },
+        {
+          "line": 53,
+          "text": "\nclass VersionConfigDict(RootModel[Dict[str, VersionConfig]]):\n    \"\"\"\n    Wrapper model for version configs dictionary to enable proper JSON serialization.\n    \"\"\"\n\n    root: Dict[str, VersionConfig] = Field(default_factory=dict)\n\n\n# Database Models"
+        },
+        {
+          "line": 62,
+          "text": "# Database Models\nclass InferenceBackendBase(SQLModel):\n    \"\"\"\n    Base model for inference backends.\n\n    Attributes:\n        backend_name: Name of the backend (e.g., 'SGLang')\n        version_configs: Dictionary mapping version strings to their configurations\n        default_version: Default version to use if not specified\n        default_backend_param: Default parameters to pass to the backend"
+        },
+        {
+          "line": 74,
+          "text": "        description: Backend description\n        health_check_path: Path for health check endpoint\n        parameter_format: Parameter format for backend parameters (Optional)\n        common_parameters: List of commonly used parameters for UI hints (Optional)\n\n    \"\"\"\n\n    # Backend name is unique within an Org scope: one Platform-NULL row\n    # plus optional one row per Org with the same backend_name (Hybrid\n    # model). Composite unique is declared on the table class below."
+        },
+        {
+          "line": 110,
+          "text": "    )\n    health_check_path: Optional[str] = SQLField(default=None)\n    backend_source: Optional[BackendSourceEnum] = SQLField(default=None)\n    enabled: Optional[bool] = SQLField(default=None)\n    icon: Optional[str] = SQLField(default=None)\n    default_env: Optional[Dict[str, str]] = SQLField(\n        sa_column=Column(JSON), default=None\n    )\n    parameter_format: Optional[ParameterFormatEnum] = SQLField(default=None)\n    common_parameters: Optional[List[str]] = SQLField("
+        }
+      ]
+    },
+    "v2.2.3:standard-api": {
+      "path": "gpustack/gateway/utils.py",
+      "matches": [
+        {
+          "line": 77,
+          "text": "\nrouter_header_key = \"X-GPUStack-Model-Instance\"\ngpustack_original_path_header = \"x-gpustack-original-path\"\ngpustack_fallback_path_header = \"x-gpustack-fallback-path\"\n\n# Type alias for destination tuples\n# Each tuple contains (weight: int, model_name: str, registry: McpBridgeRegistry)\nDestinationTupleList = List[Tuple[int, str, McpBridgeRegistry]]\n\n"
+        },
+        {
+          "line": 123,
+          "text": "# Paths routed like OpenAI (model-name resolution / same ingress); includes vLLM extras.\nopenai_model_prefixes: List[RoutePrefix] = [\n    RoutePrefix(\n        [\n            \"/chat/completions\",\n            \"/completions\",\n            \"/responses\",\n            \"/embeddings\",\n            \"/audio/transcriptions\",\n            \"/audio/speech\","
+        },
+        {
+          "line": 128,
+          "text": "            \"/completions\",\n            \"/responses\",\n            \"/embeddings\",\n            \"/audio/transcriptions\",\n            \"/audio/speech\",\n            \"/images/generations\",\n            \"/images/edits\",\n        ],\n        True,\n    ),"
+        },
+        {
+          "line": 132,
+          "text": "            \"/audio/speech\",\n            \"/images/generations\",\n            \"/images/edits\",\n        ],\n        True,\n    ),\n    RoutePrefix(\n        [\n            \"/audio/translations\",\n            \"/images/variations\","
+        },
+        {
+          "line": 643,
+          "text": "        # to compatible with rewrite-target /$1$3, the first capturing group is empty.\n        # The /\\d+ variant strips the route-id segment from /model/proxy/<id>/<path>\n        # so the upstream receives /<path>. The id-less variant preserves the legacy\n        # /model/proxy/<path> + X-GPUStack-Model header form. The more specific rule\n        # is listed first so Higress tries id-based matching before falling back.\n        expected_rule.http.paths.append(\n            wrap_route(\n                r\"/()model/proxy/\\d+(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )"
+        },
+        {
+          "line": 645,
+          "text": "        # so the upstream receives /<path>. The id-less variant preserves the legacy\n        # /model/proxy/<path> + X-GPUStack-Model header form. The more specific rule\n        # is listed first so Higress tries id-based matching before falling back.\n        expected_rule.http.paths.append(\n            wrap_route(\n                r\"/()model/proxy/\\d+(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )\n        )\n        expected_rule.http.paths.append("
+        },
+        {
+          "line": 649,
+          "text": "            wrap_route(\n                r\"/()model/proxy/\\d+(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )\n        )\n        expected_rule.http.paths.append(\n            wrap_route(\n                \"/()model/proxy(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )"
+        },
+        {
+          "line": 855,
+          "text": "        included_generic_route (bool): Whether to include a generic '/' route for fallback traffic. Used in worker gateway.\n        included_proxy_route (bool): Whether to include a proxy route for model traffic (e.g., /model/proxy/{model_name}). Used in server gateway.\n    \"\"\"\n    if event_type == EventType.DELETED:\n        try:\n            await networking_api.delete_namespaced_ingress(\n                name=ingress_name, namespace=namespace\n            )\n            logger.info(\n                f\"Deleted model ingress {ingress_name} for model route {route_name}\""
+        }
+      ]
+    },
+    "v2.2.3:gateway": {
+      "path": "gpustack/gateway/__init__.py",
+      "matches": [
+        {
+          "line": 294,
+          "text": "\ndef ext_auth_plugin(cfg: Config) -> Tuple[str, WasmPluginSpec]:\n    resource_name = \"gpustack-llm-ext-auth\"\n    registry = get_gpustack_higress_registry(cfg=cfg)\n\n    # auth every path on the matched route\n    default_match_rule = get_match_rules(\n        match_type=\"blacklist\",\n        paths=[(\"/\", \"prefix\")],\n    )"
+        },
+        {
+          "line": 539,
+          "text": "\ndef generic_proxy_router_plugin(cfg: Config) -> Tuple[str, WasmPluginSpec]:\n    \"\"\"\n    Generic-proxy router. Operates in two complementary modes per request and\n    fully replaces Higress's built-in ``model-router`` — that plugin must be\n    disabled wherever this one is active, otherwise both will write\n    ``x-higress-llm-model`` and the winner becomes priority-dependent.\n\n    1. **Path-driven**: when ``:path`` matches ``prefix`` (``/model/proxy/``),\n       the first segment after the prefix is the alias id; it is looked up in"
+        },
+        {
+          "line": 662,
+          "text": "\nasync def ensure_tls_secret(cfg: Config, api_client: k8s_client.ApiClient):\n    \"\"\"\n    Ensure the TLS secret if ssl key pair is provided.\n    \"\"\"\n    ssl_keyfile = cfg.ssl_keyfile\n    ssl_certfile = cfg.ssl_certfile\n    if not ssl_keyfile or not ssl_certfile:\n        return\n    if not (os.path.isfile(ssl_keyfile) and os.path.isfile(ssl_certfile)):"
+        }
+      ]
+    },
+    "v2.2.3:instance-query": {
+      "path": "gpustack/server/services.py",
+      "matches": [
+        {
+          "line": 905,
+          "text": "    @locked_cached()\n    async def get_running_instances(self, model_id: int) -> List[ModelInstance]:\n        results = await ModelInstance.all_by_fields(\n            self.session,\n            fields={\"model_id\": model_id, \"state\": ModelInstanceStateEnum.RUNNING},\n        )\n        if results is None:\n            return []\n\n        for result in results:"
+        }
+      ]
+    },
+    "v2.2.3:maintenance": {
+      "path": "gpustack/schemas/workers.py",
+      "matches": [
+        {
+          "line": 261,
+          "text": "\nclass Maintenance(BaseModel):\n    enabled: bool = False\n    message: Optional[str] = None\n\n\nclass WorkerStatus(SystemInfo):\n    \"\"\"\n    rpc_servers: Deprecated\n    \"\"\""
+        },
+        {
+          "line": 379,
+          "text": "\n    def compute_state(self):\n        if self.maintenance and self.maintenance.enabled:\n            self.state = WorkerStateEnum.MAINTENANCE\n            self.state_message = self.maintenance.message\n            return\n\n        if self.state.is_provisioning:\n            return\n        if self.state == WorkerStateEnum.NOT_READY and self.state_message is not None:"
+        },
+        {
+          "line": 380,
+          "text": "    def compute_state(self):\n        if self.maintenance and self.maintenance.enabled:\n            self.state = WorkerStateEnum.MAINTENANCE\n            self.state_message = self.maintenance.message\n            return\n\n        if self.state.is_provisioning:\n            return\n        if self.state == WorkerStateEnum.NOT_READY and self.state_message is not None:\n            return"
+        }
+      ]
+    },
+    "v2.2.3:worker-update": {
+      "path": "gpustack/routes/workers.py",
+      "matches": [
+        {
+          "line": 712,
+          "text": "@router.put(\"/{id}\", response_model=WorkerPublic)\nasync def update_worker(\n    ctx: TenantContextDep,\n    session: SessionDep,\n    id: int,\n    worker_in: WorkerUpdate,\n):\n    worker = await Worker.one_by_id(session, id)\n    if worker is not None and worker.deleted_at is not None:\n        worker = None"
+        },
+        {
+          "line": 725,
+          "text": "    patch = worker_in.model_dump()\n    if worker_in.maintenance is not None:\n        worker.maintenance = worker_in.maintenance\n        worker.compute_state()\n        patch[\"state\"] = worker.state\n    try:\n        await WorkerService(session).update(worker, patch)\n    except Exception as e:\n        raise InternalServerErrorException(message=f\"Failed to update worker: {e}\")\n"
+        },
+        {
+          "line": 726,
+          "text": "    if worker_in.maintenance is not None:\n        worker.maintenance = worker_in.maintenance\n        worker.compute_state()\n        patch[\"state\"] = worker.state\n    try:\n        await WorkerService(session).update(worker, patch)\n    except Exception as e:\n        raise InternalServerErrorException(message=f\"Failed to update worker: {e}\")\n\n    return worker"
+        }
+      ]
+    },
+    "v2.2.3:placement-filter": {
+      "path": "gpustack/policies/worker_filters/status_filter.py",
+      "matches": [
+        {
+          "line": 10,
+          "text": "\nclass StatusFilter:\n    def __init__(self, model: Model):\n        self._model = model\n\n    async def filter(self, workers: List[Worker]) -> Tuple[List[Worker], List[str]]:\n        \"\"\"\n        Filter the workers with the worker selector.\n        \"\"\"\n"
+        },
+        {
+          "line": 21,
+          "text": "        for worker in workers:\n            if worker.state == WorkerStateEnum.READY:\n                candidates.append(worker)\n\n        messages = []\n        if len(candidates) != len(workers):\n            messages = [\n                f\"Matched {len(candidates)}/{len(workers)} workers by READY status.\"\n            ]\n        return candidates, messages"
+        }
+      ]
+    },
+    "v2.2.3:offline-recovery": {
+      "path": "gpustack/server/worker_instance_cleaner.py",
+      "matches": [
+        {
+          "line": 37,
+          "text": "\n    async def _cleanup_offline_worker_instances(self):\n        \"\"\"\n        Delete model instances assigned to offline workers.\n        \"\"\"\n        async with async_session() as session:\n            workers = await Worker.all(session)\n            if not workers:\n                return\n"
+        },
+        {
+          "line": 49,
+          "text": "                if worker.state == WorkerStateEnum.NOT_READY and (\n                    not worker.maintenance or not worker.maintenance.enabled\n                ):\n                    offline, last_heartbeat_str = is_offline(\n                        worker.heartbeat_time,\n                        envs.MODEL_INSTANCE_RESCHEDULE_GRACE_PERIOD,\n                    )\n                    if offline:\n                        offline_workers[worker.name] = {\n                            \"id\": worker.id,"
+        },
+        {
+          "line": 100,
+          "text": "\n            await ModelInstanceService(session).batch_delete(instances_to_delete)\n\n            reschedule_minutes = envs.MODEL_INSTANCE_RESCHEDULE_GRACE_PERIOD / 60\n            for worker_name, instance_names in impacted_instances_by_worker.items():\n                last_heartbeat_str = offline_workers[worker_name][\"last_heartbeat_str\"]\n                logger.info(\n                    f\"Worker {worker_name} is in NOT_READY state for more than \"\n                    f\"{reschedule_minutes:.1f} minutes (last heartbeat at {last_heartbeat_str}) \"\n                    \"and is not in maintenance mode. \""
+        }
+      ]
+    },
+    "v2.2.3:inference-proxy": {
+      "path": "gpustack/routes/openai.py",
+      "matches": [
+        {
+          "line": 185,
+          "text": "\nasync def proxy_request_by_model(\n    request: Request,\n    user: CurrentUserDep,\n):\n    \"\"\"\n    Proxy the request to the model instance that is running the model specified in the\n    request body.\n\n    Uses an inline session instead of SessionDep so the session is released"
+        },
+        {
+          "line": 488,
+          "text": "\nasync def get_running_instance(\n    session: AsyncSession,\n    model_id: int,\n    overridden_model_name: Optional[str] = None,\n):\n    \"\"\"Pick a RUNNING instance, narrowing by ``mounted_loras`` when a\n    LoRA ``overridden_model_name`` is given. The filter is needed\n    because ``mounted_loras`` is a one-shot snapshot taken at STARTING\n    and never hot-reloaded"
+        },
+        {
+          "line": 521,
+          "text": "            )\n    return await load_balancer.get_instance(running_instances)\n\n\ndef mutate_request(\n    request: Request,\n    model_name: str,\n    body_json: Optional[dict],\n    form_data: Optional[aiohttp.FormData],\n):"
+        }
+      ]
+    },
+    "v2.2.3:queue": {
+      "path": "gpustack/server/workqueue.py",
+      "matches": [
+        {
+          "line": 7,
+          "text": "to the DB, which re-fired the event bus and re-enqueued the item — a\nself-perpetuating poll loop. A work queue with in-memory ``add_after`` lets a\ncontroller re-observe on a timer without touching the DB.\n\nGuarantees:\n\n* **Per-keys serialization** — a key handed out by :meth:`WorkQueue.get` is not\n  handed out again until :meth:`WorkQueue.done` is called for it. Events that\n  arrive for an in-flight key are coalesced and re-queued on ``done``.\n* **DELETED priority + stickiness** — a ``DELETED`` event jumps to the front of"
+        },
+        {
+          "line": 25,
+          "text": "  starve processing.\n* **Exponential backoff** — :meth:`add_rate_limited` re-queues with a capped,\n  jittered exponential delay per key; :meth:`forget` resets it on success.\n\nConcurrency model: the queue assumes a **single asyncio event loop with a single\nconsumer** calling :meth:`get`. Producers (``add`` / ``add_after`` /\n``add_rate_limited``) are synchronous and never await, so they run to completion\nwithout interleaving; the queue therefore needs no internal locking. Consumers\nfan out by spawning one task per key returned from ``get`` and calling ``done``\nwhen that task finishes — this preserves unbounded per-key concurrency while"
+        },
+        {
+          "line": 130,
+          "text": "\nclass WorkQueue:\n    \"\"\"See module docstring. Single-loop, single-consumer.\"\"\"\n\n    def __init__(\n        self,\n        *,\n        dedup_window: float = 0.0,\n        dedup_max_wait: float = 0.0,\n        backoff_base: float = 1.0,"
+        }
+      ]
+    },
+    "v2.2.3:model-files": {
+      "path": "gpustack/routes/model_files.py",
+      "matches": [
+        {
+          "line": 166,
+          "text": ")\nasync def create_model_file(\n    session: SessionDep, ctx: TenantContextDep, model_file_in: ModelFileCreate\n):\n    fields = {\n        \"worker_id\": model_file_in.worker_id,\n        \"source_index\": model_file_in.model_source_index,\n        \"local_dir\": model_file_in.local_dir,\n    }\n    existing = await ModelFile.one_by_fields(session, fields)"
+        },
+        {
+          "line": 249,
+          "text": ")\nasync def delete_model_file(\n    session: SessionDep,\n    ctx: TenantContextDep,\n    id: int,\n    cleanup: Optional[bool] = None,\n):\n    model_file = await ModelFile.one_by_id(\n        session, id, options=[selectinload(ModelFile.instances)]\n    )"
+        }
+      ]
+    },
+    "v2.2.3:usage": {
+      "path": "gpustack/schemas/model_usage.py",
+      "matches": [
+        {
+          "line": 11,
+          "text": "\nclass OperationEnum(str, Enum):\n    COMPLETION = \"completion\"\n    CHAT_COMPLETION = \"chat_completion\"\n    EMBEDDING = \"embedding\"\n    RERANK = \"rerank\"\n    IMAGE_GENERATION = \"image_generation\"\n    AUDIO_SPEECH = \"audio_speech\"\n    AUDIO_TRANSCRIPTION = \"audit_transcription\"\n"
+        },
+        {
+          "line": 74,
+          "text": "    )\n    request_count: int = Field(\n        default=..., sa_column=Column(BigInteger, nullable=False)\n    )\n    operation: Optional[OperationEnum] = Field(default=None)\n\n    model_config = ConfigDict(protected_namespaces=())"
+        }
+      ]
+    },
+    "v2.2.3:usage-details": {
+      "path": "gpustack/schemas/model_usage_details.py",
+      "matches": [
+        {
+          "line": 13,
+          "text": "\nclass ModelUsageDetails(SQLModel, BaseModelMixin, table=True):\n    \"\"\"\n    Per-request inference usage audit row.\n\n    Reference id columns (``user_id`` / ``model_id`` / ``model_route_id`` /\n    ``provider_id`` / ``cluster_id`` / ``api_key_id``) are plain integers,\n    not foreign keys. Audit rows must outlive the entities they describe;\n    losing the historical id (which ``SET NULL`` would do on parent delete)\n    is a worse audit outcome than losing the live join, so ids stay as"
+        },
+        {
+          "line": 79,
+          "text": "    # estimated token-billed rows for reconciliation / transparency.\n    completed: bool = Field(\n        default=False,\n        sa_column=Column(Boolean, nullable=False, server_default=false()),\n    )\n    operation: Optional[OperationEnum] = Field(default=None)\n    # Wall-clock anchors reported by the proxy (UnixMilli on the wire,\n    # stored as naive UTC). Distinct from ``created_at`` so quota\n    # reconciliation / cache rebuild can key off the request's actual\n    # completion time even after rows are archived or migrated."
+        },
+        {
+          "line": 151,
+          "text": "    # estimated token-billed rows for reconciliation / transparency.\n    completed: bool = Field(\n        default=False,\n        sa_column=Column(Boolean, nullable=False, server_default=false()),\n    )\n    operation: Optional[OperationEnum] = Field(default=None)\n    started_at: Optional[datetime] = Field(\n        default=None, sa_column=Column(UTCDateTime(), nullable=True)\n    )\n    completed_at: Optional[datetime] = Field("
+        }
+      ]
+    },
+    "v2.2.3:usage-ingest": {
+      "path": "gpustack/routes/gateway_metrics.py",
+      "matches": [
+        {
+          "line": 17,
+          "text": "@router.post(\"/gateway-metrics\", include_in_schema=False)\nasync def report_gateway_metrics(\n    item: ModelUsageMetrics,\n    _: None = Depends(gateway_token_auth),\n):\n    await accumulate_gateway_metrics([item])"
+        }
+      ]
+    },
+    "v2.2.3:metering": {
+      "path": "gpustack/schemas/metered_usage.py",
+      "matches": [
+        {
+          "line": 18,
+          "text": "  rollup); the summary layer unions the two sources.\n* **Quantities only, no cost.** This is a pure metering table — it stores\n  ``quantity`` in the meter's canonical unit and never any price/cost.\n* **GPU per-card / CPU whole-machine.** Instances meter on the single\n  ``instance.uptime`` meter (wall-clock metered seconds). GPU rows key on\n  ``sku = gpu_type`` and yield GPU-Hours (``quantity * sku_count / 3600`` where\n  ``sku_count`` = card count); CPU rows key on ``sku = cpu flavor`` and yield\n  Instance-Hours (``quantity / 3600``, ``sku_count`` = 1). CPU / memory are not\n  metered separately.\n* **Natural key = resource identity.** The unique constraint is"
+        },
+        {
+          "line": 70,
+          "text": "# meter_key — what is being measured.\nMETER_INSTANCE_UPTIME = \"instance.uptime\"\nMETER_STORAGE_CAPACITY = \"storage.capacity\"\n\n# unit — canonical integer unit of ``quantity``.\nUNIT_SECONDS = \"seconds\"\nUNIT_MIB_SECONDS = \"mib_seconds\"\n\n\n# ---------------------------------------------------------------------------"
+        },
+        {
+          "line": 71,
+          "text": "METER_INSTANCE_UPTIME = \"instance.uptime\"\nMETER_STORAGE_CAPACITY = \"storage.capacity\"\n\n# unit — canonical integer unit of ``quantity``.\nUNIT_SECONDS = \"seconds\"\nUNIT_MIB_SECONDS = \"mib_seconds\"\n\n\n# ---------------------------------------------------------------------------\n# Meter registry (code constants, not a DB table)"
+        },
+        {
+          "line": 97,
+          "text": "METERS: Dict[str, MeterDef] = {\n    METER_INSTANCE_UPTIME: MeterDef(\n        METER_INSTANCE_UPTIME,\n        (RESOURCE_TYPE_GPU_INSTANCE, RESOURCE_TYPE_CPU_INSTANCE),\n        UNIT_SECONDS,\n    ),\n    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,"
+        },
+        {
+          "line": 98,
+          "text": "    METER_INSTANCE_UPTIME: MeterDef(\n        METER_INSTANCE_UPTIME,\n        (RESOURCE_TYPE_GPU_INSTANCE, RESOURCE_TYPE_CPU_INSTANCE),\n        UNIT_SECONDS,\n    ),\n    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,\n    ),"
+        },
+        {
+          "line": 102,
+          "text": "    ),\n    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,\n    ),\n}\n\n\n# ---------------------------------------------------------------------------"
+        },
+        {
+          "line": 103,
+          "text": "    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,\n    ),\n}\n\n\n# ---------------------------------------------------------------------------\n# Hot table"
+        }
+      ]
+    },
+    "v2.2.3:metrics": {
+      "path": "gpustack/server/metrics_collector.py",
+      "matches": [
+        {
+          "line": 60,
+          "text": "\nclass ModelUsageMetrics(BaseModel):\n    model: str\n    input_token: int = 0\n    output_token: int = 0\n    total_token: int = 0\n    input_cached_token: int = 0\n    request_count: int = 1\n    # ``completed`` is True iff the canonical usage chunk was observed before\n    # the stream ended. When False, token fields may be 0 (OpenAI/vLLM) or"
+        },
+        {
+          "line": 208,
+          "text": "\nasync def accumulate_gateway_metrics(metrics: List[ModelUsageMetrics]):\n    async with gateway_buffers_lock:\n        # Product invariant: every inference request resolves to a route\n        # (the gateway can't dispatch otherwise). A NULL model_route_id\n        # means an ingest source regressed — the row will pollute the\n        # \"Untracked\" bucket reserved for pre-upgrade legacy data. Tally\n        # per-batch and surface via a throttled summary so a regressed\n        # gateway doesn't flood logs.\n        missing_route_id_count = 0"
+        }
+      ]
+    },
+    "v2.2.3:new-drain": {
+      "path": "gpustack/server/controllers.py",
+      "matches": []
+    },
+    "v2.2.3:dependencies": {
+      "path": "pyproject.toml",
+      "matches": [
+        {
+          "line": 66,
+          "text": "    \"gpustack-runner==0.1.27.post4\",\n    \"gpustack-runtime==0.2.1\",\n    \"gpustack-higress-plugins==0.3.0\",\n    \"websockets==16.0\",\n    \"py-radix>=1.1.0\",\n]\n\n[dependency-groups]\ndev = [\n    \"installer==0.7.0\","
+        },
+        {
+          "line": 67,
+          "text": "    \"gpustack-runtime==0.2.1\",\n    \"gpustack-higress-plugins==0.3.0\",\n    \"websockets==16.0\",\n    \"py-radix>=1.1.0\",\n]\n\n[dependency-groups]\ndev = [\n    \"installer==0.7.0\",\n    \"coverage[toml]>=7.5.1\","
+        }
+      ]
+    },
+    "main:auth-key": {
+      "path": "gpustack/schemas/api_keys.py",
+      "matches": [
+        {
+          "line": 50,
+          "text": "\nclass ApiKey(ApiKeyBase, BaseModelMixin, table=True):\n    __tablename__ = 'api_keys'\n    __table_args__ = (\n        UniqueConstraint(\n            'user_id', 'owner_principal_id', 'name', name='uix_user_org_name'\n        ),\n    )\n    id: Optional[int] = Field(default=None, primary_key=True)\n    access_key: str = Field(unique=True, index=True)"
+        },
+        {
+          "line": 54,
+          "text": "        UniqueConstraint(\n            'user_id', 'owner_principal_id', 'name', name='uix_user_org_name'\n        ),\n    )\n    id: Optional[int] = Field(default=None, primary_key=True)\n    access_key: str = Field(unique=True, index=True)\n    hashed_secret_key: str = Field(unique=True)\n    # Second verifier for the *same* plaintext, ``sha256$<salt>$<hash>``, issued\n    # only for secrets this server generated (see\n    # ``security.secret_key_digest_eligible``). Both columns are permanent and"
+        },
+        {
+          "line": 59,
+          "text": "    access_key: str = Field(unique=True, index=True)\n    hashed_secret_key: str = Field(unique=True)\n    # Second verifier for the *same* plaintext, ``sha256$<salt>$<hash>``, issued\n    # only for secrets this server generated (see\n    # ``security.secret_key_digest_eligible``). Both columns are permanent and\n    # neither is legacy: this one is the hot-path verifier, ``hashed_secret_key``\n    # keeps its argon2 value forever as the fallback — which is also what lets an\n    # older version verify every key after a downgrade.\n    #\n    # HARD CONSTRAINT: the two columns must always derive from one plaintext."
+        },
+        {
+          "line": 63,
+          "text": "    # ``security.secret_key_digest_eligible``). Both columns are permanent and\n    # neither is legacy: this one is the hot-path verifier, ``hashed_secret_key``\n    # keeps its argon2 value forever as the fallback — which is also what lets an\n    # older version verify every key after a downgrade.\n    #\n    # HARD CONSTRAINT: the two columns must always derive from one plaintext.\n    # Authentication treats a digest mismatch as an authoritative rejection and\n    # does *not* retry against argon2, so anything that writes one column must\n    # write both, or set this one back to NULL. Today every writer is a creation\n    # path and there is no rotation path; a future rotation feature — or a manual"
+        },
+        {
+          "line": 72,
+          "text": "    # path and there is no rotation path; a future rotation feature — or a manual\n    # DB fix — that touches ``hashed_secret_key`` alone would lock the key out.\n    #\n    # Populated at creation for eligible keys. NULL means either a row that\n    # predates the column, which the first successful argon2 verification\n    # backfills, or a key that is not eligible for a digest at all.\n    secret_key_digest: Optional[str] = Field(default=None, nullable=True)\n    user_id: int = Field(foreign_key='principals.id', nullable=False)\n    # ``owner_principal_id`` is the tenant the key acts as. Nullable\n    # because an admin-created \"All\" mode key (no Org context) must"
+        },
+        {
+          "line": 79,
+          "text": "    user_id: int = Field(foreign_key='principals.id', nullable=False)\n    # ``owner_principal_id`` is the tenant the key acts as. Nullable\n    # because an admin-created \"All\" mode key (no Org context) must\n    # fall through to ``bypass_tenant_filter`` — pinning such keys to\n    # any specific principal would leave USER-personal and cross-Org\n    # resources outside their reach. ``_resolve_requested_principal_id``\n    # only consumes this when non-None, so NULL keys inherit the\n    # caller's user-based resolution (admin → None → bypass).\n    owner_principal_id: Optional[int] = Field(\n        default=None,"
+        },
+        {
+          "line": 86,
+          "text": "    # caller's user-based resolution (admin → None → bypass).\n    owner_principal_id: Optional[int] = Field(\n        default=None,\n        sa_column=Column(\n            Integer,\n            ForeignKey(\"principals.id\", ondelete=\"CASCADE\"),\n            nullable=True,\n        ),\n    )\n    expires_at: Optional[datetime] = Field(sa_column=Column(UTCDateTime), default=None)"
+        },
+        {
+          "line": 163,
+          "text": "    # Organizations\".\n    owner_principal_id: Optional[int] = None\n    created_at: datetime\n    updated_at: datetime\n    expires_at: Optional[datetime] = None\n\n\nApiKeysPublic = PaginatedList[ApiKeyPublic]"
+        }
+      ]
+    },
+    "main:auth-scope": {
+      "path": "gpustack/api/auth.py",
+      "matches": [
+        {
+          "line": 187,
+          "text": "\nasync def authenticate_request(\n    request: Request,\n    basic_credentials: Optional[HTTPBasicCredentials] = None,\n    bearer_token: Optional[HTTPAuthorizationCredentials] = None,\n    x_api_key: Optional[str] = None,\n    cookie_token: Optional[str] = None,\n    session: Optional[AsyncSession] = None,\n) -> User:\n    if hasattr(request.state, \"user\"):"
+        },
+        {
+          "line": 764,
+          "text": "\ndef inference_scope(\n    request: Request, _current_user: Annotated[User, Depends(get_current_user)]\n):\n    scopes = get_scopes(request, _current_user)\n    if PermissionScope.ALL not in scopes and PermissionScope.INFERENCE not in scopes:\n        raise ForbiddenException(\n            message=\"API key does not have permission to access inference features\"\n        )\n"
+        },
+        {
+          "line": 774,
+          "text": "\ndef management_scope(\n    request: Request, _current_user: Annotated[User, Depends(get_current_user)]\n):\n    scopes = get_scopes(request, _current_user)\n    if PermissionScope.ALL not in scopes and PermissionScope.MANAGEMENT not in scopes:\n        raise ForbiddenException(\n            message=\"API key does not have permission to access management features\"\n        )\n"
+        }
+      ]
+    },
+    "main:org-isolation": {
+      "path": "gpustack/api/tenant.py",
+      "matches": [
+        {
+          "line": 295,
+          "text": "\nasync def resolve_tenant_context(\n    request: Request,\n    user: User,\n    x_organization_id: Optional[str] = None,\n    session: Optional[AsyncSession] = None,\n) -> TenantContext:\n    \"\"\"Resolve the per-request TenantContext.\n\n    Result is cached on `request.state.tenant_context` so multiple downstream"
+        },
+        {
+          "line": 496,
+          "text": "\ndef tenant_list_conditions(\n    ctx: TenantContext,\n    model: Any,\n) -> List[Any]:\n    \"\"\"Build SQLAlchemy WHERE clauses to scope a list query to the caller.\n\n    Visibility model:\n    - Cluster-bound system principals see their cluster's rows and rows\n      with NULL cluster_id. Models without cluster_id remain unfiltered."
+        },
+        {
+          "line": 737,
+          "text": "\ndef assert_resource_visible(\n    ctx: TenantContext,\n    resource: Any,\n    *,\n    not_found_message: str = \"Resource not found\",\n) -> None:\n    \"\"\"Raise 404 if the caller is not allowed to see ``resource``.\n\n    Mirrors the semantics of ``tenant_list_conditions`` for single-item"
+        }
+      ]
+    },
+    "main:routes": {
+      "path": "gpustack/schemas/model_routes.py",
+      "matches": [
+        {
+          "line": 139,
+          "text": "    )\n    # LB base-capability knobs. max_running_requests is deploy-level\n    # (one value per instance of the target): the engine's max_num_seqs\n    # is a start argument, not a metric, so it cannot be collected.\n    # None means no concurrency filtering — the default and recommended\n    # behavior.\n    max_running_requests: Optional[int] = Field(default=None, nullable=True)\n\n    @field_validator(\"max_running_requests\", mode=\"before\")\n    def validate_max_running_requests(cls, v):"
+        },
+        {
+          "line": 144,
+          "text": "    # behavior.\n    max_running_requests: Optional[int] = Field(default=None, nullable=True)\n\n    @field_validator(\"max_running_requests\", mode=\"before\")\n    def validate_max_running_requests(cls, v):\n        if v is None:\n            return v\n        if not isinstance(v, int):\n            raise ValueError(\"max_running_requests must be an integer\")\n        if v < 0:"
+        },
+        {
+          "line": 146,
+          "text": "\n    @field_validator(\"max_running_requests\", mode=\"before\")\n    def validate_max_running_requests(cls, v):\n        if v is None:\n            return v\n        if not isinstance(v, int):\n            raise ValueError(\"max_running_requests must be an integer\")\n        if v < 0:\n            raise ValueError(\"max_running_requests must not be negative\")\n        return v"
+        },
+        {
+          "line": 147,
+          "text": "    @field_validator(\"max_running_requests\", mode=\"before\")\n    def validate_max_running_requests(cls, v):\n        if v is None:\n            return v\n        if not isinstance(v, int):\n            raise ValueError(\"max_running_requests must be an integer\")\n        if v < 0:\n            raise ValueError(\"max_running_requests must not be negative\")\n        return v\n"
+        },
+        {
+          "line": 151,
+          "text": "        if not isinstance(v, int):\n            raise ValueError(\"max_running_requests must be an integer\")\n        if v < 0:\n            raise ValueError(\"max_running_requests must not be negative\")\n        return v\n\n    @model_validator(mode=\"before\")\n    @classmethod\n    def _accept_legacy_provider_model_name(cls, data):\n        # Accept the pre-v2.2.0 ``provider_model_name`` key as a"
+        },
+        {
+          "line": 153,
+          "text": "        if v < 0:\n            raise ValueError(\"max_running_requests must not be negative\")\n        return v\n\n    @model_validator(mode=\"before\")\n    @classmethod\n    def _accept_legacy_provider_model_name(cls, data):\n        # Accept the pre-v2.2.0 ``provider_model_name`` key as a\n        # deprecated alias for ``overridden_model_name``. Conflicting\n        # values on both keys are rejected to avoid silent picking."
+        },
+        {
+          "line": 222,
+          "text": "class ModelRouteTargetCreate(ModelRouteTargetUpdate):\n    fallback_status_codes: Optional[List[str]] = Field(\n        default=None,\n        sa_column=Column(\n            JSON,\n            nullable=True,\n        ),\n    )\n\n    @field_validator(\"fallback_status_codes\", mode=\"before\")"
+        },
+        {
+          "line": 230,
+          "text": "\n    @field_validator(\"fallback_status_codes\", mode=\"before\")\n    def validate_fallback_status_codes(cls, v):\n        if v is None:\n            return v\n        deduped: Set[str] = set(v)\n        for status in deduped:\n            if status not in [\n                FallbackStatusEnum.ERROR_400,\n                FallbackStatusEnum.ERROR_500,"
+        },
+        {
+          "line": 231,
+          "text": "    @field_validator(\"fallback_status_codes\", mode=\"before\")\n    def validate_fallback_status_codes(cls, v):\n        if v is None:\n            return v\n        deduped: Set[str] = set(v)\n        for status in deduped:\n            if status not in [\n                FallbackStatusEnum.ERROR_400,\n                FallbackStatusEnum.ERROR_500,\n            ]:"
+        },
+        {
+          "line": 330,
+          "text": "    categories: List[str] = Field(sa_type=JSON, default=[])\n    meta: Optional[Dict[str, Any]] = Field(sa_type=JSON, default={})\n    generic_proxy: Optional[bool] = Field(default=False)\n\n    @field_validator(\"categories\", mode=\"before\")\n    def validate_categories(cls, v):\n        if v is None:\n            return v\n        for category in v:\n            if category not in ["
+        },
+        {
+          "line": 331,
+          "text": "    meta: Optional[Dict[str, Any]] = Field(sa_type=JSON, default={})\n    generic_proxy: Optional[bool] = Field(default=False)\n\n    @field_validator(\"categories\", mode=\"before\")\n    def validate_categories(cls, v):\n        if v is None:\n            return v\n        for category in v:\n            if category not in [\n                \"llm\","
+        },
+        {
+          "line": 384,
+          "text": "\nclass ModelRouteBase(ModelRouteUpdateBase):\n    # NULL for hand-created routes.\n    created_model_id: Optional[int] = Field(default=None, nullable=True)\n    targets: int = Field(default=0, nullable=False, ge=0)\n    ready_targets: int = Field(default=0, nullable=False, ge=0)\n    access_policy: AccessPolicyEnum = Field(default=AccessPolicyEnum.AUTHED)\n    owner_principal_id: int = Field(\n        default_factory=_platform_principal_id,\n        foreign_key=\"principals.id\","
+        }
+      ]
+    },
+    "main:backend": {
+      "path": "gpustack/schemas/inference_backend.py",
+      "matches": [
+        {
+          "line": 34,
+          "text": "\nclass VersionConfig(BaseModel):\n    \"\"\"\n    Configuration for a specific version of an inference backend.\n\n    Attributes:\n        image_name: Docker image name for this version\n        run_command: Command to run the inference server (Optional, uses default if not specified)\n        entrypoint: Container entrypoint command that overrides the default image entrypoint. (Optional)\n        built_in_frameworks: Only built-in backend will return this field, sourced from gpustack-runner configuration. (Optional)"
+        },
+        {
+          "line": 60,
+          "text": "\nclass VersionConfigDict(RootModel[Dict[str, VersionConfig]]):\n    \"\"\"\n    Wrapper model for version configs dictionary to enable proper JSON serialization.\n    \"\"\"\n\n    root: Dict[str, VersionConfig] = Field(default_factory=dict)\n\n\n# Database Models"
+        },
+        {
+          "line": 69,
+          "text": "# Database Models\nclass InferenceBackendBase(SQLModel):\n    \"\"\"\n    Base model for inference backends.\n\n    Attributes:\n        backend_name: Name of the backend (e.g., 'SGLang')\n        version_configs: Dictionary mapping version strings to their configurations\n        default_version: Default version to use if not specified\n        default_backend_param: Default parameters to pass to the backend"
+        },
+        {
+          "line": 81,
+          "text": "        description: Backend description\n        health_check_path: Path for health check endpoint\n        parameter_format: Parameter format for backend parameters (Optional)\n        common_parameters: List of commonly used parameters for UI hints (Optional)\n\n    \"\"\"\n\n    # Backend name is unique within an Org scope: one Platform-NULL row\n    # plus optional one row per Org with the same backend_name (Hybrid\n    # model). Composite unique is declared on the table class below."
+        },
+        {
+          "line": 117,
+          "text": "    )\n    health_check_path: Optional[str] = SQLField(default=None)\n    backend_source: Optional[BackendSourceEnum] = SQLField(default=None)\n    enabled: Optional[bool] = SQLField(default=None)\n    icon: Optional[str] = SQLField(default=None)\n    # Card-level source origin: which managed source last produced this\n    # community backend (BUILTIN packaged / FILE-yaml / URL). NULL on built-in\n    # engine rows and user-created custom backends.\n    source_name: Optional[str] = SQLField(default=None)\n    source_type: Optional[SourceTypeEnum] = SQLField(default=None)"
+        }
+      ]
+    },
+    "main:standard-api": {
+      "path": "gpustack/gateway/utils.py",
+      "matches": [
+        {
+          "line": 98,
+          "text": "\nrouter_header_key = \"X-GPUStack-Model-Instance\"\ngpustack_original_path_header = \"x-gpustack-original-path\"\ngpustack_fallback_path_header = \"x-gpustack-fallback-path\"\n\n# Type alias for destination tuples\n# Each tuple contains (weight: int, model_name: str, registry: McpBridgeRegistry)\nDestinationTupleList = List[Tuple[int, str, McpBridgeRegistry]]\n\n"
+        },
+        {
+          "line": 195,
+          "text": "# Paths routed like OpenAI (model-name resolution / same ingress); includes vLLM extras.\nopenai_model_prefixes: List[RoutePrefix] = [\n    RoutePrefix(\n        [\n            \"/chat/completions\",\n            \"/completions\",\n            \"/responses\",\n            \"/embeddings\",\n            \"/audio/transcriptions\",\n            \"/audio/speech\","
+        },
+        {
+          "line": 200,
+          "text": "            \"/completions\",\n            \"/responses\",\n            \"/embeddings\",\n            \"/audio/transcriptions\",\n            \"/audio/speech\",\n            \"/images/generations\",\n            \"/images/edits\",\n        ],\n        True,\n    ),"
+        },
+        {
+          "line": 204,
+          "text": "            \"/audio/speech\",\n            \"/images/generations\",\n            \"/images/edits\",\n        ],\n        True,\n    ),\n    RoutePrefix(\n        [\n            \"/audio/translations\",\n            \"/images/variations\","
+        },
+        {
+          "line": 863,
+          "text": "        # to compatible with rewrite-target /$1$3, the first capturing group is empty.\n        # The /\\d+ variant strips the route-id segment from /model/proxy/<id>/<path>\n        # so the upstream receives /<path>. The id-less variant preserves the legacy\n        # /model/proxy/<path> + X-GPUStack-Model header form. The more specific rule\n        # is listed first so Higress tries id-based matching before falling back.\n        expected_rule.http.paths.append(\n            wrap_route(\n                r\"/()model/proxy/\\d+(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )"
+        },
+        {
+          "line": 865,
+          "text": "        # so the upstream receives /<path>. The id-less variant preserves the legacy\n        # /model/proxy/<path> + X-GPUStack-Model header form. The more specific rule\n        # is listed first so Higress tries id-based matching before falling back.\n        expected_rule.http.paths.append(\n            wrap_route(\n                r\"/()model/proxy/\\d+(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )\n        )\n        expected_rule.http.paths.append("
+        },
+        {
+          "line": 869,
+          "text": "            wrap_route(\n                r\"/()model/proxy/\\d+(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )\n        )\n        expected_rule.http.paths.append(\n            wrap_route(\n                \"/()model/proxy(/|$)(.*)\",\n                \"ImplementationSpecific\",\n            )"
+        },
+        {
+          "line": 1087,
+          "text": "        included_generic_route (bool): Whether to include a generic '/' route for fallback traffic. Used in worker gateway.\n        included_proxy_route (bool): Whether to include a proxy route for model traffic (e.g., /model/proxy/{model_name}). Used in server gateway.\n    \"\"\"\n    if event_type == EventType.DELETED or not destinations:\n        try:\n            await networking_api.delete_namespaced_ingress(\n                name=ingress_name, namespace=namespace\n            )\n            logger.info(\n                f\"Deleted model ingress {ingress_name} for model route {route_name}\""
+        }
+      ]
+    },
+    "main:gateway": {
+      "path": "gpustack/gateway/__init__.py",
+      "matches": [
+        {
+          "line": 329,
+          "text": "\ndef ext_auth_plugin(cfg: Config) -> Tuple[str, WasmPluginSpec]:\n    \"\"\"The static base of the ext-auth CR.\n\n    Scoped to gpustack's own inference routes by route-name prefix, so\n    unrelated traffic on a shared Higress gateway is never authenticated:\n    model-route ingresses are named ``ai-route-route-<id>.internal`` (plus\n    ``.fallback.``), nothing else matches, and non-matching routes pass\n    through untouched.\n"
+        },
+        {
+          "line": 559,
+          "text": "\ndef generic_proxy_router_plugin(cfg: Config) -> Tuple[str, WasmPluginSpec]:\n    \"\"\"\n    Generic-proxy router. Operates in two complementary modes per request and\n    fully replaces Higress's built-in ``model-router`` — that plugin must be\n    disabled wherever this one is active, otherwise both will write\n    ``x-higress-llm-model`` and the winner becomes priority-dependent.\n\n    1. **Path-driven**: when ``:path`` matches ``prefix`` (``/model/proxy/``),\n       the first segment after the prefix is the alias id; it is looked up in"
+        },
+        {
+          "line": 684,
+          "text": "\nasync def ensure_tls_secret(cfg: Config, api_client: k8s_client.ApiClient):\n    \"\"\"\n    Ensure the TLS secret if ssl key pair is provided.\n    \"\"\"\n    ssl_keyfile = cfg.ssl_keyfile\n    ssl_certfile = cfg.ssl_certfile\n    if not ssl_keyfile or not ssl_certfile:\n        return\n    if not (os.path.isfile(ssl_keyfile) and os.path.isfile(ssl_certfile)):"
+        }
+      ]
+    },
+    "main:instance-query": {
+      "path": "gpustack/server/services.py",
+      "matches": [
+        {
+          "line": 964,
+          "text": "    @locked_cached()\n    async def get_running_instances(self, model_id: int) -> List[ModelInstance]:\n        results = await ModelInstance.all_by_fields(\n            self.session,\n            fields={\"model_id\": model_id, \"state\": ModelInstanceStateEnum.RUNNING},\n        )\n        if results is None:\n            return []\n\n        for result in results:"
+        }
+      ]
+    },
+    "main:maintenance": {
+      "path": "gpustack/schemas/workers.py",
+      "matches": [
+        {
+          "line": 279,
+          "text": "\nclass Maintenance(BaseModel):\n    enabled: bool = False\n    message: Optional[str] = None\n\n\nclass WorkerStatus(SystemInfo):\n    \"\"\"\n    rpc_servers: Deprecated\n    \"\"\""
+        },
+        {
+          "line": 422,
+          "text": "\n    def compute_state(self):\n        if self.maintenance and self.maintenance.enabled:\n            self.state = WorkerStateEnum.MAINTENANCE\n            self.state_message = self.maintenance.message\n            return\n\n        if self.state.is_provisioning:\n            return\n        if self.state == WorkerStateEnum.NOT_READY and self.state_message is not None:"
+        },
+        {
+          "line": 423,
+          "text": "    def compute_state(self):\n        if self.maintenance and self.maintenance.enabled:\n            self.state = WorkerStateEnum.MAINTENANCE\n            self.state_message = self.maintenance.message\n            return\n\n        if self.state.is_provisioning:\n            return\n        if self.state == WorkerStateEnum.NOT_READY and self.state_message is not None:\n            return"
+        }
+      ]
+    },
+    "main:worker-update": {
+      "path": "gpustack/routes/workers.py",
+      "matches": [
+        {
+          "line": 766,
+          "text": "@router.put(\"/{id}\", response_model=WorkerPublic)\nasync def update_worker(\n    ctx: TenantContextDep,\n    session: SessionDep,\n    id: int,\n    worker_in: WorkerUpdate,\n):\n    worker = await Worker.one_by_id(session, id)\n    if worker is not None and worker.deleted_at is not None:\n        worker = None"
+        },
+        {
+          "line": 779,
+          "text": "    patch = worker_in.model_dump()\n    if worker_in.maintenance is not None:\n        worker.maintenance = worker_in.maintenance\n        worker.compute_state()\n        patch[\"state\"] = worker.state\n    try:\n        await WorkerService(session).update(worker, patch)\n    except Exception as e:\n        raise InternalServerErrorException(message=f\"Failed to update worker: {e}\")\n"
+        },
+        {
+          "line": 780,
+          "text": "    if worker_in.maintenance is not None:\n        worker.maintenance = worker_in.maintenance\n        worker.compute_state()\n        patch[\"state\"] = worker.state\n    try:\n        await WorkerService(session).update(worker, patch)\n    except Exception as e:\n        raise InternalServerErrorException(message=f\"Failed to update worker: {e}\")\n\n    return worker"
+        }
+      ]
+    },
+    "main:placement-filter": {
+      "path": "gpustack/policies/worker_filters/status_filter.py",
+      "matches": [
+        {
+          "line": 10,
+          "text": "\nclass StatusFilter:\n    def __init__(self, model: Model):\n        self._model = model\n\n    async def filter(self, workers: List[Worker]) -> Tuple[List[Worker], List[str]]:\n        \"\"\"\n        Filter the workers with the worker selector.\n        \"\"\"\n"
+        },
+        {
+          "line": 21,
+          "text": "        for worker in workers:\n            if worker.state == WorkerStateEnum.READY:\n                candidates.append(worker)\n\n        messages = []\n        if len(candidates) != len(workers):\n            messages = [\n                f\"Matched {len(candidates)}/{len(workers)} workers by READY status.\"\n            ]\n        return candidates, messages"
+        }
+      ]
+    },
+    "main:offline-recovery": {
+      "path": "gpustack/server/worker_instance_cleaner.py",
+      "matches": [
+        {
+          "line": 37,
+          "text": "\n    async def _cleanup_offline_worker_instances(self):\n        \"\"\"\n        Delete model instances assigned to offline workers.\n        \"\"\"\n        async with async_session() as session:\n            workers = await Worker.all(session)\n            if not workers:\n                return\n"
+        },
+        {
+          "line": 49,
+          "text": "                if worker.state == WorkerStateEnum.NOT_READY and (\n                    not worker.maintenance or not worker.maintenance.enabled\n                ):\n                    offline, last_heartbeat_str = is_offline(\n                        worker.heartbeat_time,\n                        envs.MODEL_INSTANCE_RESCHEDULE_GRACE_PERIOD,\n                    )\n                    if offline:\n                        offline_workers[worker.name] = {\n                            \"id\": worker.id,"
+        },
+        {
+          "line": 100,
+          "text": "\n            await ModelInstanceService(session).batch_delete(instances_to_delete)\n\n            reschedule_minutes = envs.MODEL_INSTANCE_RESCHEDULE_GRACE_PERIOD / 60\n            for worker_name, instance_names in impacted_instances_by_worker.items():\n                last_heartbeat_str = offline_workers[worker_name][\"last_heartbeat_str\"]\n                logger.info(\n                    f\"Worker {worker_name} is in NOT_READY state for more than \"\n                    f\"{reschedule_minutes:.1f} minutes (last heartbeat at {last_heartbeat_str}) \"\n                    \"and is not in maintenance mode. \""
+        }
+      ]
+    },
+    "main:inference-proxy": {
+      "path": "gpustack/routes/openai.py",
+      "matches": [
+        {
+          "line": 187,
+          "text": "\nasync def proxy_request_by_model(\n    request: Request,\n    user: CurrentUserDep,\n):\n    \"\"\"\n    Proxy the request to the model instance that is running the model specified in the\n    request body.\n\n    Uses an inline session instead of SessionDep so the session is released"
+        },
+        {
+          "line": 509,
+          "text": "\nasync def get_running_instance(\n    session: AsyncSession,\n    model: Model,\n    overridden_model_name: Optional[str] = None,\n):\n    \"\"\"Pick a RUNNING instance, narrowing by ``mounted_loras`` when a\n    LoRA ``overridden_model_name`` is given. The filter is needed\n    because ``mounted_loras`` is a one-shot snapshot taken at STARTING\n    and never hot-reloaded"
+        },
+        {
+          "line": 548,
+          "text": "            )\n    return await load_balancer.get_instance(running_instances)\n\n\ndef mutate_request(\n    request: Request,\n    model_name: str,\n    body_json: Optional[dict],\n    form_data: Optional[aiohttp.FormData],\n):"
+        }
+      ]
+    },
+    "main:queue": {
+      "path": "gpustack/server/workqueue.py",
+      "matches": [
+        {
+          "line": 7,
+          "text": "to the DB, which re-fired the event bus and re-enqueued the item — a\nself-perpetuating poll loop. A work queue with in-memory ``add_after`` lets a\ncontroller re-observe on a timer without touching the DB.\n\nGuarantees:\n\n* **Per-keys serialization** — a key handed out by :meth:`WorkQueue.get` is not\n  handed out again until :meth:`WorkQueue.done` is called for it. Events that\n  arrive for an in-flight key are coalesced and re-queued on ``done``.\n* **DELETED priority + stickiness** — a ``DELETED`` event jumps to the front of"
+        },
+        {
+          "line": 25,
+          "text": "  starve processing.\n* **Exponential backoff** — :meth:`add_rate_limited` re-queues with a capped,\n  jittered exponential delay per key; :meth:`forget` resets it on success.\n\nConcurrency model: the queue assumes a **single asyncio event loop with a single\nconsumer** calling :meth:`get`. Producers (``add`` / ``add_after`` /\n``add_rate_limited``) are synchronous and never await, so they run to completion\nwithout interleaving; the queue therefore needs no internal locking. Consumers\nfan out by spawning one task per key returned from ``get`` and calling ``done``\nwhen that task finishes — this preserves unbounded per-key concurrency while"
+        },
+        {
+          "line": 130,
+          "text": "\nclass WorkQueue:\n    \"\"\"See module docstring. Single-loop, single-consumer.\"\"\"\n\n    def __init__(\n        self,\n        *,\n        dedup_window: float = 0.0,\n        dedup_max_wait: float = 0.0,\n        backoff_base: float = 1.0,"
+        }
+      ]
+    },
+    "main:model-files": {
+      "path": "gpustack/routes/model_files.py",
+      "matches": [
+        {
+          "line": 171,
+          "text": ")\nasync def create_model_file(\n    session: SessionDep, ctx: TenantContextDep, model_file_in: ModelFileCreate\n):\n    cluster = await _authorize_model_file_worker(session, ctx, model_file_in.worker_id)\n    fields = {\n        \"worker_id\": model_file_in.worker_id,\n        \"source_index\": model_file_in.model_source_index,\n        \"local_dir\": model_file_in.local_dir,\n    }"
+        },
+        {
+          "line": 252,
+          "text": ")\nasync def delete_model_file(\n    session: SessionDep,\n    ctx: TenantContextDep,\n    id: int,\n    cleanup: Optional[bool] = None,\n):\n    model_file = await ModelFile.one_by_id(\n        session, id, options=[selectinload(ModelFile.instances)]\n    )"
+        }
+      ]
+    },
+    "main:usage": {
+      "path": "gpustack/schemas/model_usage.py",
+      "matches": [
+        {
+          "line": 11,
+          "text": "\nclass OperationEnum(str, Enum):\n    COMPLETION = \"completion\"\n    CHAT_COMPLETION = \"chat_completion\"\n    EMBEDDING = \"embedding\"\n    RERANK = \"rerank\"\n    IMAGE_GENERATION = \"image_generation\"\n    AUDIO_SPEECH = \"audio_speech\"\n    AUDIO_TRANSCRIPTION = \"audit_transcription\"\n"
+        },
+        {
+          "line": 74,
+          "text": "    )\n    request_count: int = Field(\n        default=..., sa_column=Column(BigInteger, nullable=False)\n    )\n    operation: Optional[OperationEnum] = Field(default=None)\n\n    model_config = ConfigDict(protected_namespaces=())"
+        }
+      ]
+    },
+    "main:usage-details": {
+      "path": "gpustack/schemas/model_usage_details.py",
+      "matches": [
+        {
+          "line": 13,
+          "text": "\nclass ModelUsageDetails(SQLModel, BaseModelMixin, table=True):\n    \"\"\"\n    Per-request inference usage audit row.\n\n    Reference id columns (``user_id`` / ``model_id`` / ``model_route_id`` /\n    ``provider_id`` / ``cluster_id`` / ``api_key_id``) are plain integers,\n    not foreign keys. Audit rows must outlive the entities they describe;\n    losing the historical id (which ``SET NULL`` would do on parent delete)\n    is a worse audit outcome than losing the live join, so ids stay as"
+        },
+        {
+          "line": 79,
+          "text": "    # estimated token-billed rows for reconciliation / transparency.\n    completed: bool = Field(\n        default=False,\n        sa_column=Column(Boolean, nullable=False, server_default=false()),\n    )\n    operation: Optional[OperationEnum] = Field(default=None)\n    # Wall-clock anchors reported by the proxy (UnixMilli on the wire,\n    # stored as naive UTC). Distinct from ``created_at`` so quota\n    # reconciliation / cache rebuild can key off the request's actual\n    # completion time even after rows are archived or migrated."
+        },
+        {
+          "line": 117,
+          "text": "    # legitimately carry one value.\n    request_id: Optional[str] = Field(default=None, index=True)\n    # The model's own id for this response (``chatcmpl-…``, ``resp_…``,\n    # ``msg_…``, ``embd-…``), taken verbatim from whatever the upstream put\n    # there. This is the id a caller reads off an SDK response, and the only\n    # one a third-party provider can be asked about. NULL when the upstream\n    # mints none, when the endpoint returns no JSON at all (TTS, image), and\n    # when no response arrived.\n    upstream_response_id: Optional[str] = Field(default=None)\n"
+        },
+        {
+          "line": 182,
+          "text": "    # estimated token-billed rows for reconciliation / transparency.\n    completed: bool = Field(\n        default=False,\n        sa_column=Column(Boolean, nullable=False, server_default=false()),\n    )\n    operation: Optional[OperationEnum] = Field(default=None)\n    started_at: Optional[datetime] = Field(\n        default=None, sa_column=Column(UTCDateTime(), nullable=True)\n    )\n    completed_at: Optional[datetime] = Field("
+        },
+        {
+          "line": 197,
+          "text": "    # that only worked before archival would be the wrong half of the feature.\n    request_id: Optional[str] = Field(default=None, index=True)\n    upstream_response_id: Optional[str] = Field(default=None)\n\n    model_config = ConfigDict(protected_namespaces=())"
+        }
+      ]
+    },
+    "main:usage-ingest": {
+      "path": "gpustack/routes/gateway_metrics.py",
+      "matches": [
+        {
+          "line": 17,
+          "text": "@router.post(\"/gateway-metrics\", include_in_schema=False)\nasync def report_gateway_metrics(\n    item: ModelUsageMetrics,\n    _: None = Depends(gateway_token_auth),\n):\n    await accumulate_gateway_metrics([item])"
+        }
+      ]
+    },
+    "main:metering": {
+      "path": "gpustack/schemas/metered_usage.py",
+      "matches": [
+        {
+          "line": 18,
+          "text": "  rollup); the summary layer unions the two sources.\n* **Quantities only, no cost.** This is a pure metering table — it stores\n  ``quantity`` in the meter's canonical unit and never any price/cost.\n* **GPU per-card / CPU whole-machine.** Instances meter on the single\n  ``instance.uptime`` meter (wall-clock metered seconds). GPU rows yield\n  GPU-Hours (``quantity * sku_count / 3600`` where ``sku_count`` = card count,\n  fractional for a sliced card); CPU rows yield Instance-Hours\n  (``quantity / 3600``, ``sku_count`` = base-flavor unit count). CPU / memory\n  are not metered separately.\n* **`sku` is the instance type's identity snapshot.** For instances it is the"
+        },
+        {
+          "line": 84,
+          "text": "# meter_key — what is being measured.\nMETER_INSTANCE_UPTIME = \"instance.uptime\"\nMETER_STORAGE_CAPACITY = \"storage.capacity\"\n\n# unit — canonical integer unit of ``quantity``.\nUNIT_SECONDS = \"seconds\"\nUNIT_MIB_SECONDS = \"mib_seconds\"\n\n# ``sku_count`` precision. A sliced accelerator bills a FRACTION of a card, so\n# the unit multiplier is a decimal rather than an int: 8 fraction digits cover"
+        },
+        {
+          "line": 85,
+          "text": "METER_INSTANCE_UPTIME = \"instance.uptime\"\nMETER_STORAGE_CAPACITY = \"storage.capacity\"\n\n# unit — canonical integer unit of ``quantity``.\nUNIT_SECONDS = \"seconds\"\nUNIT_MIB_SECONDS = \"mib_seconds\"\n\n# ``sku_count`` precision. A sliced accelerator bills a FRACTION of a card, so\n# the unit multiplier is a decimal rather than an int: 8 fraction digits cover\n# the smallest MIG share (1/8 = 0.125) and the smallest soft slice (1% = 0.01)"
+        },
+        {
+          "line": 130,
+          "text": "METERS: Dict[str, MeterDef] = {\n    METER_INSTANCE_UPTIME: MeterDef(\n        METER_INSTANCE_UPTIME,\n        (RESOURCE_TYPE_GPU_INSTANCE, RESOURCE_TYPE_CPU_INSTANCE),\n        UNIT_SECONDS,\n    ),\n    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,"
+        },
+        {
+          "line": 131,
+          "text": "    METER_INSTANCE_UPTIME: MeterDef(\n        METER_INSTANCE_UPTIME,\n        (RESOURCE_TYPE_GPU_INSTANCE, RESOURCE_TYPE_CPU_INSTANCE),\n        UNIT_SECONDS,\n    ),\n    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,\n    ),"
+        },
+        {
+          "line": 135,
+          "text": "    ),\n    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,\n    ),\n}\n\n\n# ---------------------------------------------------------------------------"
+        },
+        {
+          "line": 136,
+          "text": "    METER_STORAGE_CAPACITY: MeterDef(\n        METER_STORAGE_CAPACITY,\n        (RESOURCE_TYPE_PERSISTENT_VOLUME,),\n        UNIT_MIB_SECONDS,\n    ),\n}\n\n\n# ---------------------------------------------------------------------------\n# Hot table"
+        }
+      ]
+    },
+    "main:metrics": {
+      "path": "gpustack/server/metrics_collector.py",
+      "matches": [
+        {
+          "line": 60,
+          "text": "\nclass ModelUsageMetrics(BaseModel):\n    model: str\n    input_token: int = 0\n    output_token: int = 0\n    total_token: int = 0\n    input_cached_token: int = 0\n    request_count: int = 1\n    # ``completed`` is True iff the canonical usage chunk was observed before\n    # the stream ended. When False, token fields may be 0 (OpenAI/vLLM) or"
+        },
+        {
+          "line": 285,
+          "text": "\nasync def accumulate_gateway_metrics(metrics: List[ModelUsageMetrics]):\n    async with gateway_buffers_lock:\n        # Product invariant: every inference request resolves to a route\n        # (the gateway can't dispatch otherwise). A NULL model_route_id\n        # means an ingest source regressed — the row will pollute the\n        # \"Untracked\" bucket reserved for pre-upgrade legacy data. Tally\n        # per-batch and surface via a throttled summary so a regressed\n        # gateway doesn't flood logs.\n        missing_route_id_count = 0"
+        }
+      ]
+    },
+    "main:new-revisions": {
+      "path": "gpustack/routes/model_revisions.py",
+      "matches": [
+        {
+          "line": 76,
+          "text": "@router.get(\"/{id}/revisions\", response_model=ModelRevisionsPublic)\nasync def list_model_revisions(\n    session: SessionDep,\n    ctx: TenantContextDep,\n    id: int,\n    page: Annotated[int, Query(ge=1)] = 1,\n    perPage: Annotated[int, Query(ge=1, le=100)] = 20,\n) -> ModelRevisionsPublic:\n    await prepare_history_read(session, ctx, id)\n    total = ("
+        },
+        {
+          "line": 136,
+          "text": "@router.post(\"/{id}/rollback-preview\", response_model=ModelRollbackPreview)\nasync def preview_model_rollback(\n    session: SessionDep,\n    ctx: TenantContextDep,\n    id: int,\n    body: ModelRollbackRequest,\n) -> ModelRollbackPreview:\n    model = await lock_model(session, ctx, id)\n    latest = await ensure_baseline(session, model)\n    target = await _find_revision(session, id, body.target_revision, for_update=True)"
+        },
+        {
+          "line": 167,
+          "text": "@router.post(\"/{id}/rollback\", response_model=ModelPublic)\nasync def rollback_model(\n    session: SessionDep,\n    ctx: TenantContextDep,\n    id: int,\n    body: ModelRollbackRequest,\n) -> ModelPublic:\n    from gpustack.routes.models import save_model_update\n\n    model = await lock_model(session, ctx, id)"
+        }
+      ]
+    },
+    "main:new-lb": {
+      "path": "gpustack/routes/plugins/lb/reconciler.py",
+      "matches": [
+        {
+          "line": 62,
+          "text": "\ndef envoy_filter_name(ingress_name: str) -> str:\n    return f\"gpustack-lb-{ingress_name}\"\n\n\ndef candidate_cluster_name(registry: Any) -> str:\n    \"\"\"The Envoy cluster a candidate points at, built from the\n    registry's real port — DNS-typed instance registries and provider\n    registries do not listen on 80, and the ingress path\n    (get_service_name_with_port) never assumes they do.\"\"\""
+        },
+        {
+          "line": 66,
+          "text": "\ndef candidate_cluster_name(registry: Any) -> str:\n    \"\"\"The Envoy cluster a candidate points at, built from the\n    registry's real port — DNS-typed instance registries and provider\n    registries do not listen on 80, and the ingress path\n    (get_service_name_with_port) never assumes they do.\"\"\"\n    return f\"outbound|{registry.port or 80}||{registry.get_service_name()}\"\n\n\ndef _build_candidate("
+        },
+        {
+          "line": 74,
+          "text": "\ndef _build_candidate(\n    cluster: str,\n    target_id: int,\n    kind: str,\n    model_name: str,\n    weight: Optional[int],\n    max_running_requests: Optional[int],\n) -> Dict[str, Any]:\n    candidate: Dict[str, Any] = {"
+        },
+        {
+          "line": 93,
+          "text": "    if max_running_requests is not None:\n        candidate[\"maxRunningRequests\"] = max_running_requests\n    return candidate\n\n\nasync def _destinations_for_target(\n    session: AsyncSession, target: ModelRouteTarget\n) -> DestinationTupleList:\n    \"\"\"The same destination list ``calculate_destinations`` builds for\n    the mapper path — cluster-registry routing, LoRA-aliased services"
+        },
+        {
+          "line": 97,
+          "text": "\nasync def _destinations_for_target(\n    session: AsyncSession, target: ModelRouteTarget\n) -> DestinationTupleList:\n    \"\"\"The same destination list ``calculate_destinations`` builds for\n    the mapper path — cluster-registry routing, LoRA-aliased services\n    and provider DNS registries included — so LB candidates and mapper\n    rules always address the identical clusters. Imported lazily:\n    controllers imports this module, and the dependency only runs one\n    way at call time.\"\"\""
+        },
+        {
+          "line": 125,
+          "text": "\ndef _is_fallback_target(target: ModelRouteTarget) -> bool:\n    return bool(target.fallback_status_codes)\n\n\nasync def render_route(\n    session: AsyncSession, route: ModelRoute\n) -> Optional[Tuple[List[Dict[str, Any]], Dict[str, Dict[str, str]]]]:\n    \"\"\"Candidates and modelMappers for one route, or None when the\n    configuration is unusable: no usable target, or mixed weights —"
+        },
+        {
+          "line": 129,
+          "text": "\nasync def render_route(\n    session: AsyncSession, route: ModelRoute\n) -> Optional[Tuple[List[Dict[str, Any]], Dict[str, Dict[str, str]]]]:\n    \"\"\"Candidates and modelMappers for one route, or None when the\n    configuration is unusable: no usable target, or mixed weights —\n    some targets weighted and some not leave the latter's semantics\n    dangling, so LB is refused for the route rather than guessed.\n\n    Fallback targets (``fallback_status_codes`` set) are not candidates:"
+        },
+        {
+          "line": 216,
+          "text": "\ndef cluster_header_envoy_filter(\n    name: str, namespace: str, route_name: str\n) -> EnvoyFilter:\n    return EnvoyFilter(\n        metadata={\n            \"name\": name,\n            \"namespace\": namespace,\n            \"labels\": {**managed_labels},\n        },"
+        },
+        {
+          "line": 245,
+          "text": "\nasync def _ensure_envoy_filter(\n    namespace: str,\n    ingress_name: str,\n    istio_networking_api: NetworkingIstioIoV1Alpha3Api,\n    present: bool,\n) -> None:\n    name = envoy_filter_name(ingress_name)\n    if not present:\n        try:"
+        },
+        {
+          "line": 283,
+          "text": "\nasync def sync_model_route_lb(\n    cfg: Config,\n    session: AsyncSession,\n    collector: RouteArtifactCollector,\n    istio_networking_api: NetworkingIstioIoV1Alpha3Api,\n    model_route: ModelRoute,\n    ingress_name: str,\n    event_is_delete: bool,\n    extensions_api: Optional[Any] = None,"
+        }
+      ]
+    },
+    "main:new-least-load": {
+      "path": "gpustack/routes/plugins/least_load/plugin.py",
+      "matches": [
+        {
+          "line": 47,
+          "text": "\nclass LeastLoadPlugin(RoutePlugin):\n    name = \"least-load\"\n\n    RouteExtension = LeastLoadConfig\n\n    async def is_effective_on(self, route: ModelRoute, session: AsyncSession) -> bool:\n        config = await _config_for_route(session, route.id)\n        if config is None:\n            return False"
+        },
+        {
+          "line": 93,
+          "text": "\n    def gateway_entries(self, cfg):\n        from gpustack.routes.plugins import RouteGatewayEntry\n        from gpustack.routes.plugins.lb.capability import (\n            capability_cr_name,\n            capability_cr_spec,\n            static_spec_diff,\n        )\n\n        spec = capability_cr_spec(self.name, CR_PRIORITY, cfg, INERT_DEFAULT)"
+        }
+      ]
+    },
+    "main:new-drain": {
+      "path": "gpustack/server/controllers.py",
+      "matches": [
+        {
+          "line": 2315,
+          "text": "\nasync def _scale_down_role(\n    session: AsyncSession,\n    model: Model,\n    role: RoleSpec,\n    have: List[ModelInstance],\n    generation: Sequence[ModelInstance],\n):\n    \"\"\"Take this role's surplus members out of rotation.\n"
+        },
+        {
+          "line": 2373,
+          "text": "\ndef _soft_scale_down_enabled(model: Model) -> bool:\n    \"\"\"Only a group drains, and only when a window is configured.\n\n    A role-less model has no router registry to be removed from, so the wait\n    would be a wait with nothing happening during it — the member would keep\n    taking new requests for the whole window and then vanish mid-request,\n    which is strictly worse than deleting it now.\n    \"\"\"\n    return bool(model.roles) and envs.SCHEDULER_DRAIN_WINDOW_SECONDS > 0"
+        },
+        {
+          "line": 2384,
+          "text": "\nasync def _reap_drained(\n    session: AsyncSession, instances: List[ModelInstance]\n) -> List[ModelInstance]:\n    \"\"\"Delete the members whose drain window has passed; return the rest.\n\n    Returns the survivors rather than the reaped so the caller can assign\n    straight through. What it must not do is hand back a list still containing\n    a deleted member: the per-role arithmetic that follows would count it,\n    find the role satisfied, and skip creating the replacement a re-scale-up"
+        },
+        {
+          "line": 2426,
+          "text": "\nasync def cancel_drain(session: AsyncSession, instance: ModelInstance):\n    \"\"\"Put a draining member back into rotation.\n\n    One field: the next membership reconcile sees an ordinary RUNNING member and\n    re-registers its address. Nothing has to be restarted because nothing was\n    stopped — which is what would make a wrong scale-down recoverable rather\n    than merely regrettable, *if* anything called this.\n\n    **GPUStack ships no rollback, and this is not one.** There is no rollback"
+        }
+      ]
+    },
+    "main:pd-membership": {
+      "path": "gpustack/server/pd_membership.py",
+      "matches": [
+        {
+          "line": 133,
+          "text": "\ndef member_url(instance: ModelInstance) -> Optional[str]:\n    \"\"\"The address the router knows a member by.\n\n    `host:port` of the serving listener, which is what upstream stores and\n    what `DELETE /workers/{url}` matches on — measured: the `worker` label on\n    the router's own request counters carries the whole URL it was launched\n    with, not a worker name or id.\n    \"\"\"\n    if not instance.worker_ip or not instance.port:"
+        },
+        {
+          "line": 146,
+          "text": "\ndef desired_members(model: Model, instances: Sequence[ModelInstance]) -> Dict[str, str]:\n    \"\"\"`{url: role}` for every member that should be in the router's registry.\n\n    Only RUNNING GPU roles. The router is excluded because it is not its own\n    upstream, and a member that is not RUNNING has nothing listening — adding\n    it would be admitted only to fail the router's own probe, and upstream\n    drops such a peer silently.\n\n    **A draining member is excluded while still RUNNING**, and that is the"
+        },
+        {
+          "line": 169,
+          "text": "            continue\n        if getattr(instance, \"draining_since\", None) is not None:\n            continue\n        url = member_url(instance)\n        if url:\n            members[url] = instance.role\n    return members\n\n\ndef desired_member_ports("
+        },
+        {
+          "line": 177,
+          "text": "\ndef desired_member_ports(\n    instances: Sequence[ModelInstance],\n) -> Dict[str, Dict[str, int]]:\n    \"\"\"`{url: {band name: base port}}` for the members that declare any.\n\n    Separate from `desired_members` because only one router needs it and most\n    members have no named band at all. It exists because a membership body can\n    legitimately carry more than an address: SGLang's prefill registers with a\n    `bootstrap_port`, and a prefill added without one is admitted, routed to,"
+        },
+        {
+          "line": 813,
+          "text": "\ndef membership_fingerprint(\n    mode_name: Optional[str],\n    members: Dict[str, str],\n    routers: Sequence[ModelInstance],\n) -> str:\n    \"\"\"What the server knows about who should be registered, and with whom.\n\n    Both halves matter. The members decide what `reconcile` would send; the\n    routers decide who it would be sent to, so a router that moves to another"
+        }
+      ]
+    },
+    "main:dependencies": {
+      "path": "pyproject.toml",
+      "matches": [
+        {
+          "line": 67,
+          "text": "    \"gpustack-runner==0.1.31.post3\",\n    \"gpustack-runtime==0.2.6\",\n    \"gpustack-higress-plugins==0.5.0\",\n    \"websockets==16.0\",\n    \"py-radix>=1.1.0\",\n    # Usage export, xlsx path only (CSV needs nothing beyond the stdlib).\n    # Pure Python, no build step.\n    \"xlsxwriter>=3.2.9\",\n    # Minimum transitive versions also apply to wheel installations.\n    \"anyio>=4.14.2\","
+        },
+        {
+          "line": 68,
+          "text": "    \"gpustack-runtime==0.2.6\",\n    \"gpustack-higress-plugins==0.5.0\",\n    \"websockets==16.0\",\n    \"py-radix>=1.1.0\",\n    # Usage export, xlsx path only (CSV needs nothing beyond the stdlib).\n    # Pure Python, no build step.\n    \"xlsxwriter>=3.2.9\",\n    # Minimum transitive versions also apply to wheel installations.\n    \"anyio>=4.14.2\",\n    \"mako>=1.4.2\","
+        }
+      ]
+    }
+  }
+}

@@ -1,198 +1,212 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MaaS 统一模型服务框架 · 设计与路线图</title><style>*{box-sizing:border-box}body{margin:0;background:#f2f6fa;color:#20364a;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1240px;margin:0 auto;padding:36px 24px}h1{font-size:32px;line-height:1.4}h2{margin-top:42px;border-bottom:1px solid #dce6ef;padding-bottom:12px}h3{margin-top:30px}p{margin:12px 0}a{color:#126d99}nav{display:flex;gap:20px;flex-wrap:wrap}section,.diagram{background:white;border:1px solid #dce6ef;border-radius:12px;padding:26px;margin:24px 0}.diagram svg{display:block;width:100%;height:auto}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2eaf1;vertical-align:top;min-width:100px}th{background:#eaf2f8}pre{white-space:pre-wrap;background:#eff4f8;padding:20px;border-radius:8px}code{font-size:13px;overflow-wrap:anywhere}.notice{border-left:4px solid #c69536;padding:14px;background:#fff7e4}.phases{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:20px}.phase{background:#e7f1f8;padding:12px;border-radius:8px;font-size:12px}.phase b{display:block;font-size:19px}button{font:inherit;padding:6px 14px;background:white;border:1px solid #bdcfdd;border-radius:6px;cursor:pointer}@media(max-width:700px){main{padding:20px 12px}section,.diagram{padding:16px}.phases{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.diagram{overflow:auto}.diagram svg{min-width:850px}}@media print{body{background:white;font-size:11px}main{max-width:none;padding:0}nav,button{display:none}section,.diagram{border:0;padding:0}.diagram{break-inside:avoid}.table{overflow:visible}th,td{padding:6px;min-width:0}h2,h3{break-after:avoid}}</style></head><body><main><h1>统一模型服务框架<br>设计 · 计划 · 路线图</h1><p>2026-10-20 · 设计提案 / 尚未实施</p><nav><a href="#architecture">组件架构图</a><a href="#design">详细设计</a><a href="#roadmap">实施路线图</a><a href="ARCHITECTURE.svg">独立 SVG 图</a><button onclick="window.print()">打印 / 保存 PDF</button></nav><p class="notice">保留 GPUStack 的 GPU 放置与模型部署能力；新增任务持久化、客户入口、节点排空和结果管理。001 必须常在线，worker 可退出。结果标记成功前保存到控制端。</p><div class="phases"><div class="phase"><b>F0</b>协议与边界</div><div class="phase"><b>F1</b>持久任务闭环</div><div class="phase"><b>F2</b>GPUStack与排空</div><div class="phase"><b>F3</b>容量与观测</div><div class="phase"><b>F4</b>部署与对外试用</div><div class="phase"><b>F5</b>长时商业试点</div><div class="phase"><b>F6</b>扩容与模型扩展</div></div><div class="diagram" id="architecture"><svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850" role="img" aria-labelledby="title desc"><title id="title">统一模型服务组件架构</title><desc id="desc">客户通过网关和框架API提交持久任务，执行器调用GPUStack管理的模型实例，结果保存在控制端。控制端必须常在线。</desc><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#5b728a"/></marker></defs><style>text{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Microsoft YaHei,sans-serif;fill:#213d56} .label{font-size:15px;font-weight:600}.small{font-size:12px;fill:#566f85}</style><rect width="1200" height="850" fill="#f5f8fc"/><text x="38" y="38" font-size="24" font-weight="700">统一模型服务 · 组件架构</text><text x="38" y="64" class="small">目标架构 / 设计提案 · 2026-10-20 · 现有 GPUStack 与新增平台组件分工</text><rect x="30" y="175" width="1140" height="442" rx="16" fill="#eaf1f8" stroke="#bdcfdf"/><text x="50" y="201" class="label">001 常在线控制端（当前亦提供 GPU worker）</text><rect x="55" y="90" width="190" height="64" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="150.0" y="117" text-anchor="middle" class="label">客户 / SDK</text><text x="150.0" y="139" text-anchor="middle" class="small">统一模型别名与任务接口</text><rect x="935" y="90" width="215" height="64" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="1042.5" y="117" text-anchor="middle" class="label">本地 Mac 管理员</text><text x="1042.5" y="139" text-anchor="middle" class="small">SSH 私有管理访问</text><rect x="55" y="230" width="190" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="150.0" y="257" text-anchor="middle" class="label">客户网关</text><text x="150.0" y="279" text-anchor="middle" class="small">HTTPS / 请求与连接限制</text><rect x="295" y="230" width="300" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="445.0" y="257" text-anchor="middle" class="label">框架 API + 模型目录</text><text x="445.0" y="279" text-anchor="middle" class="small">鉴权 / schema / 幂等 / 查询</text><rect x="690" y="230" width="240" height="70" rx="10" fill="#fff7df" stroke="#b9cbd9"/><text x="810.0" y="257" text-anchor="middle" class="label">PostgreSQL</text><text x="810.0" y="279" text-anchor="middle" class="small">任务队列 / 租约 / 用量 / 状态</text><rect x="295" y="350" width="300" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="445.0" y="377" text-anchor="middle" class="label">执行器 + GPUStack connector</text><text x="445.0" y="399" text-anchor="middle" class="small">领取任务 / 并发槽 / 适配器调用</text><rect x="690" y="350" width="240" height="70" rx="10" fill="#fff7df" stroke="#b9cbd9"/><text x="810.0" y="377" text-anchor="middle" class="label">ArtifactStore</text><text x="810.0" y="399" text-anchor="middle" class="small">输入与权威结果 / 保留与清理</text><rect x="55" y="470" width="210" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="160.0" y="497" text-anchor="middle" class="label">协调器</text><text x="160.0" y="519" text-anchor="middle" class="small">回收 / 重试 / 节点排空</text><rect x="350" y="470" width="245" height="70" rx="10" fill="#dff1e8" stroke="#b9cbd9"/><text x="472.5" y="497" text-anchor="middle" class="label">现有 GPUStack 控制端</text><text x="472.5" y="519" text-anchor="middle" class="small">GPU 放置 / 模型部署 / 副本</text><rect x="690" y="470" width="240" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="810.0" y="497" text-anchor="middle" class="label">平台观测</text><text x="810.0" y="519" text-anchor="middle" class="small">结构化日志 / 指标 / 告警</text><text x="965" y="275" class="small">新增平台核心</text><text x="965" y="300" class="small">首版不拆微服务</text><text x="965" y="370" class="small">控制端持久卷</text><text x="965" y="395" class="small">worker 仅留缓存</text><text x="965" y="500" class="small">已有部署继续复用</text><path d="M150 154 L150 230" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)"/><path d="M245 265 L295 265" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)"/><path d="M595 265 L690 265" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)"/><path d="M445 300 L445 350" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)"/><path d="M595 375 L690 285" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)"/><text x="649.5" y="323.0" class="small">任务租约</text><path d="M595 395 L690 395" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)"/><text x="649.5" y="388.0" class="small">持久提交结果</text><path d="M360 420 L220 470" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)" stroke-dasharray="6 4"/><text x="297.0" y="438.0" class="small">恢复与排空</text><path d="M470 420 L470 470" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)" stroke-dasharray="6 4"/><text x="477.0" y="438.0" class="small">实例发现</text><path d="M595 505 L690 505" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)" stroke-dasharray="6 4"/><text x="649.5" y="498.0" class="small">指标</text><path d="M1040 154 L550 230" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)" stroke-dasharray="6 4"/><text x="802.0" y="185.0" class="small">私有管理</text><rect x="30" y="650" width="1140" height="145" rx="16" fill="#eef6f1" stroke="#b9d3c4"/><text x="50" y="677" class="label">GPU worker 资源池 · 模型适配器协议统一，输入输出按能力定义</text><rect x="55" y="700" width="300" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="205.0" y="727" text-anchor="middle" class="label">001 worker / GPU 实例</text><text x="205.0" y="749" text-anchor="middle" class="small">现有 OCR 适配器 · 临时缓存</text><rect x="435" y="700" width="300" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="585.0" y="727" text-anchor="middle" class="label">002 worker / GPU 实例</text><text x="585.0" y="749" text-anchor="middle" class="small">可排空退出 · 临时缓存</text><rect x="815" y="700" width="300" height="70" rx="10" fill="#fff" stroke="#b9cbd9"/><text x="965.0" y="727" text-anchor="middle" class="label">后续 worker / 模型适配器</text><text x="965.0" y="749" text-anchor="middle" class="small">更多节点与模型</text><path d="M300 385 L280 385 L280 580 L205 580 L205 700" fill="none" stroke="#196d96" stroke-width="2" marker-end="url(#arrow)"/><path d="M560 420 L630 420 L630 630 L585 630 L585 700" fill="none" stroke="#196d96" stroke-width="2" marker-end="url(#arrow)"/><text x="300" y="602" class="small">定向推理：仅选择 READY 实例；结果返回执行器</text><path d="M460 540 L350 700" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)" stroke-dasharray="6 4"/><text x="412.0" y="613.0" class="small">部署</text><path d="M495 540 L780 700" fill="none" stroke="#5b728a" stroke-width="1.6" marker-end="url(#arrow)" stroke-dasharray="6 4"/><text x="644.5" y="613.0" class="small">部署与生命周期</text><text x="38" y="828" class="small">实线：请求 / 任务 / 数据路径　虚线：管理与控制路径　严格排空须纳入框架，旧 Playground 旁路请求不自动受控。</text></svg></div><section id="design"><h2>统一模型服务框架设计</h2>
-<p>版本：0.1 · 2026-10-20 · 状态：设计提案，尚未实施</p>
-<p>依据：<a href="../../MAAS-PLAN.html">现有规划</a>、<a href="../../MILESTONES.md">原 milestones</a>、<a href="../../deploy-gpustack.sh">部署代码</a>、<a href="../../gpustack_admin.py">GPUStack 管理代码</a>。</p>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MaaS框架v0.2 · 设计、计划与路线图</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f2f6fa;color:#20364a;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1380px;margin:0 auto;padding:32px 24px 70px}h1{font-size:32px;line-height:1.4}h2{margin-top:30px;border-bottom:1px solid #dce6ef;padding-bottom:12px}h3{margin-top:26px}a{color:#126d99}nav{display:flex;gap:20px;flex-wrap:wrap}section,.diagram{background:white;border:1px solid #dce6ef;border-radius:12px;padding:26px;margin:24px 0}.diagram svg{display:block;width:100%;height:auto}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2eaf1;vertical-align:top;min-width:110px}th{background:#eaf2f8}pre{white-space:pre-wrap;background:#eff4f8;padding:20px;border-radius:8px}code{font-size:13px;overflow-wrap:anywhere}.notice,blockquote{border-left:4px solid #b48b34;padding:14px 18px;background:#fff7e4;margin:18px 0}.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0}.phase{background:#e2edf7;padding:15px;border-radius:8px;font-size:13px}.phase b{display:block;font-size:22px}button{font:inherit;padding:6px 14px;background:white;border:1px solid #bdcfdd;border-radius:6px;cursor:pointer}@media(max-width:700px){main{padding:18px 12px}section,.diagram{padding:16px}.phases{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.diagram{overflow:auto}.diagram svg{min-width:1000px}}@media print{body{background:white;font-size:11px}main{max-width:none;padding:0}nav,button{display:none}section,.diagram{border:0;padding:0}.diagram{break-inside:avoid}.table{overflow:visible}th,td{padding:6px;min-width:0}h2,h3{break-after:avoid}}</style></head><body><main><h1>统一模型服务框架 v0.2<br>GPUStack v2.2.3 + 最小持久任务层</h1><p>2026-10-20 · 当前设计基线 / P0部分及P1模拟闭环已验证</p><nav><a href="#architecture">组件架构</a><a href="#design">详细设计</a><a href="#plan">实施计划</a><a href="#roadmap">路线图</a><a href="ARCHITECTURE.svg">独立 SVG</a><button onclick="window.print()">打印 / 保存 PDF</button></nav><p class="notice">复用身份、模型目录、路由、同步/SSE、部署与监控；新增任务API、执行器、独立PostgreSQL及控制端结果卷。固定v2.2.3，不依赖main，不承诺逐节点无损排空。</p><div class="phases"><div class="phase"><b>P0</b>复用与协议确认</div><div class="phase"><b>P1</b>最小持久任务闭环</div><div class="phase"><b>P2</b>真实模型与恢复</div><div class="phase"><b>P3</b>受控维护与运营边界</div><div class="phase"><b>P4</b>发布和长时验收</div></div><div class="diagram" id="architecture"><svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1120" viewBox="0 0 1440 1120" role="img" aria-labelledby="title desc"><title id="title">统一模型服务架构 v0.2</title><desc id="desc">固定GPUStack v2.2.3，客户同步请求直接走GPUStack；异步请求经任务API、独立PostgreSQL与执行器，再调用GPUStack。输入与权威结果保存在001控制端。</desc><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#42657e"/></marker></defs><style>text{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Microsoft YaHei,sans-serif;fill:#203d55}.t{font-size:17px;font-weight:650}.d{font-size:14px;fill:#506e84}.l{font-size:14px;fill:#265c7d}</style><rect width="1440" height="1120" fill="#f7fafd"/><text x="36" y="40" font-size="27" font-weight="700">统一模型服务架构 v0.2</text><text x="36" y="69" class="d">固定 GPUStack v2.2.3 + 最小持久任务层 · 2026-10-20 · 目标架构 · P0部分/P1模拟闭环已验证，其余待实施</text><rect x="525" y="95" width="390" height="70" rx="10" fill="white" stroke="#b6cbdc"/><text x="720.0" y="124" text-anchor="middle" class="t">客户 / SDK</text><text x="720.0" y="148" text-anchor="middle" class="d">同一已登记的 GPUStack inference key</text><rect x="525" y="205" width="390" height="70" rx="10" fill="white" stroke="#b6cbdc"/><text x="720.0" y="234" text-anchor="middle" class="t">统一边缘入口</text><text x="720.0" y="258" text-anchor="middle" class="d">HTTPS / 路径分流 / 体积与连接限制</text><path d="M720 165 V205" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><rect x="25" y="325" width="1390" height="505" rx="16" fill="#eef3f8" stroke="#c6d4df"/><text x="45" y="354" class="t">001 常在线控制端 · 保留 GPU worker，控制端不能随节点切换系统</text><rect x="45" y="375" width="805" height="410" rx="12" fill="#e6f0fa" stroke="#a9c6df"/><text x="65" y="404" class="t">新增薄任务层 · 一个代码库，API 与执行器两个进程角色</text><rect x="885" y="375" width="510" height="410" rx="12" fill="#e3f1e9" stroke="#abcdb7"/><text x="905" y="404" class="t">复用 GPUStack v2.2.3</text><rect x="80" y="435" width="330" height="75" rx="10" fill="white" stroke="#b6cbdc"/><text x="245.0" y="464" text-anchor="middle" class="t">任务 API</text><text x="245.0" y="488" text-anchor="middle" class="d">上传 / 提交 / 幂等 / 查询 / 取消</text><rect x="500" y="435" width="300" height="75" rx="10" fill="white" stroke="#b6cbdc"/><text x="650.0" y="464" text-anchor="middle" class="t">身份桥接 AuthConnector</text><text x="650.0" y="488" text-anchor="middle" class="d">登记key映射 + 上游鉴权 / ACL</text><rect x="80" y="565" width="330" height="75" rx="10" fill="#fff7df" stroke="#b6cbdc"/><text x="245.0" y="594" text-anchor="middle" class="t">独立 PostgreSQL</text><text x="245.0" y="618" text-anchor="middle" class="d">持久队列 / attempt / 租约 / 用量</text><rect x="500" y="565" width="300" height="75" rx="10" fill="white" stroke="#b6cbdc"/><text x="650.0" y="594" text-anchor="middle" class="t">执行器 + 协调循环</text><text x="650.0" y="618" text-anchor="middle" class="d">领取 / 续租 / 有限重试 / 维护</text><rect x="80" y="695" width="330" height="70" rx="10" fill="#fff7df" stroke="#b6cbdc"/><text x="245.0" y="724" text-anchor="middle" class="t">ArtifactStore 持久卷</text><text x="245.0" y="748" text-anchor="middle" class="d">输入 / 权威结果 / 鉴权下载 / TTL</text><text x="500" y="715" class="d">结果模块属于任务层，不拆微服务。</text><text x="500" y="740" class="d">成功前必须完成控制端持久提交。</text><rect x="920" y="435" width="440" height="75" rx="10" fill="white" stroke="#b6cbdc"/><text x="1140.0" y="464" text-anchor="middle" class="t">GPUStack 推理入口</text><text x="1140.0" y="488" text-anchor="middle" class="d">API key / 模型ACL / 路由 / 同步 / SSE</text><rect x="920" y="565" width="440" height="75" rx="10" fill="white" stroke="#b6cbdc"/><text x="1140.0" y="594" text-anchor="middle" class="t">GPUStack 部署与资源管理</text><text x="1140.0" y="618" text-anchor="middle" class="d">模型目录 / backend / GPU放置 / 副本</text><rect x="920" y="695" width="440" height="70" rx="10" fill="white" stroke="#b6cbdc"/><text x="1140.0" y="724" text-anchor="middle" class="t">已有用量与监控</text><text x="1140.0" y="748" text-anchor="middle" class="d">worker健康 / GPU指标 / 基础usage</text><path d="M610 275 V305 H245 V435" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="65" y="299" class="l">异步 /maas/v1：提交、查询、下载</text><path d="M835 275 V305 H1140 V435" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="980" y="299" class="l">同步 / 流式：既有推理路径</text><path d="M410 472 H500" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="422" y="458" class="l">验证身份</text><path d="M800 472 H920" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)" stroke-dasharray="7 5"/><text x="812" y="458" class="l">原生验证</text><path d="M245 510 V565" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="92" y="548" class="l">事务受理202</text><path d="M500 602 H410" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="418" y="589" class="l">领取 / 续租</text><path d="M800 602 H865 V530 H1140 V510" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="897" y="549" class="l">异步任务内部调用</text><path d="M245 640 V695" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="83" y="681" class="l">元数据 / 结果引用</text><path d="M580 640 V665 H430 V730 H410" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="455" y="687" class="l">写入并原子提交结果</text><rect x="25" y="880" width="1390" height="145" rx="16" fill="#f1f6f2" stroke="#c2d7c9"/><text x="45" y="909" class="t">GPU worker 资源池 · 只有适配器包含模型算法，worker 可保留临时缓存</text><rect x="70" y="930" width="370" height="70" rx="10" fill="white" stroke="#b6cbdc"/><text x="255.0" y="959" text-anchor="middle" class="t">001 worker</text><text x="255.0" y="983" text-anchor="middle" class="d">模型适配器 → GPU实例</text><rect x="535" y="930" width="370" height="70" rx="10" fill="white" stroke="#b6cbdc"/><text x="720.0" y="959" text-anchor="middle" class="t">002 worker</text><text x="720.0" y="983" text-anchor="middle" class="d">模型适配器 → GPU实例</text><rect x="1000" y="930" width="370" height="70" rx="10" fill="white" stroke="#b6cbdc"/><text x="1185.0" y="959" text-anchor="middle" class="t">后续 worker</text><text x="1185.0" y="983" text-anchor="middle" class="d">按相同接入规范扩容</text><path d="M1360 472 H1380 V855 H720 V930" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)"/><text x="1125" y="846" class="l">推理与结果返回</text><path d="M1140 640 V665 H1400 V865 H255 V930" fill="none" stroke="#42657e" stroke-width="1.8" marker-end="url(#arrow)" stroke-dasharray="7 5"/><text x="62" y="854" class="l">部署 / 副本 / 健康管理</text><text x="36" y="1064" class="d">首期维护：全局暂停派发与同步旁路 → 核对在途/未知执行 → maintenance → 恢复探测；不是精确逐节点无损 drain。</text><text x="36" y="1092" class="d">实线：调用 / 数据　虚线：控制 / 验证　黄色：新增持久存储　绿色：复用已有底座　无 main 专属能力依赖。</text></svg></div><section id="design"><h2>统一模型服务框架设计 v0.2</h2>
+<p>日期：2026-10-20 · 状态：当前设计基线；已实现P0部分探针/P1模拟闭环，P2–P4待实现。</p>
+<p>固定依赖：GPUStack <strong>v2.2.3</strong>；不依赖main、不修改上游数据库、不以fork上游为实施前提。</p>
+<p>配套：<a href="PLAN.md">实施计划</a>、<a href="ROADMAP.md">路线图</a>、<a href="ARCHITECTURE.mmd">组件架构</a>、<a href="ROADMAP.html">HTML总览</a>。</p>
 <h3>1. 目标与范围</h3>
-<p>将分散且可能退出的 GPU 节点组织为统一模型服务。客户通过稳定模型标识提交请求；框架统一处理身份、任务、状态、结果、容量、故障与计量。模型只实现能力适配器，业务核心不依赖 OCR、LLM 或图像生成的具体算法。</p>
-<p>第一版交付：异步文件型推理主链路、同步请求及流式请求的能力声明、节点排空、持久任务、结果查询、可观测性。用现有 OCR 和不占 GPU 的模拟后端验收。模拟后端支持延迟、进度、故障和进程中断，用来验证框架，而不是继续选模型。</p>
-<p>不在首版实现：计费结算、多地域/控制端高可用、自动识别用户是否上机、跨节点分布式推理、所有模型通用 JSON 请求体、视频服务或训练服务。</p>
-<h3>2. 架构决策</h3>
-<div class="table"><table><thead><tr><th>决策</th><th>第一版选择</th><th>理由与边界</th></tr></thead><tbody>
-<tr><td>部署</td><td>001 控制端常在线，同时保留 GPU worker；002 为可退出 worker</td><td>沿用已验证部署；001 仍是单点，重启期间不承诺可用</td></tr>
-<tr><td>应用结构</td><td>一个代码库，API、执行器、协调器三个进程角色；Docker Compose 管理新增服务</td><td>简化交付，不拆大量微服务；GPUStack 原有容器独立维护</td></tr>
-<tr><td>API</td><td>FastAPI；客户入口与管理入口分离</td><td>复用现有技术；客户不能直接操作 GPUStack 管理 API</td></tr>
-<tr><td>持久层</td><td>PostgreSQL 作为任务、租约、节点意图、目录和用量事件的权威记录</td><td>首版以数据库持久队列避免增加 Redis/RabbitMQ；用事务控制竞态</td></tr>
-<tr><td>队列</td><td>数据库任务表，短事务领取、租约与心跳、过期回收</td><td>不在持有数据库锁时推理；后续吞吐确有需要再增加 broker/outbox</td></tr>
-<tr><td>结果</td><td>001 持久卷保存权威输入/结果，worker 保留临时缓存</td><td>完成任务不能只依赖随时退出的 worker；不再把 worker 本地文件视为可靠结果</td></tr>
-<tr><td>文件接口</td><td>统一 ArtifactStore 接口；首版控制端文件系统，后续可替换 S3 兼容存储</td><td>元数据与路径分离，客户只获得有鉴权的 artifact ID</td></tr>
-<tr><td>GPU 部署</td><td>GPUStack 继续管理 GPU worker、模型实例、副本、显存申报及启停</td><td>框架不实现 GPU 放置算法，显存申报仍非硬隔离</td></tr>
-<tr><td>请求执行</td><td>执行器支持 GPUStack 网关调用与内部实例定向调用两类 connector</td><td>网关便于兼容；严格节点排空需能选择合格实例，见第 6 节</td></tr>
-<tr><td>安全与计量</td><td>本地 API key 摘要、项目配额、按成功任务及实际尝试记录事件</td><td>GPUStack 管理凭据仅在内部使用；OCR 不伪造 token 用量</td></tr>
+<p>利用可能退出的闲置GPU，通过一个模型服务底座提供同步、流式及持久异步调用。模型算法不是框架核心：先用既有OCR与模拟后端验证接入、持久性、故障恢复和结果可查。</p>
+<p>本版落实最新讨论：<strong>充分复用GPUStack v2.2.3，但保留最小任务数据库、执行器与结果管理。</strong> 不将“版本固定”等同于“只能提供同步请求”，也不重复建设模型网关、用户中心或GPU调度器。</p>
+<p>首期必须具备：已接受任务可追踪、有限重试、幂等、结果持久查询、项目隔离、重启恢复，以及有明确限制的计划维护。首期不承诺：任务恰好执行一次、无损实时迁移、任意worker随时切Windows、控制端高可用、计费结算、任意视频后端。</p>
+<h3>2. 版本、证据与方案沿革</h3>
+<p>源码基线为本地v2.2.3 commit <code>1cfcbbff02aacdb51f0a390378dd7bcddd9bf365</code>。上线前核对实际容器digest、依赖和网关模式，不能仅凭标签断言与本地源码一致。源码审查与证据见 <a href="GPUSTACK-REUSE-REVIEW.md">复用分析</a> 和 <a href="GPUSTACK-SOURCE-EVIDENCE.json">证据JSON</a>。</p>
+<p>本版替代v0.1宽泛自建方案及“暂缓任务数据库/执行器/结果管理”的收敛建议。v0.1原文归档于archive/；GPUSTACK-V2.2.3-SCOPE仅保留为已被替代的讨论记录。根目录MILESTONES.md继续维持deprecated。本版ROADMAP为当前执行路线，不并行执行旧F0–F6或V1–V4。</p>
+<p>明确排除main特有依赖：新LB/least-load/session-affinity插件、model revision回退API、角色组drain。v2.2.3 maintenance不是业务排空；模型部署恢复不是客户任务恢复；内部WorkQueue不是持久推理任务队列。</p>
+<h3>3. 最小组件与职责</h3>
+<div class="table"><table><thead><tr><th>组件</th><th>归属</th><th>本版职责</th></tr></thead><tbody>
+<tr><td>统一边缘入口</td><td>复用现有/标准网关</td><td>HTTPS、体积/连接限制、路径分流；不另写通用推理代理</td></tr>
+<tr><td>GPUStack v2.2.3</td><td>复用</td><td>用户/组织、API key、模型ACL、目录/别名、同步/SSE/可验证的generic proxy、部署、副本、GPU放置、worker健康、基础用量/指标</td></tr>
+<tr><td>任务API（FastAPI）</td><td>新增，薄层</td><td>上传/查询artifact、提交/查询/取消任务、幂等、业务授权、结果下载、维护管理</td></tr>
+<tr><td>PostgreSQL</td><td>新增，独立业务数据库</td><td>任务队列、attempt/租约、业务项目映射、用量事件与artifact元数据；不复制GPUStack部署状态</td></tr>
+<tr><td>执行器（同一代码库）</td><td>新增，一个进程角色</td><td>领取任务、续租、调用GPUStack、收集结果、条件提交、有限重试</td></tr>
+<tr><td>协调循环</td><td>执行器内模块</td><td>过期租约回收、延迟重试、过期文件清理、全局维护协调；首期不拆独立服务</td></tr>
+<tr><td>ArtifactStore</td><td>任务层内模块</td><td>控制端文件持久卷保存输入/权威结果、摘要、鉴权读写及TTL；首期不部署独立结果微服务</td></tr>
+<tr><td>模型适配器</td><td>按模型新增/复用</td><td>模型输入输出、健康、错误、实际执行；只补GPUStack未标准化的业务协议</td></tr>
+<tr><td>观测</td><td>复用+补充</td><td>复用GPU/请求指标；新增队列、租约、任务、结果、维护与成功计量指标</td></tr>
 </tbody></table></div>
-<p>结果方案是相对原规划的明确调整：worker 可继续缓存，但异步任务标记成功前必须把结果提交到控制端持久卷。该调整增加 001 磁盘需求；若仍要求只存 worker，应接受节点离线后结果暂不可用及磁盘损坏丢失的限制，不能宣称结果持久可查。首版按前一种方案设计。</p>
-<h3>3. 组件与职责</h3>
-<p>组件架构图见 <a href="ARCHITECTURE.mmd">ARCHITECTURE.mmd</a> 和 <a href="ROADMAP.html">ROADMAP.html</a>。</p>
-<div class="table"><table><thead><tr><th>组件</th><th>职责</th><th>不承担的职责</th></tr></thead><tbody>
-<tr><td>外部网关</td><td>HTTPS、请求体限制、连接上限、管理入口隔离</td><td>不保管任务状态、不无限重试推理请求</td></tr>
-<tr><td>API 服务</td><td>API key、项目、模型目录、入参校验、幂等、任务/结果查询、同步/流式转发</td><td>不做 GPU 放置、不在内存里保存唯一任务记录</td></tr>
-<tr><td>模型目录</td><td>稳定别名、不可变模型 revision、schema、模式、connector、部署绑定、资源档案</td><td>不把全部能力伪装为 chat/LLM</td></tr>
-<tr><td>执行器</td><td>领取任务、资格过滤、槽位预留、调用适配器、心跳、提交结果/用量</td><td>不直接调 Docker 或分配 GPU</td></tr>
-<tr><td>协调器</td><td>任务租约回收、重试调度、节点排空状态、实例快照刷新、过期清理</td><td>不把单次心跳丢失直接视为用户开机事件</td></tr>
-<tr><td>GPUStack connector</td><td>隔离当前安装版本的目录/实例发现与推理调用细节</td><td>不假定上游有未经验证的 drain 或零损路由 API</td></tr>
-<tr><td>模型适配器</td><td>健康、能力描述、输入转换、执行、结果标准化、可选取消/进度</td><td>不持有客户鉴权/账本、不自行无限重试</td></tr>
-<tr><td>PostgreSQL</td><td>项目、目录、任务、尝试、租约、幂等、用量及审计记录</td><td>不直接存大图片/视频字节</td></tr>
-<tr><td>ArtifactStore</td><td>输入/输出持久保存、鉴权读取、摘要、保留期限及回收</td><td>不允许任意路径或任意 URL 抓取</td></tr>
-<tr><td>节点 agent（后续）</td><td>主动上报状态与请求退出，协调 Ubuntu 关机前排空</td><td>首版不控制 Windows 登录，不接入 MQTT/计费软件</td></tr>
-<tr><td>观测组件</td><td>结构化日志、指标、告警、请求/任务关联</td><td>不记录密钥、原始图片或完整敏感推理内容</td></tr>
+<p>新增运行单元只有任务API、执行器、PostgreSQL；artifact是持久卷而非额外服务。一个仓库，Docker Compose管理新增单元。001控制端常在线且兼worker，002提供可维护worker；不改变现有GPUStack自己的数据库配置。</p>
+<h3>4. 两条调用链与权威来源</h3>
+<h4>4.1 同步 / 流式</h4>
+<p>客户 → 边缘网关 → GPUStack推理入口 → 模型适配器 → 客户。</p>
+<p>继续使用现有模型名、API key和SSE；这类调用不具备后台任务持久性，连接中断不自动重放。Playground走原私有管理入口。普通原生HTTP接口先验证v2.2.3 generic proxy，再决定是否启用；不强行把所有模型包装成chat。</p>
+<h4>4.2 异步</h4>
+<p>客户上传输入 → 任务API鉴权/检查模型权限 → PostgreSQL事务提交任务并返回202 → 执行器领取租约 → 通过GPUStack入口调用具体版本目标 → 控制端持久写入结果 → 同一事务提交任务成功和唯一成功用量事件 → 客户查询/下载。</p>
+<p><strong>任务受理202代表任务记录已持久化，不代表推理已完成。任务成功代表结果已提交控制端，不以worker本地文件或HTTP200单独作为成功依据。</strong></p>
+<div class="table"><table><thead><tr><th>数据</th><th>权威来源</th><th>任务层保留范围</th></tr></thead><tbody>
+<tr><td>用户、key、组织、模型权限</td><td>GPUStack</td><td>引用和受控映射，不另造账号密码</td></tr>
+<tr><td>模型别名、部署、实例、worker状态</td><td>GPUStack</td><td>ID及必要只读快照；不反向覆盖权威状态</td></tr>
+<tr><td>业务项目、幂等、任务、尝试、保留期</td><td>任务PostgreSQL</td><td>任务层权威记录</td></tr>
+<tr><td>输入与已成功结果</td><td>001持久卷+artifact元数据</td><td>权威持久结果，worker仅可缓存</td></tr>
+<tr><td>调用次数/token/资源基础用量</td><td>GPUStack</td><td>保留来源；不等同于客户成功任务数</td></tr>
+<tr><td>成功任务唯一计量与失败尝试</td><td>任务PostgreSQL</td><td>为以后计费提供证据，首期不出账单</td></tr>
 </tbody></table></div>
-<h3>4. 模型接入协议</h3>
-<p>稳定标识如 <code>ocr.default</code> 绑定具体 revision。创建任务时固定 revision，不能因别名更新而让排队任务静默换版本。部署绑定/connector 与模型 revision 分离。</p>
-<p>能力描述至少包含：<code>model_id</code>、<code>revision</code>、<code>task_type</code>、<code>input_schema</code>、<code>output_schema</code>、<code>execution_modes</code>（sync/async/stream）、<code>max_input_bytes</code>、<code>max_runtime_s</code>、<code>supports_cancel</code>、<code>supports_progress</code>、计量单位及资源档案。不同模型允许不同 payload schema。</p>
-<p>内部适配器概念接口：</p>
-<pre><code>health() -&gt; readiness + version
-capabilities() -&gt; versioned capability document
-validate(payload, artifacts) -&gt; validated request
-invoke(request, context) -&gt; normalized result
-stream(request, context) -&gt; events                 # 可选
-cancel(attempt_id) -&gt; acknowledged/unsupported     # 可选</code></pre>
-<p>context 包含 task/attempt/request ID、截止时间、租约 fencing token、受限 artifact 读写授权；不传客户 API key 或 GPUStack 管理 key 给模型。调用鉴权的具体方式需在 connector 集成测试中验证，首版实例地址仅在私有内网开放。</p>
-<p>标准结果：<code>outputs</code>（结构化 JSON）、<code>artifacts</code>（ID、类型、大小、摘要）、<code>model_revision</code>、实际可用的 <code>usage</code>、<code>warnings</code>。算法字段放在 outputs 内；缺乏真实 token 的模型使用图片、任务、输出数量等单位。统一错误包含 <code>code</code>、<code>message</code>、<code>retryable</code>、<code>request_id</code>，隐藏内部凭据和堆栈。</p>
-<p>首版适配器 SDK 保持轻量，避免导入任何模型库。现有 OCR 包装为一个实现，模拟后端为另一个实现。两者共用任务核心，不能按模型类型写核心分支。</p>
-<h3>5. 客户接口与数据模型</h3>
-<div class="table"><table><thead><tr><th>接口（框架新接口）</th><th>用途</th></tr></thead><tbody>
-<tr><td><code>GET /v1/models</code>、<code>GET /v1/models/{id}</code></td><td>可用模型、revision 和能力/schema</td></tr>
-<tr><td><code>POST /v1/artifacts</code></td><td>有大小/类型限制的输入上传，返回 artifact ID</td></tr>
-<tr><td><code>POST /v1/tasks</code></td><td>异步提交，支持 <code>Idempotency-Key</code>；事务提交后返回 202</td></tr>
-<tr><td><code>GET /v1/tasks/{id}</code></td><td>查询状态、错误、输出和结果过期时间</td></tr>
-<tr><td><code>POST /v1/tasks/{id}/cancel</code></td><td>尝试取消；不伪称模型一定停止</td></tr>
-<tr><td><code>GET /v1/artifacts/{id}</code></td><td>所属项目鉴权后读取结果</td></tr>
-<tr><td><code>POST /v1/inferences</code></td><td>可选同步模式：有截止时间，能力不支持则拒绝</td></tr>
-<tr><td><code>POST /v1/chat/completions</code></td><td>按能力提供现有 OpenAI 兼容模式，包括 SSE；独立于持久任务保证</td></tr>
-<tr><td><code>POST /admin/nodes/{id}/drain</code>、<code>resume</code></td><td>管理节点接单资格与排空，客户不能调用</td></tr>
+<h3>5. 客户身份与任务权限：复用key，不假设现成SSO</h3>
+<p>v2.2.3没有已验证可直接用于任意新任务端点的通用identity接口。<code>/token-auth</code>是模型级ext-auth，依赖模型上下文；management接口不应要求客户提供management key。</p>
+<p><strong>首期采用受控接入的凭据绑定</strong>，不开放任意GPUStack key自动注册任务服务：</p>
+<ol>
+<li>管理员通过GPUStack签发/选择非管理员、inference-only、限定模型的客户key，并登记其key ID、owner/组织、业务project映射及允许的版本目标；映射只能由可信管理流程建立。</li>
+<li>客户仍使用这一个GPUStack key调用任务API。任务层用本地HMAC指纹识别已登记凭据，再调用GPUStack验证有效性；不保存第二份密码，不凭客户提交的身份头认定project。</li>
+<li>每次受理任务，按目标私有/受限模型通过GPUStack原生鉴权路径检查该key的权限。候选路径为私有<code>/token-auth</code>；必须验证其scope、有效期、撤销与缓存行为。普通<code>/v1/models</code>返回模型列表不能单独当作全部模型白名单权限证明。</li>
+<li>查询/下载也验证key有效性并核对记录所属project；不把“知道task/artifact ID”当作授权。模型权限撤销后是否允许读既有结果，首期规则为key仍有效且project授权可读；不因别名改动重算历史归属。</li>
+<li>执行器仅持有credential引用；注册时需要的推理key通过控制端受保护secret存储（加密、解密密钥独立挂载、最小权限）取得。提交前/每次执行前重新验证对应key和模型权限；key撤销或到期时不借全局管理key越权执行，未执行任务明确失败为AUTH_REVOKED/AUTH_EXPIRED。</li>
+<li>管理key只供受保护的登记/目录查询管理过程使用，不进入任务payload、模型容器、浏览器或日志。解析/缓存上游身份结论封装在AuthConnector中，不导入GPUStack内部auth模块或直读它的数据库。</li>
+</ol>
+<p>此桥接为P0技术门槛，不声称已实现。若上述HTTP验证在实际v2.2.3配置下无法可靠判定有效性和归属，先限定单个受控试点project并停止外部多租户开放；不得悄悄退化为只比对本地key指纹。未来是否引入通用身份服务另行设计。</p>
+<h3>6. 模型接入与版本固定</h3>
+<p>GPUStack提供backend镜像、启动命令、环境、健康、模型route和副本配置。任务层只加一份轻量能力清单，按GPUStack route/model ID关联：输入/输出schema、sync/stream/async模式、输入限制、最大执行时长、取消能力、结果转换及实际计量单位。</p>
+<p>适配器概念接口：<code>health</code>、<code>validate</code>、<code>invoke</code>、可选<code>stream/cancel</code>。统一的是任务生命周期，不是所有模型payload。健康检查与部署协议沿用GPUStack；输入解析与输出规范由适配器负责。模拟后端不依赖GPU，用来注入延迟、失败和连接中断。</p>
+<p>v2.2.3没有main的部署revision API。使用Git能力清单+固定镜像digest/权重摘要+配置快照；任务受理时记录不可变业务revision与具体版本化route。示例：客户别名<code>ocr.default</code>解析到登记的版本目标<code>ocr-r03</code>。活跃任务引用的版本目标禁止原地改绑；更新采用新目标，旧目标按引用与保留策略退役。执行前核对配置指纹；不匹配明确失败MODEL_REVISION_CHANGED，不静默切到新版本。</p>
+<p>首期保持GPUStack为路由权威，任务层的版本记录是受理快照，不是第二个可变别名控制器。为固定历史版本创建额外部署可能消耗显存，因此不承诺所有旧版本永久在线；资源不足时可排队或按显式错误结束，不能冒充旧版本运行新模型。</p>
+<h3>7. 任务与数据协议</h3>
+<p>新任务端点使用<code>/maas/v1</code>命名空间，与GPUStack <code>/v1/models</code>等既有接口分开：</p>
+<div class="table"><table><thead><tr><th>方法/路径</th><th>行为</th></tr></thead><tbody>
+<tr><td><code>POST /maas/v1/artifacts</code></td><td>限制大小/类型的上传；返回artifact ID及保留期</td></tr>
+<tr><td><code>POST /maas/v1/tasks</code></td><td>Idempotency-Key；事务成功后202，含task ID与状态地址</td></tr>
+<tr><td><code>GET /maas/v1/tasks/{id}</code></td><td>状态、revision、错误、outputs、结果有效期</td></tr>
+<tr><td><code>POST /maas/v1/tasks/{id}/cancel</code></td><td>best-effort取消；不保证模型中断</td></tr>
+<tr><td><code>GET /maas/v1/artifacts/{id}</code></td><td>project鉴权下载；结果到期410</td></tr>
+<tr><td><code>GET /maas/v1/models/{id}/capabilities</code></td><td>补充schema，引用GPUStack模型目录，不重复实现目录</td></tr>
+<tr><td><code>POST /maas/admin/maintenance</code>、<code>resume</code></td><td>私有管理入口，全局受控维护流程</td></tr>
 </tbody></table></div>
-<p>框架新 <code>/v1/models</code> 是能力目录；不等同于现有 GPUStack 同名 API。外部入口按明确路由表转发，避免路径遮蔽；原 GPUStack Playground 继续走原私有管理入口。同步/流式连接中断首版不做自动重放，避免重复输出和重复计算；其在途执行仍计入节点活动占用。</p>
-<p>异步请求示例（概念，不表示现已可调用）：</p>
-<pre><code>{
-  &quot;model&quot;: &quot;ocr.default&quot;,
-  &quot;input&quot;: {&quot;image&quot;: {&quot;artifact_id&quot;: &quot;art_input_123&quot;}},
-  &quot;parameters&quot;: {},
-  &quot;timeout_seconds&quot;: 60
-}</code></pre>
-<p>核心表：<code>projects</code>、<code>api_keys</code>、<code>model_revisions</code>、<code>model_aliases</code>、<code>deployment_bindings</code>、<code>nodes</code>、<code>instances</code>、<code>tasks</code>、<code>task_attempts</code>、<code>execution_leases</code>、<code>artifacts</code>、<code>usage_events</code>、<code>audit_events</code>。所有业务记录带 project ID；任务/结果查询不允许跨项目。任务状态与终态用量事件在同一事务中写入；唯一键防止重复记成功用量。</p>
-<h3>6. 请求路径、排空与资源边界</h3>
-<p>异步流程：鉴权/配额 → 校验输入与 revision → 持久任务事务 → 执行器领取租约 → 选取 READY 且允许接单的实例 → 预留实例并发槽 → 适配器执行 → 临时文件写入并原子提交 → 验证摘要和文件存在 → 事务提交成功状态及用量 → 客户查询。</p>
-<p>首版大输入通过控制端上传和受限下载，执行器不在请求中复制无限大小 base64；旧 OCR connector 可按其输入上限转换为 base64，后续模型可消费 artifact。JSON 结果同样进入持久存储策略。</p>
-<p>**排空不等于停止心跳。** 数据库先将节点改为 DRAINING，领取新任务和槽位预留时事务检查该状态；等待其所有执行租约和实际后端执行结束，再标记 DRAINED。超时按策略等待或强制中断并记录失败/重试，不能宣称无损退出。取消或请求超时但后端尚未停止时，继续占用槽位或隔离实例，不能立即把它当作空闲。</p>
-<p>当前 GPUStack 网关是否支持严格按节点排除必须实测，不能仅改框架状态后继续无条件调用其通用路由。设计采用以下实现顺序：</p>
-<p>1. connector 读取已运行实例的 worker、端口和健康信息；当前试点记录已经使用过私有实例 HTTP 调用。</p>
-<p>2. 对需排空保障的框架任务，执行器从允许接单的实例里选目标，直接调用其适配器；模型部署和 GPU 放置仍由 GPUStack 完成。地址只来自可信部署目录，不接受客户指定地址。</p>
-<p>3. 实例重建导致快照过期时，将该尝试失败归类、刷新目录，再按有限重试策略处理。实例/节点状态与租约、槽位需事务校验；不能保证消除网络分区造成的重复计算。</p>
-<p>4. 网关 connector 仅用于不承诺精确排空的兼容路径，或以后验证上游确有相应能力后使用。绕过框架直接从旧 Playground 发起的请求不受框架排空管理；切换系统前须关闭旁路接入并验证后端实际无任务。</p>
-<p>资源控制分两层：GPUStack 决定实例放到哪张 GPU；框架控制任务发往哪个合格实例、并发槽位和队列长度。一个实例的初始并发上限由资源档案配置，不假定支持跨图 batching。每项目及全局均有排队上限和最大排队时间；过载返回 429/503 及明确错误。不同模型类型可配置独立任务队列，首版用 FIFO 加项目并发配额，公平调度后续迭代。</p>
-<p>节点状态：<code>UNKNOWN → READY → DRAINING → DRAINED → OFFLINE</code>；主动 resume 后经健康确认再 READY。失联可由任意活动状态转 OFFLINE；恢复不自动撤销管理员设置的 drain 意图。001 的控制进程不属于可排空关机范围，可单独停用它的 worker，但整机仍须在线。</p>
-<h3>7. 任务状态与故障语义</h3>
-<pre><code>QUEUED → RUNNING → SUCCEEDED
-           ├→ RETRY_WAIT → QUEUED
-           ├→ FAILED
-           └→ CANCEL_REQUESTED → CANCELLED / SUCCEEDED / FAILED
-QUEUED / RETRY_WAIT → CANCELLED</code></pre>
-<p>- 首版执行语义为至少一次尝试，终态以 fencing token 和条件更新避免旧尝试覆盖新结果；不保证 GPU 计算恰好一次。</p>
-<p>- 队列领取使用事务与 <code>FOR UPDATE SKIP LOCKED</code>；租约包含到期时间和递增尝试 token。协调器回收过期租约，拒绝旧 attempt 的提交。</p>
-<p>- 幂等键作用域为项目+提交接口，绑定标准化请求摘要和固定 revision；相同键不同内容返回 409。同一任务重复执行不重复记成功计量。</p>
-<p>- 仅重试节点失联、可恢复网络错误和明确可重试错误，指数退避加抖动、最大次数和任务总截止时间。入参错误、权限错误不重试；OOM 先隔离/降容量，不能无限原样重试。</p>
-<p>- 取消是 best effort。排队任务可事务取消；运行任务设取消请求。模型不支持中断时允许其结束，但按确定的提交竞态规则只提交一个终态，客户端读取最终状态。</p>
-<p>- 结果先写临时路径，再原子重命名并提交数据库；崩溃产生的孤儿文件由延迟清理回收。输入/结果清理必须排除仍被活动任务引用的数据；结果到期不重写成功历史，只返回 <code>result_expired</code>/410。</p>
-<p>- 001 重启后从 PostgreSQL 恢复任务、租约和清理任务；数据库及文件持久卷备份并实际演练恢复。控制端不可达期间暂停接单，worker 结果提交失败必须有超时/重试上限。</p>
-<p>建议初始可配置值：任务租约 30 秒、执行器心跳 5 秒、最多 3 次尝试、输入临时保留 24 小时、结果保留 24 小时。以上为待验证默认值，不是已承诺 SLA；模型最大时长与任务截止时间需按能力单独配置。租约持续续期，不要求长任务在 30 秒内完成。</p>
-<h3>8. 安全、观测与计量</h3>
-<p>网关只发布客户 API；管理操作通过私有访问。API key 只存摘要并支持撤销，模型管理凭据由内部 secret 文件注入。限制文件大小、类型、解码像素和输出大小，禁止任意远程 URL 下载与路径穿越。任务、artifact 和幂等键均按项目隔离；下载不可仅依赖难猜 ID。日志脱敏，不收集原图内容。</p>
-<p>统一关联 request/task/attempt/project/model_revision/node/instance ID。指标包括接单/拒绝数、队列长度和最老年龄、成功/失败/重试、P50/P95、执行耗时、运行槽位、GPU利用率/显存、artifact存储量、节点失联与排空耗时。数据库/磁盘不足时停止接收新任务，而不是返回虚假的202。</p>
-<p>用量事件区分客户成功任务、模型实际用量和内部尝试/资源消耗；计量不等于计费。失败重试成本单独保留，后续定价可核算。没有真实 token 就不填造 token 字段。</p>
-<h3>9. 验收原则与演进边界</h3>
-<p>核心验收不依赖某 OCR 准确率：新增模拟后端不改任务核心；重启不丢已接收任务记录；实例故障可回收租约；过期提交被拒；重复提交不重复记量；节点 drain 后不接受框架新执行；结果在 worker 离线后仍可读；项目隔离及过载行为可验证。</p>
-<p>计划与验收用例见 <a href="ROADMAP.md">ROADMAP.md</a>。阶段门槛通过后再发布外部客户入口。首版只有单控制端重启恢复，非高可用，也不保证双系统切换零失败。更多 worker、消息中间件、对象存储、独立控制端与多模型调度按实际瓶颈渐进增加。</p></section><section id="roadmap"><h2>统一模型服务框架：实施计划与路线图</h2>
-<p>2026-10-20 · 设计提案，尚未实施。配套：<a href="DESIGN.md">设计</a>、<a href="ARCHITECTURE.mmd">组件图</a>、<a href="ROADMAP.html">HTML 总览</a>。</p>
-<p>本路线图调整原来以 OCR 质量为主的推进顺序。保留 <a href="../../MILESTONES.md">MILESTONES.md</a> 作为历史业务规划；下列 F0–F6 专门代表框架交付阶段，避免把已有短时模型实验当作平台能力已经完成。</p>
-<h3>1. 优先级与阶段</h3>
-<div class="table"><table><thead><tr><th>阶段</th><th>优先级</th><th>交付物</th><th>依赖</th><th>估计有效工程时间</th></tr></thead><tbody>
-<tr><td>F0 · 协议和边界冻结</td><td>P0</td><td>接入协议、API/schema、状态机、GPUStack connector 探针</td><td>现有部署</td><td>2–3 人日</td></tr>
-<tr><td>F1 · 单任务持久闭环</td><td>P0</td><td>API、数据库队列、执行器、结果存储、模拟后端</td><td>F0</td><td>4–6 人日</td></tr>
-<tr><td>F2 · GPUStack 接入与可靠退出</td><td>P0</td><td>现有 OCR 适配、租约恢复、节点排空、失败重试</td><td>F1 + F0 探针</td><td>4–6 人日</td></tr>
-<tr><td>F3 · 容量和平台观测</td><td>P1</td><td>配额、队列上限、指标、计量、压力/恢复报告</td><td>F2</td><td>3–5 人日</td></tr>
-<tr><td>F4 · 部署与对外试用</td><td>P1</td><td>镜像分发、升级回退、HTTPS、项目隔离、备份演练</td><td>F3</td><td>3–5 人日</td></tr>
-<tr><td>F5 · 长时与商业试点</td><td>P2</td><td>至少8小时运行、退出恢复演练、真实使用量和成本</td><td>F4</td><td>2–3 人日 + 运行观察</td></tr>
-<tr><td>F6 · 扩容与更多模型</td><td>P2</td><td>更多worker、额外模型类别、必要时独立控制端</td><td>F5 通过</td><td>另行估算</td></tr>
+<p>提交示例：</p>
+<pre><code>{&quot;model&quot;:&quot;ocr.default&quot;,&quot;input&quot;:{&quot;image&quot;:{&quot;artifact_id&quot;:&quot;art_123&quot;}},&quot;parameters&quot;:{},&quot;timeout_seconds&quot;:120}</code></pre>
+<p>错误响应包含code、message、retryable和request_id，不泄露内部地址、secret或堆栈。模型JSON200也需执行输出schema检查；模型特有错误应明确分类。</p>
+<p>核心表：projects（绑定）、credential_bindings（引用/指纹）、model_capabilities（版本清单）、tasks、task_attempts、artifacts、task_usage_events、maintenance_state、audit_events。tasks包含project、提交摘要、幂等键、credential_ref、模型revision/具体目标、截止、状态、attempt fencing token和结果引用。使用唯一约束保证project+幂等键及task成功事件唯一。</p>
+<p>任务状态：<code>QUEUED → RUNNING → SUCCEEDED</code>；失败可进入<code>RETRY_WAIT → QUEUED</code>或FAILED；排队/重试等待可取消；RUNNING可进入CANCEL_REQUESTED，最后确定CANCELLED/SUCCEEDED/FAILED之一。终态条件提交裁决竞态，不承诺取消一定胜过已完成结果。</p>
+<h3>8. 执行、恢复和重试边界</h3>
+<p>PostgreSQL同时作为任务记录与持久队列。执行器短事务<code>FOR UPDATE SKIP LOCKED</code>领取任务、递增attempt token并设置租约，事务外执行；周期心跳续期，协调循环回收过期租约。结果提交使用token条件更新，拒绝旧attempt覆盖新结果。</p>
+<p>初始配置建议：租约30秒、心跳5秒、最多3次业务attempt、单project及全局有界队列、可配置并发槽、最长排队时间。长任务持续续租，不要求30秒内结束。超时和退避均受任务总deadline约束；参数需P1验证，不是外部SLA。</p>
+<p>只重试明确的可恢复网络/节点故障；入参、权限、配置版本变化不重试；OOM标记容量问题，不无限原样重试。一次客户任务可有多次实际GPU执行，终态与成功计量只能提交一次。</p>
+<p>v2.2.3 Higress配置可能包含<code>non_idempotent</code>及上游2次尝试，Python fallback与Higress不同。P0必须核对实际配置、fallback和模型内部重试。对于任务专用版本目标，优先通过可用配置禁用透明上游重试；如果无法关闭，应记录每attempt可能触发的上游尝试上界、降低业务重试预算。结果提交幂等不等于GPU计算恰好一次，不把未知实际执行次数报告成精确资源账单。</p>
+<p>首期执行器通过GPUStack入口调用，不默认直连实例，因此保留其权限/LB/统计链路；request/task/attempt ID通过经过验证可传递的头和本地日志关联，上游不支持字段不伪称能完整串联。</p>
+<p>超时/失联后的实际模型执行可能未知。保留UNKNOWN_BACKEND_ACTIVITY标记并保守占用/暂停相应任务执行域；未证明后端停止，不把HTTP断开当作安全关机依据。隔离/核实后才释放容量或恢复派发，避免重试导致无限后台叠加。</p>
+<h3>9. 结果持久性与清理</h3>
+<p>001持久卷保存输入及权威结果；数据库只存元数据与小型结构化摘要，不存大文件。worker返回结果后由执行器落盘；对于返回worker本地URL的后端，必须先通过受控connector拉取到001才能标记成功。结果过大、类型不符或拉取失败时不伪报成功。</p>
+<p>先写临时文件、计算摘要、flush/fsync及原子rename，再事务提交结果引用、成功状态和唯一计量事件。崩溃产生的孤儿文件由延迟清理；如果数据库事务失败，旧attempt不得借重试覆盖已提交的新结果。存储检查失败或磁盘预算不足时停止接受新输入/任务。</p>
+<p>上传输入默认未引用TTL24小时；被非终态任务引用时不删。成功结果默认24小时，可配置；过期后保留历史任务和用量，下载返回410。失败任务输入按单独保留策略清理。清理需要事务/锁或标记流程避免与新引用竞态。</p>
+<p>001数据库与artifact卷均需备份及恢复演练；同机持久卷解决worker退出及进程重启，不解决001硬盘损坏或控制端高可用。备份RPO/RTO实测后说明，不能宣称零丢失。</p>
+<h3>10. 节点维护：首期采用全局受控排空，不伪造逐节点能力</h3>
+<p>v2.2.3 maintenance阻止新部署，不保证已有实例停止接推理；经通用入口派发时任务层也不能准确知道请求实际落到哪个worker。因此本版<strong>不实现第二套实例级调度，也不承诺逐节点精确无损drain</strong>。</p>
+<p>首期流程：</p>
+<ol>
+<li>持久记录全局MAINTENANCE_PENDING，暂停执行器领取/派发；未执行任务继续保留。任务接收可按队列容量继续或返回明确维护错误。</li>
+<li>边缘网关暂时拒绝新的同步/流式推理，原私有Playground也需停止旁路调用；仅暂停任务层不算完整排空。</li>
+<li>等待所有受控请求和任务attempt结束，核对超时/失联造成的未知后端执行；无法证明结束时禁止自动确认安全关机，转人工处理。</li>
+<li>设置目标worker maintenance，完成计划停机/切系统。恢复业务前确认仍有合格实例；离线旧RUNNING实例已退出路由、目录缓存/网关配置已收敛，并做真实调用探测。不能因maintenance PUT成功就恢复派发。</li>
+<li>解除全局暂停，记录维护过程与失败任务。002恢复Ubuntu后按健康和人工resume流程重新纳入。001整机保持在线，可维护worker但不能随意关闭控制服务。</li>
+</ol>
+<p>这会短暂暂停其他节点的业务，换取不绕过GPUStack的简单首版。若未来要求只排空002且001不中断，再评估独立路由分组、受控实例connector或上游扩展；必须同时处理权限、usage、旁路请求和传播竞态。第二阶段另行设计，不偷偷纳入本期保证。</p>
+<h3>11. 安全、配额与观测</h3>
+<p>对外网关仅开放已验证推理路径和<code>/maas/v1</code>，管理路由私有；任务端点不信任外部身份头；artifact使用随机ID且强制project授权。禁止任意URL抓取与文件路径输入，限制上传/解码/输出/存储；日志不记录key、原图或完整敏感内容。</p>
+<p>任务层设项目并发、全局并发、排队数量/年龄/磁盘配额；GPUStack负责GPU放置，任务槽不是显存硬隔离。初期FIFO+项目并发限制，多租户公平性以测试为准，不宣称加权公平调度已实现。</p>
+<p>复用GPUStack资源、路由和用量看板；新增任务成功/失败/重试、队列最老年龄、过期租约、未知后端活动、存储量、维护时长、任务到端延迟和唯一成功事件。OCR不伪造token；内部GPUStack调用次数与客户成功任务数分开记录。客户key直调同步请求和任务服务内部调用会同时出现在基础usage中，不重复相加当作客户订单数。</p>
+<h3>12. 部署、验收与演进</h3>
+<p>上线采用新命名空间/端点，先不替换原rapidocr-gpu路由。新增组件独立配置和持久卷，部署前备份；原同步服务保留回退。镜像digest、依赖、迁移和secret模板入Git，实际secret不入Git。</p>
+<p>首期验收：同key身份复用、两个project隔离；两个后端接入不改任务核心；202后重启任务可恢复；旧attempt提交被拒；结果在002离线后可读；排空过程不把maintenance误当作已完成；8小时运行无无法解释的任务遗失或重复成功计量。</p>
+<p>后续才考虑精确逐节点drain、自动双系统agent、S3对象存储、独立消息队列、独立常在线控制端、商业账本与绘图/视频。固定v2.2.3不阻止任务层独立演进；升级GPUStack另做隔离回归，不绑定首期关键路径。</p></section><section id="plan"><h2>实施计划 v0.2</h2>
+<p>2026-10-20 · 当前执行计划；P0部分探针及P1模拟闭环已实现，详见 <a href="../../results/maas-p0-p1/REPORT.md">实施报告</a>。依据：<a href="DESIGN.md">DESIGN.md</a>。</p>
+<h3>1. 交付策略</h3>
+<p>一个仓库、三个新增运行单元：任务API、执行器、PostgreSQL；结果服务以API+ArtifactStore模块和控制端持久卷实现。GPUStack固定v2.2.3，复用身份、模型目录、路由、推理和部署；不拆独立用户服务、目录服务、结果微服务或GPU调度服务。</p>
+<p>先验证接入与鉴权，再用模拟后端建设持久任务闭环，随后接既有OCR并验证故障。真实模型质量优化不在此关键路径。每阶段先满足门槛再推进，不把静态源码能力当作现网验收结果。</p>
+<h3>2. 工作包</h3>
+<div class="table"><table><thead><tr><th>工作包</th><th>任务分类</th><th>具体任务</th><th>交付物</th><th>优先级</th></tr></thead><tbody>
+<tr><td>W0 版本与接入</td><td>现网核对</td><td>镜像digest/依赖、入口模式、generic代理、usage、retry/fallback</td><td>实测能力矩阵与边界记录</td><td>P0</td></tr>
+<tr><td>W1 身份与协议</td><td>鉴权/接口</td><td>已登记GPUStack key映射、原生权限验证、查询授权、能力schema、API/OpenAPI和错误</td><td>AuthConnector探针、协议草案、安全反例</td><td>P0</td></tr>
+<tr><td>W2 存储与数据</td><td>持久化</td><td>PostgreSQL迁移、任务/attempt/幂等、artifact元数据、控制端卷、secret引用</td><td>可恢复数据结构与迁移</td><td>P0</td></tr>
+<tr><td>W3 持久闭环</td><td>API/执行</td><td>上传→提交202→领取→模拟推理→原子结果→查询；租约心跳和取消</td><td>单机可运行最小闭环</td><td>P0</td></tr>
+<tr><td>W4 既有模型接入</td><td>connector/适配</td><td>OCR调用GPUStack、版本化目标、配置指纹、错误/结果转换、关联ID</td><td>OCR和模拟后端同流程</td><td>P0</td></tr>
+<tr><td>W5 故障恢复</td><td>可靠性</td><td>重启、失联、旧attempt、有限重试、过载、未知后端执行和结果提交竞态</td><td>自动化故障测试及报告</td><td>P0</td></tr>
+<tr><td>W6 受控维护</td><td>运维</td><td>全局暂停、同步旁路限制、在途核对、maintenance、恢复探测</td><td>可执行维护/恢复手册及记录</td><td>P0</td></tr>
+<tr><td>W7 可运营边界</td><td>配额/监控</td><td>有界队列、project并发、存储TTL、任务计量、指标告警、日志脱敏</td><td>看板、告警、配额与清理验证</td><td>P1</td></tr>
+<tr><td>W8 交付与耐久</td><td>部署/验收</td><td>Compose、secret注入、备份恢复、8小时测试；具备条件时双系统切换</td><td>发布包、回退步骤、验收报告</td><td>P1</td></tr>
 </tbody></table></div>
-<p>F0–F5 合计约18–28有效人日，按一人投入为约4–6工作周的工程量，不是承诺日期；不含等待客户数据、域名/网络准备、真实双系统切换窗口、故障返工及付费观察。通过验收门槛推进，失败则修复当前阶段，不按日期强行进入下一阶段。</p>
-<h3>2. 分类任务与完成标准</h3>
-<h4>F0 · 协议和边界冻结</h4>
-<p>- **架构**：确认001常在线；确认控制端权威结果存储和磁盘预算；划分框架与GPUStack职责。</p>
-<p>- **接口**：版本化能力描述、模型revision、同步/异步/流式差异、错误码、artifact引用、幂等语义。</p>
-<p>- **技术验证**：当前安装版本的实例发现、私有定向推理、SSE、实例重建、健康信息；明确鉴权与地址变化处理。只做最小探针，不重跑模型比较。</p>
-<p>- **数据设计**：数据库迁移、租约、尝试token、任务/结果/计量关联与唯一约束。</p>
-<p>- **交付**：OpenAPI/schema草案、适配器接口、数据库初稿、connector验证记录。</p>
-<p>- **门槛**：确认严格排空可以阻止框架新请求选中目标节点；若探针无法做到，必须调整调用路径，不能把通用网关路由宣称为已支持排空。</p>
-<h4>F1 · 单任务持久闭环</h4>
-<p>- **工程基础**：新增 <code>platform/</code>（或不与标准库重名的最终包名）代码区域；配置分离、数据库迁移、Compose开发环境。建议实际Python包名 <code>maas_platform</code>，避免遮蔽标准库 <code>platform</code>。</p>
-<p>- **API/身份**：项目API key摘要、模型目录、输入上传、提交/查询/取消、幂等和错误格式。</p>
-<p>- **执行**：PostgreSQL领取租约、心跳、任务截止时间、终态条件提交；单执行器先跑通。</p>
-<p>- **存储**：输入/结果权威卷、临时文件原子提交、摘要及到期策略。</p>
-<p>- **模拟后端**：延迟、可控失败、进度和取消能力声明；适配器SDK不依赖模型库。</p>
-<p>- **门槛**：同幂等键重复提交只产生一个任务；内容不同返回409；提交202后重启API/执行器，任务记录仍在；worker侧无结果时不会伪报成功；跨项目查询被拒。</p>
-<h4>F2 · GPUStack 接入与可靠退出</h4>
-<p>- **后端接入**：把现有OCR接入SDK；私有实例发现、revision绑定、健康状态、并发槽。</p>
-<p>- **恢复机制**：租约超时回收、有限重试、旧尝试提交拒绝、OOM隔离、截止时间控制。</p>
-<p>- **节点管理**：drain/resume、接单状态与管理员意图分离，统计全部在途占用，旧Playground旁路限制。</p>
-<p>- **运行处理**：运行取消与超时后不立即释放未知后端占用；失联重连不自动覆盖drain意图。</p>
-<p>- **结果保证**：结果提交控制端后才成功；worker离线后结果仍能查询。</p>
-<p>- **门槛**：模拟进程中断、002实例退出/重建、网络短断；任务进入可解释的成功/失败终态，无永久RUNNING；drain生效后不新增目标节点执行租约，强制退出造成的重试可追踪。</p>
-<h4>F3 · 容量和平台观测</h4>
-<p>- **容量**：模型实例资源档案、并发槽、每项目及全局排队上限、排队截止、过载拒绝。</p>
-<p>- **公平性**：FIFO+项目并发配额，验证单客户不会占尽全部执行槽；后续再决定加权公平调度。</p>
-<p>- **日志/指标**：request/task/attempt关联、队列年龄、延迟、失败、重试、节点和磁盘状态。</p>
-<p>- **计量**：唯一成功事件、实际尝试成本、模型真实usage；不产生虚假token。</p>
-<p>- **故障观测**：数据库不可达、结果磁盘满、执行器失联及队列积压告警。</p>
-<p>- **门槛**：超载不会无限排队；重试不重复记成功用量；能从一个失败任务定位到节点、尝试与错误；性能测试分开报告排队与执行时间。</p>
-<h4>F4 · 部署与对外试用</h4>
-<p>- **交付**：统一镜像仓库、固定digest、配置/secret注入、数据库迁移步骤、升级回退文档。</p>
-<p>- **外部入口**：HTTPS、项目鉴权、限流、上传限制；管理服务和GPUStack实例端口仅私网可达。</p>
-<p>- **安全验证**：项目隔离、key撤销、artifact授权、路径穿越、任意URL、日志脱敏。</p>
-<p>- **运维**：数据库与artifact备份及恢复演练、磁盘预算、过期清理、版本兼容。</p>
-<p>- **文档**：SDK/调用示例、状态与错误说明、支持能力及单点边界。</p>
-<p>- **门槛**：外部客户独立完成上传→提交→查询→下载；不能访问其他项目、管理API或私有实例；恢复演练能找回已持久化任务及结果，明确备份RPO/RTO测量值。</p>
-<h4>F5 · 长时与商业试点</h4>
-<p>- **稳定性**：至少8小时持续任务，记录失败率、P95、积压、显存及磁盘变化。</p>
-<p>- **节点切换**：002主动排空/退出/恢复；有实际条件时执行Windows/Ubuntu切换。普通断连测试不能替代双系统验收。</p>
-<p>- **成本**：整机插座功耗、实际可用时长、失败重试、存储及网络成本。</p>
-<p>- **客户验收**：真实输入、任务成功/质量验收、延迟目标、保留期和计量核对。</p>
-<p>- **门槛**：无无法解释的任务记录丢失/重复成功计量；性能满足事先写定的试点目标；形成可接受边界和继续/暂停扩容决策。8小时单次通过不等于长期SLA。</p>
-<h4>F6 · 扩容与更多模型</h4>
-<p>- **资源池**：新增worker准入、版本一致性、自动分发、退出恢复。</p>
-<p>- **后端类别**：接入一种不同输入输出或运行方式的真实模型，验证无核心代码分支。</p>
-<p>- **基础设施**：按观测决定对象存储、独立消息队列、独立常在线控制端；控制高可用另行设计。</p>
-<p>- **商业能力**：配额产品、账单、成本归集；绘图后再评估视频容量。</p>
-<p>- **门槛**：新增后端以适配器和目录配置完成；扩容有量化收益及可控失败边界。</p>
-<h3>3. 跨阶段验证矩阵</h3>
-<div class="table"><table><thead><tr><th>场景</th><th>预期行为</th><th>最晚完成</th></tr></thead><tbody>
-<tr><td>相同幂等键重复提交</td><td>同任务ID；不同内容409</td><td>F1</td></tr>
-<tr><td>API/执行器在任务期间重启</td><td>记录保留；租约回收或继续；终态唯一</td><td>F2</td></tr>
-<tr><td>旧尝试延迟提交</td><td>fencing拒绝，不覆盖新终态</td><td>F2</td></tr>
-<tr><td>worker中途离线/实例地址变化</td><td>有限重试或明确失败，目录刷新</td><td>F2</td></tr>
-<tr><td>运行任务取消但模型不支持停止</td><td>状态语义明确，后端占用未结束不释放槽位</td><td>F2</td></tr>
-<tr><td>drain与领取任务竞态</td><td>drain提交后不领取该节点新执行租约</td><td>F2</td></tr>
-<tr><td>worker离线后下载已成功结果</td><td>控制端权威结果可读</td><td>F2</td></tr>
-<tr><td>一个客户大量提交</td><td>队列/配额有界，其他项目仍可执行</td><td>F3</td></tr>
-<tr><td>数据库或磁盘不可用</td><td>拒绝新接受；不返回虚假202/成功</td><td>F3</td></tr>
-<tr><td>输入/结果TTL与活动任务重叠</td><td>活动引用不删；过期结果明确返回410</td><td>F4</td></tr>
-<tr><td>备份恢复</td><td>可核对记录与artifact，报告实际恢复边界</td><td>F4</td></tr>
-<tr><td>Windows/Ubuntu切换</td><td>排空、离线、上线、缓存/磁盘验证</td><td>F5</td></tr>
-</tbody></table></div>
-<h3>4. 建议代码组织</h3>
+<h3>3. 技术与代码组织</h3>
+<p>建议Python/FastAPI + PostgreSQL；SQLAlchemy/迁移工具、异步HTTP客户端等精确依赖在P0后锁定，不沿用GPUStack内部ORM作为公共SDK。文件存储先本地卷，接口可替换为对象存储。</p>
 <pre><code>maas_platform/
-  api/                 # 客户API及管理API
-  domain/              # 模型、任务、节点状态和策略
-  persistence/         # 数据库、迁移、租约、计量
-  execution/           # 执行器与协调器
-  connectors/gpustack/ # 当前GPUStack版本细节
-  artifacts/           # 控制端文件存储及后续对象存储接口
-adapter_sdk/           # 轻量能力协议、错误、执行context
-adapters/mock/         # 可控故障/延迟后端
-adapters/ocr/          # 包装既有OCR，不重复实现算法
-deploy/framework/     # Compose、网关、配置示例、备份脚本
-tests/framework/      # 协议、恢复、隔离与端到端测试</code></pre>
-<p>现有 <code>gpu-ocr/</code>、实验报告和GPUStack部署脚本先保留；不在设计阶段搬动线上代码。迁移通过明确版本逐步进行，不直接覆盖线上路由。</p>
-<h3>5. 立即执行的第一批任务</h3>
-<p>1. 将设计中的适配器协议、错误和任务状态落实为schema与接口草案。</p>
-<p>2. 用当前部署做connector小探针，验证实例定向调用和排空边界。</p>
-<p>3. 建立数据库迁移与任务表，先接模拟后端完成一个持久任务闭环。</p>
-<p>4. 用重启、重复提交及过期租约测试证明闭环可靠，再接现有OCR。</p>
-<p>本文件为计划，不表示相关组件已经部署；未在本轮修改运行服务或发起长时测试。</p></section></main></body></html>
+  api/                     # /maas/v1 与私有维护API
+  auth/                    # 已登记key绑定、GPUStack认证/授权connector
+  domain/                  # 状态、错误、幂等、取消和重试策略
+  persistence/             # 独立数据库与迁移
+  execution/               # 领取、心跳、执行、协调循环
+  connectors/gpustack223/   # HTTP交互、版本指纹、兼容细节
+  artifacts/               # 原子提交、下载授权、引用与TTL
+  metering/                # 唯一成功事件与attempt统计
+model_contracts/           # 能力/schema/固定版本目标配置
+adapters/mock/             # 延迟、故障、连接中断、取消模拟
+adapters/ocr/              # 对现有OCR的薄封装，不重写方向算法
+deploy/maas/               # Compose、入口路由、配置、备份/回退脚本
+tests/maas/                # 状态机、事务、鉴权、恢复与端到端</code></pre>
+<p>以上为拟建结构，现有gpu-ocr和GPUStack部署脚本保持。避免使用Python包名platform遮蔽标准库。</p>
+<h3>4. 实施顺序与环境</h3>
+<ol>
+<li>本地完成协议、迁移、模拟后端和故障注入；不依赖本地入站访问。</li>
+<li>在001增量部署独立任务服务与数据库/卷，用私有入口测试；不修改GPUStack数据库，不替换现有同步OCR路由。</li>
+<li>绑定已登记试点key，接入GPUStack两worker；先验证权限、模型版本固定、JSON/SSE/generic路径和统计实际行为。</li>
+<li>控制维护窗口内做重启/断连、全局排空及恢复，持续记录请求与任务差异。</li>
+<li>验收通过后再开放外部客户入口；HTTPS、路径白名单及多project隔离未通过前仅受控内测。</li>
+</ol>
+<p>本计划不直接触发任何维护、数据库部署、长时负载或系统切换；实施需另行执行用户授权任务。</p>
+<h3>5. 测试与验收矩阵</h3>
+<div class="table"><table><thead><tr><th>类别</th><th>用例</th><th>通过条件</th></tr></thead><tbody>
+<tr><td>身份</td><td>未登记/过期/撤销key、伪造身份头、跨project访问</td><td>拒绝越权，不要求客户management key，不只做本地指纹检查</td></tr>
+<tr><td>模型授权</td><td>限定模型key、别名变化、执行前撤销</td><td>不越权；不静默改模型revision</td></tr>
+<tr><td>幂等</td><td>并发重复提交、相同key不同body、换project</td><td>同project同请求一个任务；不同body409；project互不混淆</td></tr>
+<tr><td>持久性</td><td>返回202后重启API/执行器</td><td>记录仍在，恢复执行或明确失败，无永久悬挂</td></tr>
+<tr><td>尝试竞态</td><td>旧attempt晚返回、取消与成功并发</td><td>唯一终态/成功事件；过期提交被拒</td></tr>
+<tr><td>故障</td><td>002失联、503、deadline、OOM、网关多次重试</td><td>有限预算，分类可解释，未知后端活动不被误判为空闲</td></tr>
+<tr><td>结果</td><td>写文件后数据库失败、数据库成功前崩溃、磁盘满</td><td>不伪报成功；孤儿文件可回收；已成功结果可读</td></tr>
+<tr><td>保留期</td><td>活动输入引用、过期结果、跨project下载</td><td>不删活动输入；到期410；不能跨project读</td></tr>
+<tr><td>版本</td><td>版本目标改绑、旧镜像不可用</td><td>明确报错/排队策略，不冒充原revision</td></tr>
+<tr><td>维护</td><td>全局暂停与领取竞态、旁路请求、旧实例仍RUNNING</td><td>停止派发，未确认后端结束不允许自动关机；恢复前实测路由可用</td></tr>
+<tr><td>容量</td><td>project洪泛、队列满、磁盘不足</td><td>有界拒绝/等待；无无限排队或无限重试</td></tr>
+<tr><td>恢复</td><td>数据库与文件备份还原</td><td>记录和artifact可核对，报告实际RPO/RTO</td></tr>
+<tr><td>耐久</td><td>至少8小时任务负载</td><td>无无法解释的任务遗失/重复成功计量，报告错误率、P95和积压</td></tr>
+</tbody></table></div>
+<p>所有性能阈值在P0依据实际输入、资源和试点要求确定；不能把历史OCR四副本吞吐直接作为任务平台SLA。</p>
+<h3>6. 发布、回退与完成定义</h3>
+<p>新增服务使用独立端口和路径；先备份并校验持久卷权限。数据库迁移优先采用向前兼容方式；回退时停止新任务接收、保留任务数据，再退应用版本，不自动删库/卷。原GPUStack同步调用路径保留，任务API故障不能靠丢弃任务假装回退成功。</p>
+<p>每阶段产出代码、必要测试、配置示例和可重现记录。最终交付包含当前架构、实际组件清单、限制、运维与恢复手册。未通过身份桥接/跨project验证时不得开放多租户；未通过未知后端活动处理时不得承诺自动安全切系统。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
+<p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
+<h3>1. 总体路径</h3>
+<p><strong>P0 复用与协议确认 → P1 最小持久任务闭环 → P2 真实模型与恢复 → P3 受控维护与运营边界 → P4 发布和长时验收。</strong></p>
+<p>本路线编号P0–P4代表阶段，不是任务优先级；工作包优先级见PLAN。2026-10-20实现进展：P0已完成运行版本与非管理员key鉴权探针，generic代理/重试/用量仍待核对；P1模拟持久闭环已有代码并通过15项PostgreSQL集成测试和独立API/执行器进程恢复验证。P2–P4尚未完成，P1成果不代表整个平台已上线。证据见 <a href="../../results/maas-p0-p1/REPORT.md">实施报告</a>。</p>
+<div class="table"><table><thead><tr><th>阶段</th><th>目标与分类任务</th><th>交付物</th><th>阶段门槛</th><th>依赖</th><th>初步工程量</th></tr></thead><tbody>
+<tr><td>P0 · 基线与协议</td><td>版本/入口核对；鉴权绑定探针；模型授权、generic和usage/retry；API/schema/状态机；存储容量</td><td>v2.2.3能力矩阵、身份方案实测、接口/迁移草案</td><td>非管理员inference key可安全复用；新API与上游管理入口隔离；重试和版本固定路径明确</td><td>现有两节点</td><td>3–4人日</td></tr>
+<tr><td>P1 · 持久任务闭环</td><td>任务API、PostgreSQL、artifact卷、模拟后端、执行器、幂等/租约/取消</td><td>可运行的上传→202→执行→持久结果→查询</td><td>重复提交一个任务；重启不丢记录；结果先持久后成功；跨project拒绝</td><td>P0通过</td><td>4–6人日</td></tr>
+<tr><td>P2 · GPUStack与恢复</td><td>OCR connector、固定目标、权限复核、attempt fencing、有限重试、未知后台占用</td><td>两个后端统一接入、故障测试报告</td><td>worker离线可解释恢复；旧提交拒绝；已成功结果不依赖worker；无静默换版本</td><td>P1通过</td><td>4–6人日</td></tr>
+<tr><td>P3 · 维护与运营边界</td><td>全局受控排空、旁路限制、maintenance恢复；配额、TTL、计量、指标/告警</td><td>维护手册、看板、配额/清理及安全验证</td><td>不把maintenance当drain；有未知执行不自动关机；队列有界；成功计量唯一</td><td>P2通过</td><td>3–5人日</td></tr>
+<tr><td>P4 · 发布与耐久验收</td><td>Compose、secret、HTTPS路径、备份恢复、至少8小时负载、条件允许时双系统切换</td><td>发布包、回退与恢复记录、验收报告</td><td>对外隔离通过；持久记录/结果可恢复；报告实测性能与失败边界</td><td>P3通过</td><td>3–4人日+观察</td></tr>
+</tbody></table></div>
+<p>预计17–25有效工程人日，约4–5个工作周的单人工程量；是初步估计，不是日历承诺。P0后据实际鉴权、网关和接口兼容性重估；不含外部域名/客户输入等待、真实系统切换窗口及返工。8小时测试观察时间单列，不能用短时压测代替。</p>
+<h3>2. 各阶段重点与退出条件</h3>
+<h4>P0：先解决接入边界，不先堆功能</h4>
+<p>工作包W0/W1，补W2草案。确认本地tag与运行容器关系；核对是否走Higress、哪些路由启用generic、哪些调用触发usage、是否有透明POST重试。实测已登记GPUStack key的认证/权限复用，不以源码存在代替验证。</p>
+<p>退出条件：身份安全路径成立；如果只能验证模型访问却不能可靠绑定project，限定受控试点并阻止多租户对外开放。出具明确后续影响及决策，不用management key替代客户key。</p>
+<h4>P1：先证明持久性，再接真实GPU</h4>
+<p>工作包W2/W3。模拟后端可回显、延迟、失败、断连和标记执行次数。验证幂等、事务、租约、结果提交和取消竞态，不要求此阶段部署新真实模型。</p>
+<p>退出条件：202后记录持久；API/执行器重启后任务可完成或明确失败；结果与终态不矛盾；不存在跨project访问；重复提交和旧attempt不能形成多个成功事件。</p>
+<h4>P2：复用GPUStack推理，而非另建实例调度</h4>
+<p>工作包W4/W5。执行器默认调用GPUStack入口；固定版本目标和能力清单，把输入输出转换封装在connector/适配器。测试001/002承载变化、503、实例重建、输入/权限/版本错误与有限重试。</p>
+<p>退出条件：异步链路真实可用；worker离线后已完成结果仍可读；无法确认模型停止时明确保留未知执行状态；不能把单个HTTP超时变成无上限后台重试。</p>
+<h4>P3：接受首期全局维护暂停的边界</h4>
+<p>工作包W6/W7。全局暂停任务派发和新的同步旁路，等受控在途结束，再做worker维护；恢复前核对离线实例路由收敛。加入队列/存储限制、TTL、告警和任务用量，复用GPUStack基础看板。</p>
+<p>退出条件：维护流程能重复执行；未知后端活动阻止自动确认安全停机；数据清理不破坏活动任务；overload有明确响应；不承诺普通worker精确逐节点无损排空。</p>
+<h4>P4：交付可运行、可恢复的试点</h4>
+<p>工作包W8。独立新增服务、secret与持久卷；备份恢复演练；至少8小时带任务负载。实际Windows/Ubuntu切换需真实环境，普通容器停止实验不能代替；如果不能完成，应列为未验证边界。</p>
+<p>退出条件：有完整发布/回退/恢复材料与实测指标；安全失败用例通过；没有无法解释的任务遗失/重复成功计量。质量、容量、恢复目标在P0确定，达不到则修复或缩小承诺，不以“测试跑完”当验收通过。</p>
+<h3>3. 第二阶段候选，不作为本期前置</h3>
+<ul>
+<li>不暂停001业务的精确逐节点排空、自动上下线agent和双系统联动。</li>
+<li>对象存储、独立broker、多执行器横向扩容及更高级公平调度。</li>
+<li>独立常在线控制端及高可用、跨故障域备份。</li>
+<li>更完整的客户项目管理、商业账本、付费试单和成本定价。</li>
+<li>新模型类别（绘图、视频），逐类验证输入输出、运行时长、取消与结果获取。</li>
+<li>GPUStack升级：单独评估，不能把main能力混入v2.2.3首期交付。</li>
+</ul>
+<h3>4. 下一批可以开始的任务</h3>
+<ol>
+<li>核对运行v2.2.3及入口，形成W0清单。</li>
+<li>编写只读/受控身份与推理探针，确认已登记key绑定和模型权限检查路径。</li>
+<li>固定任务、artifact和能力schema，确定P0性能/恢复目标。</li>
+<li>建立PostgreSQL迁移及模拟后端，开始P1最小闭环。</li>
+</ol>
+<p>当前已有P0部分探针与P1模拟闭环代码，测试环境已验证并清理临时服务；真实OCR异步接入及后续阶段仍待实现。原同步OCR服务继续保留。</p></section></main></body></html>

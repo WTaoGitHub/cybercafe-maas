@@ -1,152 +1,165 @@
-# 统一模型服务框架设计
+# 统一模型服务框架设计 v0.2
 
-版本：0.1 · 2026-10-20 · 状态：设计提案，尚未实施  
-依据：[现有规划](../../MAAS-PLAN.html)、[原 milestones](../../MILESTONES.md)、[部署代码](../../deploy-gpustack.sh)、[GPUStack 管理代码](../../gpustack_admin.py)。
+日期：2026-10-20 · 状态：当前设计基线；已实现P0部分探针/P1模拟闭环，P2–P4待实现。
+固定依赖：GPUStack **v2.2.3**；不依赖main、不修改上游数据库、不以fork上游为实施前提。
+配套：[实施计划](PLAN.md)、[路线图](ROADMAP.md)、[组件架构](ARCHITECTURE.mmd)、[HTML总览](ROADMAP.html)。
 
 ## 1. 目标与范围
 
-将分散且可能退出的 GPU 节点组织为统一模型服务。客户通过稳定模型标识提交请求；框架统一处理身份、任务、状态、结果、容量、故障与计量。模型只实现能力适配器，业务核心不依赖 OCR、LLM 或图像生成的具体算法。
+利用可能退出的闲置GPU，通过一个模型服务底座提供同步、流式及持久异步调用。模型算法不是框架核心：先用既有OCR与模拟后端验证接入、持久性、故障恢复和结果可查。
 
-第一版交付：异步文件型推理主链路、同步请求及流式请求的能力声明、节点排空、持久任务、结果查询、可观测性。用现有 OCR 和不占 GPU 的模拟后端验收。模拟后端支持延迟、进度、故障和进程中断，用来验证框架，而不是继续选模型。
+本版落实最新讨论：**充分复用GPUStack v2.2.3，但保留最小任务数据库、执行器与结果管理。** 不将“版本固定”等同于“只能提供同步请求”，也不重复建设模型网关、用户中心或GPU调度器。
 
-不在首版实现：计费结算、多地域/控制端高可用、自动识别用户是否上机、跨节点分布式推理、所有模型通用 JSON 请求体、视频服务或训练服务。
+首期必须具备：已接受任务可追踪、有限重试、幂等、结果持久查询、项目隔离、重启恢复，以及有明确限制的计划维护。首期不承诺：任务恰好执行一次、无损实时迁移、任意worker随时切Windows、控制端高可用、计费结算、任意视频后端。
 
-## 2. 架构决策
+## 2. 版本、证据与方案沿革
 
-| 决策 | 第一版选择 | 理由与边界 |
+源码基线为本地v2.2.3 commit `1cfcbbff02aacdb51f0a390378dd7bcddd9bf365`。上线前核对实际容器digest、依赖和网关模式，不能仅凭标签断言与本地源码一致。源码审查与证据见 [复用分析](GPUSTACK-REUSE-REVIEW.md) 和 [证据JSON](GPUSTACK-SOURCE-EVIDENCE.json)。
+
+本版替代v0.1宽泛自建方案及“暂缓任务数据库/执行器/结果管理”的收敛建议。v0.1原文归档于archive/；GPUSTACK-V2.2.3-SCOPE仅保留为已被替代的讨论记录。根目录MILESTONES.md继续维持deprecated。本版ROADMAP为当前执行路线，不并行执行旧F0–F6或V1–V4。
+
+明确排除main特有依赖：新LB/least-load/session-affinity插件、model revision回退API、角色组drain。v2.2.3 maintenance不是业务排空；模型部署恢复不是客户任务恢复；内部WorkQueue不是持久推理任务队列。
+
+## 3. 最小组件与职责
+
+| 组件 | 归属 | 本版职责 |
 |---|---|---|
-| 部署 | 001 控制端常在线，同时保留 GPU worker；002 为可退出 worker | 沿用已验证部署；001 仍是单点，重启期间不承诺可用 |
-| 应用结构 | 一个代码库，API、执行器、协调器三个进程角色；Docker Compose 管理新增服务 | 简化交付，不拆大量微服务；GPUStack 原有容器独立维护 |
-| API | FastAPI；客户入口与管理入口分离 | 复用现有技术；客户不能直接操作 GPUStack 管理 API |
-| 持久层 | PostgreSQL 作为任务、租约、节点意图、目录和用量事件的权威记录 | 首版以数据库持久队列避免增加 Redis/RabbitMQ；用事务控制竞态 |
-| 队列 | 数据库任务表，短事务领取、租约与心跳、过期回收 | 不在持有数据库锁时推理；后续吞吐确有需要再增加 broker/outbox |
-| 结果 | 001 持久卷保存权威输入/结果，worker 保留临时缓存 | 完成任务不能只依赖随时退出的 worker；不再把 worker 本地文件视为可靠结果 |
-| 文件接口 | 统一 ArtifactStore 接口；首版控制端文件系统，后续可替换 S3 兼容存储 | 元数据与路径分离，客户只获得有鉴权的 artifact ID |
-| GPU 部署 | GPUStack 继续管理 GPU worker、模型实例、副本、显存申报及启停 | 框架不实现 GPU 放置算法，显存申报仍非硬隔离 |
-| 请求执行 | 执行器支持 GPUStack 网关调用与内部实例定向调用两类 connector | 网关便于兼容；严格节点排空需能选择合格实例，见第 6 节 |
-| 安全与计量 | 本地 API key 摘要、项目配额、按成功任务及实际尝试记录事件 | GPUStack 管理凭据仅在内部使用；OCR 不伪造 token 用量 |
+| 统一边缘入口 | 复用现有/标准网关 | HTTPS、体积/连接限制、路径分流；不另写通用推理代理 |
+| GPUStack v2.2.3 | 复用 | 用户/组织、API key、模型ACL、目录/别名、同步/SSE/可验证的generic proxy、部署、副本、GPU放置、worker健康、基础用量/指标 |
+| 任务API（FastAPI） | 新增，薄层 | 上传/查询artifact、提交/查询/取消任务、幂等、业务授权、结果下载、维护管理 |
+| PostgreSQL | 新增，独立业务数据库 | 任务队列、attempt/租约、业务项目映射、用量事件与artifact元数据；不复制GPUStack部署状态 |
+| 执行器（同一代码库） | 新增，一个进程角色 | 领取任务、续租、调用GPUStack、收集结果、条件提交、有限重试 |
+| 协调循环 | 执行器内模块 | 过期租约回收、延迟重试、过期文件清理、全局维护协调；首期不拆独立服务 |
+| ArtifactStore | 任务层内模块 | 控制端文件持久卷保存输入/权威结果、摘要、鉴权读写及TTL；首期不部署独立结果微服务 |
+| 模型适配器 | 按模型新增/复用 | 模型输入输出、健康、错误、实际执行；只补GPUStack未标准化的业务协议 |
+| 观测 | 复用+补充 | 复用GPU/请求指标；新增队列、租约、任务、结果、维护与成功计量指标 |
 
-结果方案是相对原规划的明确调整：worker 可继续缓存，但异步任务标记成功前必须把结果提交到控制端持久卷。该调整增加 001 磁盘需求；若仍要求只存 worker，应接受节点离线后结果暂不可用及磁盘损坏丢失的限制，不能宣称结果持久可查。首版按前一种方案设计。
+新增运行单元只有任务API、执行器、PostgreSQL；artifact是持久卷而非额外服务。一个仓库，Docker Compose管理新增单元。001控制端常在线且兼worker，002提供可维护worker；不改变现有GPUStack自己的数据库配置。
 
-## 3. 组件与职责
+## 4. 两条调用链与权威来源
 
-组件架构图见 [ARCHITECTURE.mmd](ARCHITECTURE.mmd) 和 [ROADMAP.html](ROADMAP.html)。
+### 4.1 同步 / 流式
 
-| 组件 | 职责 | 不承担的职责 |
+客户 → 边缘网关 → GPUStack推理入口 → 模型适配器 → 客户。
+
+继续使用现有模型名、API key和SSE；这类调用不具备后台任务持久性，连接中断不自动重放。Playground走原私有管理入口。普通原生HTTP接口先验证v2.2.3 generic proxy，再决定是否启用；不强行把所有模型包装成chat。
+
+### 4.2 异步
+
+客户上传输入 → 任务API鉴权/检查模型权限 → PostgreSQL事务提交任务并返回202 → 执行器领取租约 → 通过GPUStack入口调用具体版本目标 → 控制端持久写入结果 → 同一事务提交任务成功和唯一成功用量事件 → 客户查询/下载。
+
+**任务受理202代表任务记录已持久化，不代表推理已完成。任务成功代表结果已提交控制端，不以worker本地文件或HTTP200单独作为成功依据。**
+
+| 数据 | 权威来源 | 任务层保留范围 |
 |---|---|---|
-| 外部网关 | HTTPS、请求体限制、连接上限、管理入口隔离 | 不保管任务状态、不无限重试推理请求 |
-| API 服务 | API key、项目、模型目录、入参校验、幂等、任务/结果查询、同步/流式转发 | 不做 GPU 放置、不在内存里保存唯一任务记录 |
-| 模型目录 | 稳定别名、不可变模型 revision、schema、模式、connector、部署绑定、资源档案 | 不把全部能力伪装为 chat/LLM |
-| 执行器 | 领取任务、资格过滤、槽位预留、调用适配器、心跳、提交结果/用量 | 不直接调 Docker 或分配 GPU |
-| 协调器 | 任务租约回收、重试调度、节点排空状态、实例快照刷新、过期清理 | 不把单次心跳丢失直接视为用户开机事件 |
-| GPUStack connector | 隔离当前安装版本的目录/实例发现与推理调用细节 | 不假定上游有未经验证的 drain 或零损路由 API |
-| 模型适配器 | 健康、能力描述、输入转换、执行、结果标准化、可选取消/进度 | 不持有客户鉴权/账本、不自行无限重试 |
-| PostgreSQL | 项目、目录、任务、尝试、租约、幂等、用量及审计记录 | 不直接存大图片/视频字节 |
-| ArtifactStore | 输入/输出持久保存、鉴权读取、摘要、保留期限及回收 | 不允许任意路径或任意 URL 抓取 |
-| 节点 agent（后续） | 主动上报状态与请求退出，协调 Ubuntu 关机前排空 | 首版不控制 Windows 登录，不接入 MQTT/计费软件 |
-| 观测组件 | 结构化日志、指标、告警、请求/任务关联 | 不记录密钥、原始图片或完整敏感推理内容 |
+| 用户、key、组织、模型权限 | GPUStack | 引用和受控映射，不另造账号密码 |
+| 模型别名、部署、实例、worker状态 | GPUStack | ID及必要只读快照；不反向覆盖权威状态 |
+| 业务项目、幂等、任务、尝试、保留期 | 任务PostgreSQL | 任务层权威记录 |
+| 输入与已成功结果 | 001持久卷+artifact元数据 | 权威持久结果，worker仅可缓存 |
+| 调用次数/token/资源基础用量 | GPUStack | 保留来源；不等同于客户成功任务数 |
+| 成功任务唯一计量与失败尝试 | 任务PostgreSQL | 为以后计费提供证据，首期不出账单 |
 
-## 4. 模型接入协议
+## 5. 客户身份与任务权限：复用key，不假设现成SSO
 
-稳定标识如 `ocr.default` 绑定具体 revision。创建任务时固定 revision，不能因别名更新而让排队任务静默换版本。部署绑定/connector 与模型 revision 分离。
+v2.2.3没有已验证可直接用于任意新任务端点的通用identity接口。`/token-auth`是模型级ext-auth，依赖模型上下文；management接口不应要求客户提供management key。
 
-能力描述至少包含：`model_id`、`revision`、`task_type`、`input_schema`、`output_schema`、`execution_modes`（sync/async/stream）、`max_input_bytes`、`max_runtime_s`、`supports_cancel`、`supports_progress`、计量单位及资源档案。不同模型允许不同 payload schema。
+**首期采用受控接入的凭据绑定**，不开放任意GPUStack key自动注册任务服务：
 
-内部适配器概念接口：
+1. 管理员通过GPUStack签发/选择非管理员、inference-only、限定模型的客户key，并登记其key ID、owner/组织、业务project映射及允许的版本目标；映射只能由可信管理流程建立。
+2. 客户仍使用这一个GPUStack key调用任务API。任务层用本地HMAC指纹识别已登记凭据，再调用GPUStack验证有效性；不保存第二份密码，不凭客户提交的身份头认定project。
+3. 每次受理任务，按目标私有/受限模型通过GPUStack原生鉴权路径检查该key的权限。候选路径为私有`/token-auth`；必须验证其scope、有效期、撤销与缓存行为。普通`/v1/models`返回模型列表不能单独当作全部模型白名单权限证明。
+4. 查询/下载也验证key有效性并核对记录所属project；不把“知道task/artifact ID”当作授权。模型权限撤销后是否允许读既有结果，首期规则为key仍有效且project授权可读；不因别名改动重算历史归属。
+5. 执行器仅持有credential引用；注册时需要的推理key通过控制端受保护secret存储（加密、解密密钥独立挂载、最小权限）取得。提交前/每次执行前重新验证对应key和模型权限；key撤销或到期时不借全局管理key越权执行，未执行任务明确失败为AUTH_REVOKED/AUTH_EXPIRED。
+6. 管理key只供受保护的登记/目录查询管理过程使用，不进入任务payload、模型容器、浏览器或日志。解析/缓存上游身份结论封装在AuthConnector中，不导入GPUStack内部auth模块或直读它的数据库。
 
-```text
-health() -> readiness + version
-capabilities() -> versioned capability document
-validate(payload, artifacts) -> validated request
-invoke(request, context) -> normalized result
-stream(request, context) -> events                 # 可选
-cancel(attempt_id) -> acknowledged/unsupported     # 可选
-```
+此桥接为P0技术门槛，不声称已实现。若上述HTTP验证在实际v2.2.3配置下无法可靠判定有效性和归属，先限定单个受控试点project并停止外部多租户开放；不得悄悄退化为只比对本地key指纹。未来是否引入通用身份服务另行设计。
 
-context 包含 task/attempt/request ID、截止时间、租约 fencing token、受限 artifact 读写授权；不传客户 API key 或 GPUStack 管理 key 给模型。调用鉴权的具体方式需在 connector 集成测试中验证，首版实例地址仅在私有内网开放。
+## 6. 模型接入与版本固定
 
-标准结果：`outputs`（结构化 JSON）、`artifacts`（ID、类型、大小、摘要）、`model_revision`、实际可用的 `usage`、`warnings`。算法字段放在 outputs 内；缺乏真实 token 的模型使用图片、任务、输出数量等单位。统一错误包含 `code`、`message`、`retryable`、`request_id`，隐藏内部凭据和堆栈。
+GPUStack提供backend镜像、启动命令、环境、健康、模型route和副本配置。任务层只加一份轻量能力清单，按GPUStack route/model ID关联：输入/输出schema、sync/stream/async模式、输入限制、最大执行时长、取消能力、结果转换及实际计量单位。
 
-首版适配器 SDK 保持轻量，避免导入任何模型库。现有 OCR 包装为一个实现，模拟后端为另一个实现。两者共用任务核心，不能按模型类型写核心分支。
+适配器概念接口：`health`、`validate`、`invoke`、可选`stream/cancel`。统一的是任务生命周期，不是所有模型payload。健康检查与部署协议沿用GPUStack；输入解析与输出规范由适配器负责。模拟后端不依赖GPU，用来注入延迟、失败和连接中断。
 
-## 5. 客户接口与数据模型
+v2.2.3没有main的部署revision API。使用Git能力清单+固定镜像digest/权重摘要+配置快照；任务受理时记录不可变业务revision与具体版本化route。示例：客户别名`ocr.default`解析到登记的版本目标`ocr-r03`。活跃任务引用的版本目标禁止原地改绑；更新采用新目标，旧目标按引用与保留策略退役。执行前核对配置指纹；不匹配明确失败MODEL_REVISION_CHANGED，不静默切到新版本。
 
-| 接口（框架新接口） | 用途 |
+首期保持GPUStack为路由权威，任务层的版本记录是受理快照，不是第二个可变别名控制器。为固定历史版本创建额外部署可能消耗显存，因此不承诺所有旧版本永久在线；资源不足时可排队或按显式错误结束，不能冒充旧版本运行新模型。
+
+## 7. 任务与数据协议
+
+新任务端点使用`/maas/v1`命名空间，与GPUStack `/v1/models`等既有接口分开：
+
+| 方法/路径 | 行为 |
 |---|---|
-| `GET /v1/models`、`GET /v1/models/{id}` | 可用模型、revision 和能力/schema |
-| `POST /v1/artifacts` | 有大小/类型限制的输入上传，返回 artifact ID |
-| `POST /v1/tasks` | 异步提交，支持 `Idempotency-Key`；事务提交后返回 202 |
-| `GET /v1/tasks/{id}` | 查询状态、错误、输出和结果过期时间 |
-| `POST /v1/tasks/{id}/cancel` | 尝试取消；不伪称模型一定停止 |
-| `GET /v1/artifacts/{id}` | 所属项目鉴权后读取结果 |
-| `POST /v1/inferences` | 可选同步模式：有截止时间，能力不支持则拒绝 |
-| `POST /v1/chat/completions` | 按能力提供现有 OpenAI 兼容模式，包括 SSE；独立于持久任务保证 |
-| `POST /admin/nodes/{id}/drain`、`resume` | 管理节点接单资格与排空，客户不能调用 |
+| `POST /maas/v1/artifacts` | 限制大小/类型的上传；返回artifact ID及保留期 |
+| `POST /maas/v1/tasks` | Idempotency-Key；事务成功后202，含task ID与状态地址 |
+| `GET /maas/v1/tasks/{id}` | 状态、revision、错误、outputs、结果有效期 |
+| `POST /maas/v1/tasks/{id}/cancel` | best-effort取消；不保证模型中断 |
+| `GET /maas/v1/artifacts/{id}` | project鉴权下载；结果到期410 |
+| `GET /maas/v1/models/{id}/capabilities` | 补充schema，引用GPUStack模型目录，不重复实现目录 |
+| `POST /maas/admin/maintenance`、`resume` | 私有管理入口，全局受控维护流程 |
 
-框架新 `/v1/models` 是能力目录；不等同于现有 GPUStack 同名 API。外部入口按明确路由表转发，避免路径遮蔽；原 GPUStack Playground 继续走原私有管理入口。同步/流式连接中断首版不做自动重放，避免重复输出和重复计算；其在途执行仍计入节点活动占用。
-
-异步请求示例（概念，不表示现已可调用）：
+提交示例：
 
 ```json
-{
-  "model": "ocr.default",
-  "input": {"image": {"artifact_id": "art_input_123"}},
-  "parameters": {},
-  "timeout_seconds": 60
-}
+{"model":"ocr.default","input":{"image":{"artifact_id":"art_123"}},"parameters":{},"timeout_seconds":120}
 ```
 
-核心表：`projects`、`api_keys`、`model_revisions`、`model_aliases`、`deployment_bindings`、`nodes`、`instances`、`tasks`、`task_attempts`、`execution_leases`、`artifacts`、`usage_events`、`audit_events`。所有业务记录带 project ID；任务/结果查询不允许跨项目。任务状态与终态用量事件在同一事务中写入；唯一键防止重复记成功用量。
+错误响应包含code、message、retryable和request_id，不泄露内部地址、secret或堆栈。模型JSON200也需执行输出schema检查；模型特有错误应明确分类。
 
-## 6. 请求路径、排空与资源边界
+核心表：projects（绑定）、credential_bindings（引用/指纹）、model_capabilities（版本清单）、tasks、task_attempts、artifacts、task_usage_events、maintenance_state、audit_events。tasks包含project、提交摘要、幂等键、credential_ref、模型revision/具体目标、截止、状态、attempt fencing token和结果引用。使用唯一约束保证project+幂等键及task成功事件唯一。
 
-异步流程：鉴权/配额 → 校验输入与 revision → 持久任务事务 → 执行器领取租约 → 选取 READY 且允许接单的实例 → 预留实例并发槽 → 适配器执行 → 临时文件写入并原子提交 → 验证摘要和文件存在 → 事务提交成功状态及用量 → 客户查询。
+任务状态：`QUEUED → RUNNING → SUCCEEDED`；失败可进入`RETRY_WAIT → QUEUED`或FAILED；排队/重试等待可取消；RUNNING可进入CANCEL_REQUESTED，最后确定CANCELLED/SUCCEEDED/FAILED之一。终态条件提交裁决竞态，不承诺取消一定胜过已完成结果。
 
-首版大输入通过控制端上传和受限下载，执行器不在请求中复制无限大小 base64；旧 OCR connector 可按其输入上限转换为 base64，后续模型可消费 artifact。JSON 结果同样进入持久存储策略。
+## 8. 执行、恢复和重试边界
 
-**排空不等于停止心跳。** 数据库先将节点改为 DRAINING，领取新任务和槽位预留时事务检查该状态；等待其所有执行租约和实际后端执行结束，再标记 DRAINED。超时按策略等待或强制中断并记录失败/重试，不能宣称无损退出。取消或请求超时但后端尚未停止时，继续占用槽位或隔离实例，不能立即把它当作空闲。
+PostgreSQL同时作为任务记录与持久队列。执行器短事务`FOR UPDATE SKIP LOCKED`领取任务、递增attempt token并设置租约，事务外执行；周期心跳续期，协调循环回收过期租约。结果提交使用token条件更新，拒绝旧attempt覆盖新结果。
 
-当前 GPUStack 网关是否支持严格按节点排除必须实测，不能仅改框架状态后继续无条件调用其通用路由。设计采用以下实现顺序：
+初始配置建议：租约30秒、心跳5秒、最多3次业务attempt、单project及全局有界队列、可配置并发槽、最长排队时间。长任务持续续租，不要求30秒内结束。超时和退避均受任务总deadline约束；参数需P1验证，不是外部SLA。
 
-1. connector 读取已运行实例的 worker、端口和健康信息；当前试点记录已经使用过私有实例 HTTP 调用。
-2. 对需排空保障的框架任务，执行器从允许接单的实例里选目标，直接调用其适配器；模型部署和 GPU 放置仍由 GPUStack 完成。地址只来自可信部署目录，不接受客户指定地址。
-3. 实例重建导致快照过期时，将该尝试失败归类、刷新目录，再按有限重试策略处理。实例/节点状态与租约、槽位需事务校验；不能保证消除网络分区造成的重复计算。
-4. 网关 connector 仅用于不承诺精确排空的兼容路径，或以后验证上游确有相应能力后使用。绕过框架直接从旧 Playground 发起的请求不受框架排空管理；切换系统前须关闭旁路接入并验证后端实际无任务。
+只重试明确的可恢复网络/节点故障；入参、权限、配置版本变化不重试；OOM标记容量问题，不无限原样重试。一次客户任务可有多次实际GPU执行，终态与成功计量只能提交一次。
 
-资源控制分两层：GPUStack 决定实例放到哪张 GPU；框架控制任务发往哪个合格实例、并发槽位和队列长度。一个实例的初始并发上限由资源档案配置，不假定支持跨图 batching。每项目及全局均有排队上限和最大排队时间；过载返回 429/503 及明确错误。不同模型类型可配置独立任务队列，首版用 FIFO 加项目并发配额，公平调度后续迭代。
+v2.2.3 Higress配置可能包含`non_idempotent`及上游2次尝试，Python fallback与Higress不同。P0必须核对实际配置、fallback和模型内部重试。对于任务专用版本目标，优先通过可用配置禁用透明上游重试；如果无法关闭，应记录每attempt可能触发的上游尝试上界、降低业务重试预算。结果提交幂等不等于GPU计算恰好一次，不把未知实际执行次数报告成精确资源账单。
 
-节点状态：`UNKNOWN → READY → DRAINING → DRAINED → OFFLINE`；主动 resume 后经健康确认再 READY。失联可由任意活动状态转 OFFLINE；恢复不自动撤销管理员设置的 drain 意图。001 的控制进程不属于可排空关机范围，可单独停用它的 worker，但整机仍须在线。
+首期执行器通过GPUStack入口调用，不默认直连实例，因此保留其权限/LB/统计链路；request/task/attempt ID通过经过验证可传递的头和本地日志关联，上游不支持字段不伪称能完整串联。
 
-## 7. 任务状态与故障语义
+超时/失联后的实际模型执行可能未知。保留UNKNOWN_BACKEND_ACTIVITY标记并保守占用/暂停相应任务执行域；未证明后端停止，不把HTTP断开当作安全关机依据。隔离/核实后才释放容量或恢复派发，避免重试导致无限后台叠加。
 
-```text
-QUEUED → RUNNING → SUCCEEDED
-           ├→ RETRY_WAIT → QUEUED
-           ├→ FAILED
-           └→ CANCEL_REQUESTED → CANCELLED / SUCCEEDED / FAILED
-QUEUED / RETRY_WAIT → CANCELLED
-```
+## 9. 结果持久性与清理
 
-- 首版执行语义为至少一次尝试，终态以 fencing token 和条件更新避免旧尝试覆盖新结果；不保证 GPU 计算恰好一次。
-- 队列领取使用事务与 `FOR UPDATE SKIP LOCKED`；租约包含到期时间和递增尝试 token。协调器回收过期租约，拒绝旧 attempt 的提交。
-- 幂等键作用域为项目+提交接口，绑定标准化请求摘要和固定 revision；相同键不同内容返回 409。同一任务重复执行不重复记成功计量。
-- 仅重试节点失联、可恢复网络错误和明确可重试错误，指数退避加抖动、最大次数和任务总截止时间。入参错误、权限错误不重试；OOM 先隔离/降容量，不能无限原样重试。
-- 取消是 best effort。排队任务可事务取消；运行任务设取消请求。模型不支持中断时允许其结束，但按确定的提交竞态规则只提交一个终态，客户端读取最终状态。
-- 结果先写临时路径，再原子重命名并提交数据库；崩溃产生的孤儿文件由延迟清理回收。输入/结果清理必须排除仍被活动任务引用的数据；结果到期不重写成功历史，只返回 `result_expired`/410。
-- 001 重启后从 PostgreSQL 恢复任务、租约和清理任务；数据库及文件持久卷备份并实际演练恢复。控制端不可达期间暂停接单，worker 结果提交失败必须有超时/重试上限。
+001持久卷保存输入及权威结果；数据库只存元数据与小型结构化摘要，不存大文件。worker返回结果后由执行器落盘；对于返回worker本地URL的后端，必须先通过受控connector拉取到001才能标记成功。结果过大、类型不符或拉取失败时不伪报成功。
 
-建议初始可配置值：任务租约 30 秒、执行器心跳 5 秒、最多 3 次尝试、输入临时保留 24 小时、结果保留 24 小时。以上为待验证默认值，不是已承诺 SLA；模型最大时长与任务截止时间需按能力单独配置。租约持续续期，不要求长任务在 30 秒内完成。
+先写临时文件、计算摘要、flush/fsync及原子rename，再事务提交结果引用、成功状态和唯一计量事件。崩溃产生的孤儿文件由延迟清理；如果数据库事务失败，旧attempt不得借重试覆盖已提交的新结果。存储检查失败或磁盘预算不足时停止接受新输入/任务。
 
-## 8. 安全、观测与计量
+上传输入默认未引用TTL24小时；被非终态任务引用时不删。成功结果默认24小时，可配置；过期后保留历史任务和用量，下载返回410。失败任务输入按单独保留策略清理。清理需要事务/锁或标记流程避免与新引用竞态。
 
-网关只发布客户 API；管理操作通过私有访问。API key 只存摘要并支持撤销，模型管理凭据由内部 secret 文件注入。限制文件大小、类型、解码像素和输出大小，禁止任意远程 URL 下载与路径穿越。任务、artifact 和幂等键均按项目隔离；下载不可仅依赖难猜 ID。日志脱敏，不收集原图内容。
+001数据库与artifact卷均需备份及恢复演练；同机持久卷解决worker退出及进程重启，不解决001硬盘损坏或控制端高可用。备份RPO/RTO实测后说明，不能宣称零丢失。
 
-统一关联 request/task/attempt/project/model_revision/node/instance ID。指标包括接单/拒绝数、队列长度和最老年龄、成功/失败/重试、P50/P95、执行耗时、运行槽位、GPU利用率/显存、artifact存储量、节点失联与排空耗时。数据库/磁盘不足时停止接收新任务，而不是返回虚假的202。
+## 10. 节点维护：首期采用全局受控排空，不伪造逐节点能力
 
-用量事件区分客户成功任务、模型实际用量和内部尝试/资源消耗；计量不等于计费。失败重试成本单独保留，后续定价可核算。没有真实 token 就不填造 token 字段。
+v2.2.3 maintenance阻止新部署，不保证已有实例停止接推理；经通用入口派发时任务层也不能准确知道请求实际落到哪个worker。因此本版**不实现第二套实例级调度，也不承诺逐节点精确无损drain**。
 
-## 9. 验收原则与演进边界
+首期流程：
 
-核心验收不依赖某 OCR 准确率：新增模拟后端不改任务核心；重启不丢已接收任务记录；实例故障可回收租约；过期提交被拒；重复提交不重复记量；节点 drain 后不接受框架新执行；结果在 worker 离线后仍可读；项目隔离及过载行为可验证。
+1. 持久记录全局MAINTENANCE_PENDING，暂停执行器领取/派发；未执行任务继续保留。任务接收可按队列容量继续或返回明确维护错误。
+2. 边缘网关暂时拒绝新的同步/流式推理，原私有Playground也需停止旁路调用；仅暂停任务层不算完整排空。
+3. 等待所有受控请求和任务attempt结束，核对超时/失联造成的未知后端执行；无法证明结束时禁止自动确认安全关机，转人工处理。
+4. 设置目标worker maintenance，完成计划停机/切系统。恢复业务前确认仍有合格实例；离线旧RUNNING实例已退出路由、目录缓存/网关配置已收敛，并做真实调用探测。不能因maintenance PUT成功就恢复派发。
+5. 解除全局暂停，记录维护过程与失败任务。002恢复Ubuntu后按健康和人工resume流程重新纳入。001整机保持在线，可维护worker但不能随意关闭控制服务。
 
-计划与验收用例见 [ROADMAP.md](ROADMAP.md)。阶段门槛通过后再发布外部客户入口。首版只有单控制端重启恢复，非高可用，也不保证双系统切换零失败。更多 worker、消息中间件、对象存储、独立控制端与多模型调度按实际瓶颈渐进增加。
+这会短暂暂停其他节点的业务，换取不绕过GPUStack的简单首版。若未来要求只排空002且001不中断，再评估独立路由分组、受控实例connector或上游扩展；必须同时处理权限、usage、旁路请求和传播竞态。第二阶段另行设计，不偷偷纳入本期保证。
+
+## 11. 安全、配额与观测
+
+对外网关仅开放已验证推理路径和`/maas/v1`，管理路由私有；任务端点不信任外部身份头；artifact使用随机ID且强制project授权。禁止任意URL抓取与文件路径输入，限制上传/解码/输出/存储；日志不记录key、原图或完整敏感内容。
+
+任务层设项目并发、全局并发、排队数量/年龄/磁盘配额；GPUStack负责GPU放置，任务槽不是显存硬隔离。初期FIFO+项目并发限制，多租户公平性以测试为准，不宣称加权公平调度已实现。
+
+复用GPUStack资源、路由和用量看板；新增任务成功/失败/重试、队列最老年龄、过期租约、未知后端活动、存储量、维护时长、任务到端延迟和唯一成功事件。OCR不伪造token；内部GPUStack调用次数与客户成功任务数分开记录。客户key直调同步请求和任务服务内部调用会同时出现在基础usage中，不重复相加当作客户订单数。
+
+## 12. 部署、验收与演进
+
+上线采用新命名空间/端点，先不替换原rapidocr-gpu路由。新增组件独立配置和持久卷，部署前备份；原同步服务保留回退。镜像digest、依赖、迁移和secret模板入Git，实际secret不入Git。
+
+首期验收：同key身份复用、两个project隔离；两个后端接入不改任务核心；202后重启任务可恢复；旧attempt提交被拒；结果在002离线后可读；排空过程不把maintenance误当作已完成；8小时运行无无法解释的任务遗失或重复成功计量。
+
+后续才考虑精确逐节点drain、自动双系统agent、S3对象存储、独立消息队列、独立常在线控制端、商业账本与绘图/视频。固定v2.2.3不阻止任务层独立演进；升级GPUStack另做隔离回归，不绑定首期关键路径。
