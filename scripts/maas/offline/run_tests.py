@@ -55,8 +55,58 @@ def idle():
     return result
 
 
+def inflight(action):
+    label='inflight-'+action
+    result={'phase':label,'target':'XZ-31-002','existing_worker':True,'management_ssh_preserved':True}
+    process=None
+    try:
+        result['baseline']=ready();result['snapshot']=refresh()
+        result['armed']=node('arm','--action',action,'--pause')
+        control('submit','--label',label)
+        process=subprocess.Popen(command(FIRST,'controller.py','execute','--label',label),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        result['dispatch_observed']=wait_status(lambda v:any(x['state']=='DISPATCHING' for x in v['backend_activity']),15,label)
+        started=time.monotonic();result['fault']=node('apply')
+        stdout,stderr=process.communicate(timeout=35)
+        if process.returncode:raise RuntimeError('In-flight executor failed: '+stderr[-1200:])
+        result['outcome']=json.loads(stdout);row=result['outcome']['task']
+        assert row['state']=='FAILED' and row['error_code']=='UNKNOWN_BACKEND_ACTIVITY' and row['attempts']==1,row
+        assert result['outcome']['backend_activity'][0]['state']=='UNKNOWN'
+        result['offline']=wait_status(lambda v:v['worker']['state']!='ready',110)
+        result['offline_after_s']=round(time.monotonic()-started,2)
+        result['node_offline']=node('status');result['offline_probe']=control('probe')
+        if action=='partition':
+            assert result['node_offline']['fault_chain_present']
+            assert not result['offline_probe']['worker_port_reachable']
+        result['stored_result']=control('result','--label','baseline')
+        assert result['stored_result']['lines']==46
+        pending='pending-'+action;control('mock','--label',pending)
+        result['blocked']=control('execute','--label',pending)
+        assert result['blocked']['task']['state']=='QUEUED'
+        # Stop the actual backend and prevent local respawn before releasing UNKNOWN.
+        control('scale0');result['termination_evidence']=node('terminate-test-backend')
+        assert not result['termination_evidence']['remaining_test_backends'] and result['termination_evidence']['worker_stopped']
+        result['resolution']=control('resolve','--label',label)
+        result['resumed_pending']=control('execute','--label',pending)
+        assert result['resumed_pending']['task']['state']=='SUCCEEDED'
+        result['restored']=node('restore');control('scale1');result['recovered']=ready();refresh()
+        after='after-'+action;control('submit','--label',after);result['recovery_task']=control('execute','--label',after)
+        assert result['recovery_task']['task']['state']=='SUCCEEDED'
+        result['recovery_result']=control('result','--label',after)
+        assert result['recovery_result']['lines']==46
+        result['ok']=True
+    finally:
+        if process is not None and process.poll() is None:
+            process.terminate();process.wait(timeout=10)
+        result['final_node_restore']=node('restore')
+        control('scale1')
+        save(action,result)
+    return result
+
+
 def main():
-    p=argparse.ArgumentParser();p.add_argument('phase',choices=['idle']);a=p.parse_args()
-    value=idle();print(json.dumps({'phase':value['phase'],'ok':value.get('ok',False),'offline_after_s':value['observed_offline_after_s']}))
+    p=argparse.ArgumentParser();p.add_argument('phase',choices=['idle','kill','partition']);a=p.parse_args()
+    value=idle() if a.phase=='idle' else inflight(a.phase)
+    print(json.dumps({'phase':value['phase'],'ok':value.get('ok',False),
+                     'offline_after_s':value.get('observed_offline_after_s',value.get('offline_after_s'))}))
 
 if __name__=='__main__':main()
