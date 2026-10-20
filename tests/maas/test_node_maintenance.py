@@ -11,6 +11,7 @@ class Environment:
         self.unknown=False;self.stopped=False;self.puts=[];self.actions=[]
         self.c=NodeMaintenance(self.api,self.tasks,self.node,tmp_path/'journal.json',wait_seconds=.1,sleep=lambda _:None)
     def api(self,path,body=None,method=None):
+        if path=='/version':return {'version':'v2.2.3'}
         if path.startswith('/v2/models?'):return {'items':copy.deepcopy(self.ms)}
         if path=='/v2/workers/2':
             if method=='PUT':
@@ -53,12 +54,14 @@ def test_unknown_refuses_any_deployment_mutation(tmp_path):
     assert not e.puts and not e.actions and e.status['paused']
 
 
-@pytest.mark.parametrize('fault',['generation','config','new-model'])
+@pytest.mark.parametrize('fault',['generation','config','new-model','worker-maintenance','replicas'])
 def test_drift_prevents_stop_mutations(tmp_path,fault):
     e=Environment(tmp_path);e.c.begin(2,[1],'test');e.puts=[]
     if fault=='generation':e.status['generation']+=1
     if fault=='config':e.ms[0]['env']['a']='changed'
     if fault=='new-model':e.ms.append({'id':2,'cluster_id':1})
+    if fault=='worker-maintenance':e.w['maintenance']={'enabled':True,'message':'another window'}
+    if fault=='replicas':e.ms[0]['replicas']=7
     with pytest.raises(RuntimeError):e.c.stop()
     assert not e.puts and not e.stopped
 
@@ -83,3 +86,29 @@ def test_failed_stop_proof_never_enters_stopped_phase(tmp_path):
     e.c.node=lambda action:{'backend_stop_observed':False,'running_workload_containers':[]}
     with pytest.raises(RuntimeError,match='no stop proof'):e.c.stop()
     assert e.c.state()['phase']=='STOP_UNCONFIRMED' and e.status['paused']
+
+
+def test_recovery_reconciles_spread_without_changing_model_spec(tmp_path):
+    e=Environment(tmp_path);original_api=e.api;packed=False
+    def api(path,body=None,method=None):
+        nonlocal packed
+        if path.startswith('/v2/model-instances/'):
+            assert method=='DELETE';packed=False;return {}
+        value=original_api(path,body,method)
+        if path.endswith('/instances'):
+            for i,x in enumerate(value['items']):x['worker_name']='XZ-31-001' if packed or i==0 else 'XZ-31-002'
+        return value
+    e.c.api=api;e.c.begin(2,[1],'test');e.c.stop();packed=True
+    state=e.c.recover()
+    assert state['phase']=='RECOVERED' and len(state['placement_repairs'])==1 and e.status['paused']
+
+
+def test_failed_probe_does_not_mark_session_resumed(tmp_path):
+    e=Environment(tmp_path);e.c.begin(2,[1],'test');e.c.stop();e.c.recover()
+    original=e.c.tasks
+    def tasks(action,*args):
+        if action=='resume':raise RuntimeError('real inference probe failed')
+        return original(action,*args)
+    e.c.tasks=tasks
+    with pytest.raises(RuntimeError,match='probe failed'):e.c.resume()
+    assert e.c.state()['phase']=='RECOVERED' and e.status['paused']

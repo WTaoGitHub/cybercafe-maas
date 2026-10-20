@@ -4,12 +4,13 @@ Callbacks carry operator authority outside customer API/executors. The durable
 journal contains fingerprints and original replica/maintenance values, not keys.
 """
 import json,os,time,uuid
+from collections import Counter
 from pathlib import Path
 from .collector import atomic_json
 from .versioning import MODEL_FIELDS,digest
 
 
-def model_hash(model):return digest({k:model.get(k) for k in MODEL_FIELDS})
+def model_hash(model):return digest({k:model.get(k) for k in (*MODEL_FIELDS,'placement_strategy')})
 
 
 class NodeMaintenance:
@@ -51,6 +52,8 @@ class NodeMaintenance:
         return status
 
     def check_models(self):
+        if self.api('/version').get('version') not in ('2.2.3','v2.2.3'):
+            raise RuntimeError('Maintenance controller requires the approved GPUStack v2.2.3')
         s=self.state();rows=[m for m in self.models() if m.get('cluster_id')==s['cluster_id']]
         if {m['id'] for m in rows}!={m['id'] for m in s['models']}:
             raise RuntimeError('Cluster model set changed; refusing unscoped changes')
@@ -63,16 +66,24 @@ class NodeMaintenance:
 
     def begin(self,worker_id,model_ids,reason):
         if self.path.exists():raise RuntimeError('Journal already exists; inspect/recover it instead of overwriting')
+        if self.api('/version').get('version') not in ('2.2.3','v2.2.3'):
+            raise RuntimeError('Maintenance controller requires the approved GPUStack v2.2.3')
         worker=self.api('/v2/workers/'+str(worker_id))
         if worker['name']!='XZ-31-002' or worker['state']!='ready' or (worker.get('maintenance') or {}).get('enabled'):
             raise RuntimeError('Only the ready existing 002 worker can enter this prototype')
         rows=[m for m in self.models() if m.get('cluster_id')==worker['cluster_id']]
         if {m['id'] for m in rows}!=set(model_ids) or not rows:raise RuntimeError('Explicit model list must cover the entire target cluster')
+        placements={}
+        for m in rows:
+            instances=self.api('/v2/models/'+str(m['id'])+'/instances')['items']
+            if len(instances)!=m['replicas'] or any(x['state']!='running' or not x.get('worker_name') for x in instances):
+                raise RuntimeError('Baseline model instances must be fully running')
+            placements[m['id']]=sorted(x['worker_name'] for x in instances)
         ident=uuid.uuid4().hex
         state={'session':ident,'phase':'PREPARED','cluster_id':worker['cluster_id'],'events':[],
             'maintenance_value':{'enabled':True,'message':'maas:'+ident+':'+reason},
             'worker':{k:worker.get(k) for k in ('id','name','labels','maintenance')},
-            'models':[{'id':m['id'],'name':m['name'],'replicas':m['replicas'],'sha256':model_hash(m)} for m in rows]}
+            'models':[{'id':m['id'],'name':m['name'],'replicas':m['replicas'],'sha256':model_hash(m),'worker_names':placements[m['id']]} for m in rows]}
         self.path.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
         fd=os.open(self.path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
         with os.fdopen(fd,'w') as f:json.dump(state,f);f.flush();os.fsync(f.fileno())
@@ -130,6 +141,19 @@ class NodeMaintenance:
             for m in self.check_models():
                 instances=self.api('/v2/models/'+str(m['id'])+'/instances')['items']
                 if len(instances)!=originals[m['id']]['replicas'] or any(x['state']!='running' for x in instances):return False
+                expected=Counter(originals[m['id']]['worker_names']);actual=Counter(x.get('worker_name') for x in instances)
+                if actual!=expected:
+                    # Spread is a placement preference, not a strict anti-affinity
+                    # guarantee. Repair only excess assignments while paused,
+                    # via GPUStack's instance API, with a durable finite budget.
+                    repairs=self.state().get('placement_repairs',[])
+                    if len(repairs)>=2*sum(x['replicas'] for x in originals.values()):
+                        raise RuntimeError('Placement reconciliation budget exhausted; admission remains paused')
+                    excess=next(x for x in instances if actual[x.get('worker_name')]>expected[x.get('worker_name')])
+                    self.check_window()
+                    self.event('RECOVERING',placement_repairs=repairs+[{'model_id':m['id'],'instance_id':excess['id'],'worker_name':excess.get('worker_name')}])
+                    self.api('/v2/model-instances/'+str(excess['id']),None,'DELETE')
+                    return False
             return True
         self.wait(ready)
         return self.event('RECOVERED')
