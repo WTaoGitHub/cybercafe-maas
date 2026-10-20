@@ -1,6 +1,6 @@
 # 实施计划 v0.2
 
-2026-10-20 · 当前执行计划；P0部分探针及P1模拟闭环已实现，详见 [实施报告](../../results/maas-p0-p1/REPORT.md)。依据：[DESIGN.md](DESIGN.md)。
+2026-10-20 · 当前执行计划；P0已通过受控试点验收，P1模拟闭环已实现，详见 [P0报告](../../results/maas-p0/REPORT.md)及 [首批实现报告](../../results/maas-p0-p1/REPORT.md)。依据：[DESIGN.md](DESIGN.md)。
 
 ## 1. 交付策略
 

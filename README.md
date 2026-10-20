@@ -146,3 +146,7 @@ CPU 原服务未调优，CPU/GPU 两环境依赖和线程设置不完全相同�
 - [运行与测试说明](deploy/maas/README.md)
 - [实施报告与证据](results/maas-p0-p1/REPORT.md)
 - [当前设计与路线图](docs/framework/ROADMAP.html)
+
+### P0验收完成
+
+入口重试、OCR/generic用量、多组织权限、版本固定预检和协议参数已验收，累计42项测试通过。详情见 [P0报告](results/maas-p0/REPORT.md)。仍未上线真实OCR异步服务，下一步收尾P1后进入P2。

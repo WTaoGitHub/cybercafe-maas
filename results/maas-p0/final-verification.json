@@ -1,0 +1,34 @@
+{
+  "checked_unix": 1792477025.140712,
+  "temporary_resources_remaining": {
+    "models": [],
+    "model-routes": [],
+    "inference-backends": [],
+    "users": [],
+    "organizations": []
+  },
+  "original_model": {
+    "id": 1,
+    "name": "rapidocr-gpu",
+    "backend_version": "0.3",
+    "replicas": 2,
+    "ready_replicas": 2,
+    "generic_proxy": false
+  },
+  "original_route": {
+    "id": 1,
+    "name": "rapidocr-gpu",
+    "generic_proxy": false,
+    "access_policy": "authed"
+  },
+  "original_ocr_smoke": {
+    "status": 200,
+    "lines": 46
+  },
+  "private_probe_bundle_removed": true,
+  "storage": {
+    "free_bytes": 420209725440,
+    "total_bytes": 527086919680
+  },
+  "ok": true
+}
