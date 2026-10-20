@@ -1,0 +1,44 @@
+{
+  "collector": {
+    "ok": true,
+    "observed_at": 1792482446.6542137,
+    "updated_at": 1792482447.3903465
+  },
+  "original": [
+    {
+      "worker": "XZ-31-001",
+      "status": 200,
+      "lines": 46
+    },
+    {
+      "worker": "XZ-31-002",
+      "status": 200,
+      "lines": 46
+    }
+  ],
+  "workers": [
+    {
+      "name": "XZ-31-002",
+      "state": "ready"
+    },
+    {
+      "name": "XZ-31-001",
+      "state": "ready"
+    }
+  ],
+  "pilot_instances": [
+    {
+      "worker": "XZ-31-001",
+      "state": "running"
+    },
+    {
+      "worker": "XZ-31-002",
+      "state": "running"
+    }
+  ],
+  "test_artifacts_and_private_daemon_storage_removed": true,
+  "extra_worker_records_removed": true,
+  "verified_at": 1792482453.1900198,
+  "new_bridge_container_verified": true,
+  "worker_offline_test": "deferred_by_user_no_disposable_VM"
+}

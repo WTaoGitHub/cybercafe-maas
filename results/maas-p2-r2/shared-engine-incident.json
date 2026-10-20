@@ -1,0 +1,22 @@
+{
+  "original_001_workload_removed_by_test_cleaner": true,
+  "original_recovered_automatically": true,
+  "verification": [
+    {
+      "worker": "XZ-31-002",
+      "status": 200,
+      "lines": 46
+    },
+    {
+      "worker": "XZ-31-001",
+      "status": 200,
+      "lines": 46
+    }
+  ],
+  "test_worker_stopped": true,
+  "removal_log_local_time": "2026-10-20 15:31:23+08:00",
+  "recovery_verified_at": 1792481644.1245925,
+  "duration_not_measured": true,
+  "cause": "GPUStack v2.2.3 WorkloadCleaner lists engine workloads but only recognizes its own worker deployment metadata",
+  "prevention": "Dedicated Docker daemon and distinct-engine-ID guard required for additional worker tests"
+}

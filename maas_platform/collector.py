@@ -1,5 +1,5 @@
 """Trusted host collector; credentials are never supplied to inference processes."""
-import argparse,ipaddress,json,logging,os,signal,subprocess,sys,threading,time,urllib.request
+import argparse,ipaddress,json,logging,os,signal,socket,subprocess,sys,threading,time,urllib.request
 from pathlib import Path
 from .errors import ServiceError
 from .inventory import collect_inventory
@@ -54,13 +54,19 @@ class Collector:
             sys.path.insert(0,'/root/wtaobj')
             from gpustack_admin import api
             admin=api
-        self.admin=admin
+        def bounded_admin(path):
+            # The existing operator helper does not set a socket timeout. Limit it
+            # in this single-threaded collector so an outage cannot hang refresh.
+            previous=socket.getdefaulttimeout();socket.setdefaulttimeout(5)
+            try:return admin(path)
+            finally:socket.setdefaulttimeout(previous)
+        self.admin=bounded_admin
 
     def observe(self):
         cfg=self.config;ids=json.loads((self.root/'target.json').read_text());start=time.time()
         inventory={}
         for worker,spec in cfg['workers'].items():
-            if spec['local']:row=collect_inventory(worker,cfg['image'],cfg['container_prefix'])
+            if spec['local']:row=collect_inventory(worker,cfg['image'],cfg['container_prefix'],docker_socket=spec.get('docker_socket'))
             else:row=json.loads(subprocess.check_output(inventory_command(spec),text=True,timeout=10,stderr=subprocess.PIPE))
             inventory[worker]=row
         api=self.admin

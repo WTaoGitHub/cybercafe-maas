@@ -8,6 +8,9 @@ from common import Resources,admin
 root=Path('/root/wtaobj/maas-framework');runtime=Path('/root/wtaobj/maas-runtime')
 ids=json.loads((runtime/'target.json').read_text());res=Resources()
 private=root/'.secrets'/'p2r2';private.mkdir(mode=0o700,exist_ok=True)
+smoke_only='--smoke-only' in sys.argv
+database='maas_runtime_smoke_test' if smoke_only else 'maas_p2r2_test'
+class SmokeComplete(Exception):pass
 containers=['wta-maas-p2r2-api','wta-maas-p2r2-executor'];report={'checks':{},'original_workers_stopped':False}
 for name in containers:
     if subprocess.run(['docker','inspect',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:raise RuntimeError('Acceptance container already exists')
@@ -42,7 +45,7 @@ def docker_base():
 def execute():
     code='from maas_platform.config import Settings;from maas_platform.auth import AuthConnector;from maas_platform.service import TaskService;from maas_platform.worker import Worker;s=Settings.from_env();v=TaskService(s,AuthConnector(s));v.db.migrate();assert Worker(v).run_once()'
     run(*docker_base()[:-1],'--name',containers[1],docker_base()[-1],'/work/.venv/bin/python','-c',code)
-def sql(query):return run('docker','exec','wta-maas-p1-test-db','psql','-U','maas','-d','maas_p2r2_test','-tAc',query).strip()
+def sql(query):return run('docker','exec','wta-maas-p1-test-db','psql','-U','maas','-d',database,'-tAc',query).strip()
 def state(task):
     assert re.fullmatch(r'task_[a-f0-9]{32}',task)
     return json.loads(sql("SELECT json_build_object('state',state,'error_code',error_code,'attempts',attempts,'result_artifact_id',result_artifact_id) FROM tasks WHERE id='"+task+"'"))
@@ -56,7 +59,7 @@ def assert_no_dispatch(ident,error):
 original_env=None
 try:
     wait(healthy)
-    run('docker','exec','wta-maas-p1-test-db','psql','-U','maas','-d','postgres','-c','CREATE DATABASE maas_p2r2_test')
+    run('docker','exec','wta-maas-p1-test-db','psql','-U','maas','-d','postgres','-c','CREATE DATABASE '+database)
     user,op=res.user('r2-matrix')
     keyinfo,key=res.key(op,'r2-matrix',[ids['name'],'rapidocr-gpu'],expires=3600)
     write('key',key);write('pepper',secrets.token_hex(32))
@@ -64,7 +67,7 @@ try:
     write('bindings.json',json.dumps(bindings))
     write('catalog.json',json.dumps({'ocr.default':{'driver':'gpustack.ocr','revision':'ocr-p2-r2','max_runtime_s':25,
         'upstream_model':ids['name'],'pin_file':'/trusted/pin.json','preflight_file':'/trusted/preflight.json'}}))
-    url=(root/'.secrets/test.env').read_text().strip().split('=',1)[1].replace('/maas_test','/maas_p2r2_test')
+    url=(root/'.secrets/test.env').read_text().strip().split('=',1)[1].replace('/maas_test','/'+database)
     write('app.env','\n'.join(['MAAS_DATABASE_URL='+url,'MAAS_ARTIFACT_ROOT=/work/p2r2-artifacts','MAAS_GPUSTACK_URL=http://127.0.0.1:18080',
         'MAAS_BINDINGS_FILE=/work/.secrets/p2r2/bindings.json','MAAS_CATALOG_FILE=/work/.secrets/p2r2/catalog.json','MAAS_PEPPER_FILE=/work/.secrets/p2r2/pepper'])+'\n')
     run(*docker_base()[:-1],'-d','--name',containers[0],docker_base()[-1],'/work/.venv/bin/uvicorn','maas_platform.api:create_app','--factory','--host','127.0.0.1','--port','18830')
@@ -75,6 +78,12 @@ try:
     ident=submit(key,'baseline');execute();row=state(ident);assert row['state']=='SUCCEEDED',row
     report['checks']['host_collector_real_task_success']=True
     saved_result=row['result_artifact_id']
+    if smoke_only:
+        result=request('/maas/v1/artifacts/'+saved_result,key=key)[1]
+        assert result['outputs']['lines']
+        report['checks']['persisted_result_lines']=len(result['outputs']['lines'])
+        report['ok']=True
+        raise SmokeComplete()
     # Revocation after acceptance must be checked again before dispatch.
     ident=submit(key,'permission-removed')
     admin('/v2/api-keys/'+str(keyinfo['id']),{'allowed_model_names':['rapidocr-gpu']},'PUT')
@@ -126,6 +135,8 @@ try:
     report['unknown_activities']=int(sql("SELECT count(*) FROM backend_activity WHERE state='UNKNOWN'"))
     assert report['successful_events']==2 and report['unknown_activities']==0
     report['ok']=True
+except SmokeComplete:
+    pass
 finally:
     if original_env is not None:
         m=admin('/v2/models/'+str(ids['model']));m['env']=original_env;admin('/v2/models/'+str(ids['model']),m,'PUT')
@@ -133,5 +144,5 @@ finally:
     for name in containers:subprocess.run(['docker','rm','-f',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     report['temporary_identity_cleanup']=res.cleanup();report['cleanup_failures']=res.failures
     for p in private.glob('*'):p.unlink()
-    (runtime/'fault-matrix.json').write_text(json.dumps(report,indent=2)+'\n')
+    (runtime/('runtime-smoke.json' if smoke_only else 'fault-matrix.json')).write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))

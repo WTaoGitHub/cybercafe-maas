@@ -74,3 +74,42 @@ def test_inventory_connection_disables_ambient_config_and_forwarding():
     args=inventory_command({'host':'10.11.31.2','identity_file':'/private/key','known_hosts':'/private/hosts'})
     assert args[-1]=='inventory' and args[1:3]==['-F','/dev/null']
     assert 'StrictHostKeyChecking=yes' in args and 'ForwardAgent=no' in args
+
+
+def test_worker_fault_guard_rejects_shared_docker_engine():
+    import importlib.util
+    path=Path(__file__).resolve().parents[2]/'scripts/maas/runtime/isolation_guard.py'
+    spec=importlib.util.spec_from_file_location('isolated_docker',path);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    with pytest.raises(RuntimeError):module.require_distinct_engine('same','same')
+    with pytest.raises(RuntimeError):module.require_distinct_engine('','test')
+    module.require_distinct_engine('host','test')
+
+
+def test_inventory_uses_only_explicit_isolated_socket_when_configured():
+    image='sha256:'+'a'*64
+    def run(args):
+        assert args[:3]==['docker','-H','unix:///private/test/docker.sock']
+        action=args[3:]
+        if action[:2]==['image','inspect']:return image
+        if action[0]=='ps':return 'pilot-one-run-0\n'
+        return json.dumps({'image_id':image,'running':True,'paused':False})
+    assert collect_inventory('test','local/ocr:r2','pilot',run=run,docker_socket='/private/test/docker.sock')['image_id']==image
+
+
+@pytest.mark.parametrize('addresses,containers',[(['10.11.31.1'],[]),(['10.11.31.2'],[]),(['10.99.0.1'],['wta-gpustack-worker'])])
+def test_fault_guard_refuses_managed_hosts(addresses,containers):
+    import importlib.util
+    path=Path(__file__).resolve().parents[2]/'scripts/maas/runtime/isolation_guard.py'
+    spec=importlib.util.spec_from_file_location('guard',path);guard=importlib.util.module_from_spec(spec);spec.loader.exec_module(guard)
+    with pytest.raises(RuntimeError):guard.require_dedicated_host(addresses,containers)
+
+
+def test_collector_bounds_operator_http_timeout_and_restores_default(tmp_path):
+    import socket
+    previous=socket.getdefaulttimeout()
+    def admin(path):
+        assert socket.getdefaulttimeout()==5
+        raise OSError('simulated connection failure')
+    collector=Collector({'root':str(tmp_path)},admin=admin)
+    with pytest.raises(OSError):collector.admin('/v2/models')
+    assert socket.getdefaulttimeout()==previous
