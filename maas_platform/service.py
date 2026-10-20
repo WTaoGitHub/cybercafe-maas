@@ -129,7 +129,8 @@ class TaskService:
         with self.db.transaction() as c:
             maintenance = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
             if maintenance['paused']: return None
-            if c.execute("SELECT 1 FROM backend_activity WHERE state='UNKNOWN' LIMIT 1").fetchone(): return None
+            self.expire_sync(c)
+            if self.has_unknown(c): return None
             c.execute("UPDATE tasks SET state='FAILED',error_code='DEADLINE_EXCEEDED',updated_at=now() WHERE state IN ('QUEUED','RETRY_WAIT') AND deadline<=now()")
             running = c.execute("SELECT count(*) AS n FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')").fetchone()['n']
             if running >= self.settings.max_running: return None
@@ -148,7 +149,8 @@ class TaskService:
             maintenance = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
             if maintenance['paused']:
                 raise ServiceError('MAINTENANCE_PAUSED', 'Inference dispatch is paused', 503)
-            if c.execute("SELECT 1 FROM backend_activity WHERE state='UNKNOWN' LIMIT 1").fetchone():
+            self.expire_sync(c)
+            if self.has_unknown(c):
                 raise ServiceError('BACKEND_QUARANTINED', 'Unresolved backend activity blocks dispatch', 503)
             row = c.execute("SELECT id FROM tasks WHERE id=%s AND token=%s AND state='RUNNING' AND lease_until>now() AND deadline>now() FOR UPDATE", (task['id'], task['token'])).fetchone()
             if not row:
@@ -259,7 +261,16 @@ class TaskService:
 
     def pause(self, paused, reason=''):
         with self.db.transaction() as c:
-            c.execute('UPDATE maintenance SET paused=%s,reason=%s,updated_at=now() WHERE id=1', (paused, reason))
+            row=c.execute('UPDATE maintenance SET paused=%s,reason=%s,generation=generation+1,updated_at=now() WHERE id=1 RETURNING generation', (paused, reason)).fetchone()
+            c.execute('INSERT INTO maintenance_events(generation,action,reason) VALUES(%s,%s,%s)', (row['generation'],'pause' if paused else 'resume',reason))
+
+    @staticmethod
+    def expire_sync(c):
+        c.execute("UPDATE sync_activity SET state='UNKNOWN',updated_at=now() WHERE state='DISPATCHING' AND deadline<=now()")
+
+    @staticmethod
+    def has_unknown(c):
+        return bool(c.execute("SELECT 1 FROM backend_activity WHERE state='UNKNOWN' UNION ALL SELECT 1 FROM sync_activity WHERE state='UNKNOWN' LIMIT 1").fetchone())
 
     def metrics(self):
         with self.db.transaction() as c:
@@ -267,4 +278,5 @@ class TaskService:
             events = c.execute('SELECT count(*) AS n FROM task_usage_events').fetchone()['n']
             paused = c.execute('SELECT paused FROM maintenance WHERE id=1').fetchone()['paused']
             unknown = c.execute("SELECT count(*) n FROM backend_activity WHERE state='UNKNOWN'").fetchone()['n']
-        return {'tasks': {r['state']:r['n'] for r in rows}, 'successful_tasks': events, 'dispatch_paused': paused, 'unknown_backend_activity': unknown}
+            sync_unknown = c.execute("SELECT count(*) n FROM sync_activity WHERE state='UNKNOWN' OR (state='DISPATCHING' AND deadline<=now())").fetchone()['n']
+        return {'tasks': {r['state']:r['n'] for r in rows}, 'successful_tasks': events, 'dispatch_paused': paused, 'unknown_backend_activity': unknown, 'unknown_sync_activity':sync_unknown}

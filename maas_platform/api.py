@@ -11,6 +11,7 @@ from .config import Settings
 from .errors import ServiceError
 from .schemas import TaskCreate, TaskView
 from .service import TaskService
+from .sync_ingress import SyncIngress
 
 
 def create_app(settings=None, auth=None):
@@ -21,7 +22,8 @@ def create_app(settings=None, auth=None):
         service.db.migrate(); yield
     app = FastAPI(title='MaaS persistent tasks', version='0.1.0', lifespan=lifespan)
     app.state.service = service
-    app.add_middleware(JsonBodyLimit)
+    app.state.sync_ingress=SyncIngress(service)
+    app.add_middleware(JsonBodyLimit,sync_limit=settings.max_input_bytes*2)
 
     @app.middleware('http')
     async def request_id(request, call_next):
@@ -50,7 +52,13 @@ def create_app(settings=None, auth=None):
     @app.get('/healthz')
     def health():
         with service.db.transaction() as c: c.execute('SELECT 1')
-        return {'ok':True,'version':'0.1.0','stage':'P2-pinned-ocr-pilot'}
+        return {'ok':True,'version':'0.1.0','stage':'P3-controlled-ingress-pilot'}
+
+    @app.post('/v1/chat/completions')
+    async def synchronous(request:Request,who=Depends(identity)):
+        try:body=await request.json()
+        except ValueError:raise ServiceError('SYNC_INPUT','Request must be JSON',422) from None
+        return await app.state.sync_ingress.infer(who,body)
 
     @app.post('/maas/v1/artifacts', status_code=201)
     async def upload(request: Request, who=Depends(identity)):
