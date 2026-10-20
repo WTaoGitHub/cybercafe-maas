@@ -1,0 +1,230 @@
+{
+  "protocol": "maas-task-v1",
+  "status": "P0 engineering baseline",
+  "task_request": {
+    "additionalProperties": false,
+    "properties": {
+      "model": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Model",
+        "type": "string"
+      },
+      "input": {
+        "additionalProperties": true,
+        "title": "Input",
+        "type": "object"
+      },
+      "parameters": {
+        "additionalProperties": true,
+        "title": "Parameters",
+        "type": "object"
+      },
+      "timeout_seconds": {
+        "default": 120,
+        "maximum": 3600,
+        "minimum": 1,
+        "title": "Timeout Seconds",
+        "type": "integer"
+      },
+      "max_attempts": {
+        "default": 3,
+        "maximum": 3,
+        "minimum": 1,
+        "title": "Max Attempts",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "model",
+      "input"
+    ],
+    "title": "TaskCreate",
+    "type": "object"
+  },
+  "task_response": {
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "model": {
+        "title": "Model",
+        "type": "string"
+      },
+      "revision": {
+        "title": "Revision",
+        "type": "string"
+      },
+      "state": {
+        "enum": [
+          "QUEUED",
+          "RUNNING",
+          "RETRY_WAIT",
+          "CANCEL_REQUESTED",
+          "CANCELLED",
+          "SUCCEEDED",
+          "FAILED"
+        ],
+        "title": "State",
+        "type": "string"
+      },
+      "attempts": {
+        "minimum": 0,
+        "title": "Attempts",
+        "type": "integer"
+      },
+      "result_artifact_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Result Artifact Id"
+      },
+      "error_code": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Error Code"
+      },
+      "deadline": {
+        "format": "date-time",
+        "title": "Deadline",
+        "type": "string"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "Created At",
+        "type": "string"
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "Updated At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "model",
+      "revision",
+      "state",
+      "attempts",
+      "result_artifact_id",
+      "error_code",
+      "deadline",
+      "created_at",
+      "updated_at"
+    ],
+    "title": "TaskView",
+    "type": "object"
+  },
+  "error": {
+    "$defs": {
+      "ApiErrorDetail": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "request_id"
+        ],
+        "title": "ApiErrorDetail",
+        "type": "object"
+      }
+    },
+    "properties": {
+      "error": {
+        "$ref": "#/$defs/ApiErrorDetail"
+      }
+    },
+    "required": [
+      "error"
+    ],
+    "title": "ApiError",
+    "type": "object"
+  },
+  "mock_input": {
+    "additionalProperties": false,
+    "properties": {
+      "text": {
+        "default": "",
+        "maxLength": 10000,
+        "title": "Text",
+        "type": "string"
+      },
+      "artifact_id": {
+        "anyOf": [
+          {
+            "maxLength": 80,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Artifact Id"
+      }
+    },
+    "title": "MockInput",
+    "type": "object"
+  },
+  "mock_parameters": {
+    "additionalProperties": false,
+    "properties": {
+      "delay_seconds": {
+        "default": 0,
+        "maximum": 30,
+        "minimum": 0,
+        "title": "Delay Seconds",
+        "type": "number"
+      },
+      "fail_first_attempts": {
+        "default": 0,
+        "maximum": 3,
+        "minimum": 0,
+        "title": "Fail First Attempts",
+        "type": "integer"
+      }
+    },
+    "title": "MockParameters",
+    "type": "object"
+  },
+  "idempotency": {
+    "required_header": "Idempotency-Key",
+    "scope": "project",
+    "same_request_status": 200,
+    "different_request_status": 409,
+    "new_task_status": 202
+  },
+  "artifact_reference": {
+    "current_mock_shape": "input.artifact_id",
+    "other_models": "model-specific input schema; no forced universal payload"
+  }
+}

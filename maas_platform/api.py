@@ -9,7 +9,7 @@ from .schemas import MockInput
 from .auth import AuthConnector
 from .config import Settings
 from .errors import ServiceError
-from .schemas import TaskCreate
+from .schemas import TaskCreate, TaskView
 from .service import TaskService
 
 
@@ -66,15 +66,15 @@ def create_app(settings=None, auth=None):
         data,media=service.artifact(who,ident)
         return Response(data,media_type=media,headers={'Cache-Control':'no-store','Content-Disposition':'attachment'})
 
-    @app.post('/maas/v1/tasks', status_code=202)
+    @app.post('/maas/v1/tasks', status_code=202, response_model=TaskView)
     def submit(body:TaskCreate, request:Request, who=Depends(identity), idempotency_key:str=Header(default='')):
         row,created=service.submit(who,body,idempotency_key)
         return JSONResponse(jsonable_encoder(row),status_code=202 if created else 200,headers={'Location':'/maas/v1/tasks/'+row['id']})
 
-    @app.get('/maas/v1/tasks/{ident}')
+    @app.get('/maas/v1/tasks/{ident}', response_model=TaskView)
     def get(ident:str,who=Depends(identity)): return service.get(who,ident)
 
-    @app.post('/maas/v1/tasks/{ident}/cancel')
+    @app.post('/maas/v1/tasks/{ident}/cancel', response_model=TaskView)
     def cancel(ident:str,who=Depends(identity)): return service.cancel(who,ident)
 
     @app.get('/maas/v1/models/{name}/capabilities')

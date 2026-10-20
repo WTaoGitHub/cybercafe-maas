@@ -27,7 +27,7 @@ def test_pin_matches_and_ignores_transient_replica_status():
 @pytest.mark.parametrize('field',['env','backend_version','backend_parameters','local_path'])
 def test_changed_model_spec_rejected(field):
  vals=fixture();vals[3][field]='changed'
- with pytest.raises((ServiceError,KeyError)):check(vals)
+ with pytest.raises(ServiceError):check(vals)
 
 
 def test_retarget_or_new_fallback_rejected():

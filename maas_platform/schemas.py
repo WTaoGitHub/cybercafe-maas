@@ -21,3 +21,32 @@ class MockParameters(BaseModel):
     model_config = ConfigDict(extra='forbid')
     delay_seconds: float = Field(default=0, ge=0, le=30)
     fail_first_attempts: int = Field(default=0, ge=0, le=3)
+
+
+# Public task envelope is independent from each model's payload schema.
+from datetime import datetime
+from typing import Literal
+
+
+class TaskView(BaseModel):
+    id: str
+    model: str
+    revision: str
+    state: Literal['QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED','CANCELLED','SUCCEEDED','FAILED']
+    attempts: int = Field(ge=0)
+    result_artifact_id: str | None
+    error_code: str | None
+    deadline: datetime
+    created_at: datetime
+    updated_at: datetime
+
+
+class ApiErrorDetail(BaseModel):
+    code: str
+    message: str
+    retryable: bool
+    request_id: str
+
+
+class ApiError(BaseModel):
+    error: ApiErrorDetail
