@@ -87,8 +87,9 @@ class OCRAdapter:
             {'type':'image_url','image_url':{'url':'data:'+media+';base64,'+base64.b64encode(data).decode()}}]}]}
         # No redirects, proxy environment, cookie jar or client-side transport retries.
         # Higress may still try up to three backends; no application replay after send.
+        network_deadline = time.monotonic()+remaining
         ctx.service.begin_backend(ctx.task)
-        raw = asyncio.run(self._infer(ctx, key, body, remaining))
+        raw = asyncio.run(self._infer(ctx, key, body, max(0,network_deadline-time.monotonic())))
         ctx.check()
         try:
             envelope = json.loads(raw)
