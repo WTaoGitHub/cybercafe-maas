@@ -184,6 +184,8 @@ class TaskService:
         preserve_result_file = False
         try:
             with self.db.transaction() as c:
+                # Serialize quarantine visibility with claim/begin_backend decisions.
+                c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
                 row = c.execute('SELECT * FROM tasks WHERE id=%s FOR UPDATE', (task['id'],)).fetchone()
                 if (not row or row['token'] != task['token'] or row['state'] not in ('RUNNING','CANCEL_REQUESTED')
                         or row['lease_until'] <= datetime.now(timezone.utc)):

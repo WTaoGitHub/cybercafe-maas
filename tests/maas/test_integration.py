@@ -392,3 +392,36 @@ def test_executor_process_exit_after_remote_dispatch_intent_preserves_quarantine
     assert submit(client,'pending').status_code==202 and s.claim() is None
     row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
     assert row['state']=='FAILED' and row['error_code']=='UNKNOWN_BACKEND_ACTIVITY'
+
+
+def test_quarantine_commit_serializes_with_other_remote_dispatch(env):
+    from contextlib import contextmanager
+    client,s,settings,auth,_=env
+    submit(client,'remote-a');submit(client,'remote-b',key='b')
+    first=s.claim();second=s.claim();assert second
+    s.begin_backend(first)
+    original=s.db.transaction;ready=threading.Event();release=threading.Event();done=threading.Event();errors=[]
+    @contextmanager
+    def transaction():
+        with original() as c:
+            yield c
+            if threading.current_thread().name=='quarantine-finisher':
+                ready.set();assert release.wait(3)
+    s.db.transaction=transaction
+    finisher=threading.Thread(name='quarantine-finisher',target=lambda:s.finish(first,error=ServiceError('TIMEOUT','unknown')))
+    def dispatch():
+        try:s.begin_backend(second)
+        except ServiceError as exc:errors.append(exc.code)
+        finally:done.set()
+    contender=threading.Thread(target=dispatch)
+    try:
+        finisher.start();assert ready.wait(3)
+        contender.start();assert not done.wait(.1)
+    finally:
+        release.set();finisher.join(5)
+        if contender.ident:contender.join(5)
+        s.db.transaction=original
+    assert not finisher.is_alive() and not contender.is_alive()
+    assert errors==['BACKEND_QUARANTINED']
+    with original() as c:
+        assert c.execute('SELECT count(*) n FROM backend_activity').fetchone()['n']==1
