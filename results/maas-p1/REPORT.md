@@ -1,0 +1,43 @@
+# P1 持久任务层收尾验收
+
+2026-10-20。结论：P1 本地适配器范围通过，可进入 P2 真实 GPUStack OCR 接入。
+
+## 本轮交付
+
+- 独立适配器注册表：任务核心负责鉴权、持久化、租约与结果提交；适配器负责输入/参数校验、artifact 引用提取与执行。
+- 保留 mock 回显行为，新增 `local.sha256`，使用 `input.source_artifact`，证明核心不依赖统一模型 payload。
+- capabilities 返回对应模型的输入和参数 schema；配置仅允许明确注册的本地驱动，不动态导入任意模块。
+- 上传提交确认丢失时保留已落盘文件，避免数据库已成功提交后误删输入。
+
+## 验证结果
+
+| 验证 | 结果 |
+|---|---|
+| 全量回归 | 47 passed，1 skipped，5.75 秒 |
+| 真实 PostgreSQL 中断专项 | 1 passed；使用独立有标签的测试容器 |
+| 文件原子落盘后进程退出 | 数据库未伪报成功；租约回收后可完成 |
+| 结果 SQL 已执行、commit 前进程退出 | 事务回滚；恢复后成功事件恰好一条 |
+| commit 后、返回调用者前进程退出 | 成功结果可读；旧 attempt 提交被拒绝 |
+| 上传 commit 确认丢失 | 已提交 artifact 对应文件仍存在 |
+| 数据库停机 | 查询/提交返回 503，心跳失败，不假成功接单 |
+| 数据库重启 | 原任务仍在，模拟租约过期后第二次 attempt 完成，计量一条 |
+
+全量中的一个 skip 是需要宿主机启停 PostgreSQL 的专项测试；它已通过独立 harness 实际执行。日志和 JUnit XML 保存在本目录。存在一条 Starlette/AnyIO 弃用警告，不影响用例结果。
+
+## 复现
+
+控制端源码位于 `/root/wtaobj/maas-framework`，使用既有私密 test.env 和 Python 3.11 容器环境：
+
+```sh
+python3 /root/wtaobj/start_test_db.py
+python3 /root/wtaobj/maas-framework/scripts/maas/test_db_interruption.py
+```
+
+专项脚本核对容器 `wta-maas-p1-test-db` 的 `cybercafe.role=p1-disposable-test` 标签，只重启此测试库。pytest fixture 会重建指定 `_test` 数据库的 public schema，不能指向业务库。
+
+## 边界与下一步
+
+- 当前为本地可取消、可重放的适配器验证；真实 GPU 推理、HTTP 超时后的后台未知占用、版本预检接入属于 P2。
+- 崩溃可能留下没有数据库引用的文件；本期保守保留，自动孤儿巡检/回收属于 P3。不能将此理解为没有磁盘泄漏。
+- 未验证断电、文件系统硬件故障、备份恢复、8 小时耐久及双系统切换；这些属于后续阶段。
+- 本轮未修改现有 OCR/GPUStack 部署。下一步先准备专用 OCR 版本目标和两节点一致的内容镜像，再实现真实 connector。
