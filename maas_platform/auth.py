@@ -22,8 +22,24 @@ class AuthConnector:
 
     def bindings(self):
         # Reload on every validation: local disable/revoke takes effect without API restart.
-        data = json.loads(private_text(self.bindings_file))
-        return [r for r in data['credentials'] if r.get('enabled', True)]
+        try:
+            data = json.loads(private_text(self.bindings_file))
+            rows = [r for r in data['credentials'] if r.get('enabled', True)]
+            ids, fingerprints = set(), set()
+            for row in rows:
+                if (not isinstance(row['id'], str) or not row['id']
+                        or not isinstance(row['project'], str) or not row['project']
+                        or not isinstance(row['models'], list) or not row['models']
+                        or any(not isinstance(m, str) or not m for m in row['models'])):
+                    raise ValueError('Invalid credential binding')
+                digest = self._fingerprint(private_text(row['secret_file']))
+                if row['id'] in ids or digest in fingerprints:
+                    raise ValueError('Ambiguous credential binding')
+                ids.add(row['id']); fingerprints.add(digest)
+            return rows
+        except (OSError, ValueError, KeyError, TypeError):
+            raise ServiceError('BINDING_INVALID', 'Credential registry unavailable or ambiguous', 503)
+
 
     def _fingerprint(self, value):
         return hmac.new(self.pepper, value.encode(), hashlib.sha256).digest()
