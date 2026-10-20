@@ -1,0 +1,25 @@
+{
+  "worker": {
+    "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+    "running": true,
+    "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+  },
+  "scoped_containers": [],
+  "fault_chain_present": false,
+  "active": {
+    "active": false,
+    "action": "partition",
+    "worker": {
+      "id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+      "running": true,
+      "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
+    },
+    "paused": [
+      "maas-ocr-002-offline-7l6c5-run-0"
+    ],
+    "armed_at": 1792488407.7379231,
+    "timer": "maas-002-restore-f4c0e51ec4",
+    "applied_at": 1792488410.2171373,
+    "restored_at": 1792488496.2776992
+  }
+}

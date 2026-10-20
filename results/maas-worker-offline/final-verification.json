@@ -1,0 +1,64 @@
+{
+  "checked_at": 1792488571.4884143,
+  "models": [
+    {
+      "name": "rapidocr-gpu",
+      "replicas": 2,
+      "probes": [
+        {
+          "worker": "XZ-31-002",
+          "instance": 35,
+          "status": 200,
+          "lines": 46
+        },
+        {
+          "worker": "XZ-31-001",
+          "instance": 34,
+          "status": 200,
+          "lines": 46
+        }
+      ]
+    },
+    {
+      "name": "maas-ocr-p2-r2",
+      "replicas": 2,
+      "probes": [
+        {
+          "worker": "XZ-31-002",
+          "instance": 36,
+          "status": 200,
+          "lines": 46
+        },
+        {
+          "worker": "XZ-31-001",
+          "instance": 33,
+          "status": 200,
+          "lines": 46
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "unreachable": false
+    },
+    {
+      "id": 1,
+      "name": "XZ-31-001",
+      "state": "ready",
+      "unreachable": false
+    }
+  ],
+  "collector": {
+    "ok": true,
+    "observed_at": 1792488571.9061606,
+    "updated_at": 1792488572.5835876
+  },
+  "collector_service": "active",
+  "temporary_model_remaining": false,
+  "temporary_api_executor_remaining": [],
+  "ok": true
+}

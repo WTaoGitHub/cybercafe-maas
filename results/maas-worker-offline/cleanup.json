@@ -1,0 +1,56 @@
+{
+  "tasks": [
+    {
+      "id": "task_abf98712616d4fb9be4351db9d87b614",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "error_code": null
+    },
+    {
+      "id": "task_f78fc1051f054803bdd8486db665632c",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "error_code": null
+    },
+    {
+      "id": "task_3e27a7e8fa4d417f8100995aa786b081",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "error_code": null
+    },
+    {
+      "id": "task_68cf8654f1aa48c88237fdc9fc030acb",
+      "state": "FAILED",
+      "attempts": 1,
+      "error_code": "UNKNOWN_BACKEND_ACTIVITY"
+    },
+    {
+      "id": "task_af6207d323464517a8b3262c7f77c8b0",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "error_code": null
+    },
+    {
+      "id": "task_7aa7357a5d164410bb14907c23a1c795",
+      "state": "FAILED",
+      "attempts": 1,
+      "error_code": "UNKNOWN_BACKEND_ACTIVITY"
+    },
+    {
+      "id": "task_75053439a43f4816b2bd6caa87a92ac6",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "error_code": null
+    },
+    {
+      "id": "task_a7075350c7e543ae8a9caf358b63301f",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "error_code": null
+    }
+  ],
+  "successful_events": 6,
+  "unknown_activities": 0,
+  "resources_removed": true,
+  "cleanup_failures": []
+}

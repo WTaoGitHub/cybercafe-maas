@@ -1,0 +1,42 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>002 worker 离线测试报告</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f2f6fa;color:#20364a;font:15px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1380px;margin:0 auto;padding:32px 24px 70px}h1{font-size:32px;line-height:1.4}h2{margin-top:30px;border-bottom:1px solid #dce6ef;padding-bottom:12px}h3{margin-top:26px}a{color:#126d99}nav{display:flex;gap:20px;flex-wrap:wrap}section,.diagram{background:white;border:1px solid #dce6ef;border-radius:12px;padding:26px;margin:24px 0}.diagram svg{display:block;width:100%;height:auto}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2eaf1;vertical-align:top;min-width:110px}th{background:#eaf2f8}pre{white-space:pre-wrap;background:#eff4f8;padding:20px;border-radius:8px}code{font-size:13px;overflow-wrap:anywhere}.notice,blockquote{border-left:4px solid #b48b34;padding:14px 18px;background:#fff7e4;margin:18px 0}.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0}.phase{background:#e2edf7;padding:15px;border-radius:8px;font-size:13px}.phase b{display:block;font-size:22px}button{font:inherit;padding:6px 14px;background:white;border:1px solid #bdcfdd;border-radius:6px;cursor:pointer}@media(max-width:700px){main{padding:18px 12px}section,.diagram{padding:16px}.phases{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.diagram{overflow:auto}.diagram svg{min-width:1000px}}@media print{body{background:white;font-size:11px}main{max-width:none;padding:0}nav,button{display:none}section,.diagram{border:0;padding:0}.diagram{break-inside:avoid}.table{overflow:visible}th,td{padding:6px;min-width:0}h2,h3{break-after:avoid}}</style><main><section><h2>既有 worker 002 离线与恢复测试报告</h2>
+<p>2026-10-20 · GPUStack v2.2.3 · 控制端 XZ-31-001 · 故障节点 XZ-31-002。</p>
+<h3>结论</h3>
+<p>三项实机测试通过，82项回归通过、1项跳过。P2按本报告的故障范围通过，可以进入P3全局维护控制。实际整机断电、双系统切换及8小时耐久仍未验证。</p>
+<p>最重要的发现：<strong>停止GPUStack worker，不代表它启动的推理容器已经停止。</strong> 因此，节点失联或HTTP超时后，系统保留UNKNOWN后台活动并阻止后续派发；不能直接重试任务或宣告节点可安全切系统。</p>
+<h3>测试范围与方法</h3>
+<p>用户明确允许中断既有002服务、当前无客户请求。本轮直接使用原worker，未追加GPUStack worker或Docker daemon，001控制端保持运行。</p>
+<p>创建临时模型 <code>maas-ocr-002-offline</code>，通过worker selector固定002，使用与P2试点相同内容的镜像；独立临时身份、任务数据库和artifact隔离测试。临时任务接口仅监听001本机。每次故障前设置180秒自动恢复定时器，执行结束主动恢复。</p>
+<p>在途测试先暂停专用测试推理容器，再观察任务DISPATCHING后注入故障，稳定制造请求无法完成的情形。这验证已进入派发阶段的超时与不确定性处理，未证明GPU内核正在计算时被中断，也未通过上游日志证明请求已到达推理进程。</p>
+<p>网络隔离只丢弃001↔002非SSH流量，保留双向TCP22；未关闭网卡、重启宿主机或模拟外部网络全部断开。</p>
+<h3>实测结果</h3>
+<div class="table"><table><thead><tr><th>场景</th><th>观测到worker不可用</th><th>任务与结果</th><th>恢复验证</th></tr></thead><tbody>
+<tr><td>空闲停止worker</td><td>36.09秒</td><td>历史结果仍可下载；推理容器仍在运行</td><td>原worker恢复后，新OCR成功46行</td></tr>
+<tr><td>在途强制停止worker</td><td>22.46秒</td><td>FAILED / UNKNOWN_BACKEND_ACTIVITY，attempts=1；新mock任务保持QUEUED</td><td>确认实际后端终止后解除UNKNOWN，mock及新OCR成功</td></tr>
+<tr><td>在途节点间网络隔离</td><td>25.31秒</td><td>worker端口不可达；UNKNOWN与排队保护成立；历史结果可下载</td><td>清除隔离、恢复worker与模型后，新OCR成功46行</td></tr>
+</tbody></table></div>
+<p>以上为单次测试的观测延迟，包含控制面刷新、轮询与脚本耗时，不是恢复SLA或统计性能指标。</p>
+<p>三个离线阶段，各做一次原同步OCR探针，均返回HTTP200、46行。不能据此推断请求必定由001处理：停止worker后002推理进程可能仍在，且GPUStack网关存在透明重试；本轮没有逐请求定位执行节点。异步试点collector要求两节点就绪，002离线时health为WORKER_UNAVAILABLE，停止授权新OCR派发；自动缩减可用节点集合尚未实现。</p>
+<p>两次在途故障均按以下顺序恢复：测试模型期望副本设为0 → 确认既有002 worker停止 → 删除专用测试推理进程并确认无残留 → 人工解除UNKNOWN → 排队mock任务完成 → 恢复worker/副本 → 核对版本快照 → 新OCR成功。没有根据“worker离线”本身解除UNKNOWN。</p>
+<p><strong>attempts=1仅证明任务层没有重放，不能证明GPU只执行一次。</strong> 实测Higress允许额外2次上游重试（最多3次尝试），应用层没有重发不等于端到端恰好执行一次。</p>
+<h3>数据一致性、回归与收尾</h3>
+<p>本轮共8个任务：6成功（4个OCR、2个mock），2个预期失败。成功计量事件6条，与成功任务数一致；清理前未决UNKNOWN为0，未产生多个成功计量事件。</p>
+<p>回归结果：<strong>82 passed, 1 skipped，6.23秒</strong>。跳过项为需宿主机编排的真实数据库停启专项；此前P2已有独立通过记录，本轮未重复。另有一条Starlette依赖弃用警告。</p>
+<p>收尾复核：</p>
+<ul>
+<li>原 <code>rapidocr-gpu</code> 与保留的 <code>maas-ocr-p2-r2</code> 各2个实例，分别位于001/002；四个实例逐一直接请求均HTTP200、46行。</li>
+<li>两个worker均ready；002原worker容器ID不变；001 collector active且health正常。</li>
+<li>临时模型、路由、身份、任务API/执行器、测试数据库和artifact已清理；测试PostgreSQL容器已停止，保留既有测试环境卷。</li>
+<li>专用测试推理容器无残留；故障iptables链已删除；活动故障恢复定时器为0。</li>
+</ul>
+<h3>下一步</h3>
+<p>开始P3/W6：全局暂停派发、限制同步旁路、核对在途及UNKNOWN、恢复前探测。随后做队列/项目并发限额、TTL和指标；P4再发布常驻任务服务、HTTPS、备份恢复和至少8小时负载验收。</p>
+<p>本轮不增加自动关机、自动重试未知任务或Windows/Ubuntu切换承诺。控制端001故障、高可用、外部公开入口和多租户商业运营仍属于后续范围。</p>
+<h3>可追溯材料</h3>
+<ul>
+<li><a href="idle.json">空闲停止证据</a>、<a href="kill.json">在途强停证据</a>、<a href="partition.json">网络隔离证据</a></li>
+<li><a href="cleanup.json">任务与计量收尾</a>、<a href="final-verification.json">四实例复核</a>、<a href="final-node.json">002状态</a></li>
+<li><a href="node-cleanup.json">节点清理</a>、<a href="final-cleanup.json">定时器及数据库收尾</a></li>
+<li><a href="worker-offline-regression.log">回归日志</a>、<a href="worker-offline-regression.xml">JUnit记录</a></li>
+<li><a href="../../scripts/maas/offline/node002.py">故障执行器</a>、<a href="../../scripts/maas/offline/controller.py">控制端脚本</a>、<a href="../../scripts/maas/offline/run_tests.py">本地编排</a>、<a href="../../scripts/maas/offline/verify.py">只读收尾复核</a></li>
+</ul>
+<p>测试脚本固定现有节点及临时资源作用域，并非通用生产维护工具。重新执行前需按脚本检查私密配置、端口、测试数据库与状态文件，不能直接复用旧测试状态。</p></section></main></html>

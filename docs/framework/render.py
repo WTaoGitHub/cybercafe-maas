@@ -89,7 +89,7 @@ def standalone(source):
 if __name__=='__main__':
     svg=svg_diagram();(P/'ARCHITECTURE.svg').write_text(svg)
     phases=['复用与协议确认','最小持久任务闭环','真实模型与恢复','受控维护与运营边界','发布和长时验收']
-    header='<h1>统一模型服务框架 v0.2<br>GPUStack v2.2.3 + 最小持久任务层</h1><p>2026-10-20 · 当前设计基线 / P0已验收 / P1模拟闭环已验证</p><nav><a href="#architecture">组件架构</a><a href="#design">详细设计</a><a href="#plan">实施计划</a><a href="#roadmap">路线图</a><a href="ARCHITECTURE.svg">独立 SVG</a><button onclick="window.print()">打印 / 保存 PDF</button></nav><p class="notice">复用身份、模型目录、路由、同步/SSE、部署与监控；新增任务API、执行器、独立PostgreSQL及控制端结果卷。固定v2.2.3，不依赖main，不承诺逐节点无损排空。</p>'
+    header='<h1>统一模型服务框架 v0.2<br>GPUStack v2.2.3 + 最小持久任务层</h1><p>2026-10-20 · 当前设计基线 / P0–P2按对应范围验收 / P3–P4待实施</p><nav><a href="#architecture">组件架构</a><a href="#design">详细设计</a><a href="#plan">实施计划</a><a href="#roadmap">路线图</a><a href="ARCHITECTURE.svg">独立 SVG</a><button onclick="window.print()">打印 / 保存 PDF</button></nav><p class="notice">复用身份、模型目录、路由、同步/SSE、部署与监控；新增任务API、执行器、独立PostgreSQL及控制端结果卷。固定v2.2.3，不依赖main，不承诺逐节点无损排空。</p>'
     stages='<div class="phases">'+''.join('<div class="phase"><b>P'+str(i)+'</b>'+v+'</div>' for i,v in enumerate(phases))+'</div>'
     sections=''.join('<section id="'+ident+'">'+render((P/file).read_text())+'</section>' for ident,file in [('design','DESIGN.md'),('plan','PLAN.md'),('roadmap','ROADMAP.md')])
     (P/'ROADMAP.html').write_text('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MaaS框架v0.2 · 设计、计划与路线图</title><style>'+CSS+'</style></head><body><main>'+header+stages+'<div class="diagram" id="architecture">'+svg+'</div>'+sections+'</main></body></html>')
