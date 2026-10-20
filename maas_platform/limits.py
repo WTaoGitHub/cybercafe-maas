@@ -15,7 +15,7 @@ class JsonBodyLimit:
             if event['type']=='http.disconnect':return
             body.extend(event.get('body',b''))
             if len(body)>self.limit:
-                rid='req_'+uuid.uuid4().hex
+                rid=scope.get('state',{}).get('request_id') or 'req_'+uuid.uuid4().hex
                 data=json.dumps({'error':{'code':'REQUEST_SIZE','message':'JSON request exceeds 64 KiB','retryable':False,'request_id':rid}}).encode()
                 await send({'type':'http.response.start','status':413,'headers':[(b'content-type',b'application/json'),(b'x-request-id',rid.encode())]})
                 await send({'type':'http.response.body','body':data});return

@@ -180,6 +180,7 @@ def test_chunked_json_limit_and_local_disable(env):
     response=client.post('/maas/v1/tasks',headers={**headers(),'Content-Type':'application/json'},content=iter([b'x'*40000,b'x'*40000]))
     assert response.status_code==413
     assert response.json()['error']['code']=='REQUEST_SIZE'
+    assert response.json()['error']['request_id']==response.headers['x-request-id']
     data=json.loads(settings.bindings_file.read_text());data['credentials'][0]['enabled']=False;settings.bindings_file.write_text(json.dumps(data))
     assert submit(client).status_code==401
 
