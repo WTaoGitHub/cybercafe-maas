@@ -57,3 +57,7 @@ CLI pause用于受控入口暂停；resume仍必须携带 `--credential-id pilot
 ## P4最新发布状态
 
 2026-10-21已补私有TLS、独立监控、指标历史、备份恢复、网络持久化/Docker重启与镜像回退；8小时测试已改为今晚19:00定时启动（北京时间）。本文保留常驻部署基线，最新操作与未验证边界见 [P4发布手册](P4-RELEASE.md)。
+
+## 2026-10-21 22:16 夜间耐久失败更新
+
+2026-10-21夜间耐久测试在22:16:38以FAILED结束：2360接纳/2359成功，1个PREFLIGHT_UNAVAILABLE；仅运行约3小时16分钟，P4未通过。collector与002 SSH限流窗口吻合，当前服务已恢复健康，原因仍需验证。保留失败记录，不自动重新计时；先修复并重新安排完整8小时，P4通过前不启动E5。见 [失败分析](../../results/maas-p4-release/ENDURANCE-FAILURE.md) 和 [更新报告](../../results/maas-p4-release/REPORT.html)。

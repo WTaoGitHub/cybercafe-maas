@@ -80,3 +80,7 @@ P4剩余当前仅长时结果及最终收尾核对。公网开放、实际整机
 - 查看：`systemctl list-timers maas-endurance-night-20261021.timer`；日志：`journalctl -u maas-endurance-night-20261021.service`。
 - 取消尚未启动计划：`systemctl disable --now maas-endurance-night-20261021.timer`；停止已启动负载：`systemctl stop maas-endurance-night-20261021.service`。这些操作不停止正常OCR服务。
 - 正常进展静默；完成后核对持续时间、连续性、任务和计量并更新报告，出现新问题才提示。单次运行不自动重启；最终验收仍待实测。
+
+## 2026-10-21 22:16 夜间耐久失败更新
+
+2026-10-21夜间耐久测试在22:16:38以FAILED结束：2360接纳/2359成功，1个PREFLIGHT_UNAVAILABLE；仅运行约3小时16分钟，P4未通过。collector与002 SSH限流窗口吻合，当前服务已恢复健康，原因仍需验证。保留失败记录，不自动重新计时；先修复并重新安排完整8小时，P4通过前不启动E5。见 [失败分析](../../results/maas-p4-release/ENDURANCE-FAILURE.md) 和 [更新报告](../../results/maas-p4-release/REPORT.html)。

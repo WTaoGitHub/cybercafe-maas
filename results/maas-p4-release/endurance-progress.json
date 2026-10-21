@@ -1,18 +1,29 @@
 {
   "run_id": "night-8h-20261021",
-  "service": "maas-endurance-night-20261021.service",
-  "timer": "maas-endurance-night-20261021.timer",
-  "state": "SCHEDULED",
-  "scheduled_start_unix": 1792580400.0,
-  "scheduled_end_unix": 1792609200.0,
+  "state": "FAILED",
+  "started_at": 1792580402.5794947,
   "duration_target_seconds": 28800,
-  "interval_seconds": 5,
+  "interval_seconds": 5.0,
   "fixtures": 40,
-  "timezone": "Asia/Shanghai",
-  "persistent": false,
-  "started_at": 1792580400.0,
-  "elapsed_seconds": 0,
-  "accepted": 0,
-  "succeeded": 0,
-  "errors": []
+  "tls_verified": true,
+  "concurrency": 1,
+  "errors": [
+    {
+      "at": 1792592198.5858734,
+      "code": "task_terminal_PREFLIGHT_UNAVAILABLE"
+    }
+  ],
+  "elapsed_seconds": 11796.06,
+  "accepted": 2360,
+  "succeeded": 2359,
+  "submit_p95_ms": 60.129710007458925,
+  "e2e_p95_seconds": 1.1537665918003768,
+  "lines_total": 92739,
+  "updated_at": 1792592198.6421955,
+  "database_check": {
+    "tasks": 2360,
+    "succeeded": 2359,
+    "usage_events": 2359
+  },
+  "finished_at": 1792592198.6418774
 }

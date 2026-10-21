@@ -22,6 +22,7 @@ def main():
  end=load('endurance-final.json' if (BASE/'endurance-final.json').exists() else 'endurance-progress.json')
  verification=load('endurance-verification.json') if (BASE/'endurance-verification.json').exists() else {}
  passed=eight_hour_passed(end,verification)
+ failure_note='## 夜间失败与排查\n\n本轮于北京时间2026-10-21 22:16:38提前结束：2360接纳、2359成功、1个PREFLIGHT_UNAVAILABLE。collector采集失败与002 SSH MaxStartups限流时间吻合，因果链仍需专项验证。当前服务恢复健康，不自动重启负载，P4未通过，E5不启动。详见[失败记录与修复建议](ENDURANCE-FAILURE.md)。\n\n' if end.get('state')=='FAILED' and end.get('run_id')=='night-8h-20261021' and (BASE/'ENDURANCE-FAILURE.md').exists() else ''
  assert smoke['state']=='COMPLETE' and restart['ok'] and rest['ok'] and rollback['ok']
  status='8小时门槛通过；其余验收按本报告的私有两节点范围解释。' if passed else ('耐久测试失败或中断，P4未通过，请检查原始状态及错误记录。' if end.get('state') in ('FAILED','INTERRUPTED') else '8小时耐久测试尚未完成或最终核对未通过，P4暂不整体验收。')
  text=f'''# P4 发布与耐久验收进展
@@ -61,7 +62,7 @@ def main():
 - 8小时结束必须核对：elapsed≥28800、所有accepted有成功终态、errors为空、数据库任务/成功事件数量一致，且verify_endurance.py确认请求时间连续（最大间隔不超过60秒），不能用休眠满8小时代替持续负载；异常时停止负载且不自动解除UNKNOWN或重启计时。
 - 已安排每小时跟进，进度正常时不通知；完成或发生需处理的问题再汇总。
 
-## 保留边界
+{failure_note}## 保留边界
 
 没有实际整机重启/VM断电或Windows切换；验证了systemd依赖与两次Docker引擎重启的拦截抽样。监控与控制端同机，不能覆盖001整机失联，不提供HA。私有TLS不代表已开放公网或取得公有CA证书。备份包含敏感配置，归档与恢复密钥不得提交Git，需另行安全保管密钥；尚无生产备份周期/RPO约定。P4是否通过仍以长时结果及上述范围为准。
 
