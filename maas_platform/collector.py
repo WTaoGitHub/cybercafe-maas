@@ -3,7 +3,7 @@ import argparse,ipaddress,json,logging,os,signal,socket,subprocess,sys,threading
 from pathlib import Path
 from .errors import ServiceError
 from .inventory import collect_inventory
-from .versioning import VersionPin,verify_pin,register_pin
+from .versioning import VersionPin,verify_pin,register_pin,digest
 
 
 def atomic_json(path,value):
@@ -17,6 +17,34 @@ def atomic_json(path,value):
         finally:os.close(directory)
     finally:
         temp.unlink(missing_ok=True)
+
+
+def export_consumer(config,pin,snapshot=None,error=None):
+    """Publish no raw model/backend env, credentials or operator configuration.
+
+    The collector is the trust boundary: it verifies the full snapshot privately.
+    Consumers get a fresh attestation bound to the immutable public pin hash.
+    """
+    if not config.get('consumer_root'):return
+    root=Path(config['consumer_root'])
+    if root.resolve()==Path(config['root']).resolve():raise ValueError('Consumer export must be a separate directory')
+    root.mkdir(parents=True,exist_ok=True,mode=0o750)
+    gid=int(config.get('consumer_gid',10001))
+    os.chown(root,-1,gid);os.chmod(root,0o750)
+    def publish(name,value):
+        path=root/name
+        atomic_json(path,value)
+        # Complete publication permissions only after the atomic write. Readers
+        # may briefly fail closed while a newly replaced file is still mode600.
+        os.chown(path,-1,gid);os.chmod(path,0o640)
+    if error:
+        (root/'preflight.json').unlink(missing_ok=True)
+        publish('health.json',{'ok':False,'code':error,'updated_at':time.time()})
+        return
+    publish('pin.json',pin.public())
+    publish('preflight.json',{'schema_version':2,'observed_at':snapshot['observed_at'],
+        'pin_sha256':digest(pin.public()),'gateway_max_attempts':snapshot['gateway_max_attempts']})
+    publish('health.json',{'ok':True,'updated_at':time.time()})
 
 
 def inventory_command(config):
@@ -100,12 +128,14 @@ class Collector:
             control,inventory,gateway,start=self.observe()
             value=build_snapshot(pin,control,inventory,gateway,start)
             atomic_json(snapshot,value)
+            export_consumer(self.config,pin,value)
             atomic_json(self.root/'health.json',{'ok':True,'observed_at':value['observed_at'],'updated_at':time.time()})
             return True
         except Exception as exc:
             # Revoke the previous attestation immediately on observed drift/failure.
             snapshot.unlink(missing_ok=True)
             code=exc.code if isinstance(exc,ServiceError) else 'COLLECTION_UNAVAILABLE'
+            export_consumer(self.config,None,error=code)
             atomic_json(self.root/'health.json',{'ok':False,'code':code,'updated_at':time.time()})
             logging.getLogger('maas.collector').warning('collection_failed code=%s',code)
             return False

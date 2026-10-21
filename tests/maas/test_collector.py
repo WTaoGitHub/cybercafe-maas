@@ -113,3 +113,24 @@ def test_collector_bounds_operator_http_timeout_and_restores_default(tmp_path):
     collector=Collector({'root':str(tmp_path)},admin=admin)
     with pytest.raises(OSError):collector.admin('/v2/models')
     assert socket.getdefaulttimeout()==previous
+
+
+def test_consumer_projection_redacts_configuration_and_revokes_on_drift(tmp_path):
+    from maas_platform.ocr_connector import preflight
+    pin,control,inventory,gateway=fixture()
+    private=tmp_path/'private';private.mkdir();export=tmp_path/'consumer'
+    (private/'pin.json').write_text(json.dumps(pin.public()))
+    c=Collector({'root':str(private),'consumer_root':str(export),'consumer_gid':os.getgid()},admin=lambda *a:None)
+    c.observe=lambda:(control,inventory,gateway,time.time())
+    assert c.collect_once()
+    assert {p.name for p in export.iterdir()}=={'pin.json','preflight.json','health.json'}
+    projection=json.loads((export/'preflight.json').read_text())
+    assert set(projection)=={'schema_version','observed_at','pin_sha256','gateway_max_attempts'}
+    assert (export/'preflight.json').stat().st_mode & 0o777==0o640
+    model={'revision':pin.revision,'upstream_model':pin.route_name,'pin_file':str(export/'pin.json'),'preflight_file':str(export/'preflight.json')}
+    assert preflight(model)
+    projection['pin_sha256']='wrong';(export/'preflight.json').write_text(json.dumps(projection))
+    with pytest.raises(Exception):preflight(model)
+    control['model']['env']={'SECRET':'canary-do-not-export'}
+    assert not c.collect_once() and not (export/'preflight.json').exists()
+    assert 'canary-do-not-export' not in ''.join(p.read_text() for p in export.iterdir())
