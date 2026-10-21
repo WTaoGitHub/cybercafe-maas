@@ -1,6 +1,6 @@
-# MaaS P0/P1 最小实现
+# MaaS 受控 OCR 部署
 
-实现范围：任务API + PostgreSQL持久队列 + 执行器 + 控制端ArtifactStore。**当前只启用 `mock.echo`，真实OCR异步connector、精确排空和公网服务尚未交付。** 既有GPUStack同步OCR不受本实现替换。
+实现范围：任务API、独立PostgreSQL、执行器、控制端ArtifactStore及观察进程。固定版本OCR、受控维护及配额已验收；公网服务、精确逐节点无损排空未交付。
 
 ## 环境
 
@@ -22,19 +22,19 @@ secret目录权限700，文件600，所有者UID 10001以便应用容器读取�
 
 ## Compose（部署模板，未作为线上常驻服务验收）
 
-当前001尚未安装Docker Compose插件，本轮使用独立docker run验证API、执行器和数据库。下面模板需先具备Compose v2；本轮未安装全局插件，也未将新服务常驻上线。
+P4使用Compose v2。host网络下API仅监听127.0.0.1:18830，独立数据库仅监听127.0.0.1:18835；部署前检查端口空闲。不创建新Docker网桥，不改变既有推理防火墙。
 
 在项目根目录：
 
 ```sh
 # 准备私有env文件（chmod 600）；不要使用示例密码。
 cp deploy/maas/.env.example deploy/maas/.env
-# 手动填入随机数据库密码、内部GPUStack URL、secret目录绝对路径。
+# 填入随机hex数据库密码、回环GPUStack URL及secret/模型目录/证明/探针路径。
 # 依据上述要求准备secret文件，登记key归属必须由管理员确认。
 docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml up -d --build
 ```
 
-API仅绑定控制机 `127.0.0.1:18830`，数据库不发布端口。新增卷postgres/artifacts独立于GPUStack数据；不执行`down -v`清理有价值任务。两进程可并发启动，迁移采用数据库advisory lock及校验和。
+API仅绑定控制机 `127.0.0.1:18830`，数据库仅绑定回环18835。新增卷postgres/artifacts独立于GPUStack数据；不执行`down -v`清理有价值任务。迁移采用数据库advisory lock及校验和。
 
 本地管理访问可通过001的SSH转发18830。此模板不提供公网TLS、网关旁路封锁、worker系统切换或生产备份。
 
@@ -112,3 +112,19 @@ MAAS_TEST_DATABASE_URL=postgresql://.../maas_test python -m pytest tests/maas -q
 ### P3/W7 运营控制
 
 同步与异步共享并发配额；新增全局/项目存储配额、孤儿宽限期和单轮清理数量。Compose 的 observer 将私有指标和告警状态写入共享 artifact 卷下 `.observability/`，不开放 HTTP 端口。完整配置、计量口径及处置步骤见 [P3-OPERATIONS.md](../../docs/framework/P3-OPERATIONS.md)。本轮仅完成模板和临时验收，尚未常驻部署；目标主机缺少 Compose 插件，未执行 Compose 启动验证，P4 发布前需解决。
+
+## P4 正式配置
+
+Compose 必须指定 `MAAS_CATALOG_PATH`，按 `catalog.ocr.example.json` 及已登记 pin 填入实际 revision/route；mock 示例不再被自动加载。`MAAS_TRUSTED_DIR` 只能指向 collector 的独立 consumer 导出目录，`MAAS_PROBE_DIR` 指向不含凭据的探针目录。三个应用使用同一 artifact 卷。secret 目录/文件属 UID 10001、权限 700/600，模型目录和探针只读。
+
+collector 通过 `consumer_root`、`consumer_gid=10001` 开启精简证明导出：目录root:10001、750，文件root:10001、640。应用仅有只读挂载，不能修改证明。完整快照/SSH/管理key不导出。每5秒刷新，失败撤销preflight；应用仍检查30秒新鲜度和pin摘要。不得通过开放完整私有目录来解决读取权限。
+
+`prepare_live.py` 仅在001以root运行一次，准备 `/root/wtaobj/maas-live/`：独立非管理员推理身份、30天key、secret、正式OCR目录、探针及私有env；已有目录时拒绝覆盖。需要在30天前轮换key，轮换提醒时间保存在私有identity.json。此脚本不删除已有业务数据、不修改模型或worker。
+
+```sh
+# 001上从部署目录执行，先完成collector配置并刷新导出。
+docker compose --env-file /root/wtaobj/maas-live/app.env -f deploy/maas/compose.yaml config --quiet
+docker compose --env-file /root/wtaobj/maas-live/app.env -f deploy/maas/compose.yaml up -d --build --wait
+```
+
+host网络适用于当前受信任001试点；客户入口仍通过既有回环18831 Nginx。不要将API改为0.0.0.0，不挂载Docker socket或管理凭据。首次启动会创建独立命名卷；重启保留数据，禁止使用 `down -v`。

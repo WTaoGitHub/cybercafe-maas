@@ -1,0 +1,7 @@
+# Only application sources and pinned requirements enter the build context.
+**
+!requirements-maas.txt
+!maas_platform/
+!maas_platform/**
+maas_platform/**/__pycache__/
+maas_platform/**/*.pyc
