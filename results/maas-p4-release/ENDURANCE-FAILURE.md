@@ -40,3 +40,7 @@
 截至02:58快照故障仍存在，不宣布恢复，不修改SSH/网络或预检规则。新推理可能被缺失预检证明拒绝。P4未通过，不自动重新启动负载，不进入E5。
 
 证据：[collector复发日志](collector-recurrence-20261022.log)、[002限流复发日志](ssh-throttling-recurrence-20261022.log)、[监控快照](monitor-recurrence-20261022.json)。
+
+## 2026-10-22 04:00 恢复快照
+
+只读检查显示collector已恢复新鲜健康状态，独立监控ok=true、alerts=[]，UNKNOWN=0；[恢复监控快照](monitor-recovered-20261022-0400.json)已保存。未变更配置，故仅代表该时点自动恢复，不代表根因修复或完成稳定性验收。原负载仍inactive，P4未通过，不启动新负载或E5。
