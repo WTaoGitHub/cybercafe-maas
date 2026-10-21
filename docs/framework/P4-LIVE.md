@@ -40,7 +40,7 @@ docker compose --env-file /root/wtaobj/maas-live/app.env -f deploy/maas/compose.
 docker compose --env-file /root/wtaobj/maas-live/app.env -f deploy/maas/compose.yaml exec -T api python -m maas_platform.cli alerts
 ```
 
-CLI pause用于受控入口暂停；resume仍必须携带 `--credential-id pilot-ocr --probe-image /run/maas-probe/upright.png` 并通过真实探针。完整GPUStack节点维护操作器的正式配置尚未绑定，不直接运行历史临时验收配置。
+CLI pause用于受控入口暂停；resume仍必须携带 `--credential-id pilot-ocr --probe-image /run/maas-probe/upright.png` 并通过真实探针。完整GPUStack节点维护操作器已绑定常驻环境，使用每窗口新配置，不复用历史临时验收配置；命令与恢复步骤见 [正式维护手册](P4-MAINTENANCE.md)。
 
 本地可使用SSH隧道转发001回环18831进行手动测试。未把新key复制到本地或聊天，需按既有安全文件方式取得受限推理key；不要用collector管理key做客户请求。
 
@@ -52,4 +52,4 @@ CLI pause用于受控入口暂停；resume仍必须携带 `--credential-id pilot
 
 首次验收脚本曾按Docker挂载列表原始顺序比较而误判，修正为按目标路径排序；探针恢复后保留首次两条任务，重新验收新增两条，正式库共4条成功记录，无重复成功事件的证据见usage.json。
 
-接下来：正式维护操作配置、发布文档统一、网络规则启动持久性/HTTPS、独立监控、数据库与artifact配套备份/恢复、至少8小时负载。实际VM断电/双系统切换和控制端高可用仍未验证。
+正式维护配置已绑定且常驻演练通过，见 [维护手册](P4-MAINTENANCE.md)。接下来：发布文档统一、网络规则启动持久性/HTTPS、独立监控、数据库与artifact配套备份/恢复、至少8小时负载。实际VM断电/双系统切换和控制端高可用仍未验证。

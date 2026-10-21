@@ -130,3 +130,7 @@ docker compose --env-file /root/wtaobj/maas-live/app.env -f deploy/maas/compose.
 ```
 
 host网络适用于当前受信任001试点；客户入口仍通过既有回环18831 Nginx。不要将API改为0.0.0.0，不挂载Docker socket或管理凭据。首次启动会创建独立命名卷；重启保留数据，禁止使用 `down -v`。
+
+### 正式维护命令
+
+当前已绑定常驻环境。每次先执行 `python3 scripts/maas/runtime/bind_maintenance.py new-session` 获得本窗口配置路径，再以相同配置执行maintenance_control.py的begin/stop/recover/resume。上一窗口未完成时拒绝另建窗口。操作会暂停整个目标集群推理，不停止001控制端；完整命令、恢复保护和异常处理见 [正式维护手册](../../docs/framework/P4-MAINTENANCE.md)，本轮 [演练报告](../../results/maas-p4-maintenance/REPORT.html)。

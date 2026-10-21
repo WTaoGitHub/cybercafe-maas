@@ -1,0 +1,109 @@
+{
+  "session": "20261021T041130Z-2649446ebf",
+  "started_at": 1792555981.63015,
+  "scope": "live Compose, original task DB and volumes; cluster-wide inference pause; no host shutdown",
+  "usage_before": {
+    "tasks": 4,
+    "sync": 2
+  },
+  "containers_before": {
+    "api": "542a900d8b2787ed59811ab681bef7f6d696052ad44ba929631a05edb30d70d9",
+    "db": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+    "executor": "6ead2fa8c082f356f5943ecdcde972f35f08e32d41916f206db4ea0fa06050a3",
+    "observer": "2ccf41628842b9dbe45a38a6ce1fcb1f4d167982292a7e5b251c5fc2355a28b7"
+  },
+  "baseline_sync": {
+    "status": 200,
+    "lines": 46
+  },
+  "baseline_task": {
+    "id": "task_936ed338e6874fdb8e5ed555fb998113",
+    "state": "SUCCEEDED"
+  },
+  "phase": "RESUMED",
+  "maintenance_alone_running_instances": 4,
+  "queued_task": "task_fc8df396b37f41788192021340cb6a44",
+  "stop_proof": {
+    "worker": "XZ-31-002",
+    "observed_at": 1792555997.046983,
+    "running_worker_containers": [],
+    "running_workload_containers": [],
+    "gpu_compute_processes": [],
+    "backend_stop_observed": true,
+    "safe_to_poweroff": false,
+    "scope": "Docker workloads and NVIDIA compute processes only; host workers, external admission and control plane require separate verification",
+    "worker_id": "6d01ae1bce467ededb8881046d9016376148f69de9838ea31447cbfedefe0066",
+    "legacy_agent_active": false,
+    "node_management_ssh_preserved": true,
+    "vm_powered_off": false
+  },
+  "seconds_to_stop": 12.97,
+  "held_stopped_10s": true,
+  "sync_during_stop": {
+    "status": 503,
+    "code": "PREFLIGHT_UNAVAILABLE"
+  },
+  "during_stop": {
+    "controller_healthy": true,
+    "queued_waited": true,
+    "old_result_readable": true
+  },
+  "recover_kept_admission_paused": true,
+  "resume_probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 6,
+      "reason": "planned 002 maintenance",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-p2-r2",
+        "lines": 46
+      }
+    ]
+  },
+  "total_window_seconds": 60.626,
+  "queued_after_resume": {
+    "state": "SUCCEEDED",
+    "attempts": 1,
+    "lines": 46
+  },
+  "containers_after": {
+    "api": "542a900d8b2787ed59811ab681bef7f6d696052ad44ba929631a05edb30d70d9",
+    "db": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+    "executor": "6ead2fa8c082f356f5943ecdcde972f35f08e32d41916f206db4ea0fa06050a3",
+    "observer": "2ccf41628842b9dbe45a38a6ce1fcb1f4d167982292a7e5b251c5fc2355a28b7"
+  },
+  "usage_after": {
+    "tasks": 6,
+    "sync": 3
+  },
+  "usage_delta": {
+    "tasks": 2,
+    "sync": 1
+  },
+  "final_status": {
+    "paused": false,
+    "generation": 6,
+    "reason": "planned 002 maintenance",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "final_alerts": [],
+  "controller_watchdog_active": false,
+  "journal_mode": "0o600",
+  "config_mode": "0o600",
+  "ok": true,
+  "finished_at": 1792556046.965496
+}

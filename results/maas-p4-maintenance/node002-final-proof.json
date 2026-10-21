@@ -1,0 +1,21 @@
+{
+  "node": "XZ-31-002",
+  "armed": false,
+  "same_worker": true,
+  "worker_running": true,
+  "restart_restored": true,
+  "legacy_agent_restored": true,
+  "rollback_timer_active": false,
+  "parked": [
+    {
+      "name": "cybercafe-h3",
+      "running": false,
+      "restart": "no"
+    },
+    {
+      "name": "cloudflared",
+      "running": false,
+      "restart": "no"
+    }
+  ]
+}

@@ -118,3 +118,7 @@ W4/W5最新进展：常驻collector、专用只读清单通道、权限/配置�
 ## 后续增强 E3：多执行器并发与容量验证
 
 已登记，安排在P4之后。优先在001部署两个独立执行器，每进程仍一次执行一个任务；共用数据库、artifact卷和一致配置。先验证竞争领取/租约恢复、统一同步异步配额及共享文件清理，再对比并发1/2的吞吐与资源占用；不预设性能收益，不新增GPUStack worker或Docker daemon。与E1容量准入、E2批次公平接纳衔接，详见 [增强计划E3](ENHANCEMENTS.md#e3-多执行器并发与容量验证)。
+
+## 2026-10-21 P4：正式维护配置与常驻演练完成
+
+已绑定正式Compose任务CLI、pilot-ocr探针身份、模型1/9与002专用SSH；增加每窗口私有配置/日志、未完成窗口保护、001恢复watchdog及collector新鲜度等待。129项回归通过、1项跳过。直接使用常驻API/执行器/正式任务库和原卷完成begin→stop→recover→resume，窗口60.626秒，STOPPED保持10秒，历史结果可读、排队任务恢复一次成功，探针未计费；002原worker身份/restart policy/Agent恢复，两端timer解除。见 [报告](../../results/maas-p4-maintenance/REPORT.html)和 [正式维护手册](P4-MAINTENANCE.md)。P4后续为文档统一、网络启动持久性/HTTPS、独立监控、备份恢复及8小时耐久；E1–E3不在本轮实现范围。

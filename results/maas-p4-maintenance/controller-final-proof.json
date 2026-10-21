@@ -1,0 +1,40 @@
+{
+  "services": [
+    {
+      "name": "api",
+      "running": true,
+      "id": "542a900d8b2787ed59811ab681bef7f6d696052ad44ba929631a05edb30d70d9"
+    },
+    {
+      "name": "db",
+      "running": true,
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732"
+    },
+    {
+      "name": "executor",
+      "running": true,
+      "id": "6ead2fa8c082f356f5943ecdcde972f35f08e32d41916f206db4ea0fa06050a3"
+    },
+    {
+      "name": "observer",
+      "running": true,
+      "id": "2ccf41628842b9dbe45a38a6ce1fcb1f4d167982292a7e5b251c5fc2355a28b7"
+    }
+  ],
+  "management_config_mounted_in_apps": false,
+  "controller_timer_active": false,
+  "test_db_running": false,
+  "collector_healthy": true,
+  "h3": [
+    {
+      "name": "cybercafe-h3",
+      "running": false,
+      "restart": "no"
+    },
+    {
+      "name": "cloudflared",
+      "running": false,
+      "restart": "no"
+    }
+  ]
+}
