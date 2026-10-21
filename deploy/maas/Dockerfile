@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 WORKDIR /app
-COPY requirements-maas.txt /app/
-RUN pip install --no-cache-dir -r requirements-maas.txt
+COPY requirements-maas.txt requirements-maas-tested-lock.txt /app/
+RUN pip install --no-cache-dir -r requirements-maas.txt -c requirements-maas-tested-lock.txt
 COPY maas_platform /app/maas_platform
 RUN useradd --uid 10001 --create-home maas && mkdir -p /var/lib/maas/artifacts && chown -R maas /var/lib/maas
 USER 10001

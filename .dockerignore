@@ -1,6 +1,7 @@
 # Only application sources and pinned requirements enter the build context.
 **
 !requirements-maas.txt
+!requirements-maas-tested-lock.txt
 !maas_platform/
 !maas_platform/**
 maas_platform/**/__pycache__/
