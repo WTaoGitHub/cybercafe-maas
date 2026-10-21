@@ -6,10 +6,12 @@ from .inventory import collect_inventory
 from .versioning import VersionPin,verify_pin,register_pin,digest
 
 
-def atomic_json(path,value):
+def atomic_json(path,value,mode=0o600,gid=None):
     path=Path(path);temp=path.with_suffix('.tmp')
     fd=os.open(temp,os.O_CREAT|os.O_TRUNC|os.O_WRONLY,0o600)
     try:
+        if gid is not None:os.fchown(fd,-1,gid)
+        os.fchmod(fd,mode)
         with os.fdopen(fd,'w') as f:json.dump(value,f,allow_nan=False);f.flush();os.fsync(f.fileno())
         os.replace(temp,path)
         directory=os.open(path.parent,os.O_DIRECTORY)
@@ -33,10 +35,9 @@ def export_consumer(config,pin,snapshot=None,error=None):
     os.chown(root,-1,gid);os.chmod(root,0o750)
     def publish(name,value):
         path=root/name
-        atomic_json(path,value)
-        # Complete publication permissions only after the atomic write. Readers
-        # may briefly fail closed while a newly replaced file is still mode600.
-        os.chown(path,-1,gid);os.chmod(path,0o640)
+        # Publish a fully readable inode atomically: never expose a transient
+        # mode600 replacement to the non-root application.
+        atomic_json(path,value,mode=0o640,gid=gid)
     if error:
         (root/'preflight.json').unlink(missing_ok=True)
         publish('health.json',{'ok':False,'code':error,'updated_at':time.time()})
