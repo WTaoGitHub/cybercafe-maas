@@ -1,0 +1,9 @@
+[Unit]
+Description=Reconcile MaaS trusted runtime network inventory
+After=docker.service maas-boundary-boot.service
+Requires=docker.service
+PartOf=docker.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /root/wtaobj/maas-framework/scripts/maas/runtime/persist_boundary.py refresh
+TimeoutStartSec=90
