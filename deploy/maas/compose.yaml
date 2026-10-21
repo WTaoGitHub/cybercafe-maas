@@ -1,7 +1,7 @@
 # Run from repository root: docker compose --env-file <private-env> -f deploy/maas/compose.yaml up -d
 name: maas-tasks
 x-app: &app
-  image: cybercafe-maas-tasks:p4-r1
+  image: ${MAAS_TASK_IMAGE:-cybercafe-maas-tasks:p4-r1}
   build:
     context: ../..
     dockerfile: deploy/maas/Dockerfile
