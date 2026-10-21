@@ -1,0 +1,59 @@
+{
+  "services": [
+    {
+      "service": "api",
+      "running": true,
+      "image_id": "sha256:22984d4f4a5c19fc4a591cf5950cc1fd21aced2a7deb1cccbed2547572b4143a",
+      "network": "host",
+      "restart": "unless-stopped",
+      "health": "healthy",
+      "user": "10001"
+    },
+    {
+      "service": "db",
+      "running": true,
+      "image_id": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "network": "host",
+      "restart": "unless-stopped",
+      "health": "healthy",
+      "user": ""
+    },
+    {
+      "service": "executor",
+      "running": true,
+      "image_id": "sha256:22984d4f4a5c19fc4a591cf5950cc1fd21aced2a7deb1cccbed2547572b4143a",
+      "network": "host",
+      "restart": "unless-stopped",
+      "health": null,
+      "user": "10001"
+    },
+    {
+      "service": "observer",
+      "running": true,
+      "image_id": "sha256:22984d4f4a5c19fc4a591cf5950cc1fd21aced2a7deb1cccbed2547572b4143a",
+      "network": "host",
+      "restart": "unless-stopped",
+      "health": null,
+      "user": "10001"
+    }
+  ],
+  "private_listeners": [
+    "LISTEN 0      2048       127.0.0.1:18830 0.0.0.0:*",
+    "LISTEN 0      200        127.0.0.1:18835 0.0.0.0:*"
+  ],
+  "h3": [
+    {
+      "name": "cybercafe-h3",
+      "running": false,
+      "restart": "no"
+    },
+    {
+      "name": "cloudflared",
+      "running": false,
+      "restart": "no"
+    }
+  ],
+  "collector": "active",
+  "compose_version": "2.40.3+ds1-0ubuntu1~24.04.1",
+  "checked_at": 1792548480.2422097
+}

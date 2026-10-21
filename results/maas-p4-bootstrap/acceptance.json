@@ -1,0 +1,59 @@
+{
+  "started_at": 1792548381.559285,
+  "through_nginx": true,
+  "scope": "persistent private OCR pilot; no host or Docker daemon restart",
+  "compose_version": "2.40.3+ds1-0ubuntu1~24.04.1",
+  "sync": {
+    "status": 200,
+    "lines": 46
+  },
+  "first_task": {
+    "id": "task_fd22fe06ef784d3184ebdac3a6040f52",
+    "state": "SUCCEEDED",
+    "lines": 46
+  },
+  "consumer": {
+    "uid": 10001,
+    "read_only": true,
+    "metadata_refresh_verified": true,
+    "raw_model_env_exported": false
+  },
+  "restart": {
+    "services": [
+      "api",
+      "db",
+      "executor",
+      "observer"
+    ],
+    "same_containers_and_volumes": true,
+    "containers_restarted": true,
+    "host_restarted": false,
+    "docker_daemon_restarted": false
+  },
+  "persisted": {
+    "queued_retained": true,
+    "maintenance_pause_retained": true,
+    "old_result_readable": true
+  },
+  "queued_after_restart": {
+    "id": "task_349bcf5a047e4a9f8efb442848b47ec0",
+    "state": "SUCCEEDED",
+    "attempts": 1
+  },
+  "status": {
+    "tasks": {
+      "SUCCEEDED": 4
+    },
+    "successful_tasks": 4,
+    "dispatch_paused": false,
+    "unknown_backend_activity": 0,
+    "unknown_sync_activity": 0
+  },
+  "observer": {
+    "ok": true,
+    "fresh": true,
+    "codes": []
+  },
+  "finished_at": 1792548395.0229135,
+  "ok": true
+}

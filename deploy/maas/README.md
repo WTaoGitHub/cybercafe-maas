@@ -2,6 +2,8 @@
 
 实现范围：任务API、独立PostgreSQL、执行器、控制端ArtifactStore及观察进程。固定版本OCR、受控维护及配额已验收；公网服务、精确逐节点无损排空未交付。
 
+当前运行状态以 [P4运行手册](../../docs/framework/P4-LIVE.md) 为准：四个新增服务已常驻001私有入口。下方P1/P2/P3分批验收章节保留历史背景，不能据旧章节判断当前是否部署。
+
 ## 环境
 
 Python **3.11**、PostgreSQL 16。Mac现有Python3.9不能直接运行本包，请使用Python3.11环境或Docker。运行依赖见根目录requirements-maas.txt；测试需要pytest（目前也固定在该文件）。
@@ -10,7 +12,7 @@ Python **3.11**、PostgreSQL 16。Mac现有Python3.9不能直接运行本包，�
 
 复用GPUStack inference key，不提供新密码/用户注册。管理员将一个已有、限定模型的非管理员key以600权限保存；按bindings.example.json登记project映射及该服务允许的能力。**mock.echo是本地受控验证能力，其授权由登记文件明确授予，不代表GPUStack实际部署了mock模型。**
 
-每次请求在本地匹配已登记key后，仍调用GPUStack `/v1/models`校验有效性；不接受客户身份头，不信任客户携带的auth cache。未登记/本地禁用的key拒绝访问。P2固定版本OCR、未知执行隔离、常驻collector和权限/漂移/容器重建均已实机验证；worker离线按用户要求暂缓，P2未完整验收。
+每次请求在本地匹配已登记key后，仍调用GPUStack `/v1/models`校验有效性；不接受客户身份头，不信任客户携带的auth cache。未登记/本地禁用的key拒绝访问。P2固定版本OCR、未知执行隔离、常驻collector、既有002离线及P3受控维护已按对应范围验收。
 
 三个secret文件：
 
@@ -74,7 +76,7 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 `pause` 同时停止本任务服务派发与新增受控同步入口的准入；`drain-status`核对在途/UNKNOWN，`resume`要求真实探针。它不停止直接GPUStack/Playground请求，不能作为安全切换Windows的证明。完整流程与尚未落地的旁路边界见 [P3维护手册](../../docs/framework/P3-MAINTENANCE.md)。
 
-输入默认24小时TTL，活动任务引用期间保留；结果默认24小时，过期下载410。执行器每分钟清理已登记的过期artifact。崩溃留下的未登记孤儿文件自动巡检/回收仍待P3补齐，当前保留供诊断；磁盘余量检查会阻止继续接单。
+输入默认24小时TTL，活动任务引用期间保留；结果默认24小时，过期下载410。执行器周期清理已登记的过期artifact及超过宽限期的孤儿文件；磁盘余量和存储配额检查会阻止继续接纳超额数据。
 
 ## 验证
 
@@ -107,11 +109,11 @@ MAAS_TEST_DATABASE_URL=postgresql://.../maas_test python -m pytest tests/maas -q
 
 新增数据库迁移只作用于独立任务库。实际Nginx配置为 `edge.nginx.conf`，已部署到001私有18831入口并通过真实OCR验收；`edge.nginx.conf.example`为历史示例。两节点另已应用运行期网络策略，范围和回退见 [边界说明](../../docs/framework/P3-BOUNDARY.md)。现有Playground保留SSH运维访问，不支持直接迁移到当前非流式试点入口。原H3隧道仍不经过MaaS门禁；尚不能宣称整机全局维护或安全关机。任务API/执行器仍未常驻发布。
 
-最新维护状态：H3/隧道已停用；全局副本降0、002原worker及GPU进程停止/恢复的私有控制工具和演练已通过，见 [节点维护手册](../../docs/framework/P3-NODE-MAINTENANCE.md)。VM和SSH始终保留，不做自动关机；当前优先进入W7运营能力，P4再做常驻发布和耐久验证。
+最新维护状态：H3/隧道已停用；全局副本降0、002原worker及GPU进程停止/恢复的私有控制工具和演练已通过，见 [节点维护手册](../../docs/framework/P3-NODE-MAINTENANCE.md)。VM和SSH始终保留，不做自动关机。W7已验收，P4常驻部署进展见下文及最新报告。
 
 ### P3/W7 运营控制
 
-同步与异步共享并发配额；新增全局/项目存储配额、孤儿宽限期和单轮清理数量。Compose 的 observer 将私有指标和告警状态写入共享 artifact 卷下 `.observability/`，不开放 HTTP 端口。完整配置、计量口径及处置步骤见 [P3-OPERATIONS.md](../../docs/framework/P3-OPERATIONS.md)。本轮仅完成模板和临时验收，尚未常驻部署；目标主机缺少 Compose 插件，未执行 Compose 启动验证，P4 发布前需解决。
+同步与异步共享并发配额；新增全局/项目存储配额、孤儿宽限期和单轮清理数量。Compose 的 observer 将私有指标和告警状态写入共享 artifact 卷下 `.observability/`，不开放 HTTP 端口。完整配置、计量口径及处置步骤见 [P3-OPERATIONS.md](../../docs/framework/P3-OPERATIONS.md)。W7历史报告记录临时验收状态；P4已完成Compose安装与常驻私有服务发布，见 [P4首批报告](../../results/maas-p4-bootstrap/REPORT.html)。
 
 ## P4 正式配置
 
