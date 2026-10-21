@@ -215,3 +215,15 @@ def test_cross_process_capacity_fencing(env):
         p.join(timeout=10)
         assert p.exitcode==0
     assert sum(results)==2 and len(c.snapshot()['requests'])==2
+
+
+def test_new_model_fault_during_probe_invalidates_old_recovery(env):
+    c,*_=env;c.isolate('001','initial model fault',model='m1')
+    session=c.snapshot()['model_isolations']['m1@001']['session']
+    def fault_during_probe(r,s):
+        c.isolate('001','new fault during recovery',model='m1')
+        return dict(worker='001',session=s,observed_at=c.clock(),ok=True,
+                    **{k:r[k] for k in ('route','revision','image_id','instance_id')})
+    with pytest.raises(ServiceError):c.recover_model('001','m1',session,fault_during_probe)
+    assert c.capacity('m1')['workers']==['002']
+    assert c.snapshot()['model_isolations']['m1@001']['session']!=session

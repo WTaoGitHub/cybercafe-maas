@@ -5,7 +5,6 @@ transport is deliberately not wired into P4's OCRAdapter or SyncIngress yet.
 """
 import asyncio
 import json
-import time
 import httpx
 
 from ..errors import ServiceError

@@ -202,8 +202,8 @@ class E1Control:
                     raise ValueError('Unapproved model placement')
                 # Instance failures share a worker quarantine if any execution
                 # is unknown; model-only quarantine itself is persisted below.
-                s.setdefault('model_isolations', {}).setdefault(model+'@'+worker,
-                    dict(reason=reason,session=uuid.uuid4().hex,changed_at=self.clock()))
+                s.setdefault('model_isolations', {})[model+'@'+worker] = dict(
+                    reason=reason,session=uuid.uuid4().hex,changed_at=self.clock())
             else:
                 w = s['workers'][worker]
                 w.update(mode='ISOLATED', session=w.get('session') or uuid.uuid4().hex,
