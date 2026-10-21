@@ -1,0 +1,13 @@
+[Unit]
+Description=Independent private MaaS health and observer freshness checks
+After=docker.service
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /root/wtaobj/maas-framework/scripts/maas/runtime/monitor_live.py
+TimeoutStartSec=45
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/wtaobj/maas-live/monitor

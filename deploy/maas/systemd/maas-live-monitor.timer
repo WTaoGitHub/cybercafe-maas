@@ -1,0 +1,9 @@
+[Unit]
+Description=Check MaaS private service health every 30 seconds
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=30s
+AccuracySec=1s
+Unit=maas-live-monitor.service
+[Install]
+WantedBy=timers.target
