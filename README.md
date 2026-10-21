@@ -1,5 +1,7 @@
 # GPUStack + GPU OCR 两节点试验
 
+当前系统文档入口：[开发、运维及分角色用户手册](docs/handbooks/README.md)。以下保留早期试验说明；当前常驻部署与维护以新手册为准。
+
 ## 部署
 
 - XZ-31-001 / 10.11.31.1：GPUStack server 和 worker。
