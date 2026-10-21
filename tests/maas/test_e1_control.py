@@ -192,3 +192,26 @@ def test_recovery_hold_prevents_flapping(env):
     with pytest.raises(ServiceError,match='hold'):c.recover('002',session,lambda *a:None,probe(c))
     now[0]+=10;c.recover('002',session,lambda *a:c.publish([replace(r,observed_at=now[0]) for r in rows]),probe(c))
     assert c.snapshot()['workers']['002']['mode']=='ACTIVE'
+
+
+def _process_reserve(path, token, event, queue):
+    event.wait(5)
+    c=E1Control(path,clock=lambda:100.)
+    try:
+        reserve(c,token)
+        queue.put(True)
+    except ServiceError:
+        queue.put(False)
+
+
+def test_cross_process_capacity_fencing(env):
+    import multiprocessing
+    c,*_=env;ctx=multiprocessing.get_context('spawn');event=ctx.Event();queue=ctx.Queue()
+    processes=[ctx.Process(target=_process_reserve,args=(str(c.path),str(i),event,queue)) for i in range(4)]
+    for p in processes:p.start()
+    event.set()
+    results=[queue.get(timeout=10) for _ in processes]
+    for p in processes:
+        p.join(timeout=10)
+        assert p.exitcode==0
+    assert sum(results)==2 and len(c.snapshot()['requests'])==2

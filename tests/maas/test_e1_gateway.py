@@ -98,3 +98,14 @@ def test_mixed_sync_async_burst_during_target_maintenance(env):
     asyncio.run(flow())
     assert len(seen)==40 and all(alias.endswith('001') for alias in seen)
     assert all(r['state']=='COMPLETED' for r in c.snapshot()['requests'].values())
+
+
+def test_persist_failure_never_sends(env,monkeypatch):
+    import maas_platform.e1.control as module
+    c,*_=env;real=module.atomic_json
+    def disk_full(path,value):
+        if value['requests']:raise OSError('disk full before durable dispatch')
+        return real(path,value)
+    monkeypatch.setattr(module,'atomic_json',disk_full)
+    with pytest.raises(OSError):asyncio.run(request(run(c,lambda r:pytest.fail('must not send'))))
+    assert c.snapshot()['requests']=={}

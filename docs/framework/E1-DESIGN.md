@@ -47,3 +47,44 @@ E1代码独立模块，默认不导入现有P4服务路径；仅执行本地测�
 `E1Gateway` 在逻辑模型鉴权后先持久化intent，再通过GPUStack认证入口发送已验证别名；同步/异步复用同一账本，不透传客户路由header，不直连worker，不做应用重试。完整接收被认可的HTTP终态才确认完成，超时/取消/异常状态/超限或编码不明保留UNKNOWN；JSON内容错误与远端是否已结束分别判断。它不创建任务、不计费、不替代现有TaskService。
 
 **尚未接入P4 API/执行器。** 后续适配必须将任务attempt/sync token与此账本一一绑定；在发送前保留原PostgreSQL租约/取消/全局暂停检查，失败时同步两侧状态，旧通用请求UNKNOWN继续阻塞全局。只有所有入口完成迁移和旁路封闭后，才能启用局部隔离承诺。现阶段不会因这些本地模块的存在改变正式UNKNOWN行为。
+
+## 组件图
+
+```mermaid
+flowchart LR
+    C[同步请求 / 异步attempt] --> A[原有鉴权 / 队列 / 租约 / 全局暂停]
+    A -. P4后接入 .-> R[E1Gateway 单次发送]
+    R --> L[E1Control\n落点账本 / 共享容量 / 局部UNKNOWN]
+    T[独立别名collector\n配置pin / 实例 / 镜像 / 网关证据] --> L
+    L --> G[GPUStack v2.2.3\n认证入口 / 单worker别名]
+    G --> W1[健康worker\n继续服务]
+    G --> W2[目标worker\n排空 / 隔离 / 探针后恢复]
+    O[可信运维适配器\nP4后实现与实机验证] -. 同session证据 .-> L
+    O -. 仅目标作用域 .-> W2
+```
+
+实线表示候选模块的控制/调用关系，不表示已部署；左侧P4入口及右侧真实运维适配器尚未对接。
+
+## 路线图与后续门槛
+
+| 工作包 | 当前状态 | 完成门槛 |
+|---|---|---|
+| E1-A 路由契约/健康子集 | 本地实现与测试完成 | 独立别名、不可变pin、单worker、禁重试、逐别名撤销证明 |
+| E1-B 落点/容量/状态机 | 本地实现与测试完成 | 持久意图、共享额度、故障最小隔离、排空/停止/恢复与UNKNOWN边界 |
+| E1-C 候选HTTP传输 | 本地实现与测试完成 | 鉴权前置、落点后单次发送、取消/超时保留UNKNOWN |
+| E1-D 正式请求路径对接 | 待P4通过后开发、独立测试 | 原任务/同步token绑定、租约/取消/全局暂停双侧一致；旧UNKNOWN全局保护；验证计量不重复及跨项目权限 |
+| E1-E GPUStack及运维适配器 | 待P4后部署窗口 | 别名实际目标/禁重试可观测；只操作目标alias与worker；防旁路；真实停止/恢复及幂等补偿 |
+| E1-F 持续流量实机验收 | 未执行 | 多模型流量下维护/失联/实例崩溃/UNKNOWN/恢复失败/防抖，记录错误率、延迟、容量与GPU退出证据 |
+
+E1-D必须先在本地/独立环境解决跨journal与PostgreSQL的崩溃一致性，不能把同一个请求登记两次或漏登记。只有确证所有实际发送具有持久落点，才允许把原有全局UNKNOWN降为局部；否则继续全局保守隔离。E1-E需实现真实hooks，当前本地布尔证据仅用于测试契约，不是实机证明。
+
+未来部署顺序：P4最终验收 → 独立保存P4基线与备份 → 本地/独立环境验证D → 受控窗口迁移现有多worker部署到单worker别名（避免直接叠加导致显存超额）→ 安装观测/运维适配器并验证旁路 → 001承载持续流量、002演练 → 失败回退P4并清理候选别名。保护001控制端，整机维护不纳入002演练。
+
+本地复现（Python3.11+）：
+
+```sh
+.venv-maas/bin/python -m pytest tests/maas/test_e1_topology.py tests/maas/test_e1_control.py tests/maas/test_e1_gateway.py -q
+.venv-maas/bin/python scripts/maas/e1_local_acceptance.py
+```
+
+脚本使用httpx本地MockTransport和临时journal，不发外部HTTP，不操作SSH/Docker/GPU，不读取任何正式密钥。验收摘要写入 `results/maas-e1-local/acceptance.json`。

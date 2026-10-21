@@ -1,0 +1,52 @@
+{
+  "scope": "LOCAL_SIMULATION_ONLY",
+  "real_gpustack_tested": false,
+  "servers_modified": false,
+  "p4_runtime_integrated": false,
+  "http_sends": 62,
+  "scenarios": [
+    {
+      "name": "计划维护时两模型连续请求",
+      "passed": true,
+      "completed": 40,
+      "target_new_sends": 0
+    },
+    {
+      "name": "只停止目标及探针恢复",
+      "passed": true,
+      "node_actions": [
+        {
+          "worker": "002",
+          "action": "stop"
+        },
+        {
+          "worker": "002",
+          "action": "restore"
+        }
+      ]
+    },
+    {
+      "name": "002 UNKNOWN局部隔离",
+      "passed": true,
+      "healthy_completed": 20,
+      "drained": false
+    },
+    {
+      "name": "模型1无副本时模型2继续",
+      "passed": true,
+      "model1_unavailable": true,
+      "model2_completed": 1
+    }
+  ],
+  "all_passed": true,
+  "final_worker_modes": {
+    "001": "ACTIVE",
+    "002": "ISOLATED"
+  },
+  "request_states": {
+    "DISPATCHING": 0,
+    "UNKNOWN": 0,
+    "COMPLETED": 64,
+    "RESOLVED": 1
+  }
+}
