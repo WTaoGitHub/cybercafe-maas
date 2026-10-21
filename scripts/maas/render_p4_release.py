@@ -50,8 +50,10 @@ def main():
 
 ## 长时测试
 
-- 服务：maas-endurance-8h-20261021；run ID：full-8h-20261021。
-- 起点：{local(end['started_at'])}；预计最早完成：{local(end['started_at']+28800)}。
+- 服务：maas-endurance-night-20261021；run ID：{end["run_id"]}。
+- 白天一轮按用户要求主动停止，1276.26秒、256/256成功、无错误；不计为8小时通过。
+- 夜间计划：2026-10-21 19:00至2026-10-22 03:00（北京时间），服务器systemd定时启动，不依赖本机在线；错过窗口不补跑。
+- 起点（SCHEDULED时为计划时间）：{local(end['started_at'])}；预计最早完成：{local(end['started_at']+28800)}。
 - 40张固定中英文样本（DocLayNet/RCTW-17各20），每5秒提交一个独立异步任务，经校验证书的HTTPS完成上传/提交/查询/下载。
 - 单执行器、每项目额度1保持不变；这验证持续运行与持久性，不测最大吞吐或后端合批。
 - 预检短测：{smoke['accepted']}提交/{smoke['succeeded']}成功，零错误；成功计量逐任务对账一致；端到端P95 {smoke['e2e_p95_seconds']:.3f}秒。

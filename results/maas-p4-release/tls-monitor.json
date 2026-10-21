@@ -1,0 +1,18 @@
+{
+  "private_tls_ocr_status": 200,
+  "lines": 46,
+  "untrusted_certificate_rejected": true,
+  "observer_stop_detected": {
+    "generated_at_unix": 1792556670.479108,
+    "ok": false,
+    "alerts": [
+      "SERVICE_DOWN_OBSERVER"
+    ]
+  },
+  "recovered": {
+    "generated_at_unix": 1792556673.4451337,
+    "ok": true,
+    "alerts": []
+  },
+  "outbound_notifications": false
+}

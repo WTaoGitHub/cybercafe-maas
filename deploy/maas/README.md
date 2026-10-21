@@ -134,3 +134,7 @@ host网络适用于当前受信任001试点；客户入口仍通过既有回环1
 ### 正式维护命令
 
 当前已绑定常驻环境。每次先执行 `python3 scripts/maas/runtime/bind_maintenance.py new-session` 获得本窗口配置路径，再以相同配置执行maintenance_control.py的begin/stop/recover/resume。上一窗口未完成时拒绝另建窗口。操作会暂停整个目标集群推理，不停止001控制端；完整命令、恢复保护和异常处理见 [正式维护手册](../../docs/framework/P4-MAINTENANCE.md)，本轮 [演练报告](../../results/maas-p4-maintenance/REPORT.html)。
+
+### P4发布与长时验收
+
+私有TLS回环18832、独立宿主机监控和有界指标历史、任务数据加密异机备份/独立恢复、两节点启动前拦截/Docker重启、兼容镜像回退均已验证。Compose可通过MAAS_TASK_IMAGE选择已批准应用镜像。8小时测试已改为今晚19:00定时启动（北京时间），未标记P4整体验收；使用 [P4发布手册](../../docs/framework/P4-RELEASE.md) 与 [进展报告](../../results/maas-p4-release/REPORT.html) 查看当前状态。公网按用户选择保持关闭，不在负载测试期间随意重启或变更服务。

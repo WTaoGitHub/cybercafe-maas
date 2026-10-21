@@ -1,0 +1,24 @@
+{
+  "config_path": "/root/wtaobj/maas-live/maintenance/sessions/20261021T043409Z-2010296d1a/operator.json",
+  "started_at": 1792557249.1839519,
+  "begin": "MAINTENANCE_ENABLED",
+  "stop": "STOPPED",
+  "node002": {
+    "docker_pid_changed": true,
+    "raw_fence_samples": 224,
+    "missing_fence_samples": 0,
+    "seconds": 12.527,
+    "host_rebooted": false
+  },
+  "node001": {
+    "docker_pid_changed": true,
+    "raw_fence_samples": 218,
+    "missing_fence_samples": 0,
+    "seconds": 12.46,
+    "host_rebooted": false
+  },
+  "recover": "RECOVERED",
+  "resume": "RESUMED",
+  "ok": true,
+  "finished_at": 1792557352.725693
+}

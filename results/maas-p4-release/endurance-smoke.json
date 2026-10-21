@@ -1,0 +1,24 @@
+{
+  "run_id": "smoke-20261021",
+  "state": "COMPLETE",
+  "started_at": 1792557497.0347364,
+  "duration_target_seconds": 60,
+  "interval_seconds": 1.0,
+  "fixtures": 40,
+  "tls_verified": true,
+  "concurrency": 1,
+  "errors": [],
+  "elapsed_seconds": 60.63,
+  "accepted": 57,
+  "succeeded": 57,
+  "submit_p95_ms": 59.21390396542847,
+  "e2e_p95_seconds": 1.1625474791508168,
+  "lines_total": 2785,
+  "updated_at": 1792557557.6621811,
+  "database_check": {
+    "tasks": 57,
+    "succeeded": 57,
+    "usage_events": 57
+  },
+  "finished_at": 1792557557.66215
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=MaaS scheduled eight-hour private TLS endurance run
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=root
+WorkingDirectory=/root/wtaobj/maas-framework
+ExecStart=/usr/bin/python3 /root/wtaobj/maas-framework/scripts/maas/runtime/endurance.py --seconds 28800 --interval 5 --run-id night-8h-20261021
+Restart=no
+TimeoutStopSec=180
+RuntimeMaxSec=29200
+UMask=0077

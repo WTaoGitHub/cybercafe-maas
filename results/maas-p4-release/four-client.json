@@ -1,0 +1,29 @@
+{
+  "clients": 4,
+  "all_succeeded": true,
+  "submission_p95_ms_nearest_rank": 45.062222983688116,
+  "target_ms": 1000,
+  "rows": [
+    {
+      "task": "task_0499215bf1f24a74a7710f092aa5a06b",
+      "submission_ms": 34.891705960035324,
+      "state": "SUCCEEDED"
+    },
+    {
+      "task": "task_2d82b7d4bc9341b0ae937f08c65dc3ae",
+      "submission_ms": 42.860426008701324,
+      "state": "SUCCEEDED"
+    },
+    {
+      "task": "task_dcb46a9d8f4f4cf38f4aa2afbbd749ea",
+      "submission_ms": 45.062222983688116,
+      "state": "SUCCEEDED"
+    },
+    {
+      "task": "task_ce32590715344e908a57ed477c3014e4",
+      "submission_ms": 38.097820011898875,
+      "state": "SUCCEEDED"
+    }
+  ],
+  "single_executor_unchanged": true
+}
