@@ -22,7 +22,9 @@ def main():
  end=load('endurance-final.json' if (BASE/'endurance-final.json').exists() else 'endurance-progress.json')
  verification=load('endurance-verification.json') if (BASE/'endurance-verification.json').exists() else {}
  passed=eight_hour_passed(end,verification)
- failure_note='## 夜间失败与排查\n\n本轮于北京时间2026-10-21 22:16:38提前结束：2360接纳、2359成功、1个PREFLIGHT_UNAVAILABLE。collector采集失败与002 SSH MaxStartups限流时间吻合，因果链仍需专项验证。当前服务恢复健康，不自动重启负载，P4未通过，E5不启动。详见[失败记录与修复建议](ENDURANCE-FAILURE.md)。\n\n' if end.get('state')=='FAILED' and end.get('run_id')=='night-8h-20261021' and (BASE/'ENDURANCE-FAILURE.md').exists() else ''
+ failure_note='## 夜间失败与排查\n\n本轮于北京时间2026-10-21 22:16:38提前结束：2360接纳、2359成功、1个PREFLIGHT_UNAVAILABLE。collector采集失败与002 SSH MaxStartups限流时间吻合，因果链仍需专项验证。首次故障后服务曾恢复，不自动重启负载，P4未通过，E5不启动。详见[失败记录与修复建议](ENDURANCE-FAILURE.md)。\n\n' if end.get('state')=='FAILED' and end.get('run_id')=='night-8h-20261021' and (BASE/'ENDURANCE-FAILURE.md').exists() else ''
+ if failure_note and (BASE/'monitor-recurrence-20261022.json').exists():
+  failure_note+='复发更新：2026-10-22 02:58快照显示collector再次失败，独立监控COLLECTOR_FAILED_OR_STALE，UNKNOWN=0；002同窗反复SSH MaxStartups限流。见失败记录中的复发证据。\n\n'
  assert smoke['state']=='COMPLETE' and restart['ok'] and rest['ok'] and rollback['ok']
  status='8小时门槛通过；其余验收按本报告的私有两节点范围解释。' if passed else ('耐久测试失败或中断，P4未通过，请检查原始状态及错误记录。' if end.get('state') in ('FAILED','INTERRUPTED') else '8小时耐久测试尚未完成或最终核对未通过，P4暂不整体验收。')
  text=f'''# P4 发布与耐久验收进展

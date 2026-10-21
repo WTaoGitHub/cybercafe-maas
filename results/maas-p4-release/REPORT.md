@@ -37,7 +37,9 @@
 
 ## 夜间失败与排查
 
-本轮于北京时间2026-10-21 22:16:38提前结束：2360接纳、2359成功、1个PREFLIGHT_UNAVAILABLE。collector采集失败与002 SSH MaxStartups限流时间吻合，因果链仍需专项验证。当前服务恢复健康，不自动重启负载，P4未通过，E5不启动。详见[失败记录与修复建议](ENDURANCE-FAILURE.md)。
+本轮于北京时间2026-10-21 22:16:38提前结束：2360接纳、2359成功、1个PREFLIGHT_UNAVAILABLE。collector采集失败与002 SSH MaxStartups限流时间吻合，因果链仍需专项验证。首次故障后服务曾恢复，不自动重启负载，P4未通过，E5不启动。详见[失败记录与修复建议](ENDURANCE-FAILURE.md)。
+
+复发更新：2026-10-22 02:58快照显示collector再次失败，独立监控COLLECTOR_FAILED_OR_STALE，UNKNOWN=0；002同窗反复SSH MaxStartups限流。见失败记录中的复发证据。
 
 ## 保留边界
 

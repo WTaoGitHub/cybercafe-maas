@@ -32,3 +32,11 @@
 ## 原始证据
 
 [最终状态](endurance-final.json)、[SQL验收](endurance-verification.json)、[任务级采样](endurance-requests.jsonl)、[失败任务及隔离状态](endurance-failed-task.json)、[collector日志](endurance-collector-failure.log)、[SSH限流日志](endurance-ssh-throttling.log)、[恢复后模型核对](post-failure-verification.json)、[恢复后监控](post-failure-monitor.json)。
+
+## 2026-10-22 02:58 复发更新
+
+只读巡检发现collector再次COLLECTION_UNAVAILABLE，独立监控为COLLECTOR_FAILED_OR_STALE、UNKNOWN仍为0；原夜间负载保持inactive，没有新任务。002在02:51起再次反复出现MaxStartups限流，现有OCR/worker容器仍持续运行。首次通过公网2023新建SSH连接被reset，但既有001复用会话可读状态。说明采集链路与共享SSH接入的稳定性仍需修复，不能认为首次自动恢复即已解决。
+
+截至02:58快照故障仍存在，不宣布恢复，不修改SSH/网络或预检规则。新推理可能被缺失预检证明拒绝。P4未通过，不自动重新启动负载，不进入E5。
+
+证据：[collector复发日志](collector-recurrence-20261022.log)、[002限流复发日志](ssh-throttling-recurrence-20261022.log)、[监控快照](monitor-recurrence-20261022.json)。
