@@ -28,3 +28,7 @@
 后续需安装并验证NVIDIA Container Toolkit、准备固定版本GPUStack Worker、实现每机Server URL/集群注册凭据/身份或会话配置的首次启动注入。公共快照不包含已注册worker_uuid/worker_token或每台固定worker名；无需让母版加入当前生产集群。root authorized_keys是否继承由管理员决定，不能清理掉管理通道。
 
 母版驱动激活和GPU运行验证由管理员安排，本轮及自动化均不重启母版。001/002永久禁止VM重启，启动/克隆验证只能在另行获准的独立克隆环境进行。该检查不改变今晚P4测试安排。
+
+## 后续授权安装更新
+
+用户在只读检查后另行授权安装NVIDIA Container Toolkit，现已安装1.20.1并写入Docker运行时配置，未重启VM/Docker或重载驱动。原检查表是安装前快照，最新状态见 [安装报告](../tower-container-toolkit/REPORT.md)。GPU容器运行仍待管理员安排驱动与Docker生效后验证。

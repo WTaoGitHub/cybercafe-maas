@@ -1,0 +1,26 @@
+{
+  "host": "tower-mNST8iPdv",
+  "checked_at": 1792668284.8979242,
+  "packages": {
+    "nvidia-container-toolkit": "1.20.1-1",
+    "nvidia-container-toolkit-base": "1.20.1-1",
+    "libnvidia-container-tools": "1.20.1-1",
+    "libnvidia-container1": "1.20.1-1"
+  },
+  "nvidia_ctk_version": "NVIDIA Container Toolkit CLI version 1.20.1\ncommit: dffc40b4f820ce5c512633bac9e0418d0e05a2ee",
+  "runtime_version": "NVIDIA Container Runtime version 1.20.1\ncommit: dffc40b4f820ce5c512633bac9e0418d0e05a2ee\nspec: 1.3.0\n\nrunc version 1.3.0-0ubuntu2~24.04.1\nspec: 1.2.1\ngo: go1.23.1\nlibseccomp: 2.5.5",
+  "docker_runtime_configuration_written": true,
+  "runtime_names": [
+    "nvidia"
+  ],
+  "default_runtime": "runc",
+  "old_configuration_preserved": true,
+  "docker_process_unchanged": true,
+  "boot_unchanged": true,
+  "loaded_driver_unchanged": true,
+  "loaded_driver": "NVRM version: NVIDIA UNIX x86_64 Kernel Module  535.274.02  Thu Sep  4 22:13:52 UTC 2025",
+  "dpkg_audit": "",
+  "temporary_policy_removed": true,
+  "gpu_container_test_executed": false,
+  "activation": "Pending administrator driver activation and Docker restart/start; no activation performed"
+}
