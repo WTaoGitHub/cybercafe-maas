@@ -1,0 +1,49 @@
+{
+  "virt_detection_output": "none",
+  "related_modules": [
+    "sw_writebackimage",
+    "sw_admin",
+    "sw_readimage"
+  ],
+  "block_links": {
+    "swblock0": "/sys/devices/virtual/block/swblock0",
+    "swwbblock0": "/sys/devices/virtual/block/swwbblock0"
+  },
+  "related_service_names": [
+    "initrd-switch-root.service",
+    "maas-boundary-boot.service",
+    "netplan-ovs-cleanup.service",
+    "networkd-dispatcher.service",
+    "NetworkManager.service",
+    "plymouth-switch-root.service",
+    "secureboot-db.service",
+    "swappdev.service",
+    "swcfghostname.service",
+    "swgamedisk.service",
+    "switcheroo-control.service",
+    "swnetboot_success.service",
+    "swnetreport.service",
+    "systemd-ask-password-console.service",
+    "systemd-ask-password-wall.service",
+    "systemd-firstboot.service",
+    "systemd-networkd.service",
+    "systemd-soft-reboot.service",
+    "ua-reboot-cmds.service",
+    "ubuntu-advantage-cloud-id-shim.service",
+    "udisks2.service"
+  ],
+  "network_methods": [],
+  "vendor_services": {
+    "swnetboot_success.service": "Description=Report Boot Success\nActiveState=inactive\nSubState=dead",
+    "swcfghostname.service": "Description=config swnetboot hostname\nActiveState=inactive\nSubState=dead"
+  },
+  "netplan_dhcp_flags": {
+    "90-NM-b58fa620-633b-303b-8e83-ef176b4d5ad0.yaml": [
+      "renderer: NetworkManager",
+      "dhcp6: true"
+    ],
+    "01-network-manager-all.yaml": [
+      "renderer: NetworkManager"
+    ]
+  }
+}

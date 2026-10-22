@@ -1,0 +1,1068 @@
+{
+  "observed_at": 1792649454.4449525,
+  "hostname": "XZ-31-002",
+  "kernel": "6.14.0-27-generic",
+  "architecture": "x86_64",
+  "virtualization": null,
+  "uptime_seconds": 1069109.41,
+  "os_release": {
+    "PRETTY_NAME": "Ubuntu 24.04.3 LTS",
+    "NAME": "Ubuntu",
+    "VERSION_ID": "24.04"
+  },
+  "dmi": {
+    "sys_vendor": "Intel",
+    "product_name": "PC Farm B760M",
+    "product_version": "E1.1G",
+    "board_vendor": "Intel",
+    "bios_vendor": "American Megatrends International, LLC.",
+    "bios_version": "5.27"
+  },
+  "identity_sha256": {
+    "machine_id": "071ae543f132753e5ea019a1f33f1bf9aa8f65750f4c714d7276d79fb25d6a69",
+    "boot_id": "8ebed4eb0d09d957518de32e878b40db2d368281f604a9aefd570129e523ffc0",
+    "dmi_product_uuid": "78261dfb94dab1eee3298f761818431d604db265b4903d084ae0867ff6556525",
+    "dmi_product_serial": "36ed27d0801b076a0f896128e18f825073956500def77273f2d5f915570853ae"
+  },
+  "block_devices": {
+    "blockdevices": [
+      {
+        "name": "loop0",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock1",
+            "type": "dm",
+            "size": "50G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop1",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock2",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/INTEL/5"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop2",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock3",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/cf9fe34f-d485-487f-a655-328f11cb5539/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop3",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock4",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/4db4021b-b90b-4733-bf76-cc5744040ae9/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop4",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock5",
+            "type": "dm",
+            "size": "50G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop5",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock6",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/NVIDIA/1"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop6",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock7",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/9e0250ee-ebe6-4ebe-b628-2102aead8eb5/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop7",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock8",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/AMD/3"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop8",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock9",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/0ae5f2a0-620b-4889-a383-0ba7cf9c9990/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop9",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock10",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/AMD/9"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop10",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock11",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/NVIDIA/8"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "loop11",
+        "type": "loop",
+        "size": "100M",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock12",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/7842d7b1-8476-4f6e-b51b-755c5dfd5d16/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swwbblock0",
+        "type": "disk",
+        "size": "500G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock0",
+            "type": "dm",
+            "size": "500G",
+            "fstype": null,
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null,
+            "children": [
+              {
+                "name": "swblock0p1",
+                "type": "part",
+                "size": "200M",
+                "fstype": "vfat",
+                "mountpoints": [
+                  null
+                ],
+                "model": null,
+                "ro": false,
+                "tran": null
+              },
+              {
+                "name": "swblock0p2",
+                "type": "part",
+                "size": "499.8G",
+                "fstype": "ext4",
+                "mountpoints": [
+                  "/"
+                ],
+                "model": null,
+                "ro": false,
+                "tran": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "swblock0",
+        "type": "disk",
+        "size": "500G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock0p1",
+            "type": "part",
+            "size": "200M",
+            "fstype": null,
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          },
+          {
+            "name": "swblock0",
+            "type": "dm",
+            "size": "500G",
+            "fstype": null,
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null,
+            "children": [
+              {
+                "name": "swblock0p1",
+                "type": "part",
+                "size": "200M",
+                "fstype": "vfat",
+                "mountpoints": [
+                  null
+                ],
+                "model": null,
+                "ro": false,
+                "tran": null
+              },
+              {
+                "name": "swblock0p2",
+                "type": "part",
+                "size": "499.8G",
+                "fstype": "ext4",
+                "mountpoints": [
+                  "/"
+                ],
+                "model": null,
+                "ro": false,
+                "tran": null
+              }
+            ]
+          },
+          {
+            "name": "swblock0p2",
+            "type": "part",
+            "size": "499.8G",
+            "fstype": null,
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock1",
+        "type": "disk",
+        "size": "50G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock1",
+            "type": "dm",
+            "size": "50G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock2",
+        "type": "disk",
+        "size": "5G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock2",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/INTEL/5"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock3",
+        "type": "disk",
+        "size": "1G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock3",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/cf9fe34f-d485-487f-a655-328f11cb5539/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock4",
+        "type": "disk",
+        "size": "1G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock4",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/4db4021b-b90b-4733-bf76-cc5744040ae9/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock5",
+        "type": "disk",
+        "size": "50G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock5",
+            "type": "dm",
+            "size": "50G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              null
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock6",
+        "type": "disk",
+        "size": "5G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock6",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/NVIDIA/1"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock7",
+        "type": "disk",
+        "size": "1G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock7",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/9e0250ee-ebe6-4ebe-b628-2102aead8eb5/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock8",
+        "type": "disk",
+        "size": "5G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock8",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/AMD/3"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock9",
+        "type": "disk",
+        "size": "1G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock9",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/0ae5f2a0-620b-4889-a383-0ba7cf9c9990/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock10",
+        "type": "disk",
+        "size": "5G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock10",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/AMD/9"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock11",
+        "type": "disk",
+        "size": "5G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock11",
+            "type": "dm",
+            "size": "5G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/AutoInstallDriver/displaypnpN/NVIDIA/8"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      },
+      {
+        "name": "swblock12",
+        "type": "disk",
+        "size": "1G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "model": null,
+        "ro": false,
+        "tran": null,
+        "children": [
+          {
+            "name": "swblock12",
+            "type": "dm",
+            "size": "1G",
+            "fstype": "ntfs",
+            "mountpoints": [
+              "/B:/CloudAppCenter/App/7842d7b1-8476-4f6e-b51b-755c5dfd5d16/Resource"
+            ],
+            "model": null,
+            "ro": false,
+            "tran": null
+          }
+        ]
+      }
+    ]
+  },
+  "root_mount": {
+    "filesystems": [
+      {
+        "target": "/",
+        "source": "/dev/swblock_sysroot",
+        "fstype": "ext4"
+      }
+    ]
+  },
+  "wtaobj_mount": {
+    "filesystems": [
+      {
+        "target": "/",
+        "source": "/dev/swblock_sysroot",
+        "fstype": "ext4"
+      }
+    ]
+  },
+  "network_mount_types": [
+    "overlay",
+    "tmpfs"
+  ],
+  "boot": {
+    "efi": true,
+    "cmdline_flags": [],
+    "root_argument_kind": "device"
+  },
+  "cloud_init": {
+    "installed": true,
+    "status": "status: disabled",
+    "datasource": "DataSourceNone: DataSourceNone",
+    "instance_id_sha256": "411b1265419325ea98ef048494a83b244b5c7ea665cdedfeeebc08b74998a8ce"
+  },
+  "network": {
+    "addresses": [
+      {
+        "ifindex": 1,
+        "ifname": "lo",
+        "flags": [
+          "LOOPBACK",
+          "UP",
+          "LOWER_UP"
+        ],
+        "mtu": 65536,
+        "qdisc": "noqueue",
+        "operstate": "UNKNOWN",
+        "group": "default",
+        "txqlen": 1000,
+        "link_type": "loopback",
+        "addr_info": [
+          {
+            "family": "inet",
+            "local": "127.0.0.1",
+            "prefixlen": 8,
+            "scope": "host",
+            "label": "lo",
+            "valid_life_time": 4294967295,
+            "preferred_life_time": 4294967295
+          },
+          {
+            "family": "inet6",
+            "local": "::1",
+            "prefixlen": 128,
+            "scope": "host",
+            "noprefixroute": true,
+            "valid_life_time": 4294967295,
+            "preferred_life_time": 4294967295
+          }
+        ],
+        "mac_sha256": "38fbdde984330e50c02382e647c576b71f41cc5c45b193d4f3177e6ee8f22a78"
+      },
+      {
+        "ifindex": 2,
+        "ifname": "enp2s0",
+        "flags": [
+          "NO-CARRIER",
+          "BROADCAST",
+          "MULTICAST",
+          "UP"
+        ],
+        "mtu": 1500,
+        "qdisc": "fq_codel",
+        "operstate": "DOWN",
+        "group": "default",
+        "txqlen": 1000,
+        "link_type": "ether",
+        "addr_info": [],
+        "mac_sha256": "aaa935eb485d2a3b9cb46c7c2700e7558ebf1450a7f7e5435032e8840e270f67"
+      },
+      {
+        "ifindex": 3,
+        "ifname": "enp3s0",
+        "flags": [
+          "BROADCAST",
+          "MULTICAST",
+          "UP",
+          "LOWER_UP"
+        ],
+        "mtu": 1500,
+        "qdisc": "pfifo_fast",
+        "operstate": "UP",
+        "group": "default",
+        "txqlen": 1000,
+        "link_type": "ether",
+        "addr_info": [
+          {
+            "family": "inet",
+            "local": "10.11.31.2",
+            "prefixlen": 24,
+            "broadcast": "10.11.31.255",
+            "scope": "global",
+            "label": "enp3s0",
+            "valid_life_time": 4294967295,
+            "preferred_life_time": 4294967295
+          },
+          {
+            "family": "inet6",
+            "local": "fe80::2e2:69ff:fe87:8ddc",
+            "prefixlen": 64,
+            "scope": "link",
+            "valid_life_time": 4294967295,
+            "preferred_life_time": 4294967295
+          }
+        ],
+        "mac_sha256": "0a55985cc31951d47503870d9cf7d7b1fe2b8427a1f9e142ec23b518a257fbdf"
+      },
+      {
+        "ifindex": 4,
+        "ifname": "docker0",
+        "flags": [
+          "BROADCAST",
+          "MULTICAST",
+          "UP",
+          "LOWER_UP"
+        ],
+        "mtu": 1500,
+        "qdisc": "noqueue",
+        "operstate": "UP",
+        "group": "default",
+        "link_type": "ether",
+        "addr_info": [
+          {
+            "family": "inet",
+            "local": "172.17.0.1",
+            "prefixlen": 16,
+            "broadcast": "172.17.255.255",
+            "scope": "global",
+            "label": "docker0",
+            "valid_life_time": 4294967295,
+            "preferred_life_time": 4294967295
+          },
+          {
+            "family": "inet6",
+            "local": "fe80::e4b3:7dff:fe35:70e2",
+            "prefixlen": 64,
+            "scope": "link",
+            "valid_life_time": 4294967295,
+            "preferred_life_time": 4294967295
+          }
+        ],
+        "mac_sha256": "eb7184d099443eefe19d4000a9669985a75f59e93dd069a9fdbad716811cac30"
+      },
+      {
+        "ifindex": 127,
+        "link_index": 2,
+        "ifname": "veth681182d",
+        "flags": [
+          "BROADCAST",
+          "MULTICAST",
+          "UP",
+          "LOWER_UP"
+        ],
+        "mtu": 1500,
+        "qdisc": "noqueue",
+        "master": "docker0",
+        "operstate": "UP",
+        "group": "default",
+        "link_type": "ether",
+        "link_netnsid": 0,
+        "addr_info": [
+          {
+            "family": "inet6",
+            "local": "fe80::d487:71ff:fe14:1973",
+            "prefixlen": 64,
+            "scope": "link",
+            "valid_life_time": 4294967295,
+            "preferred_life_time": 4294967295
+          }
+        ],
+        "mac_sha256": "44ca5f62c5213bbce8a8e0c9e3867a166776aa69294a8093d83dd523e6a580ba"
+      }
+    ],
+    "routes": [
+      {
+        "dst": "default",
+        "gateway": "10.11.31.254",
+        "dev": "enp3s0",
+        "flags": []
+      },
+      {
+        "dst": "default",
+        "gateway": "10.11.31.254",
+        "dev": "enp3s0",
+        "protocol": "static",
+        "metric": 100,
+        "flags": []
+      }
+    ]
+  },
+  "network_config_files": [
+    "/etc/netplan/90-NM-b58fa620-633b-303b-8e83-ef176b4d5ad0.yaml.back",
+    "/etc/netplan/90-NM-b58fa620-633b-303b-8e83-ef176b4d5ad0.yaml",
+    "/etc/netplan/01-network-manager-all.yaml"
+  ],
+  "dhcp_lease_files": [],
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, 16376 MiB, 535.274.02, 00000000:01:00.0",
+  "gpu_uuid_sha256": [
+    "925d5bee165fbc5af5f9e85ae09b255a9f269b20fe3b5cd42bb2129c0192e21c"
+  ],
+  "cpu": {
+    "logical_count": 24,
+    "model": "13th Gen Intel(R) Core(TM) i7-13790F"
+  },
+  "memory_total_kib": 32670816,
+  "gpustack": {
+    "wta-gpustack-worker": {
+      "image": "quay.io/gpustack/gpustack:v2.2.3",
+      "running": true,
+      "started_at": "2026-10-22T05:47:54.450994407Z",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/run/docker.sock",
+          "Destination": "/var/run/docker.sock",
+          "RW": true,
+          "Name": null
+        },
+        {
+          "Type": "bind",
+          "Source": "/root/wtaobj/gpu-ocr",
+          "Destination": "/root/wtaobj/gpu-ocr",
+          "RW": false,
+          "Name": null
+        },
+        {
+          "Type": "bind",
+          "Source": "/root/wtaobj/gpustack-worker",
+          "Destination": "/var/lib/gpustack",
+          "RW": true,
+          "Name": null
+        }
+      ],
+      "configured": {
+        "--worker-name": "XZ-31-002"
+      },
+      "data_mount": {
+        "filesystems": [
+          {
+            "target": "/",
+            "source": "/dev/swblock_sysroot",
+            "fstype": "ext4"
+          }
+        ]
+      },
+      "identity_files": {
+        "worker_name": {
+          "exists": true,
+          "mode": "0o644",
+          "bytes": 9,
+          "sha256": "8a3d89cf1c49b50f3505644475dac695c4cc8ba945689dd915a09a6ed371fa95"
+        },
+        "worker_uuid": {
+          "exists": true,
+          "mode": "0o644",
+          "bytes": 36,
+          "sha256": "856b3c4f78d4f9c2907ed498cdb5eb2fed672409d99cbaf872e265e334507f6b"
+        },
+        "worker_token": {
+          "exists": true,
+          "mode": "0o644",
+          "bytes": 59
+        }
+      }
+    }
+  }
+}
