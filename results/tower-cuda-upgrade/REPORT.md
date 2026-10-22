@@ -14,4 +14,10 @@
 
 ## Toolkit阶段
 
-正在安装cuda-toolkit-13-0；保留/usr/local/cuda-12.2。尚不标记整体完成，编译及最终包审计将在安装结束后核对。
+已安装`cuda-toolkit-13-0=13.0.3-1`，nvcc版本13.0.88；`/usr/local/cuda`默认指向`/usr/local/cuda-13.0`，原`/usr/local/cuda-12.2`及其编译器12.2.91仍保留。未添加全局LD_LIBRARY_PATH。
+
+为RTX 4070的sm_89架构编译cuda13_probe.cu成功；没有执行GPU探针。`dpkg --audit`为空、`apt-get check`返回0，DKMS对应当前6.14.0-27-generic为installed。临时policy-rc.d已清理，安装前后boot ID一致；当前加载驱动仍为535.274.02，未重启/主动重载。
+
+当前nvidia-smi返回Driver/library version mismatch，NVML库580.95与已加载535模块不一致；这是此次分阶段安装的待激活状态，不标记GPU/CUDA运行验收通过。管理员安排新驱动生效后，再执行nvidia-smi和`/root/wtaobj/tower-cuda-upgrade/cuda13_probe`核对实际GPU运行；本轮不提供或执行自动重启步骤。
+
+完整无凭据核对见 [最终验证](verification.json)。源码与脚本保存在scripts/tower；远端日志、原包清单及探针位于/root/wtaobj/tower-cuda-upgrade。

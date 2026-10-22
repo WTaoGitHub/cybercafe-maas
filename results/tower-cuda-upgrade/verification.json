@@ -1,0 +1,52 @@
+{
+  "host": "tower-mNST8iPdv",
+  "started_at": 1792664093.2030952,
+  "requested_driver": "580.95.05-0ubuntu1",
+  "requested_toolkit": "13.0",
+  "reboot_executed": false,
+  "module_reload_requested": false,
+  "phase": "INSTALLED_PENDING_ADMIN_ACTIVATION",
+  "running_driver_before": "NVRM version: NVIDIA UNIX x86_64 Kernel Module  535.274.02  Thu Sep  4 22:13:52 UTC 2025\nGCC version:  gcc version 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04)",
+  "toolkit_12_2_preserved": true,
+  "toolkit_nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+  "installed_driver": "580.95.05-0ubuntu1",
+  "running_driver_after": "NVRM version: NVIDIA UNIX x86_64 Kernel Module  535.274.02  Thu Sep  4 22:13:52 UTC 2025\nGCC version:  gcc version 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04)",
+  "dkms": "nvidia/580.95.05, 6.14.0-27-generic, x86_64: installed",
+  "dpkg_audit": "",
+  "boot_id_unchanged": true,
+  "finished_at": 1792664954.1570013,
+  "compile_probe": {
+    "returncode": 0,
+    "stderr": "",
+    "architecture": "sm_89",
+    "gpu_probe_executed": false
+  },
+  "toolkit_package": {
+    "code": 0,
+    "stdout": "13.0.3-1",
+    "stderr": ""
+  },
+  "old_nvcc": {
+    "code": 0,
+    "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2023 NVIDIA Corporation\nBuilt on Tue_Jun_13_19:16:58_PDT_2023\nCuda compilation tools, release 12.2, V12.2.91\nBuild cuda_12.2.r12.2/compiler.32965470_0",
+    "stderr": ""
+  },
+  "apt_integrity": {
+    "code": 0,
+    "stdout": "Reading package lists...\nBuilding dependency tree...\nReading state information...",
+    "stderr": ""
+  },
+  "nvidia_smi_pending_activation": {
+    "code": 18,
+    "stdout": "Failed to initialize NVML: Driver/library version mismatch\nNVML library version: 580.95",
+    "stderr": ""
+  },
+  "disk_driver": {
+    "code": 0,
+    "stdout": "580.95.05",
+    "stderr": ""
+  },
+  "temporary_service_policy_removed": true,
+  "default_cuda_path": "/usr/local/cuda-13.0",
+  "boot_id_sha256": "1f7ea9121a04f67df64babcd625cc2fdbf48263113ab08d840606e41d1de572f"
+}
