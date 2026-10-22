@@ -19,11 +19,15 @@ def eight_hour_passed(end,verification):
 
 def main():
  smoke=load('endurance-smoke.json');four=load('four-client.json');rest=load('restore-result.json');restart=load('docker-restart-window.json');rollback=load('rollback.json')
- end=load('endurance-final.json' if (BASE/'endurance-final.json').exists() else 'endurance-progress.json')
- verification=load('endurance-verification.json') if (BASE/'endurance-verification.json').exists() else {}
+ retest=any((BASE/name).exists() for name in ('endurance-retest-final.json','endurance-retest-progress.json'))
+ end=load(('endurance-retest-final.json' if (BASE/'endurance-retest-final.json').exists() else 'endurance-retest-progress.json') if retest else ('endurance-final.json' if (BASE/'endurance-final.json').exists() else 'endurance-progress.json'))
+ vfile='endurance-retest-verification.json' if retest else 'endurance-verification.json'
+ verification=load(vfile) if (BASE/vfile).exists() else {}
  passed=eight_hour_passed(end,verification)
  failure_note='## 夜间失败与排查\n\n本轮于北京时间2026-10-21 22:16:38提前结束：2360接纳、2359成功、1个PREFLIGHT_UNAVAILABLE。collector采集失败与002 SSH MaxStartups限流时间吻合，因果链仍需专项验证。首次故障后服务曾恢复，不自动重启负载，P4未通过，E5不启动。详见[失败记录与修复建议](ENDURANCE-FAILURE.md)。\n\n' if end.get('state')=='FAILED' and end.get('run_id')=='night-8h-20261021' and (BASE/'ENDURANCE-FAILURE.md').exists() else ''
- if failure_note and (BASE/'monitor-recurrence-20261022.json').exists():
+ if retest:
+  failure_note='## E6整改后的独立复测\n\n自建collector已退役，当前复测使用新run ID，不拼接旧时长。原night-8h-20261021保持FAILED，见[原失败记录](ENDURANCE-FAILURE.md)。E6实机维护/恢复与备份证据见[执行记录](../../docs/framework/E6-RETIREMENT.md)。\n\n'
+ if not retest and failure_note and (BASE/'monitor-recurrence-20261022.json').exists():
   failure_note+='复发更新：2026-10-22 02:58快照显示collector再次失败，独立监控COLLECTOR_FAILED_OR_STALE，UNKNOWN=0；002同窗反复SSH MaxStartups限流。见失败记录中的复发证据。\n\n'
  assert smoke['state']=='COMPLETE' and restart['ok'] and rest['ok'] and rollback['ok']
  status='8小时门槛通过；其余验收按本报告的私有两节点范围解释。' if passed else ('耐久测试失败或中断，P4未通过，请检查原始状态及错误记录。' if end.get('state') in ('FAILED','INTERRUPTED') else '8小时耐久测试尚未完成或最终核对未通过，P4暂不整体验收。')
@@ -38,7 +42,7 @@ def main():
 | 任务 | 实测结果 |
 |---|---|
 | 私有HTTPS | 001回环18832，自签证书90天；信任指定证书后OCR200/46行；未信任证书时拒绝连接，未使用跳过证书校验 |
-| 独立监控 | 001 systemd每30秒检查服务、collector、TLS与observer新鲜度；真实停止observer后检测并在恢复后解除告警；无外部通知通道 |
+| 独立监控 | 001 systemd每30秒检查服务、TLS与observer新鲜度；E6后不再依赖自建collector；历史observer停止/恢复告警已验证，无外部通知通道 |
 | 指标历史与看板 | 私有聚合历史轮换、最多约10MiB；最近120个采样的任务速率和资源指标；HTML是导出快照 |
 | 备份 | 暂停并排空、停止三个应用写入进程后同时备份任务DB/artifact/应用配置；正式数据不删除 |
 | 加密异机副本 | 本机.maas保存AES-256-CBC/PBKDF2加密文件、独立HMAC-SHA256验证；密钥不离开本机、不入Git；篡改密文在回传前被拒绝 |
@@ -70,7 +74,7 @@ def main():
 
 ## 原始证据
 
-[私有TLS/监控](tls-monitor.json) · [指标看板快照](monitor-dashboard.html) · [备份记录](backup-status.json) · [恢复核对](restore-result.json) · [密文篡改反例](backup-authentication.json) · [Docker重启](docker-restart-window.json) · [001隔离探测](boundary-001-probes.json) · [002隔离探测](boundary-002-probes.json) · [镜像回退](rollback.json) · [四客户端提交](four-client.json) · [短测](endurance-smoke.json) · [8小时快照](endurance-progress.json) · [原服务核对](final-verification.json) · [回归日志](regression.log) · [运行收尾状态](post-release-state.json)
+[私有TLS/监控](tls-monitor.json) · [指标看板快照](monitor-dashboard.html) · [备份记录](backup-status.json) · [恢复核对](restore-result.json) · [密文篡改反例](backup-authentication.json) · [Docker重启](docker-restart-window.json) · [001隔离探测](boundary-001-probes.json) · [002隔离探测](boundary-002-probes.json) · [镜像回退](rollback.json) · [四客户端提交](four-client.json) · [短测](endurance-smoke.json) · [原8小时快照](endurance-progress.json) · [E6复测快照](endurance-retest-progress.json) · [原服务核对](final-verification.json) · [回归日志](regression.log) · [运行收尾状态](post-release-state.json)
 '''
  (BASE/'REPORT.md').write_text(text)
  lines=text.splitlines();out=[];i=0
