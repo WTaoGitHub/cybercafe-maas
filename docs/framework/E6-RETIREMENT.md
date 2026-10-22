@@ -28,3 +28,13 @@ Compose移除trusted导出挂载；新安装prepare_live要求运维显式提供
 正式维护绑定、恢复和备份去掉collector等待，仍通过注册凭据及真实OCR探针后恢复。宿主监控保留容器、API、observer、磁盘、UNKNOWN与TLS检查，移除collector告警依赖。verify_live改为核验非root、无trusted挂载/管理密钥/Docker socket。旧目录字段可暂留作任务fingerprint兼容，运行时不再读取。
 
 验证：候选e6-r1在独立maas_test运行194通过、1跳过，14.69秒；新增异步OCR无collector的完整API→领取→推理→结果下载及幂等唯一计量用例。正式服务器尚未切换版本。本地149通过、46项数据库相关跳过；脚本编译及diff空白检查通过。
+
+## 阶段三：正式发布与资产清理
+
+已在001发布e6-r1，三个应用去掉trusted挂载，保留原任务库/artifact卷和catalog字节；旧pin/preflight字段仅作为fingerprint兼容保留，不再读取。collector停止、禁用并永久mask；001运行目录中的配置、私钥、known_hosts、pin、health及consumer导出已清理，私有回退备份仍保存在001。002仅删除唯一匹配的collector forced-command授权行及inventory配置，其他authorized_keys逐行保持。原运维/维护访问与GPUStack内置采集保留。旧夜间timer禁用，原FAILED证据未修改。
+
+真实私有入口验证：无collector文件/挂载/专用inventory私钥时，同步OCR与异步OCR均返回46行；异步同幂等键返回同任务，UNKNOWN=0，宿主监控无告警。报告见 [实机验收](../../results/maas-e6/live-acceptance.json) 与 [发布记录](../../results/maas-e6/deployment.json)。尚需新基线8小时；本次短测不代表P4通过。
+
+### 回退材料与操作边界
+
+001 e6-deployment.json记录私有rollback_directory：含旧source、app.env、catalog、maintenance及collector-assets和原service单元；002私有maas-inventory-retired含原authorized_keys与配置。不得上传或提交这些备份。回退前先暂停、确认无在途/UNKNOWN，恢复旧源码/Compose/配置与collector资产、解除mask并恢复单元及002唯一授权，再等待旧证明链路新鲜、运行真实探针后恢复。不能只切旧镜像。当前保留材料，未进行生产回退再发布演练；备份保留期由运维决定。

@@ -1,0 +1,38 @@
+{
+  "started_at": 1792647993.79392,
+  "image": "cybercafe-maas-tasks:e6-r1",
+  "collector_disabled_and_assets_absent": true,
+  "sync_lines": 46,
+  "async": {
+    "id": "task_dcdd3fc61e7042839e5ba5d852d003e9",
+    "state": "SUCCEEDED",
+    "lines": 46,
+    "idempotency_same_task": true
+  },
+  "status": {
+    "tasks": {
+      "SUCCEEDED": 2684,
+      "FAILED": 1
+    },
+    "successful_tasks": 2684,
+    "dispatch_paused": false,
+    "unknown_backend_activity": 0,
+    "unknown_sync_activity": 0
+  },
+  "monitor": {
+    "generated_at_unix": 1792647996.0916743,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 2683.0,
+      "maas_successful_sync_requests_total": 4.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 42583241.0,
+      "maas_artifact_free_bytes": 418928697344.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  },
+  "ok": true,
+  "finished_at": 1792647996.100632
+}
