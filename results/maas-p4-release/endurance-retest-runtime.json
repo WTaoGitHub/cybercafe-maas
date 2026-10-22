@@ -1,0 +1,59 @@
+{
+  "checked_at": 1792699642.71909,
+  "models": {
+    "1": {
+      "name": "rapidocr-gpu",
+      "replicas": 2,
+      "instances": [
+        {
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        },
+        {
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ]
+    },
+    "9": {
+      "name": "maas-ocr-p2-r2",
+      "replicas": 2,
+      "instances": [
+        {
+          "state": "running",
+          "worker_name": "XZ-31-002"
+        },
+        {
+          "state": "running",
+          "worker_name": "XZ-31-001"
+        }
+      ]
+    }
+  },
+  "workers": [
+    {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready"
+    },
+    {
+      "id": 1,
+      "name": "XZ-31-001",
+      "state": "ready"
+    }
+  ],
+  "monitor": {
+    "generated_at_unix": 1792699627.990272,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8466.0,
+      "maas_successful_sync_requests_total": 6.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 94210721.0,
+      "maas_artifact_free_bytes": 418601041920.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  }
+}

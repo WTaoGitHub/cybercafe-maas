@@ -254,3 +254,7 @@ journalctl -u maas-endurance-night-20261021.service -n 50 --no-pager
 | DB不可用 | 保留文件与attempt；应用恢复扫描并不等于所有上游执行已终止 |
 
 证书/key到期轮换仍需人工安排；具体业务授权见 [管理员手册](ADMIN.md)，接口行为见 [普通用户手册](USER.md)。
+
+## 2026-10-23 私有试点验收状态
+
+E6退役collector后的完整8小时复测通过：5760/5760成功，零错误，独立SQL任务/终态/计量一致；P4限定两节点私有环境通过。参见 [最终报告](../../results/maas-p4-release/REPORT.html)。无需重新启动负载；不恢复自建collector，不自动解除UNKNOWN。两台VM永久禁止重启；本轮没有重启VM或Docker/worker/容器。私有证书、同机监控、手动备份及未做E6生产回退演练的边界仍有效。下一项为E5设计调研，未部署动态身份方案。

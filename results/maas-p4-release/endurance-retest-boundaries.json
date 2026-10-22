@@ -1,0 +1,10 @@
+{
+  "001": {
+    "output": "active\n-N MAAS-P4-EARLY\n-A MAAS-P4-EARLY -i lo -j RETURN\n-A MAAS-P4-EARLY -s 10.11.31.1/32 -i enp3s0 -j RETURN\n-A MAAS-P4-EARLY -s 10.11.31.2/32 -i enp3s0 -j RETURN\n-A MAAS-P4-EARLY -s 172.17.0.2/32 -i docker0 -j RETURN\n-A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP\n-A MAAS-P4-EARLY -d 172.17.0.0/16 -p tcp -m multiport --dports 80,8820,11435,40000:40063 -j DROP\n-N MAAS-P4-EARLY\n-A MAAS-P4-EARLY -i lo -j RETURN\n-A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP\nrapidocr-gpu-1xdw7-run-0\nrapidocr-gpu-1xdw7-pause\nrapidocr-gpu-65wbz-run-0\nrapidocr-gpu-65wbz-pause\nmaas-ocr-p2-r2-s7tnz-run-0\nmaas-ocr-p2-r2-s7tnz-pause\nmaas-tasks-observer-1\nmaas-tasks-executor-1\nmaas-tasks-api-1\nmaas-edge\nmaas-private-tls\nmaas-tasks-db-1\nwta-maas-p1-test-db\nwta-gpustack-worker\nwta-gpustack-server\ncybercafe-ocr\nmasked\n",
+    "exit_code": 1
+  },
+  "002": {
+    "output": "active\n-N MAAS-P4-EARLY\n-A MAAS-P4-EARLY -i lo -j RETURN\n-A MAAS-P4-EARLY -s 10.11.31.1/32 -i enp3s0 -j RETURN\n-A MAAS-P4-EARLY -s 10.11.31.2/32 -i enp3s0 -j RETURN\n-A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP\n-A MAAS-P4-EARLY -d 172.17.0.0/16 -p tcp -m multiport --dports 80,8820,11435,40000:40063 -j DROP\n-N MAAS-P4-EARLY\n-A MAAS-P4-EARLY -i lo -j RETURN\n-A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP\nmaas-ocr-p2-r2-lfoqm-run-0\nmaas-ocr-p2-r2-lfoqm-pause\nwta-gpustack-worker\ncybercafe-ocr\nnot-found\n",
+    "exit_code": 4
+  }
+}

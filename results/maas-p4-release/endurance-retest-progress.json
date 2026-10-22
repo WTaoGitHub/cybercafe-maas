@@ -1,6 +1,6 @@
 {
   "run_id": "e6-night-8h-20261022",
-  "state": "RUNNING",
+  "state": "COMPLETE",
   "started_at": 1792670402.5808642,
   "duration_target_seconds": 28800,
   "interval_seconds": 5.0,
@@ -8,11 +8,17 @@
   "tls_verified": true,
   "concurrency": 1,
   "errors": [],
-  "elapsed_seconds": 3611.23,
-  "accepted": 723,
-  "succeeded": 723,
-  "submit_p95_ms": 61.06804986484349,
-  "e2e_p95_seconds": 1.1568161640316248,
-  "lines_total": 28476,
-  "updated_at": 1792674013.8137941
+  "elapsed_seconds": 28800.79,
+  "accepted": 5760,
+  "succeeded": 5760,
+  "submit_p95_ms": 60.53172214888036,
+  "e2e_p95_seconds": 1.156690486939624,
+  "lines_total": 226368,
+  "updated_at": 1792699203.3672094,
+  "database_check": {
+    "tasks": 5760,
+    "succeeded": 5760,
+    "usage_events": 5760
+  },
+  "finished_at": 1792699203.3663988
 }

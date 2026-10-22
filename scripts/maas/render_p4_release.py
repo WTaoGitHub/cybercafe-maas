@@ -57,7 +57,7 @@ def main():
 
 ## 长时测试
 
-- 服务：{end.get("service", "maas-endurance-night-20261021")}；run ID：{end["run_id"]}。
+- 服务：{end.get("service", "maas-endurance-e6-night-20261022" if retest else "maas-endurance-night-20261021")}；run ID：{end["run_id"]}。
 - 白天一轮按用户要求主动停止，1276.26秒、256/256成功、无错误；不计为8小时通过。
 - 本轮计划：{local(end["started_at"])}至{local(end["started_at"]+28800)}，由服务器systemd执行，不依赖本机在线；错过定时窗口不自动补跑。
 - 起点（SCHEDULED时为计划时间）：{local(end['started_at'])}；预计最早完成：{local(end['started_at']+28800)}。
