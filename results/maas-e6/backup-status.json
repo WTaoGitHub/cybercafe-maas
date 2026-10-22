@@ -1,0 +1,44 @@
+{
+  "started_at": 1792648135.9822183,
+  "scope": "task DB + artifact + application config; not GPUStack DR",
+  "snapshot_at": 1792648137.4551888,
+  "generation": 19,
+  "files": {
+    "database.dump": {
+      "sha256": "67b6960c51adfb362faa56bcef96f0bf2797ebf9bec451d15e05dd056faa54cd",
+      "bytes": 831043
+    },
+    "artifacts.tar": {
+      "sha256": "5b252729cd028862d52ce69733fe0692353f0724799a8b987c50a95520060854",
+      "bytes": 45434880
+    },
+    "config.tar": {
+      "sha256": "77ffc2407bada6958a8f3d108ed6b4cc16580f928c594c30811b595e23d22333",
+      "bytes": 563200
+    }
+  },
+  "archive_sha256": "54b3f948324276cadd7fab8a0a778cb040660a8b83776782b688f85ca90675ec",
+  "archive_bytes": 46837760,
+  "ok": true,
+  "resume": {
+    "maintenance": {
+      "paused": false,
+      "generation": 20,
+      "reason": "P4 coherent task-data backup",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-p2-r2",
+        "lines": 46
+      }
+    ]
+  },
+  "finished_at": 1792648140.558828
+}

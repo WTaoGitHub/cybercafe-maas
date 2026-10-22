@@ -1,6 +1,6 @@
 # 常驻环境维护：正式绑定与操作
 
-> E6迁移说明（2026-10-22）：候选版本e6-r1已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
+> E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
 
 
 2026-10-21。当前方案为**整个目标集群暂停推理、维护002**，不是E1逐节点持续服务。001控制端、数据库、Nginx与SSH保持在线。新功能代码在001宿主机运行，不把管理key或SSH私钥挂入应用。

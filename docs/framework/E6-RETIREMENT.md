@@ -38,3 +38,11 @@ Compose移除trusted导出挂载；新安装prepare_live要求运维显式提供
 ### 回退材料与操作边界
 
 001 e6-deployment.json记录私有rollback_directory：含旧source、app.env、catalog、maintenance及collector-assets和原service单元；002私有maas-inventory-retired含原authorized_keys与配置。不得上传或提交这些备份。回退前先暂停、确认无在途/UNKNOWN，恢复旧源码/Compose/配置与collector资产、解除mask并恢复单元及002唯一授权，再等待旧证明链路新鲜、运行真实探针后恢复。不能只切旧镜像。当前保留材料，未进行生产回退再发布演练；备份保留期由运维决定。
+
+## 阶段四：常驻维护与备份恢复验证
+
+collector已mask、动态文件与专用SSH资产不存在的条件下，再次完成正式begin→stop→recover→resume，停止保持10秒，窗口60.512秒；旧结果可读，排队任务恢复一次成功，任务计量+2/同步+1，恢复探针不计费，四模型实例恢复原分布，两端watchdog解除。见 [维护验收](../../results/maas-e6/maintenance.json)。
+
+新版本完成一致性备份、加密异机传输、认证解密回传并恢复到独立_test库：2686个成功任务/计量与2404个文件核对通过，恢复核对1.343秒，正式库未覆盖，恢复临时目录已清理。见 [备份](../../results/maas-e6/backup-status.json)、[恢复](../../results/maas-e6/restore-result.json)。这不是生产RPO/整机RTO承诺。回退材料完整且原catalog字节一致已核对，未实际回退生产服务。
+
+2026-10-22用户要求将8小时复测推迟至北京时间20:00。白天e6-8h-20261022已主动停止，96.47秒、20/20成功、errors为空，记为INTERRUPTED。独立新run e6-night-8h-20261022由服务器timer在2026-10-22 20:00启动，预计2026-10-23 04:00结束；不拼接时长，不提前启动，自动跟进已更新。见 [汇总报告](../../results/maas-e6/REPORT.html)。
