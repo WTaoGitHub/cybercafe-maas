@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-22",
+  "scope": [
+    "XZ-31-001",
+    "XZ-31-002"
+  ],
+  "vm_reboot_prohibited_permanently": true,
+  "remote_scripts_match_reviewed_local": {
+    "scripts/maas/runtime/endurance.py": "b42bb49202f831c2324c54ddf5ed6c9954c7a7fbff8852495d4e344fdb0b8702",
+    "scripts/maas/runtime/verify_endurance.py": "7ef328050a974a785e04c40db2be9c3d118707c4a51bbe2907b4d0b6d601d2b3"
+  },
+  "service_has_no_reboot_hooks": true,
+  "test_operations": [
+    "HTTPS OCR upload/submit/query/download",
+    "read-only SQL reconciliation"
+  ],
+  "schedule_unchanged": "2026-10-22 20:00 to 2026-10-23 04:00 Asia/Shanghai"
+}
