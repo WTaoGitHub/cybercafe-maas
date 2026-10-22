@@ -1,5 +1,8 @@
 # MaaS 受控 OCR 部署
 
+> E6迁移说明（2026-10-22）：候选版本e6-r1已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](../../docs/framework/E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
+
+
 实现范围：任务API、独立PostgreSQL、执行器、控制端ArtifactStore及观察进程。固定版本OCR、受控维护及配额已验收；公网服务、精确逐节点无损排空未交付。
 
 当前运行状态以 [P4运行手册](../../docs/framework/P4-LIVE.md) 为准：四个新增服务已常驻001私有入口。下方P1/P2/P3分批验收章节保留历史背景，不能据旧章节判断当前是否部署。

@@ -3,8 +3,6 @@
     "driver": "gpustack.ocr",
     "revision": "REPLACE_WITH_REGISTERED_PIN_REVISION",
     "upstream_model": "REPLACE_WITH_REGISTERED_PIN_ROUTE_NAME",
-    "max_runtime_s": 25,
-    "pin_file": "/run/maas-trusted/pin.json",
-    "preflight_file": "/run/maas-trusted/preflight.json"
+    "max_runtime_s": 25
   }
 }

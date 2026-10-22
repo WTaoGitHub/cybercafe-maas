@@ -17,6 +17,7 @@ def write(path,value):
 
 
 def main():
+    raise RuntimeError('Historical P3 isolated collector setup retired; use current live maintenance acceptance')
     global WORK
     parser=argparse.ArgumentParser();parser.add_argument('--edge',action='store_true');parser.add_argument('--node-maintenance',action='store_true');parser.add_argument('--operations',action='store_true');options=parser.parse_args()
     if options.operations:

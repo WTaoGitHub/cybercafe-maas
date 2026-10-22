@@ -57,16 +57,11 @@ def main():
     report['first_task']={'id':first['id'],'state':first['state'],'lines':46}
     uidcheck="""import json,os,time
 from pathlib import Path
-root=Path('/run/maas-trusted');p=root/'preflight.json';a=json.loads(p.read_text());pin=json.loads((root/'pin.json').read_text())
-assert set(a)=={'schema_version','observed_at','pin_sha256','gateway_max_attempts'}
-assert os.getuid()==10001 and not os.access(p,os.W_OK)
-try:(root/'forbidden-write-test').write_text('no')
-except OSError:pass
-else:raise AssertionError('Attestation mount writable')
+assert os.getuid()==10001
+assert not Path('/run/maas-trusted').exists()
 assert not Path('/var/run/docker.sock').exists()
 assert not Path('/run/secrets/collector.json').exists()
-time.sleep(6);b=json.loads(p.read_text());assert b['observed_at']>a['observed_at'] and time.time()-b['observed_at']<30
-print(json.dumps({'uid':os.getuid(),'read_only':True,'metadata_refresh_verified':True,'raw_model_env_exported':False}))
+print(json.dumps({'uid':os.getuid(),'collector_mount_absent':True,'docker_socket_absent':True}))
 """
     report['consumer']=json.loads(run(*COMPOSE,'exec','-T','api','python','-c',uidcheck))
     cli('pause','--reason','P4 persistent service restart acceptance')

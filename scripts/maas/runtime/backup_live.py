@@ -58,10 +58,6 @@ def main():
   run(*COMPOSE,'start','api','executor','observer');ready()
   current=cli('drain-status')
   if generation is not None and current['generation']==generation and current['managed_requests_drained']:
-   sys_path=str(ROOT)
-   import sys;sys.path.insert(0,sys_path)
-   from maas_platform.operator_config import wait_collector
-   wait_collector('/root/wtaobj/maas-runtime/health.json',90)
    report['resume']=cli('resume','--credential-id','pilot-ocr','--probe-image','/run/maas-probe/upright.png')
   else:report['resume_refused']=True
   run('systemctl','stop',watchdog+'.timer');report['finished_at']=time.time();write(folder/'status.json',report)

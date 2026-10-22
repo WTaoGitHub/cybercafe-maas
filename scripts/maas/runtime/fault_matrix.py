@@ -1,6 +1,7 @@
 """Real task-chain faults against retained pilot only; temporary tenant, API and DB.
 Original GPUStack workers and original OCR containers are never stopped.
 """
+raise SystemExit('Historical P2 collector fault matrix retired by E6; use current regression and E6 acceptance')
 import base64,hashlib,json,os,re,secrets,subprocess,sys,time,urllib.request,urllib.error
 from pathlib import Path
 sys.path.insert(0,'/root/wtaobj/maas-framework/scripts/maas/p0')

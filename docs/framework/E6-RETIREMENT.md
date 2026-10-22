@@ -20,3 +20,11 @@
 | 手册与自动化 | API、开发/运维/管理员/用户手册、P4运行说明、耐久跟进指令 |
 
 阶段一验证后才能进入受控发布；线上停用与资产清理须在所有依赖迁移后执行。GPUStack内置采集、原运维SSH及维护forced-command授权保留。原night-8h-20261021继续FAILED；本次代码验证不能替代新基线完整8小时验收。
+
+## 阶段二：运行流程迁移
+
+Compose移除trusted导出挂载；新安装prepare_live要求运维显式提供已批准的--revision与--upstream-model，不再读取collector目录或改其配置。旧collector安装入口拒绝运行，systemd模板移至archive并使用.disabled后缀；旧P2故障矩阵/P3临时部署入口明确拒绝执行，历史行为保留在Git。
+
+正式维护绑定、恢复和备份去掉collector等待，仍通过注册凭据及真实OCR探针后恢复。宿主监控保留容器、API、observer、磁盘、UNKNOWN与TLS检查，移除collector告警依赖。verify_live改为核验非root、无trusted挂载/管理密钥/Docker socket。旧目录字段可暂留作任务fingerprint兼容，运行时不再读取。
+
+验证：候选e6-r1在独立maas_test运行194通过、1跳过，14.69秒；新增异步OCR无collector的完整API→领取→推理→结果下载及幂等唯一计量用例。正式服务器尚未切换版本。本地149通过、46项数据库相关跳过；脚本编译及diff空白检查通过。

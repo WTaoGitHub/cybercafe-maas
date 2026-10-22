@@ -697,3 +697,29 @@ def test_worker_unexpected_exception_is_redacted(env,monkeypatch,caplog):
     assert Worker(s).run_once()
     assert 'attempt_failed' in caplog.text
     assert 'canary-private-key' not in caplog.text and 'Traceback' not in caplog.text
+
+
+def test_async_ocr_without_collector_preserves_result_and_unique_metering(env,monkeypatch):
+    calls=[]
+    value={'text':'hello','lines':[],'elapsed_ms':1,'node':'worker'}
+    def reply(request):
+        calls.append(request)
+        return httpx.Response(200,json={'choices':[{'message':{'content':json.dumps(value)}}]})
+    client,s,settings=sync_setup(env,monkeypatch,reply)
+    original=httpx.AsyncClient
+    monkeypatch.setattr('maas_platform.ocr_connector.httpx.AsyncClient',lambda **kw:original(transport=httpx.MockTransport(reply),**kw))
+    image=client.post('/maas/v1/artifacts',headers={**headers(),'Content-Type':'image/png'},content=b'\x89PNG\r\n\x1a\nfixture')
+    assert image.status_code==201
+    body={'model':'ocr.default','input':{'image':{'artifact_id':image.json()['id']}}}
+    accepted=client.post('/maas/v1/tasks',headers=headers(idem='no-collector'),json=body)
+    assert accepted.status_code==202
+    assert Worker(s).run_once()
+    row=client.get('/maas/v1/tasks/'+accepted.json()['id'],headers=headers()).json()
+    assert row['state']=='SUCCEEDED'
+    result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers())
+    assert result.json()['outputs']['text']=='hello'
+    again=client.post('/maas/v1/tasks',headers=headers(idem='no-collector'),json=body)
+    assert again.json()['id']==row['id'] and not Worker(s).run_once()
+    assert len(calls)==1
+    with s.db.transaction() as c:
+        assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==1

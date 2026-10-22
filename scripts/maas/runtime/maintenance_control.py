@@ -9,7 +9,7 @@ ROOT=Path('/root/wtaobj/maas-framework')
 sys.path.insert(0,str(ROOT));sys.path.insert(0,str(ROOT/'scripts/maas/p0'))
 from common import admin
 from maas_platform.node_maintenance import NodeMaintenance
-from maas_platform.operator_config import private_json,wait_collector
+from maas_platform.operator_config import private_json
 
 
 def main():
@@ -23,8 +23,6 @@ def main():
         if action=='status':args=['drain-status']
         elif action=='pause':args=['pause','--reason',reason]
         else:
-            # The runtime collector must be ready again before a real recovery probe.
-            if cfg.get('collector_health_file'):wait_collector(cfg['collector_health_file'],cfg.get('wait_seconds',180))
             args=['resume','--credential-id',cfg['credential_id'],'--probe-image',cfg['probe_image']]
         return json.loads(execute(cfg['task_cli']+args))
     def node(action):return json.loads(execute(cfg['node_ssh']+[action]))

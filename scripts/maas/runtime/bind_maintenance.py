@@ -14,8 +14,6 @@ def main():
     from common import admin
     if admin('/version').get('version') not in ('2.2.3','v2.2.3'):raise RuntimeError('Approved GPUStack v2.2.3 required')
     if not (LIVE/'identity.json').is_file():raise RuntimeError('Live pilot identity missing')
-    health=Path('/root/wtaobj/maas-runtime/health.json');v=json.loads(health.read_text())
-    assert v['ok'] and time.time()-v['updated_at']<15
     access=Path('/root/wtaobj/maas-maintenance-access')
     for file in ('id_ed25519','known_hosts'):
         if not (access/file).is_file():raise RuntimeError('Dedicated maintenance access is missing')
@@ -34,7 +32,7 @@ def main():
     # The binding is intentionally limited to the already accepted two-model pilot.
     if ids!=[1,9]:raise RuntimeError('Cluster model set differs from approved pilot; review maintenance scope')
     cfg={'worker_id':2,'model_ids':ids,'credential_id':'pilot-ocr','probe_image':'/run/maas-probe/upright.png',
-        'task_cli':task_cli,'collector_health_file':str(health),'wait_seconds':180,
+        'task_cli':task_cli,'wait_seconds':180,
         'node_ssh':['ssh','-F','/dev/null','-i',str(access/'id_ed25519'),'-o','IdentitiesOnly=yes',
             '-o','BatchMode=yes','-o','StrictHostKeyChecking=yes','-o','UserKnownHostsFile='+str(access/'known_hosts'),
             '-o','ConnectTimeout=5','-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','RequestTTY=no','root@10.11.31.2']}

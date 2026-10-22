@@ -32,10 +32,6 @@ def inspect_live():
         with urllib.request.urlopen('http://127.0.0.1:18830/healthz',timeout=3) as r:assert r.status==200
     except Exception:add('API_HEALTH_FAILED')
     try:
-        d=json.loads(Path('/root/wtaobj/maas-runtime/health.json').read_text())
-        if not d['ok'] or not 0<=time.time()-d['updated_at']<30:add('COLLECTOR_FAILED_OR_STALE')
-    except Exception:add('COLLECTOR_FAILED_OR_STALE')
-    try:
         context=ssl.create_default_context(cafile='/root/wtaobj/maas-private-tls/server.crt')
         try:urllib.request.urlopen('https://127.0.0.1:18832/',context=context,timeout=3)
         except urllib.error.HTTPError as e:assert e.code==404

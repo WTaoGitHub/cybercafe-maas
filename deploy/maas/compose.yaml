@@ -1,7 +1,7 @@
 # Run from repository root: docker compose --env-file <private-env> -f deploy/maas/compose.yaml up -d
 name: maas-tasks
 x-app: &app
-  image: ${MAAS_TASK_IMAGE:-cybercafe-maas-tasks:p4-r1}
+  image: ${MAAS_TASK_IMAGE:-cybercafe-maas-tasks:e6-r1}
   build:
     context: ../..
     dockerfile: deploy/maas/Dockerfile
@@ -33,7 +33,6 @@ x-app: &app
   volumes:
     - ${MAAS_SECRET_DIR:?set private secret directory}:/run/secrets:ro
     - ${MAAS_CATALOG_PATH:?set absolute registered OCR catalog path}:/app/catalog.json:ro
-    - ${MAAS_TRUSTED_DIR:?set collector consumer export directory}:/run/maas-trusted:ro
     - ${MAAS_PROBE_DIR:?set non-secret probe image directory}:/run/maas-probe:ro
     - artifacts:/var/lib/maas/artifacts
   depends_on:

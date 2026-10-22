@@ -50,7 +50,7 @@ with psycopg.connect(url,row_factory=dict_row) as c:
  print(json.dumps({'artifacts_verified':len(artifacts),'tasks':tasks,'successful_task_events':usage,'database_restored':True,'live_database_modified':False}))
 """
   result=json.loads(run('docker','run','--rm','--network','host','--env-file',str(ROOT/'.secrets/test.env'),'-e','RESTORE_DB='+db,
-      '-v',str(folder/'artifacts')+':/restore:ro','-v',str(secret)+':/run/secrets:ro','cybercafe-maas-tasks:p4-r1','python','-c',code))
+      '-v',str(folder/'artifacts')+':/restore:ro','-v',str(secret)+':/run/secrets:ro','cybercafe-maas-tasks:e6-r1','python','-c',code))
   # Config restored privately and checked without printing credential values.
   config=folder/'config';assert (config/'secrets/pilot-key').stat().st_size>0 and (config/'app.env').is_file()
   result.update(config_archive_restored=True,restore_seconds=round(time.monotonic()-start,3),snapshot_at=manifest['snapshot_at'],ok=True)

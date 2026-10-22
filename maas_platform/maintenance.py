@@ -27,13 +27,13 @@ class Maintenance:
         before=self.status()
         if not before['managed_requests_drained']:
             raise ServiceError('MAINTENANCE_NOT_DRAINED','Pause and resolve all managed activity before resuming',409)
-        probe()  # Must raise on failed preflight or real inference; never swallow it.
+        probe()  # Must raise on failed real inference; never swallow it.
         with self.service.db.transaction() as c:
             after=self._snapshot(c)
             if after['generation']!=before['generation'] or not after['managed_requests_drained']:
                 raise ServiceError('MAINTENANCE_CHANGED','Maintenance state changed during recovery probe',409)
             row=c.execute("UPDATE maintenance SET paused=false,generation=generation+1,updated_at=now() WHERE id=1 RETURNING generation").fetchone()
-            c.execute("INSERT INTO maintenance_events(generation,action,reason) VALUES(%s,'verified-resume','Trusted preflight and inference probe passed')",(row['generation'],))
+            c.execute("INSERT INTO maintenance_events(generation,action,reason) VALUES(%s,'verified-resume','Registered model inference probe passed')",(row['generation'],))
         return self.status()
 
     def resolve_sync(self,token,reason):
