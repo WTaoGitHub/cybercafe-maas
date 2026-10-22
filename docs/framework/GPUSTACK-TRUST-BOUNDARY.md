@@ -43,3 +43,7 @@
 ## 源码与事实依据
 
 当前MaaS代码：maas_platform/collector.py、ocr_connector.py、sync_ingress.py、auth.py、recovery.py、operator_config.py及runtime/maintenance_control.py。GPUStack依据本地仓库v2.2.3标签的worker/worker.py、worker/worker_manager.py、worker/collector.py和server/worker_syncer.py。失败证据见 [原因分析](../../results/maas-p4-release/CAUSE-ANALYSIS.md)。
+
+## 用户决策更新（2026-10-22）
+
+用户已明确决定退役自建collector，不继续将其作为低频常驻组件保留。完整背景、迁移/清理/回退和验收已登记为 [E6](ENHANCEMENTS.md#e6退役自建collector复用gpustack服务状态)。本次仅计划登记，正式进程尚未停止。

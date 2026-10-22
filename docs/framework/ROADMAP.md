@@ -99,3 +99,7 @@ P0、P1已通过对应范围验收；P2常驻collector、专用只读节点清�
 ## 2026-10-21 22:16 夜间耐久失败更新
 
 2026-10-21夜间耐久测试在22:16:38以FAILED结束：2360接纳/2359成功，1个PREFLIGHT_UNAVAILABLE；仅运行约3小时16分钟，P4未通过。collector与002 SSH限流窗口吻合，当前服务已恢复健康，原因仍需验证。保留失败记录，不自动重新计时；先修复并重新安排完整8小时，P4通过前不启动E5。见 [失败分析](../../results/maas-p4-release/ENDURANCE-FAILURE.md) 和 [更新报告](../../results/maas-p4-release/REPORT.html)。
+
+## 最新排期：E6退役自建collector、P4复测、E5
+
+2026-10-22用户决定退役自建collector，作为P4架构整改先清点/迁移同步异步、维护恢复、配置/挂载、监控、备份与安装依赖，验证后再停进程和清理独占SSH资产。复用GPUStack原生状态，不重建节点采集平台；保留业务鉴权/任务/UNKNOWN/计量及按需发布核验。新run ID重新完成P4八小时验收后立即启动最高优先级E5。E1–E4不新增实施，E1候选相关证明契约需后续修订。本轮仅登记，未变更服务器。见 [E6背景与任务验收](ENHANCEMENTS.md#e6退役自建collector复用gpustack服务状态)。
