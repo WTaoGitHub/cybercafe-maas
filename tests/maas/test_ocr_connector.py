@@ -2,7 +2,8 @@ import json,time
 from types import SimpleNamespace
 from datetime import datetime,timedelta,timezone
 import httpx,pytest
-from maas_platform.ocr_connector import OCRAdapter,preflight
+from maas_platform.ocr_connector import OCRAdapter
+from maas_platform.versioning import legacy_preflight as preflight
 from maas_platform.versioning import register_pin
 from maas_platform.errors import ServiceError
 
@@ -33,9 +34,16 @@ def test_preflight_fails_closed(tmp_path,change):
     with pytest.raises(ServiceError):preflight(model)
 
 
+@pytest.mark.parametrize('proof',['absent','stale','corrupt'])
 @pytest.mark.parametrize('case',['success','timeout','503','malformed','oversize','denied'])
-def test_ocr_sends_once_and_only_proven_completion_releases_activity(tmp_path,monkeypatch,case):
+def test_ocr_sends_once_and_only_proven_completion_releases_activity(tmp_path,monkeypatch,case,proof):
     model,_=target(tmp_path);events=[];requests=[]
+    from pathlib import Path
+    if proof=='absent':
+        Path(model.pop('preflight_file')).unlink();Path(model.pop('pin_file')).unlink()
+    elif proof=='stale':Path(model['preflight_file']).write_text(json.dumps({'observed_at':0}))
+    else:
+        Path(model['preflight_file']).write_text('invalid');Path(model['pin_file']).write_text('invalid')
     client_class=httpx.AsyncClient
     def transport(request):
         requests.append(request)

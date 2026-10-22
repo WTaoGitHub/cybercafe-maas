@@ -7,7 +7,6 @@ import asyncio,json,uuid
 import httpx
 from fastapi.responses import Response
 from .errors import ServiceError
-from .ocr_connector import preflight
 
 
 class SyncIngress:
@@ -44,7 +43,6 @@ class SyncIngress:
         if model['driver']!='gpustack.ocr':
             raise ServiceError('SYNC_UNSUPPORTED','This synchronous pilot supports the registered OCR connector',422)
         self.service.auth.authorize(who,name,model)
-        preflight(model)
         key=self.service.auth.key_for(who)
         runtime=min(model['max_runtime_s'],120)
         token=self.begin(who,name,runtime,probe)

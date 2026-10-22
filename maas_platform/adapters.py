@@ -1,4 +1,4 @@
-"""Explicit local adapter registry. Network connectors require trusted P2 version preflight."""
+"""Explicit local adapter registry. Network connectors use an operator-approved static model catalog."""
 import hashlib
 import time
 from dataclasses import dataclass

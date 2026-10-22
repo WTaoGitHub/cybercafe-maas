@@ -3,12 +3,10 @@ import asyncio
 import base64
 from datetime import datetime, timezone
 import json
-from pathlib import Path
 import time
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from .errors import ServiceError
-from .versioning import VersionPin, verify_pin, digest
 
 
 class ImageReference(BaseModel):
@@ -38,30 +36,6 @@ class OCRResult(BaseModel):
     node: str
 
 
-def preflight(model):
-    """Read only operator-produced metadata; customer keys never receive admin access."""
-    try:
-        pin = VersionPin(**json.loads(Path(model['pin_file']).read_text()))
-        snapshot = json.loads(Path(model['preflight_file']).read_text())
-        now = time.time()
-        age = now-snapshot['observed_at']
-        if not 0 <= age <= 30:
-            raise ServiceError('PREFLIGHT_STALE', 'Refresh trusted control and gateway metadata', 503)
-        if model['revision'] != pin.revision or model['upstream_model'] != pin.route_name:
-            raise ServiceError('MODEL_REVISION_CHANGED', 'Catalog does not match immutable target', 409)
-        if snapshot['gateway_max_attempts'] not in (1, 2, 3):
-            raise ServiceError('GATEWAY_POLICY_UNVERIFIED', 'Gateway attempt bound is not approved', 503)
-        if snapshot.get('schema_version')==2:
-            if snapshot.get('pin_sha256')!=digest(pin.public()):
-                raise ServiceError('MODEL_REVISION_CHANGED','Collector attestation does not match pin',409)
-            return pin
-        verify_pin(pin, snapshot['version'], snapshot['route'], snapshot['targets'],
-                   snapshot['model'], snapshot['backend'], snapshot['inventory'])
-        return pin
-    except ServiceError:
-        raise
-    except (OSError, ValueError, KeyError, TypeError):
-        raise ServiceError('PREFLIGHT_UNAVAILABLE', 'Trusted version metadata unavailable', 503) from None
 
 
 class OCRAdapter:
@@ -80,7 +54,6 @@ class OCRAdapter:
         data, media = ctx.read_input()
         if media not in ('image/png', 'image/jpeg'):
             raise ServiceError('MEDIA_TYPE', 'OCR requires an uploaded PNG or JPEG', 415)
-        preflight(model)
         key = ctx.service.auth.key_for(ctx.identity)
         ctx.check()
         remaining = min(ctx.deadline-time.monotonic(),

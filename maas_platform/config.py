@@ -75,8 +75,8 @@ class Settings:
         data = json.loads(self.catalog_file.read_text())
         for name, model in data.items():
             adapter = adapter_for(model['driver'])
-            if adapter.requires_upstream and any(not isinstance(model.get(key),str) or not model[key] for key in ('upstream_model','pin_file','preflight_file')):
-                raise ValueError('Network adapters require an upstream model and trusted version metadata files')
+            if adapter.requires_upstream and any(not isinstance(model.get(key),str) or not model[key] for key in ('upstream_model',)):
+                raise ValueError('Network adapters require a registered upstream model')
             if (not isinstance(model.get('revision'), str) or not model['revision']
                     or not isinstance(model.get('max_runtime_s'), (int,float))
                     or not math.isfinite(model['max_runtime_s']) or not 0<model['max_runtime_s']<=3600):

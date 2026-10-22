@@ -116,7 +116,7 @@ def test_collector_bounds_operator_http_timeout_and_restores_default(tmp_path):
 
 
 def test_consumer_projection_redacts_configuration_and_revokes_on_drift(tmp_path):
-    from maas_platform.ocr_connector import preflight
+    from maas_platform.versioning import legacy_preflight as preflight
     pin,control,inventory,gateway=fixture()
     private=tmp_path/'private';private.mkdir();export=tmp_path/'consumer'
     (private/'pin.json').write_text(json.dumps(pin.public()))

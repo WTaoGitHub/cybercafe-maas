@@ -35,3 +35,12 @@ def test_invalid_model_runtime_rejected(monkeypatch,tmp_path):
  env(monkeypatch,tmp_path);c=Settings.from_env()
  c.catalog_file.write_text(json.dumps({'mock.echo':{'driver':'mock','revision':'1','max_runtime_s':-10}}))
  with pytest.raises(ValueError):c.catalog()
+
+
+def test_network_catalog_needs_no_collector_files(monkeypatch,tmp_path):
+ env(monkeypatch,tmp_path);c=Settings.from_env()
+ model={'driver':'gpustack.ocr','revision':'ocr-r1','max_runtime_s':30,'upstream_model':'registered-ocr'}
+ c.catalog_file.write_text(json.dumps({'ocr.default':model}))
+ assert c.catalog()['ocr.default']==model
+ model.pop('upstream_model');c.catalog_file.write_text(json.dumps({'ocr.default':model}))
+ with pytest.raises(ValueError):c.catalog()

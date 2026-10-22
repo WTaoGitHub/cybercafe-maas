@@ -461,11 +461,10 @@ def test_deferral_never_erases_dispatch_intent_and_honors_cancellation(env):
 
 def sync_setup(env,monkeypatch,handler):
     client,s,settings,auth,_=env
-    catalog={'driver':'gpustack.ocr','revision':'ocr-r1','max_runtime_s':5,'upstream_model':'real-ocr','pin_file':'/trusted/pin','preflight_file':'/trusted/preflight'}
+    catalog={'driver':'gpustack.ocr','revision':'ocr-r1','max_runtime_s':5,'upstream_model':'real-ocr'}
     settings.catalog_file.write_text(json.dumps({'mock.echo':{'driver':'mock','revision':'1','max_runtime_s':30},'ocr.default':catalog}))
     bindings=json.loads(settings.bindings_file.read_text());bindings['credentials'][0]['models'].append('ocr.default')
     settings.bindings_file.write_text(json.dumps(bindings))
-    monkeypatch.setattr('maas_platform.sync_ingress.preflight',lambda model:None)
     client.app.state.sync_ingress.client_factory=lambda **kw:httpx.AsyncClient(transport=httpx.MockTransport(handler),**kw)
     return client,s,settings
 
