@@ -1,6 +1,6 @@
 # P4 发布与耐久验收进展
 
-耐久测试失败或中断，P4未通过，请检查原始状态及错误记录。
+8小时耐久测试尚未完成或最终核对未通过，P4暂不整体验收。
 
 当前范围：可信两节点、GPUStack v2.2.3、001单执行器及受控私有入口。用户明确暂不开放公网；不实现E1/E2/E3或推理后端合批。
 
@@ -9,7 +9,7 @@
 | 任务 | 实测结果 |
 |---|---|
 | 私有HTTPS | 001回环18832，自签证书90天；信任指定证书后OCR200/46行；未信任证书时拒绝连接，未使用跳过证书校验 |
-| 独立监控 | 001 systemd每30秒检查服务、collector、TLS与observer新鲜度；真实停止observer后检测并在恢复后解除告警；无外部通知通道 |
+| 独立监控 | 001 systemd每30秒检查服务、TLS与observer新鲜度；E6后不再依赖自建collector；历史observer停止/恢复告警已验证，无外部通知通道 |
 | 指标历史与看板 | 私有聚合历史轮换、最多约10MiB；最近120个采样的任务速率和资源指标；HTML是导出快照 |
 | 备份 | 暂停并排空、停止三个应用写入进程后同时备份任务DB/artifact/应用配置；正式数据不删除 |
 | 加密异机副本 | 本机.maas保存AES-256-CBC/PBKDF2加密文件、独立HMAC-SHA256验证；密钥不离开本机、不入Git；篡改密文在回传前被拒绝 |
@@ -24,22 +24,20 @@
 
 ## 长时测试
 
-- 服务：maas-endurance-night-20261021；run ID：night-8h-20261021。
+- 服务：maas-endurance-e6-night-20261022；run ID：e6-night-8h-20261022。
 - 白天一轮按用户要求主动停止，1276.26秒、256/256成功、无错误；不计为8小时通过。
-- 夜间计划：2026-10-21 19:00至2026-10-22 03:00（北京时间），服务器systemd定时启动，不依赖本机在线；错过窗口不补跑。
-- 起点（SCHEDULED时为计划时间）：2026-10-21 19:00:02 +08:00；预计最早完成：2026-10-22 03:00:02 +08:00。
+- 本轮计划：2026-10-22 20:00:00 +08:00至2026-10-23 04:00:00 +08:00，由服务器systemd执行，不依赖本机在线；错过定时窗口不自动补跑。
+- 起点（SCHEDULED时为计划时间）：2026-10-22 20:00:00 +08:00；预计最早完成：2026-10-23 04:00:00 +08:00。
 - 40张固定中英文样本（DocLayNet/RCTW-17各20），每5秒提交一个独立异步任务，经校验证书的HTTPS完成上传/提交/查询/下载。
 - 单执行器、每项目额度1保持不变；这验证持续运行与持久性，不测最大吞吐或后端合批。
 - 预检短测：57提交/57成功，零错误；成功计量逐任务对账一致；端到端P95 1.163秒。
-- 本地保存快照状态：FAILED；已运行11796.06秒，2360提交/2359成功。此项是快照，后续由验收跟进更新。
+- 本地保存快照状态：SCHEDULED；已运行0.00秒，0提交/0成功。此项是快照，后续由验收跟进更新。
 - 8小时结束必须核对：elapsed≥28800、所有accepted有成功终态、errors为空、数据库任务/成功事件数量一致，且verify_endurance.py确认请求时间连续（最大间隔不超过60秒），不能用休眠满8小时代替持续负载；异常时停止负载且不自动解除UNKNOWN或重启计时。
 - 已安排每小时跟进，进度正常时不通知；完成或发生需处理的问题再汇总。
 
-## 夜间失败与排查
+## E6整改后的独立复测
 
-本轮于北京时间2026-10-21 22:16:38提前结束：2360接纳、2359成功、1个PREFLIGHT_UNAVAILABLE。collector采集失败与002 SSH MaxStartups限流时间吻合，因果链仍需专项验证。首次故障后服务曾恢复，不自动重启负载，P4未通过，E5不启动。详见[失败记录与修复建议](ENDURANCE-FAILURE.md)。
-
-复发更新：2026-10-22 02:58快照显示collector再次失败，独立监控COLLECTOR_FAILED_OR_STALE，UNKNOWN=0；002同窗反复SSH MaxStartups限流。见失败记录中的复发证据。
+自建collector已退役，当前复测使用新run ID，不拼接旧时长。原night-8h-20261021保持FAILED，见[原失败记录](ENDURANCE-FAILURE.md)。E6实机维护/恢复与备份证据见[执行记录](../../docs/framework/E6-RETIREMENT.md)。
 
 ## 保留边界
 
@@ -47,4 +45,4 @@
 
 ## 原始证据
 
-[私有TLS/监控](tls-monitor.json) · [指标看板快照](monitor-dashboard.html) · [备份记录](backup-status.json) · [恢复核对](restore-result.json) · [密文篡改反例](backup-authentication.json) · [Docker重启](docker-restart-window.json) · [001隔离探测](boundary-001-probes.json) · [002隔离探测](boundary-002-probes.json) · [镜像回退](rollback.json) · [四客户端提交](four-client.json) · [短测](endurance-smoke.json) · [8小时快照](endurance-progress.json) · [原服务核对](final-verification.json) · [回归日志](regression.log) · [运行收尾状态](post-release-state.json)
+[私有TLS/监控](tls-monitor.json) · [指标看板快照](monitor-dashboard.html) · [备份记录](backup-status.json) · [恢复核对](restore-result.json) · [密文篡改反例](backup-authentication.json) · [Docker重启](docker-restart-window.json) · [001隔离探测](boundary-001-probes.json) · [002隔离探测](boundary-002-probes.json) · [镜像回退](rollback.json) · [四客户端提交](four-client.json) · [短测](endurance-smoke.json) · [原8小时快照](endurance-progress.json) · [E6复测快照](endurance-retest-progress.json) · [原服务核对](final-verification.json) · [回归日志](regression.log) · [运行收尾状态](post-release-state.json)

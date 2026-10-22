@@ -1,0 +1,12 @@
+[Unit]
+Description=Start E6 endurance at 2026-10-22 20:00 Asia/Shanghai
+
+[Timer]
+OnCalendar=2026-10-22 20:00:00 Asia/Shanghai
+AccuracySec=1s
+RandomizedDelaySec=0
+Persistent=false
+Unit=maas-endurance-e6-night-20261022.service
+
+[Install]
+WantedBy=timers.target
