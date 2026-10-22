@@ -1,0 +1,17 @@
+{
+  "host": "XZ-31-001",
+  "source": "journalctl -u ssh.service (read-only)",
+  "first_window": {
+    "begin": "2026-10-21T22:16:20+08:00",
+    "end": "2026-10-21T22:20:35+08:00",
+    "duration_seconds": 255,
+    "connections_dropped": 2372,
+    "preauth_log_lines_in_2215_2221_window": 2109
+  },
+  "recurrence_window": {
+    "begin": "2026-10-22T02:51:45+08:00",
+    "end_not_found_before": "2026-10-22T03:00:00+08:00",
+    "preauth_log_lines_in_0250_0300_window": 2626
+  },
+  "note": "Log line counts are not unique sources or proof of successful access. Both nodes experienced SSH admission throttling. Collector uses local Docker on 001 and remote SSH to 002."
+}

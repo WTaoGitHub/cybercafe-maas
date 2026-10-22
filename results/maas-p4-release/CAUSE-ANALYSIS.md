@@ -50,3 +50,9 @@ MaxStartups限制同时尚未认证的连接，start:rate:full形式表示达到
 如要改善暂态业务失败，可另行设计“发送前预检暂不可用时有界等待/延后”，严格保留总deadline/队列/项目额度，不对已发送或UNKNOWN重试。修复后用新run ID完整重测，不能续跑本轮时长。
 
 原始材料：[失败记录](ENDURANCE-FAILURE.md)、[失败任务](endurance-failed-task.json)、[collector日志](endurance-collector-failure.log)、[SSH限流](endurance-ssh-throttling.log)、本仓库maas_platform/collector.py与ocr_connector.py。
+
+## 6. 001同窗SSH故障补充
+
+2026-10-22按用户问题进一步核对，**不能称为仅002故障**。001的ssh.service日志证实：10月21日22:16:20开始MaxStartups限流，22:20:35结束，持续4分15秒，记录2372次连接丢弃；002则在22:16:21—22:19:38限流、丢弃932次。10月22日复发时001在02:51:45开始，002在02:51:48开始，仍为同窗现象。证据见 [001日志摘要](ssh-throttling-001-correlation.json)。
+
+须区分SSH故障范围与collector的依赖方向：001 collector对本机用Docker清单、对002用SSH，因此002的SSH准入是直接远程采集依赖；001的SSH限流直接影响新建运维连接，但collector不经SSH读取001本地清单。不能据此把001的模型/API也判为宕机，或完全排除共有主机资源压力。未记录采集失败阶段的证据缺口仍在，修复应同时审查两节点公网/管理SSH准入，并稳定只读清单通道。
