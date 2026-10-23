@@ -1,0 +1,120 @@
+{
+  "started_at": 1792747880.324938,
+  "scope": "001 worker and standalone legacy OCR only; no VM or Docker daemon restart",
+  "before": {
+    "wta-gpustack-worker": {
+      "id": "1d446810a5c26eb6c0a04ffae09b8c623838f2d87ee825df3d5bfb443961c15c",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-21T04:34:48.640129499Z"
+    },
+    "cybercafe-ocr": {
+      "id": "ab3b59434a88d573561fb7acc84be2bfa7f89b959ae58a029d9b6d04ded53709",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-21T04:34:48.631401533Z"
+    }
+  },
+  "after": {
+    "wta-gpustack-worker": {
+      "id": "1d446810a5c26eb6c0a04ffae09b8c623838f2d87ee825df3d5bfb443961c15c",
+      "running": false,
+      "restart": "no",
+      "started_at": "2026-10-21T04:34:48.640129499Z"
+    },
+    "cybercafe-ocr": {
+      "id": "ab3b59434a88d573561fb7acc84be2bfa7f89b959ae58a029d9b6d04ded53709",
+      "running": false,
+      "restart": "no",
+      "started_at": "2026-10-21T04:34:48.631401533Z"
+    }
+  },
+  "protected_before": {
+    "wta-gpustack-server": {
+      "id": "74ad75025d057e222345a739dc26cd49e8d7d8d156a548d98b50c6485f2bd435",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-21T04:34:48.63211562Z"
+    },
+    "maas-tasks-api-1": {
+      "id": "ec37476fb2e1ff8482827787ede3c1ce961048c1a38ae201628fed9d1417d78d",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-22T05:48:58.108569817Z"
+    },
+    "maas-tasks-executor-1": {
+      "id": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-22T05:48:58.107769188Z"
+    },
+    "maas-tasks-observer-1": {
+      "id": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-22T05:48:58.106975127Z"
+    },
+    "maas-tasks-db-1": {
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-21T04:34:48.639526584Z"
+    }
+  },
+  "protected_after": {
+    "wta-gpustack-server": {
+      "id": "74ad75025d057e222345a739dc26cd49e8d7d8d156a548d98b50c6485f2bd435",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-21T04:34:48.63211562Z"
+    },
+    "maas-tasks-api-1": {
+      "id": "ec37476fb2e1ff8482827787ede3c1ce961048c1a38ae201628fed9d1417d78d",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-22T05:48:58.108569817Z"
+    },
+    "maas-tasks-executor-1": {
+      "id": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-22T05:48:58.107769188Z"
+    },
+    "maas-tasks-observer-1": {
+      "id": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-22T05:48:58.106975127Z"
+    },
+    "maas-tasks-db-1": {
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+      "running": true,
+      "restart": "unless-stopped",
+      "started_at": "2026-10-21T04:34:48.639526584Z"
+    }
+  },
+  "maas_api_health": 200,
+  "clusters": [
+    {
+      "id": 1,
+      "name": "cybercafe-poc",
+      "provider": "Docker"
+    },
+    {
+      "id": 3,
+      "name": "test1",
+      "provider": "Docker"
+    }
+  ],
+  "workers": [
+    {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "cluster_id": 1
+    }
+  ],
+  "gpu_compute": "",
+  "finished_at": 1792747914.1912746,
+  "ok": true
+}

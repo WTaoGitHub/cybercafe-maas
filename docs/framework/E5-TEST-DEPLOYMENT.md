@@ -83,3 +83,10 @@ E5.F1优化配置服务寻址；E5.F2在必要时增加独立会话授权、凭�
 ## 云备份入口预留（2026-10-23）
 
 预留URL为 `http://configuration.cybercafe.phanlink.cn`，cloud_backup.enabled默认false。当前不部署/探测云服务、不配置DNS或隧道、不自动回退、不发送共享码或原生token。D1/D2只预留schema/EndpointResolver接口，D8补充验证：即使LAN失败，云备用仍不建立连接且不发送秘密。后续正式启用再评估HTTPS、授权及配置同步版本；本地正常启动不依赖该域名。
+
+
+## 2026-10-23用户操作后的实际进展
+
+用户已建独立Docker cluster `test1`（ID3）并删除001原生worker记录；只读发现原容器仍运行后，依据已选角色切换及用户允许停止模型服务，已停止001的wta-gpustack-worker和本机cybercafe-ocr，restart=no，保留镜像/卷。Server及MaaS API/任务执行器/observer/DB未重启，healthz=200；002未改，test1当前无worker/模型。见 [准备证据](../../results/maas-e5-preparation/REPORT.md)。
+
+不再需要创建test1，仍需安全配置它的原生注册凭据；001旧维护脚本的固定worker/model假设尚待适配。现有模型可停止，不再作为E5切换的保留条件；原业务推理路由未重测，控制存活不代表OCR可用。配置服务和E5脚本仍未实现/部署，新克隆验收未完成。

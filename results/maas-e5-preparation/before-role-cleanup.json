@@ -1,0 +1,153 @@
+{
+  "checked_at": 1792747790.392053,
+  "clusters": [
+    {
+      "id": 1,
+      "name": "cybercafe-poc",
+      "provider": "Docker"
+    },
+    {
+      "id": 3,
+      "name": "test1",
+      "provider": "Docker"
+    }
+  ],
+  "workers": [
+    {
+      "id": 2,
+      "name": "XZ-31-002",
+      "state": "ready",
+      "cluster_id": 1
+    }
+  ],
+  "models": [
+    {
+      "id": 1,
+      "name": "rapidocr-gpu",
+      "cluster_id": 1,
+      "replicas": 1,
+      "instances": [
+        {
+          "worker": "XZ-31-002",
+          "state": "running"
+        }
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "name": "maas-tasks-observer-1",
+      "image": "cybercafe-maas-tasks:e6-r1",
+      "running": true,
+      "status": "running",
+      "restart": "unless-stopped"
+    },
+    {
+      "name": "maas-tasks-executor-1",
+      "image": "cybercafe-maas-tasks:e6-r1",
+      "running": true,
+      "status": "running",
+      "restart": "unless-stopped"
+    },
+    {
+      "name": "maas-tasks-api-1",
+      "image": "cybercafe-maas-tasks:e6-r1",
+      "running": true,
+      "status": "running",
+      "restart": "unless-stopped"
+    },
+    {
+      "name": "maas-edge",
+      "image": "sha256:3dd08163706a20b20622f310ec10258cc96e9007ab357f7201955bc880ac17f4",
+      "running": true,
+      "status": "running",
+      "restart": "no"
+    },
+    {
+      "name": "maas-private-tls",
+      "image": "sha256:3dd08163706a20b20622f310ec10258cc96e9007ab357f7201955bc880ac17f4",
+      "running": true,
+      "status": "running",
+      "restart": "no"
+    },
+    {
+      "name": "maas-tasks-db-1",
+      "image": "postgres:16-alpine",
+      "running": true,
+      "status": "running",
+      "restart": "unless-stopped"
+    },
+    {
+      "name": "wta-maas-p1-test-db",
+      "image": "postgres:16-alpine",
+      "running": true,
+      "status": "running",
+      "restart": "no"
+    },
+    {
+      "name": "hungry_galois",
+      "image": "sha256:08adbc27acaf5bdad22e224ad94f47b36ef6c98a2660015ce1c3c741fc3add75",
+      "running": false,
+      "status": "exited",
+      "restart": "no"
+    },
+    {
+      "name": "wta-gpustack-worker",
+      "image": "quay.io/gpustack/gpustack:v2.2.3",
+      "running": true,
+      "status": "running",
+      "restart": "unless-stopped"
+    },
+    {
+      "name": "infallible_mcclintock",
+      "image": "sha256:0ce8a44c2edf2d0940e341ae214df1f28412d64663a1b1e33a0cfbec7d605f05",
+      "running": false,
+      "status": "exited",
+      "restart": "no"
+    },
+    {
+      "name": "wta-gpustack-server",
+      "image": "quay.io/gpustack/gpustack:v2.2.3",
+      "running": true,
+      "status": "running",
+      "restart": "unless-stopped"
+    },
+    {
+      "name": "cybercafe-h3",
+      "image": "cybercafe-h3:0.1.0",
+      "running": false,
+      "status": "exited",
+      "restart": "no"
+    },
+    {
+      "name": "cloudflared",
+      "image": "cloudflare/cloudflared:latest",
+      "running": false,
+      "status": "exited",
+      "restart": "no"
+    },
+    {
+      "name": "cybercafe-ocr",
+      "image": "cybercafe-ocr:1.1",
+      "running": true,
+      "status": "running",
+      "restart": "unless-stopped"
+    }
+  ],
+  "gpu_compute": "",
+  "monitor": {
+    "generated_at_unix": 1792747786.0153294,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8466,
+      "maas_successful_sync_requests_total": 6,
+      "maas_unknown_backend_activity": 0,
+      "maas_unknown_sync_activity": 0,
+      "maas_artifact_live_bytes": 67761278,
+      "maas_artifact_free_bytes": 418562146304,
+      "maas_oldest_queue_seconds": 0
+    }
+  },
+  "maas_api_health": 200
+}

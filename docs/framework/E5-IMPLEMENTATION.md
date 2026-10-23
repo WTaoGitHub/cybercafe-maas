@@ -35,3 +35,10 @@ E5成功标准是同批克隆读取相同配置并原生自动注册，不是实
 ## 云备份扩展点预留
 
 F3仅预留cloud_backup.url=`http://configuration.cybercafe.phanlink.cn`、enabled=false及EndpointResolver扩展接口，不实现云客户端、同步、重试或切换。配置读取/主源失败测试应断言disabled入口零请求、无秘密转发；不依赖真实域名可达。云端部署、证书和启用策略后续单列，不计入F0–F7交付。
+
+
+## 2026-10-23用户操作后的实际进展
+
+用户已建独立Docker cluster `test1`（ID3）并删除001原生worker记录；只读发现原容器仍运行后，依据已选角色切换及用户允许停止模型服务，已停止001的wta-gpustack-worker和本机cybercafe-ocr，restart=no，保留镜像/卷。Server及MaaS API/任务执行器/observer/DB未重启，healthz=200；002未改，test1当前无worker/模型。见 [准备证据](../../results/maas-e5-preparation/REPORT.md)。
+
+不再需要创建test1，仍需安全配置它的原生注册凭据；001旧维护脚本的固定worker/model假设尚待适配。现有模型可停止，不再作为E5切换的保留条件；原业务推理路由未重测，控制存活不代表OCR可用。配置服务和E5脚本仍未实现/部署，新克隆验收未完成。
