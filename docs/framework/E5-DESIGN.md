@@ -112,6 +112,26 @@ revision不可变，切换active revision原子完成；管理员回退发布新
 
 母版启动时间有不一致证据，不能因无限期证书忽略notBefore/校时；首次配置取得前时钟异常明确报错，不能关闭校验。无需域名/公网/独立CA/第三方证书；扩展需求再评估。
 
+## 云备份配置服务预留入口
+
+2026-10-23用户指定云备份配置服务使用 `http://configuration.cybercafe.phanlink.cn` 指代；**当前只预留接入入口，不实现或部署云服务，也不启用自动回退。** 该URL按用户原样记录，不表示DNS、HTTP响应、证书或服务存在已验证，本轮不解析或探测。
+
+本地bootstrap配置schema预留以下字段（设计草案，尚未生成配置文件）：
+
+```json
+{
+  "config_service_url": "https://10.11.31.1:<部署时确定的专用端口>",
+  "cloud_backup": {
+    "url": "http://configuration.cybercafe.phanlink.cn",
+    "enabled": false
+  }
+}
+```
+
+EndpointResolver保留独立cloud_backup配置块，disabled时不解析/探测/建立连接，不建立后台健康检查，也不在LAN失败时启用。其他模块不依赖云服务；boot/manual均继续只使用LAN主入口。后续备用Provider是扩展点，不实现空壳云客户端或自动切换流程。
+
+预留URL使用HTTP不改变首版LAN HTTPS要求。将来启用时再明确HTTPS/信任、共享码授权、配置版本一致性及允许同步的内容；不得在当前禁用HTTP入口发送共享码、GPUStack token或包含秘密的配置。不得把LAN故障静默改为向该地址明文发码。云备份部署和容灾验收均不计入当前完成项。
+
 ## 开发计划与验收状态
 
 | 阶段 | 交付 | 门槛/状态 |

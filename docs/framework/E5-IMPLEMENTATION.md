@@ -30,3 +30,8 @@
 先本地单元/接口/进程测试实际不变量，再有界独立223/新克隆验证。重用测试集而不为纯文档造实现镜像测试。验证范围包括鉴权/秘密泄漏、原子发布、互斥幂等、native失败恢复、HTTPS错误、依赖检查、维护门槛与控制服务宕机不影响运行worker。
 
 E5成功标准是同批克隆读取相同配置并原生自动注册，不是实现中央VM台账。独立会话/凭证平台移至[E5.F2](ENHANCEMENTS.md#e5f2凭证管理与自动分发增强)，GPU资源历史移至[E5.F3](ENHANCEMENTS.md#e5f3gpu资源vm与原生worker关联)。详细拓扑及T01–T14见 [部署测试](E5-TEST-DEPLOYMENT.md)。
+
+
+## 云备份扩展点预留
+
+F3仅预留cloud_backup.url=`http://configuration.cybercafe.phanlink.cn`、enabled=false及EndpointResolver扩展接口，不实现云客户端、同步、重试或切换。配置读取/主源失败测试应断言disabled入口零请求、无秘密转发；不依赖真实域名可达。云端部署、证书和启用策略后续单列，不计入F0–F7交付。
