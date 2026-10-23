@@ -1,6 +1,6 @@
 # E5：克隆节点启动配置与GPUStack自动注册
 
-2026-10-23修订四，当前实施基线。最新实验拓扑与实施顺序见 [测试环境部署计划](E5-TEST-DEPLOYMENT.md)。**最高优先级；设计已收敛，环境取证部分完成，配置/登记服务及引导程序尚未实现、未部署、未完成克隆验收。** P4在既定两节点私有试点范围已通过。此文替代之前扩大到运行期动态管理的设想；历史调查保留在 [调研记录](E5-RESEARCH-20261023.md)。
+2026-10-23修订五，当前实施基线；用户决定首版采用可替换的共享注册码认证模块。最新实验拓扑与实施顺序见 [测试环境部署计划](E5-TEST-DEPLOYMENT.md)。**最高优先级；设计已收敛，环境取证部分完成，配置/登记服务及引导程序尚未实现、未部署、未完成克隆验收。** P4在既定两节点私有试点范围已通过。此文替代之前扩大到运行期动态管理的设想；历史调查保留在 [调研记录](E5-RESEARCH-20261023.md)。
 
 ## 目标与部署前提
 
@@ -16,7 +16,7 @@
 | 组件 | 本期职责 | 明确不承担 |
 |---|---|---|
 | 母版/构建工具 | 固定版本驱动及容器依赖、worker镜像/离线包、最小引导程序、可信CA与配置服务地址、封版manifest | 生产节点、长期凭据仓库、运行时配置主源 |
-| 克隆引导程序 | 启动条件检查、可信会话登记、配置验证、启动worker、一次注册核对、启动结果回报 | 持续设备Agent、模型调度、系统自动修复 |
+| 克隆引导程序 | 启动条件检查、授权会话登记、配置验证、启动worker、一次注册核对、启动结果回报 | 持续设备Agent、模型调度、系统自动修复 |
 | 配置服务 | 启动配置匹配、配置版本分发、登记授权、会话/原生worker关联与启动审计 | 节点健康仲裁、请求前预检、每次推理依赖 |
 | PostgreSQL | 配置发布元数据、登记事务/幂等、会话互斥、审计；独立schema及最小权限 | GPUStack状态的另一个全量副本 |
 | GPUStack v2.2.3 | 原生worker注册、资源上报、健康、模型部署、调度与推理路由 | 由E5替代其原生生命周期管理 |
@@ -29,7 +29,7 @@
 ```mermaid
 flowchart LR
   T[母版构建与封版] -->|供应商快照| V[独立克隆VM]
-  P[供应商一次性启动证明] --> B[最小启动引导程序]
+  P[试点站点/批次共享注册码] --> B[最小启动引导程序]
   V --> B
   B -->|HTTPS登记/获取配置| C[局域网配置服务]
   C --> D[(配置/会话/审计数据库)]
@@ -47,7 +47,7 @@ flowchart LR
 
 1. 读取image_id、bootstrap协议版本及当前启动标识，检测快照中的实例状态污染。
 2. 有界检查GPU可见性、完整UUID、驱动/用户态库、Docker及NVIDIA runtime、配置服务与原生Server网络；只检查，不安装、重启或重载。
-3. 完成可信登记，原子预留本次VM会话；同GPU活动会话冲突时拒绝新会话覆盖。
+3. 完成授权登记，原子预留本次VM会话；同GPU活动会话冲突时拒绝新会话覆盖。
 4. 获取适用于site、镜像、架构及GPU条件的配置，校验TLS、发布签名、版本/摘要及本地允许的配置字段。
 5. 准备固定摘要worker镜像及配置；禁止任意shell命令、在线执行“最新版”脚本和请求携带的自选Server/cluster覆盖受信策略。
 6. 原子写本次会话配置至受限目录，启动原生worker；网络就绪排序之外，必须显式检查引导成功，不能仅靠Before就让登记失败的worker启动。
@@ -67,11 +67,11 @@ flowchart LR
 | 管理员手动 | SSH登录后以root/sudo执行 `sudo /opt/maas/bin/maas-worker-bootstrap.sh apply --trigger manual`，拉取当前适用revision并应用 |
 | 本地查看 | `sudo /opt/maas/bin/maas-worker-bootstrap.sh status`，仅输出脱敏应用版本、会话/worker关联与最后阶段；此结果不是GPUStack实时健康 |
 
-`--trigger`只用于审计，不改变权限、签名或凭据要求；手动入口不允许绕过GPU身份、会话冲突、TLS和兼容检查。管理员SSH认证不自动等于配置服务的登记认证，脚本仍需合法本机会话或受支持的新登记证明；过期/缺失凭据明确报错，不使用母版共享秘密替代。
+`--trigger`只用于审计，不改变权限、签名或凭据要求；手动入口不允许绕过GPU身份、会话冲突、TLS和兼容检查。管理员SSH认证不自动等于配置服务的登记认证，已有会话的脚本仍需合法本机会话凭据；本次VM首次登记可使用配置好的有效批次共享码。过期/缺失凭据明确报错，不能用共享码读回或冒用其他会话秘密。
 
 ### 拉取与应用规则
 
-- 每次开机执行均向服务端取得当前适用配置；新的VM启动创建新会话。同次启动内的手动执行及失败重试复用会话、请求记录，不因为重新拉取而新增worker或消耗第二次启动证明。
+- 每次开机执行均向服务端取得当前适用配置；新的VM启动创建新会话。同次启动内的手动执行及失败重试复用会话、请求记录，不因为重新拉取而新增worker或重复扣登记额度。
 - boot与manual共用进程锁及持久操作记录；并发调用返回BOOTSTRAP_BUSY，不允许两个进程同时写配置/注册。中途退出后按操作记录与原生状态恢复，REGISTRATION_UNCERTAIN先对账。
 - 同revision且本地内容摘要/实际worker关联一致时返回UNCHANGED；不能只看“已完成”marker跳过服务端拉取，也不能只看revision而忽略本地文件损坏。
 - 配置文件先写受限临时文件，校验后原子替换；只有应用和原生核对完成后才提交applied_revision，启动结果回报失败单独记录，不把运行成功误报为尚未应用。
@@ -89,7 +89,7 @@ flowchart LR
 | 功能 | 本期行为与边界 |
 |---|---|
 | 启动配置下发 | Server URL、cluster标识、worker镜像摘要、worker启动参数、模型挂载定义；不同镜像版本选不同兼容配置 |
-| 会话登记与凭据发放 | 新VM独立会话，秘密不从母版继承；不把GPU UUID作为认证；原生凭据作用域能力验证是生产门槛 |
+| 会话登记与凭据发放 | 新VM独立会话；母版仅允许试点共享注册码这一明确例外，不含已注册会话/原生worker秘密；不把GPU UUID作为认证 |
 | 条件检查 | 逐项输出稳定错误码，GPU或runtime缺失时停止引导；不自动切换MAC/machine-id资源身份 |
 | 幂等与冲突 | 本次引导重试不重复创建worker；同request_id不同请求体冲突；同GPU活动会话不静默覆盖 |
 | 配置兼容性 | image_id、架构、bootstrap协议、GPU条件及必要驱动/runtime最低要求匹配；不兼容则明确失败 |
@@ -97,7 +97,7 @@ flowchart LR
 | 退避与错峰 | 启动随机延迟、有界指数退避+jitter；等待用单调时钟，最终超时后不启动新worker |
 | 签名与受控回退 | 发布物签名/摘要校验；配置revision不可变；回退为管理员发布的新revision指向先前内容，避免自动接受旧版本 |
 
-建议配置manifest包含：schema_version、config_revision、site_id、image_id及兼容范围、architecture、worker_image_digest、server_url、cluster_id、允许的worker参数、模型只读挂载、校验要求和签名key_id。manifest不含管理员密钥或可无限使用的cluster注册秘密。TLS CA与发布验证公钥来自母版可信根，密钥轮换需预置重叠信任或受控镜像更新，不能接受响应中的任意新信任根。
+建议配置manifest包含：schema_version、config_revision、site_id、image_id及兼容范围、architecture、worker_image_digest、server_url、cluster_id、允许的worker参数、模型只读挂载、校验要求和签名key_id。manifest不含共享注册码、管理员密钥或可无限使用的cluster注册秘密。TLS CA与发布验证公钥来自母版可信根，密钥轮换需预置重叠信任或受控镜像更新，不能接受响应中的任意新信任根。
 
 母版版本与配置revision分别追踪。第一版只支持明确允许的版本组合；未知image_id不自动套用最新配置。旧001/002和新母版属于不同版本，不作为必须同时迁移的对象。
 
@@ -105,11 +105,11 @@ flowchart LR
 
 以(site_id, 完整GPU UUID)关联资源，保存标识来源与可信资产映射；session_id/generation代表本次VM。boot_id、供应商swbootid、hostname/IP是关联线索，不是凭据；缺少UUID稳定性证明时不承诺跨VM稳定物理身份。
 
-建议最小数据表：image_release、config_release、gpu_resource、vm_session、bootstrap_proof、bootstrap_operation与bootstrap_event。配置发布按站点/镜像明确指定，不提供任意URL下载执行。
+建议最小数据表：image_release、config_release、gpu_resource、vm_session、registration_grant、bootstrap_operation与bootstrap_event。配置发布按站点/镜像明确指定，不提供任意URL下载执行。
 
-登记事务锁资源、检查启动证明有效性/消费状态、预留会话及操作ID。批次ID只标识镜像/来源，非认证；可选批次限量属于登记准入，不是推理配额，不必引入完整配额产品。一次性证明优先由供应商启动时可信注入；不具备时保留人工批准受限试点，不能静默降级成母版共享长期密钥。
+登记事务锁资源、重新校验认证授权范围/有效性、检查登记额度、预留会话及操作ID。批次ID仅分类，认证由当前SharedRegistrationCode模块完成；共享码可用于多个新VM，不按一次性证明消费。登记额度在同一事务内按成功预留的新会话计一次，重复请求不重复计数，注册结果不确定不自动退还额度。一次性注册码与供应商证明为后续可替换实现，不作为首版阻塞依赖。
 
-重复登记需同一可信实例重新认证并核对规范化请求体。HTTP token仅存hash；响应丢失时用短期加密封套或重新认证后轮换恢复，不承诺从hash恢复旧token。原生秘密如必须转发，使用独立受控秘密存储，不进公共配置、Git或日志。
+重复登记需重新认证并核对规范化请求体；共享码仅证明持有码，不能证明是同一VM。已存在会话的恢复须使用本次独立会话凭据，不能只凭共享码、GPU UUID或request_id取回旧会话秘密。HTTP token仅存hash；响应丢失时用短期加密封套或重新认证后轮换恢复，不承诺从hash恢复旧token。原生秘密如必须转发，使用独立受控秘密存储，不进公共配置、Git或日志。
 
 原生注册与DB事务不是一个事务。原生请求超时进入REGISTRATION_UNCERTAIN，按会话唯一worker名核对后补偿，不盲目再次注册。worker_id由Server关联核对，不能只信客户端自报。注册超时后若原生worker已运行，不直接重建/杀掉它；进入可审计待处理状态。
 
@@ -117,11 +117,55 @@ flowchart LR
 
 复用223的Server URL+cluster注册机制；空Server必须预建cluster。worker启动重新注册并保存UUID/token；external_id不能任填GPU UUID首次创建。**尚未证明原生支持逐VM受限/短期注册凭据与即时撤销**，不能把共享cluster token称为单GPU凭据。优先验证原生能力；受控代理或管理端绑定只作候选，不预先承诺。未完成原生绑定/调度隔离验证时，仅使用无模型独立测试cluster，不能靠配置服务的“未批准”状态阻止原生调度。
 
+## 首版共享注册码与可替换模块
+
+用户于2026-10-23明确暂采用共享注册码；**这是已选择的试点策略，不再要求供应商一次性注入才能开始无人值守测试。** 它实现持有码克隆自动接入，不证明物理机器真实身份或GPU所有权。试点先限定在独立无业务模型cluster，不能直接接触客户任务。
+
+### 共享码生命周期
+
+- 每site/batch单独随机高熵注册码，带非秘密code_id；服务端保存不可逆校验值、site、允许image集合、固定目标测试cluster、到期时间、最大登记数、启用状态和创建/撤销审计。客户端不能自选cluster或修改允许范围。
+- 母版可在root-only受限文件中预置本批次注册码，这是用户接受的试点例外；任何持有镜像/root权限的人仍可取得它，文件权限不消除镜像泄漏风险。独立会话token、GPUStack管理员/已注册worker秘密和签名私钥不得随快照复制。
+- 通过HTTPS请求体/受保护header传递，不放URL、命令行参数、日志、公共manifest或云备份。boot/manual通过同一凭据读取模块获取，审计只记录code_id。
+- 每次新登记检查到期/撤销/site/image/额度、资源冲突与限速；恢复已有会话则需会话授权，不通过“已有GPU记录”绕过认证。共享码正常可重复用于不同VM，不能把重复使用本身误判攻击。
+- 登记成功发独立会话凭据；手动apply在有效会话内无需再次消耗共享码额度。共享码不是会话token、GPUStack cluster token或配置签名密钥，各自用途分离。
+- 轮换发布新code_id，可配置有界重叠窗口；旧镜像码到期/撤销后不能新接入，需更新交付或管理员安全更换本地凭据，不提供匿名恢复口。已运行worker不因共享码轮换被停止。
+- 撤销共享码只禁止新登记/以该码重试未完成授权，**不会自动撤销已派生会话或原生worker**。泄漏处置须按code_id列出会话/worker，分别核查、撤销与清理；原生凭据若已外发，按其实际范围轮换。不能宣称停码即可清除恶意节点。
+- 对错误码验证和请求频率做有界限速；共享码限量/限时减少影响面，不防已持有码的冒用。并发同GPU拒绝覆盖、注册不确定先核对、UNKNOWN保留。
+
+### 模块契约（设计，尚未实现）
+
+采用普通接口+静态注册表，不引入动态插件下载或完整身份平台。客户端只允许配置中预先支持的auth_method，服务端按站点策略选择，未知/禁用方法拒绝；不能通过请求参数把强认证降级为shared_code。
+
+| 模块 | 输入→输出 | 责任边界 |
+|---|---|---|
+| ClientCredentialProvider | 本地受限配置→auth_method/version及秘密envelope | 首版SharedCodeFileProvider；以后替换一次性文件/供应商证明，秘密不写启动日志 |
+| RegistrationAuthenticator | auth_envelope+请求上下文→AuthGrant | 首版SharedRegistrationCode；返回subject/grant_id、site、image/cluster授权、有效期和assurance=shared_secret，不自行创建worker |
+| AdmissionPolicy | AuthGrant+登记请求→准入/冲突原因 | site/image/cluster一致性、码额度与资源互斥在DB事务内确认，避免认证后被撤销仍完成新预留 |
+| SessionService | 通过准入的请求→session/幂等操作 | 独立会话凭据、恢复、去重和审计，不依赖共享码字段结构 |
+| ConfigResolver/ReleaseVerifier | session+image→签名revision及验证结果 | 配置选择、兼容和完整性，与注册码认证独立 |
+| GPUStackRegistrationAdapter | 授权session/操作ID→原生关联/不确定状态 | 封装223注册与查询，GPUStack凭据不借共享码名义扩权 |
+| LocalWorkerLauncher | 已验证会话配置→启动/UNCHANGED/需维护 | boot/manual共用；不知道注册码算法，不负责认证和调度 |
+
+AuthGrant只存认证结果与策略引用，不包含原始秘密；shared_secret、one_time_code、provider_attestation分别代表不同可信度，不能下游一律当作verified_hardware。未来强认证可以增加证据字段，但不改变GPU资源/session/config/worker应用流程。
+
+版本化接口采用auth.method、auth.version与对应payload；日志层默认整段auth脱敏。认证错误为稳定分类，不回显提交码。共享码不做一次性唯一约束；未来OneTimeCode插件的消费在登记事务中完成，公共AuthGrant/SessionService契约需支持不同grant的次数/有效性规则。
+
+每个登记记录保存auth_method、grant_id/code_id、assurance和policy_version以追踪来源；不以共享码hash作设备身份。迁移时服务端按site显式允许新旧方法并设置截止期，再更新母版/本地Provider；在有效期内的旧会话手动apply不需要重建worker，新的VM遵循新策略。认证升级不自动轮换原生GPUStack凭据，需要单独操作计划。
+
+### 模块化验收
+
+1. SharedCode插件支持有效/过期/撤销/越site/越image/越cluster、额度并发与轮换窗口；所有日志/结果不含秘密。
+2. 同共享码两个新VM获得不同会话，原生worker身份独立；同GPU冲突不覆盖；同次重复请求不重复扣额度。
+3. 只凭共享码+他人UUID/request_id无法读回他人会话秘密；响应丢失按显式恢复协议处理，不盲目重建。
+4. 用测试认证适配器替换SharedCode，SessionService、配置选择与Launcher公共用例不变；此测试不代表供应商证明已实现。
+5. 未启用方法及认证降级请求被拒绝；撤销码与撤销会话/worker分别验证，禁止把前者当后者。
+6. 新节点先无业务模型cluster，GPUStack注册原生凭据的泄漏范围单独记录；配置服务的授权限制不能代替GPUStack限制。
+
 ## 最小内部接口（设计草案，尚未实现）
 
 | 接口 | 语义 |
 |---|---|
-| POST /bootstrap/v1/sessions | 启动证明、request_id、image/site、GPU与当前地址；预留会话并返回适用配置引用及受控会话凭据 |
+| POST /bootstrap/v1/sessions | 版本化auth_envelope（首版共享码）、request_id、image/site、GPU与当前地址；预留会话并返回适用配置引用及受控会话凭据 |
 | GET /bootstrap/v1/configs/{revision} | 获取不可变签名公共配置；私有内容需授权，不在URL放秘密 |
 | GET /bootstrap/v1/sessions/{id} | 本会话授权后恢复本次引导状态，禁止读取他人秘密 |
 | POST /bootstrap/v1/sessions/{id}/result | 幂等提交启动阶段和原生worker关联，Server独立核对注册结果 |
@@ -136,7 +180,7 @@ flowchart LR
 - 同次引导中断：有可校验缓存且会话仍被权威确认有效时恢复；不能把快照遗留缓存当本次有效会话。
 - 已成功注册节点：配置服务宕机不停止原生worker，不影响已有推理；原生worker本身恢复仍服从GPUStack机制，不承诺永远不需要原生凭据。
 - 第一版不自动更新运行中节点。管理员SSH运行本机apply脚本触发重新拉取/应用；同次会话复用，涉及worker重启的变更先返回NEEDS_MAINTENANCE，按既有维护条件处理后再apply，不借此更新系统依赖。
-- 若以后要求LAN全损仍允许新克隆注册，必须增加唯一签发权威切换、证明重放防护与一致性方案，单纯备份文件不算注册容灾。
+- 若以后要求LAN全损仍允许新克隆注册，必须增加唯一签发权威切换、登记重放防护与一致性方案，单纯备份文件不算注册容灾。
 
 ## 系统更新边界
 
@@ -157,21 +201,21 @@ flowchart LR
 | Docker Hub443探测失败 | 构建优先准备内网固定摘要镜像/离线包，不把外网拉取作为启动唯一条件 |
 | 启动墙钟与日志/uptime不一致 | 用户确认昨晚重启单独记录；服务端验证凭据时间，本地有界等待用单调时钟；TLS错误不跳校验 |
 
-完整证据见 [重启后报告](../../results/tower-post-reboot/REPORT.md)。实际快照源、字段语义、可信注入、GPU重绑定/独占和原生撤销仍需自己用独立环境验证，不只依赖供应商口头说明。
+完整证据见 [重启后报告](../../results/tower-post-reboot/REPORT.md)。实际快照源、字段语义、GPU重绑定/独占和原生撤销仍需独立验证。供应商可信注入调研后续进行，不阻塞当前共享码试点，也不把试点升级为可信物理设备认证。
 
 ## 实施路线与验收
 
 | 阶段 | 交付 | 验收门槛与当前状态 |
 |---|---|---|
 | E5.0 | 本设计、范围及参考项目取舍 | 设计完成；不代表实现 |
-| E5.1 | 独立实验环境盘点、223原生注册/凭据门槛、镜像版本清单及启动注入验证方案 | 环境取证部分完成；以001控制端+真实独立新克隆为目标，Mac本地模拟为可选补充，原生/供应商能力待验证 |
-| E5.2 | 配置发布/签名验证、PostgreSQL登记事务、最小HTTP接口、注册结果核对及脱敏结果 | 待实现；并发同GPU/证明重放/响应丢失/错版本/篡改/注册不确定均有明确结果 |
+| E5.1 | 独立实验环境盘点、223原生注册/凭据门槛、镜像版本及共享码授权范围 | 环境取证部分完成；以001控制端+真实独立新克隆为目标，Mac本地模拟为可选补充，原生/供应商能力待验证 |
+| E5.2 | 配置发布/签名验证、PostgreSQL登记事务、最小HTTP接口、注册结果核对及脱敏结果 | 待实现；并发同GPU/共享码撤销或越权/重复请求/响应丢失/错版本/篡改/注册不确定均有明确结果 |
 | E5.3 | image-prep、固定依赖/镜像清单、boot/manual统一本机脚本、systemd成功依赖及封版检查 | 待实现；临时root构建可验证，无GPU不降级身份，登记失败不启动worker |
 | E5.4 | 本地同一干净镜像双VM接入独立无模型cluster | 待做；独立会话/凭据/worker；同次重试幂等，旧marker拒绝继承；CPU模拟不证明GPU |
 | E5.5 | 独立获准新版快照真实GPU克隆 | 待做；新依赖继承、容器GPU、注册及Server/worker双向可达；tower离线仍能接入；外部资产锚定同卡验证 |
 | E5.6 | 镜像交付、启动排障、批准/撤销、发布/回退和管理入口保留手册 | 待做；供应商与运维可复现；001按部署计划去除worker但不重启VM，002不迁移 |
 
-首版必要失败矩阵：配置主源不可达、未知/旧image_id不兼容、无GPU/UUID、driver/runtime不匹配、签名/摘要错误、同证明多请求/同请求不同body、同GPU并发、新VM携带旧marker、原生注册成功但响应丢失、结果回报丢失、boot/manual并发、手动相同/新revision与维护门槛，以及配置服务在worker成功后离线。不得因任何失败自动重启机器、跳TLS或解除UNKNOWN。
+首版必要失败矩阵：配置主源不可达、未知/旧image_id不兼容、无GPU/UUID、driver/runtime不匹配、签名/摘要错误、共享码正常多VM使用与越权/过期/撤销、同请求不同body、同GPU并发、新VM携带旧marker、原生注册成功但响应丢失、结果回报丢失、boot/manual并发、手动相同/新revision与维护门槛，以及配置服务在worker成功后离线。不得因任何失败自动重启机器、跳TLS或解除UNKNOWN。
 
 云端备用、运行期配置更新、远程系统依赖维护、自动旧worker清理及大规模容量测试均后续单列，不作为首版启动闭环的扩张范围。E5仍优先于E1–E4/E7新增实施。
 

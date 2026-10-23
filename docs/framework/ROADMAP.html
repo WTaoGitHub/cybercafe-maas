@@ -223,7 +223,9 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h4>E5触发契约补充（2026-10-23）</h4>
 <p>默认克隆开机从配置服务拉取并应用；管理员SSH到克隆后，可运行本地固定版本maas-worker-bootstrap.sh apply --trigger manual触发相同流程。命令是设计草案、未实现。E5.3统一boot/manual入口、进程互斥、会话复用、revision幂等与原子落盘；E5.4增加自动/手动一致性和并发验证。影响已有worker运行的变更先返回NEEDS_MAINTENANCE，既有维护完成后再执行，不自动停推理容器或重启Docker/VM，不隐含实现E1。详见 <a href="E5-DESIGN.md#两种触发方式与统一本机入口">两种触发方式</a>。</p>
 <h4>E5测试部署拓扑确定（2026-10-23）</h4>
-<p>001转为GPUStack Server-only并承载LAN配置服务；tower封版交付快照；独立新克隆验证；002保留旧版基线。执行顺序为E5软件/原生门槛 → 备份和维护排空 → 处理001实例/worker及旧运维假设 → LAN配置服务 → 母版引导封版 → 供应商快照/新VM → 首启与SSH手动apply场景。001当前有3个OCR实例（rapidocr-gpu两个都在001），不能直接停worker；002容量和暂降副本策略需实施前明确。详见 <a href="E5-TEST-DEPLOYMENT.md">可执行部署计划与回退边界</a>。本轮仅只读核对和计划，不部署、不重启VM。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p>001转为GPUStack Server-only并承载LAN配置服务；tower封版交付快照；独立新克隆验证；002保留旧版基线。执行顺序为E5软件/原生门槛 → 备份和维护排空 → 处理001实例/worker及旧运维假设 → LAN配置服务 → 母版引导封版 → 供应商快照/新VM → 首启与SSH手动apply场景。001当前有3个OCR实例（rapidocr-gpu两个都在001），不能直接停worker；002容量和暂降副本策略需实施前明确。详见 <a href="E5-TEST-DEPLOYMENT.md">可执行部署计划与回退边界</a>。本轮仅只读核对和计划，不部署、不重启VM。</p>
+<h4>E5首版认证：可替换共享注册码（2026-10-23，当前决策）</h4>
+<p>首版采用站点/批次共享注册码，不再将供应商一次性注入列为试点前置。E5.2分离RegistrationAuthenticator、AdmissionPolicy及SessionService；E5.3客户端CredentialProvider与Launcher分离。hash保存、scope/过期/撤销/限量/限速和独立会话审计为首版范围，母版仅可预置试点共享码，不含原生管理员/已注册身份。先在独立无业务模型cluster验证自动加入，不把持有码当作硬件认证。后续显式切换到一次性码/供应商证明，公共启动流程不变。详见 <a href="E5-DESIGN.md#首版共享注册码与可替换模块">模块化设计与替换验收</a>。本轮未实现、未生成凭据或改服务器。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
 <h3>1. 总体路径</h3>
@@ -309,4 +311,6 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h4>E5触发契约补充（2026-10-23）</h4>
 <p>默认克隆开机从配置服务拉取并应用；管理员SSH到克隆后，可运行本地固定版本maas-worker-bootstrap.sh apply --trigger manual触发相同流程。命令是设计草案、未实现。E5.3统一boot/manual入口、进程互斥、会话复用、revision幂等与原子落盘；E5.4增加自动/手动一致性和并发验证。影响已有worker运行的变更先返回NEEDS_MAINTENANCE，既有维护完成后再执行，不自动停推理容器或重启Docker/VM，不隐含实现E1。详见 <a href="E5-DESIGN.md#两种触发方式与统一本机入口">两种触发方式</a>。</p>
 <h4>E5测试部署拓扑确定（2026-10-23）</h4>
-<p>001转为GPUStack Server-only并承载LAN配置服务；tower封版交付快照；独立新克隆验证；002保留旧版基线。执行顺序为E5软件/原生门槛 → 备份和维护排空 → 处理001实例/worker及旧运维假设 → LAN配置服务 → 母版引导封版 → 供应商快照/新VM → 首启与SSH手动apply场景。001当前有3个OCR实例（rapidocr-gpu两个都在001），不能直接停worker；002容量和暂降副本策略需实施前明确。详见 <a href="E5-TEST-DEPLOYMENT.md">可执行部署计划与回退边界</a>。本轮仅只读核对和计划，不部署、不重启VM。</p></section></main></body></html>
+<p>001转为GPUStack Server-only并承载LAN配置服务；tower封版交付快照；独立新克隆验证；002保留旧版基线。执行顺序为E5软件/原生门槛 → 备份和维护排空 → 处理001实例/worker及旧运维假设 → LAN配置服务 → 母版引导封版 → 供应商快照/新VM → 首启与SSH手动apply场景。001当前有3个OCR实例（rapidocr-gpu两个都在001），不能直接停worker；002容量和暂降副本策略需实施前明确。详见 <a href="E5-TEST-DEPLOYMENT.md">可执行部署计划与回退边界</a>。本轮仅只读核对和计划，不部署、不重启VM。</p>
+<h4>E5首版认证：可替换共享注册码（2026-10-23，当前决策）</h4>
+<p>首版采用站点/批次共享注册码，不再将供应商一次性注入列为试点前置。E5.2分离RegistrationAuthenticator、AdmissionPolicy及SessionService；E5.3客户端CredentialProvider与Launcher分离。hash保存、scope/过期/撤销/限量/限速和独立会话审计为首版范围，母版仅可预置试点共享码，不含原生管理员/已注册身份。先在独立无业务模型cluster验证自动加入，不把持有码当作硬件认证。后续显式切换到一次性码/供应商证明，公共启动流程不变。详见 <a href="E5-DESIGN.md#首版共享注册码与可替换模块">模块化设计与替换验收</a>。本轮未实现、未生成凭据或改服务器。</p></section></main></body></html>
