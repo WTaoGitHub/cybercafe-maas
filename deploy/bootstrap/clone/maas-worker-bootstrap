@@ -1,0 +1,5 @@
+#!/bin/sh
+# Fixed local code only. Never source configuration or download executable scripts.
+set -eu
+export PYTHONPATH=/opt/maas/lib
+exec /usr/bin/python3 -m maas_bootstrap.cli --config /etc/maas/bootstrap.json "$@"

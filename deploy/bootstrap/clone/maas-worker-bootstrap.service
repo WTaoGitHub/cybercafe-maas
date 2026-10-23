@@ -1,0 +1,21 @@
+[Unit]
+Description=Verify E5 configuration and join native GPUStack as a clone worker
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+ExecStart=/opt/maas/bin/maas-worker-bootstrap apply --trigger boot
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=150
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
