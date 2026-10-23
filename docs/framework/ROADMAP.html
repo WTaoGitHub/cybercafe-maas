@@ -250,7 +250,10 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h3>2026-10-23最新实现状态：克隆客户端与离线母版工具</h3>
 <p>本节覆盖前文历史状态：F1新增本地签名发布/新revision回退CLI；F3拉取、验签、私有暂存/锁及status已完成；F4 boot/manual统一apply、所属Docker worker启动、原生me=true身份核对已实现并模拟验证；F5离线Ubuntu文件安装、污染拒绝和systemd单元已实现。客户端在001真实HTTPS接口连续prepare验证通过且未启动worker；本地累计32项测试通过。</p>
 <p>尚未完成：发布CLI线上演练、旧维护工具适配、母版generalize/实际安装/保存快照、新建A/B克隆的开机与原生注册、真实GPU和模型验收。systemd只在启动时引导并有界重试，成功后不持续守护worker；镜像工具只写离线文件系统，不自动导出平台镜像。001002未重启，原生18080规则未改，云备份禁用。详见<a href="../../results/maas-e5-preparation/CLIENT-IMPLEMENTATION.md">实现记录</a>及<a href="../../deploy/bootstrap/clone/README.md">客户端操作说明</a>。</p>
-<p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p>
+<h3>2026-10-23母版准备暂停点（用户最新要求）</h3>
+<p>用户要求先准备、不要部署到tower。已完成本地公开交付包（源码commit f7de733）、只读清单脚本及校验工具；34项测试和实际包解压/临时离线文件树安装验证通过。真实码未拉取，无token/私钥入包。tower仅只读取证：Ubuntu24.04/Python3.12/crypto41.0.7及NVIDIA runtime已具备，但固定worker镜像未缓存、旧CyberCafe服务enabled、machine-id/SSH主机密钥未generalize。</p>
+<p><strong>当前只完成本地部署材料准备，不是实际母版封版完成。</strong> 不上传/安装到tower，不自动缓存镜像、停旧服务、清理身份或请求管理员立即制作快照。实际部署及旧启动职责审查、首启身份契约、离线镜像来源/构建方式确认仍待后续部署指令；检查通过后再由管理员制作快照、创建和启动独立A/B。001002不变。详见<a href="../../results/maas-e5-preparation/TEMPLATE-PREPARATION.md">母版准备报告</a>。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
 <blockquote><strong>E5当前执行基线（2026-10-23修订六）</strong>：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 <a href="E5-DESIGN.md">当前设计</a>、<a href="E5-IMPLEMENTATION.md">开发计划</a>和 <a href="E5-TEST-DEPLOYMENT.md">部署测试</a>。</blockquote>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
@@ -363,4 +366,7 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h3>2026-10-23最新实现状态：克隆客户端与离线母版工具</h3>
 <p>本节覆盖前文历史状态：F1新增本地签名发布/新revision回退CLI；F3拉取、验签、私有暂存/锁及status已完成；F4 boot/manual统一apply、所属Docker worker启动、原生me=true身份核对已实现并模拟验证；F5离线Ubuntu文件安装、污染拒绝和systemd单元已实现。客户端在001真实HTTPS接口连续prepare验证通过且未启动worker；本地累计32项测试通过。</p>
 <p>尚未完成：发布CLI线上演练、旧维护工具适配、母版generalize/实际安装/保存快照、新建A/B克隆的开机与原生注册、真实GPU和模型验收。systemd只在启动时引导并有界重试，成功后不持续守护worker；镜像工具只写离线文件系统，不自动导出平台镜像。001002未重启，原生18080规则未改，云备份禁用。详见<a href="../../results/maas-e5-preparation/CLIENT-IMPLEMENTATION.md">实现记录</a>及<a href="../../deploy/bootstrap/clone/README.md">客户端操作说明</a>。</p>
-<p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p></section></main></body></html>
+<p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p>
+<h3>2026-10-23母版准备暂停点（用户最新要求）</h3>
+<p>用户要求先准备、不要部署到tower。已完成本地公开交付包（源码commit f7de733）、只读清单脚本及校验工具；34项测试和实际包解压/临时离线文件树安装验证通过。真实码未拉取，无token/私钥入包。tower仅只读取证：Ubuntu24.04/Python3.12/crypto41.0.7及NVIDIA runtime已具备，但固定worker镜像未缓存、旧CyberCafe服务enabled、machine-id/SSH主机密钥未generalize。</p>
+<p><strong>当前只完成本地部署材料准备，不是实际母版封版完成。</strong> 不上传/安装到tower，不自动缓存镜像、停旧服务、清理身份或请求管理员立即制作快照。实际部署及旧启动职责审查、首启身份契约、离线镜像来源/构建方式确认仍待后续部署指令；检查通过后再由管理员制作快照、创建和启动独立A/B。001002不变。详见<a href="../../results/maas-e5-preparation/TEMPLATE-PREPARATION.md">母版准备报告</a>。</p></section></main></body></html>

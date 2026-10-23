@@ -1,0 +1,65 @@
+{
+  "readonly": true,
+  "units": [
+    {
+      "unit": "cybercafe-provision.service",
+      "unit_sha256": "9aa6f8622d07df0622f1b30c727aa9a13979e6528058dc85171692fa474b63c9",
+      "executable_path": "/opt/cybercafe/provision.sh",
+      "script_metadata": [
+        {
+          "path": "/opt/cybercafe/provision.sh",
+          "sha256": "6dfd3c54bbea78f0d35392376ebbbc11c0274ae1e87de8c6bc967f0d50e3f975",
+          "capability_words": [
+            "docker",
+            "hostname",
+            "systemctl",
+            "provision",
+            "agent"
+          ]
+        }
+      ],
+      "after_relevant": [
+        "network-online.target"
+      ],
+      "before_relevant": [
+        "cybercafe-agent.service"
+      ]
+    },
+    {
+      "unit": "cybercafe-agent.service",
+      "unit_sha256": "c3302cface86c470dec7b348e003537d51078e3cfc74c4c4a1de8cc7eec3aa6d",
+      "executable_path": "/usr/bin/python3",
+      "script_metadata": [
+        {
+          "path": "/opt/cybercafe/cybercafe-agent.py",
+          "sha256": "7954b8f8534f02a8605c779e26569f6b50c922c810340635b19ca19c0bec77fb",
+          "capability_words": [
+            "docker",
+            "hostname",
+            "systemctl",
+            "worker",
+            "provision",
+            "agent"
+          ]
+        }
+      ],
+      "after_relevant": [
+        "docker.service",
+        "cybercafe-provision.service",
+        "network-online.target"
+      ],
+      "before_relevant": []
+    },
+    {
+      "unit": "swcfghostname.service",
+      "unit_sha256": "a552bcb9af8d80aa69ca66b2a43bd841b4654c5c5e23a0937a4c8cbf987b8d12",
+      "executable_path": "/sbin/swcfghostname",
+      "script_metadata": [],
+      "after_relevant": [],
+      "before_relevant": [
+        "network-pre.target"
+      ]
+    }
+  ],
+  "limits": "metadata and keyword inventory only; not full control-flow review"
+}
