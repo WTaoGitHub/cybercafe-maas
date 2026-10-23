@@ -62,3 +62,39 @@ def test_same_manifest_different_local_clones_have_distinct_names(setup,tmp_path
     d={**a.data,'state_dir':str(tmp_path/'another-state')};p=tmp_path/'another.json';atomic_json(p,d)
     r2=FakeWorker();second=apply(LocalSettings(p),fetcher=Fetcher(sign()),backend=r2)
     assert first['worker_name']!=second['worker_name']
+
+
+def test_native_probe_matches_local_identity_and_exact_cluster(setup,monkeypatch):
+    import maas_bootstrap.worker as w
+    s,sign=setup;data=Path(s.data['worker_data_dir']);data.mkdir(mode=0o700)
+    identity={'worker_name':'e5-local-test','cluster_id':3}
+    for name,value in {'worker_token':'individual-native-token','worker_uuid':'native-uuid','worker_name':identity['worker_name']}.items():
+        p=data/name;p.write_text(value);p.chmod(0o600)
+    row={'id':12,'name':identity['worker_name'],'worker_uuid':'native-uuid','cluster_id':3,'state':'ready'}
+    rows=[row]
+    class Response:
+        def __enter__(self):return self
+        def __exit__(self,*a):pass
+        def read(self,n):return json.dumps({'items':rows}).encode()
+    class Opener:
+        def open(self,req,timeout):
+            assert req.full_url=='http://10.11.31.1:18080/v2/workers?me=true'
+            assert req.get_header('Authorization')=='Bearer individual-native-token'
+            return Response()
+    monkeypatch.setattr(w.urllib.request,'build_opener',lambda *a:Opener())
+    probe=NativeDockerWorker()
+    assert probe.registered(s,sign(),identity)['worker_id']==12
+    row['cluster_id']=1;assert probe.registered(s,sign(),identity) is None
+    row['cluster_id']=3;row['worker_uuid']='other';assert probe.registered(s,sign(),identity) is None
+    row['worker_uuid']='native-uuid';rows.append(dict(row));assert probe.registered(s,sign(),identity) is None
+
+
+def test_docker_create_pins_image_and_never_puts_token_in_arguments(setup,monkeypatch,tmp_path):
+    import maas_bootstrap.worker as w
+    s,sign=setup;calls=[];e=sign()
+    monkeypatch.setattr(w,'run',lambda args,**kw:calls.append(args))
+    NativeDockerWorker().create(s,e,{'fingerprint':'a'*64},{},tmp_path/'private-env')
+    args=calls[0]
+    assert args[:2]==['docker','create'] and args[-1]==e['manifest']['worker_image_digest']
+    assert '--restart=no' in args and '--env-file' in args
+    assert TOKEN not in ' '.join(args) and '--server-url' not in args

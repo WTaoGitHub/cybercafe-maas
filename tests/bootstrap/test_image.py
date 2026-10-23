@@ -34,7 +34,7 @@ def test_offline_image_contains_only_template_configuration(setup,tmp_path):
     with pytest.raises(BootstrapError,match='IMAGE_DESTINATION_EXISTS'):image.build(root,cfg)
 
 
-@pytest.mark.parametrize('name', ['etc/machine-id','etc/ssh/ssh_host_ed25519_key','var/lib/gpustack/worker_token'])
+@pytest.mark.parametrize('name', ['etc/machine-id','etc/ssh/ssh_host_ed25519_key','var/lib/gpustack/worker_token','var/lib/docker/containers/old/config.v2.json'])
 def test_rejects_dirty_identity_without_deleting_it(setup,tmp_path,name):
     root,cfg=inputs(setup,tmp_path);p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('preserve-me')
     with pytest.raises(BootstrapError,match='IMAGE_GENERALIZATION_REQUIRED'):image.build(root,cfg)

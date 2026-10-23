@@ -54,7 +54,7 @@ def build(root,settings_path):
         raise BootstrapError('IMAGE_STATE_PATH_UNSUPPORTED')
     # Never erase the supplier's SSH access or registered identities. Fail for manual generalization.
     blockers=[]
-    for name in ('var/lib/gpustack','var/lib/maas-bootstrap','etc/gpustack','root/.gpustack'):
+    for name in ('var/lib/gpustack','var/lib/maas-bootstrap','etc/gpustack','root/.gpustack','var/lib/docker/containers'):
         p=safe_target(root,name)
         if p.exists() and (not p.is_dir() or any(p.iterdir())):blockers.append(name)
     for name in ('etc/machine-id','var/lib/dbus/machine-id'):
@@ -68,7 +68,9 @@ def build(root,settings_path):
         p=safe_target(root,name)
         if p.exists():blockers.append(name)
     if blockers:raise BootstrapError('IMAGE_GENERALIZATION_REQUIRED:'+','.join(sorted(blockers)))
-    cfg=dict(settings.data)
+    cfg={k:settings.data[k] for k in (
+        'schema_version','config_service_url','release_key_id','state_dir','worker_data_dir',
+        'site_id','batch_id','cluster_id','image_id','architecture','allowed_server_urls','cloud_backup')}
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
                release_public_key_file='/etc/maas/release-signing.pub')
     files={
