@@ -105,6 +105,7 @@
 <h3>2026-10-20 补充：常驻清单与worker宿主机边界</h3>
 <p>001已部署常驻collector，002通过专用forced-command SSH只读清单提供内容和运行状态；失败时撤销旧预检，不自动重新登记pin。详见 <a href="P2-COLLECTOR.md">操作手册</a>。</p>
 <p>每个Docker引擎只允许一个GPUStack worker控制者。v2.2.3的WorkloadCleaner不以cluster名称隔离同引擎容器；不同daemon ID也不证明宿主机网络/containerd隔离。实际实验造成001原OCR容器清理及docker0丢失，均已恢复并记录。后续离线注入必须使用独立可销毁VM，当前按用户要求暂缓。此限制不禁止001兼任server、单个GPUStack worker、collector与任务executor。</p></section><section id="plan"><h2>实施计划 v0.2</h2>
+<blockquote><strong>E5当前执行基线（2026-10-23修订六）</strong>：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 <a href="E5-DESIGN.md">当前设计</a>、<a href="E5-IMPLEMENTATION.md">开发计划</a>和 <a href="E5-TEST-DEPLOYMENT.md">部署测试</a>。</blockquote>
 <p>2026-10-20 · 当前执行计划；P0已通过受控试点验收，P1本地适配器及故障窗口已验收（<a href="../../results/maas-p1/REPORT.md">收尾报告</a>），详见 <a href="../../results/maas-p0/REPORT.md">P0报告</a>及 <a href="../../results/maas-p0-p1/REPORT.md">首批实现报告</a>。依据：<a href="DESIGN.md">DESIGN.md</a>。</p>
 <h3>1. 交付策略</h3>
 <p>一个仓库、三个新增运行单元：任务API、执行器、PostgreSQL；结果服务以API+ArtifactStore模块和控制端持久卷实现。GPUStack固定v2.2.3，复用身份、模型目录、路由、推理和部署；不拆独立用户服务、目录服务、结果微服务或GPU调度服务。</p>
@@ -233,7 +234,12 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h4>E5 HTTPS首版决策（2026-10-23）</h4>
 <p>配置服务使用自签名服务端证书，母版预置完整公开信任证书，私钥只留配置服务器；正常验证IP SAN及有效期，不做独立CA/第三方证书集成。正式上线迁到独立稳定LAN机器时，制作正式镜像更新地址、证书和注册码，测试码停用。其他证书方式待实际扩展需求再评估。详见 <a href="E5-DESIGN.md#首版https自签名服务端证书">当前HTTPS设计</a>。本轮未签发证书或更改服务器。</p>
 <h4>E5自签名证书默认无限期（2026-10-23）</h4>
-<p>用户指定默认无限期，notAfter采用RFC5280约定9999-12-31T23:59:59Z，实现时验证签发/客户端兼容；不设周期续期，不跳TLS时间/SAN/信任校验。更换地址、密钥或正式镜像仍按可信交付更新证书。注册码/会话有效期不受影响。本次仅设计，无证书签发或服务器变更。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p>用户指定默认无限期，notAfter采用RFC5280约定9999-12-31T23:59:59Z，实现时验证签发/客户端兼容；不设周期续期，不跳TLS时间/SAN/信任校验。更换地址、密钥或正式镜像仍按可信交付更新证书。注册码/会话有效期不受影响。本次仅设计，无证书签发或服务器变更。</p>
+<h3>E5修订六：统一配置读取，去除首版登记会话（2026-10-23）</h3>
+<p>同批配置相同，首版共享码直接授权GET配置；无需VM登记→会话凭据链路，也不增加E5DB/GPU资源表/每VM结果回报。原生GPUStack管理独立worker，配置服务只做版本文件、访问认证、签名/兼容与基本日志，结果在克隆本地查看。共享码可读原生cluster token时须承认其实际权限；先独立无业务模型cluster试点，不承诺每VM撤销、设备数量配额或重复GPU防护。</p>
+<p>开发按 <a href="E5-IMPLEMENTATION.md">F0–F7计划</a> 推进：原生契约→文件发布→认证只读API→本机应用→原生启动核对→image-prep→001切换部署→新版快照/真实新克隆验收。001保留控制面和MaaS任务执行器，仅去GPUStack worker；002保留旧版，不重启001002；tower只制镜像。固定001IP、自签名证书默认无限期、共享码模块化、boot/manual同入口等既定决定保留。</p>
+<p>凭证分发/独立会话移至E5.F2，GPU资源关联移至E5.F3，不阻塞首版。软件先完成本地/隔离验证，再改服务器；本轮只修订文档，未实现或部署E5。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<blockquote><strong>E5当前执行基线（2026-10-23修订六）</strong>：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 <a href="E5-DESIGN.md">当前设计</a>、<a href="E5-IMPLEMENTATION.md">开发计划</a>和 <a href="E5-TEST-DEPLOYMENT.md">部署测试</a>。</blockquote>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
 <h3>1. 总体路径</h3>
@@ -329,4 +335,8 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h4>E5 HTTPS首版决策（2026-10-23）</h4>
 <p>配置服务使用自签名服务端证书，母版预置完整公开信任证书，私钥只留配置服务器；正常验证IP SAN及有效期，不做独立CA/第三方证书集成。正式上线迁到独立稳定LAN机器时，制作正式镜像更新地址、证书和注册码，测试码停用。其他证书方式待实际扩展需求再评估。详见 <a href="E5-DESIGN.md#首版https自签名服务端证书">当前HTTPS设计</a>。本轮未签发证书或更改服务器。</p>
 <h4>E5自签名证书默认无限期（2026-10-23）</h4>
-<p>用户指定默认无限期，notAfter采用RFC5280约定9999-12-31T23:59:59Z，实现时验证签发/客户端兼容；不设周期续期，不跳TLS时间/SAN/信任校验。更换地址、密钥或正式镜像仍按可信交付更新证书。注册码/会话有效期不受影响。本次仅设计，无证书签发或服务器变更。</p></section></main></body></html>
+<p>用户指定默认无限期，notAfter采用RFC5280约定9999-12-31T23:59:59Z，实现时验证签发/客户端兼容；不设周期续期，不跳TLS时间/SAN/信任校验。更换地址、密钥或正式镜像仍按可信交付更新证书。注册码/会话有效期不受影响。本次仅设计，无证书签发或服务器变更。</p>
+<h3>E5修订六：统一配置读取，去除首版登记会话（2026-10-23）</h3>
+<p>同批配置相同，首版共享码直接授权GET配置；无需VM登记→会话凭据链路，也不增加E5DB/GPU资源表/每VM结果回报。原生GPUStack管理独立worker，配置服务只做版本文件、访问认证、签名/兼容与基本日志，结果在克隆本地查看。共享码可读原生cluster token时须承认其实际权限；先独立无业务模型cluster试点，不承诺每VM撤销、设备数量配额或重复GPU防护。</p>
+<p>开发按 <a href="E5-IMPLEMENTATION.md">F0–F7计划</a> 推进：原生契约→文件发布→认证只读API→本机应用→原生启动核对→image-prep→001切换部署→新版快照/真实新克隆验收。001保留控制面和MaaS任务执行器，仅去GPUStack worker；002保留旧版，不重启001002；tower只制镜像。固定001IP、自签名证书默认无限期、共享码模块化、boot/manual同入口等既定决定保留。</p>
+<p>凭证分发/独立会话移至E5.F2，GPU资源关联移至E5.F3，不阻塞首版。软件先完成本地/隔离验证，再改服务器；本轮只修订文档，未实现或部署E5。</p></section></main></body></html>
