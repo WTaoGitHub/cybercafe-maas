@@ -80,4 +80,4 @@ python3 -m maas_bootstrap.publisher \
 
 ## 下一批实际验收
 
-先完成母版generalize/依赖和旧启动钩子核对，再安装E5文件、保存新快照，供应商创建独立克隆A/B。验证同码同配置、独立名称/UUID、真实GPU容器、原生注册和模型请求、SSH手动重复apply、错误配置不破坏原worker。不能重启001/002，不能在母版上启动实验worker。详见[E5部署矩阵](../../../docs/framework/E5-TEST-DEPLOYMENT.md)。
+先完成母版generalize/依赖和旧启动钩子核对，再安装E5文件；准备完成后交由管理员保存新快照，并由管理员创建、启动独立克隆A/B。管理员交付访问入口和快照版本后，我们再执行真实验收。验证同码同配置、独立名称/UUID、真实GPU容器、原生注册和模型请求、SSH手动重复apply、错误配置不破坏原worker。不能重启001/002，不能在母版上启动实验worker。详见[E5部署矩阵](../../../docs/framework/E5-TEST-DEPLOYMENT.md)。
