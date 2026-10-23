@@ -1,0 +1,71 @@
+{
+  "checked_at": 1792749309.3727558,
+  "no_secrets_in_service_logs": true,
+  "services": {
+    "maas-bootstrap-config.service": {
+      "active": "active",
+      "enabled": "enabled"
+    },
+    "maas-bootstrap-boundary.service": {
+      "active": "active",
+      "enabled": "enabled"
+    }
+  },
+  "protected": {
+    "wta-gpustack-server": {
+      "id": "74ad75025d057e222345a739dc26cd49e8d7d8d156a548d98b50c6485f2bd435",
+      "running": true,
+      "started_at": "2026-10-21T04:34:48.63211562Z"
+    },
+    "maas-tasks-api-1": {
+      "id": "ec37476fb2e1ff8482827787ede3c1ce961048c1a38ae201628fed9d1417d78d",
+      "running": true,
+      "started_at": "2026-10-22T05:48:58.108569817Z"
+    },
+    "maas-tasks-executor-1": {
+      "id": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+      "running": true,
+      "started_at": "2026-10-22T05:48:58.107769188Z"
+    },
+    "maas-tasks-observer-1": {
+      "id": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc",
+      "running": true,
+      "started_at": "2026-10-22T05:48:58.106975127Z"
+    },
+    "maas-tasks-db-1": {
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+      "running": true,
+      "started_at": "2026-10-21T04:34:48.639526584Z"
+    }
+  },
+  "stopped_worker_and_ocr": {
+    "wta-gpustack-worker": {
+      "running": false,
+      "restart": "no"
+    },
+    "cybercafe-ocr": {
+      "running": false,
+      "restart": "no"
+    }
+  },
+  "maas_api_health": 200,
+  "rules": {
+    "iptables": "-N MAAS-E5-CONFIG\n-A MAAS-E5-CONFIG -i lo -j ACCEPT\n-A MAAS-E5-CONFIG -s 10.11.31.0/24 -i enp3s0 -j ACCEPT\n-A MAAS-E5-CONFIG -j DROP\n",
+    "ip6tables": "-N MAAS-E5-CONFIG\n-A MAAS-E5-CONFIG -i lo -j ACCEPT\n-A MAAS-E5-CONFIG -j DROP\n"
+  },
+  "monitor": {
+    "generated_at_unix": 1792749296.9858057,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8466,
+      "maas_successful_sync_requests_total": 6,
+      "maas_unknown_backend_activity": 0,
+      "maas_unknown_sync_activity": 0,
+      "maas_artifact_live_bytes": 67761278,
+      "maas_artifact_free_bytes": 418556850176,
+      "maas_oldest_queue_seconds": 0
+    }
+  },
+  "ok": true
+}

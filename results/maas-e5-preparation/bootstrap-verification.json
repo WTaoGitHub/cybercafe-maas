@@ -1,0 +1,57 @@
+{
+  "checked_at": 1792748990.8569272,
+  "url": "https://10.11.31.1:18840",
+  "health_status": 200,
+  "authenticated_read": 200,
+  "unauthenticated_status": 401,
+  "wrong_code_status": 401,
+  "incompatible_image_status": 409,
+  "certificate_not_after": "9999-12-31T23:59:59Z",
+  "certificate_sha256": "3cd65a160369d5d38f921c656154a756e312717a2f77c14c4005ab38179fc7b1",
+  "manifest_signature_verified": true,
+  "revision": "e5-pilot-r1",
+  "test_cluster_id": 3,
+  "code_id": "e5-pilot-v1",
+  "native_registration_path_verified": false,
+  "cloud_backup": {
+    "url": "http://configuration.cybercafe.phanlink.cn",
+    "enabled": false
+  },
+  "protected": {
+    "wta-gpustack-server": {
+      "id": "74ad75025d057e222345a739dc26cd49e8d7d8d156a548d98b50c6485f2bd435",
+      "running": true,
+      "started_at": "2026-10-21T04:34:48.63211562Z"
+    },
+    "maas-tasks-api-1": {
+      "id": "ec37476fb2e1ff8482827787ede3c1ce961048c1a38ae201628fed9d1417d78d",
+      "running": true,
+      "started_at": "2026-10-22T05:48:58.108569817Z"
+    },
+    "maas-tasks-executor-1": {
+      "id": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+      "running": true,
+      "started_at": "2026-10-22T05:48:58.107769188Z"
+    },
+    "maas-tasks-observer-1": {
+      "id": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc",
+      "running": true,
+      "started_at": "2026-10-22T05:48:58.106975127Z"
+    },
+    "maas-tasks-db-1": {
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+      "running": true,
+      "started_at": "2026-10-21T04:34:48.639526584Z"
+    }
+  },
+  "untrusted_certificate_rejected": true,
+  "wrong_hostname_rejected": true,
+  "allowed_cidrs": [
+    "127.0.0.0/8",
+    "10.11.31.0/24"
+  ],
+  "service_active": "active",
+  "boundary_active": "active",
+  "listening": "LISTEN 0      2048   10.11.31.1:18840 0.0.0.0:*",
+  "ok": true
+}

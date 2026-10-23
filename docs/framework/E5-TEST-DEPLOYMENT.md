@@ -90,3 +90,10 @@ E5.F1优化配置服务寻址；E5.F2在必要时增加独立会话授权、凭�
 用户已建独立Docker cluster `test1`（ID3）并删除001原生worker记录；只读发现原容器仍运行后，依据已选角色切换及用户允许停止模型服务，已停止001的wta-gpustack-worker和本机cybercafe-ocr，restart=no，保留镜像/卷。Server及MaaS API/任务执行器/observer/DB未重启，healthz=200；002未改，test1当前无worker/模型。见 [准备证据](../../results/maas-e5-preparation/REPORT.md)。
 
 不再需要创建test1，仍需安全配置它的原生注册凭据；001旧维护脚本的固定worker/model假设尚待适配。现有模型可停止，不再作为E5切换的保留条件；原业务推理路由未重测，控制存活不代表OCR可用。配置服务和E5脚本仍未实现/部署，新克隆验收未完成。
+
+
+## 2026-10-23实施进展：18840配置服务入口
+
+已部署001 `https://10.11.31.1:18840`，只读共享码配置API、版本文件及专用INPUT规则上线，当前LAN允许10.11.31.0/24，policy/生成器支持多CIDR。自签名证书notAfter=9999-12-31T23:59:59Z在001/002/tower校验通过；授权读200、匿名401、非允许来源实测DROP。实际运行镜像8项测试通过，原Server/MaaS容器ID和启动时间不变。详见 [实施报告](../../results/maas-e5-preparation/BOOTSTRAP-HTTPS.md)及 [操作手册](../../deploy/bootstrap/README.md)。
+
+这是F1/F2部分功能和网络部署，不是E5全部完成：通用发布CLI、boot/manual引导、image-prep、母版快照/真实新克隆注册、旧维护工具适配仍待做。云备用保持禁用；仅新克隆到原生18080/注册才是后续验收，tower到18080不通不作阻塞，未扩大原生端口规则。多CIDR能力不代表千节点容量已测；001002未重启。
