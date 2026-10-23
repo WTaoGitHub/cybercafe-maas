@@ -1,0 +1,20 @@
+{
+  "/run/swboot": {
+    "exists": true,
+    "mode": "0o755",
+    "bytes": 140,
+    "entries": [
+      "APPDEV_DISCOVER_ACK",
+      "CLIENT_DESC_ACK",
+      "CLIENT_INFO_ACK",
+      "CLIENT_DISCOVER_ACK",
+      "bootsrv_ip"
+    ]
+  },
+  "/run/swboot/CLIENT_INFO_ACK": {
+    "exists": true,
+    "mode": "0o600",
+    "bytes": 162,
+    "field_names": []
+  }
+}

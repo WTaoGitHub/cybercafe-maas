@@ -1,0 +1,16 @@
+{
+  "checked_at": 1792723593.575851,
+  "tcp": {
+    "10.11.31.1:22": "connected",
+    "10.11.31.1:18080": "TimeoutError",
+    "10.11.31.1:18832": "TimeoutError",
+    "10.11.31.2:22": "connected",
+    "registry-1.docker.io:443": "OSError"
+  },
+  "dns": {
+    "registry-1.docker.io": [
+      "2a03:2880:f126:83:face:b00c:0:25de",
+      "88.191.249.183"
+    ]
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "checked_at": 1792723460.027019,
+  "time": {
+    "code": 0,
+    "stdout": "Timezone=Asia/Shanghai\nNTP=yes\nNTPSynchronized=yes",
+    "stderr": ""
+  },
+  "cuda_probe": {
+    "code": 0,
+    "stdout": "PASS: devices=1, kernel result=42",
+    "stderr": ""
+  },
+  "probe_source_sha256": "e99659dea4433ab9c9e84587221015c32d856dd41b20250199943cb63b4ecd2d",
+  "boot_current": {
+    "code": 0,
+    "stdout": "IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY\n-26 e0842e6bc11c41aa930220052bde9ea4 Fri 2025-10-31 22:13:58 CST Fri 2025-10-31 14:46:22 CST\n-25 0c332199b70e4dbe96011f79d65a5ab4 Fri 2025-10-31 14:47:11 CST Fri 2025-10-31 14:52:27 CST\n-24 ba1d738b3cb04d578b1c72044817f983 Fri 2025-10-31 14:53:07 CST Fri 2025-10-31 16:01:58 CST\n-23 7fc6ee1db04a42939d34ae1b1401a649 Fri 2025-10-31 16:29:09 CST Fri 2025-10-31 16:32:25 CST\n-22 5cade49510294e758e62cc3d85231ecb Fri 2025-10-31 16:33:12 CST Fri 2025-10-31 18:02:48 CST\n-21 e8c4c3fdc6204672a0983a7df22657db Fri 2025-10-31 18:03:26 CST Mon 2025-11-03 13:42:58 CST\n-20 cfef1fb96d6549d3824207c9591fd493 Mon 2025-11-03 13:43:45 CST Mon 2025-11-03 13:53:09 CST\n-19 092316073fac49acb5f3e174649b1b80 Mon 2025-11-03 13:53:48 CST Mon 2025-11-03 14:13:10 CST\n-18 c62437a671d64e9ea094677eb76e6845 Mon 2025-11-03 14:13:48 CST Mon 2025-11-03 14:36:18 CST\n-17 bd13248971ee4ed398db6799360e80c1 Mon 2025-11-03 14:37:06 CST Mon 2025-11-03 14:48:57 CST\n-16 2254495d05e0483996c7c559f8dcd9f1 Mon 2025-11-03 14:49:40 CST Mon 2025-11-03 14:56:12 CST\n-15 be223445c5884302ba962523c4507ea0 Mon 2025-11-03 14:56:51 CST Mon 2025-11-03 14:57:24 CST\n-14 6f5cd3263b694c5a9f07b0a605162995 Mon 2025-11-03 14:58:02 CST Mon 2025-11-03 15:07:54 CST\n-13 14e24e1668404778b842df40b060f86c Mon 2025-11-03 15:08:34 CST Mon 2025-11-03 15:10:54 CST\n-12 5bd2c06f5e3f44919197d9cf74d5ebec Mon 2025-11-03 15:11:32 CST Mon 2025-11-03 15:12:53 CST\n-11 3dcde4a705bf475db78ec2c48321fdc9 Mon 2025-11-03 15:13:31 CST Mon 2025-11-03 15:14:20 CST\n-10 2b84b02eb52943809057cf3469755ac4 Mon 2025-11-03 15:14:58 CST Mon 2025-11-03 16:36:56 CST\n -9 d75e1f1a410a4e6ba5f41d654ddc741e Mon 2025-11-03 16:37:35 CST Tue 2025-11-04 11:14:14 CST\n -8 d482edd4d47143af8362fd58e04524fc Tue 2025-11-04 13:36:44 CST Tue 2025-11-04 15:00:00 CST\n -7 e8836016fa66456b9170e28ab07c6150 Thu 2025-11-20 10:00:03 CST Thu 2025-11-20 10:05:05 CST\n -6 7de2965de9c4437dbede02ce63348cf5 Fri 2025-12-19 23:05:12 CST Fri 2025-12-19 15:33:04 CST\n -5 e8b7c9eb09a94cb09dfb8d700e6ed812 Tue 2026-01-13 17:16:27 CST Tue 2026-01-13 09:25:31 CST\n -4 295dc51684504bff9655c558d909c1f8 Mon 2026-08-17 10:54:43 CST Mon 2026-08-17 11:02:01 CST\n -3 7ad48b9eef9c4ee69971178035cb18e9 Thu 2026-10-08 16:37:20 CST Thu 2026-10-08 17:26:51 CST\n -2 b75e697533194532894790c4bbf1092b Fri 2026-10-09 01:38:51 CST Thu 2026-10-08 17:45:01 CST\n -1 42be05fe0c93471b9d8fa2bbc71b4ce3 Fri 2026-10-23 00:51:14 CST Thu 2026-10-22 19:42:01 CST\n  0 35e2c3d927e949489953fc910ba532c6 Fri 2026-10-23 18:10:23 CST Fri 2026-10-23 10:44:20 CST",
+    "stderr": ""
+  },
+  "units": {
+    "cybercafe-provision.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:25 CST\nExecMainStatus=0\nActiveState=active\nSubState=exited\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "cybercafe-agent.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:36 CST\nExecMainStatus=0\nActiveState=active\nSubState=running\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "NetworkManager.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:24 CST\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "systemd-networkd.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\nUnitFileState=disabled",
+      "stderr": ""
+    },
+    "swnetreport.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:24 CST\nExecMainStatus=0\nActiveState=active\nSubState=running\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "swappdev.service": {
+      "code": 0,
+      "stdout": "Result=exit-code\nExecMainStartTimestamp=Fri 2026-10-23 18:10:24 CST\nExecMainStatus=1\nActiveState=failed\nSubState=failed\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "swgamedisk.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:24 CST\nExecMainStatus=0\nActiveState=active\nSubState=exited\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "ssh.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 10:24:37 CST\nExecMainStatus=0\nActiveState=active\nSubState=running\nUnitFileState=disabled",
+      "stderr": ""
+    },
+    "ssh.socket": {
+      "code": 0,
+      "stdout": "Result=success\nActiveState=active\nSubState=running\nUnitFileState=enabled",
+      "stderr": ""
+    }
+  },
+  "kernel_cmdline_keys": [
+    "swnetboot",
+    "BOOTIF",
+    "ip",
+    "cs",
+    "pnpcfg",
+    "initrd",
+    "root",
+    "swdiskid",
+    "swsnapid",
+    "swsoluid",
+    "swbootid",
+    "i915.force_probe",
+    "igb.EEE",
+    "igb.InterruptThrottleRate",
+    "intel_iommu",
+    "video",
+    "nouveau.modeset",
+    "loglevel",
+    "sw_image_version",
+    "sw_rootdiskmode"
+  ],
+  "provider_executable_metadata": {
+    "/sbin/swcfghostname": {
+      "exists": true,
+      "bytes": 889,
+      "kind": {
+        "code": 0,
+        "stdout": "/sbin/swcfghostname: Bourne-Again shell script, ASCII text executable",
+        "stderr": ""
+      },
+      "known_keyword_presence": {
+        "ReportBootSuccess": false,
+        "hostname": true,
+        "machine-id": false,
+        "ssh-keygen": false,
+        "cloud-init": false,
+        "token": false,
+        "credential": false
+      }
+    },
+    "/sbin/swnetboot_success.sh": {
+      "exists": true,
+      "bytes": 66,
+      "kind": {
+        "code": 0,
+        "stdout": "/sbin/swnetboot_success.sh: Bourne-Again shell script, ASCII text executable",
+        "stderr": ""
+      },
+      "known_keyword_presence": {
+        "ReportBootSuccess": false,
+        "hostname": false,
+        "machine-id": false,
+        "ssh-keygen": false,
+        "cloud-init": false,
+        "token": false,
+        "credential": false
+      }
+    }
+  },
+  "provision_observations": {
+    "0": {
+      "log_present": true,
+      "gpu_uuid_values": [],
+      "fingerprint_values": [
+        "e9de91cfd30f"
+      ],
+      "marker_same_message": false,
+      "clone_change_message": true,
+      "completion_message": true
+    },
+    "-1": {
+      "log_present": true,
+      "gpu_uuid_values": [],
+      "fingerprint_values": [
+        "a56a6995e61d"
+      ],
+      "marker_same_message": false,
+      "clone_change_message": true,
+      "completion_message": true
+    }
+  },
+  "connectivity": {
+    "10.11.31.1:18080": false,
+    "10.11.31.1:18832": false,
+    "10.11.31.2:22": true
+  }
+}

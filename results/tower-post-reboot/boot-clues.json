@@ -1,0 +1,94 @@
+{
+  "fingerprint_sources": {
+    "0": [
+      [
+        "e9de91cfd30f",
+        "gpu"
+      ],
+      [
+        "e9de91cfd30f",
+        "gpu"
+      ],
+      {
+        "old": "a56a6995e61d",
+        "new": "e9de91cfd30f"
+      }
+    ],
+    "-1": [
+      [
+        "a56a6995e61d",
+        "gpu"
+      ],
+      [
+        "a56a6995e61d",
+        "gpu"
+      ],
+      {
+        "old": "382e8c7aa3d5",
+        "new": "a56a6995e61d"
+      }
+    ]
+  },
+  "boot_parameter_digests": {
+    "0": {
+      "swbootid": [
+        "89053dc391b7db4df4d52ba07feab00dcccaa05bc6501ef6e6c16916c783fd69"
+      ],
+      "swsnapid": [
+        "d0fa7c29bea365f7cbdaeb34955cdfca948bbf415eb4f4b3c9ff31b367f4af99"
+      ],
+      "swsoluid": [
+        "bfc55c560e5b2dea90b91f9565b09482477ae13ff638de7c678f3716d67a0a02"
+      ],
+      "swdiskid": [
+        "c838d97d1d8ee11727878888a12e8a39bf6b88a7393ffb7ba5a1604977378b39"
+      ],
+      "sw_image_version": [
+        "0be771b37f5dc053db5d4d53127f1de24652434f4fc7dca5b0581d7aafd41984"
+      ],
+      "sw_rootdiskmode": [
+        "d33c14d05725304a47f12cbd4860f0412f5c3413d6e411cd2080bb0b22cf375d",
+        "fbfb17359d5cc2c54b95dab59025b1326bde6555d582c2df9c14ab0396f262c5"
+      ]
+    },
+    "-1": {
+      "swbootid": [
+        "5fdf0107702cd12a0b4dfe595205c3f7687c3f8e2165d9be8e899b0ff36b3909"
+      ],
+      "swsnapid": [
+        "d0fa7c29bea365f7cbdaeb34955cdfca948bbf415eb4f4b3c9ff31b367f4af99"
+      ],
+      "swsoluid": [
+        "bfc55c560e5b2dea90b91f9565b09482477ae13ff638de7c678f3716d67a0a02"
+      ],
+      "swdiskid": [
+        "c838d97d1d8ee11727878888a12e8a39bf6b88a7393ffb7ba5a1604977378b39"
+      ],
+      "sw_image_version": [
+        "0be771b37f5dc053db5d4d53127f1de24652434f4fc7dca5b0581d7aafd41984"
+      ],
+      "sw_rootdiskmode": [
+        "d33c14d05725304a47f12cbd4860f0412f5c3413d6e411cd2080bb0b22cf375d",
+        "fbfb17359d5cc2c54b95dab59025b1326bde6555d582c2df9c14ab0396f262c5"
+      ]
+    }
+  },
+  "provider_script_summary": {
+    "/sbin/swcfghostname": {
+      "sha256": "019dc882b14376ffdd0e4b127c065bca0afc54a3595ecfa56c83fbcebc6e75ad",
+      "referenced_absolute_paths": [
+        "/etc/hostname",
+        "/proc/cmdline",
+        "/run/swboot/CLIENT_INFO_ACK"
+      ],
+      "mentions_swbootid": false,
+      "mentions_machine_id": false
+    },
+    "/sbin/swnetboot_success.sh": {
+      "sha256": "660f2612d8f84d6cb273f3c45dc4315ec3dae9f22141b09d839a3b91f720c51e",
+      "referenced_absolute_paths": [],
+      "mentions_swbootid": false,
+      "mentions_machine_id": false
+    }
+  }
+}

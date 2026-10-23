@@ -1,0 +1,247 @@
+{
+  "checked_at": 1792723353.0055542,
+  "host": "tower-mNST8iPdv",
+  "kernel": "6.14.0-27-generic",
+  "boot_id_sha256": "a349c9610d6acbd73bf26fff7058010cecce6ea47e70035a902750b503f6a6bd",
+  "uptime_seconds": "1937.62",
+  "identities": {
+    "machine_id": "071ae543f132753e5ea019a1f33f1bf9aa8f65750f4c714d7276d79fb25d6a69",
+    "dmi_uuid": "1effacd0aa2d96d98ce6c14039bb42c194124348ce5b2484b34ae04be874fb2e",
+    "dmi_serial": "d9ee8c3e59f61a6c9495e9678e8907ad9abc6bb07ad0cf88748fa34f7830bd61"
+  },
+  "ssh_public_fingerprints": {
+    "ssh_host_ed25519_key.pub": {
+      "code": 0,
+      "stdout": "256 SHA256:Y2NCb0b3/u6ZOW1iz0V9KEumBhwdWr8mCi/+Efhp5Y4 root@swdesk (ED25519)",
+      "stderr": ""
+    },
+    "ssh_host_rsa_key.pub": {
+      "code": 0,
+      "stdout": "3072 SHA256:mcEGwH2zIaxEI4MPlocmTBYOt1cb+08fu+70Q/WTINs root@swdesk (RSA)",
+      "stderr": ""
+    },
+    "ssh_host_ecdsa_key.pub": {
+      "code": 0,
+      "stdout": "256 SHA256:67WP+hTLu9E65i9GY+XuD0O/AVS7CH3oVVlw04KWgLY root@swdesk (ECDSA)",
+      "stderr": ""
+    }
+  },
+  "authorized_keys_metadata": {
+    "exists": true,
+    "bytes": 102,
+    "mode": "0o600"
+  },
+  "driver": "NVRM version: NVIDIA UNIX x86_64 Kernel Module  580.95.05  Tue Sep 23 10:11:16 UTC 2025\nGCC version:  gcc version 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04)",
+  "gpu": {
+    "code": 0,
+    "stdout": "NVIDIA GeForce RTX 4070, GPU-690b4fd1-7481-72ed-b4aa-bb3c32cadba1, 00000000:01:00.0, 580.95.05, 12282 MiB",
+    "stderr": ""
+  },
+  "gpu_selected_details": [
+    "Product Name                          : NVIDIA GeForce RTX 4070",
+    "MIG Mode",
+    "Serial Number                         : N/A",
+    "GPU UUID                              : GPU-690b4fd1-7481-72ed-b4aa-bb3c32cadba1",
+    "Chassis Serial Number             : N/A",
+    "GPU Virtualization Mode",
+    "Virtualization Mode               : None",
+    "Host VGPU Mode                    : N/A",
+    "vGPU Heterogeneous Mode           : N/A"
+  ],
+  "pci": {
+    "code": 0,
+    "stdout": "01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD104 [GeForce RTX 4070] [10de:2786] (rev a1)\n\tSubsystem: NVIDIA Corporation AD104 [GeForce RTX 4070] [10de:1800]\n\tKernel driver in use: nvidia\n\tKernel modules: nvidiafb, nouveau, nvidia_drm, nvidia",
+    "stderr": ""
+  },
+  "pci_attributes": {
+    "vendor": "0x10de",
+    "device": "0x2786",
+    "subsystem_vendor": "0x10de",
+    "subsystem_device": "0x1800",
+    "sriov_totalvfs": "",
+    "sriov_numvfs": ""
+  },
+  "pci_links": {
+    "driver": "/sys/bus/pci/drivers/nvidia",
+    "iommu_group": "/sys/kernel/iommu_groups/11",
+    "physfn": null
+  },
+  "mdev_bus_present": false,
+  "virt_detection": {
+    "code": 1,
+    "stdout": "none",
+    "stderr": ""
+  },
+  "cpu_hypervisor_flag": false,
+  "dmi": {
+    "sys_vendor": "Intel",
+    "product_name": "PC Farm B760M",
+    "board_name": "PC Farm B760M",
+    "bios_vendor": "American Megatrends International, LLC."
+  },
+  "root_mount": {
+    "code": 0,
+    "stdout": "/dev/swblock_sysroot ext4",
+    "stderr": ""
+  },
+  "modules": [
+    "nvidia_uvm",
+    "nvidia_drm",
+    "nvidia_modeset",
+    "nvidia",
+    "sw_writebackimage",
+    "sw_admin",
+    "sw_readimage"
+  ],
+  "cloud_init": {
+    "disabled_marker": true,
+    "status": {
+      "code": 0,
+      "stdout": "status: disabled",
+      "stderr": ""
+    },
+    "instance_id_sha256": "411b1265419325ea98ef048494a83b244b5c7ea665cdedfeeebc08b74998a8ce",
+    "datasource": "DataSourceNone: DataSourceNone"
+  },
+  "injection_path_metadata": {
+    "/var/lib/cloud/seed": {
+      "exists": true,
+      "entries": []
+    },
+    "/run/cloud-init": {
+      "exists": true,
+      "entries": [
+        "disabled",
+        ".ds-identify.result",
+        "ds-identify.log",
+        "cloud-init-generator.log"
+      ]
+    },
+    "/sys/firmware/qemu_fw_cfg": {
+      "exists": false,
+      "entries": []
+    },
+    "/dev/virtio-ports": {
+      "exists": false,
+      "entries": []
+    },
+    "/etc/rc.local": {
+      "exists": false,
+      "entries": []
+    },
+    "/etc/cybercafe": {
+      "exists": false,
+      "entries": []
+    },
+    "/run/credentials": {
+      "exists": true,
+      "entries": []
+    }
+  },
+  "vendor_units": {
+    "swcfghostname.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:24 CST\nExecMainExitTimestamp=Fri 2026-10-23 18:10:24 CST\nBefore=shutdown.target network-pre.target\nAfter=systemd-journald.socket swap.target system.slice local-fs.target systemd-modules-load.service systemd-tmpfiles-setup.service\nLoadState=loaded\nActiveState=inactive\nSubState=dead\nFragmentPath=/etc/systemd/system/swcfghostname.service\nUnitFileState=enabled",
+      "stderr": "",
+      "exec_paths": [
+        "/sbin/swcfghostname"
+      ]
+    },
+    "swnetboot_success.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:25 CST\nExecMainExitTimestamp=Fri 2026-10-23 18:10:25 CST\nBefore=shutdown.target\nAfter=systemd-journald.socket systemd-modules-load.service systemd-tmpfiles-setup.service swap.target system.slice local-fs.target systemd-user-sessions.service\nLoadState=loaded\nActiveState=inactive\nSubState=dead\nFragmentPath=/etc/systemd/system/swnetboot_success.service\nUnitFileState=enabled",
+      "stderr": "",
+      "exec_paths": [
+        "/sbin/swnetboot_success.sh"
+      ]
+    },
+    "cloud-init-local.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=\nExecMainExitTimestamp=\nBefore=shutdown.target sysinit.target network-pre.target\nAfter=system.slice systemd-remount-fs.service hv_kvp_daemon.service -.mount systemd-journald.socket\nLoadState=loaded\nActiveState=inactive\nSubState=dead\nFragmentPath=/usr/lib/systemd/system/cloud-init-local.service\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "cloud-init.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=\nExecMainExitTimestamp=\nBefore=sshd-keygen.service network-online.target systemd-user-sessions.service shutdown.target sshd.service\nAfter=NetworkManager.service systemd-journald.socket NetworkManager-wait-online.service networking.service system.slice systemd-networkd-wait-online.service cloud-init-local.service\nLoadState=loaded\nActiveState=inactive\nSubState=dead\nFragmentPath=/usr/lib/systemd/system/cloud-init.service\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "rc-local.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=\nExecMainExitTimestamp=\nBefore=getty@tty1.service shutdown.target\nAfter=systemd-journald.socket basic.target network.target system.slice sysinit.target network-online.target\nLoadState=loaded\nActiveState=inactive\nSubState=dead\nFragmentPath=/usr/lib/systemd/system/rc-local.service\nUnitFileState=static",
+      "stderr": ""
+    },
+    "docker.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=Fri 2026-10-23 18:10:27 CST\nExecMainExitTimestamp=\nBefore=shutdown.target multi-user.target cybercafe-agent.service\nAfter=nvidia-cdi-refresh.service system.slice network-online.target containerd.service systemd-journald.socket firewalld.service basic.target docker.socket sysinit.target\nLoadState=loaded\nActiveState=active\nSubState=running\nFragmentPath=/usr/lib/systemd/system/docker.service\nUnitFileState=enabled",
+      "stderr": ""
+    },
+    "sshd.service": {
+      "code": 0,
+      "stdout": "Result=success\nExecMainStartTimestamp=\nExecMainExitTimestamp=\nBefore=\nAfter=\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nFragmentPath=\nUnitFileState=",
+      "stderr": ""
+    }
+  },
+  "network": {
+    "ipv4": {
+      "code": 0,
+      "stdout": "[{\"ifindex\":1,\"ifname\":\"lo\",\"flags\":[\"LOOPBACK\",\"UP\",\"LOWER_UP\"],\"mtu\":65536,\"qdisc\":\"noqueue\",\"operstate\":\"UNKNOWN\",\"group\":\"default\",\"txqlen\":1000,\"addr_info\":[{\"family\":\"inet\",\"local\":\"127.0.0.1\",\"prefixlen\":8,\"scope\":\"host\",\"label\":\"lo\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":3,\"ifname\":\"enp3s0\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"pfifo_fast\",\"operstate\":\"UP\",\"group\":\"default\",\"txqlen\":1000,\"addr_info\":[{\"family\":\"inet\",\"local\":\"10.11.31.3\",\"prefixlen\":24,\"broadcast\":\"10.11.31.255\",\"scope\":\"global\",\"label\":\"enp3s0\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":4,\"ifname\":\"docker0\",\"flags\":[\"NO-CARRIER\",\"BROADCAST\",\"MULTICAST\",\"UP\"],\"mtu\":1500,\"qdisc\":\"noqueue\",\"operstate\":\"DOWN\",\"group\":\"default\",\"addr_info\":[{\"family\":\"inet\",\"local\":\"172.17.0.1\",\"prefixlen\":16,\"broadcast\":\"172.17.255.255\",\"scope\":\"global\",\"label\":\"docker0\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]}]",
+      "stderr": ""
+    },
+    "default_route": {
+      "code": 0,
+      "stdout": "[{\"dst\":\"default\",\"gateway\":\"10.11.31.254\",\"dev\":\"enp3s0\",\"flags\":[]},{\"dst\":\"default\",\"gateway\":\"10.11.31.254\",\"dev\":\"enp3s0\",\"protocol\":\"static\",\"metric\":100,\"flags\":[]}]",
+      "stderr": ""
+    },
+    "dns": {
+      "code": 0,
+      "stdout": "Global:\nLink 2 (enp2s0):\nLink 3 (enp3s0): 211.137.58.20 223.5.5.5\nLink 4 (docker0):",
+      "stderr": ""
+    },
+    "active_methods": {
+      "code": 8,
+      "stdout": "",
+      "stderr": "Error: NetworkManager is not running."
+    }
+  },
+  "packages": {
+    "code": 0,
+    "stdout": "cuda-toolkit-13-0 13.0.3-1\nlibnvidia-container-tools 1.20.1-1\nlibnvidia-container1 1.20.1-1\nnvidia-container-toolkit 1.20.1-1\nnvidia-container-toolkit-base 1.20.1-1\nnvidia-driver-580 580.95.05-0ubuntu1",
+    "stderr": ""
+  },
+  "nvcc": {
+    "code": 0,
+    "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+    "stderr": ""
+  },
+  "cuda_target": "/usr/local/cuda-13.0",
+  "container_cli": {
+    "code": 0,
+    "stdout": "NVRM version:   580.95.05\nCUDA version:   13.0\n\nDevice Index:   0\nDevice Minor:   0\nModel:          NVIDIA GeForce RTX 4070\nBrand:          GeForce\nGPU UUID:       GPU-690b4fd1-7481-72ed-b4aa-bb3c32cadba1\nBus Location:   00000000:01:00.0\nArchitecture:   8.9",
+    "stderr": ""
+  },
+  "docker": {
+    "runtime_names": [
+      "io.containerd.runc.v2",
+      "nvidia",
+      "runc"
+    ],
+    "default_runtime": "runc",
+    "server_version": "28.2.2"
+  },
+  "images": {
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "containers": {
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "dpkg_audit": {
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "probe_binary_exists": true
+}
