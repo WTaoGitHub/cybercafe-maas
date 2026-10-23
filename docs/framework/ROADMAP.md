@@ -212,3 +212,12 @@ E6整改后的独立8小时复测已通过：28800.79秒、5760/5760成功、零
 已部署001 `https://10.11.31.1:18840`，只读共享码配置API、版本文件及专用INPUT规则上线，当前LAN允许10.11.31.0/24，policy/生成器支持多CIDR。自签名证书notAfter=9999-12-31T23:59:59Z在001/002/tower校验通过；授权读200、匿名401、非允许来源实测DROP。实际运行镜像8项测试通过，原Server/MaaS容器ID和启动时间不变。详见 [实施报告](../../results/maas-e5-preparation/BOOTSTRAP-HTTPS.md)及 [操作手册](../../deploy/bootstrap/README.md)。
 
 这是F1/F2部分功能和网络部署，不是E5全部完成：通用发布CLI、boot/manual引导、image-prep、母版快照/真实新克隆注册、旧维护工具适配仍待做。云备用保持禁用；仅新克隆到原生18080/注册才是后续验收，tower到18080不通不作阻塞，未扩大原生端口规则。多CIDR能力不代表千节点容量已测；001002未重启。
+
+
+## 2026-10-23最新实现状态：克隆客户端与离线母版工具
+
+本节覆盖前文历史状态：F1新增本地签名发布/新revision回退CLI；F3拉取、验签、私有暂存/锁及status已完成；F4 boot/manual统一apply、所属Docker worker启动、原生me=true身份核对已实现并模拟验证；F5离线Ubuntu文件安装、污染拒绝和systemd单元已实现。客户端在001真实HTTPS接口连续prepare验证通过且未启动worker；本地累计32项测试通过。
+
+尚未完成：发布CLI线上演练、旧维护工具适配、母版generalize/实际安装/保存快照、新建A/B克隆的开机与原生注册、真实GPU和模型验收。systemd只在启动时引导并有界重试，成功后不持续守护worker；镜像工具只写离线文件系统，不自动导出平台镜像。001002未重启，原生18080规则未改，云备份禁用。详见[实现记录](../../results/maas-e5-preparation/CLIENT-IMPLEMENTATION.md)及[客户端操作说明](../../deploy/bootstrap/clone/README.md)。
+
+下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。

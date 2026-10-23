@@ -246,7 +246,11 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>不再需要创建test1，仍需安全配置它的原生注册凭据；001旧维护脚本的固定worker/model假设尚待适配。现有模型可停止，不再作为E5切换的保留条件；原业务推理路由未重测，控制存活不代表OCR可用。配置服务和E5脚本仍未实现/部署，新克隆验收未完成。</p>
 <h3>2026-10-23实施进展：18840配置服务入口</h3>
 <p>已部署001 <code>https://10.11.31.1:18840</code>，只读共享码配置API、版本文件及专用INPUT规则上线，当前LAN允许10.11.31.0/24，policy/生成器支持多CIDR。自签名证书notAfter=9999-12-31T23:59:59Z在001/002/tower校验通过；授权读200、匿名401、非允许来源实测DROP。实际运行镜像8项测试通过，原Server/MaaS容器ID和启动时间不变。详见 <a href="../../results/maas-e5-preparation/BOOTSTRAP-HTTPS.md">实施报告</a>及 <a href="../../deploy/bootstrap/README.md">操作手册</a>。</p>
-<p>这是F1/F2部分功能和网络部署，不是E5全部完成：通用发布CLI、boot/manual引导、image-prep、母版快照/真实新克隆注册、旧维护工具适配仍待做。云备用保持禁用；仅新克隆到原生18080/注册才是后续验收，tower到18080不通不作阻塞，未扩大原生端口规则。多CIDR能力不代表千节点容量已测；001002未重启。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p>这是F1/F2部分功能和网络部署，不是E5全部完成：通用发布CLI、boot/manual引导、image-prep、母版快照/真实新克隆注册、旧维护工具适配仍待做。云备用保持禁用；仅新克隆到原生18080/注册才是后续验收，tower到18080不通不作阻塞，未扩大原生端口规则。多CIDR能力不代表千节点容量已测；001002未重启。</p>
+<h3>2026-10-23最新实现状态：克隆客户端与离线母版工具</h3>
+<p>本节覆盖前文历史状态：F1新增本地签名发布/新revision回退CLI；F3拉取、验签、私有暂存/锁及status已完成；F4 boot/manual统一apply、所属Docker worker启动、原生me=true身份核对已实现并模拟验证；F5离线Ubuntu文件安装、污染拒绝和systemd单元已实现。客户端在001真实HTTPS接口连续prepare验证通过且未启动worker；本地累计32项测试通过。</p>
+<p>尚未完成：发布CLI线上演练、旧维护工具适配、母版generalize/实际安装/保存快照、新建A/B克隆的开机与原生注册、真实GPU和模型验收。systemd只在启动时引导并有界重试，成功后不持续守护worker；镜像工具只写离线文件系统，不自动导出平台镜像。001002未重启，原生18080规则未改，云备份禁用。详见<a href="../../results/maas-e5-preparation/CLIENT-IMPLEMENTATION.md">实现记录</a>及<a href="../../deploy/bootstrap/clone/README.md">客户端操作说明</a>。</p>
+<p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
 <blockquote><strong>E5当前执行基线（2026-10-23修订六）</strong>：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 <a href="E5-DESIGN.md">当前设计</a>、<a href="E5-IMPLEMENTATION.md">开发计划</a>和 <a href="E5-TEST-DEPLOYMENT.md">部署测试</a>。</blockquote>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
@@ -355,4 +359,8 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>不再需要创建test1，仍需安全配置它的原生注册凭据；001旧维护脚本的固定worker/model假设尚待适配。现有模型可停止，不再作为E5切换的保留条件；原业务推理路由未重测，控制存活不代表OCR可用。配置服务和E5脚本仍未实现/部署，新克隆验收未完成。</p>
 <h3>2026-10-23实施进展：18840配置服务入口</h3>
 <p>已部署001 <code>https://10.11.31.1:18840</code>，只读共享码配置API、版本文件及专用INPUT规则上线，当前LAN允许10.11.31.0/24，policy/生成器支持多CIDR。自签名证书notAfter=9999-12-31T23:59:59Z在001/002/tower校验通过；授权读200、匿名401、非允许来源实测DROP。实际运行镜像8项测试通过，原Server/MaaS容器ID和启动时间不变。详见 <a href="../../results/maas-e5-preparation/BOOTSTRAP-HTTPS.md">实施报告</a>及 <a href="../../deploy/bootstrap/README.md">操作手册</a>。</p>
-<p>这是F1/F2部分功能和网络部署，不是E5全部完成：通用发布CLI、boot/manual引导、image-prep、母版快照/真实新克隆注册、旧维护工具适配仍待做。云备用保持禁用；仅新克隆到原生18080/注册才是后续验收，tower到18080不通不作阻塞，未扩大原生端口规则。多CIDR能力不代表千节点容量已测；001002未重启。</p></section></main></body></html>
+<p>这是F1/F2部分功能和网络部署，不是E5全部完成：通用发布CLI、boot/manual引导、image-prep、母版快照/真实新克隆注册、旧维护工具适配仍待做。云备用保持禁用；仅新克隆到原生18080/注册才是后续验收，tower到18080不通不作阻塞，未扩大原生端口规则。多CIDR能力不代表千节点容量已测；001002未重启。</p>
+<h3>2026-10-23最新实现状态：克隆客户端与离线母版工具</h3>
+<p>本节覆盖前文历史状态：F1新增本地签名发布/新revision回退CLI；F3拉取、验签、私有暂存/锁及status已完成；F4 boot/manual统一apply、所属Docker worker启动、原生me=true身份核对已实现并模拟验证；F5离线Ubuntu文件安装、污染拒绝和systemd单元已实现。客户端在001真实HTTPS接口连续prepare验证通过且未启动worker；本地累计32项测试通过。</p>
+<p>尚未完成：发布CLI线上演练、旧维护工具适配、母版generalize/实际安装/保存快照、新建A/B克隆的开机与原生注册、真实GPU和模型验收。systemd只在启动时引导并有界重试，成功后不持续守护worker；镜像工具只写离线文件系统，不自动导出平台镜像。001002未重启，原生18080规则未改，云备份禁用。详见<a href="../../results/maas-e5-preparation/CLIENT-IMPLEMENTATION.md">实现记录</a>及<a href="../../deploy/bootstrap/clone/README.md">客户端操作说明</a>。</p>
+<p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p></section></main></body></html>

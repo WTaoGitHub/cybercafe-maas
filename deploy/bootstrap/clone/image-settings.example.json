@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "config_service_url": "https://10.11.31.1:18840",
+  "shared_code_file": "/root/wtaobj/maas-bootstrap/operator/shared-code",
+  "tls_certificate_file": "/root/wtaobj/maas-bootstrap/operator/server.crt",
+  "release_public_key_file": "/root/wtaobj/maas-bootstrap/operator/release-signing.pub",
+  "release_key_id": "e5-pilot-signing-v1",
+  "state_dir": "/var/lib/maas-bootstrap",
+  "worker_data_dir": "/var/lib/maas-bootstrap/gpustack-worker",
+  "site_id": "cybercafe-lab",
+  "batch_id": "e5-pilot",
+  "cluster_id": 3,
+  "image_id": "tower-e5-pilot-v1",
+  "architecture": "x86_64",
+  "allowed_server_urls": ["http://10.11.31.1:18080"],
+  "cloud_backup": {"url": "http://configuration.cybercafe.phanlink.cn", "enabled": false}
+}
