@@ -21,3 +21,6 @@ service-validation/wheels/
 deploy/maas/secrets/
 deploy/maas/.env
 service-validation/*.sock
+
+# Generated E5 public handoff bundles (checksums/evidence are committed separately).
+/dist/e5/
