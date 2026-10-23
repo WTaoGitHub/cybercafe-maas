@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "readonly": true,
+  "hostname": "tower-mNST8iPdv",
+  "os": {
+    "VERSION_ID": "24.04",
+    "ID": "ubuntu"
+  },
+  "architecture": "x86_64",
+  "python": "3.12.3",
+  "cryptography": "41.0.7",
+  "docker_version": "28.2.2",
+  "docker_runtimes": [
+    "io.containerd.runc.v2",
+    "nvidia",
+    "runc"
+  ],
+  "container_count": 0,
+  "driver_versions": [
+    "580.95.05"
+  ],
+  "container_toolkit": "NVIDIA Container Toolkit CLI version 1.20.1",
+  "units": {
+    "cybercafe-provision.service": "enabled",
+    "cybercafe-agent.service": "enabled",
+    "maas-worker-bootstrap.service": "not-found",
+    "swcfghostname.service": "enabled",
+    "gpustack.service": "not-found",
+    "gpustack-worker.service": "not-found"
+  },
+  "machine_id_initialized": true,
+  "ssh_host_key_count": 3,
+  "instance_state_paths": [],
+  "pinned_worker_image": "quay.io/gpustack/gpustack@sha256:55ecc762950a32641b6a4d96195c0662ef72998eaeeda31bba0e8e218d41afef",
+  "pinned_image_cached": false,
+  "sealing_review_items": [
+    "OS_IDENTITY_GENERALIZATION_REQUIRED",
+    "SSH_HOST_KEY_GENERALIZATION_REQUIRED",
+    "EXISTING_BOOT_OWNER_REVIEW_REQUIRED",
+    "PINNED_WORKER_IMAGE_NOT_CACHED"
+  ],
+  "snapshot_ready": false,
+  "limits": [
+    "no container GPU test",
+    "no boot or clone test",
+    "not a complete secret/startup-hook scan",
+    "snapshot_ready requires separate installation, generalization and administrator approval"
+  ],
+  "checked_at": "2026-10-23T11:05:04.867Z"
+}
