@@ -380,3 +380,18 @@ E5开机入口已触发并自动重试5次，最终NATIVE_SERVER_UNREACHABLE、e
 001在10.11.31.1:18080监听，但旧MAAS-P3-HOST/MAAS-P3-DOCKER网络规则仅允许局域网来源.1/.2，新克隆.4未纳入；配置服务18840单独允许10.11.31.0/24。这是已确认的访问策略缺口，但未做抓包/对照放行，不能仅凭规则断定超时的唯一根因。下一步设计原生端口最小放行与反向worker连通性验证，再安排人工重试；该结果不能替代后续新版快照首启验收。
 
 本轮仅只读检查，未打补丁、运行apply、重启服务/VM或改防火墙；本机仅首次记录新SSH入口的主机公钥。[脱敏证据](../../results/maas-e5-preparation/clone-004-first-boot-20261026.json)。
+
+
+## 2026-10-26：004网络修复与手动接入验收
+
+001持久化策略新增native_server_cidrs=["10.11.31.0/24"]，支持后续多个IPv4 CIDR。仅在001局域网接口放行到10.11.31.1:18080/tcp：raw开机过滤、HOST和DOCKER链均受控；Docker按conntrack原始目的地址/端口匹配，未扩大所有端口或容器直连许可。原配置18840规则保留；其他业务端口、IPv6和SSH范围不变。重用原boot/refresh服务实现持久化，未重启系统或Docker。策略源码及配置已备份至Mac和001私有目录。
+
+004实测18840/18080连通，原生/v2/workers未认证返回401，18834/8820/11435仍超时；修复前18080超时，修复后连通，完成实际网络对照。refresh再次执行成功，边界rules_ok/inventory_matches和IPv4/IPv6早期hook验证通过；实际整机重启持久性未测试且不得在001002执行。
+
+首次人工apply实际注册了worker ID4至test1(cluster3)，原生状态ready/unreachable=false，但E5误报REGISTRATION_UNCONFIRMED。查v2.2.3 WorkerPublic定义，worker_uuid明确exclude=True，不会在列表响应中出现。确认逻辑已修复为使用本机原生worker token访问/v2/workers?me=true，严格要求单条记录、me=true、集群及本机名称匹配；本机UUID/token/名称文件仍须存在且有效。不是忽略身份或改用管理员token，也不重放注册接口。
+
+修复仅替换004与当前tower模块中的确认条件，分别保持各自名称保护版本；004仍未安装“放行002/保护tower-*”改动。Mac保存修改前模块。之后apply返回APPLIED/ready，再次apply返回UNCHANGED，容器ID/启动时间未变，未重复创建worker。容器内nvidia-smi正常识别RTX4080 SUPER/580.95.05。001反向10150和实际metrics_port=10151可达；之前探测10161拒绝仅说明该端口不是当前实际指标端口。bootstrap40项、边界相关7项测试通过。
+
+第一版首启失败证据保留，本次只判“网络修复后的手动注册及重复应用成功”；未做新快照首启、双克隆独立性或模型推理验收。原systemd failed为首启历史状态，手动CLI成功不自动清空。当前tower文件含修正，管理员保存的第一版镜像仍不含它。下一步按用户计划评估安装剩余保护补丁，再由管理员保存新版快照并新建独立克隆验证自动接入；不要重启或重建001002。
+
+[网络修复证据](../../results/maas-e5-preparation/native-network-fix-20261026.json) · [手动接入与确认修复证据](../../results/maas-e5-preparation/clone-004-manual-registration-20261026.json)。

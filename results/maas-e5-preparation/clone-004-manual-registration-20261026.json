@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-26",
+  "cause": "GPUStack v2.2.3 WorkerPublic excludes worker_uuid. Earlier confirmation logic incorrectly required it after successful native registration.",
+  "confirmation": "Read local native UUID/name/token; authenticate /v2/workers?me=true with individual worker token; require exactly one row, me=true, matching cluster and local worker name. No registration endpoint replay.",
+  "tests": {
+    "bootstrap": 40,
+    "boundary": 7
+  },
+  "deployment": {
+    "clone": "XZ-31-004",
+    "clone_sha256": "b22bab42f1b56d176703e41d2b20b7d96efa7d628e6df196b8b9ff67e1fc6c38",
+    "template": "tower-8CbKAhaaf",
+    "template_sha256": "bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994",
+    "scope": "one-line confirmation fix on each existing module; hostname guards unchanged",
+    "source_module_sha256": "667698a03dd0b234792957da7dbac0876d10aaabed3579b14f0e37c6b37e1dac"
+  },
+  "manual_apply": "APPLIED",
+  "repeat_manual_apply": "UNCHANGED",
+  "worker": {
+    "id": 4,
+    "cluster_id": 3,
+    "hostname": "XZ-31-004",
+    "ip": "10.11.31.4",
+    "state": "ready",
+    "unreachable": false
+  },
+  "container_unchanged_on_repeat": true,
+  "container_gpu": {
+    "name": "NVIDIA GeForce RTX 4080 SUPER",
+    "driver": "580.95.05",
+    "command_rc": 0
+  },
+  "reverse_ports": {
+    "10150": "connected",
+    "10151": "connected",
+    "10161": "not configured; earlier refused probe was not actual metrics port"
+  },
+  "persistent_refresh": "passed",
+  "raw_hooks_first": true,
+  "backup_mac": ".maas/backups/native-confirmation-20261026",
+  "limits": [
+    "Initial boot failed on native network and remains failed evidence. Manual recovery is not unattended first-boot acceptance.",
+    "No model deployed or inference performed in test1.",
+    "No new hostname guard installed on 004; original guard remains.",
+    "No VM or Docker engine reboot/restart. Existing container kept running during confirmation fix.",
+    "Template current files contain new guards and confirmation fix, but saved snapshot remains first version.",
+    "systemd bootstrap failed state reflects original boot; successful manual CLI does not clear unit history."
+  ]
+}

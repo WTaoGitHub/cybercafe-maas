@@ -70,7 +70,8 @@ def test_native_probe_matches_local_identity_and_exact_cluster(setup,monkeypatch
     identity={'worker_name':'e5-local-test','cluster_id':3}
     for name,value in {'worker_token':'individual-native-token','worker_uuid':'native-uuid','worker_name':identity['worker_name']}.items():
         p=data/name;p.write_text(value);p.chmod(0o600)
-    row={'id':12,'name':identity['worker_name'],'worker_uuid':'native-uuid','cluster_id':3,'state':'ready'}
+    # GPUStack v2.2.3 deliberately omits worker_uuid from WorkerPublic.
+    row={'id':12,'name':identity['worker_name'],'me':True,'cluster_id':3,'state':'ready'}
     rows=[row]
     class Response:
         def __enter__(self):return self
@@ -85,8 +86,10 @@ def test_native_probe_matches_local_identity_and_exact_cluster(setup,monkeypatch
     probe=NativeDockerWorker()
     assert probe.registered(s,sign(),identity)['worker_id']==12
     row['cluster_id']=1;assert probe.registered(s,sign(),identity) is None
-    row['cluster_id']=3;row['worker_uuid']='other';assert probe.registered(s,sign(),identity) is None
-    row['worker_uuid']='native-uuid';rows.append(dict(row));assert probe.registered(s,sign(),identity) is None
+    row['cluster_id']=3;row['me']=False;assert probe.registered(s,sign(),identity) is None
+    del row['me'];assert probe.registered(s,sign(),identity) is None
+    row['me']=True;row['name']='other';assert probe.registered(s,sign(),identity) is None
+    row['name']=identity['worker_name'];rows.append(dict(row));assert probe.registered(s,sign(),identity) is None
 
 
 def test_docker_create_pins_image_and_never_puts_token_in_arguments(setup,monkeypatch,tmp_path):

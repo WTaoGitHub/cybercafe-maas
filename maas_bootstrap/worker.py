@@ -110,7 +110,9 @@ class NativeDockerWorker:
                 rows=json.loads(raw)['items']
             if len(rows)!=1:return None
             w=rows[0]
-            if w['cluster_id']!=settings.data['cluster_id'] or w['worker_uuid']!=uuid or w['name']!=name:return None
+            # v2.2.3 WorkerPublic excludes worker_uuid. The individual worker
+            # token authenticates ?me=true; require the server's explicit me flag.
+            if w.get('me') is not True or w['cluster_id']!=settings.data['cluster_id'] or w['name']!=name:return None
             return {'worker_id':w['id'],'worker_name':name,'cluster_id':w['cluster_id'],'native_state':w['state']}
         except Exception:return None
 
