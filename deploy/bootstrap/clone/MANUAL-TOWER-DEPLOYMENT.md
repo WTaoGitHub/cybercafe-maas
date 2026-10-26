@@ -22,7 +22,7 @@
 - 本地包：`/Users/4paradigm/dev/cybercafe-maas/dist/e5/e5-worker-template-tower-e5-pilot-v1.tar.gz`。
 - 本包源码commit：`f7de733f7f1d7c7b58380527fd601dc69c811212`；SHA256：`cb8dd386020c95db1b79d6bc5d2a8858c3d060ef51fa7accd0703b0d64ba9e71`。
 - 001受限文件：`/root/wtaobj/maas-bootstrap/operator/shared-code`。它是共享注册码，不是SSH密钥或原生管理员token。
-- 管理员确认旧CyberCafe启动逻辑的替换范围、快照方式、克隆首次machine-id/SSH主机密钥初始化方式。
+- 管理员确认旧CyberCafe启动逻辑的替换范围及人工快照方式；当前试点不要求供应商提供身份泛化或启动注入能力，见第16节。
 
 **停止推进条件：** 已有E5安装/实例身份、未知Docker容器、依赖检查失败、旧启动逻辑尚未审查、包校验不一致、真实码或证书来源无法确认。先保存现状并处理原因，不覆盖、不擦除、不关闭TLS校验。
 
@@ -277,16 +277,16 @@ unit成功后不持续监护worker容器；容器使用restart=no，后续退出
 
 ## 11. 封版前检查与身份初始化交接
 
-以下全部满足后，才通知管理员制作快照：
+本节以第16节的最新试点边界为准：软件/配置和实例状态清洁仍需满足；独立OS身份不再作为试验快照的前置。正式生产身份泛化仍需另行评估。
 
 - 客户端、配置、共享码和公开信任材料到位；`/etc/maas`为root:root/700，shared-code与bootstrap.json为root:root/600；固定镜像摘要匹配。
 - 临时prepare通过，临时私有返回数据已清理；母版无worker容器、无`/var/lib/maas-bootstrap`实例目录，无标准原生路径UUID/token。
 - 旧业务启动服务已按审查结论处理；供应商网络/命名及SSH入口保留；E5单元enabled但当前inactive。
 - `hostname`仍是tower，克隆首次启动会获得不同hostname/IP；E5不自行更改它们。克隆若继承tower名称或001/002地址，会被本机保护拒绝。
-- 管理员已确定machine-id和SSH主机密钥的离线清理/首启重建方案，并有确保SSH可登录的执行顺序；保留管理员authorized_keys。
-- 管理员确认平台失败单元不会破坏快照/克隆；记录当前依赖、镜像摘要、E5源码版本及处理结果。
+- 当前试点保留供应商现有machine-id、SSH主机密钥和管理员authorized_keys，不删除、不重建、不要求供应商提供首启钩子。记录共用系统身份/密钥的限制，真实A/B验证SSH和原生worker独立。
+- 记录平台失败单元、当前依赖、镜像摘要、E5源码版本；是否影响网络/GPU/注册，以新克隆实测判断，不等待供应商给出技术结论。
 
-**本文不提供在运行中tower删除machine-id或SSH私钥的命令。** 当前E5单元也不负责生成这些系统身份；仅删除密钥而没有首启重建流程可能使新克隆SSH不可用。若平台只支持在线热快照且不提供初始化，应先补齐并验证专用首启方案，不能把“E5文件已安装”写成“可正式封版”。
+**本文不提供在运行中tower删除machine-id或SSH私钥的命令。** 当前E5单元也不负责生成这些系统身份；仅删除密钥而没有首启重建流程可能使新克隆SSH不可用。若平台仅支持现有在线快照且不提供初始化，按第16节保留现状做受控试验；这不等于生产身份隔离已实现。
 
 `inspect_worker_template.py`是清单，不是自动验收器：它的snapshot_ready固定为false，如果运行过普通prepare/apply，新增实例状态也会被列为需审查项。不要为让报告变绿而删除正常安装文件，需人工按本节记录结论。
 
@@ -367,6 +367,20 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 | 母版状态 | 无Docker容器，无/var/lib/maas-bootstrap，未注册worker；machine-id和SSH主机密钥摘要与变更前一致 |
 | 平台操作 | 无VM/Docker引擎重启；未制作快照或创建克隆；001002未修改 |
 
-**当前是“母版E5业务层已部署，尚未完成封版”，不是“可直接发布快照”。** 下一步需确认克隆首次machine-id/SSH密钥重建与启动顺序、迁出旧设备凭据/回退秘密、由管理员确认供应商失败单元影响。满足后管理员再保存快照并创建独立A/B，随后验证真实自动注册和GPU/模型。
+**当前母版E5业务层已部署，真实克隆未验收。** 按第16节的新试点边界，不再等待供应商身份初始化或失败单元解释；检查并处理我们自己的实例状态和旧秘密交付后，可由管理员制作受控试验快照、创建独立A/B，再实测自动注册和GPU/模型。
 
 线上脱敏结果保存为`/root/e5-install-input/deployment-result.json`；本地证据：[tower-deployment-20261026.json](../../../results/maas-e5-preparation/tower-deployment-20261026.json)。没有把原生token、共享码、配置响应或私钥写入证据。
+
+
+## 16. 供应商无技术支持/API时的试点操作边界（当前基线）
+
+用户已说明基本无法取得供应商技术支持或网管API。我们适配既有环境，不再要求供应商新增能力，也不将泛化系统身份设为小规模E5试验的阻塞条件。
+
+1. 保留现有machine-id、SSH主机密钥、authorized_keys和供应商网络/hostname机制；不增加OS首启身份模块，不在tower执行重建身份操作。共用密钥风险和其他组件的身份依赖保留记录，不声称生产安全隔离完成。
+2. 保持E5实例状态清洁：母版不执行apply，/var/lib/maas-bootstrap和原生worker身份不得固化；旧agent/provision保持disabled/inactive。正式快照交付前处理我们自己的旧设备凭据/秘密备份，不要求修改供应商文件。
+3. 管理员仅需人工保存试验快照、创建并启动A/B、分配GPU并提供SSH入口。不需要网管API、可信启动参数、座位资产号、离线编辑或技术支持承诺。
+4. 我们以实际访问结果验证网络和命名；若克隆hostname仍为tower导致保护拒绝，先在独立新克隆核查，再通过我们可控的worker适配解决，不删除母版保护或要求改造001002。
+5. 验收以独立worker原生名称/UUID、配置拉取、GPU和推理为准；machine-id或SSH主机公钥相同只记录现状，不直接判E5失败。保留SSH主机校验，不通过关闭验证掩盖连接问题。
+6. 原检查脚本固定的snapshot_ready=false和离线工具generalization拒绝，仅描述各自检查范围，不作为此受控在线试点的硬门槛；不改写历史取证文件或伪造通过结果。
+
+当前仍没有创建快照或新VM。网络/系统原生行为只有在A/B真正启动后才能验收；失败时由我们在新克隆上取证和适配，而不是承诺供应商会修复。
