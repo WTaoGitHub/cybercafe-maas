@@ -407,3 +407,12 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 ## 19. 后续增强：角色驱动的启动保护
 
 [E5.F5](../../../docs/framework/ENHANCEMENTS.md#e5-f5-role-based-guard)已列入后续计划：角色/启动许可取代固定名称和IP，仍保护controller与template，同时允许合法worker复用地址。角色字段不能简单固化为template后复制给所有克隆，生命周期需另行设计；不要求供应商API或系统身份泛化。此项尚未实施，不能据此忽略第18节当前002复用误拦截。它仅防误操作，不负责身份认证或VM重启控制；本次没有修改代码或服务器。
+
+
+## 20. 旧002名称/IP复用修正（本地已完成，tower待部署）
+
+用户授权后源码596516e已完成最小兼容修正，38项bootstrap测试通过：允许新克隆使用XZ-31-002或10.11.31.2，仍拒绝001/tower名称及001地址。E5.F5通用角色改造仍为后续计划，本次没有实现角色系统。
+
+本轮6025公网SSH和经001访问原10.11.31.3:22均超时，未向tower写入补丁。当前暂停保存最终试验快照；等待管理员确认母版在线及有效入口。原f7de733包未重建，保留旧限制，不能将源码已修改理解为母版已更新。
+
+恢复后只替换/opt/maas/lib/maas_bootstrap/worker.py，先核对远端版本和Mac备份，再原子安装并确认新摘要、语法/导入、单元enabled/inactive和无实例身份。不要启动服务或apply，不清理旧凭据；本地补丁目录dist/e5/002-guard-patch-596516e，after SHA256为0d02619f9eff5624edf68aaba1f18b5b63254a94dde54dc755f971eba8a3ac9d。记录本轮实际未部署，不覆盖此前首次安装证据。
