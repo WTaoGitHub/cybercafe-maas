@@ -86,3 +86,14 @@ python3 -m maas_bootstrap.publisher \
 ## 2026-10-26部署状态更新
 
 客户端已手动部署到tower，固定镜像已缓存；旧agent/provision disabled/inactive，E5开机单元enabled/inactive，母版不注册worker。发布CLI仍未在001线上演练，封版/真实新克隆验收待完成。后续以[实际部署手册](MANUAL-TOWER-DEPLOYMENT.md)为准；其第15节记录本次证据，不把本文早期未部署状态作为现状。
+# 独立模型存储启动契约 model-storage-v1
+
+客户端默认创建/srv/maas/models只读发布目录和/srv/maas/model-cache可写缓存，通过明确bind传给原生worker；配置可用model_root/model_cache_dir指定独立规范路径。二者不得覆盖/包含原生身份目录、bootstrap秘密、对方目录或宽泛系统根目录，不跟随symlink。image-contained/model内只预置公开marker，实际OCR权重仍在推理镜像中。
+
+worker设置GPUSTACK_CACHE_DIR到独立缓存，显式启用原生mirrored并指定自身容器名；保留固定镜像内既有ignore列表，并加入/var/lib/gpustack，防止原生身份卷被传给模型容器。只读发布目录保持只读，可写缓存会保持可写；这不构成privileged容器的强隔离，也不等于HF/ModelScope下载已验收。
+
+新布局具有独立版本/摘要标签。每次开机或手动apply核对真实Mounts、读写属性及关键环境配置，旧布局/额外挂载/摘要不符返回NEEDS_MAINTENANCE，不会自动停止或删除容器；改变本机路径也必须维护。签名manifest中的model_mounts仍不接受任意远程挂载，本项为受控本地启动契约。
+
+存量节点维护若保留停止的旧容器，必须写root-only state_dir/maintenance-backups.json，schema_version=1、container_ids为获准的完整容器ID。只有显式列入、受本工具标签管理、固定镜像/同一原生身份bind、restart=no且停止的容器可被忽略；运行的旧容器仍拒绝启动第二worker。此文件是节点维护记录，不能进入母版或共享模型目录。
+
+已有节点须暂停并排空MaaS、停止模型副本，再由运维重建worker容器，保留身份数据与可回退旧容器；本工具apply本身没有stop/rm/reboot功能。001/002禁止VM重启的约束始终生效。母版仅安装程序/准备公开目录，不执行apply，不保存原生身份；快照由管理员另行操作。

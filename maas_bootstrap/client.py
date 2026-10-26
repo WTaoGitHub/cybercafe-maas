@@ -78,6 +78,8 @@ class LocalSettings:
                 raise ValueError()
             for k in ('shared_code_file','tls_certificate_file','release_public_key_file','state_dir','worker_data_dir'):
                 if not Path(d[k]).is_absolute():raise ValueError()
+            from .storage import paths
+            d['model_root'],d['model_cache_dir']=map(str,paths(d))
             if not isinstance(d['cluster_id'], int) or isinstance(d['cluster_id'], bool):raise ValueError()
             if not d['allowed_server_urls'] or not isinstance(d['allowed_server_urls'], list):raise ValueError()
             if not SAFE_REVISION.fullmatch(d['image_id']):raise ValueError()

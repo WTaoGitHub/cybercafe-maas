@@ -16,6 +16,7 @@ def setup(tmp_path):
     cfg={'schema_version':1,'config_service_url':'https://10.11.31.1:18840','shared_code_file':str(shared),
          'tls_certificate_file':str(tmp_path/'cert.pem'),'release_public_key_file':str(pub),'release_key_id':'test-key',
          'state_dir':str(tmp_path/'state'),'worker_data_dir':str(tmp_path/'native'),'cluster_id':3,
+         'model_root':str(tmp_path/'models'),'model_cache_dir':str(tmp_path/'model-cache'),
          'site_id':'lab','batch_id':'pilot','image_id':'tower-v1','architecture':'x86_64',
          'allowed_server_urls':['http://10.11.31.1:18080'],'cloud_backup':{'url':'http://configuration.cybercafe.phanlink.cn','enabled':False}}
     path=tmp_path/'bootstrap.json';atomic_json(path,cfg)

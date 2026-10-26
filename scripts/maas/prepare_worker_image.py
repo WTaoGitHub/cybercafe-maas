@@ -69,7 +69,7 @@ def build(root,settings_path):
         if p.exists():blockers.append(name)
     if blockers:raise BootstrapError('IMAGE_GENERALIZATION_REQUIRED:'+','.join(sorted(blockers)))
     cfg={k:settings.data[k] for k in (
-        'schema_version','config_service_url','release_key_id','state_dir','worker_data_dir',
+        'schema_version','config_service_url','release_key_id','state_dir','worker_data_dir','model_root','model_cache_dir',
         'site_id','batch_id','cluster_id','image_id','architecture','allowed_server_urls','cloud_backup')}
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
                release_public_key_file='/etc/maas/release-signing.pub')
@@ -79,7 +79,7 @@ def build(root,settings_path):
         'etc/maas/server.crt':(cert,0o644),
         'etc/maas/release-signing.pub':(pub,0o644),
     }
-    for name in ('__init__.py','client.py','worker.py','cli.py'):
+    for name in ('__init__.py','client.py','storage.py','worker.py','cli.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),
@@ -103,8 +103,9 @@ def build(root,settings_path):
             'hashes':{n:hashlib.sha256(b).hexdigest() for n,(b,m) in files.items() if n!='etc/maas/shared-code'},
             'required_before_sealing':['root ownership of installed files','Python3 with cryptography==41.0.7',
                 'Docker and NVIDIA Container Toolkit configured','pinned worker image cached',
-                'supplier first-boot machine-id and SSH host-key generation',
-                'fresh clone hostname/IP distinct from protected 001/002/tower']}
+                'native instance identity absent; supplier OS identity preserved for pilot',
+                'fresh clone hostname does not match protected controller or tower prefix',
+                'dedicated public model root and cache prepared by bootstrap; native identity volume excluded']}
     p=safe_target(root,manifest);p.write_text(json.dumps(result,indent=2)+'\n');p.chmod(0o644)
     return result
 

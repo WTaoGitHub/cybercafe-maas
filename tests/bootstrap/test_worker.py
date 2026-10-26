@@ -10,6 +10,7 @@ class FakeWorker:
     def guard(self):pass
     def inspect(self):return self.container
     def check_environment(self,s,e):pass
+    def validate_layout(self,s,e,c):pass
     def create(self,s,e,m,i,env):
         self.creates+=1;self.container={'running':False,'fingerprint':m['fingerprint']}
         self.identity=i
@@ -95,9 +96,13 @@ def test_native_probe_matches_local_identity_and_exact_cluster(setup,monkeypatch
 def test_docker_create_pins_image_and_never_puts_token_in_arguments(setup,monkeypatch,tmp_path):
     import maas_bootstrap.worker as w
     s,sign=setup;calls=[];e=sign()
-    monkeypatch.setattr(w,'run',lambda args,**kw:calls.append(args))
+    def run(args,**kw):
+        calls.append(args)
+        if args[:3]==['docker','image','inspect']:
+            return json.dumps([{'Config':{'Env':['GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES=/opt/vendor']}}])
+    monkeypatch.setattr(w,'run',run)
     NativeDockerWorker().create(s,e,{'fingerprint':'a'*64},{},tmp_path/'private-env')
-    args=calls[0]
+    args=calls[-1]
     assert args[:2]==['docker','create'] and args[-1]==e['manifest']['worker_image_digest']
     assert '--restart=no' in args and '--env-file' in args
     assert TOKEN not in ' '.join(args) and '--server-url' not in args

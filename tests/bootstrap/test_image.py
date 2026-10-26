@@ -29,6 +29,9 @@ def test_offline_image_contains_only_template_configuration(setup,tmp_path):
     assert (root/'etc/maas').stat().st_mode&0o777==0o700
     assert (root/'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
     assert not (root/'opt/maas/lib/maas_bootstrap/service.py').exists()
+    assert (root/'opt/maas/lib/maas_bootstrap/storage.py').is_file()
+    written=json.loads((root/'etc/maas/bootstrap.json').read_text())
+    assert written['model_root'] and written['model_cache_dir'] and written['model_root']!=written['worker_data_dir']
     wrapper=(root/'opt/maas/bin/maas-worker-bootstrap').read_text()
     assert 'exec /usr/bin/python3' in wrapper and 'curl' not in wrapper
     with pytest.raises(BootstrapError,match='IMAGE_DESTINATION_EXISTS'):image.build(root,cfg)
