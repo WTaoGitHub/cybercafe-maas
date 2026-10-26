@@ -7,7 +7,7 @@ from .client import (BootstrapError,LocalState,HTTPSConfigFetcher,ReleaseVerifie
 NAME='maas-gpustack-worker'
 LABEL='com.cybercafe.maas.bootstrap'
 # Retired 002 names/addresses may be reused by a new test1 clone.
-PROTECTED_HOSTS={'XZ-31-001','tower-mNST8iPdv'}
+PROTECTED_HOSTS={'XZ-31-001','tower-mNST8iPdv','tower-8CbKAhaaf'}
 
 
 def run(args, optional=False):

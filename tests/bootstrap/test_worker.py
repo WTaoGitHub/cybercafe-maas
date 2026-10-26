@@ -52,7 +52,7 @@ def test_dirty_native_directory_is_not_adopted_or_erased(setup):
 
 def test_protected_nodes_and_mother_cannot_launch(monkeypatch):
     import maas_bootstrap.worker as w
-    for host in ('XZ-31-001','tower-mNST8iPdv'):
+    for host in ('XZ-31-001','tower-mNST8iPdv','tower-8CbKAhaaf'):
         monkeypatch.setattr(w.platform,'node',lambda:host)
         with pytest.raises(BootstrapError,match='PROTECTED_HOST_WORKER_FORBIDDEN'):guard_clone_host()
 
