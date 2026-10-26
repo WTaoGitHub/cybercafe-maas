@@ -52,7 +52,7 @@ def test_dirty_native_directory_is_not_adopted_or_erased(setup):
 
 def test_protected_nodes_and_mother_cannot_launch(monkeypatch):
     import maas_bootstrap.worker as w
-    for host in ('XZ-31-001','XZ-31-002','tower-mNST8iPdv'):
+    for host in ('XZ-31-001','tower-mNST8iPdv'):
         monkeypatch.setattr(w.platform,'node',lambda:host)
         with pytest.raises(BootstrapError,match='PROTECTED_HOST_WORKER_FORBIDDEN'):guard_clone_host()
 
@@ -98,3 +98,29 @@ def test_docker_create_pins_image_and_never_puts_token_in_arguments(setup,monkey
     assert args[:2]==['docker','create'] and args[-1]==e['manifest']['worker_image_digest']
     assert '--restart=no' in args and '--env-file' in args
     assert TOKEN not in ' '.join(args) and '--server-url' not in args
+
+
+@pytest.mark.parametrize('hostname,addresses', [
+    ('XZ-31-002',['10.11.31.2']),
+    ('XZ-31-002',['10.11.31.15']),
+    ('new-clone',['10.11.31.2']),
+])
+def test_replacement_clone_can_reuse_002_name_or_address(monkeypatch,hostname,addresses):
+    import maas_bootstrap.worker as w
+    monkeypatch.setattr(w.platform,'node',lambda:hostname)
+    monkeypatch.setattr(w.platform,'system',lambda:'Linux')
+    monkeypatch.setattr(w.os,'geteuid',lambda:0)
+    def ip_only(args):
+        assert args==['ip','-j','-4','address','show']
+        return json.dumps([{'addr_info':[{'local':address} for address in addresses]}])
+    monkeypatch.setattr(w,'run',ip_only)
+    guard_clone_host()
+
+
+def test_controller_address_still_blocks_reused_name_and_secondary_address(monkeypatch):
+    import maas_bootstrap.worker as w
+    monkeypatch.setattr(w.platform,'node',lambda:'XZ-31-002')
+    monkeypatch.setattr(w.platform,'system',lambda:'Linux')
+    monkeypatch.setattr(w.os,'geteuid',lambda:0)
+    monkeypatch.setattr(w,'run',lambda args:json.dumps([{'addr_info':[{'local':'10.11.31.2'},{'local':'10.11.31.1'}]}]))
+    with pytest.raises(BootstrapError,match='PROTECTED_HOST_WORKER_FORBIDDEN'):guard_clone_host()

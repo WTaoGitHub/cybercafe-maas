@@ -6,7 +6,8 @@ from .client import (BootstrapError,LocalState,HTTPSConfigFetcher,ReleaseVerifie
 
 NAME='maas-gpustack-worker'
 LABEL='com.cybercafe.maas.bootstrap'
-PROTECTED_HOSTS={'XZ-31-001','XZ-31-002','tower-mNST8iPdv'}
+# Retired 002 names/addresses may be reused by a new test1 clone.
+PROTECTED_HOSTS={'XZ-31-001','tower-mNST8iPdv'}
 
 
 def run(args, optional=False):
@@ -26,9 +27,9 @@ def guard_clone_host():
         raise BootstrapError('PROTECTED_HOST_WORKER_FORBIDDEN')
     if os.geteuid()!=0 or platform.system()!='Linux':
         raise BootstrapError('LINUX_ROOT_REQUIRED')
-    # Also reject renamed control nodes retaining their known addresses.
+    # Also reject a renamed controller retaining its known address.
     rows=json.loads(run(['ip','-j','-4','address','show']))
-    if any(a.get('local') in ('10.11.31.1','10.11.31.2') for n in rows for a in n.get('addr_info',[])):
+    if any(a.get('local') == '10.11.31.1' for n in rows for a in n.get('addr_info',[])):
         raise BootstrapError('PROTECTED_HOST_WORKER_FORBIDDEN')
 
 
