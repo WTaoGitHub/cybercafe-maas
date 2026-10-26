@@ -1,0 +1,76 @@
+{
+  "checked_at": "2026-10-26T03:02:35.501231+00:00",
+  "host": "tower-mNST8iPdv",
+  "backup_dir": "/root/e5-before-install-20261026-105709",
+  "source_commit": "f7de733f7f1d7c7b58380527fd601dc69c811212",
+  "files_match_bundle": true,
+  "service_states": {
+    "cybercafe-agent.service": {
+      "enabled": "disabled",
+      "active": "inactive"
+    },
+    "cybercafe-provision.service": {
+      "enabled": "disabled",
+      "active": "inactive"
+    },
+    "maas-worker-bootstrap.service": {
+      "enabled": "enabled",
+      "active": "inactive"
+    }
+  },
+  "permissions": {
+    "/etc/maas": {
+      "mode": "0o700",
+      "uid": 0,
+      "gid": 0
+    },
+    "/etc/maas/bootstrap.json": {
+      "mode": "0o600",
+      "uid": 0,
+      "gid": 0
+    },
+    "/etc/maas/shared-code": {
+      "mode": "0o600",
+      "uid": 0,
+      "gid": 0
+    }
+  },
+  "image": {
+    "reference": "quay.io/gpustack/gpustack@sha256:55ecc762950a32641b6a4d96195c0662ef72998eaeeda31bba0e8e218d41afef",
+    "platform": "linux/amd64",
+    "repo_digests": [
+      "quay.io/gpustack/gpustack@sha256:55ecc762950a32641b6a4d96195c0662ef72998eaeeda31bba0e8e218d41afef"
+    ],
+    "size_bytes": 4941415793
+  },
+  "container_count": 0,
+  "instance_state_absent": true,
+  "temporary_shared_code_absent": true,
+  "temporary_prepare_dirs": 0,
+  "worker_started": false,
+  "identity_initialized_by_e5": false,
+  "snapshot_created": false,
+  "snapshot_ready": false,
+  "docker_not_restarted": true,
+  "machine_id_unchanged": true,
+  "ssh_host_keys_unchanged": true,
+  "config_prepare": {
+    "verified_https": true,
+    "verified_signature": true,
+    "revision": "e5-pilot-r1",
+    "cluster_id": 3,
+    "repeat_same": true,
+    "temporary_payload_removed": true
+  },
+  "unit_verify": {
+    "exit_code": 0,
+    "vendor_warning": "start_appinstaller.service marked executable; unchanged"
+  },
+  "remaining": [
+    "OS/SSH first-boot identity scheme",
+    "legacy secrets and backup exclusion from published image",
+    "vendor failed units review",
+    "administrator snapshot and independent clones",
+    "real clone registration and GPU inference"
+  ]
+}

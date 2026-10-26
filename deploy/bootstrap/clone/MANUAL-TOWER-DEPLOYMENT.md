@@ -1,6 +1,6 @@
 # tower 母版手动部署操作手册
 
-版本：2026-10-26；适用于当前 E5 试点、Ubuntu 24.04 x86_64。本文是后续人工执行说明，**编写手册不表示已授权或已经部署到 tower**。此前“先准备、不要部署到tower”的要求继续有效。
+版本：2026-10-26；适用于当前 E5 试点、Ubuntu 24.04 x86_64。本文为管理员人工执行说明，并记录2026-10-26实际部署。用户本轮已授权部署到tower，并明确确认“两项旧业务服务由E5替代”；此前暂停部署的限制在本轮被解除。母版仍不启动worker，不自动清理系统身份或制作快照。实际结果见文末执行记录。
 
 目标：在母版安装启动客户端、配置和镜像缓存；母版本身不注册worker。管理员保存新快照并创建独立A/B后，克隆开机加入001的`test1`集群。001继续承载GPUStack Server、配置服务和MaaS控制组件；002保持原状。禁止重启/重建/还原001、002。
 
@@ -28,10 +28,15 @@
 
 ## 2. 上传并验证公开交付包
 
-以下命令在 **Mac终端**执行，待实际部署窗口获准后再操作：
+以下命令在 **Mac终端**执行。重新部署需确认自己的部署窗口；已有安装不能直接覆盖：
 
 ```sh
-shasum -a 256 /Users/4paradigm/dev/cybercafe-maas/dist/e5/e5-worker-template-tower-e5-pilot-v1.tar.gz
+python3 - <<'PY'
+from pathlib import Path
+import hashlib
+p=Path('/Users/4paradigm/dev/cybercafe-maas/dist/e5/e5-worker-template-tower-e5-pilot-v1.tar.gz')
+print(hashlib.sha256(p.read_bytes()).hexdigest())
+PY
 
 ssh -p 6025 -i /Users/4paradigm/.ssh/id_ed25519 root@111.4.255.126 \
   'install -d -m 700 /root/e5-install-input'
@@ -57,6 +62,8 @@ tar -xzf /root/e5-install-input/e5-worker-template-tower-e5-pilot-v1.tar.gz \
 cd /root/e5-install-input/bundle
 python3 scripts/maas/verify_worker_bundle.py --root /root/e5-install-input/bundle
 ```
+
+实测Mac的Perl版`shasum`因C.UTF-8 locale异常退出；上面改用Python标准库，不改全局locale。上传前本地校验、上传后tower校验均须通过；不要在前一步失败后继续解包。
 
 预期：`ok=true`、`files_verified=15`、source_commit与第1节一致。SHA256用于核对从可信来源取得的包，不是第三方数字签名。不要使用来源不明、仅附自报哈希的压缩包。
 
@@ -100,7 +107,7 @@ for E5_UNIT in cybercafe-agent.service cybercafe-provision.service; do
 done
 ```
 
-记录该目录，回退时使用实际备份路径，不依赖跨SSH会话保留变量。
+记录该目录，回退时使用实际备份路径，不依赖跨SSH会话保留变量。本次实际备份：`/root/e5-before-install-20261026-105709`，除单元状态外，还私有备份旧unit、agent/provision/install脚本、config.env及.provisioned，共7个文件；均只留root可访问，不将秘密复制入报告或Git。
 
 ## 4. 审查并处理旧启动职责
 
@@ -117,7 +124,9 @@ systemctl stop cybercafe-provision.service
 systemctl disable cybercafe-provision.service
 ```
 
-保留旧脚本和备份便于回退。不禁用`swcfghostname`、`swnetboot_success`、SSH或供应商网络/磁盘服务。若provision含仍需保留的工作，先拆分职责，不直接照抄上述停用命令。停用旧服务后再次检查Docker容器，未知容器不要自动删除。
+本轮已确认两项旧服务替代范围，实际ExecStop/ExecStopPost为空，agent未发现显式signal/atexit处理注册；停止后两项均disabled/inactive，Docker PID未变。
+
+保留旧脚本和备份便于当前安装回退；**发布快照前应将旧设备凭据/config.env及含秘密备份迁出交付镜像或按管理员方案清理**，不能将“回退材料留在母版”误当作可无条件固化到克隆。此项不影响当前客户端安装，但仍是封版交接检查。不禁用`swcfghostname`、`swnetboot_success`、SSH或供应商网络/磁盘服务。若provision含仍需保留的工作，先拆分职责，不直接照抄上述停用命令。停用旧服务后再次检查Docker容器，未知容器不要自动删除。
 
 ## 5. 安装客户端与公开材料（不启动）
 
@@ -260,6 +269,8 @@ systemctl is-enabled maas-worker-bootstrap.service
 systemctl is-active maas-worker-bootstrap.service
 ```
 
+实测`systemd-analyze verify`退出码0，但附带供应商`/usr/lib/systemd/system/start_appinstaller.service`带可执行位的警告（Proceeding anyway）；它不是E5 unit失败，本次未修改供应商权限。
+
 预期enabled、当前inactive。**不要使用`enable --now`、`start`、`restart`或直接`apply`。** 当前代码会拒绝在tower/001/002上启动worker，这个保护不应删除或绕过。启用只设置以后开机入口，母版当前不启动；母版若后来重启，该保护仍会拒绝其注册。
 
 unit成功后不持续监护worker容器；容器使用restart=no，后续退出不会由该oneshot单元自动恢复。启动阶段失败有界重试，10分钟最多5次；不要把此功能理解为全天候自动修复。
@@ -338,3 +349,24 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 4. 共享码若发生泄漏，在001执行停码/换码，并评估已外发原生token；仅删除母版文件不能撤销凭据。
 
 如果新克隆已运行worker，此回退段不适用；应先按维护流程处理原生实例和GPU占用，再决定替换配置/组件。
+
+
+## 15. 2026-10-26实际部署记录（已执行）
+
+本节覆盖此前“仅准备、未部署”的历史状态。用户授权在tower实际部署，并确认旧agent/provision由E5替代。
+
+| 阶段 | 实际结果 |
+|---|---|
+| 变更前备份 | /root/e5-before-install-20261026-105709，7个文件及before.json；root私有，未复制秘密入Git |
+| 旧业务退出 | 两项均disabled/inactive；ExecStop/ExecStopPost为空；Docker未重启 |
+| 包及安装 | 源码f7de733，包SHA256一致，15项载荷校验通过；8个已安装公开文件逐项匹配包摘要 |
+| 凭据/权限 | shared-code经临时私有目录转交；本地及tower中转码均清理；/etc/maas为700，配置与码600，owner均root |
+| 配置链路 | 当前001真实HTTPS和Ed25519验证通过；e5-pilot-r1、cluster3；两次prepare指纹相同，/run临时配置已删除 |
+| 镜像缓存 | quay.io固定摘要拉取成功，linux/amd64，RepoDigest精确匹配；本地image size 4,941,415,793 bytes（约4.60 GiB，非下载流量/独占磁盘占用） |
+| 开机入口 | shell语法、Python导入和systemd unit验证通过；单元enabled/inactive，未使用start或enable --now |
+| 母版状态 | 无Docker容器，无/var/lib/maas-bootstrap，未注册worker；machine-id和SSH主机密钥摘要与变更前一致 |
+| 平台操作 | 无VM/Docker引擎重启；未制作快照或创建克隆；001002未修改 |
+
+**当前是“母版E5业务层已部署，尚未完成封版”，不是“可直接发布快照”。** 下一步需确认克隆首次machine-id/SSH密钥重建与启动顺序、迁出旧设备凭据/回退秘密、由管理员确认供应商失败单元影响。满足后管理员再保存快照并创建独立A/B，随后验证真实自动注册和GPU/模型。
+
+线上脱敏结果保存为`/root/e5-install-input/deployment-result.json`；本地证据：[tower-deployment-20261026.json](../../../results/maas-e5-preparation/tower-deployment-20261026.json)。没有把原生token、共享码、配置响应或私钥写入证据。
