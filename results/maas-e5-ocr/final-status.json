@@ -1,0 +1,42 @@
+{
+  "status": {
+    "tasks": {
+      "SUCCEEDED": 8467,
+      "FAILED": 1
+    },
+    "successful_tasks": 8467,
+    "dispatch_paused": false,
+    "unknown_backend_activity": 0,
+    "unknown_sync_activity": 0
+  },
+  "paused": false,
+  "active_tasks": 0,
+  "backend_activity": 0,
+  "sync_activity": 0,
+  "temporary_transfer_service": "inactive",
+  "temporary_port_18841_listening": false,
+  "worker": {
+    "name": "e5-9c5be5b92f10f84b714a5dbe",
+    "cluster_id": 3,
+    "state": "ready",
+    "unreachable": false,
+    "id": 5
+  },
+  "model": {
+    "name": "maas-ocr-e5-r1",
+    "ready_replicas": 1,
+    "cluster_id": 3,
+    "id": 12
+  },
+  "maintenance_binding_fields": [
+    "worker_id",
+    "model_ids",
+    "credential_id",
+    "probe_image",
+    "task_cli",
+    "wait_seconds",
+    "node_ssh"
+  ],
+  "no_vm_reboot_performed": true,
+  "no_collector_installed": true
+}

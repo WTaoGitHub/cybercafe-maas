@@ -417,3 +417,16 @@ E5于16:49:46自动开始、16:50:00完成，trigger=boot、code=APPLIED、NRest
 边界：未部署模型或执行端到端推理；未验证5070、所有GPU型号、大规模或多克隆同时在线。新ID5与先前ID4名称不同，可证明观察到独立原生记录；004目前not_ready/unreachable，不算双节点同时可用验证。旧worker记录未自动删除，后续清理需区分集群/ID。母版启动保护采用名称约定，仍非平台可信角色认证。
 
 下一步在test1为新worker部署测试模型并通过MaaS客户入口完成请求；另安排独立克隆并行身份验证。不得通过重启001/002开展测试。[第二版首启证据](../../results/maas-e5-preparation/second-snapshot-clone-002-20261026.json)。
+
+
+## 2026-10-26：新克隆OCR及MaaS端到端通过
+
+test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94），完整OCR image ID校验匹配已验证版本。MaaS客户模型仍为ocr.default，上游切到新route，静态revision登记为ocr-e5-r1，未改写旧route含义或历史数据。切换前确认无排队/活动/UNKNOWN、备份catalog及key模型许可，暂停排空后更新并以真实探针恢复；没有容器/VM重启或collector恢复。
+
+私有TLS端到端：同步200识别46行；输入上传201、异步提交202、SUCCEEDED/attempts1；结果下载200、46行、新revision正确，处理node均为新克隆GPU。SQL确认本任务成功1条且计量1条。收尾未暂停、活动请求0、UNKNOWN=0，worker/model ready；临时LAN镜像传输服务已关闭。部署及核验脚本已保存在scripts/maas/runtime，回退材料优先备份Mac。
+
+发现的实际部署缺口：原宿主机模型目录没有挂入bootstrap worker，实例93路径检查失败。试点改用专用公开元数据目录，在宿主机与现有worker分别准备，移除失败实例后由GPUStack生成94；OCR程序/权重仍在镜像内。此为人工分发和容器文件系统准备，重建worker需重新准备，不是规范模型卷或自动模型分发完成。后续需完善模型目录生命周期与分发；本次未更改母版。
+
+另一待办：常驻维护binding仍引用旧worker2/model1、9，不适用于当前worker5/model12及SSH16482。先重绑并校验，不能直接调用旧绑定。双克隆并行、故障迁移、当前版本长测、5070及生产验收仍未完成。
+
+[端到端报告](../../results/maas-e5-ocr/REPORT.md) · [试点操作手册](../../deploy/maas/E5-OCR-PILOT.md)。
