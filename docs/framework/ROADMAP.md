@@ -298,3 +298,14 @@ GPUStack223 worker.worker_uuid读取运行内存或本机data_dir/worker_uuid，
 GPU仍不可用：当前PCI 10de:2f04要求NVIDIA open kernel modules，实际加载闭源模块，nvidia-smi显示No devices found。母版到001:18080此前仍超时；按既定边界，原生端口重点在新克隆实测。下一步先单独处理GPU模块兼容，再由管理员安排受控快照/新克隆，验证配置拉取、test1自动注册、GPU和模型服务。不得把本次补丁成功写成GPU环境或真实首启验收通过。
 
 原f7de733归档包仍是历史版本，重装会丢失本次修正；需使用当前源码重新构建，或显式叠加fbd3d3e模块并核对摘要。证据见[部署核验](../../results/maas-e5-preparation/002-guard-patch-deployment-20261026.json)，GPU只读取证见[new-tower-comparison-20261026.json](../../results/maas-e5-preparation/new-tower-comparison-20261026.json)。E5.F4清理、E5.F5通用角色保护继续暂缓。
+
+
+## 2026-10-26：TOWER母版名称保护规则更新（已部署）
+
+管理员确认“TOWER就是改镜像的”。当前试点据此采用命名约定：hostname忽略大小写后，等于tower或以tower-开头即拒绝启动worker；不再逐台登记随机后缀。XZ-31-001名称保护也忽略大小写，10.11.31.1地址保护保留；002名称/IP继续允许复用。towerish-worker、worker-tower不匹配母版规则。
+
+保护在配置拉取、环境检查和容器创建前执行，因此母版的开机入口及手动apply均不会进入接入流程。此规则只用于防误启动，不是身份认证；管理员说明并非完整命名规范，首次普通克隆仍需实测hostname。若普通克隆继承tower名称会被拒绝，应先取证再适配，不直接移除母版保护。
+
+本地40项bootstrap测试通过，母版模块已备份到Mac后原子替换；远端真实名称及模拟名称保护、002复用均验证通过，installed SHA256为7db3e0709fec7728e8c310798879b5dc14c589b3845823f953f66fb59b465ae5。无容器、无注册身份，原enabled/failed历史状态保留。本次未运行apply、未启动worker、未重启VM或改驱动。GPU兼容问题及真实克隆注册仍未验收；若只分配4070/4080，可先用新克隆验证现有驱动，不将母版5070修复作为这项试验的强制前置。
+
+[本次部署证据](../../results/maas-e5-preparation/tower-prefix-guard-deployment-20261026.json)。原f7de733归档包未更新，重新部署须使用当前源码构建或叠加当前模块并验证摘要。通用角色识别E5.F5仍为后续增强。

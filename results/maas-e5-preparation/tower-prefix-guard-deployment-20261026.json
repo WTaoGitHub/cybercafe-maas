@@ -1,0 +1,16 @@
+{
+  "hostname": "tower-8CbKAhaaf",
+  "installed_sha256": "7db3e0709fec7728e8c310798879b5dc14c589b3845823f953f66fb59b465ae5",
+  "protected_host_cases_passed": 5,
+  "mock_002_reuse_allowed": true,
+  "containers": 0,
+  "identity_absent": true,
+  "service_state": "failed",
+  "worker_started": false,
+  "driver_modified": false,
+  "vm_rebooted": false,
+  "local_tests_passed": 40,
+  "date": "2026-10-26",
+  "rule": "Case-insensitive exact tower or tower- prefix; controller name/IP protection retained",
+  "limits": "No real clone boot or registration validation; existing failed service state retained."
+}

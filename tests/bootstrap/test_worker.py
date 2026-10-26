@@ -52,7 +52,7 @@ def test_dirty_native_directory_is_not_adopted_or_erased(setup):
 
 def test_protected_nodes_and_mother_cannot_launch(monkeypatch):
     import maas_bootstrap.worker as w
-    for host in ('XZ-31-001','tower-mNST8iPdv','tower-8CbKAhaaf'):
+    for host in ('XZ-31-001','xz-31-001','tower','TOWER','tower-mNST8iPdv','tower-8CbKAhaaf','ToWeR-new-template'):
         monkeypatch.setattr(w.platform,'node',lambda:host)
         with pytest.raises(BootstrapError,match='PROTECTED_HOST_WORKER_FORBIDDEN'):guard_clone_host()
 
@@ -104,6 +104,8 @@ def test_docker_create_pins_image_and_never_puts_token_in_arguments(setup,monkey
     ('XZ-31-002',['10.11.31.2']),
     ('XZ-31-002',['10.11.31.15']),
     ('new-clone',['10.11.31.2']),
+    ('towerish-worker',['10.11.31.15']),
+    ('worker-tower',['10.11.31.15']),
 ])
 def test_replacement_clone_can_reuse_002_name_or_address(monkeypatch,hostname,addresses):
     import maas_bootstrap.worker as w

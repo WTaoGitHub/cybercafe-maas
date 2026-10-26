@@ -22,5 +22,7 @@
     "artifact_dir": "/Users/4paradigm/dev/cybercafe-maas/dist/e5/002-guard-patch-596516e",
     "required_before_snapshot": "restore SSH, verify target source, back up to Mac, install and verify without launching worker"
   },
-  "evidence": "002-guard-patch-deployment-20261026.json"
+  "evidence": "002-guard-patch-deployment-20261026.json",
+  "superseded_by": "tower-prefix-guard-deployment-20261026.json",
+  "note": "This file records the earlier exact-hostname deployment; use superseding evidence for currently installed hash and prefix policy."
 }
