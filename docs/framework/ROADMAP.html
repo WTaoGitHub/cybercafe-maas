@@ -319,7 +319,13 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h3>第二版受控试验快照前核对（2026-10-26）</h3>
 <p>只读核对当前tower文件：002名称/IP复用、大小写无关tower/tower-*保护及GPUStack223 me确认修复均已安装，模块SHA256为bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994。启动入口enabled；无容器、E5 identity/applied或原生token/UUID/name，固定worker镜像已缓存，配置cluster3及信任文件/共享码齐备，旧agent/provision disabled/inactive。到001:18840/18080均可连。仅有apply.lock和旧last-result.json，systemd failed属历史启动结果，不作为已注册实例或当前worker运行状态，不需为试验快照重启/人工apply。</p>
 <p>结论：若下一台独立普通克隆分配RTX4070/4080系列，本轮无额外必须写入母版的改动，可请管理员保存第二版受控试验快照并启动新克隆，先只读观察自动启动，再核对test1 ready、独立身份及GPU。001的18080网段修复属于控制端配置，无需写进母版。当前母版5070仍不可初始化，不宣称第二版支持5070；若新克隆分配5070须另处理驱动模块。旧凭据清理继续Nice to have。</p>
-<p>不要用已注册004保存母版，避免复制实例身份；应保存当前tower。记录管理员侧快照版本/时间及新VM SSH入口，保留004作为手动接入对照。本轮未保存快照、修改服务器或重启VM；<a href="../../results/maas-e5-preparation/template-snapshot-readiness-20261026.json">封版前只读核对</a>。新版无人值守首启、双克隆及模型推理仍待实测。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p>不要用已注册004保存母版，避免复制实例身份；应保存当前tower。记录管理员侧快照版本/时间及新VM SSH入口，保留004作为手动接入对照。本轮未保存快照、修改服务器或重启VM；<a href="../../results/maas-e5-preparation/template-snapshot-readiness-20261026.json">封版前只读核对</a>。新版无人值守首启、双克隆及模型推理仍待实测。</p>
+<h3>第二版真实克隆首启自动接入通过（2026-10-26）</h3>
+<p>用户确认端口16482现为新建VM，虽然复用XZ-31-002名称及10.11.31.2地址，不能视为旧002或先前004。只读检查启动时间16:49:33；worker模块SHA256 bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994匹配封版前母版，证明保护及注册确认修正已随镜像带入。</p>
+<p>E5于16:49:46自动开始、16:50:00完成，trigger=boot、code=APPLIED、NRestarts=0，单元enabled/active(exited)，符合oneshot成功状态。新worker ID5、随机名称e5-9c5be5b92f10f84b714a5dbe自动加入test1(cluster3)，本机原生身份文件存在。首启记录native_state=not_ready是注册时的瞬时快照；随后本机个体token的me=true查询及001管理查询均显示ready/unreachable=false，不将旧快照误读为当前不可用。</p>
+<p>宿主机和worker容器均识别RTX4080 SUPER/580.95.05，18840/18080可达，001反向10150/10151均可连。002名称/IP复用未被误拦截。整个检查未运行prepare/apply、未改配置/补丁或重启任何VM，只有只读命令及容器内GPU查询。因此第二版独立克隆的无人值守配置获取、worker启动和原生纳管链路通过本次实测。</p>
+<p>边界：未部署模型或执行端到端推理；未验证5070、所有GPU型号、大规模或多克隆同时在线。新ID5与先前ID4名称不同，可证明观察到独立原生记录；004目前not_ready/unreachable，不算双节点同时可用验证。旧worker记录未自动删除，后续清理需区分集群/ID。母版启动保护采用名称约定，仍非平台可信角色认证。</p>
+<p>下一步在test1为新worker部署测试模型并通过MaaS客户入口完成请求；另安排独立克隆并行身份验证。不得通过重启001/002开展测试。<a href="../../results/maas-e5-preparation/second-snapshot-clone-002-20261026.json">第二版首启证据</a>。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
 <blockquote><strong>E5当前执行基线（2026-10-23修订六）</strong>：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 <a href="E5-DESIGN.md">当前设计</a>、<a href="E5-IMPLEMENTATION.md">开发计划</a>和 <a href="E5-TEST-DEPLOYMENT.md">部署测试</a>。</blockquote>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
@@ -501,4 +507,10 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <h3>第二版受控试验快照前核对（2026-10-26）</h3>
 <p>只读核对当前tower文件：002名称/IP复用、大小写无关tower/tower-*保护及GPUStack223 me确认修复均已安装，模块SHA256为bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994。启动入口enabled；无容器、E5 identity/applied或原生token/UUID/name，固定worker镜像已缓存，配置cluster3及信任文件/共享码齐备，旧agent/provision disabled/inactive。到001:18840/18080均可连。仅有apply.lock和旧last-result.json，systemd failed属历史启动结果，不作为已注册实例或当前worker运行状态，不需为试验快照重启/人工apply。</p>
 <p>结论：若下一台独立普通克隆分配RTX4070/4080系列，本轮无额外必须写入母版的改动，可请管理员保存第二版受控试验快照并启动新克隆，先只读观察自动启动，再核对test1 ready、独立身份及GPU。001的18080网段修复属于控制端配置，无需写进母版。当前母版5070仍不可初始化，不宣称第二版支持5070；若新克隆分配5070须另处理驱动模块。旧凭据清理继续Nice to have。</p>
-<p>不要用已注册004保存母版，避免复制实例身份；应保存当前tower。记录管理员侧快照版本/时间及新VM SSH入口，保留004作为手动接入对照。本轮未保存快照、修改服务器或重启VM；<a href="../../results/maas-e5-preparation/template-snapshot-readiness-20261026.json">封版前只读核对</a>。新版无人值守首启、双克隆及模型推理仍待实测。</p></section></main></body></html>
+<p>不要用已注册004保存母版，避免复制实例身份；应保存当前tower。记录管理员侧快照版本/时间及新VM SSH入口，保留004作为手动接入对照。本轮未保存快照、修改服务器或重启VM；<a href="../../results/maas-e5-preparation/template-snapshot-readiness-20261026.json">封版前只读核对</a>。新版无人值守首启、双克隆及模型推理仍待实测。</p>
+<h3>第二版真实克隆首启自动接入通过（2026-10-26）</h3>
+<p>用户确认端口16482现为新建VM，虽然复用XZ-31-002名称及10.11.31.2地址，不能视为旧002或先前004。只读检查启动时间16:49:33；worker模块SHA256 bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994匹配封版前母版，证明保护及注册确认修正已随镜像带入。</p>
+<p>E5于16:49:46自动开始、16:50:00完成，trigger=boot、code=APPLIED、NRestarts=0，单元enabled/active(exited)，符合oneshot成功状态。新worker ID5、随机名称e5-9c5be5b92f10f84b714a5dbe自动加入test1(cluster3)，本机原生身份文件存在。首启记录native_state=not_ready是注册时的瞬时快照；随后本机个体token的me=true查询及001管理查询均显示ready/unreachable=false，不将旧快照误读为当前不可用。</p>
+<p>宿主机和worker容器均识别RTX4080 SUPER/580.95.05，18840/18080可达，001反向10150/10151均可连。002名称/IP复用未被误拦截。整个检查未运行prepare/apply、未改配置/补丁或重启任何VM，只有只读命令及容器内GPU查询。因此第二版独立克隆的无人值守配置获取、worker启动和原生纳管链路通过本次实测。</p>
+<p>边界：未部署模型或执行端到端推理；未验证5070、所有GPU型号、大规模或多克隆同时在线。新ID5与先前ID4名称不同，可证明观察到独立原生记录；004目前not_ready/unreachable，不算双节点同时可用验证。旧worker记录未自动删除，后续清理需区分集群/ID。母版启动保护采用名称约定，仍非平台可信角色认证。</p>
+<p>下一步在test1为新worker部署测试模型并通过MaaS客户入口完成请求；另安排独立克隆并行身份验证。不得通过重启001/002开展测试。<a href="../../results/maas-e5-preparation/second-snapshot-clone-002-20261026.json">第二版首启证据</a>。</p></section></main></body></html>

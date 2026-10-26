@@ -1,0 +1,89 @@
+{
+  "hostname": "XZ-31-002",
+  "boot": {
+    "rc": 0,
+    "out": "2026-10-26 16:49:33"
+  },
+  "ip_addresses": {
+    "rc": 0,
+    "out": "10.11.31.2 172.17.0.1"
+  },
+  "worker_sha256": "bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994",
+  "gpu": {
+    "rc": 0,
+    "out": "NVIDIA GeForce RTX 4080 SUPER, GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6, 580.95.05, 16376 MiB"
+  },
+  "service": {
+    "rc": 0,
+    "out": "NRestarts=0\nExecMainStartTimestamp=Mon 2026-10-26 16:49:46 CST\nExecMainExitTimestamp=Mon 2026-10-26 16:50:00 CST\nActiveState=active\nSubState=exited\nUnitFileState=enabled"
+  },
+  "last-result.json": {
+    "code": "APPLIED",
+    "trigger": "boot",
+    "cluster_id": 3,
+    "worker_id": 5,
+    "worker_name": "e5-9c5be5b92f10f84b714a5dbe",
+    "native_state": "not_ready",
+    "revision": "e5-pilot-r1"
+  },
+  "applied.json": {
+    "code": "APPLIED",
+    "trigger": "boot",
+    "cluster_id": 3,
+    "worker_id": 5,
+    "worker_name": "e5-9c5be5b92f10f84b714a5dbe",
+    "native_state": "not_ready",
+    "revision": "e5-pilot-r1"
+  },
+  "identity.json": {
+    "cluster_id": 3,
+    "worker_name": "e5-9c5be5b92f10f84b714a5dbe"
+  },
+  "native_files_present": {
+    "worker_uuid": true,
+    "worker_name": true,
+    "worker_token": true
+  },
+  "containers": {
+    "rc": 0,
+    "out": "maas-gpustack-worker running"
+  },
+  "network": {
+    "18080": "connected",
+    "18840": "connected"
+  },
+  "native_me": [
+    {
+      "id": 5,
+      "name": "e5-9c5be5b92f10f84b714a5dbe",
+      "hostname": "XZ-31-002",
+      "ip": "10.11.31.2",
+      "cluster_id": 3,
+      "state": "ready",
+      "me": true,
+      "unreachable": false,
+      "port": 10150,
+      "metrics_port": 10151
+    }
+  ],
+  "validation": {
+    "read_only": true,
+    "manual_apply_invoked": false,
+    "vm_rebooted": false,
+    "container_gpu": "NVIDIA GeForce RTX 4080 SUPER, 580.95.05",
+    "reverse_10150": "connected",
+    "reverse_10151": "connected",
+    "native_worker_id": 5,
+    "current_native_state": "ready",
+    "unreachable": false,
+    "old004_id": 4,
+    "old004_current_state": "not_ready/unreachable",
+    "identity_distinction": "New worker ID5/name differ from prior ID4/name; no claim of simultaneous two-worker availability",
+    "limits": [
+      "Boot result native_state=not_ready is an initial registration snapshot; subsequent authenticated and controller queries show ready.",
+      "No model deployment/inference performed.",
+      "Existing obsolete worker records not deleted.",
+      "Same hostname/IP does not identify the same VM; this check uses new boot and new native worker identity."
+    ]
+  }
+}
