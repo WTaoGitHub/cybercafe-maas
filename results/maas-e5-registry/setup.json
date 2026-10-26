@@ -1,0 +1,17 @@
+{
+  "phase": "PUBLISHED",
+  "registry": "10.11.31.1:18443",
+  "repository": "e5/probe",
+  "tag": "pilot-20261026",
+  "registry_image_id": "sha256:26b2eb03618e749084668eaff68cff8f81dda12d06ac641be7a6398b82a6f25b",
+  "nginx_image_id": "sha256:3dd08163706a20b20622f310ec10258cc96e9007ab357f7201955bc880ac17f4",
+  "certificate_sha256": "421f2c184e6339b2e4f1bf01e30ecae84413515bb941c1bba95a4fc947e2a9c8",
+  "source_image_id": "sha256:e9f98bfa496f27ae5ca6ee59bfb73efc63f427c14c5f937a3146c1377cd6846c",
+  "manifest_digest": "sha256:c4f10cd146e8342232fa37140b223f4817516ca139c40cbf7ae1e04f57fbe190",
+  "canonical_image": "10.11.31.1:18443/e5/probe@sha256:c4f10cd146e8342232fa37140b223f4817516ca139c40cbf7ae1e04f57fbe190",
+  "anonymous_http": 401,
+  "incorrect_password_http": 401,
+  "reader_write_http": 401,
+  "reader_read_http": 200,
+  "controller_docker_trust_without_restart": true
+}
