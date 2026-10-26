@@ -14,6 +14,8 @@
 
 原路径/root/wtaobj/gpu-ocr在宿主机存在，但bootstrap worker没有挂载它，首次实例93报路径不存在。已改用独立公开元数据目录/opt/maas-models/ocr-e5-r1/model，并在宿主机与现有worker内准备相同目录；只删除失败实例，由GPUStack生成运行实例94。未重建worker、未重启Docker引擎或VM、未恢复collector；没有在不确定请求上重试推理。
 
+**挂载范围更正（后续只读核对）**：官方worker默认mirrored=true，实际OCR容器继承/var/lib/gpustack原生数据卷（RW），没有挂入上述公开元数据目录。元数据复制仅让GPUStack本地路径检查通过，OCR权重仍来自镜像。此前操作手册“只挂载专用父目录”的描述已修正；请求和计量通过仍有效，但不构成外置权重挂载/身份目录隔离通过。后续须分离模型卷并排除原生身份卷，详见[原生能力核对](../../docs/framework/GPUSTACK-223-DISTRIBUTION-REVIEW.md)。本次未调整服务器挂载。
+
 ## 限制与下一步
 
 1. 本次模型分发和元数据目录为人工准备，worker容器重建后元数据需要重新准备；规范的模型卷/分发尚未实现。不能因此宣称新克隆会自动具备模型文件及立即提供OCR。

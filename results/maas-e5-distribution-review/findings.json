@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-26",
+  "scope": "read-only v2.2.3 tag + installed runtime 0.2.1; no registry/model/worker configuration changes",
+  "capabilities": {
+    "custom_registry_image_reference": "supported",
+    "digest_pull": "supported by runtime pull code",
+    "registry_username_password": "supported by runtime env/auth_config and Docker SDK client config fallback",
+    "pull_policy": [
+      "Always",
+      "IfNotPresent",
+      "Never"
+    ],
+    "default_pull_policy": "IfNotPresent",
+    "worker_image_mirrored_default": true,
+    "model_host_path_automatic_remap_in_nonmirrored_mode": false,
+    "mirrored_mounts_copy_source_destination_readonly": true,
+    "kubernetes_image_credentials": "native k8s_options; not Docker cluster inference auth UI",
+    "native_weight_sources": [
+      "huggingface",
+      "model_scope",
+      "local_path"
+    ],
+    "native_nfs_server_or_host_mount_management": "not provided by inspected model-source/mount paths"
+  },
+  "current_gap": "E5 only mounts native data and docker.sock. Current mirrored inference container inherits native data RW. Dedicated public model metadata was copied into worker but is not automatically mounted into inference container; OCR weights are image-contained.",
+  "recommended_boundary": "Use native registry pull/runtime/downloaders; E5 handles worker launch, separate model bind mount, native-data exclusion, trust/credential bootstrap. No custom per-node model distribution scheduler.",
+  "unverified": [
+    "Actual authenticated private registry cold pull",
+    "Self-signed registry Docker-daemon trust and no-restart activation",
+    "Registry unavailable / cache hit / digest cold-pull behavior against a real registry",
+    "Mount isolation after worker/model recreation and brand-new clone",
+    "NFS mount readiness/performance/failure behavior",
+    "Multi-registry credentials routing"
+  ],
+  "prior_report_correction_required": true
+}

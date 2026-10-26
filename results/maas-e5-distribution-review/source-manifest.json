@@ -1,0 +1,82 @@
+{
+  "tag": "v2.2.3",
+  "commit": "1cfcbbff02aacdb51f0a390378dd7bcddd9bf365",
+  "source_files": {
+    "pyproject.toml": {
+      "sha256": "370050577e9f63b7b9edc084fd4bda670c7d825c210a6f11dac68c4c4292ae1d",
+      "lines": 120
+    },
+    "pack/Dockerfile": {
+      "sha256": "e7c4edf8bab15d1dd1e52362c564d4db15f6b7b65302c06044376c4c5e8769a9",
+      "lines": 755
+    },
+    "gpustack/utils/config.py": {
+      "sha256": "d86cf4f2fcc8c1af16bff5b75986b03a601393e5b644699393a8a13b562a5510",
+      "lines": 117
+    },
+    "gpustack/worker/backends/base.py": {
+      "sha256": "f1b9d5105d3519ae7eed6fa9c428d8e9e93727a06d2f4371efc0a7645d716fa0",
+      "lines": 1298
+    },
+    "gpustack/worker/backends/custom.py": {
+      "sha256": "8421a22ded042a915d6665ecfedf9096c7307c02b6f98e68443fcb1231920689",
+      "lines": 181
+    },
+    "gpustack/worker/downloaders.py": {
+      "sha256": "d5cfed97552df7747ac936a8e655447c7fae5d94877c1014fc478d99caf0f28f",
+      "lines": 264
+    },
+    "gpustack/schemas/config.py": {
+      "sha256": "d8b797eaa8901c4543b4c202b5ee8ebe4004f2f311f596d0a3b7c7f35aff7043",
+      "lines": 135
+    },
+    "gpustack/schemas/models.py": {
+      "sha256": "613116f19012705d025264e188f9baf401c5ad8e4d9f3f8e7e91fc95c437dcc9",
+      "lines": 896
+    },
+    "gpustack/schemas/clusters.py": {
+      "sha256": "14d83dd9a786731f7fc9c596b18d7d26f649d1e16bdfd948a18e742e2a3f0c48",
+      "lines": 739
+    },
+    "docs/environment-variables.md": {
+      "sha256": "f6f6aae06e2217a3d75c55a871423fb780b789c2f6d6f26922360129efd0d088",
+      "lines": 309
+    },
+    "docs/user-guide/cluster-management.md": {
+      "sha256": "c0f4ffc9085f1ccc48d02ea54c5a16c6b1b748dc57b999bd4e00559f0ef23558",
+      "lines": 173
+    },
+    "docs/cli-reference/copy-images.md": {
+      "sha256": "2a28b0b53195ea53c1235fb96f22a8654f695143f309cb5f0cdd3e8a4da28a71",
+      "lines": 38
+    },
+    "docs/installation/air-gapped.md": {
+      "sha256": "367bc6e71b8125bb2e4cf885e3f0341171c17cdfd96ad018407f81792491bec3",
+      "lines": 178
+    },
+    "gpustack/config/config.py": {
+      "sha256": "328cb32f67016dfa48ff1c8c13cad98494ba20b313e31c1d5cef807fb9b321c1",
+      "lines": 1041
+    }
+  },
+  "installed_versions": {
+    "gpustack": "2.2.3",
+    "gpustack-runtime": "0.2.1",
+    "gpustack-runner": "0.1.27.post4",
+    "docker": "7.2.0"
+  },
+  "runtime_sources": {
+    "envs.py": {
+      "sha256": "829f66409c55e720978e00ec3b8d3659b304601502e39b090367ba5d0be84ff9",
+      "lines": 1074
+    },
+    "deployer/docker.py": {
+      "sha256": "49ffc5e4b39f8956bde2ffca9543da911a4054ea6efc52f9850f577333ee997f",
+      "lines": 2367
+    },
+    "deployer/__types__.py": {
+      "sha256": "da6d343afd8377da8fa50ea7ff929d84a30c8dfaf0eb6f5fd23c913e430a7dd0",
+      "lines": 2616
+    }
+  }
+}

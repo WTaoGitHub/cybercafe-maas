@@ -1,0 +1,49 @@
+[
+  {
+    "container": "/maas-ocr-e5-r1-ty35m-run-0",
+    "mounts": [
+      {
+        "source": "/var/lib/maas-bootstrap/gpustack-worker",
+        "destination": "/var/lib/gpustack",
+        "rw": true
+      }
+    ],
+    "runtime_settings": {
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT": null,
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME": null,
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES": null,
+      "GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY": null
+    }
+  },
+  {
+    "container": "/maas-ocr-e5-r1-ty35m-pause",
+    "mounts": [],
+    "runtime_settings": {
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT": null,
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME": null,
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES": null,
+      "GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY": null
+    }
+  },
+  {
+    "container": "/maas-gpustack-worker",
+    "mounts": [
+      {
+        "source": "/var/lib/maas-bootstrap/gpustack-worker",
+        "destination": "/var/lib/gpustack",
+        "rw": true
+      },
+      {
+        "source": "/var/run/docker.sock",
+        "destination": "/var/run/docker.sock",
+        "rw": true
+      }
+    ],
+    "runtime_settings": {
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT": "true",
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME": null,
+      "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES": "/var/run/cdi;/usr/local/PPU_SDK;/opt/maca;/usr/local/corex;/opt/dtk;/usr/local/neuware;/usr/local/Ascend/ascend-toolkit;/opt/rocm",
+      "GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY": null
+    }
+  }
+]

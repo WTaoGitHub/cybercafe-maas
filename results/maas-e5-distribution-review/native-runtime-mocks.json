@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "if_not_present_cache_hit_no_pull": true,
+    "if_not_present_cache_miss_pulls": true,
+    "always_pulls": true,
+    "never_does_not_pull": true,
+    "default_credentials_resolved": true,
+    "workload_credentials_override_defaults": true,
+    "direct_mount_preserves_path_and_readonly": true
+  },
+  "count": 7,
+  "scope": "pure in-memory mocks against installed native runtime; no Docker API or registry contacted",
+  "remote_configuration_changed": false
+}

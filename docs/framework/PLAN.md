@@ -430,3 +430,16 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 另一待办：常驻维护binding仍引用旧worker2/model1、9，不适用于当前worker5/model12及SSH16482。先重绑并校验，不能直接调用旧绑定。双克隆并行、故障迁移、当前版本长测、5070及生产验收仍未完成。
 
 [端到端报告](../../results/maas-e5-ocr/REPORT.md) · [试点操作手册](../../deploy/maas/E5-OCR-PILOT.md)。
+
+
+## 模型目录/分发前置调研完成：复用GPUStack223原生能力（2026-10-26）
+
+核对固定v2.2.3提交1cfcbbff02aacdb51f0a390378dd7bcddd9bf365和实际runtime0.2.1/runner0.1.27.post4，原生支持私有镜像地址、username/password auth_config、Always/IfNotPresent/Never（默认IfNotPresent）、digest拉取、mirrored挂载及HF/ModelScope下载。7项原生函数内存mock通过，无真实Docker API/registry调用。界面Image Credentials及Volume Mounts属于Kubernetes选项，不能当成Docker worker的现成凭据分发配置。
+
+关键更正：官方worker镜像默认mirrored=true，当前OCR实际继承整个/var/lib/gpustack数据卷RW。此前“只挂载专用模型父目录”只适用于非mirrored路径，不能用于当前环境。试点复制元数据让local_path通过，但没有证明该目录传给OCR；OCR权重在镜像内，原请求/计量验收有效，目录隔离尚未完成。已修正试点报告和操作手册，未修改服务器或读取真实秘密。
+
+后续不自研分发调度器。E5仅补worker启动契约：独立模型目录bind、原生身份/认证卷排除、必要cache目录、registry信任与只读认证接入、挂载布局版本检查。GPUStack继续负责模型调度、拉镜像、下载及推理容器生命周期；registry服务与OS/NFS挂载属基础设施。
+
+下一门槛是小测试镜像的真实私有registry认证冷拉、正确/错误凭据、digest与缓存行为，以及新克隆目录可见性/身份隔离验证。实际私有仓库、自签信任无重启生效、NFS和新布局尚未实测；不把源码支持写成部署完成，不在001002做VM或Docker引擎重启。默认registry不会替换显式quay.io地址，发布后使用registry manifest digest而不是本地image ID。
+
+[详细核对报告](GPUSTACK-223-DISTRIBUTION-REVIEW.md) · [源码及实测证据](../../results/maas-e5-distribution-review/findings.json)。

@@ -7,7 +7,7 @@
 - 复用已验证的quay.io/cybercafe-maas-ocr:p2-r1，完整本地image ID为sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5；权重在镜像内。
 - 在001导出docker save压缩包，只向新克隆传输非秘密镜像；临时HTTP服务绑定10.11.31.1:18841，仅允许10.11.31.2访问一个固定文件，无目录列表。传输后停止该临时服务，不作为正式registry。
 - 新克隆运行fetch_e5_image.py校验压缩包SHA256、docker load、完整image ID；成功后删除克隆上的传输归档，保留镜像和transfer.json。不在母版加入模型或实例身份。
-- OCR程序和权重均在镜像内。执行stage_e5_ocr_metadata.py，将公开deployment.json放在宿主机及现有worker容器的/opt/maas-models/ocr-e5-r1/model；GPUStack运行时仅挂载其专用父目录，不挂载包含凭据的宽泛父目录。既有固定worker镜像及身份不改。
+- OCR程序和权重均在镜像内。执行stage_e5_ocr_metadata.py，将公开deployment.json放在宿主机及现有worker容器的/opt/maas-models/ocr-e5-r1/model，让local_path检查通过。更正：实际官方worker默认mirrored=true，OCR容器继承原生数据卷，而非只挂载此公开目录父目录；此前对挂载范围的推断不成立。既有固定worker镜像及身份不改。
 - 当前bootstrap没有独立模型目录挂载。此步向现有worker文件系统复制公开元数据，不是持久化模型卷；worker容器重建或另一新克隆需要重新准备。必须保留此试点边界，后续实现规范模型目录/分发方案。
 
 ## 分阶段执行
@@ -29,3 +29,5 @@
 这次是单克隆端到端试点；不代表双克隆并发、大规模容量、容灾或生产上线验收。正式模型分发/共享存储/registry仍需后续设计，不能把本次临时传输写成自动分发已完成。
 
 旧常驻维护binding仍指向worker ID2、model IDs[1,9]；不能直接用于新ID5/model12。先更新维护目标及SSH端口16482并作校验，再安排维护演练。不要仅按复用的XZ-31-002名称或10.11.31.2地址复用旧维护操作。
+
+仓库/模型目录的正式方案以[GPUStack v2.2.3原生能力核对](../../docs/framework/GPUSTACK-223-DISTRIBUTION-REVIEW.md)为准：复用原生registry pull、mirrored mounts及模型下载；补独立模型挂载并排除原生身份目录，不再以docker cp/临时HTTP作为正式分发方案。当前环境尚未实施这项整改。
