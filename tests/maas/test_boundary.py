@@ -29,3 +29,15 @@ def test_prior_accept_or_return_invalidates_existing_hooks():
     assert not mod.hooks_first('-A INPUT -j ACCEPT\n'+owned,1,mod.HOST)
     assert not mod.hooks_first('-A INPUT -j MAAS-P3-HOST-OTHER\n'+owned,1,mod.HOST)
     assert not mod.hooks_first('-A DOCKER-USER -j RETURN\n-A DOCKER-USER -j MAAS-P3-DOCKER',1,mod.DOCKER)
+
+
+def test_native_exception_cannot_open_other_ports_or_direct_bridge():
+    inv={**INV,'node':'XZ-31-001','native_server_cidrs':['10.11.31.0/24']}
+    extra=set(mod.chain_rules(inv,4))-set(mod.chain_rules(INV,4))
+    assert len(extra)==2
+    host=next(x for x in extra if x.startswith('-A '+mod.HOST))
+    docker=next(x for x in extra if x.startswith('-A '+mod.DOCKER))
+    assert '-d 10.11.31.1/32 -p tcp --dport 18080' in host
+    assert '--ctdir ORIGINAL --ctorigdst 10.11.31.1 --ctorigdstport 18080' in docker
+    assert all('-i ens18 -s 10.11.31.0/24' in x for x in extra)
+    assert mod.chain_rules(inv,6)==mod.chain_rules(INV,6)

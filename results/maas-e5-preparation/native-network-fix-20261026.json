@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-26",
+  "controller": "XZ-31-001",
+  "native_server_cidrs": [
+    "10.11.31.0/24"
+  ],
+  "allowed_destination": "10.11.31.1:18080/tcp",
+  "layers": [
+    "raw pre-DNAT",
+    "INPUT",
+    "DOCKER-USER conntrack original destination"
+  ],
+  "persistent_config": "/root/wtaobj/maas-boundary/persistent.json",
+  "boundary_rules_ok": true,
+  "inventory_matches": true,
+  "raw_hooks_first_ipv4_ipv6": true,
+  "clone_004_probe": {
+    "18840": "connected",
+    "18080": "connected",
+    "unauthenticated_workers_http": 401,
+    "18834": "timeout",
+    "8820": "timeout",
+    "11435": "timeout"
+  },
+  "local_boundary_tests_passed": 7,
+  "manual_apply_result": "REGISTRATION_UNCONFIRMED",
+  "native_worker": {
+    "id": 4,
+    "hostname": "XZ-31-004",
+    "ip": "10.11.31.4",
+    "cluster_id": 3,
+    "state": "ready"
+  },
+  "reverse_10150": "connected",
+  "reverse_10161": "refused; metrics not yet verified",
+  "followup": "E5 confirmation incorrectly expects worker_uuid in WorkerPublic, excluded by GPUStack v2.2.3. Fix separately; do not replay registration or recreate container.",
+  "backup_mac": ".maas/backups/001-native-cidr-20261026",
+  "backup_controller": "/root/wtaobj/maas-boundary/native-cidr-before-20261026",
+  "vm_rebooted": false,
+  "worker_guard_patch_installed_on_clone": false
+}
