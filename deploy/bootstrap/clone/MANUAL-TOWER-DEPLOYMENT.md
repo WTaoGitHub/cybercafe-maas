@@ -126,7 +126,7 @@ systemctl disable cybercafe-provision.service
 
 本轮已确认两项旧服务替代范围，实际ExecStop/ExecStopPost为空，agent未发现显式signal/atexit处理注册；停止后两项均disabled/inactive，Docker PID未变。
 
-保留旧脚本和备份便于当前安装回退；**发布快照前应将旧设备凭据/config.env及含秘密备份迁出交付镜像或按管理员方案清理**，不能将“回退材料留在母版”误当作可无条件固化到克隆。此项不影响当前客户端安装，但仍是封版交接检查。不禁用`swcfghostname`、`swnetboot_success`、SSH或供应商网络/磁盘服务。若provision含仍需保留的工作，先拆分职责，不直接照抄上述停用命令。停用旧服务后再次检查Docker容器，未知容器不要自动删除。
+保留旧脚本和备份便于当前安装回退；旧设备凭据/config.env及含秘密备份迁出/清理已列为低优先级Nice to have（第17节），不阻塞当前试验快照；保留它们会让克隆继承旧凭据，记录这一限制即可，不把保留状态写成已经清理。不禁用`swcfghostname`、`swnetboot_success`、SSH或供应商网络/磁盘服务。若provision含仍需保留的工作，先拆分职责，不直接照抄上述停用命令。停用旧服务后再次检查Docker容器，未知容器不要自动删除。
 
 ## 5. 安装客户端与公开材料（不启动）
 
@@ -367,7 +367,7 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 | 母版状态 | 无Docker容器，无/var/lib/maas-bootstrap，未注册worker；machine-id和SSH主机密钥摘要与变更前一致 |
 | 平台操作 | 无VM/Docker引擎重启；未制作快照或创建克隆；001002未修改 |
 
-**当前母版E5业务层已部署，真实克隆未验收。** 按第16节的新试点边界，不再等待供应商身份初始化或失败单元解释；检查并处理我们自己的实例状态和旧秘密交付后，可由管理员制作受控试验快照、创建独立A/B，再实测自动注册和GPU/模型。
+**当前母版E5业务层已部署，真实克隆未验收。** 按第16节的新试点边界，不再等待供应商身份初始化或失败单元解释；检查E5/原生实例状态清洁后，可由管理员制作受控试验快照（旧业务秘密清理不作本轮前置）、创建独立A/B，再实测自动注册和GPU/模型。
 
 线上脱敏结果保存为`/root/e5-install-input/deployment-result.json`；本地证据：[tower-deployment-20261026.json](../../../results/maas-e5-preparation/tower-deployment-20261026.json)。没有把原生token、共享码、配置响应或私钥写入证据。
 
@@ -377,10 +377,21 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 用户已说明基本无法取得供应商技术支持或网管API。我们适配既有环境，不再要求供应商新增能力，也不将泛化系统身份设为小规模E5试验的阻塞条件。
 
 1. 保留现有machine-id、SSH主机密钥、authorized_keys和供应商网络/hostname机制；不增加OS首启身份模块，不在tower执行重建身份操作。共用密钥风险和其他组件的身份依赖保留记录，不声称生产安全隔离完成。
-2. 保持E5实例状态清洁：母版不执行apply，/var/lib/maas-bootstrap和原生worker身份不得固化；旧agent/provision保持disabled/inactive。正式快照交付前处理我们自己的旧设备凭据/秘密备份，不要求修改供应商文件。
+2. 保持E5实例状态清洁：母版不执行apply，/var/lib/maas-bootstrap和原生worker身份不得固化；旧agent/provision保持disabled/inactive。旧设备凭据/秘密备份清理已下调为第17节的后续增强，不阻塞当前试验快照，不要求修改供应商文件。
 3. 管理员仅需人工保存试验快照、创建并启动A/B、分配GPU并提供SSH入口。不需要网管API、可信启动参数、座位资产号、离线编辑或技术支持承诺。
 4. 我们以实际访问结果验证网络和命名；若克隆hostname仍为tower导致保护拒绝，先在独立新克隆核查，再通过我们可控的worker适配解决，不删除母版保护或要求改造001002。
 5. 验收以独立worker原生名称/UUID、配置拉取、GPU和推理为准；machine-id或SSH主机公钥相同只记录现状，不直接判E5失败。保留SSH主机校验，不通过关闭验证掩盖连接问题。
 6. 原检查脚本固定的snapshot_ready=false和离线工具generalization拒绝，仅描述各自检查范围，不作为此受控在线试点的硬门槛；不改写历史取证文件或伪造通过结果。
 
 当前仍没有创建快照或新VM。网络/系统原生行为只有在A/B真正启动后才能验收；失败时由我们在新克隆上取证和适配，而不是承诺供应商会修复。
+
+
+## 17. 旧凭据与残留清理：低优先级后续任务（当前决策）
+
+用户2026-10-26明确列为Nice to have，详见[E5.F4](../../../docs/framework/ENHANCEMENTS.md#e5-f4-legacy-cleanup)。覆盖前文将旧业务秘密清理列为快照/封版前置的要求：本轮暂缓清理，不阻塞受控试验快照、A/B注册和推理验证；旧服务仍需保持disabled/inactive。
+
+备份优先放Mac。目前本地归档`/Users/4paradigm/dev/cybercafe-maas/.maas/backups/tower-legacy-20261026-113634/tower-legacy-private.tar.gz`及verification.json均存在，核对记录显示归档和15个源文件完整性验证通过。备份含秘密，不入Git、不作为公开交付物，不在聊天中显示内容。此前工具调用被中断不等于传输失败；不得重复宣称本地备份未完成。
+
+母版旧配置、标记、含设备凭据的agent脚本、原回退目录及`/root/e5-legacy-export-20261026-113634`导出副本均未删除。下一次实施先核对现状和Mac备份，再按明确清单处理；当前不要执行删除。原第14节回退所需材料仍在母版，今后实际清理后需改为从Mac恢复。
+
+不清理旧凭据的主要限制是克隆继承旧秘密和误启动旧程序的可能性；不据此认定当前推理/接入一定失败。E5/原生已注册身份不能随母版复制仍是必要要求，不因本项降级而放宽。供应商machine-id、SSH主机密钥、管理员authorized_keys、网络配置和有效E5共享码继续保留。
