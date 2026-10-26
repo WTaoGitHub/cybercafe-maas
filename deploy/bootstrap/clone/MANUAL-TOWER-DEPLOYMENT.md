@@ -402,3 +402,8 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 管理员回收旧002后，用新快照创建的新VM应加入test1（ID3）；002原属cybercafe-poc（ID1）。“替代002提供模型服务”是业务接替，不是把新worker注册进旧集群。先验证test1自动注册，再显式部署模型、核对MaaS路由并验证客户入口；模型和原接口不会随worker跨集群自动迁移。
 
 当前保护在注册前匹配XZ-31-002和10.11.31.2，与cluster无关。若新VM复用这些名称/地址，会被PROTECTED_HOST_WORKER_FORBIDDEN拒绝；应在快照前确认或调整本系统的保护判定，再验证真实首启。此处只是登记问题，代码尚未变更，不要求供应商提供API。旧凭据清理仍暂缓。
+
+
+## 19. 后续增强：角色驱动的启动保护
+
+[E5.F5](../../../docs/framework/ENHANCEMENTS.md#e5-f5-role-based-guard)已列入后续计划：角色/启动许可取代固定名称和IP，仍保护controller与template，同时允许合法worker复用地址。角色字段不能简单固化为template后复制给所有克隆，生命周期需另行设计；不要求供应商API或系统身份泛化。此项尚未实施，不能据此忽略第18节当前002复用误拦截。它仅防误操作，不负责身份认证或VM重启控制；本次没有修改代码或服务器。
