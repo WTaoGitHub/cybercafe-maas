@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-26",
+  "check_type": "readonly pre-snapshot readiness",
+  "hostname": "tower-8CbKAhaaf",
+  "installed_worker_sha256": "bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994",
+  "confirmed_changes": [
+    "case-insensitive tower / tower- template guard",
+    "retired 002 hostname/IP reuse allowed",
+    "GPUStack v2.2.3 authenticated me registration confirmation"
+  ],
+  "template_guard_blocks": true,
+  "bootstrap_enabled": true,
+  "bootstrap_active_state": "failed; historical boot attempt; no reset or restart performed",
+  "containers": 0,
+  "instance_identity_present": false,
+  "applied_record_present": false,
+  "remaining_state_files": [
+    "apply.lock",
+    "last-result.json"
+  ],
+  "required_config_files_present_nonempty": true,
+  "shared_code_mode": "0600",
+  "cluster_id": 3,
+  "pinned_worker_image_cached": "amd64/linux",
+  "old_agent_provision_services": "disabled/inactive",
+  "config_and_native_server_ports": "18840 and 18080 connected from template",
+  "gpu_current": "RTX5070 previously identified; nvidia-smi still No devices found",
+  "decision": "Ready for controlled snapshot and independent RTX4070/4080-family clone validation; not validated for RTX5070 or production",
+  "remaining_required_image_changes_for_40_series_pilot": [],
+  "boundaries": [
+    "No current template GPU initialization success claimed.",
+    "001 native firewall repair is server-side and not part of snapshot payload.",
+    "Generic hostname rule still requires first new clone hostname observation.",
+    "Historical last-result is not an instance identity and is retained.",
+    "Legacy credential cleanup remains deferred by user.",
+    "New snapshot not yet saved or verified."
+  ],
+  "remote_changes": false
+}

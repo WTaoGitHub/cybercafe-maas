@@ -466,3 +466,12 @@ GPU仍不可用：当前PCI 10de:2f04要求NVIDIA open kernel modules，实际�
 第一版首启失败证据保留，本次只判“网络修复后的手动注册及重复应用成功”；未做新快照首启、双克隆独立性或模型推理验收。原systemd failed为首启历史状态，手动CLI成功不自动清空。当前tower文件含修正，管理员保存的第一版镜像仍不含它。下一步按用户计划评估安装剩余保护补丁，再由管理员保存新版快照并新建独立克隆验证自动接入；不要重启或重建001002。
 
 [网络修复证据](../../../results/maas-e5-preparation/native-network-fix-20261026.json) · [手动接入与确认修复证据](../../../results/maas-e5-preparation/clone-004-manual-registration-20261026.json)。
+
+
+## 25. 第二版受控试验快照前核对（2026-10-26）
+
+只读核对当前tower文件：002名称/IP复用、大小写无关tower/tower-*保护及GPUStack223 me确认修复均已安装，模块SHA256为bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994。启动入口enabled；无容器、E5 identity/applied或原生token/UUID/name，固定worker镜像已缓存，配置cluster3及信任文件/共享码齐备，旧agent/provision disabled/inactive。到001:18840/18080均可连。仅有apply.lock和旧last-result.json，systemd failed属历史启动结果，不作为已注册实例或当前worker运行状态，不需为试验快照重启/人工apply。
+
+结论：若下一台独立普通克隆分配RTX4070/4080系列，本轮无额外必须写入母版的改动，可请管理员保存第二版受控试验快照并启动新克隆，先只读观察自动启动，再核对test1 ready、独立身份及GPU。001的18080网段修复属于控制端配置，无需写进母版。当前母版5070仍不可初始化，不宣称第二版支持5070；若新克隆分配5070须另处理驱动模块。旧凭据清理继续Nice to have。
+
+不要用已注册004保存母版，避免复制实例身份；应保存当前tower。记录管理员侧快照版本/时间及新VM SSH入口，保留004作为手动接入对照。本轮未保存快照、修改服务器或重启VM；[封版前只读核对](../../../results/maas-e5-preparation/template-snapshot-readiness-20261026.json)。新版无人值守首启、双克隆及模型推理仍待实测。
