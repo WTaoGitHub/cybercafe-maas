@@ -1,6 +1,6 @@
 # 独立模型存储与身份卷排除 · 2026-10-26
 
-结论：代码实现和新克隆容器级迁移验证通过，OCR/MaaS已恢复。母版6025当前不可达，用户明确稍后恢复时通知，因此母版部署、保存快照及新版克隆首启尚未完成，不宣称全流程交付结束。
+结论：代码实现和新克隆容器级迁移验证通过，OCR/MaaS已恢复。母版恢复后已于19:18完成安装与核对；保存快照及新版克隆首启尚未完成，不宣称全流程交付结束。
 
 ## 已实现
 
@@ -29,7 +29,7 @@ GPUStack在维护时将worker state显示为maintenance，解除后才恢复read
 ## 当前保留与限制
 
 - 旧worker容器maas-gpustack-worker-before-storage-v1-20261026保持停止、restart=no，仅供回退，不能与新worker同时启动；root-only receipt只认可停止且同一原生身份卷的受管理容器。此receipt、原生身份及维护日志不得进入母版。
-- 本轮未向母版安装本版本，实际状态待恢复后复核。公开源码包dist/e5/e5-worker-template-model-storage-v1-e202112.tar.gz已构建并核验16个公开载荷；它不是Ubuntu镜像，不含注册码/token/私钥或GPUStack容器镜像，需母版恢复后安装，再由管理员保存快照。
+- 母版tower-icDC5YcU3已安装本版本并核对通过，未运行apply或启动worker。公开源码包dist/e5/e5-worker-template-model-storage-v1-e202112.tar.gz已构建并核验16个公开载荷；它不是Ubuntu镜像，不含注册码/token/私钥或GPUStack容器镜像，实际安装证据见tower-installed.json及tower-verification.json，下一步由管理员保存快照。
 - 目录隔离仅减少不必要共享，不是privileged容器的强安全边界；可写缓存没有伪装成只读。HF/ModelScope真实下载、NFS、双克隆并行及千节点分发未验收。
 - 旧通用维护binding仍引用worker2/model1、9，未重绑；本轮仅使用显式worker5的专用迁移流程，不是通用E1逐worker排空功能。
 - 真实回退未演练，回退材料已保留；不在001/002做VM重启或间接重启验证。旧凭据清理仍按用户决定暂缓。
@@ -37,3 +37,7 @@ GPUStack在维护时将worker state显示为maintenance，解除后才恢复read
 证据：[克隆安装](clone-installed.json) · [容器替换与身份保持](replacement.json) · [挂载/读写证明](mount-proof.json) · [MaaS请求/计量](acceptance.json) · [新目标](target.json) · [版本登记](pin.json) · [最终状态](final-status.json) · [交付包](bundle.json)。
 
 部署与回退流程见[操作手册](../../deploy/maas/MODEL-STORAGE-V1.md)。
+
+## 母版部署补充
+
+已在恢复的母版安装三个模块，旧配置优先备份Mac；启动保护、源码摘要、目录和无实例身份核对通过。母版开机单元failed源自保护拒绝，保持enabled；本次没有重置、启动或执行apply。管理员快照及新克隆首启仍待执行。[母版安装](tower-installed.json) · [核对证据](tower-verification.json)。

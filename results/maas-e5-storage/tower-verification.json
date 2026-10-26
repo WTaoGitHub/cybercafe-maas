@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-26T11:18:11.812827+00:00",
+  "hostname": "tower-icDC5YcU3",
+  "boot": "2026-10-26 19:10:12",
+  "guard": "PROTECTED_HOST_WORKER_FORBIDDEN",
+  "cluster_id": 3,
+  "storage": {
+    "model_root": "/srv/maas/models",
+    "model_cache_dir": "/srv/maas/model-cache",
+    "marker_path": "/srv/maas/models/image-contained/model",
+    "published_models_readonly": true,
+    "cache_writable": true
+  },
+  "instance_state_files": [],
+  "worker_identity_directory_exists": false,
+  "docker_container_count": 0,
+  "bootstrap_enabled": "enabled",
+  "hashes": {
+    "client.py": "16a50b83012b74bae4a4296dc2ad93c99d48dcbbd3f870a3d91f2eeb84a954c9",
+    "worker.py": "5010d4c7d0fa21d97f868ee03ec5e2cca556db9324ba5aed9d336447fd449cf2",
+    "storage.py": "741d9eb89dd7429d36e6166580fe2e443f62976de21d517192fe4545352114d4"
+  },
+  "apply_executed": false,
+  "vm_rebooted_by_us": false,
+  "snapshot_created": false
+}

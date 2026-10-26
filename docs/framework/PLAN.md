@@ -467,3 +467,11 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 母版6025无法连接，用户确认暂时不可达并会通知恢复；未向母版写入本轮改动，不反复尝试。公开包已生成并核验，等待恢复后备份/安装/确认母版无身份，再由管理员保存新快照并起独立克隆。此处未做新快照/真实首启、NFS、HF下载或强隔离验收。原通用维护binding仍旧，独立待重绑；本轮不是通用E1实现。
 
 [本轮报告](../../results/maas-e5-storage/REPORT.md) · [部署与回退](../../deploy/maas/MODEL-STORAGE-V1.md)。
+
+## model-storage-v1母版安装完成（2026-10-26 19:18 北京时间）
+
+用户通知母版恢复后，确认6025现为tower-icDC5YcU3，boot为19:10:12；旧源码摘要符合预期。旧client/worker/bootstrap配置已优先私有备份Mac，随后安装e202112三模块和公开存储配置，未运行apply、未启动worker、未重启VM或Docker。
+
+核对通过：cluster3/test1配置保留、母版保护返回PROTECTED_HOST_WORKER_FORBIDDEN、启动单元enabled、无worker实例身份目录/identity/applied/维护receipt、无Docker容器，独立模型目录与缓存及公开marker齐备。单元failed为开机被母版保护拒绝的历史结果，本次不重置或启动它。只读目录属性由克隆创建worker时落实，母版目录准备不等于推理容器挂载验收。
+
+现在可以请管理员保存含model-storage-v1的新快照并创建独立克隆；收到新入口后验收首次启动自动注册、真实挂载和OCR。本轮没有制作快照，也没有验证这个新快照的首启；001/002未操作。旧凭据清理继续暂缓。[安装证据](../../results/maas-e5-storage/tower-installed.json) · [母版核对](../../results/maas-e5-storage/tower-verification.json)。此前母版待连接记录为历史状态，由本节更新。

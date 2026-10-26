@@ -11,7 +11,7 @@ maas_bootstrap/storage.py创建并检查独立模型发布目录、缓存及公�
 ## 已执行顺序
 
 1. Mac .maas/backups/model-storage-v1-20261026保存旧client/worker/config、旧容器私有inspect、原生token/UUID/name/JWT、旧catalog和维护窗口。私有文件600，不入Git。
-2. 暂存新client.py、worker.py、storage.py到节点/root/<name>.storage-v1。install_storage_client.py核对新旧SHA、原子安装、保存节点私有回退文件并准备公开模型目录；不运行apply，不启动worker。新克隆安装已完成，母版尚未安装。
+2. 暂存新client.py、worker.py、storage.py到节点/root/<name>.storage-v1。install_storage_client.py核对新旧SHA、原子安装、保存节点私有回退文件并准备公开模型目录；不运行apply，不启动worker。新克隆及母版安装均已完成。
 3. 新克隆旧布局apply返回NEEDS_MAINTENANCE；这个拒绝是正确结果，不要删身份或强行改标签绕过。
 4. 在001执行storage_controller_window.py prepare：核对worker5/model12/cluster3，暂停并排空，启用原生维护、旧副本降0；不能使用旧binding。窗口私有状态/root/wtaobj/maas-e5-storage/window.private.json记录generation23。
 5. 新克隆replace_storage_worker.py：核对boot及只剩worker运行；保存私有journal，停止并重命名旧容器；root-only state_dir/maintenance-backups.json只列入旧容器完整ID；调用新bootstrap创建容器并验证身份文件不变、重复应用UNCHANGED。receipt不是自动恢复指令，也不能进入母版。
@@ -41,3 +41,7 @@ maas_bootstrap/storage.py创建并检查独立模型发布目录、缓存及公�
 5. 以真实探针恢复MaaS，核对新维护generation、UNKNOWN和计量；任何不确定身份/请求先保留暂停，禁止自动覆盖凭据、重放推理或清除UNKNOWN。旧容器和备份的最终清理另行安排。
 
 此回退只是一份具备具体材料的操作方案，未声称已演练成功。
+
+## 母版实际安装：19:18更新
+
+用户通知恢复后，6025对应tower-icDC5YcU3；旧摘要匹配，Mac私有备份位于.maas/backups/model-storage-v1-20261026/tower-icDC5YcU3。使用上述安装脚本--role template完成三模块和公开目录配置，随后只读核对源码、保护、无实例身份/容器和启动单元enabled。未运行apply或重启服务。此前待恢复段落为历史执行计划，现已完成；下一步管理员保存新快照，创建独立克隆验证首启。

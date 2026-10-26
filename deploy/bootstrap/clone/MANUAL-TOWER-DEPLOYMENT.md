@@ -497,3 +497,7 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 新安装文件清单必须包含maas_bootstrap/storage.py；三模块client.py/storage.py/worker.py更新及模型目录配置须一起核对。公开交付包、SHA、具体部署/回退步骤见[MODEL-STORAGE-V1.md](../../maas/MODEL-STORAGE-V1.md)。该文档为本轮最新操作入口，覆盖前文仅放行002/保护tower-*的封版状态；旧历史原包不含本轮能力。
 
 恢复连接后优先备份Mac，准备公开目录，不在母版启动worker，不复制新克隆的身份、applied.json或maintenance-backups.json。快照与独立克隆创建仍由管理员执行，不能重启001/002替代验证。
+
+## 28. model-storage-v1母版实际安装完成
+
+2026-10-26 19:18，北京时间：恢复入口6025对应tower-icDC5YcU3。Mac备份后已安装client.py/storage.py/worker.py及独立目录配置。摘要、母版保护、无实例身份/容器和enabled启动单元核对通过；未运行apply、未重启。第27节“尚待部署”为此前历史状态。现在请管理员保存新快照、创建独立克隆，提供新SSH入口后再验收新版首启及OCR。不得重启001/002代替。证据见[母版核对](../../../results/maas-e5-storage/tower-verification.json)。
