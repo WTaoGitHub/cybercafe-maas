@@ -1,12 +1,26 @@
 {
-  "source_commit": "596516e",
+  "source_commit": "fbd3d3e",
   "before_sha256": "4b6a48c469aad46d261cee29b937c4dd279ad5556bd91481aefe28e53f87dc9f",
-  "after_sha256": "0d02619f9eff5624edf68aaba1f18b5b63254a94dde54dc755f971eba8a3ac9d",
+  "after_sha256": "470431ac9a0533d1b4a9280c6968105f680b82a3bec26932ba3576a3505e8114",
   "patch": "allow retired 002 name/IP reuse; protect controller and template",
   "tests_passed": 38,
-  "deployed_to_tower": false,
-  "blocked_reason": "SSH public endpoint and LAN endpoint timed out",
+  "deployed_to_tower": true,
+  "blocked_reason": null,
   "target": "/opt/maas/lib/maas_bootstrap/worker.py",
-  "artifact_dir": "/Users/4paradigm/dev/cybercafe-maas/dist/e5/002-guard-patch-596516e",
-  "required_before_snapshot": "restore SSH, verify target source, back up to Mac, install and verify without launching worker"
+  "artifact_dir": null,
+  "required_before_snapshot": "Guard patch verified; resolve GPU module compatibility before claiming GPU-ready image; clone registration/network still require actual validation",
+  "hostname": "tower-8CbKAhaaf",
+  "prior_blocked_attempt": {
+    "source_commit": "596516e",
+    "before_sha256": "4b6a48c469aad46d261cee29b937c4dd279ad5556bd91481aefe28e53f87dc9f",
+    "after_sha256": "0d02619f9eff5624edf68aaba1f18b5b63254a94dde54dc755f971eba8a3ac9d",
+    "patch": "allow retired 002 name/IP reuse; protect controller and template",
+    "tests_passed": 38,
+    "deployed_to_tower": false,
+    "blocked_reason": "SSH public endpoint and LAN endpoint timed out",
+    "target": "/opt/maas/lib/maas_bootstrap/worker.py",
+    "artifact_dir": "/Users/4paradigm/dev/cybercafe-maas/dist/e5/002-guard-patch-596516e",
+    "required_before_snapshot": "restore SSH, verify target source, back up to Mac, install and verify without launching worker"
+  },
+  "evidence": "002-guard-patch-deployment-20261026.json"
 }

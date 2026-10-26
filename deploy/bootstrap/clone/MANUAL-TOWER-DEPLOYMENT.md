@@ -416,3 +416,14 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 本轮6025公网SSH和经001访问原10.11.31.3:22均超时，未向tower写入补丁。当前暂停保存最终试验快照；等待管理员确认母版在线及有效入口。原f7de733包未重建，保留旧限制，不能将源码已修改理解为母版已更新。
 
 恢复后只替换/opt/maas/lib/maas_bootstrap/worker.py，先核对远端版本和Mac备份，再原子安装并确认新摘要、语法/导入、单元enabled/inactive和无实例身份。不要启动服务或apply，不清理旧凭据；本地补丁目录dist/e5/002-guard-patch-596516e，after SHA256为0d02619f9eff5624edf68aaba1f18b5b63254a94dde54dc755f971eba8a3ac9d。记录本轮实际未部署，不覆盖此前首次安装证据。
+
+
+## 21. 2026-10-26：管理员确认新母版，002兼容补丁已部署
+
+当前6025入口对应的新母版为tower-8CbKAhaaf，管理员已确认其角色。源码fbd3d3e在允许新克隆复用XZ-31-002名称/10.11.31.2地址的同时，将新母版名称纳入保护；001名称及10.11.31.1保护保留。该补丁已原子替换母版的/opt/maas/lib/maas_bootstrap/worker.py，旧文件优先备份到Mac。此前SSH不可达、补丁未部署的记录为历史状态。
+
+38项本地bootstrap测试通过；远端摘要、导入、真实母版拒绝、模拟002复用允许和控制端IP拒绝均已核验。cluster3配置保持不变，无容器、无E5/native注册身份。单元enabled/failed为此前开机尝试留下的状态，本轮未启动、重启或重置单元，未运行apply，未修改驱动、旧凭据或001/002。真实克隆启动注册尚未验证，模拟保护测试不等于注册验收。
+
+GPU仍不可用：当前PCI 10de:2f04要求NVIDIA open kernel modules，实际加载闭源模块，nvidia-smi显示No devices found。母版到001:18080此前仍超时；按既定边界，原生端口重点在新克隆实测。下一步先单独处理GPU模块兼容，再由管理员安排受控快照/新克隆，验证配置拉取、test1自动注册、GPU和模型服务。不得把本次补丁成功写成GPU环境或真实首启验收通过。
+
+原f7de733归档包仍是历史版本，重装会丢失本次修正；需使用当前源码重新构建，或显式叠加fbd3d3e模块并核对摘要。证据见[部署核验](../../../results/maas-e5-preparation/002-guard-patch-deployment-20261026.json)，GPU只读取证见[new-tower-comparison-20261026.json](../../../results/maas-e5-preparation/new-tower-comparison-20261026.json)。E5.F4清理、E5.F5通用角色保护继续暂缓。

@@ -1,0 +1,33 @@
+{
+  "hostname": "tower-8CbKAhaaf",
+  "source_commit": "fbd3d3e",
+  "installed_sha256": "470431ac9a0533d1b4a9280c6968105f680b82a3bec26932ba3576a3505e8114",
+  "template_guard_rejected": true,
+  "mock_002_reuse_allowed": true,
+  "mock_controller_ip_rejected": true,
+  "cluster_id": 3,
+  "containers": 0,
+  "native_identity_absent": true,
+  "service_states": {
+    "maas-worker-bootstrap.service": [
+      "ActiveState=failed",
+      "SubState=failed",
+      "UnitFileState=enabled"
+    ]
+  },
+  "worker_started": false,
+  "vm_rebooted": false,
+  "driver_modified": false,
+  "legacy_cleanup_performed": false,
+  "date": "2026-10-26",
+  "administrator_confirmed_role": "template",
+  "before_sha256": "4b6a48c469aad46d261cee29b937c4dd279ad5556bd91481aefe28e53f87dc9f",
+  "backup_location": ".maas/backups/tower-worker-patch-fbd3d3e/worker.py.before",
+  "local_bootstrap_tests_passed": 38,
+  "validation_scope": "guard only; no full apply, startup, registration or GPU inference",
+  "remaining_issues": [
+    "GPU PCI 10de:2f04 requires NVIDIA open kernel modules; currently proprietary module loaded; nvidia-smi reports No devices found",
+    "template TCP access to 10.11.31.1:18080 timed out in prior readonly check; clone access remains unverified"
+  ],
+  "service_failed_state": "pre-existing boot failure retained; no start/restart/reset"
+}
