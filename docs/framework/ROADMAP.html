@@ -337,7 +337,13 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>关键更正：官方worker镜像默认mirrored=true，当前OCR实际继承整个/var/lib/gpustack数据卷RW。此前“只挂载专用模型父目录”只适用于非mirrored路径，不能用于当前环境。试点复制元数据让local_path通过，但没有证明该目录传给OCR；OCR权重在镜像内，原请求/计量验收有效，目录隔离尚未完成。已修正试点报告和操作手册，未修改服务器或读取真实秘密。</p>
 <p>后续不自研分发调度器。E5仅补worker启动契约：独立模型目录bind、原生身份/认证卷排除、必要cache目录、registry信任与只读认证接入、挂载布局版本检查。GPUStack继续负责模型调度、拉镜像、下载及推理容器生命周期；registry服务与OS/NFS挂载属基础设施。</p>
 <p>下一门槛是小测试镜像的真实私有registry认证冷拉、正确/错误凭据、digest与缓存行为，以及新克隆目录可见性/身份隔离验证。实际私有仓库、自签信任无重启生效、NFS和新布局尚未实测；不把源码支持写成部署完成，不在001002做VM或Docker引擎重启。默认registry不会替换显式quay.io地址，发布后使用registry manifest digest而不是本地image ID。</p>
-<p><a href="GPUSTACK-223-DISTRIBUTION-REVIEW.md">详细核对报告</a> · <a href="../../results/maas-e5-distribution-review/findings.json">源码及实测证据</a>。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p><a href="GPUSTACK-223-DISTRIBUTION-REVIEW.md">详细核对报告</a> · <a href="../../results/maas-e5-distribution-review/findings.json">源码及实测证据</a>。</p>
+<h3>私有仓库第一项真实验证通过（2026-10-26）</h3>
+<p>在001隔离部署临时HTTPS registry，独立reader/publisher与LAN ACL，精确新增Docker certs.d信任，无insecure registry/daemon配置改动。真实发布小探针镜像并登记registry manifest digest（不同于本地image ID）。匿名/错误密码401、reader读取200/写入401；两端Docker28.2.2无重启完成自签信任接入。</p>
+<p>新worker5原先没有canonical引用及对应source config ID。GPUStack原生调度的错误凭据model13/instance95授权失败；正确只读凭据model14/instance96真实冷拉并running/health通过，digest/config ID匹配发布值，registry日志可见manifest和layers下载。停止测试仓库入口、worker连接被拒绝时，新model15/instance97仍运行，验证IfNotPresent缓存复用。未在worker手动pull/load，也未修改worker启动配置。</p>
+<p>收尾：删除本次3模型、backend21及全部探针容器，撤销两个测试账号并验证401；测试registry两容器停止、restart=no、18443/18500无监听。数据/镜像及精确trust文件保留，账号/私钥优先备份Mac。原worker/OCR容器ID、启动时间和restart count保持，两端Docker PID/boot未变；MaaS OCR仍200/46行，原网络边界核对通过。</p>
+<p>第一项门槛已通过，正式registry生命周期、worker只读凭据自动接入、独立模型卷/原生身份卷隔离、新镜像/新克隆及NFS仍未实现或验收。测试凭据只放临时probe模型env且已撤销，不采用此方式作为正式凭据设计。下一项先完成模型目录/挂载隔离的设计与最小验证，保持复用GPUStack原生机制。</p>
+<p><a href="../../results/maas-e5-registry/REPORT.md">第一项报告</a> · <a href="../../deploy/maas/REGISTRY-PILOT.md">操作记录</a>。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
 <blockquote><strong>E5当前执行基线（2026-10-23修订六）</strong>：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 <a href="E5-DESIGN.md">当前设计</a>、<a href="E5-IMPLEMENTATION.md">开发计划</a>和 <a href="E5-TEST-DEPLOYMENT.md">部署测试</a>。</blockquote>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
@@ -537,4 +543,10 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>关键更正：官方worker镜像默认mirrored=true，当前OCR实际继承整个/var/lib/gpustack数据卷RW。此前“只挂载专用模型父目录”只适用于非mirrored路径，不能用于当前环境。试点复制元数据让local_path通过，但没有证明该目录传给OCR；OCR权重在镜像内，原请求/计量验收有效，目录隔离尚未完成。已修正试点报告和操作手册，未修改服务器或读取真实秘密。</p>
 <p>后续不自研分发调度器。E5仅补worker启动契约：独立模型目录bind、原生身份/认证卷排除、必要cache目录、registry信任与只读认证接入、挂载布局版本检查。GPUStack继续负责模型调度、拉镜像、下载及推理容器生命周期；registry服务与OS/NFS挂载属基础设施。</p>
 <p>下一门槛是小测试镜像的真实私有registry认证冷拉、正确/错误凭据、digest与缓存行为，以及新克隆目录可见性/身份隔离验证。实际私有仓库、自签信任无重启生效、NFS和新布局尚未实测；不把源码支持写成部署完成，不在001002做VM或Docker引擎重启。默认registry不会替换显式quay.io地址，发布后使用registry manifest digest而不是本地image ID。</p>
-<p><a href="GPUSTACK-223-DISTRIBUTION-REVIEW.md">详细核对报告</a> · <a href="../../results/maas-e5-distribution-review/findings.json">源码及实测证据</a>。</p></section></main></body></html>
+<p><a href="GPUSTACK-223-DISTRIBUTION-REVIEW.md">详细核对报告</a> · <a href="../../results/maas-e5-distribution-review/findings.json">源码及实测证据</a>。</p>
+<h3>私有仓库第一项真实验证通过（2026-10-26）</h3>
+<p>在001隔离部署临时HTTPS registry，独立reader/publisher与LAN ACL，精确新增Docker certs.d信任，无insecure registry/daemon配置改动。真实发布小探针镜像并登记registry manifest digest（不同于本地image ID）。匿名/错误密码401、reader读取200/写入401；两端Docker28.2.2无重启完成自签信任接入。</p>
+<p>新worker5原先没有canonical引用及对应source config ID。GPUStack原生调度的错误凭据model13/instance95授权失败；正确只读凭据model14/instance96真实冷拉并running/health通过，digest/config ID匹配发布值，registry日志可见manifest和layers下载。停止测试仓库入口、worker连接被拒绝时，新model15/instance97仍运行，验证IfNotPresent缓存复用。未在worker手动pull/load，也未修改worker启动配置。</p>
+<p>收尾：删除本次3模型、backend21及全部探针容器，撤销两个测试账号并验证401；测试registry两容器停止、restart=no、18443/18500无监听。数据/镜像及精确trust文件保留，账号/私钥优先备份Mac。原worker/OCR容器ID、启动时间和restart count保持，两端Docker PID/boot未变；MaaS OCR仍200/46行，原网络边界核对通过。</p>
+<p>第一项门槛已通过，正式registry生命周期、worker只读凭据自动接入、独立模型卷/原生身份卷隔离、新镜像/新克隆及NFS仍未实现或验收。测试凭据只放临时probe模型env且已撤销，不采用此方式作为正式凭据设计。下一项先完成模型目录/挂载隔离的设计与最小验证，保持复用GPUStack原生机制。</p>
+<p><a href="../../results/maas-e5-registry/REPORT.md">第一项报告</a> · <a href="../../deploy/maas/REGISTRY-PILOT.md">操作记录</a>。</p></section></main></body></html>

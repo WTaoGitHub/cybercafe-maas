@@ -1,0 +1,56 @@
+{
+  "cases": {
+    "wrong": {
+      "name": "maas-e5-registry-pilot-wrong",
+      "phase": "CREATED",
+      "model_id": 13,
+      "instance_id": 95,
+      "authorization_failure_confirmed": true
+    },
+    "cold": {
+      "name": "maas-e5-registry-pilot-cold",
+      "phase": "CREATED",
+      "model_id": 14,
+      "instance_id": 96,
+      "running_confirmed": true,
+      "health": {
+        "ok": true,
+        "version": "p0-fixture-r1"
+      }
+    },
+    "cache": {
+      "name": "maas-e5-registry-pilot-cache",
+      "phase": "CREATED",
+      "model_id": 15,
+      "instance_id": 97,
+      "running_confirmed": true,
+      "health": {
+        "ok": true,
+        "version": "p0-fixture-r1"
+      },
+      "registry_offline_during_create": true
+    }
+  },
+  "phase": "CLEANED",
+  "backend_id": 21,
+  "removed": [
+    [
+      "model",
+      13
+    ],
+    [
+      "model",
+      14
+    ],
+    [
+      "model",
+      15
+    ],
+    [
+      "backend",
+      21
+    ]
+  ],
+  "reader_revoked": true,
+  "publisher_revoked": true
+}

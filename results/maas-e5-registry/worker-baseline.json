@@ -1,0 +1,26 @@
+{
+  "boot": "2026-10-26 16:49:33",
+  "docker_pid": "4661",
+  "containers": [
+    {
+      "name": "/maas-ocr-e5-r1-ty35m-run-0",
+      "id": "db0b0642840fa0dbffa5b3a44760012a31f7033bc81809ce7e1be70f66f2b72b",
+      "started_at": "2026-10-26T09:25:08.678368218Z",
+      "restarts": 0
+    },
+    {
+      "name": "/maas-ocr-e5-r1-ty35m-pause",
+      "id": "1468a2d2806693e04c5a99a11bbd93ec148ad03287d5e2b6b70eacc50428c06c",
+      "started_at": "2026-10-26T09:25:08.606049038Z",
+      "restarts": 0
+    },
+    {
+      "name": "/maas-gpustack-worker",
+      "id": "5d24d7d8ec992bdd97bc47c30804b9c05f9c058bc33d90503eb5131fafec7ed1",
+      "started_at": "2026-10-26T08:49:46.857628076Z",
+      "restarts": 0
+    }
+  ],
+  "canonical_image_absent_before": true,
+  "source_config_absent_before": true
+}

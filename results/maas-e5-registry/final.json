@@ -1,0 +1,25 @@
+{
+  "state": "PASSED",
+  "registry_containers": {
+    "maas-e5-registry-tls": {
+      "running": false,
+      "restart_policy": "no"
+    },
+    "maas-e5-registry-store": {
+      "running": false,
+      "restart_policy": "no"
+    }
+  },
+  "ports_18443_18500_closed": true,
+  "probe_models_backends_removed": true,
+  "ocr_ready_replicas": 1,
+  "worker_state": "ready",
+  "existing_boundary_rules_ok": true,
+  "registry_data_and_images_retained": true,
+  "scoped_docker_trust_files_retained": true,
+  "private_test_accounts_revoked": true,
+  "controller_docker_version": "28.2.2",
+  "cache_case_registry_connection_error": "ConnectionRefusedError",
+  "no_manual_worker_docker_pull_or_load": true,
+  "no_worker_boot_configuration_change": true
+}
