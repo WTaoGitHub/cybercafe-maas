@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-10-26T05:24:53.378036+00:00",
+  "ssh_alias": "tower-mNST8iPdv",
+  "actual_hostname": "tower-8CbKAhaaf",
+  "remote_changes": false,
+  "software": {
+    "ubuntu": "24.04",
+    "python": "3.12.3",
+    "cryptography": "41.0.7",
+    "cuda": "13.0.88",
+    "docker": "28.2.2",
+    "container_toolkit": "1.20.1",
+    "loaded_nvidia_driver": "580.95.05",
+    "eight_installed_public_files_match_previous": true,
+    "configuration_matches_previous": true,
+    "cluster_id": 3,
+    "worker_image_cached": true,
+    "shared_code_present": true
+  },
+  "identity_comparison": {
+    "machine_id_same": true,
+    "ssh_host_public_keys_same": true,
+    "hostname_same": false,
+    "ipv4": "10.11.31.3",
+    "provider_snapshot_parameter_digest_changed_vs_20261023": true,
+    "note": "Inherited system identity and equal files do not prove the same VM; platform instance lifecycle is not independently established."
+  },
+  "gpu": {
+    "previous_model": "RTX 4070",
+    "previous_pci_device": "10de:2786",
+    "current_pci_device": "10de:2f04",
+    "nvidia_smi_L": "No devices found.",
+    "current_model_not_identified": true,
+    "module_license": "NVIDIA",
+    "kernel_diagnostics": [
+      "NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:2f04)\nNVRM: installed in this system requires use of the NVIDIA open kernel modules.",
+      "NVRM: GPU 0000:01:00.0: RmInitAdapter failed! (0x22:0x56:884)",
+      "NVRM: GPU 0000:01:00.0: rm_init_adapter failed, device minor number 0"
+    ]
+  },
+  "runtime": {
+    "bootstrap_service": "failed",
+    "bootstrap_restarts": 5,
+    "last_error": "RUNTIME_COMMAND_FAILED",
+    "trigger": "boot",
+    "containers": 0,
+    "local_state_root_exists": true,
+    "local_identity_exists": false,
+    "native_uuid_exists": false,
+    "native_token_exists": false,
+    "old_services_disabled_inactive": true,
+    "config_tcp_18840": "connected",
+    "native_tcp_18080": "timeout",
+    "test1_worker_count": 0
+  },
+  "patch": {
+    "old_002_guard_patch_applied": false,
+    "current_worker_sha256": "4b6a48c469aad46d261cee29b937c4dd279ad5556bd91481aefe28e53f87dc9f"
+  },
+  "limits": [
+    "Read-only comparison; no driver/package changes, restarts, registration retries or state cleanup.",
+    "The exact failing bootstrap subprocess is not captured by its generic error code.",
+    "No GPU model identification from PCI ID alone; no assumption that old PCI device and current device are equivalent.",
+    "18080 connectivity is required for a worker; mother-only connectivity policy remains separate."
+  ],
+  "next": [
+    "Confirm with administrator whether the 6025 endpoint is the new template or a test clone.",
+    "Resolve GPU module compatibility before claiming GPU readiness; remediation and any activation/reboot require a separate scoped plan.",
+    "If this is a worker clone, investigate its path to native 18080.",
+    "002 name/IP guard patch remains pending deployment to the confirmed template."
+  ]
+}
