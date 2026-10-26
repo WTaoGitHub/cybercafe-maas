@@ -18,6 +18,7 @@ NAME='maas-ocr-e5-r1'
 REVISION='ocr-e5-r1'
 IMAGE='quay.io/cybercafe-maas-ocr:p2-r1'
 IMAGE_ID='sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5'
+MODEL_PATH='/srv/maas/models/image-contained/model'
 
 
 def save(path,data):
@@ -45,7 +46,7 @@ def create(worker_id):
     assert backend['version_configs']['p2-r2']['image_name']==IMAGE
     state={'phase':'CREATING','worker_id':worker_id,'worker_name':worker['name'],'cluster_id':3,'backend_id':backend['id']}
     save(STATE,state)
-    model=api('/v2/models',{'name':NAME,'source':'local_path','local_path':'/opt/maas-models/ocr-e5-r1/model',
+    model=api('/v2/models',{'name':NAME,'source':'local_path','local_path':MODEL_PATH,
         'cluster_id':3,'replicas':1,'categories':['llm'],'placement_strategy':'spread',
         'backend':backend['backend_name'],'backend_version':'p2-r2','cpu_offloading':False,
         'distributed_inference_across_workers':False,'worker_selector':{'worker-name':worker['name']},
@@ -60,7 +61,7 @@ def create(worker_id):
     print(json.dumps(state))
 
 
-def activate():
+def activate(paused_generation=None):
     state=json.loads(STATE.read_text());assert state['phase']=='CREATED'
     model=api('/v2/models/'+str(state['model_id']))
     assert model['cluster_id']==3 and model['ready_replicas']==1
@@ -72,7 +73,9 @@ def activate():
     pin=register_pin(REVISION,route,targets,model,backend,IMAGE_ID,[state['worker_name']])
     save(WORK/'pin.json',pin.public())
     status=cli('status');drain=cli('drain-status')
-    assert not drain['paused'] and not any(drain[k] for k in ['active_tasks','backend_activity','sync_activity'])
+    assert not any(drain[k] for k in ['active_tasks','backend_activity','sync_activity'])
+    if paused_generation is None:assert not drain['paused']
+    else:assert drain['paused'] and drain['generation']==paused_generation
     assert not status['tasks'].get('QUEUED',0) and not status['unknown_backend_activity'] and not status['unknown_sync_activity']
     identity=json.loads((LIVE/'identity.json').read_text())
     keypath='/v2/api-keys/'+str(identity['key_id'])
@@ -82,11 +85,13 @@ def activate():
     backup={'catalog':json.loads((LIVE/'catalog.json').read_text()),'key_id':identity['key_id'],
             'allowed_model_names':key.get('allowed_model_names'),'created_at':time.time()}
     save(WORK/'switch-backup.json',backup)
-    cli('pause','--reason','E5 new-clone OCR route activation')
+    if paused_generation is None:cli('pause','--reason','E5 new-clone OCR route activation')
     assert cli('drain-status')['managed_requests_drained']
     allowed=key.get('allowed_model_names')
     # Empty/None means unrestricted; do not accidentally narrow a shared key.
-    if allowed:api(keypath,{'allowed_model_names':sorted(set(allowed+[NAME]))},'PUT')
+    if allowed:api(keypath,{'allowed_model_names':sorted(set(allowed+[NAME])),'scope':key['scope']},'PUT')
+    if paused_generation is not None:
+        check=cli('drain-status');assert check['paused'] and check['generation']==paused_generation
     state['phase']='SWITCHING';save(STATE,state)
     catalog={'ocr.default':{'driver':'gpustack.ocr','revision':REVISION,'upstream_model':NAME,'max_runtime_s':25}}
     # Existing consumers bind-mount this file's inode; write only while drained/paused.
@@ -103,6 +108,11 @@ if __name__=='__main__':
     assert socket.gethostname()=='XZ-31-001' and os.getuid()==0
     WORK.mkdir(mode=0o700,exist_ok=True)
     parser=argparse.ArgumentParser();parser.add_argument('phase',choices=['create','activate']);parser.add_argument('--worker-id',type=int,default=5)
+    parser.add_argument('--name',default=NAME);parser.add_argument('--revision',default=REVISION)
+    parser.add_argument('--work-dir',default=str(WORK));parser.add_argument('--model-path',default=MODEL_PATH)
+    parser.add_argument('--paused-generation',type=int)
     args=parser.parse_args()
+    NAME=args.name;REVISION=args.revision;MODEL_PATH=args.model_path;WORK=Path(args.work_dir);STATE=WORK/'target.json'
+    WORK.mkdir(mode=0o700,parents=True,exist_ok=True)
     if args.phase=='create':create(args.worker_id)
-    else:activate()
+    else:activate(args.paused_generation)

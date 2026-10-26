@@ -409,3 +409,14 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 第一项门槛已通过，正式registry生命周期、worker只读凭据自动接入、独立模型卷/原生身份卷隔离、新镜像/新克隆及NFS仍未实现或验收。测试凭据只放临时probe模型env且已撤销，不采用此方式作为正式凭据设计。下一项先完成模型目录/挂载隔离的设计与最小验证，保持复用GPUStack原生机制。
 
 [第一项报告](../../results/maas-e5-registry/REPORT.md) · [操作记录](../../deploy/maas/REGISTRY-PILOT.md)。
+
+
+## model-storage-v1已实现并在新克隆验证；母版待连接恢复（2026-10-26）
+
+核心源码e202112：独立只读发布目录/srv/maas/models、可写缓存/srv/maas/model-cache，原生mirrored保留vendor排除项并排除/var/lib/gpustack，显式自身容器名；新版本/摘要核对实际挂载及关键env，旧布局返回NEEDS_MAINTENANCE。根目录重叠、秘密路径、symlink及其他用户可写根拒绝。57项bootstrap测试通过，离线构建与公开交付包已包含storage.py。
+
+新克隆16482已完成容器级维护：显式暂停/排空，原model12降0，停止保留旧worker容器，原生UUID/name/token/JWT字节及worker ID5保持，创建新worker，重复apply=UNCHANGED。无VM/Docker引擎重启。当前model16/route15/revision ocr-e5-r2使用公开新路径；旧版本保留停用，不覆盖原revision。实际推理容器只有模型RO与缓存RW两个卷，身份文件/socket不可见，RO写失败EROFS、缓存写入宿主机可见。同步/异步/下载/一次计量均通过，MaaS已恢复、UNKNOWN=0。
+
+母版6025无法连接，用户确认暂时不可达并会通知恢复；未向母版写入本轮改动，不反复尝试。公开包已生成并核验，等待恢复后备份/安装/确认母版无身份，再由管理员保存新快照并起独立克隆。此处未做新快照/真实首启、NFS、HF下载或强隔离验收。原通用维护binding仍旧，独立待重绑；本轮不是通用E1实现。
+
+[本轮报告](../../results/maas-e5-storage/REPORT.md) · [部署与回退](../../deploy/maas/MODEL-STORAGE-V1.md)。

@@ -488,3 +488,12 @@ E5于16:49:46自动开始、16:50:00完成，trigger=boot、code=APPLIED、NRest
 边界：未部署模型或执行端到端推理；未验证5070、所有GPU型号、大规模或多克隆同时在线。新ID5与先前ID4名称不同，可证明观察到独立原生记录；004目前not_ready/unreachable，不算双节点同时可用验证。旧worker记录未自动删除，后续清理需区分集群/ID。母版启动保护采用名称约定，仍非平台可信角色认证。
 
 下一步在test1为新worker部署测试模型并通过MaaS客户入口完成请求；另安排独立克隆并行身份验证。不得通过重启001/002开展测试。[第二版首启证据](../../../results/maas-e5-preparation/second-snapshot-clone-002-20261026.json)。
+
+
+## 27. 独立模型存储版本：母版尚待部署
+
+model-storage-v1已在独立新克隆完成容器维护、身份保持、只读模型/可写缓存、身份卷排除及MaaS OCR验收；母版6025当前不通，用户会通知恢复。不要据此通知管理员直接保存含本轮改动的新快照：当前母版文件还未安装本版本。
+
+新安装文件清单必须包含maas_bootstrap/storage.py；三模块client.py/storage.py/worker.py更新及模型目录配置须一起核对。公开交付包、SHA、具体部署/回退步骤见[MODEL-STORAGE-V1.md](../../maas/MODEL-STORAGE-V1.md)。该文档为本轮最新操作入口，覆盖前文仅放行002/保护tower-*的封版状态；旧历史原包不含本轮能力。
+
+恢复连接后优先备份Mac，准备公开目录，不在母版启动worker，不复制新克隆的身份、applied.json或maintenance-backups.json。快照与独立克隆创建仍由管理员执行，不能重启001/002替代验证。

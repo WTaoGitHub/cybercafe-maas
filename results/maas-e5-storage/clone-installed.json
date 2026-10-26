@@ -1,0 +1,20 @@
+{
+  "hostname": "XZ-31-002",
+  "role": "clone",
+  "source_commit": "e202112",
+  "hashes": {
+    "client.py": "16a50b83012b74bae4a4296dc2ad93c99d48dcbbd3f870a3d91f2eeb84a954c9",
+    "worker.py": "5010d4c7d0fa21d97f868ee03ec5e2cca556db9324ba5aed9d336447fd449cf2",
+    "storage.py": "741d9eb89dd7429d36e6166580fe2e443f62976de21d517192fe4545352114d4"
+  },
+  "storage": {
+    "model_root": "/srv/maas/models",
+    "model_cache_dir": "/srv/maas/model-cache",
+    "marker_path": "/srv/maas/models/image-contained/model",
+    "published_models_readonly": true,
+    "cache_writable": true
+  },
+  "worker_started": false,
+  "vm_rebooted": false,
+  "snapshot_created": false
+}

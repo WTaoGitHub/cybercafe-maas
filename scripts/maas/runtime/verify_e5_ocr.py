@@ -9,15 +9,15 @@ LIVE=Path('/root/wtaobj/maas-live')
 OUT=Path('/root/wtaobj/maas-e5-ocr/acceptance.json')
 
 
-def main():
-    if OUT.exists():raise RuntimeError('Acceptance evidence exists; inspect before another run')
+def main(out=OUT,revision='ocr-e5-r1'):
+    if out.exists():raise RuntimeError('Acceptance evidence exists; inspect before another run')
     key=(LIVE/'secrets/pilot-key').read_text().strip()
     context=ssl.create_default_context(cafile='/root/wtaobj/maas-private-tls/server.crt')
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPSHandler(context=context))
     report={'state':'STARTED','tls_verified':True,'started_at':time.time(),'scope':'single sync and single async request; no automatic replay'}
     def checkpoint():
-        with OUT.open('w') as f:json.dump(report,f,indent=2)
-        OUT.chmod(0o600)
+        with out.open('w') as f:json.dump(report,f,indent=2)
+        out.chmod(0o600)
     def request(path,body=None,media='application/json',idem=None):
         headers={'Authorization':'Bearer '+key,'Content-Type':media}
         if idem:headers['Idempotency-Key']=idem
@@ -47,7 +47,7 @@ def main():
             time.sleep(.5)
         assert row['state']=='SUCCEEDED',row.get('error_code')
         code,result=request('/maas/v1/artifacts/'+row['result_artifact_id'])
-        assert code==200 and len(result['outputs']['lines'])==46 and result['model_revision']=='ocr-e5-r1'
+        assert code==200 and len(result['outputs']['lines'])==46 and result['model_revision']==revision
         assert result['outputs']['node']==value['node']
         report['task'].update(state=row['state'],attempts=row['attempts'],result_artifact_id=row['result_artifact_id'],
             result_download_http=code,revision=result['model_revision'],lines=46,node=result['outputs']['node'])
@@ -64,4 +64,7 @@ def main():
     print(json.dumps(report))
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--out',default=str(OUT));parser.add_argument('--revision',default='ocr-e5-r1')
+    args=parser.parse_args();main(Path(args.out),args.revision)
