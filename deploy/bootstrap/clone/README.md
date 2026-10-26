@@ -81,3 +81,8 @@ python3 -m maas_bootstrap.publisher \
 ## 下一批实际验收
 
 先完成母版generalize/依赖和旧启动钩子核对，再安装E5文件；准备完成后交由管理员保存新快照，并由管理员创建、启动独立克隆A/B。管理员交付访问入口和快照版本后，我们再执行真实验收。验证同码同配置、独立名称/UUID、真实GPU容器、原生注册和模型请求、SSH手动重复apply、错误配置不破坏原worker。不能重启001/002，不能在母版上启动实验worker。详见[E5部署矩阵](../../../docs/framework/E5-TEST-DEPLOYMENT.md)。
+
+
+## 2026-10-26部署状态更新
+
+客户端已手动部署到tower，固定镜像已缓存；旧agent/provision disabled/inactive，E5开机单元enabled/inactive，母版不注册worker。发布CLI仍未在001线上演练，封版/真实新克隆验收待完成。后续以[实际部署手册](MANUAL-TOWER-DEPLOYMENT.md)为准；其第15节记录本次证据，不把本文早期未部署状态作为现状。

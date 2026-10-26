@@ -253,7 +253,11 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p>
 <h3>2026-10-23母版准备暂停点（用户最新要求）</h3>
 <p>用户要求先准备、不要部署到tower。已完成本地公开交付包（源码commit f7de733）、只读清单脚本及校验工具；34项测试和实际包解压/临时离线文件树安装验证通过。真实码未拉取，无token/私钥入包。tower仅只读取证：Ubuntu24.04/Python3.12/crypto41.0.7及NVIDIA runtime已具备，但固定worker镜像未缓存、旧CyberCafe服务enabled、machine-id/SSH主机密钥未generalize。</p>
-<p><strong>当前只完成本地部署材料准备，不是实际母版封版完成。</strong> 不上传/安装到tower，不自动缓存镜像、停旧服务、清理身份或请求管理员立即制作快照。实际部署及旧启动职责审查、首启身份契约、离线镜像来源/构建方式确认仍待后续部署指令；检查通过后再由管理员制作快照、创建和启动独立A/B。001002不变。详见<a href="../../results/maas-e5-preparation/TEMPLATE-PREPARATION.md">母版准备报告</a>。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
+<p><strong>当前只完成本地部署材料准备，不是实际母版封版完成。</strong> 不上传/安装到tower，不自动缓存镜像、停旧服务、清理身份或请求管理员立即制作快照。实际部署及旧启动职责审查、首启身份契约、离线镜像来源/构建方式确认仍待后续部署指令；检查通过后再由管理员制作快照、创建和启动独立A/B。001002不变。详见<a href="../../results/maas-e5-preparation/TEMPLATE-PREPARATION.md">母版准备报告</a>。</p>
+<h3>2026-10-26实际部署：tower业务层已安装，封版待完成</h3>
+<p>用户本轮授权部署，并明确确认cybercafe-agent/provision由E5替代，覆盖此前“只准备不部署”的暂停点。已在tower私有备份7个旧文件及状态到/root/e5-before-install-20261026-105709；两项旧服务disabled/inactive，供应商命名/网络/SSH服务未改。客户端、公开信任材料、600权限配置和共享码已安装；真实HTTPS/Ed25519连续prepare验证通过，临时原生注册材料已删除。固定GPUStack镜像linux/amd64按摘要缓存成功，E5单元enabled/inactive，尚无容器或实例状态。Docker未重启，machine-id和SSH密钥未清理，001002未修改。</p>
+<p>本轮完成的是母版E5业务层部署，不是平台快照交付或真实克隆验收。封版前仍需确定首次machine-id/SSH主机密钥生成及启动顺序、迁出旧设备凭据和含秘密回退材料、管理员确认供应商失败单元影响；随后由管理员保存快照并创建/首次启动独立A/B。原生注册、GPU容器与模型能力须在新克隆验收，不能用母版prepare成功替代。</p>
+<p>实际命令修订、备份/回退及证据见<a href="../../deploy/bootstrap/clone/MANUAL-TOWER-DEPLOYMENT.md#15-2026-10-26实际部署记录已执行">母版手动部署手册</a>和<a href="../../results/maas-e5-preparation/tower-deployment-20261026.json">部署结果</a>。本地公开包仍是f7de733历史交付，未重打包；本轮手册修订单独交付，不把旧包内“暂停部署”的文案视作当前状态。</p></section><section id="roadmap"><h2>统一模型服务路线图 v0.2</h2>
 <blockquote><strong>E5当前执行基线（2026-10-23修订六）</strong>：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 <a href="E5-DESIGN.md">当前设计</a>、<a href="E5-IMPLEMENTATION.md">开发计划</a>和 <a href="E5-TEST-DEPLOYMENT.md">部署测试</a>。</blockquote>
 <p>2026-10-20 · 当前路线图；替代历史F0–F6及V1–V4。</p>
 <p>设计：<a href="DESIGN.md">DESIGN.md</a> · 工作包与测试：<a href="PLAN.md">PLAN.md</a> · <a href="ROADMAP.html">HTML总览</a>。</p>
@@ -369,4 +373,8 @@ tests/maas/                # 状态机、事务、鉴权、恢复与端到端</c
 <p>下一步先核对母版首启身份生成和旧启动钩子，再安装客户端/缓存固定镜像、保存新版快照并创建独立新克隆；以克隆到18080和实际注册为门槛，tower不通不作阻塞。</p>
 <h3>2026-10-23母版准备暂停点（用户最新要求）</h3>
 <p>用户要求先准备、不要部署到tower。已完成本地公开交付包（源码commit f7de733）、只读清单脚本及校验工具；34项测试和实际包解压/临时离线文件树安装验证通过。真实码未拉取，无token/私钥入包。tower仅只读取证：Ubuntu24.04/Python3.12/crypto41.0.7及NVIDIA runtime已具备，但固定worker镜像未缓存、旧CyberCafe服务enabled、machine-id/SSH主机密钥未generalize。</p>
-<p><strong>当前只完成本地部署材料准备，不是实际母版封版完成。</strong> 不上传/安装到tower，不自动缓存镜像、停旧服务、清理身份或请求管理员立即制作快照。实际部署及旧启动职责审查、首启身份契约、离线镜像来源/构建方式确认仍待后续部署指令；检查通过后再由管理员制作快照、创建和启动独立A/B。001002不变。详见<a href="../../results/maas-e5-preparation/TEMPLATE-PREPARATION.md">母版准备报告</a>。</p></section></main></body></html>
+<p><strong>当前只完成本地部署材料准备，不是实际母版封版完成。</strong> 不上传/安装到tower，不自动缓存镜像、停旧服务、清理身份或请求管理员立即制作快照。实际部署及旧启动职责审查、首启身份契约、离线镜像来源/构建方式确认仍待后续部署指令；检查通过后再由管理员制作快照、创建和启动独立A/B。001002不变。详见<a href="../../results/maas-e5-preparation/TEMPLATE-PREPARATION.md">母版准备报告</a>。</p>
+<h3>2026-10-26实际部署：tower业务层已安装，封版待完成</h3>
+<p>用户本轮授权部署，并明确确认cybercafe-agent/provision由E5替代，覆盖此前“只准备不部署”的暂停点。已在tower私有备份7个旧文件及状态到/root/e5-before-install-20261026-105709；两项旧服务disabled/inactive，供应商命名/网络/SSH服务未改。客户端、公开信任材料、600权限配置和共享码已安装；真实HTTPS/Ed25519连续prepare验证通过，临时原生注册材料已删除。固定GPUStack镜像linux/amd64按摘要缓存成功，E5单元enabled/inactive，尚无容器或实例状态。Docker未重启，machine-id和SSH密钥未清理，001002未修改。</p>
+<p>本轮完成的是母版E5业务层部署，不是平台快照交付或真实克隆验收。封版前仍需确定首次machine-id/SSH主机密钥生成及启动顺序、迁出旧设备凭据和含秘密回退材料、管理员确认供应商失败单元影响；随后由管理员保存快照并创建/首次启动独立A/B。原生注册、GPU容器与模型能力须在新克隆验收，不能用母版prepare成功替代。</p>
+<p>实际命令修订、备份/回退及证据见<a href="../../deploy/bootstrap/clone/MANUAL-TOWER-DEPLOYMENT.md#15-2026-10-26实际部署记录已执行">母版手动部署手册</a>和<a href="../../results/maas-e5-preparation/tower-deployment-20261026.json">部署结果</a>。本地公开包仍是f7de733历史交付，未重打包；本轮手册修订单独交付，不把旧包内“暂停部署”的文案视作当前状态。</p></section></main></body></html>

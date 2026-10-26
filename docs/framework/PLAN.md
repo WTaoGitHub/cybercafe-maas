@@ -275,3 +275,12 @@ E6整改后的独立8小时复测已通过：28800.79秒、5760/5760成功、零
 用户要求先准备、不要部署到tower。已完成本地公开交付包（源码commit f7de733）、只读清单脚本及校验工具；34项测试和实际包解压/临时离线文件树安装验证通过。真实码未拉取，无token/私钥入包。tower仅只读取证：Ubuntu24.04/Python3.12/crypto41.0.7及NVIDIA runtime已具备，但固定worker镜像未缓存、旧CyberCafe服务enabled、machine-id/SSH主机密钥未generalize。
 
 **当前只完成本地部署材料准备，不是实际母版封版完成。** 不上传/安装到tower，不自动缓存镜像、停旧服务、清理身份或请求管理员立即制作快照。实际部署及旧启动职责审查、首启身份契约、离线镜像来源/构建方式确认仍待后续部署指令；检查通过后再由管理员制作快照、创建和启动独立A/B。001002不变。详见[母版准备报告](../../results/maas-e5-preparation/TEMPLATE-PREPARATION.md)。
+
+
+## 2026-10-26实际部署：tower业务层已安装，封版待完成
+
+用户本轮授权部署，并明确确认cybercafe-agent/provision由E5替代，覆盖此前“只准备不部署”的暂停点。已在tower私有备份7个旧文件及状态到/root/e5-before-install-20261026-105709；两项旧服务disabled/inactive，供应商命名/网络/SSH服务未改。客户端、公开信任材料、600权限配置和共享码已安装；真实HTTPS/Ed25519连续prepare验证通过，临时原生注册材料已删除。固定GPUStack镜像linux/amd64按摘要缓存成功，E5单元enabled/inactive，尚无容器或实例状态。Docker未重启，machine-id和SSH密钥未清理，001002未修改。
+
+本轮完成的是母版E5业务层部署，不是平台快照交付或真实克隆验收。封版前仍需确定首次machine-id/SSH主机密钥生成及启动顺序、迁出旧设备凭据和含秘密回退材料、管理员确认供应商失败单元影响；随后由管理员保存快照并创建/首次启动独立A/B。原生注册、GPU容器与模型能力须在新克隆验收，不能用母版prepare成功替代。
+
+实际命令修订、备份/回退及证据见[母版手动部署手册](../../deploy/bootstrap/clone/MANUAL-TOWER-DEPLOYMENT.md#15-2026-10-26实际部署记录已执行)和[部署结果](../../results/maas-e5-preparation/tower-deployment-20261026.json)。本地公开包仍是f7de733历史交付，未重打包；本轮手册修订单独交付，不把旧包内“暂停部署”的文案视作当前状态。
