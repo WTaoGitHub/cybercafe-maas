@@ -1,0 +1,31 @@
+{
+  "actual_import_root": "/opt/maas/lib",
+  "hostname": "tower-KuGJk9WU8",
+  "image_id": "tower-e5-registry-v1",
+  "verified_revision": "e5-registry-r1",
+  "layout_version": "registry-access-v1",
+  "template_guard": "PROTECTED_HOST_WORKER_FORBIDDEN",
+  "instance_state_absent": true,
+  "registry_auth_directory_absent": true,
+  "native_identity_absent": true,
+  "containers_absent": true,
+  "bootstrap_enabled": true,
+  "bootstrap_active_state": "failed",
+  "worker_image_cached": true,
+  "cached_image_count": 1,
+  "storage": {
+    "model_root": "/srv/maas/models",
+    "model_cache_dir": "/srv/maas/model-cache",
+    "marker_path": "/srv/maas/models/image-contained/model",
+    "published_models_readonly": true,
+    "cache_writable": true
+  },
+  "module_hashes": {
+    "client.py": "f38a99f8354da0fa347c5b5a0e95034c2fe851a3dd9ce122e81428d48ae0ca5e",
+    "worker.py": "c946591779096f9b90620831a57f4a218f393c01d4f8e4c55d1eb82f1e59f535",
+    "registry.py": "10d3a19414c4ebfcdc661a4aeadcabf642d8c2dfaa5a4c8b55ffa29e1eff3ffe",
+    "storage.py": "741d9eb89dd7429d36e6166580fe2e443f62976de21d517192fe4545352114d4"
+  },
+  "fetch_verified_without_persistence": true,
+  "snapshot_created": false
+}

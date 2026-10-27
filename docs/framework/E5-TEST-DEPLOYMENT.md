@@ -329,3 +329,10 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 母版未更新。活跃配置e5-registry-r1仅兼容tower-e5-registry-v1，旧快照image_id会收到409；下一步先更新母版客户端/允许registry目标/image_id，保留母版保护、排除实例/auth状态，再由管理员保存快照和创建独立克隆验证无人值守首启。replicas仍1，新节点加入不自动增加副本。回退材料保留，实际回退未演练，生产HA/RPO和NFS权重分发、E8仍未完成。
 
 [仓库报告](../../results/maas-e5-registry-service/REPORT.md) · [第一步验收](../../results/maas-e5-registry-access/REPORT.md) · [操作与回退](../../deploy/maas/REGISTRY-ACCESS-V1.md)。
+
+
+## registry-access-v1母版实际更新完成（2026-10-27）
+
+用户授权后，6025母版tower-KuGJk9WU8已备份并安装client/worker/registry，storage保持；image_id=tower-e5-registry-v1，registry allowlist仅10.11.31.1:18443。实际源码导入/摘要、内存读取及验证e5-registry-r1、registry-access-v1布局计算、母版保护与enabled启动单元均通过。无实例身份、registry-auth/generations或Docker容器，未运行apply或重启VM/Docker，未触碰001/002服务。OCR未预置，仅缓存固定worker镜像。
+
+下一步由管理员保存新快照、启动普通独立克隆，验证首次自动配置/注册/调度/认证拉取/OCR。既有旧快照不随文件更新而改变，真实新版首启尚未验证。当前replicas=1，若保留worker6需安排测试部署或额外副本。E8与其他增强不因此启动。[母版报告](../../results/maas-e5-registry-template/REPORT.md)。

@@ -39,3 +39,7 @@ Mac私有备份.maas/backups/registry-access-v1-20261027含旧源码/配置/work
 仅下一阶段向母版安装新client.py/worker.py/registry.py及相同storage.py，配置new image_id和registry endpoint allowlist；保留母版guard，不复制本次state、native身份、auth文件、applied或receipt。秘密由克隆从受信配置服务器获取，publisher账号不能入母版。
 
 管理员再保存快照并新建独立克隆，以无业务镜像/配置缓存、无人手动补配置为条件验证boot→注册→被调度→认证拉取→OCR。旧基础镜像缓存存在的本次测试不能替代该验收。模型权重仍image-contained，NFS/HF权重分发、凭据热轮换、千节点拉取风暴与2.3升级均未实施。
+
+## 母版已更新（2026-10-27）
+
+用户随后授权更新母版。6025当前tower-KuGJk9WU8已安装新模块并更新image_id/registry allowlist，内存签名读取、布局、保护、无实例/auth状态检查通过；仅缓存worker镜像，没有OCR。本节更新前文“母版待部署”的当前状态，但不修改此前克隆验收历史证据。既有快照尚未重新保存，下一步管理员保存新快照和创建独立克隆。[母版报告](../../results/maas-e5-registry-template/REPORT.md)。

@@ -515,3 +515,11 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 活跃配置e5-registry-r1仅支持image_id=tower-e5-registry-v1；旧母版tower-e5-pilot-v1会收到409。下一步明确部署母版时须同时安装新模块、更新image_id和allowed_registry_endpoints，保留tower保护，不复制本次registry-auth、identity、native数据、applied或maintenance receipt。reader经配置HTTPS取得，publisher不能入母版。再由管理员保存新快照并新建独立克隆；若保留当前worker6，先安排额外测试副本，加入节点不会自动把replicas从1变2。
 
 本节只是交接要求，尚未在母版执行。详见[部署与回退](../../maas/REGISTRY-ACCESS-V1.md)及[第一步报告](../../../results/maas-e5-registry-access/REPORT.md)。
+
+## 31. registry-access-v1母版实际更新完成
+
+2026-10-27：用户授权后，6025母版tower-KuGJk9WU8已备份Mac并安装client.py/worker.py/registry.py；storage.py保持。bootstrap.json改为image_id=tower-e5-registry-v1及allowed_registry_endpoints=[10.11.31.1:18443]，其余接入配置保留。第30节“母版未更新”为此前状态，现由本节覆盖。
+
+实际导入、源码摘要、内存签名配置读取、布局计算、母版guard、启动单元enabled和无实例/auth目录均通过；没有运行apply、启动worker或重启VM/Docker。reader/publisher和原生实例身份没有写入母版。仅缓存worker镜像，不预装OCR，保留首次拉取验证条件。
+
+可以请管理员保存新快照，备注registry-access-v1 / tower-e5-registry-v1 / 2026-10-27，再创建普通模式独立克隆并提供入口。本次没有保存快照；旧快照仍是旧配置。若旧worker继续服务，需另外安排测试副本；replicas=1不保证新节点加入即部署OCR。[实际报告](../../../results/maas-e5-registry-template/REPORT.md)。
