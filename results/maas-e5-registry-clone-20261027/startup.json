@@ -1,0 +1,66 @@
+{
+  "hostname": "XZ-31-002",
+  "boot_id": "ec913d05-5caf-428a-937e-90fc537c3d2b",
+  "image_id": "tower-e5-registry-v1",
+  "applied": {
+    "cluster_id": 3,
+    "code": "APPLIED",
+    "fingerprint": "13e89924577998e1f18fc49b94315ae477149db613c5997ccb9dd75afe40dcb1",
+    "layout_sha256": "ae2ab5a78f98a54b1232bedde848b8a7e7a9515cffa44549f8debea4711aac37",
+    "layout_version": "registry-access-v1",
+    "native_state": "not_ready",
+    "revision": "e5-registry-r1",
+    "trigger": "boot",
+    "worker_id": 7,
+    "worker_name": "e5-4672ade0506987f34555caed"
+  },
+  "cold_cache": {
+    "new_manifest_absent": true,
+    "new_config_absent": true,
+    "old_ocr_config_absent": true,
+    "images": [
+      {
+        "Containers": "N/A",
+        "CreatedAt": "2026-07-31 19:19:50 +0800 CST",
+        "CreatedSince": "2 months ago",
+        "Digest": "",
+        "ID": "3bd2f66800ec",
+        "Repository": "quay.io/gpustack/gpustack",
+        "SharedSize": "N/A",
+        "Size": "4.94GB",
+        "Tag": "<none>",
+        "UniqueSize": "N/A",
+        "VirtualSize": "4.941GB"
+      },
+      {
+        "Containers": "N/A",
+        "CreatedAt": "2024-05-24 04:42:04 +0800 CST",
+        "CreatedSince": "2 years ago",
+        "Digest": "<none>",
+        "ID": "873ed7510279",
+        "Repository": "quay.io/gpustack/runtime",
+        "SharedSize": "N/A",
+        "Size": "736kB",
+        "Tag": "pause",
+        "UniqueSize": "N/A",
+        "VirtualSize": "735.8kB"
+      }
+    ]
+  },
+  "auth_prepared_automatically": true,
+  "auth_file_mode": "600",
+  "auth_directory_mode": "700",
+  "trust_sha256": "421f2c184e6339b2e4f1bf01e30ecae84413515bb941c1bba95a4fc947e2a9c8",
+  "worker_container_id": "183750f2da8fe42258a09c2dce4c87f83202a61a1e9b250032dc47d68fd49929",
+  "worker_started_at": "2026-10-27T04:14:39.993955017Z",
+  "worker_restart_count": 0,
+  "module_hashes": {
+    "client.py": "f38a99f8354da0fa347c5b5a0e95034c2fe851a3dd9ce122e81428d48ae0ca5e",
+    "worker.py": "c946591779096f9b90620831a57f4a218f393c01d4f8e4c55d1eb82f1e59f535",
+    "registry.py": "10d3a19414c4ebfcdc661a4aeadcabf642d8c2dfaa5a4c8b55ffa29e1eff3ffe",
+    "storage.py": "741d9eb89dd7429d36e6166580fe2e443f62976de21d517192fe4545352114d4"
+  },
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a, 580.95.05",
+  "boot_journal": "Starting maas-worker-bootstrap.service - Verify E5 configuration and join native GPUStack as a clone worker...\n{\"code\": \"APPLIED\", \"trigger\": \"boot\", \"revision\": \"e5-registry-r1\", \"fingerprint\": \"13e89924577998e1f18fc49b94315ae477149db613c5997ccb9dd75afe40dcb1\", \"cluster_id\": 3, \"worker_id\": 7, \"worker_name\": \"e5-4672ade0506987f34555caed\", \"native_state\": \"not_ready\", \"layout_version\": \"registry-access-v1\", \"layout_sha256\": \"ae2ab5a78f98a54b1232bedde848b8a7e7a9515cffa44549f8debea4711aac37\"}\nFinished maas-worker-bootstrap.service - Verify E5 configuration and join native GPUStack as a clone worker.\n",
+  "manual_apply_or_image_delivery": false
+}

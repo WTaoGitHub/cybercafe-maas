@@ -523,3 +523,7 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 实际导入、源码摘要、内存签名配置读取、布局计算、母版guard、启动单元enabled和无实例/auth目录均通过；没有运行apply、启动worker或重启VM/Docker。reader/publisher和原生实例身份没有写入母版。仅缓存worker镜像，不预装OCR，保留首次拉取验证条件。
 
 可以请管理员保存新快照，备注registry-access-v1 / tower-e5-registry-v1 / 2026-10-27，再创建普通模式独立克隆并提供入口。本次没有保存快照；旧快照仍是旧配置。若旧worker继续服务，需另外安排测试副本；replicas=1不保证新节点加入即部署OCR。[实际报告](../../../results/maas-e5-registry-template/REPORT.md)。
+
+## 32. registry-access-v1新快照首启已验证
+
+2026-10-27端口16487的新克隆worker7由boot自动配置/注册，取证时无OCR镜像，随后由GPUStack使用原model18/route17自动调度拉取并运行instance103。未手动补节点配置或运行apply/pull/load；挂载隔离和MaaS同步异步/下载/单次计量通过。无需为本次QA再更新母版或重做快照。旧节点记录保留，不做VM重启或全局清理。[实际报告](../../../results/maas-e5-registry-clone-20261027/REPORT.md)。

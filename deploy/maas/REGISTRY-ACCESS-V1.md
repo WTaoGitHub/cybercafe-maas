@@ -43,3 +43,7 @@ Mac私有备份.maas/backups/registry-access-v1-20261027含旧源码/配置/work
 ## 母版已更新（2026-10-27）
 
 用户随后授权更新母版。6025当前tower-KuGJk9WU8已安装新模块并更新image_id/registry allowlist，内存签名读取、布局、保护、无实例/auth状态检查通过；仅缓存worker镜像，没有OCR。本节更新前文“母版待部署”的当前状态，但不修改此前克隆验收历史证据。既有快照尚未重新保存，下一步管理员保存新快照和创建独立克隆。[母版报告](../../results/maas-e5-registry-template/REPORT.md)。
+
+## 新快照首启已通过（2026-10-27）
+
+随后管理员启动16487新克隆：worker7自动接入并准备认证，首次取证无OCR镜像，原生自动拉取并接替离线worker6运行model18/instance103。无需手动补节点配置、apply/pull/load或模型/路由变更。OCR/MaaS同步异步/结果/单次计量及挂载隔离通过；此前“新快照待验”现在由此例补齐，其他边界仍保留。[报告](../../results/maas-e5-registry-clone-20261027/REPORT.md)。
