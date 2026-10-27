@@ -1,9 +1,8 @@
 # MaaS 对外 API 文档（当前版本）
 
-> E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](../framework/E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
+> 当前基线：API consumer-ocr-r1、执行器/Observer e6-r1、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。
 
-
-文档日期：2026-10-27。API镜像consumer-ocr-r1已上线，执行器/observer保持e6-r1；GPUStack v2.2.3。消费者兼容入口及最新验收见[OCR对接契约](CONSUMER-OCR.md)与[发布报告](../../results/maas-consumer-ocr/REPORT.md)。
+文档日期：2026-10-27；当日只读核对001的容器版本、监听和运行限额。API镜像consumer-ocr-r1已上线，执行器/observer保持e6-r1；GPUStack v2.2.3。消费者兼容入口及最新验收见[OCR对接契约](CONSUMER-OCR.md)与[发布报告](../../results/maas-consumer-ocr/REPORT.md)。
 
 **当前提供：消费者兼容同步OCR、原Chat同步OCR、异步OCR任务、输入/结果文件上传下载、任务查询/取消、模型能力查询。** 不包含E1候选接口；无文生图、音频、视频、批次或ZIP接口。
 
@@ -60,7 +59,28 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 
 ## 3. 同步OCR
 
-### POST /v1/chat/completions
+### 3.1 新接入推荐：POST /ocr 或 /v1/ocr
+
+单张图片直接提交，HTTP200返回顶层 `lines`，不需要先上传artifact：
+
+```json
+{
+  "model": "ocr.default",
+  "image_base64": "<PNG或JPEG的裸base64>",
+  "return_boxes": true,
+  "request_id": "consumer-business-001"
+}
+```
+
+也可将image_base64替换为image_url（公开HTTP(S)图片地址）；两个来源恰好一个。返回示例：
+
+```json
+{"lines":[{"text":"中文 English","confidence":0.99,"polygon":[[12,12],[220,12],[220,44],[12,44]]}]}
+```
+
+无文字返回 `{"lines":[]}`，仍为成功。request_id仅关联日志，不去重；完整字段、图片下载限制、可运行示例见[消费者OCR契约](CONSUMER-OCR.md)。
+
+### 3.2 原Chat入口：POST /v1/chat/completions
 
 请求体：
 
@@ -270,11 +290,19 @@ text为合并文字；lines为行级文本/框/置信度，空文字图可返回
 }
 ```
 
-上例为无文字结果的字段示意。当前没有文生图data数组、confidence/polygon别名或检测语言字段。
+上例为无文字结果的字段示意。三类接口的结果结构不同：
+
+| 接口 | 解析方式 | 行字段 |
+|---|---|---|
+| /ocr、/v1/ocr | 直接读取响应JSON的lines | text、可选confidence/polygon |
+| /v1/chat/completions | 将choices[0].message.content再次JSON解析 | text、score、box |
+| 异步结果artifact | 下载JSON并读取outputs.lines | text、score、box |
+
+confidence/polygon是兼容同步门面的转换字段，不会改变原Chat及异步结果。当前没有文生图data数组或检测语言字段。
 
 ## 9. 限制、保留与失败语义
 
-下表为代码默认/已登记试点值；交付方应在接入时确认实际配置，不构成吞吐/SLA承诺。
+下表限额已与2026-10-27的001 API运行配置核对；单次模型预算取当前登记目录。部署配置可以调整，不构成吞吐/SLA承诺。
 
 | 项目 | 当前值/行为 |
 |---|---|
@@ -315,15 +343,19 @@ text为合并文字；lines为行级文本/框/置信度，空文字图可返回
 | 404 NOT_FOUND / INPUT_NOT_FOUND / MODEL_NOT_FOUND | 资源/有效输入/模型不存在或不可访问 |
 | 409 IDEMPOTENCY_CONFLICT / MODEL_REVISION_CHANGED | 幂等内容冲突或固定版本变更 |
 | 410 RESULT_EXPIRED | 输入/结果已到期或删除 |
-| 413 INPUT_SIZE / REQUEST_SIZE | 上传或JSON超限 |
-| 415 MEDIA_TYPE | 上传媒体类型不允许；OCR执行阶段也可能记录此错误 |
+| 413 INPUT_SIZE / REQUEST_SIZE / IMAGE_PIXELS | 上传、JSON、解码字节或兼容OCR像素超限 |
+| 415 MEDIA_TYPE / IMAGE_FORMAT | 上传媒体类型不允许或兼容OCR格式不支持 |
 | 422 INPUT_INVALID / SYNC_INPUT / SYNC_UNSUPPORTED | schema错误、同步格式或模型不支持 |
+| 422 IMAGE_BASE64 / IMAGE_INVALID | 兼容OCR的base64或PNG/JPEG内容无效 |
+| 422 IMAGE_URL_NOT_ALLOWED / IMAGE_URL_REDIRECT / IMAGE_FETCH_FAILED / IMAGE_ENCODING | 图片URL受限、重定向、下载失败或HTTP压缩不支持 |
+| 408 IMAGE_FETCH_TIMEOUT | 兼容OCR输入准备超时，未发送推理 |
 | 429 SYNC_CAPACITY / QUEUE_FULL / STORAGE_QUOTA | 并发、等待队列或存储额度不足 |
 | 503 MAINTENANCE_PAUSED / BACKEND_QUARANTINED | 同步准入暂停或未知执行隔离 |
-| 503 PREFLIGHT_STALE / PREFLIGHT_UNAVAILABLE | 可信版本证明不可用 |
 | 503 UNKNOWN_BACKEND_ACTIVITY | 同步远端完成未确认，不能盲目重发 |
 | 503 AUTH_UNAVAILABLE / BINDING_INVALID / STORAGE_FULL / SERVICE_UNAVAILABLE | 鉴权、配置、磁盘或内部服务不可用 |
 | 502 OUTPUT_INVALID / OUTPUT_SIZE / OUTPUT_ENCODING | 同步上游响应格式/大小/编码异常 |
+
+PREFLIGHT_STALE、PREFLIGHT_UNAVAILABLE属于已退役基线，当前正常推理路径不依赖这些门禁。
 
 此表为常见错误，不是穷举。同步UPSTREAM_REJECTED可能保留被认可的上游4xx；某些版本/网关校验还有专用代码。异步执行失败通常体现在查询所得TaskView.error_code，而不是查询HTTP直接返回上述错误状态。
 

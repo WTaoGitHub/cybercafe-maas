@@ -30,6 +30,59 @@ return_boxes是严格JSON boolean，默认true；false省略polygon，不影响�
 
 request_id为可选1–200字符字符串，不允许控制字符。它与服务器生成的X-Request-ID一起用于日志关联，不透传到模型，不是幂等键。不要在关联ID中放入秘密。没有持久请求去重或结果复用保证；相同request_id再次调用仍可能再次推理/计成功用量。消费者“不重试”不改变GPUStack内部策略。
 
+## 字段速查
+
+| 字段 | 类型 / 默认 | 约束与含义 |
+|---|---|---|
+| model | 必填string | 1–128字符；当前登记ocr.default，须有模型权限 |
+| image_base64 | string，可省略 | 裸base64或PNG/JPEG data URL，与image_url恰好一个 |
+| image_url | string，可省略 | 1–4096字符；公网HTTP(S)，不支持认证下载和重定向 |
+| language | string/null，默认null | 仅auto、zh、en或null；提示语义，不保证过滤或检测语言 |
+| return_boxes | boolean，默认true | false时省略polygon；不接受字符串"false"或数字0 |
+| request_id | string/null，默认null | 1–200字符，无控制字符；只作日志关联 |
+
+请求拒绝未定义字段。`provider`、`stream`、`messages`、`prompt`不属于此门面请求；不要把Chat请求体原样发到/ocr。
+
+## Python单次调用示例
+
+使用Python3和httpx；先由管理员提供可达地址、受信服务证书和客户key文件。以下证书仅用于验证MaaS入口，与E5配置服务/仓库证书不同。示例不自动重试，不打印密钥或完整图片。
+
+```python
+from pathlib import Path
+import base64
+import ssl
+import httpx
+
+BASE_URL = "https://127.0.0.1:18832"  # 仅适用于本机或已建立授权转发
+KEY_FILE = Path("/private/path/inference-key")
+CERT_FILE = Path("/private/path/maas-server.crt")
+IMAGE_FILE = Path("/private/path/sample.png")
+raw = IMAGE_FILE.read_bytes()
+if not raw or len(raw) > 10 * 1024 * 1024:
+    raise ValueError("图片必须非空且不超过10MiB")
+context = ssl.create_default_context(cafile=str(CERT_FILE))
+body = {
+    "model": "ocr.default",
+    "image_base64": base64.b64encode(raw).decode("ascii"),
+    "return_boxes": True,
+    "request_id": "consumer-business-001",
+}
+with httpx.Client(verify=context, timeout=45, trust_env=False,
+                  follow_redirects=False) as client:
+    response = client.post(
+        BASE_URL.rstrip("/") + "/ocr", json=body,
+        headers={"Authorization": "Bearer " + KEY_FILE.read_text().strip()},
+    )
+    print("request_id:", response.headers.get("X-Request-ID"))
+    response.raise_for_status()
+    for line in response.json()["lines"]:
+        print(line["text"])
+```
+
+若改用公开图片地址，将body中的image_base64删除，再设置 `body["image_url"] = "https://<图片站点>/<图片路径>"`。返回的confidence/polygon可能缺省，应按可选字段处理。
+
+客户端45秒超时是示例值，不是服务保证；连接中断或推理完成不明时不要自动重发。需要持久任务ID和接纳幂等时使用[异步任务接口](README.md#5-异步任务提交)。
+
 ## 成功响应与计量
 
 HTTP200，顶层直接返回lines：
@@ -75,3 +128,9 @@ score映射confidence（有限数值0–1），box映射polygon（四点有限�
 入口：maas_platform/consumer_ocr.py、image_fetch.py；共享SyncIngress通过prepare_input/map_output保持统一准入和终态/计量。HTTPX0.28.1/httpcore1.0.9的连接后端注入有专门测试，升级时复测DNS固定和TLS域名保留。
 
 图片验证使用[Pillow官方发布包](https://pypi.org/project/pillow/13.0.0/)，固定13.0.0。控制端增量构建可用Dockerfile.consumer-ocr，基于已核对的e6镜像和离线Linux wheel；标准Dockerfile的requirements同时更新。MAAS_API_IMAGE仅覆盖API，执行器和observer可保持原e6镜像，数据库schema和任务协议没有变更；新接口不要求更新母版/worker。
+
+## 当前接入状态（2026-10-27复核）
+
+001运行API镜像consumer-ocr-r1；MaaS HTTPS仍仅127.0.0.1/[::1]:18832，HTTP仅回环18831，未提供可直接配置的公网业务URL。公网IP或443端口的单次连通测试不能证明该地址映射到MaaS；须以管理员交付并验证的业务地址为准。当前正式逻辑模型为ocr.default，revision为ocr-registry-r1，任务capabilities接口描述异步schema，不列本同步门面。
+
+现有验收覆盖base64、data URL、公网图片下载、空白图、拒绝分支和成功计量，以及原Chat/异步/下载回归。尚未完成实际下游部署环境的渠道联调；不承诺同步持久幂等、批处理、文生图或音视频能力。
