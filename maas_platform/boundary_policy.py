@@ -1,5 +1,6 @@
 """Pre-DNAT boot fence, installed before Docker; only our raw chain is managed."""
 import ipaddress
+from .container_ingress import container_http_clients
 
 CHAIN='MAAS-P4-EARLY'
 PORTS='8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999'
@@ -19,8 +20,11 @@ def native_sources(config):
 
 
 def rules(config,family,trusted_bridge=()):
+    clients=container_http_clients(config)
     out=[f'-A {CHAIN} -i lo -j RETURN']
     if family==4:
+        for row in clients:
+            out.append(f'-A {CHAIN} -i {row["interface"]} -s {row["source_cidr"]} -d {row["listen_address"]}/32 -p tcp --dport 18831 -j RETURN')
         for cidr in native_sources(config):
             out.append(f'-A {CHAIN} -i {config["interface"]} -s {cidr} -d 10.11.31.1/32 -p tcp --dport 18080 -j RETURN')
         for address in ('10.11.31.1','10.11.31.2'):out.append(f'-A {CHAIN} -i {config["interface"]} -s {address}/32 -j RETURN')
