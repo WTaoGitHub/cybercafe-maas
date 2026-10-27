@@ -530,3 +530,7 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 001 API发布consumer-ocr-r1，仅API重建、HTTP/TLS入口白名单reload；执行器/observer维持e6，GPUStack/worker7/母版及客户监听未改变。新契约四张成功图对应四成功事件，包含空白图[]和真实URL；旧Chat/异步/下载46行及单次计量通过。MaaS恢复接单、UNKNOWN=0、monitor ok。未完成文生图/音视频、E4同步幂等、消费者自身环境联调或新的8小时耐久；公网仍未开放。
 
 本地186通过/56跳过，独立测试库相关测试89通过/1历史harness跳过。后续E8回归应纳入新门面、图片下载DNS固定/TLS和转换前计量约束。[接口契约](../api/CONSUMER-OCR.md) · [验收](../../results/maas-consumer-ocr/REPORT.md) · [发布/回退](../../deploy/maas/CONSUMER-OCR.md)。
+
+## 2026-10-27 E3补充：副本与显存预算联合调优
+
+先完成E5第二克隆自动注册/拉取及14副本验收，当前2GiB声明和MaaS配额不变。E3在多执行器及并发1/2/4之外，增加每卡副本数1/2/4/7及有依据的8副本候选、显存claim与冷启动/大图并发峰值的联合比较。以吞吐、P95/错误率、实际峰值与安全余量决定是否下调claim；1.8GiB仅为待验证候选，不为填满1.99GiB调度余额而直接改参数。无收益或异常则保留保守配置；不重启VM、不恢复collector。详见[E3任务与验收](ENHANCEMENTS.md#e3多执行器并发与容量验证)。
