@@ -10,7 +10,7 @@
 - 也支持endpoint=https://<可达地址>:<端口>/v1，追加后成为/v1/ocr。
 - 两个POST入口等价，不应再把submit_path拼进endpoint。
 - Authorization: Bearer <key>；Content-Type: application/json。
-- 当前仍是001回环私有TLS18832/HTTP18831，访问通道和证书由运维另行配置，本次不新增公网/LAN监听。
+- 原001回环私有TLS18832/HTTP18831保留；2026-10-27已增加同机Docker桥专用HTTP入口http://172.18.0.1:18831，仅允许当前下游172.18.0.0/16桥接网络。仍须Bearer key，不需HTTP证书，未新增公网/LAN客户监听；其他访问通道和证书由运维配置。
 
 ```json
 {
@@ -131,6 +131,6 @@ score映射confidence（有限数值0–1），box映射polygon（四点有限�
 
 ## 当前接入状态（2026-10-27复核）
 
-001运行API镜像consumer-ocr-r1；MaaS HTTPS仍仅127.0.0.1/[::1]:18832，HTTP仅回环18831，未提供可直接配置的公网业务URL。公网IP或443端口的单次连通测试不能证明该地址映射到MaaS；须以管理员交付并验证的业务地址为准。当前正式逻辑模型为ocr.default，revision为ocr-registry-r1，任务capabilities接口描述异步schema，不列本同步门面。
+001运行API镜像consumer-ocr-r1；MaaS HTTPS仍仅127.0.0.1/[::1]:18832，原HTTP仍有回环18831；另已为当前下游Docker桥网络增加http://172.18.0.1:18831受限HTTP入口，未提供可直接配置的公网业务URL。公网IP或443端口的单次连通测试不能证明该地址映射到MaaS；须以管理员交付并验证的业务地址为准。当前正式逻辑模型为ocr.default，revision为ocr-registry-r1，任务capabilities接口描述异步schema，不列本同步门面。
 
 现有验收覆盖base64、data URL、公网图片下载、空白图、拒绝分支和成功计量，以及原Chat/异步/下载回归。尚未完成实际下游部署环境的渠道联调；不承诺同步持久幂等、批处理、文生图或音视频能力。

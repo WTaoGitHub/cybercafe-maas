@@ -20,6 +20,8 @@ flowchart TB
         CFG["E5配置服务 · HTTPS 18840<br/>共享码认证、签名配置与受保护凭据"]
         REG["镜像仓库 · HTTPS 18443<br/>只读拉取 / 管理端发布<br/>后端回环18500"]
         OBS["Observer / 宿主监控<br/>观测业务状态，不作为全池推理门禁"]
+        CEDGE["Docker下游专用Nginx<br/>172.18.0.1:18831 · CIDR限制"]
+        CEDGE --> API
         EDGE --> API
         API --> DB
         API --> FILES
@@ -30,6 +32,7 @@ flowchart TB
         GS --> GDB
         OBS -. "读取状态" .-> DB
     end
+    DOWNSTREAM["001下游容器 · 172.18.0.0/16"] --> CEDGE
     T --> EDGE
     TEMPLATE["母版快照<br/>E5引导程序 + 固定worker镜像<br/>无实例身份，不预装OCR"]
     subgraph NODE["当前新克隆 · worker7 · test1 · 10.11.31.2"]
@@ -73,6 +76,8 @@ flowchart TB
         HTTP --> APP
         APP --> PG
     end
+    DC["001下游Docker容器 · 172.18.0.0/16"] --> CE["桥网关HTTP 172.18.0.1:18831<br/>精确raw例外 + CIDR ACL + 业务白名单"]
+    CE --> APP
     SSH --> TLS
     FUTURE -. "后续单独设计和部署" .-> TLS
     subgraph LAN["001局域网入口 · 不等于MaaS客户入口"]
@@ -104,6 +109,7 @@ TLS18832与HTTP18831是两个平行Nginx入口，都直接转发18830，并非18
 |---|---|---|
 | 001 127.0.0.1:18832（同时::1） | MaaS客户HTTPS接口 | 自签证书，仅回环；远程测试需授权转发，尚未新增LAN/公网客户监听 |
 | 001 127.0.0.1:18831（同时::1） | MaaS客户HTTP测试入口 | 仅回环，独立于TLS入口 |
+| 001 172.18.0.1:18831 | 同机下游容器HTTP入口 | 仅指定Docker桥/172.18.0.0/16允许，仍须MaaS Bearer；原API内部端口及原生GPUStack未向该网段放开 |
 | 001 127.0.0.1:18830 | MaaS API内部监听 | 回环，正常客户路径经过Nginx白名单 |
 | 001 127.0.0.1:18835 | MaaS PostgreSQL | 回环，客户不直接访问 |
 | 001 10.11.31.1:18840 | E5配置HTTPS | LAN来源规则、共享码；返回签名配置和受保护凭据，不是OCR接口 |
@@ -116,3 +122,5 @@ TLS18832与HTTP18831是两个平行Nginx入口，都直接转发18830，并非18
 001和新克隆分别读取监听信息；新克隆filter/raw表中未发现MAAS链，INPUT策略为ACCEPT。本轮不是完整网络安全审计，未测试第三方LAN/公网直连，也没有修改ACL。图中“非客户入口”描述接口职责，不声称底层网络一定不可达。需要后续核验并落地克隆侧管理/推理端口ACL，不能把001已有规则视为会自动复制到所有克隆。
 
 2026-10-27兼容门面上线后，当前客户路径包括/ocr、/v1/ocr、/v1/chat/completions，以及/maas/v1/artifacts、tasks、查询/取消和capabilities。POST /ocr兼容门面已上线，文生图仍未提供；网络监听和worker ACL状态没有因兼容适配而改变。
+
+2026-10-27同机下游接入更新：新增独立maas-container-http入口，不替换原HTTP/TLS进程；只在172.18.0.1监听18831，持久raw规则仅放指定桥接来源到该目的地址和端口。已从下游后端network namespace验证401/200及路径限制，其他桥/内部API/原生管理仍阻断。下游业务渠道须自行更新endpoint，未测试公网或VM重启。见[报告](../../results/maas-container-http/REPORT.md)。

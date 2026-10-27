@@ -1,0 +1,53 @@
+{
+  "downstream_network_namespace": "/kc-e2e-aliyun-slave3-server",
+  "checks": [
+    {
+      "path": "/maas/v1/models/ocr.default/capabilities",
+      "authenticated": false,
+      "status": 401,
+      "request_id": "req_6c28d6de0f7f48558b30828a9e0ec030"
+    },
+    {
+      "path": "/maas/v1/models/ocr.default/capabilities",
+      "authenticated": true,
+      "status": 200,
+      "request_id": "req_ad03cb19592a4984a134f098fda47a4c",
+      "model": "ocr.default"
+    },
+    {
+      "path": "/healthz",
+      "authenticated": true,
+      "status": 404,
+      "request_id": null
+    },
+    {
+      "path": "/v1/models",
+      "authenticated": true,
+      "status": 404,
+      "request_id": null
+    },
+    {
+      "path": "/maas/v1/models/ocr.default/capabilities?x=1",
+      "authenticated": true,
+      "status": 400,
+      "request_id": null
+    },
+    {
+      "protected_url": "http://172.18.0.1:18830/healthz",
+      "blocked": true,
+      "error_type": "URLError"
+    },
+    {
+      "protected_url": "http://10.11.31.1:18080/v1/models",
+      "blocked": true,
+      "error_type": "URLError"
+    }
+  ],
+  "other_bridge": {
+    "blocked": true,
+    "error_type": "URLError"
+  },
+  "original_loopback_http_unauthenticated_status": 401,
+  "inference_sent": false,
+  "new_endpoint": "http://172.18.0.1:18831"
+}

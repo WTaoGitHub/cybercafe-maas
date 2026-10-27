@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-27",
+  "new_endpoint": "http://172.18.0.1:18831",
+  "network_name": "kc-e2e-aliyun-slave3",
+  "interface": "br-bac8bba30f24",
+  "allowed_source_cidr": "172.18.0.0/16",
+  "authentication_required": true,
+  "service": "maas-container-http.service",
+  "service_active": true,
+  "service_enabled": true,
+  "ingress_restart_count": 0,
+  "container_id": "ec84f9e00b96f9b260f438c631ccb6f42dde49dfd4c6cd7c82cfaf6a7b080f7e",
+  "image_id": "sha256:3dd08163706a20b20622f310ec10258cc96e9007ab357f7201955bc880ac17f4",
+  "new_public_listener": false,
+  "existing_containers_unchanged": true,
+  "original_http_tls_config_unchanged": true,
+  "vm_boot_unchanged": true,
+  "docker_pid_unchanged": true,
+  "after_persistent_boundary_refresh_http": 200,
+  "downstream_application_config_changed": false,
+  "inference_sent": false,
+  "actual_vm_reboot_tested": false,
+  "source_sha256": {
+    "maas_platform/container_ingress.py": "c909a12daea1cfa65a7f83320096aefac76d759e24e7bb7c3904df2d4da21260",
+    "maas_platform/boundary_policy.py": "ad1ca4a4f291e7b4eb13ad4d05e003c741a151562060f590266eb7dea3c579ee",
+    "scripts/maas/runtime/enable_container_http.py": "a291e0fc7eb4df31c9d6fded7d9f627918fc53dcabd753ca78afae574853e9b5"
+  }
+}
