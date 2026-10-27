@@ -80,6 +80,9 @@ class LocalSettings:
                 if not Path(d[k]).is_absolute():raise ValueError()
             from .storage import paths
             d['model_root'],d['model_cache_dir']=map(str,paths(d))
+            allowed=d.get('allowed_registry_endpoints',[])
+            from .registry import ENDPOINT
+            if not isinstance(allowed,list) or any(not isinstance(v,str) or not ENDPOINT.fullmatch(v) or int(v.rsplit(':',1)[1])>65535 for v in allowed):raise ValueError()
             if not isinstance(d['cluster_id'], int) or isinstance(d['cluster_id'], bool):raise ValueError()
             if not d['allowed_server_urls'] or not isinstance(d['allowed_server_urls'], list):raise ValueError()
             if not SAFE_REVISION.fullmatch(d['image_id']):raise ValueError()
@@ -174,6 +177,8 @@ class ReleaseVerifier:
             token = registration['token']
             if not isinstance(token,str) or not 16 <= len(token) <= 4096 or any(ord(x)<33 or ord(x)>126 for x in token):
                 raise ValueError()
+            from .registry import validate as validate_registry
+            validate_registry(settings,envelope)
             # Registration material travels over verified TLS; only the public manifest is signed.
             digest = hashlib.sha256(canonical({'manifest':m,'token_sha256':hashlib.sha256(token.encode()).hexdigest()})).hexdigest()
             return {'revision':m['config_revision'],'fingerprint':digest,'cluster_id':m['cluster_id']}

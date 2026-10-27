@@ -71,6 +71,7 @@ def build(root,settings_path):
     cfg={k:settings.data[k] for k in (
         'schema_version','config_service_url','release_key_id','state_dir','worker_data_dir','model_root','model_cache_dir',
         'site_id','batch_id','cluster_id','image_id','architecture','allowed_server_urls','cloud_backup')}
+    if 'allowed_registry_endpoints' in settings.data:cfg['allowed_registry_endpoints']=settings.data['allowed_registry_endpoints']
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
                release_public_key_file='/etc/maas/release-signing.pub')
     files={
@@ -79,7 +80,7 @@ def build(root,settings_path):
         'etc/maas/server.crt':(cert,0o644),
         'etc/maas/release-signing.pub':(pub,0o644),
     }
-    for name in ('__init__.py','client.py','storage.py','worker.py','cli.py'):
+    for name in ('__init__.py','client.py','storage.py','registry.py','worker.py','cli.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),

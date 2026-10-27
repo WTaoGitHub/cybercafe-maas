@@ -97,3 +97,11 @@ worker设置GPUSTACK_CACHE_DIR到独立缓存，显式启用原生mirrored并指
 存量节点维护若保留停止的旧容器，必须写root-only state_dir/maintenance-backups.json，schema_version=1、container_ids为获准的完整容器ID。只有显式列入、受本工具标签管理、固定镜像/同一原生身份bind、restart=no且停止的容器可被忽略；运行的旧容器仍拒绝启动第二worker。此文件是节点维护记录，不能进入母版或共享模型目录。
 
 已有节点须暂停并排空MaaS、停止模型副本，再由运维重建worker容器，保留身份数据与可回退旧容器；本工具apply本身没有stop/rm/reboot功能。001/002禁止VM重启的约束始终生效。母版仅安装程序/准备公开目录，不执行apply，不保存原生身份；快照由管理员另行操作。
+
+## 可选registry-access-v1启动契约
+
+新客户端支持签名manifest.registry_access与受保护registration.registry_access。manifest只含endpoint、credential_id、payload_sha256及schema_version，签名绑定证书/用户名/密码的完整载荷摘要；秘密仅经验证的配置HTTPS传输并root-only保存。本地allowed_registry_endpoints必须显式允许目标，例如10.11.31.1:18443；未启用时保持model-storage-v1。
+
+启动worker前准备精确Docker certs.d证书及state_dir/registry-auth/<payload_sha256>/config.json，目录700/文件600；专用目录只读挂入worker的/run/maas-registry-auth，DOCKER_CONFIG指向它。只配置单个endpoint认证，无全局registry用户名密码env、无publisher凭据。新挂载加入mirrored ignore列表，不传入推理容器。
+
+已有worker fingerprint/布局不匹配返回NEEDS_MAINTENANCE，不自动重建或覆盖证书；证书/凭据轮换仍须显式维护，不承诺热轮换。配置拉取失败不伪称应用成功。发布新版配置前先部署客户端，新快照首启须单独验收，当前不表示已向母版安装。

@@ -3,7 +3,7 @@ import hashlib,json,os,platform,secrets,socket,stat,subprocess,time,urllib.reque
 from pathlib import Path
 from .client import (BootstrapError,LocalState,HTTPSConfigFetcher,ReleaseVerifier,atomic_json,
                      read_file,NoRedirect)
-from . import storage
+from . import storage,registry
 
 NAME='maas-gpustack-worker'
 LABEL='com.cybercafe.maas.bootstrap'
@@ -50,11 +50,19 @@ class NativeDockerWorker:
         ignore={p.strip() for p in defaults.get(key,'').split(';') if p.strip()}
         ignore.add('/var/lib/gpustack')
         models,cache=storage.paths(settings.data)
+        access=registry.validate(settings,envelope)
+        if access:ignore.add(registry.TARGET)
         spec={'version':LAYOUT_VERSION,'env':dict(zip(LAYOUT_KEYS,[str(cache),'true',NAME,';'.join(sorted(ignore))])),
               'mounts':sorted([{'source':str(Path(settings.data['worker_data_dir'])),'target':'/var/lib/gpustack','rw':True},
                   {'source':'/var/run/docker.sock','target':'/var/run/docker.sock','rw':True},
                   {'source':str(models),'target':str(models),'rw':False},
                   {'source':str(cache),'target':str(cache),'rw':True}],key=lambda x:x['target'])}
+        if access:
+            spec['version']='registry-access-v1'
+            spec['env']['DOCKER_CONFIG']=registry.TARGET
+            spec['env']['GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY']='IfNotPresent'
+            spec['mounts'].append({'source':access['auth_dir'],'target':registry.TARGET,'rw':False})
+            spec['mounts'].sort(key=lambda x:x['target'])
         spec['sha256']=hashlib.sha256(json.dumps(spec,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         return spec
 
@@ -63,6 +71,7 @@ class NativeDockerWorker:
         if current:
             if current.get('layout')!=spec:raise BootstrapError('NEEDS_MAINTENANCE')
             storage.status(settings)
+            registry.status(settings,envelope)
         return {'layout_version':spec['version'],'layout_sha256':spec['sha256']}
 
     def inspect(self):
@@ -80,7 +89,7 @@ class NativeDockerWorker:
                     'id':row['Id'],'status':row['State']['Status'],
                     'layout':{'version':labels.get(LABEL+'.layout-version'),'sha256':labels.get(LABEL+'.layout-sha256'),
                               'mounts':sorted(mounts,key=lambda x:x['target']),
-                              'env':{k:env.get(k) for k in LAYOUT_KEYS}}}
+                              'env':{k:env[k] for k in (*LAYOUT_KEYS,'DOCKER_CONFIG','GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY') if k in env}}}
         except BootstrapError:raise
         except Exception:raise BootstrapError('RUNTIME_STATE_INVALID') from None
 
@@ -118,12 +127,13 @@ class NativeDockerWorker:
         if not stat.S_ISDIR(data.lstat().st_mode) or data.stat().st_mode&0o077:
             raise BootstrapError('NATIVE_DIRECTORY_UNTRUSTED')
         storage.prepare(settings)
+        registry.prepare(settings,envelope)
         layout=self.desired_layout(settings,envelope)
         # Keep restart=no so daemon/host startup cannot bypass the next bootstrap configuration check.
         image=envelope['manifest']['worker_image_digest']
         args=['docker','create','--name',NAME,'--label',LABEL+'=worker-v1',
              '--label',LABEL+'.fingerprint='+metadata['fingerprint'],
-             '--label',LABEL+'.layout-version='+LAYOUT_VERSION,
+             '--label',LABEL+'.layout-version='+layout['version'],
              '--label',LABEL+'.layout-sha256='+layout['sha256'],
              '--restart=no','--privileged','--gpus','all','--network','host',
              '--ulimit','nofile=65535:65535','--env-file',str(env_file)]
