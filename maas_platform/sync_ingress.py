@@ -36,7 +36,7 @@ class SyncIngress:
             if row and confirmed and successful and not row['is_probe']:
                 c.execute('INSERT INTO sync_usage_events(token,project,model) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING',(token,row['project'],row['model']))
 
-    async def infer(self,who,body,probe=False):
+    async def infer(self,who,body,probe=False,prepare_input=None,map_output=None):
         if not isinstance(body,dict) or not isinstance(body.get('model'),str) or body.get('stream',False) is not False:
             raise ServiceError('SYNC_INPUT','Use a registered logical model and stream=false',422)
         name=body['model'];model=self.service.model(name)
@@ -45,9 +45,15 @@ class SyncIngress:
         self.service.auth.authorize(who,name,model)
         key=self.service.auth.key_for(who)
         runtime=min(model['max_runtime_s'],120)
-        token=self.begin(who,name,runtime,probe)
-        confirmed=False;successful=False
+        token=self.begin(who,name,runtime+(10 if prepare_input else 0),probe)
+        confirmed=True;successful=False
         try:
+            if prepare_input:
+                try:
+                    async with asyncio.timeout(10):body=await prepare_input()
+                except TimeoutError:
+                    raise ServiceError('IMAGE_FETCH_TIMEOUT','Input preparation exceeded its budget before inference',408) from None
+            confirmed=False
             async with asyncio.timeout(runtime):
                 async with self.client_factory(trust_env=False,follow_redirects=False,timeout=httpx.Timeout(runtime,connect=min(5,runtime))) as client:
                     async with client.stream('POST',self.service.settings.gpustack_url+'/v1/chat/completions',
@@ -66,8 +72,11 @@ class SyncIngress:
                             raise ServiceError('UPSTREAM_REJECTED','Inference rejected by upstream',response.status_code)
                         try:json.loads(raw)
                         except ValueError:raise ServiceError('OUTPUT_INVALID','Upstream returned invalid JSON',502) from None
+                        output=map_output(bytes(raw)) if map_output else bytes(raw)
+                        if len(output)>self.service.settings.max_output_bytes:
+                            raise ServiceError('OUTPUT_SIZE','Converted inference output exceeds limit',502)
                         successful=True
-                        return Response(bytes(raw),media_type='application/json',headers={'Cache-Control':'no-store'})
+                        return Response(output,media_type='application/json',headers={'Cache-Control':'no-store'})
         except (httpx.HTTPError,TimeoutError):
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY','Inference transport failed; admission quarantined',503) from None
         finally:

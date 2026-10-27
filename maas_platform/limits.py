@@ -14,7 +14,7 @@ class JsonBodyLimit:
             event=await receive()
             if event['type']=='http.disconnect':return
             body.extend(event.get('body',b''))
-            limit=self.sync_limit if scope.get('path')=='/v1/chat/completions' else self.limit
+            limit=self.sync_limit if scope.get('path') in ('/v1/chat/completions','/ocr','/v1/ocr') else self.limit
             if len(body)>limit:
                 rid=scope.get('state',{}).get('request_id') or 'req_'+uuid.uuid4().hex
                 data=json.dumps({'error':{'code':'REQUEST_SIZE','message':'JSON request exceeds configured limit','retryable':False,'request_id':rid}}).encode()

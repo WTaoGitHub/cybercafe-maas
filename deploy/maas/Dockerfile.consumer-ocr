@@ -1,0 +1,8 @@
+# Offline incremental build on the approved e6 runtime; verify base ID before use.
+ARG BASE_IMAGE=cybercafe-maas-tasks:e6-r1
+FROM ${BASE_IMAGE}
+USER root
+COPY wheels /tmp/ocr-wheels
+RUN python -m pip install --no-index --no-deps /tmp/ocr-wheels/*.whl && rm -rf /tmp/ocr-wheels
+COPY maas_platform /app/maas_platform
+USER maas
