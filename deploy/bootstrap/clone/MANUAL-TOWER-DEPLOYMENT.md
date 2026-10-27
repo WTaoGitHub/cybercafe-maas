@@ -507,3 +507,11 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 2026-10-27管理员已保存快照并启动新克隆16482。实际worker6/test1由boot自动接入，挂载隔离和重复apply通过；与旧worker5区分，不因为同名同IP当作同一VM。无需在克隆docker cp模型占位目录。
 
 重要：本次新快照未缓存OCR镜像，历史测试镜像引用远程404；离线从001缓存交付后，OCR/MaaS同步异步验收通过。后续还需建设稳定仓库和凭据/证书接入，不能要求管理员反复复制旧worker缓存或把此例写成自动分发成功。母版不用为本次离线补镜像修改；新源端准备好后再实测无缓存克隆。详见[报告](../../../results/maas-e5-clone-storage-20261027/REPORT.md)。
+
+## 30. registry-access-v1：当前仅克隆已部署，母版待下一步
+
+2026-10-27已在001上线常驻registry，在worker6安装新client.py/worker.py/registry.py并保留storage.py；签名配置自动准备专用只读认证和精确Docker信任，原生冷拉及OCR验收通过，没有VM重启。母版没有安装本轮版本，不能直接再保存原样快照并宣称仓库无人值守能力。
+
+活跃配置e5-registry-r1仅支持image_id=tower-e5-registry-v1；旧母版tower-e5-pilot-v1会收到409。下一步明确部署母版时须同时安装新模块、更新image_id和allowed_registry_endpoints，保留tower保护，不复制本次registry-auth、identity、native数据、applied或maintenance receipt。reader经配置HTTPS取得，publisher不能入母版。再由管理员保存新快照并新建独立克隆；若保留当前worker6，先安排额外测试副本，加入节点不会自动把replicas从1变2。
+
+本节只是交接要求，尚未在母版执行。详见[部署与回退](../../maas/REGISTRY-ACCESS-V1.md)及[第一步报告](../../../results/maas-e5-registry-access/REPORT.md)。

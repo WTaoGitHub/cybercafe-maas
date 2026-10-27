@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "revision": "ocr-registry-r1",
+  "gpustack_version": "v2.2.3",
+  "route_id": 17,
+  "route_name": "maas-ocr-registry-r1",
+  "model_id": 18,
+  "backend_name": "MaaS-OCR-registry-r1-custom",
+  "backend_version": "registry-r1",
+  "image_name": "10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+  "image_id": "sha256:b46b348685e9c49c2b8b44110a8f7858c02afc3c32bf149037f7f200a84f4a6b",
+  "worker_names": [
+    "e5-ba71e774d9ca94c0138c01fa"
+  ],
+  "weights_policy": "image-contained",
+  "configuration_sha256": "b6ea502df1c7fc6eb08958956f99225159db567c6102a7192064f7bf05ffc63b"
+}

@@ -111,8 +111,10 @@ if __name__=='__main__':
     parser.add_argument('--name',default=NAME);parser.add_argument('--revision',default=REVISION)
     parser.add_argument('--work-dir',default=str(WORK));parser.add_argument('--model-path',default=MODEL_PATH)
     parser.add_argument('--paused-generation',type=int)
+    parser.add_argument('--image-name',default=IMAGE);parser.add_argument('--image-id',default=IMAGE_ID)
     args=parser.parse_args()
     NAME=args.name;REVISION=args.revision;MODEL_PATH=args.model_path;WORK=Path(args.work_dir);STATE=WORK/'target.json'
+    IMAGE=args.image_name;IMAGE_ID=args.image_id
     WORK.mkdir(mode=0o700,parents=True,exist_ok=True)
     if args.phase=='create':create(args.worker_id)
     else:activate(args.paused_generation)

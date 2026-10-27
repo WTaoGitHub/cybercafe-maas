@@ -32,13 +32,17 @@ assert (models/'image-contained/model/deployment.json').is_file()
 for n in ['worker_token','worker_uuid','worker_name','jwt_secret_key']:
  assert not (Path('/var/lib/gpustack')/n).exists()
 assert not Path('/var/run/docker.sock').exists()
+assert not Path('/run/maas-registry-auth').exists()
+assert not os.environ.get('GPUSTACK_TOKEN')
+if 'DOCKER_CONFIG' in os.environ:assert os.environ['DOCKER_CONFIG']=='/run/maas-registry-auth'
+assert not os.environ.get('GPUSTACK_RUNTIME_DEPLOY_DEFAULT_CONTAINER_REGISTRY_PASSWORD')
 name=NAME
 try:fd=os.open(models/name,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
 except OSError as e:assert e.errno==errno.EROFS
 else:os.close(fd);raise AssertionError('Published model root was writable')
 target=cache/name;target.write_text(NONCE)
 print(json.dumps({'model_marker_readable':True,'model_write_denied_EROFS':True,
- 'identity_files_absent':True,'docker_socket_absent':True,'cache_write_succeeded':True}))
+ 'identity_files_absent':True,'docker_socket_absent':True,'registry_auth_absent':True,'native_token_env_absent':True,'docker_config_pointer_inherited':bool(os.environ.get('DOCKER_CONFIG')),'cache_write_succeeded':True}))
 """.replace('NAME',repr(name)).replace('NONCE',repr(nonce))
     proof=json.loads(run(['docker','exec','-i',model['Id'],'python3','-'],code))
     path=Path('/srv/maas/model-cache')/name

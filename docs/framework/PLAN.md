@@ -495,3 +495,13 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 此次通过的是“新版快照首启接入、挂载布局及离线交付后OCR闭环”，不是完全无人值守模型分发。下一步优先持久镜像仓库、只读拉取凭据/证书自动接入和空缓存新克隆冷拉取；继续复用GPUStack分发，不固化12GB业务镜像作为唯一方案。E8仍是后续计划，当前v2.2.3不变；双克隆/NFS/千节点及通用维护binding适配未因此完成。
 
 [新快照克隆验收报告](../../results/maas-e5-clone-storage-20261027/REPORT.md)。
+
+## E5镜像分发第一步完成（2026-10-27）
+
+已在001部署常驻LAN HTTPS registry并发布不可变OCR镜像；独立registry.py实现签名payload绑定、endpoint allowlist、精确Docker信任和专用只读SDK认证目录。worker6经显式容器维护保持原生身份，当前registry-access-v1，重复apply=UNCHANGED，VM/Docker引擎未重启。67项bootstrap测试通过。
+
+本次无worker手工pull/load，GPUStack自动取得新manifest/config/layers并启动model18/route17；test1及os=linux/arch=amd64选择器取代随机worker-name。OCR/MaaS同步异步/下载/一次计量46行通过，当前ocr-registry-r1、UNKNOWN=0。旧基础镜像缓存存在，不替代全空缓存新快照首启。
+
+母版未更新。活跃配置e5-registry-r1仅兼容tower-e5-registry-v1，旧快照image_id会收到409；下一步先更新母版客户端/允许registry目标/image_id，保留母版保护、排除实例/auth状态，再由管理员保存快照和创建独立克隆验证无人值守首启。replicas仍1，新节点加入不自动增加副本。回退材料保留，实际回退未演练，生产HA/RPO和NFS权重分发、E8仍未完成。
+
+[仓库报告](../../results/maas-e5-registry-service/REPORT.md) · [第一步验收](../../results/maas-e5-registry-access/REPORT.md) · [操作与回退](../../deploy/maas/REGISTRY-ACCESS-V1.md)。
