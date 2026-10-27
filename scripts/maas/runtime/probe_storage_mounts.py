@@ -10,10 +10,11 @@ from pathlib import Path
 def run(args,stdin=None):return subprocess.check_output(args,input=stdin,text=True,stderr=subprocess.PIPE,timeout=30).strip()
 
 
-def main():
+def main(model_name="maas-ocr-e5-r2",out=Path("/root/wtaobj/e5-storage-v1-install/mount-proof.json")):
+    if out.exists():raise RuntimeError('Mount proof exists; inspect before another run')
     rows=json.loads(run(['docker','inspect',*run(['docker','ps','-q']).split()]))
     worker=next(c for c in rows if c['Name']=='/maas-gpustack-worker')
-    model=next(c for c in rows if c['Name'].startswith('/maas-ocr-e5-r2-') and c['Name'].endswith('-run-0'))
+    model=next(c for c in rows if c['Name'].startswith('/'+model_name+'-') and c['Name'].endswith('-run-0'))
     def mounts(c):return {m['Destination']:{'source':m['Source'],'rw':m['RW']} for m in c['Mounts']}
     wm,mm=mounts(worker),mounts(model)
     assert set(mm)=={'/srv/maas/models','/srv/maas/model-cache'}
@@ -47,9 +48,13 @@ print(json.dumps({'model_marker_readable':True,'model_write_denied_EROFS':True,
     assert token_present=='True';proof['worker_identity_still_present']=True
     proof.update(model_container_id=model['Id'],worker_container_id=worker['Id'],model_mounts=mm,
                  worker_mounts=wm,scope='filesystem sharing only; privileged containers are not a strong security boundary')
-    out=Path('/root/wtaobj/e5-storage-v1-install/mount-proof.json')
+    out.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
     out.write_text(json.dumps(proof,indent=2)+'\n');out.chmod(0o600)
     print(json.dumps(proof))
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import argparse
+    p=argparse.ArgumentParser();p.add_argument('--model-name',default='maas-ocr-e5-r2')
+    p.add_argument('--out',default='/root/wtaobj/e5-storage-v1-install/mount-proof.json')
+    args=p.parse_args();main(args.model_name,Path(args.out))

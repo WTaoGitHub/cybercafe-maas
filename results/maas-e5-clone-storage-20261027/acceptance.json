@@ -1,0 +1,29 @@
+{
+  "state": "PASSED",
+  "tls_verified": true,
+  "started_at": 1793071257.0418115,
+  "scope": "single sync and single async request; no automatic replay",
+  "sync": {
+    "http": 200,
+    "lines": 46,
+    "node": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a"
+  },
+  "input_artifact_id": "art_4f54aa6ff52a494d8ec0b9243852a51a",
+  "task": {
+    "id": "task_ea79dcf451f6457385d1b9488150fb69",
+    "submit_http": 202,
+    "idempotency_key": "e5-ocr-acceptance-8239fdc82943435f81f9976f2139ecec",
+    "state": "SUCCEEDED",
+    "attempts": 1,
+    "result_artifact_id": "art_4e863c2c890b44a29cd55c13a6d977ca",
+    "result_download_http": 200,
+    "revision": "ocr-e5-r3",
+    "lines": 46,
+    "node": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a"
+  },
+  "database": {
+    "succeeded": 1,
+    "usage_events": 1
+  },
+  "finished_at": 1793071258.8531363
+}

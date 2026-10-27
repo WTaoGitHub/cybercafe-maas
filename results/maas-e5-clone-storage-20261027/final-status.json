@@ -1,0 +1,31 @@
+{
+  "worker_id": 6,
+  "worker_name": "e5-ba71e774d9ca94c0138c01fa",
+  "cluster_id": 3,
+  "worker_state": "ready",
+  "model_id": 17,
+  "model_name": "maas-ocr-e5-r3",
+  "ready_replicas": 1,
+  "old_model_16_replicas": 0,
+  "maas_status": {
+    "tasks": {
+      "SUCCEEDED": 8469,
+      "FAILED": 1
+    },
+    "successful_tasks": 8469,
+    "dispatch_paused": false,
+    "unknown_backend_activity": 0,
+    "unknown_sync_activity": 0
+  },
+  "drain": {
+    "paused": false,
+    "generation": 26,
+    "reason": "E5 fresh snapshot clone storage acceptance 20261027",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  }
+}

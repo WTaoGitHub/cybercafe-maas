@@ -1,0 +1,40 @@
+{
+  "model_marker_readable": true,
+  "model_write_denied_EROFS": true,
+  "identity_files_absent": true,
+  "docker_socket_absent": true,
+  "cache_write_succeeded": true,
+  "cache_write_visible_on_host": true,
+  "worker_identity_still_present": true,
+  "model_container_id": "9c79cdf014946d783466c50d2597047ca63380de7a54d58bdc3cb71d399a34e9",
+  "worker_container_id": "5def0a29f2bad10d8080a22c73dd9ff799fc46211cf8891eba50f34ebe0c0c86",
+  "model_mounts": {
+    "/srv/maas/models": {
+      "source": "/srv/maas/models",
+      "rw": false
+    },
+    "/srv/maas/model-cache": {
+      "source": "/srv/maas/model-cache",
+      "rw": true
+    }
+  },
+  "worker_mounts": {
+    "/srv/maas/model-cache": {
+      "source": "/srv/maas/model-cache",
+      "rw": true
+    },
+    "/srv/maas/models": {
+      "source": "/srv/maas/models",
+      "rw": false
+    },
+    "/var/lib/gpustack": {
+      "source": "/var/lib/maas-bootstrap/gpustack-worker",
+      "rw": true
+    },
+    "/var/run/docker.sock": {
+      "source": "/var/run/docker.sock",
+      "rw": true
+    }
+  },
+  "scope": "filesystem sharing only; privileged containers are not a strong security boundary"
+}

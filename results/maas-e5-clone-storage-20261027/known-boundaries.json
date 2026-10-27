@@ -1,0 +1,20 @@
+{
+  "snapshot_saved_by_administrator": true,
+  "independent_clone_started_by_administrator": true,
+  "new_worker_id": 6,
+  "prior_worker_id": 5,
+  "prior_gpu_uuid": "GPU-4a64ff0c-324c-60ed-5a48-df099dde9dd6",
+  "new_gpu_uuid": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a",
+  "same_gpu_rebinding_verified": false,
+  "automatic_ocr_image_distribution_passed": false,
+  "image_pull_failure": "quay.io/cybercafe-maas-ocr:p2-r1 returned 404; no OCR image in snapshot",
+  "offline_image_delivery_in_progress": false,
+  "maintenance_generation": 25,
+  "reboot_by_us": false,
+  "offline_image_delivery_passed": true,
+  "ocr_image_id": "sha256:8eed873554282ec02ba4d8d3a78f8230178cef2ee4f6f94ca6dfb858336e89e5",
+  "actual_model_mount_proof_passed": true,
+  "ocr_maas_acceptance_passed": true,
+  "boot_id_unchanged": true,
+  "final_revision": "ocr-e5-r3"
+}

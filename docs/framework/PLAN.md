@@ -484,3 +484,14 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 阶段：兼容性清单 → 独立环境/启动与维护工具适配 → OCR/MaaS全链路回归 → 原生revision/YAML/LB/鉴权能力复用验证 → 分发与挂载隔离回归 → 备份恢复及受控发布。先server后同版worker；母版更新和管理员快照另验，禁止001/002 VM重启。E1–E7业务边界保留，不恢复collector、不附带LLM高级能力或后端合批。
 
 [范围、依赖与验收](ENHANCEMENTS.md#e8-gpustack-230-adaptation) · [调研报告](GPUSTACK-V2.3-RESEARCH.md)。实施/独立验证/现网升级尚未开始。
+
+
+## model-storage-v1新快照克隆实际验收（2026-10-27）
+
+用户确认管理员保存新快照并启动新克隆，SSH16482、hostname XZ-31-002和10.11.31.2复用，实际为独立新worker6（e5-ba71e774d9ca94c0138c01fa）。手动apply之前已取得trigger=boot/APPLIED及原生ready证据，三模块摘要与母版一致，layout=model-storage-v1。后续手动apply=UNCHANGED，身份/worker容器和boot ID不变。新GPU RTX4080SUPER、580.95.05，与旧GPU UUID不同；不据此宣称同GPU跨VM复用已验证。
+
+首次部署OCR发现新克隆无业务镜像，历史quay.io/cybercafe-maas-ocr:p2-r1远程引用404；停止新部署失败重试并暂停排空MaaS。随后通过LAN SSH从001缓存离线交付精确镜像，未启用旧临时registry、修改authorized_keys或长期分发凭据，未重启VM/Docker。model17/route16、revision ocr-e5-r3现为服务目标，旧model16副本0保留。模型RO/缓存RW及身份/socket排除实测通过；同步/异步/结果下载46行、一次计量通过，MaaS恢复接单、UNKNOWN=0。
+
+此次通过的是“新版快照首启接入、挂载布局及离线交付后OCR闭环”，不是完全无人值守模型分发。下一步优先持久镜像仓库、只读拉取凭据/证书自动接入和空缓存新克隆冷拉取；继续复用GPUStack分发，不固化12GB业务镜像作为唯一方案。E8仍是后续计划，当前v2.2.3不变；双克隆/NFS/千节点及通用维护binding适配未因此完成。
+
+[新快照克隆验收报告](../../results/maas-e5-clone-storage-20261027/REPORT.md)。

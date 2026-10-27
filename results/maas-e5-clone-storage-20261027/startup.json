@@ -1,0 +1,47 @@
+{
+  "hostname": "XZ-31-002",
+  "boot_id": "ac1c964a-aec1-48af-a53a-ae85bc6f2a36",
+  "uptime_start_raw": "2026-10-27 11:09:58",
+  "utc_now": "2026-10-27T03:12:42.063809+00:00",
+  "applied": {
+    "cluster_id": 3,
+    "code": "APPLIED",
+    "fingerprint": "ac372cb28bee5ed99d5b60e9abd90f21098e7cd012490eceb3e0ce8f11845f88",
+    "layout_sha256": "623850ed02369ebdc0d1a3603d711e8e8baddd763ad5bfa4d29d9f0043770198",
+    "layout_version": "model-storage-v1",
+    "native_state": "not_ready",
+    "revision": "e5-pilot-r1",
+    "trigger": "boot",
+    "worker_id": 6,
+    "worker_name": "e5-ba71e774d9ca94c0138c01fa"
+  },
+  "worker_container_id": "5def0a29f2bad10d8080a22c73dd9ff799fc46211cf8891eba50f34ebe0c0c86",
+  "worker_started_at": "2026-10-27T11:10:14.503418263Z",
+  "restart_count": 0,
+  "mounts": [
+    {
+      "Source": "/srv/maas/model-cache",
+      "Destination": "/srv/maas/model-cache",
+      "RW": true
+    },
+    {
+      "Source": "/srv/maas/models",
+      "Destination": "/srv/maas/models",
+      "RW": false
+    },
+    {
+      "Source": "/var/lib/maas-bootstrap/gpustack-worker",
+      "Destination": "/var/lib/gpustack",
+      "RW": true
+    },
+    {
+      "Source": "/var/run/docker.sock",
+      "Destination": "/var/run/docker.sock",
+      "RW": true
+    }
+  ],
+  "image": "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26",
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a, 580.95.05",
+  "bootstrap_boot_log": "Starting maas-worker-bootstrap.service - Verify E5 configuration and join native GPUStack as a clone worker...\n{\"code\": \"APPLIED\", \"trigger\": \"boot\", \"revision\": \"e5-pilot-r1\", \"fingerprint\": \"ac372cb28bee5ed99d5b60e9abd90f21098e7cd012490eceb3e0ce8f11845f88\", \"cluster_id\": 3, \"worker_id\": 6, \"worker_name\": \"e5-ba71e774d9ca94c0138c01fa\", \"native_state\": \"not_ready\", \"layout_version\": \"model-storage-v1\", \"layout_sha256\": \"623850ed02369ebdc0d1a3603d711e8e8baddd763ad5bfa4d29d9f0043770198\"}\nFinished maas-worker-bootstrap.service - Verify E5 configuration and join native GPUStack as a clone worker.\n",
+  "manual_apply_executed": false
+}
