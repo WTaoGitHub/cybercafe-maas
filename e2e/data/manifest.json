@@ -1,0 +1,29 @@
+{
+  "origin": "Project-generated text on white background; no customer data or font files",
+  "text_lines": [
+    "MAAS E2E TEST 2026",
+    "中文文字识别测试"
+  ],
+  "expected_text_contains": [
+    "MAAS",
+    "中文"
+  ],
+  "files": [
+    {
+      "file": "ocr-bilingual.png",
+      "sha256": "b666bc4d54cbe2b250698793c6b7fab167d96b7b30cff3dc0884c302e2afc2bd",
+      "bytes": 13247,
+      "width": 1200,
+      "height": 240,
+      "format": "PNG"
+    },
+    {
+      "file": "ocr-bilingual.jpg",
+      "sha256": "5532b565928a7b3093d98f216f6bc25e11a66ac5d5f2e63a05a702346a8c9c0f",
+      "bytes": 29005,
+      "width": 1200,
+      "height": 240,
+      "format": "JPEG"
+    }
+  ]
+}

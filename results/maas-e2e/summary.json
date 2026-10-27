@@ -1,0 +1,41 @@
+{
+  "catalog_cases": 65,
+  "distinct_cases_passed": 57,
+  "not_live_verified": [
+    "AUTH-005",
+    "TTL-001",
+    "MAINT-001",
+    "MAINT-002",
+    "QUOTA-001",
+    "QUOTA-002",
+    "METER-002",
+    "METER-003"
+  ],
+  "runs": {
+    "live-tls": {
+      "PASS": 56,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 9
+    },
+    "http-selection": {
+      "PASS": 2,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "http-boundary": {
+      "PASS": 1,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  "automatic_retries": false,
+  "deployment_or_vm_mutations": false,
+  "runtime_baseline": {
+    "api": "consumer-ocr-r1",
+    "executor": "e6-r1",
+    "gpustack": "v2.2.3"
+  }
+}

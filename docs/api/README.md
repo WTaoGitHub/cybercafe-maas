@@ -375,3 +375,7 @@ retryable表示错误类型的建议，不是无限重试许可。同步发送�
 更完整的可执行Python调用示例见 [普通用户手册](../handbooks/USER.md)；密钥开通见 [管理员手册](../handbooks/ADMIN.md)。
 
 说明：capabilities查询描述异步TaskAdapter的input/parameters及execution_modes，不是消费者同步门面的schema；同步字段以[消费者OCR契约](CONSUMER-OCR.md)为准。
+
+## 12. 可选择的端到端验收
+
+当前接口可使用[模块化E2E框架](../../e2e/README.md)回归，支持按case_id、模块、label筛选和全目录执行，输出JSON/JUnit/Markdown。真实推理和数据写入需显式启用；测试沿用当前鉴权，不自动修改授权、维护或部署。详见[65项用例目录](../../e2e/CATALOG.md)。

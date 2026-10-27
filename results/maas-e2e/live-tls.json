@@ -1,0 +1,2989 @@
+{
+  "run_id": "live-r1",
+  "started_at": 1793092929.572387,
+  "selection": [
+    {
+      "case_id": "AUTH-001",
+      "module": "auth",
+      "title": "Missing Bearer is rejected",
+      "labels": [
+        "smoke",
+        "negative",
+        "auth"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "AUTH-002",
+      "module": "auth",
+      "title": "Unregistered key is rejected",
+      "labels": [
+        "smoke",
+        "negative",
+        "auth"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "AUTH-003",
+      "module": "auth",
+      "title": "Registered customer key and model authorization",
+      "labels": [
+        "smoke",
+        "positive",
+        "auth"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "AUTH-004",
+      "module": "auth",
+      "title": "Identity headers cannot bypass authentication",
+      "labels": [
+        "negative",
+        "auth",
+        "isolation"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "AUTH-005",
+      "module": "auth",
+      "title": "Restricted credential cannot access OCR",
+      "labels": [
+        "negative",
+        "auth",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "restricted_key_file"
+      ]
+    },
+    {
+      "case_id": "CAP-001",
+      "module": "capabilities",
+      "title": "Published async input and budget schema",
+      "labels": [
+        "smoke",
+        "contract"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "CAP-002",
+      "module": "capabilities",
+      "title": "Unknown model is not implicitly aliased",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "EDGE-001",
+      "module": "edge",
+      "title": "API health and OpenAPI are not customer routes",
+      "labels": [
+        "smoke",
+        "boundary"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "EDGE-002",
+      "module": "edge",
+      "title": "Unsupported generation and batch routes are closed",
+      "labels": [
+        "boundary",
+        "negative"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "EDGE-003",
+      "module": "edge",
+      "title": "Query parameters rejected at business ingress",
+      "labels": [
+        "boundary",
+        "negative"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "EDGE-004",
+      "module": "edge",
+      "title": "Generated request ID and safe JSON error envelope",
+      "labels": [
+        "smoke",
+        "contract"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "EDGE-005",
+      "module": "edge",
+      "title": "Client request ID is not trusted as server ID",
+      "labels": [
+        "contract",
+        "negative"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "EDGE-006",
+      "module": "edge",
+      "title": "Unsupported method denied by ingress",
+      "labels": [
+        "boundary",
+        "negative"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-001",
+      "module": "ocr",
+      "title": "Bare base64 through real OCR",
+      "labels": [
+        "positive",
+        "gpu",
+        "smoke"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-002",
+      "module": "ocr",
+      "title": "Data URL via v1 alias with polygons omitted",
+      "labels": [
+        "positive",
+        "gpu",
+        "contract"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-003",
+      "module": "ocr",
+      "title": "Blank PNG yields successful empty lines",
+      "labels": [
+        "positive",
+        "gpu",
+        "fixture"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-004",
+      "module": "ocr",
+      "title": "Real JPEG fixture accepted",
+      "labels": [
+        "positive",
+        "gpu",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "jpeg_file"
+      ]
+    },
+    {
+      "case_id": "OCR-005",
+      "module": "ocr",
+      "title": "Public image URL downloaded and inferred",
+      "labels": [
+        "positive",
+        "gpu",
+        "external",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "public_image_url"
+      ]
+    },
+    {
+      "case_id": "OCR-006",
+      "module": "ocr",
+      "title": "Configured bilingual expected text is recognized",
+      "labels": [
+        "accuracy",
+        "gpu",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "image_file",
+        "expected_text_contains"
+      ]
+    },
+    {
+      "case_id": "OCR-V001",
+      "module": "ocr_validation",
+      "title": "Missing image source",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V002",
+      "module": "ocr_validation",
+      "title": "Two image sources rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V003",
+      "module": "ocr_validation",
+      "title": "Malformed base64 rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V004",
+      "module": "ocr_validation",
+      "title": "Unsupported language hint rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V005",
+      "module": "ocr_validation",
+      "title": "Boolean must not be string",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V006",
+      "module": "ocr_validation",
+      "title": "Unknown request field rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V007",
+      "module": "ocr_validation",
+      "title": "Request ID control character rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V008",
+      "module": "ocr_validation",
+      "title": "Non-image bytes rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V009",
+      "module": "ocr_validation",
+      "title": "Data URL media mismatch rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V010",
+      "module": "ocr_validation",
+      "title": "PNG/JPEG-only data URL format",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V011",
+      "module": "ocr_validation",
+      "title": "Oversized pixel dimensions rejected without GPU",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V012",
+      "module": "ocr_validation",
+      "title": "Unknown logical model is not aliased",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V013",
+      "module": "ocr_validation",
+      "title": "Private/loopback URLs, ports and credentials rejected",
+      "labels": [
+        "negative",
+        "ssrf",
+        "boundary"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OCR-V014",
+      "module": "ocr_validation",
+      "title": "Malformed JSON safely rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "CHAT-001",
+      "module": "chat",
+      "title": "Legacy Chat envelope and nested OCR JSON",
+      "labels": [
+        "positive",
+        "gpu",
+        "legacy"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "CHAT-002",
+      "module": "chat",
+      "title": "Streaming not supported on MaaS Chat",
+      "labels": [
+        "negative",
+        "legacy"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "ART-001",
+      "module": "artifacts",
+      "title": "Upload metadata and exact authenticated download",
+      "labels": [
+        "positive",
+        "storage",
+        "smoke"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "ART-002",
+      "module": "artifacts",
+      "title": "Empty upload rejected",
+      "labels": [
+        "negative",
+        "storage"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "ART-003",
+      "module": "artifacts",
+      "title": "Unsupported media type rejected",
+      "labels": [
+        "negative",
+        "storage"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "ART-004",
+      "module": "artifacts",
+      "title": "Missing artifact returns safe 404",
+      "labels": [
+        "negative",
+        "storage"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "ART-005",
+      "module": "artifacts",
+      "title": "Duplicate upload creates separate IDs",
+      "labels": [
+        "positive",
+        "storage"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "ART-006",
+      "module": "artifacts",
+      "title": "Upload byte limit enforced",
+      "labels": [
+        "negative",
+        "boundary",
+        "large"
+      ],
+      "effects": [
+        "write",
+        "load"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-001",
+      "module": "tasks",
+      "title": "Upload-submit-poll-download real async OCR",
+      "labels": [
+        "positive",
+        "gpu",
+        "smoke",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-002",
+      "module": "tasks",
+      "title": "Same key/body reuses same task without new execution",
+      "labels": [
+        "positive",
+        "idempotency",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-003",
+      "module": "tasks",
+      "title": "Same key and changed request conflicts",
+      "labels": [
+        "negative",
+        "idempotency",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-004",
+      "module": "tasks",
+      "title": "Missing idempotency header rejected",
+      "labels": [
+        "negative",
+        "idempotency"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-005",
+      "module": "tasks",
+      "title": "Missing artifact is not accepted",
+      "labels": [
+        "negative",
+        "async"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-006",
+      "module": "tasks",
+      "title": "Extra fields and invalid retry budgets rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-007",
+      "module": "tasks",
+      "title": "OCR input and parameter schema enforced",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-008",
+      "module": "tasks",
+      "title": "Missing task cannot be queried or cancelled",
+      "labels": [
+        "negative",
+        "async"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "TASK-009",
+      "module": "tasks",
+      "title": "Cancellation is race-aware and repeatable",
+      "labels": [
+        "positive",
+        "cancellation",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "ISO-001",
+      "module": "isolation",
+      "title": "Different project cannot download known input or spoof ownership",
+      "labels": [
+        "negative",
+        "isolation",
+        "optional"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [
+        "secondary_key_file",
+        "distinct_projects"
+      ]
+    },
+    {
+      "case_id": "ISO-002",
+      "module": "isolation",
+      "title": "Different project cannot query/cancel task or download result",
+      "labels": [
+        "negative",
+        "isolation",
+        "optional",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [
+        "secondary_key_file",
+        "distinct_projects"
+      ]
+    },
+    {
+      "case_id": "TTL-001",
+      "module": "lifecycle",
+      "title": "Previously expired own artifact is unavailable",
+      "labels": [
+        "retention",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "expired_artifact_id"
+      ]
+    },
+    {
+      "case_id": "MAINT-001",
+      "module": "maintenance",
+      "title": "Synchronous inference blocked in externally prepared maintenance",
+      "labels": [
+        "maintenance",
+        "window",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "expect_maintenance"
+      ]
+    },
+    {
+      "case_id": "MAINT-002",
+      "module": "maintenance",
+      "title": "Queued task cancellation while dispatch is externally paused",
+      "labels": [
+        "maintenance",
+        "window",
+        "cancellation",
+        "optional"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [
+        "expect_maintenance"
+      ]
+    },
+    {
+      "case_id": "QUOTA-001",
+      "module": "quota",
+      "title": "Externally saturated inference capacity returns 429",
+      "labels": [
+        "quota",
+        "window",
+        "optional"
+      ],
+      "effects": [
+        "inference",
+        "load"
+      ],
+      "requires": [
+        "expect_capacity_full"
+      ]
+    },
+    {
+      "case_id": "QUOTA-002",
+      "module": "quota",
+      "title": "Externally full queue rejects a new task",
+      "labels": [
+        "quota",
+        "window",
+        "optional"
+      ],
+      "effects": [
+        "write",
+        "inference",
+        "load"
+      ],
+      "requires": [
+        "expect_queue_full"
+      ]
+    },
+    {
+      "case_id": "JSON-001",
+      "module": "edge",
+      "title": "Task JSON envelope byte budget enforced",
+      "labels": [
+        "negative",
+        "boundary"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": []
+    },
+    {
+      "case_id": "OPS-001",
+      "module": "operations",
+      "title": "Current control plane components running",
+      "labels": [
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ]
+    },
+    {
+      "case_id": "OPS-002",
+      "module": "operations",
+      "title": "Business monitor fresh, healthy and no UNKNOWN",
+      "labels": [
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ]
+    },
+    {
+      "case_id": "OPS-003",
+      "module": "operations",
+      "title": "Retired collector remains inactive and masked",
+      "labels": [
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ]
+    },
+    {
+      "case_id": "E5-001",
+      "module": "bootstrap",
+      "title": "Configuration and authenticated registry components running",
+      "labels": [
+        "e5",
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ]
+    },
+    {
+      "case_id": "METER-001",
+      "module": "metering",
+      "title": "One successful async task creates exactly one task event",
+      "labels": [
+        "metering",
+        "gpu",
+        "async",
+        "optional"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [
+        "operator"
+      ]
+    },
+    {
+      "case_id": "METER-002",
+      "module": "metering",
+      "title": "Successful sync increments exclusive project event count once",
+      "labels": [
+        "metering",
+        "gpu",
+        "exclusive",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "operator",
+        "project",
+        "exclusive_project"
+      ]
+    },
+    {
+      "case_id": "METER-003",
+      "module": "metering",
+      "title": "Invalid image creates no successful sync event",
+      "labels": [
+        "metering",
+        "negative",
+        "exclusive",
+        "optional"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [
+        "operator",
+        "project",
+        "exclusive_project"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "case_id": "AUTH-001",
+      "module": "auth",
+      "title": "Missing Bearer is rejected",
+      "labels": [
+        "smoke",
+        "negative",
+        "auth"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092929.575209,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 401,
+          "request_id": "req_325b56e9867a4d5c88b952c0c924d61e",
+          "error_code": "UNAUTHENTICATED"
+        }
+      ],
+      "duration_s": 0.146
+    },
+    {
+      "case_id": "AUTH-002",
+      "module": "auth",
+      "title": "Unregistered key is rejected",
+      "labels": [
+        "smoke",
+        "negative",
+        "auth"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092929.723178,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 401,
+          "request_id": "req_4d9c15fadcf7460da56bbde388b9a8a8",
+          "error_code": "UNAUTHENTICATED"
+        }
+      ],
+      "duration_s": 0.158
+    },
+    {
+      "case_id": "AUTH-003",
+      "module": "auth",
+      "title": "Registered customer key and model authorization",
+      "labels": [
+        "smoke",
+        "positive",
+        "auth"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092929.883399,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_de0f2e06ec3344078ce77576ce20a480"
+        }
+      ],
+      "duration_s": 0.197
+    },
+    {
+      "case_id": "AUTH-004",
+      "module": "auth",
+      "title": "Identity headers cannot bypass authentication",
+      "labels": [
+        "negative",
+        "auth",
+        "isolation"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092930.083446,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 401,
+          "request_id": "req_bf48cfce3c8b47ebbb54f8f208ac7581",
+          "error_code": "UNAUTHENTICATED"
+        }
+      ],
+      "duration_s": 0.249
+    },
+    {
+      "case_id": "AUTH-005",
+      "module": "auth",
+      "title": "Restricted credential cannot access OCR",
+      "labels": [
+        "negative",
+        "auth",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "restricted_key_file"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092930.335913,
+      "requests": [],
+      "reason": "Missing configuration: restricted_key_file",
+      "duration_s": 0.003
+    },
+    {
+      "case_id": "CAP-001",
+      "module": "capabilities",
+      "title": "Published async input and budget schema",
+      "labels": [
+        "smoke",
+        "contract"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092930.341254,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_cc78217283504038bc1456661d7600fe"
+        }
+      ],
+      "duration_s": 0.217
+    },
+    {
+      "case_id": "CAP-002",
+      "module": "capabilities",
+      "title": "Unknown model is not implicitly aliased",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092930.561263,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/e2e-absent-model/capabilities",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_16c36805179441419fb53a2c714eb7d7",
+          "error_code": "MODEL_NOT_FOUND"
+        }
+      ],
+      "duration_s": 0.184
+    },
+    {
+      "case_id": "EDGE-001",
+      "module": "edge",
+      "title": "API health and OpenAPI are not customer routes",
+      "labels": [
+        "smoke",
+        "boundary"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092930.748536,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/healthz",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": null
+        },
+        {
+          "method": "GET",
+          "path": "/docs",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": null
+        },
+        {
+          "method": "GET",
+          "path": "/openapi.json",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": null
+        },
+        {
+          "method": "GET",
+          "path": "/v1/models",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": null
+        }
+      ],
+      "duration_s": 0.646
+    },
+    {
+      "case_id": "EDGE-002",
+      "module": "edge",
+      "title": "Unsupported generation and batch routes are closed",
+      "labels": [
+        "boundary",
+        "negative"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092931.398883,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/images/generations",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": null
+        },
+        {
+          "method": "GET",
+          "path": "/v1/images/generations",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": null
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/batches",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": null
+        }
+      ],
+      "duration_s": 0.639
+    },
+    {
+      "case_id": "EDGE-003",
+      "module": "edge",
+      "title": "Query parameters rejected at business ingress",
+      "labels": [
+        "boundary",
+        "negative"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092932.040742,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities?unexpected=1",
+          "state": "RECEIVED",
+          "status": 400,
+          "request_id": null
+        }
+      ],
+      "duration_s": 0.15
+    },
+    {
+      "case_id": "EDGE-004",
+      "module": "edge",
+      "title": "Generated request ID and safe JSON error envelope",
+      "labels": [
+        "smoke",
+        "contract"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092932.194388,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_e2e_absent",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_e58ca7ba48de49f2be6fda940577074f",
+          "error_code": "NOT_FOUND"
+        }
+      ],
+      "duration_s": 0.185
+    },
+    {
+      "case_id": "EDGE-005",
+      "module": "edge",
+      "title": "Client request ID is not trusted as server ID",
+      "labels": [
+        "contract",
+        "negative"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092932.382487,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_132d2d1aabce4029a57c576d9620e239"
+        }
+      ],
+      "duration_s": 0.172
+    },
+    {
+      "case_id": "EDGE-006",
+      "module": "edge",
+      "title": "Unsupported method denied by ingress",
+      "labels": [
+        "boundary",
+        "negative"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092932.557869,
+      "requests": [
+        {
+          "method": "DELETE",
+          "path": "/maas/v1/tasks/task_e2e_absent",
+          "state": "RECEIVED",
+          "status": 403,
+          "request_id": null
+        }
+      ],
+      "duration_s": 0.149
+    },
+    {
+      "case_id": "OCR-001",
+      "module": "ocr",
+      "title": "Bare base64 through real OCR",
+      "labels": [
+        "positive",
+        "gpu",
+        "smoke"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092932.709604,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_97e03c18abf44e848cea0097519b3d90"
+        }
+      ],
+      "observations": {
+        "line_count": 2
+      },
+      "duration_s": 0.368
+    },
+    {
+      "case_id": "OCR-002",
+      "module": "ocr",
+      "title": "Data URL via v1 alias with polygons omitted",
+      "labels": [
+        "positive",
+        "gpu",
+        "contract"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092933.081292,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/ocr",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_0c3d7f5396304710b96b13869428bc3e"
+        }
+      ],
+      "duration_s": 0.333
+    },
+    {
+      "case_id": "OCR-003",
+      "module": "ocr",
+      "title": "Blank PNG yields successful empty lines",
+      "labels": [
+        "positive",
+        "gpu",
+        "fixture"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092933.417255,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_625bd680f9834086ac9781ebddaaa68f"
+        }
+      ],
+      "duration_s": 0.28
+    },
+    {
+      "case_id": "OCR-004",
+      "module": "ocr",
+      "title": "Real JPEG fixture accepted",
+      "labels": [
+        "positive",
+        "gpu",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "jpeg_file"
+      ],
+      "status": "PASS",
+      "started_at": 1793092933.700616,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_dc3f974688274da7ad67d079ab76d5ba"
+        }
+      ],
+      "duration_s": 0.319
+    },
+    {
+      "case_id": "OCR-005",
+      "module": "ocr",
+      "title": "Public image URL downloaded and inferred",
+      "labels": [
+        "positive",
+        "gpu",
+        "external",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "public_image_url"
+      ],
+      "status": "PASS",
+      "started_at": 1793092934.023656,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_d9718e1517184bdea2aa4eb95da116ca"
+        }
+      ],
+      "duration_s": 0.648
+    },
+    {
+      "case_id": "OCR-006",
+      "module": "ocr",
+      "title": "Configured bilingual expected text is recognized",
+      "labels": [
+        "accuracy",
+        "gpu",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "image_file",
+        "expected_text_contains"
+      ],
+      "status": "PASS",
+      "started_at": 1793092934.6752288,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_4e32ee9481524effb4211e15a7c932cf"
+        }
+      ],
+      "duration_s": 0.331
+    },
+    {
+      "case_id": "OCR-V001",
+      "module": "ocr_validation",
+      "title": "Missing image source",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092935.0093281,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_f3f094f858f0465582f4c96cdd1a8cd5",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.168
+    },
+    {
+      "case_id": "OCR-V002",
+      "module": "ocr_validation",
+      "title": "Two image sources rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092935.179788,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_1e1ead6297c1445fb831dc920b2702d3",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.182
+    },
+    {
+      "case_id": "OCR-V003",
+      "module": "ocr_validation",
+      "title": "Malformed base64 rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092935.36559,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_aad6c42334fb4b33b0880b3d33a86e78",
+          "error_code": "IMAGE_BASE64"
+        }
+      ],
+      "duration_s": 0.207
+    },
+    {
+      "case_id": "OCR-V004",
+      "module": "ocr_validation",
+      "title": "Unsupported language hint rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092935.576563,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_1951de3f375d43db8c166e93957f807b",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.168
+    },
+    {
+      "case_id": "OCR-V005",
+      "module": "ocr_validation",
+      "title": "Boolean must not be string",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092935.747275,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_ac035c9d91904aaba60a4c92f4765e22",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.167
+    },
+    {
+      "case_id": "OCR-V006",
+      "module": "ocr_validation",
+      "title": "Unknown request field rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092935.9184482,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_132df3d2185d472e9ecf8f9b6bf1992b",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.169
+    },
+    {
+      "case_id": "OCR-V007",
+      "module": "ocr_validation",
+      "title": "Request ID control character rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092936.090847,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_2314a90003dd47d2a0c0e4bf0b8ef160",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.165
+    },
+    {
+      "case_id": "OCR-V008",
+      "module": "ocr_validation",
+      "title": "Non-image bytes rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092936.25805,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_0b38c55d90d5488aa626187578eca52e",
+          "error_code": "IMAGE_INVALID"
+        }
+      ],
+      "duration_s": 0.204
+    },
+    {
+      "case_id": "OCR-V009",
+      "module": "ocr_validation",
+      "title": "Data URL media mismatch rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092936.4642859,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 415,
+          "request_id": "req_8798e242194044fc87312eca45e29747",
+          "error_code": "IMAGE_FORMAT"
+        }
+      ],
+      "duration_s": 0.209
+    },
+    {
+      "case_id": "OCR-V010",
+      "module": "ocr_validation",
+      "title": "PNG/JPEG-only data URL format",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092936.676789,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 415,
+          "request_id": "req_a5f27d405b334dc59c040dddb9bed28d",
+          "error_code": "IMAGE_FORMAT"
+        }
+      ],
+      "duration_s": 0.209
+    },
+    {
+      "case_id": "OCR-V011",
+      "module": "ocr_validation",
+      "title": "Oversized pixel dimensions rejected without GPU",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092936.889458,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 413,
+          "request_id": "req_8fcb5790f0374473a2bbef775e5a4fbf",
+          "error_code": "IMAGE_PIXELS"
+        }
+      ],
+      "duration_s": 0.2
+    },
+    {
+      "case_id": "OCR-V012",
+      "module": "ocr_validation",
+      "title": "Unknown logical model is not aliased",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092937.093407,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_1f38db0f68c44b5f83ce1a7aceb8171c",
+          "error_code": "MODEL_NOT_FOUND"
+        }
+      ],
+      "duration_s": 0.167
+    },
+    {
+      "case_id": "OCR-V013",
+      "module": "ocr_validation",
+      "title": "Private/loopback URLs, ports and credentials rejected",
+      "labels": [
+        "negative",
+        "ssrf",
+        "boundary"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092937.2647839,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_3a81eacb930a46a0bdef7d60e0a6c285",
+          "error_code": "IMAGE_URL_NOT_ALLOWED"
+        },
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_c54be2d87f35404da597108da4dcc6eb",
+          "error_code": "IMAGE_URL_NOT_ALLOWED"
+        },
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_661848787e3341ac8a1a2d84cb64805e",
+          "error_code": "IMAGE_URL_NOT_ALLOWED"
+        },
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_6b2d33602c50425caeea29131cc668f6",
+          "error_code": "IMAGE_URL_NOT_ALLOWED"
+        },
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_415d37760f5240f293f8498bbc8f0b6f",
+          "error_code": "IMAGE_URL_NOT_ALLOWED"
+        }
+      ],
+      "duration_s": 0.884
+    },
+    {
+      "case_id": "OCR-V014",
+      "module": "ocr_validation",
+      "title": "Malformed JSON safely rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092938.152568,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/ocr",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_40aed0304a6d4b458fc11c34589e0e30",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.148
+    },
+    {
+      "case_id": "CHAT-001",
+      "module": "chat",
+      "title": "Legacy Chat envelope and nested OCR JSON",
+      "labels": [
+        "positive",
+        "gpu",
+        "legacy"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092938.302619,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/chat/completions",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_d16f24e1b3014f56b214b6733adec530"
+        }
+      ],
+      "duration_s": 0.311
+    },
+    {
+      "case_id": "CHAT-002",
+      "module": "chat",
+      "title": "Streaming not supported on MaaS Chat",
+      "labels": [
+        "negative",
+        "legacy"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092938.618589,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/chat/completions",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_423d0542660844e5a0085258982574bd",
+          "error_code": "SYNC_INPUT"
+        }
+      ],
+      "duration_s": 0.176
+    },
+    {
+      "case_id": "ART-001",
+      "module": "artifacts",
+      "title": "Upload metadata and exact authenticated download",
+      "labels": [
+        "positive",
+        "storage",
+        "smoke"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092938.7981539,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_d095c64ec34c4a36a583bf2aef58ea70"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/artifacts/art_5ae3dcb2ce4640afbe1f74d85f0edea3",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_7acfade52ce14683bf551877a628c267"
+        }
+      ],
+      "duration_s": 0.399
+    },
+    {
+      "case_id": "ART-002",
+      "module": "artifacts",
+      "title": "Empty upload rejected",
+      "labels": [
+        "negative",
+        "storage"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092939.1987689,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 413,
+          "request_id": "req_91d1b12537db42759cd295c448898c04",
+          "error_code": "INPUT_SIZE"
+        }
+      ],
+      "duration_s": 0.187
+    },
+    {
+      "case_id": "ART-003",
+      "module": "artifacts",
+      "title": "Unsupported media type rejected",
+      "labels": [
+        "negative",
+        "storage"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092939.388619,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 415,
+          "request_id": "req_0997e4180f4f41de8f2aa9f9fd6683b3",
+          "error_code": "MEDIA_TYPE"
+        }
+      ],
+      "duration_s": 0.193
+    },
+    {
+      "case_id": "ART-004",
+      "module": "artifacts",
+      "title": "Missing artifact returns safe 404",
+      "labels": [
+        "negative",
+        "storage"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092939.586105,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/artifacts/art_e2e_absent",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_3423004ee34845fcb54a3140c961dd17",
+          "error_code": "NOT_FOUND"
+        }
+      ],
+      "duration_s": 0.206
+    },
+    {
+      "case_id": "ART-005",
+      "module": "artifacts",
+      "title": "Duplicate upload creates separate IDs",
+      "labels": [
+        "positive",
+        "storage"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092939.796907,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_aa792895699e47b286aaf18cdd7a6d6b"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_ac46461b993e4570b8f802d50e91e511"
+        }
+      ],
+      "duration_s": 0.364
+    },
+    {
+      "case_id": "ART-006",
+      "module": "artifacts",
+      "title": "Upload byte limit enforced",
+      "labels": [
+        "negative",
+        "boundary",
+        "large"
+      ],
+      "effects": [
+        "write",
+        "load"
+      ],
+      "requires": [],
+      "status": "SKIP",
+      "started_at": 1793092940.165499,
+      "requests": [],
+      "reason": "Enable effects: load",
+      "duration_s": 0.004
+    },
+    {
+      "case_id": "TASK-001",
+      "module": "tasks",
+      "title": "Upload-submit-poll-download real async OCR",
+      "labels": [
+        "positive",
+        "gpu",
+        "smoke",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092940.175384,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_144dcf2e864f42c4a137117a277f313b"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 202,
+          "request_id": "req_10a7c6aab7fa45ea9132f483f46cc2b9"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_faeed82b7cba4478859035eac1d75d7e",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_c1939e672ae044349257c75b0e7c5cf4"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_faeed82b7cba4478859035eac1d75d7e",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_16aa5b0ca9bc474eba49f96b33cc7fb4"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/artifacts/art_6ed9da367f8949deb0332094bade6948",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_b3cf03c2ef5c419591968933baa84977"
+        }
+      ],
+      "observations": {
+        "task_id": "task_faeed82b7cba4478859035eac1d75d7e",
+        "result_artifact_id": "art_6ed9da367f8949deb0332094bade6948",
+        "line_count": 2
+      },
+      "duration_s": 1.934
+    },
+    {
+      "case_id": "TASK-002",
+      "module": "tasks",
+      "title": "Same key/body reuses same task without new execution",
+      "labels": [
+        "positive",
+        "idempotency",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092942.114176,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_145a856bafb5472cbf3c03fb14813744"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 202,
+          "request_id": "req_29091b01f379418db9f4deeaf74c5937"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_72378dadeafd4a45810577160a06a9de"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_004b2598c49f40dc98f0c73c6b24e1de",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_74666ee4a9ed41fa8677eaac9068d463"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_004b2598c49f40dc98f0c73c6b24e1de",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_e47cbaed6a2c4305be38adb604fb7332"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_d31acf7ec8664e3b8dea6125976cc154"
+        }
+      ],
+      "duration_s": 2.126
+    },
+    {
+      "case_id": "TASK-003",
+      "module": "tasks",
+      "title": "Same key and changed request conflicts",
+      "labels": [
+        "negative",
+        "idempotency",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092944.245777,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_d5e41dc3fb4343eaa01df26db639066c"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 202,
+          "request_id": "req_dba4bb4880c14f5fa11aeacc574dcc3a"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 409,
+          "request_id": "req_c894a83831754ed6b648cadf4cabb55b",
+          "error_code": "IDEMPOTENCY_CONFLICT"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_d188e92dfe1346f098d5798711e3478f",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_b10ca293e73540bda20a13a3e5b5129a"
+        }
+      ],
+      "duration_s": 0.751
+    },
+    {
+      "case_id": "TASK-004",
+      "module": "tasks",
+      "title": "Missing idempotency header rejected",
+      "labels": [
+        "negative",
+        "idempotency"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092945.002452,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 400,
+          "request_id": "req_120ad4401854422fba8aae6a4f2070df",
+          "error_code": "IDEMPOTENCY_REQUIRED"
+        }
+      ],
+      "duration_s": 0.194
+    },
+    {
+      "case_id": "TASK-005",
+      "module": "tasks",
+      "title": "Missing artifact is not accepted",
+      "labels": [
+        "negative",
+        "async"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092945.201988,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_983af81e1c2b4930a5510551b4fe1dac",
+          "error_code": "INPUT_NOT_FOUND"
+        }
+      ],
+      "duration_s": 0.184
+    },
+    {
+      "case_id": "TASK-006",
+      "module": "tasks",
+      "title": "Extra fields and invalid retry budgets rejected",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092945.389004,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_38d2037c535d42bdba4d1884d9c396b0",
+          "error_code": "INPUT_INVALID"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_d0affa42c9c640b5ba2cef1a339205f3",
+          "error_code": "INPUT_INVALID"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_4c370308596149a3b6ff5807681cfce6",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.519
+    },
+    {
+      "case_id": "TASK-007",
+      "module": "tasks",
+      "title": "OCR input and parameter schema enforced",
+      "labels": [
+        "negative",
+        "contract"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092945.9134479,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_54f14056ce69432887f9684ce6dfed49",
+          "error_code": "INPUT_INVALID"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 422,
+          "request_id": "req_51bd6ba5f5c84f609f15604b4ae6a6db",
+          "error_code": "INPUT_INVALID"
+        }
+      ],
+      "duration_s": 0.359
+    },
+    {
+      "case_id": "TASK-008",
+      "module": "tasks",
+      "title": "Missing task cannot be queried or cancelled",
+      "labels": [
+        "negative",
+        "async"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092946.275733,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_e2e_absent",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_3fced0b5826c4d1d83d8a6829410c0c7",
+          "error_code": "NOT_FOUND"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks/task_e2e_absent/cancel",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_0a0ad88d5dec4e74bb7e3750545fbf0b",
+          "error_code": "NOT_FOUND"
+        }
+      ],
+      "duration_s": 0.376
+    },
+    {
+      "case_id": "TASK-009",
+      "module": "tasks",
+      "title": "Cancellation is race-aware and repeatable",
+      "labels": [
+        "positive",
+        "cancellation",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092946.655871,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_f84c4989141a421e8b76a98a01e89c16"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 202,
+          "request_id": "req_2d2fb6f67db44dada408f6366adc18b8"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks/task_e95f04ff095d4bceaeea4bbbdc15196f/cancel",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_05703691b0914be6b3fb011fd8b05f38"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_e95f04ff095d4bceaeea4bbbdc15196f",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_70947cabf04b4d388eab45448a105c1a"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks/task_e95f04ff095d4bceaeea4bbbdc15196f/cancel",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_7dc0f701fc7b49b081d14002b60115ff"
+        }
+      ],
+      "duration_s": 0.942
+    },
+    {
+      "case_id": "ISO-001",
+      "module": "isolation",
+      "title": "Different project cannot download known input or spoof ownership",
+      "labels": [
+        "negative",
+        "isolation",
+        "optional"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [
+        "secondary_key_file",
+        "distinct_projects"
+      ],
+      "status": "PASS",
+      "started_at": 1793092947.6040618,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_eb95598f32b2473b8cd5199748969bfb"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/artifacts/art_e1676ba94111446ab518bb6445784100",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_c04e51630f594c419536506f0118f5c3",
+          "error_code": "NOT_FOUND"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/artifacts/art_e1676ba94111446ab518bb6445784100",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_d705d48b4466492780318fff0a9d5fdb",
+          "error_code": "NOT_FOUND"
+        }
+      ],
+      "duration_s": 0.635
+    },
+    {
+      "case_id": "ISO-002",
+      "module": "isolation",
+      "title": "Different project cannot query/cancel task or download result",
+      "labels": [
+        "negative",
+        "isolation",
+        "optional",
+        "async"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [
+        "secondary_key_file",
+        "distinct_projects"
+      ],
+      "status": "PASS",
+      "started_at": 1793092948.244552,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_fcfa7875b6ce4a27902ec69947f81191"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 202,
+          "request_id": "req_dc124c3c3462465ca3fae29089858a72"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_3664efc6b55c47389cd9ad4037652f6d",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_2bad99ef4d6d47948b9fe1511d46fe6f",
+          "error_code": "NOT_FOUND"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks/task_3664efc6b55c47389cd9ad4037652f6d/cancel",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_707a354a42f34b62bca01de4ef804c3a",
+          "error_code": "NOT_FOUND"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_3664efc6b55c47389cd9ad4037652f6d",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_090d4c14c70b48f28fdf9c3554cc4e4b"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_3664efc6b55c47389cd9ad4037652f6d",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_74b4b7a82aad4867936ff13034a110b9"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/artifacts/art_39b2da981fbc48cd9d5495d3c84aab87",
+          "state": "RECEIVED",
+          "status": 404,
+          "request_id": "req_f95e5e74a3444610a19a9ca35a1cc6b4",
+          "error_code": "NOT_FOUND"
+        }
+      ],
+      "duration_s": 2.487
+    },
+    {
+      "case_id": "TTL-001",
+      "module": "lifecycle",
+      "title": "Previously expired own artifact is unavailable",
+      "labels": [
+        "retention",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "expired_artifact_id"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092950.7354271,
+      "requests": [],
+      "reason": "Missing configuration: expired_artifact_id",
+      "duration_s": 0.006
+    },
+    {
+      "case_id": "MAINT-001",
+      "module": "maintenance",
+      "title": "Synchronous inference blocked in externally prepared maintenance",
+      "labels": [
+        "maintenance",
+        "window",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "expect_maintenance"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092950.746774,
+      "requests": [],
+      "reason": "Missing configuration: expect_maintenance",
+      "duration_s": 0.005
+    },
+    {
+      "case_id": "MAINT-002",
+      "module": "maintenance",
+      "title": "Queued task cancellation while dispatch is externally paused",
+      "labels": [
+        "maintenance",
+        "window",
+        "cancellation",
+        "optional"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [
+        "expect_maintenance"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092950.760582,
+      "requests": [],
+      "reason": "Missing configuration: expect_maintenance",
+      "duration_s": 0.005
+    },
+    {
+      "case_id": "QUOTA-001",
+      "module": "quota",
+      "title": "Externally saturated inference capacity returns 429",
+      "labels": [
+        "quota",
+        "window",
+        "optional"
+      ],
+      "effects": [
+        "inference",
+        "load"
+      ],
+      "requires": [
+        "expect_capacity_full"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092950.769897,
+      "requests": [],
+      "reason": "Enable effects: load",
+      "duration_s": 0.005
+    },
+    {
+      "case_id": "QUOTA-002",
+      "module": "quota",
+      "title": "Externally full queue rejects a new task",
+      "labels": [
+        "quota",
+        "window",
+        "optional"
+      ],
+      "effects": [
+        "write",
+        "inference",
+        "load"
+      ],
+      "requires": [
+        "expect_queue_full"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092950.7789571,
+      "requests": [],
+      "reason": "Enable effects: load",
+      "duration_s": 0.006
+    },
+    {
+      "case_id": "JSON-001",
+      "module": "edge",
+      "title": "Task JSON envelope byte budget enforced",
+      "labels": [
+        "negative",
+        "boundary"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793092950.7881322,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 413,
+          "request_id": "req_e86f2c8364f4450a9b08630e24c2985e",
+          "error_code": "REQUEST_SIZE"
+        }
+      ],
+      "duration_s": 0.143
+    },
+    {
+      "case_id": "OPS-001",
+      "module": "operations",
+      "title": "Current control plane components running",
+      "labels": [
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ],
+      "status": "PASS",
+      "started_at": 1793092950.935331,
+      "requests": [],
+      "observations": {
+        "required_components_running": [
+          "maas-edge",
+          "maas-private-tls",
+          "maas-tasks-api-1",
+          "maas-tasks-db-1",
+          "maas-tasks-executor-1",
+          "maas-tasks-observer-1",
+          "wta-gpustack-server"
+        ]
+      },
+      "duration_s": 0.675
+    },
+    {
+      "case_id": "OPS-002",
+      "module": "operations",
+      "title": "Business monitor fresh, healthy and no UNKNOWN",
+      "labels": [
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ],
+      "status": "PASS",
+      "started_at": 1793092951.6198778,
+      "requests": [],
+      "observations": {
+        "age_s": 20.46440577507019,
+        "ok": true,
+        "alerts": 0,
+        "unknown_backend": 0.0,
+        "unknown_sync": 0.0
+      },
+      "duration_s": 0.611
+    },
+    {
+      "case_id": "OPS-003",
+      "module": "operations",
+      "title": "Retired collector remains inactive and masked",
+      "labels": [
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ],
+      "status": "PASS",
+      "started_at": 1793092952.237818,
+      "requests": [],
+      "duration_s": 0.571
+    },
+    {
+      "case_id": "E5-001",
+      "module": "bootstrap",
+      "title": "Configuration and authenticated registry components running",
+      "labels": [
+        "e5",
+        "operations",
+        "readonly",
+        "optional"
+      ],
+      "effects": [],
+      "requires": [
+        "operator"
+      ],
+      "status": "PASS",
+      "started_at": 1793092952.8185668,
+      "requests": [],
+      "duration_s": 0.62
+    },
+    {
+      "case_id": "METER-001",
+      "module": "metering",
+      "title": "One successful async task creates exactly one task event",
+      "labels": [
+        "metering",
+        "gpu",
+        "async",
+        "optional"
+      ],
+      "effects": [
+        "write",
+        "inference"
+      ],
+      "requires": [
+        "operator"
+      ],
+      "status": "PASS",
+      "started_at": 1793092953.445992,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 201,
+          "request_id": "req_b19ca09d14c44e9bb8058546e35ee4a8"
+        },
+        {
+          "method": "POST",
+          "path": "/maas/v1/tasks",
+          "state": "RECEIVED",
+          "status": 202,
+          "request_id": "req_b8189bded97843b4a690066f1751a054"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_29940cc8bccd430a98fcfd353122d1b5",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_4adb3234492543a59df76bca0e478464"
+        },
+        {
+          "method": "GET",
+          "path": "/maas/v1/tasks/task_29940cc8bccd430a98fcfd353122d1b5",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_c54fe1c6620643fba777b57d2e6c8f39"
+        }
+      ],
+      "observations": {
+        "task_id": "task_29940cc8bccd430a98fcfd353122d1b5",
+        "success_events": 1
+      },
+      "duration_s": 2.483
+    },
+    {
+      "case_id": "METER-002",
+      "module": "metering",
+      "title": "Successful sync increments exclusive project event count once",
+      "labels": [
+        "metering",
+        "gpu",
+        "exclusive",
+        "optional"
+      ],
+      "effects": [
+        "inference"
+      ],
+      "requires": [
+        "operator",
+        "project",
+        "exclusive_project"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092955.939321,
+      "requests": [],
+      "reason": "Missing configuration: exclusive_project",
+      "duration_s": 0.007
+    },
+    {
+      "case_id": "METER-003",
+      "module": "metering",
+      "title": "Invalid image creates no successful sync event",
+      "labels": [
+        "metering",
+        "negative",
+        "exclusive",
+        "optional"
+      ],
+      "effects": [
+        "write"
+      ],
+      "requires": [
+        "operator",
+        "project",
+        "exclusive_project"
+      ],
+      "status": "SKIP",
+      "started_at": 1793092955.952092,
+      "requests": [],
+      "reason": "Missing configuration: exclusive_project",
+      "duration_s": 0.006
+    }
+  ],
+  "resources": [
+    {
+      "case_id": "ART-001",
+      "kind": "artifact",
+      "id": "art_5ae3dcb2ce4640afbe1f74d85f0edea3"
+    },
+    {
+      "case_id": "ART-005",
+      "kind": "artifact",
+      "id": "art_0fc97ff03259469b88c76725f5b7fd02"
+    },
+    {
+      "case_id": "ART-005",
+      "kind": "artifact",
+      "id": "art_605c18f31d5141f38ca5b2e85270fba2"
+    },
+    {
+      "case_id": "TASK-001",
+      "kind": "artifact",
+      "id": "art_e209ebd8cdf143459deaa9725a7945ac"
+    },
+    {
+      "case_id": "TASK-001",
+      "kind": "idempotency_key",
+      "id": "e2e-8f2ffb9ed49a404da70f63156861f1a5"
+    },
+    {
+      "case_id": "TASK-001",
+      "kind": "task",
+      "id": "task_faeed82b7cba4478859035eac1d75d7e"
+    },
+    {
+      "case_id": "TASK-002",
+      "kind": "artifact",
+      "id": "art_2e936c75360c483b8087d3d9ce9a5f37"
+    },
+    {
+      "case_id": "TASK-002",
+      "kind": "idempotency_key",
+      "id": "e2e-dce08264e21d46e99f0a4ec9d6096c4c"
+    },
+    {
+      "case_id": "TASK-002",
+      "kind": "task",
+      "id": "task_004b2598c49f40dc98f0c73c6b24e1de"
+    },
+    {
+      "case_id": "TASK-003",
+      "kind": "artifact",
+      "id": "art_5cc90b5bac0149749443d7aead68ebd6"
+    },
+    {
+      "case_id": "TASK-003",
+      "kind": "idempotency_key",
+      "id": "e2e-8922ec0c825f47f788d9d99cabf5f371"
+    },
+    {
+      "case_id": "TASK-003",
+      "kind": "task",
+      "id": "task_d188e92dfe1346f098d5798711e3478f"
+    },
+    {
+      "case_id": "TASK-009",
+      "kind": "artifact",
+      "id": "art_c901658de4d44a49bdadeb03b8c3abd2"
+    },
+    {
+      "case_id": "TASK-009",
+      "kind": "idempotency_key",
+      "id": "e2e-d8ae9ed022224165b95fbd3446dd0c5c"
+    },
+    {
+      "case_id": "TASK-009",
+      "kind": "task",
+      "id": "task_e95f04ff095d4bceaeea4bbbdc15196f"
+    },
+    {
+      "case_id": "ISO-001",
+      "kind": "artifact",
+      "id": "art_e1676ba94111446ab518bb6445784100"
+    },
+    {
+      "case_id": "ISO-002",
+      "kind": "artifact",
+      "id": "art_7454c52a7a8348a89a65937db91a19ed"
+    },
+    {
+      "case_id": "ISO-002",
+      "kind": "idempotency_key",
+      "id": "e2e-b8358a1ff74d417cb8e222bbdbbbbdd0"
+    },
+    {
+      "case_id": "ISO-002",
+      "kind": "task",
+      "id": "task_3664efc6b55c47389cd9ad4037652f6d"
+    },
+    {
+      "case_id": "METER-001",
+      "kind": "artifact",
+      "id": "art_378663598bdb4ac78162d0cd0dc843c2"
+    },
+    {
+      "case_id": "METER-001",
+      "kind": "idempotency_key",
+      "id": "e2e-b025c6eb76d34b03bdfd5c8a4c05e113"
+    },
+    {
+      "case_id": "METER-001",
+      "kind": "task",
+      "id": "task_29940cc8bccd430a98fcfd353122d1b5"
+    }
+  ],
+  "no_automatic_request_retry": true,
+  "inference_blocked": false,
+  "pending_tasks": [],
+  "finished_at": 1793092955.962833,
+  "interrupted": false,
+  "summary": {
+    "PASS": 56,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 9
+  }
+}

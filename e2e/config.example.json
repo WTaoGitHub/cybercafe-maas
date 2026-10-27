@@ -9,9 +9,12 @@
   "poll_timeout": 150,
   "poll_interval": 1,
   "max_input_bytes": 10485760,
-  "image_file": null,
-  "jpeg_file": null,
-  "expected_text_contains": [],
+  "image_file": "../e2e/data/ocr-bilingual.png",
+  "jpeg_file": "../e2e/data/ocr-bilingual.jpg",
+  "expected_text_contains": [
+    "MAAS",
+    "中文"
+  ],
   "public_image_url": null,
   "secondary_key_file": null,
   "distinct_projects": false,

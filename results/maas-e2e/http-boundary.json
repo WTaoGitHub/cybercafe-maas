@@ -1,0 +1,63 @@
+{
+  "run_id": "http-boundary",
+  "started_at": 1793093238.553329,
+  "selection": [
+    {
+      "case_id": "ART-006",
+      "module": "artifacts",
+      "title": "Upload byte limit enforced",
+      "labels": [
+        "negative",
+        "boundary",
+        "large"
+      ],
+      "effects": [
+        "write",
+        "load"
+      ],
+      "requires": []
+    }
+  ],
+  "results": [
+    {
+      "case_id": "ART-006",
+      "module": "artifacts",
+      "title": "Upload byte limit enforced",
+      "labels": [
+        "negative",
+        "boundary",
+        "large"
+      ],
+      "effects": [
+        "write",
+        "load"
+      ],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793093238.554283,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/maas/v1/artifacts",
+          "state": "RECEIVED",
+          "status": 413,
+          "request_id": "req_09a33c3cb46748a4b11340e05d967f78",
+          "error_code": "INPUT_SIZE"
+        }
+      ],
+      "duration_s": 1.168
+    }
+  ],
+  "resources": [],
+  "no_automatic_request_retry": true,
+  "inference_blocked": false,
+  "pending_tasks": [],
+  "finished_at": 1793093239.723753,
+  "interrupted": false,
+  "summary": {
+    "PASS": 1,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  }
+}

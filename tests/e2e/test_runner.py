@@ -119,10 +119,6 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue((ctx.output / 'junit.xml').exists())
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
 class CatalogTests(unittest.TestCase):
     def test_metadata_ids_are_unique_and_documented_effects(self):
         from e2e import cases
@@ -156,3 +152,95 @@ class CatalogTests(unittest.TestCase):
             self.assertNotIn('shell', options)
             self.assertIn('SET TRANSACTION READ ONLY', options['input'])
             compile(options['input'], '<remote-observer>', 'exec')
+
+
+class RequestSafetyTests(unittest.TestCase):
+    setUp = RunnerTests.setUp
+    context = RunnerTests.context
+    def fake_response(self, status, value):
+        from email.message import Message
+        response = io.BytesIO(json.dumps(value).encode())
+        response.code = status
+        response.headers = Message()
+        response.headers['Content-Type'] = 'application/json'
+        response.headers['X-Request-ID'] = 'req_framework_test'
+        return response
+
+    def test_unknown_error_blocks_mutations_and_report_has_no_payload(self):
+        ctx = self.context(('inference',))
+        response = self.fake_response(503, {'error': {'code': 'UNKNOWN_BACKEND_ACTIVITY',
+                                                     'message': 'PRIVATE_RESPONSE_TEXT'}})
+        class Opener:
+            def open(self, req, timeout):
+                return response
+        ctx.opener = Opener()
+        def infer(c):
+            c.request('POST', '/ocr', body={'image_base64': 'PRIVATE_IMAGE_DATA'}, inference=True).expect(200)
+        report = execute(ctx, [Case('A', 'x', 'a', (), infer, ('inference',)),
+                               Case('B', 'x', 'b', (), infer, ('inference',))])
+        self.assertEqual([r['status'] for r in report['results']], ['FAIL', 'SKIP'])
+        saved = (ctx.output / 'report.json').read_text()
+        self.assertNotIn('PRIVATE_RESPONSE_TEXT', saved)
+        self.assertNotIn('PRIVATE_IMAGE_DATA', saved)
+        self.assertIn('UNKNOWN_BACKEND_ACTIVITY', saved)
+
+    def test_confirmed_maintenance_response_is_not_misclassified_unknown(self):
+        ctx = self.context(('inference',))
+        owner = self
+        class Opener:
+            def open(self, req, timeout):
+                return owner.fake_response(503, {'error': {'code': 'MAINTENANCE_PAUSED'}})
+        ctx.opener = Opener()
+        def gate(c):
+            c.request('POST', '/ocr', body={}, inference=True).expect(503, 'MAINTENANCE_PAUSED')
+        report = execute(ctx, [Case('A', 'x', 'a', (), gate, ('inference',))])
+        self.assertFalse(report['inference_blocked'])
+        self.assertEqual(report['summary']['PASS'], 1)
+
+    def test_partially_completed_upload_opens_circuit_without_replay(self):
+        ctx = self.context(('write',))
+        calls = []
+        class Opener:
+            def open(self, req, timeout):
+                calls.append(req)
+                raise TimeoutError()
+        ctx.opener = Opener()
+        def upload(c):
+            c.upload()
+        report = execute(ctx, [Case('A', 'x', 'a', (), upload, ('write',)),
+                               Case('B', 'x', 'b', (), upload, ('write',))])
+        self.assertEqual(len(calls), 1)
+        self.assertTrue(report['inference_blocked'])
+        self.assertEqual(report['summary'], {'PASS': 0, 'FAIL': 1, 'ERROR': 0, 'SKIP': 1})
+
+    def test_failed_assertion_still_polls_own_known_task_without_resubmission(self):
+        ctx = self.context()
+        waited = []
+        def wait(ident):
+            waited.append(ident)
+            ctx.pending_tasks.discard(ident)
+        ctx.wait = wait
+        def fail(c):
+            c.pending_tasks.add('task_owned')
+            raise CheckFailed('Known response assertion failed')
+        execute(ctx, [Case('A', 'x', 'a', (), fail)])
+        self.assertEqual(waited, ['task_owned'])
+        self.assertFalse(ctx.pending_tasks)
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+def test_committed_fixture_hashes_and_catalog_are_consistent():
+    import hashlib
+    from e2e import cases
+    from e2e.core import CASES
+    root = Path(__file__).resolve().parents[2]
+    directory = root / 'e2e/data'
+    manifest = json.loads((directory / 'manifest.json').read_text())
+    for row in manifest['files']:
+        assert hashlib.sha256((directory / row['file']).read_bytes()).hexdigest() == row['sha256']
+    catalog = (root / 'e2e/CATALOG.md').read_text()
+    documented = [line.split('|')[1].strip() for line in catalog.splitlines() if line.startswith('| ')][1:]
+    assert documented == [c.case_id for c in CASES]

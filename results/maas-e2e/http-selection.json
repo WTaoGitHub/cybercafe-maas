@@ -1,0 +1,91 @@
+{
+  "run_id": "http-selection",
+  "started_at": 1793093238.27491,
+  "selection": [
+    {
+      "case_id": "AUTH-001",
+      "module": "auth",
+      "title": "Missing Bearer is rejected",
+      "labels": [
+        "smoke",
+        "negative",
+        "auth"
+      ],
+      "effects": [],
+      "requires": []
+    },
+    {
+      "case_id": "CAP-001",
+      "module": "capabilities",
+      "title": "Published async input and budget schema",
+      "labels": [
+        "smoke",
+        "contract"
+      ],
+      "effects": [],
+      "requires": []
+    }
+  ],
+  "results": [
+    {
+      "case_id": "AUTH-001",
+      "module": "auth",
+      "title": "Missing Bearer is rejected",
+      "labels": [
+        "smoke",
+        "negative",
+        "auth"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793093238.276175,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 401,
+          "request_id": "req_51f82422f92e416da20373c7892f7e75",
+          "error_code": "UNAUTHENTICATED"
+        }
+      ],
+      "duration_s": 0.075
+    },
+    {
+      "case_id": "CAP-001",
+      "module": "capabilities",
+      "title": "Published async input and budget schema",
+      "labels": [
+        "smoke",
+        "contract"
+      ],
+      "effects": [],
+      "requires": [],
+      "status": "PASS",
+      "started_at": 1793093238.352044,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/maas/v1/models/ocr.default/capabilities",
+          "state": "RECEIVED",
+          "status": 200,
+          "request_id": "req_600a2bfa4dc54b57906fba5ccae1348d"
+        }
+      ],
+      "duration_s": 0.128
+    }
+  ],
+  "resources": [],
+  "no_automatic_request_retry": true,
+  "inference_blocked": false,
+  "pending_tasks": [],
+  "finished_at": 1793093238.4807198,
+  "interrupted": false,
+  "summary": {
+    "PASS": 2,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  }
+}
