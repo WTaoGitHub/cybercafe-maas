@@ -230,3 +230,7 @@ with httpx.Client(base_url=BASE_URL, verify=context, headers=headers,
 联系支持时提供：时间、逻辑模型、HTTP状态、error.code、X-Request-ID、task ID及是否已下载结果。**不要提供API key**。图片/识别文本如含敏感信息，先确认支持人员授权再提供。
 
 GPUStack Playground是管理员诊断工具，不能绕过暂停/额度作为普通用户的备用入口。正式服务异常由管理员与运维处理。
+
+## 消费者兼容同步OCR（2026-10-27）
+
+新增POST /ocr（别名/v1/ocr），请求model=ocr.default及image_base64或image_url二选一，直接返回顶层lines；不需要先上传artifact。只接受PNG/JPEG，远程URL仅公开HTTP(S)80/443且无重定向；原Chat/异步方式保留。request_id只是关联字段，没有同步幂等；不要对未知完成直接重发。参数、示例和错误见[完整契约](../api/CONSUMER-OCR.md)。私有访问地址与受限key由管理员提供，不将001回环地址直接填给另一台机器。

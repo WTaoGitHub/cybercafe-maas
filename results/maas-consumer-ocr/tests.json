@@ -1,0 +1,16 @@
+{
+  "source_feature_commit": "9468518",
+  "local_suite": {
+    "passed": 186,
+    "skipped": 56,
+    "reason": "No local disposable PostgreSQL configured"
+  },
+  "isolated_suite": {
+    "passed": 89,
+    "skipped": 1,
+    "reason": "Historical DB interruption harness not enabled"
+  },
+  "runtime_matches_source": true,
+  "live_contract_passed": true,
+  "legacy_api_passed": true
+}

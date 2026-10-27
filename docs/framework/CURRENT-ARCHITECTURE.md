@@ -115,4 +115,4 @@ TLS18832与HTTP18831是两个平行Nginx入口，都直接转发18830，并非18
 
 001和新克隆分别读取监听信息；新克隆filter/raw表中未发现MAAS链，INPUT策略为ACCEPT。本轮不是完整网络安全审计，未测试第三方LAN/公网直连，也没有修改ACL。图中“非客户入口”描述接口职责，不声称底层网络一定不可达。需要后续核验并落地克隆侧管理/推理端口ACL，不能把001已有规则视为会自动复制到所有克隆。
 
-当前已对客户提供的路径是/v1/chat/completions，以及/maas/v1/artifacts、tasks、查询/取消和capabilities。消费者契约中的POST /ocr兼容门面及文生图入口尚未实现；网络/证书接通不会自动补齐协议差异。
+2026-10-27兼容门面上线后，当前客户路径包括/ocr、/v1/ocr、/v1/chat/completions，以及/maas/v1/artifacts、tasks、查询/取消和capabilities。POST /ocr兼容门面已上线，文生图仍未提供；网络监听和worker ACL状态没有因兼容适配而改变。

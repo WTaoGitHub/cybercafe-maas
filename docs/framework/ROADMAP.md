@@ -473,3 +473,12 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 管理员启动端口16487的新克隆，开机自动读取e5-registry-r1并以独立worker7加入test1，自动生成registry信任/只读认证。首次取证时新旧OCR镜像均不存在。旧worker6已离线，GPUStack使用同一model18/route17及稳定标签自行将instance103调度到7，原生拉取固定镜像并进入running；没有手动补节点配置、apply/pull/load，也未改模型/路由/MaaS revision。
 
 真实模型RO/cache RW及身份/认证排除通过；私有TLS同步/异步/下载46行及单次计量通过。worker7 ready、MaaS正常接单、UNKNOWN=0，VM/worker容器未重启。新版快照完整无人值守正常首启门槛本轮通过；母版无需为QA再次更新。旧worker记录保留，双克隆、轮换、独立权重/NFS、容量和E8不因此完成。GPU UUID与旧6相同而VM boot/worker不同，只记录一个再现案例，不证明普适稳定或并发排他。[验收报告](../../results/maas-e5-registry-clone-20261027/REPORT.md)。
+
+
+## 消费者兼容OCR已交付（2026-10-27）
+
+按下游文档实现POST /ocr与/v1/ocr，接受model+base64/data URL或受限公网HTTP(S)图片URL，返回顶层lines/confidence/polygon；language为auto/zh/en提示、return_boxes默认true、request_id仅日志关联。复用SyncIngress统一鉴权/配额/维护/UNKNOWN，输入准备有界且输出验证先于成功计量。原Chat/异步接口和数据库schema保持。
+
+001 API发布consumer-ocr-r1，仅API重建、HTTP/TLS入口白名单reload；执行器/observer维持e6，GPUStack/worker7/母版及客户监听未改变。新契约四张成功图对应四成功事件，包含空白图[]和真实URL；旧Chat/异步/下载46行及单次计量通过。MaaS恢复接单、UNKNOWN=0、monitor ok。未完成文生图/音视频、E4同步幂等、消费者自身环境联调或新的8小时耐久；公网仍未开放。
+
+本地186通过/56跳过，独立测试库相关测试89通过/1历史harness跳过。后续E8回归应纳入新门面、图片下载DNS固定/TLS和转换前计量约束。[接口契约](../api/CONSUMER-OCR.md) · [验收](../../results/maas-consumer-ocr/REPORT.md) · [发布/回退](../../deploy/maas/CONSUMER-OCR.md)。

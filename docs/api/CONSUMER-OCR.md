@@ -1,6 +1,6 @@
 # 下游消费者兼容OCR接口
 
-2026-10-27。代码及独立测试库验证完成，部署结果另以验收报告为准。针对upstream-generation-api-integration.md的同步OCR契约，保留原Chat及异步任务API。文生图/音频/视频不在本轮范围，E4持久同步幂等仍未实施。
+2026-10-27。代码、独立测试库及001私有TLS实测均已通过，已发布consumer-ocr-r1；详见[验收报告](../../results/maas-consumer-ocr/REPORT.md)。针对upstream-generation-api-integration.md的同步OCR契约，保留原Chat及异步任务API。文生图/音频/视频不在本轮范围，E4持久同步幂等仍未实施。
 
 ## 渠道配置与请求
 

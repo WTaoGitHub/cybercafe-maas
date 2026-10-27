@@ -1,0 +1,64 @@
+{
+  "state": "PASSED",
+  "tls_verified": true,
+  "cases": {
+    "base64": {
+      "http": 200,
+      "lines": 46,
+      "request_id": "req_b622736a1bcd4a858d8cfa78d37bc904",
+      "polygon_valid": true
+    },
+    "data_url_alias": {
+      "http": 200,
+      "lines": 46,
+      "polygon_omitted": true,
+      "request_id": "req_41a443c241ed45bc97a866bce0ce7c20"
+    },
+    "public_url": {
+      "http": 200,
+      "lines": 1,
+      "request_id": "req_de8c525ddf184ff8bda8e4903864c61b",
+      "tls_download_verified": true
+    },
+    "blank": {
+      "http": 200,
+      "lines": 0,
+      "request_id": "req_1baf211efba240a3a946ffc8dc7fecb6"
+    },
+    "bad_base64": {
+      "http": 422,
+      "error_code": "IMAGE_BASE64",
+      "request_id": "req_db5db6b5171841949eaba70234e4c3e4"
+    },
+    "private_url": {
+      "http": 422,
+      "error_code": "IMAGE_URL_NOT_ALLOWED",
+      "request_id": "req_9b2930858b6f468fb9c14cba220e6e18"
+    },
+    "two_sources": {
+      "http": 422,
+      "error_code": "INPUT_INVALID",
+      "request_id": "req_b297cac0c7c445fd9164507079fe7271"
+    },
+    "unsupported_language": {
+      "http": 422,
+      "error_code": "INPUT_INVALID",
+      "request_id": "req_17f28dcc78c845ed8514caabb2a3158b"
+    },
+    "unauthorized": {
+      "http": 401,
+      "error_code": "UNAUTHENTICATED"
+    }
+  },
+  "started_at": 1793080952.6653826,
+  "automatic_inference_replays": false,
+  "before": {
+    "sync_success_events": 12
+  },
+  "after": {
+    "sync_success_events": 16
+  },
+  "successful_images": 4,
+  "success_event_delta": 4,
+  "finished_at": 1793080955.4436862
+}

@@ -459,3 +459,12 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 4. 备份恢复通过，升级及回退步骤可执行；数据库迁移后不能仅换回旧容器镜像当作恢复。自动克隆接入须使用更新后的管理员快照另验，容器重建不等于真实首启验收。
 5. 交付适配代码、固定版本清单、独立验证报告和运维手册；仅计划登记或源码审查不能标成实施完成。现网切换未执行时明确写“未部署”。
 6. 不把此项扩大为共享KV缓存、PD分离、GPU切分或后端合批实施；不将负载均衡/定时副本数等同于E1完整排空，不将OTA元数据更新等同于模型文件分发，不宣称已达到E7千节点容量。
+
+
+## 消费者兼容OCR已交付（2026-10-27）
+
+按下游文档实现POST /ocr与/v1/ocr，接受model+base64/data URL或受限公网HTTP(S)图片URL，返回顶层lines/confidence/polygon；language为auto/zh/en提示、return_boxes默认true、request_id仅日志关联。复用SyncIngress统一鉴权/配额/维护/UNKNOWN，输入准备有界且输出验证先于成功计量。原Chat/异步接口和数据库schema保持。
+
+001 API发布consumer-ocr-r1，仅API重建、HTTP/TLS入口白名单reload；执行器/observer维持e6，GPUStack/worker7/母版及客户监听未改变。新契约四张成功图对应四成功事件，包含空白图[]和真实URL；旧Chat/异步/下载46行及单次计量通过。MaaS恢复接单、UNKNOWN=0、monitor ok。未完成文生图/音视频、E4同步幂等、消费者自身环境联调或新的8小时耐久；公网仍未开放。
+
+本地186通过/56跳过，独立测试库相关测试89通过/1历史harness跳过。后续E8回归应纳入新门面、图片下载DNS固定/TLS和转换前计量约束。[接口契约](../api/CONSUMER-OCR.md) · [验收](../../results/maas-consumer-ocr/REPORT.md) · [发布/回退](../../deploy/maas/CONSUMER-OCR.md)。

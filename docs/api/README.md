@@ -3,9 +3,9 @@
 > E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](../framework/E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
 
 
-文档日期：2026-10-21。适用范围：当前P0–P4私有OCR服务，应用版本0.1.0、GPUStack v2.2.3。依据现有代码、Nginx配置和正式目录说明整理；不是外部消费者兼容接口的实施方案。
+文档日期：2026-10-27。API镜像consumer-ocr-r1已上线，执行器/observer保持e6-r1；GPUStack v2.2.3。消费者兼容入口及最新验收见[OCR对接契约](CONSUMER-OCR.md)与[发布报告](../../results/maas-consumer-ocr/REPORT.md)。
 
-**当前提供：同步OCR、异步OCR任务、输入/结果文件上传下载、任务查询/取消、模型能力查询。** 不包含E1候选接口；无对外 `/ocr`、`/images/generations`、音频、视频、批次或ZIP接口。
+**当前提供：消费者兼容同步OCR、原Chat同步OCR、异步OCR任务、输入/结果文件上传下载、任务查询/取消、模型能力查询。** 不包含E1候选接口；无文生图、音频、视频、批次或ZIP接口。
 
 ## 1. 接入信息
 
@@ -47,7 +47,8 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 
 | 方法 | 路径 | 成功状态 | 用途 |
 |---|---|---:|---|
-| POST | `/v1/chat/completions` | 200 | 同步OCR，stream=false |
+| POST | `/ocr`、`/v1/ocr` | 200 | 消费者兼容同步OCR，顶层lines；详见[契约](CONSUMER-OCR.md) |
+| POST | `/v1/chat/completions` | 200 | 原Chat同步OCR，stream=false |
 | POST | `/maas/v1/artifacts` | 201 | 上传输入文件 |
 | GET | `/maas/v1/artifacts/{ident}` | 200 | 下载同project的未过期输入或结果 |
 | POST | `/maas/v1/tasks` | 202 / 200 | 新建异步任务 / 幂等复用 |
@@ -81,7 +82,7 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 | stream | 省略视为false；只能false，不支持SSE |
 | messages | 使用上例单张PNG/JPEG的base64 data URL结构 |
 
-JPEG使用 `data:image/jpeg;base64,...`。`image_url.url`此处不支持远程HTTP图片地址。顶层image_base64、image_url、language、return_boxes、prompt不是当前OCR对外契约；后端即使忽略某些多余字段，也不表示已支持其语义。
+JPEG使用 `data:image/jpeg;base64,...`。`image_url.url`此处不支持远程HTTP图片地址。顶层image_base64、image_url、language、return_boxes不属于本节Chat契约；需要这些字段请使用[消费者兼容/ocr](CONSUMER-OCR.md)。prompt仍不属于OCR契约；后端忽略字段不代表支持其语义。
 
 成功返回Chat completion envelope：
 
@@ -278,7 +279,7 @@ text为合并文字；lines为行级文本/框/置信度，空文字图可返回
 | 项目 | 当前值/行为 |
 |---|---|
 | 上传输入 | 默认10MiB；OCR只支持PNG/JPEG，后端解码上限2000万像素 |
-| 同步JSON | 默认20MiB（含base64开销）；其他非上传POST默认64KiB |
+| 同步JSON | /ocr、/v1/ocr和Chat默认20MiB（含base64开销）；其他非上传POST默认64KiB |
 | Nginx请求体 | 20MiB；各层更小的有效限制优先 |
 | 上游输出/保存结果 | 默认20MiB |
 | 并发 | 默认全局2、每project1，受控同步/异步共享；当前单异步执行器 |
@@ -337,6 +338,8 @@ retryable表示错误类型的建议，不是无限重试许可。同步发送�
 - API私有18830的 `/healthz`、`/docs`、`/openapi.json`：Nginx业务入口未放行；health仅检查API/DB。
 - GPUStack原生 `/v1/models`、管理UI/Playground、worker `/ocr`与 `/health`：内部管理/诊断路径，不受本文客户契约保证。
 - 私有CLI、metrics/alerts文件、维护/备份工具：无客户HTTP路由。
-- 消费者期望的同步 `/ocr`与 `/images/generations`：尚未实现；当前差异见 [消费者API分析](../framework/CONSUMER-API-GAP.md)。
+- `/images/generations`：尚未实现；`/ocr`与`/v1/ocr`已上线，协议边界见[消费者API分析](../framework/CONSUMER-API-GAP.md)。
 
 更完整的可执行Python调用示例见 [普通用户手册](../handbooks/USER.md)；密钥开通见 [管理员手册](../handbooks/ADMIN.md)。
+
+说明：capabilities查询描述异步TaskAdapter的input/parameters及execution_modes，不是消费者同步门面的schema；同步字段以[消费者OCR契约](CONSUMER-OCR.md)为准。
