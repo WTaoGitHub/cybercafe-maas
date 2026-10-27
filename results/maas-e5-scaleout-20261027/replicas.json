@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-27",
+  "source": "Read-only GPUStack v2.2.3 /v2/models, /v2/model-instances and /v2/workers via existing administrator connector",
+  "change_owner": "user, through GPUStack UI",
+  "assistant_deployment_changes": false,
+  "deployment": {
+    "id": 18,
+    "name": "maas-ocr-registry-r1",
+    "cluster_id": 3,
+    "cluster_name": "test1",
+    "replicas": 14,
+    "ready_replicas": 7,
+    "worker_selector": {"os": "linux", "arch": "amd64"},
+    "gpu_selector": null,
+    "placement_strategy": "spread",
+    "distributed_inference_across_workers": false
+  },
+  "instances": {
+    "running": 7,
+    "pending": 7,
+    "running_worker_id": 7,
+    "running_instance_ids": [103, 104, 105, 106, 107, 108, 109],
+    "pending_instance_ids": [110, 111, 112, 113, 114, 115, 116],
+    "per_replica_declared_ram_bytes": 2147483648,
+    "per_replica_declared_vram_bytes": 2147483648,
+    "pending_reason": "No suitable workers: 4 workers matched cluster selector, only 1 READY; model requires approximately 2.0 GiB VRAM and 2.0 GiB RAM; current available GPU has 1.99 GiB allocatable VRAM."
+  },
+  "next_action": "Administrator creates one additional independent clone from latest approved snapshot; existing VM is not recycled or restarted by the framework.",
+  "expected_not_yet_verified": "Automatic registration, image pull and scheduling of 7 pending replicas if the new worker has sufficient allocatable GPU/RAM resources and all runtime/network conditions are satisfied.",
+  "acceptance": "Both workers ready, 14 instances running with intended distribution, MaaS sync/async/result regression succeeds; do not equate replica count with throughput or MaaS concurrency."
+}

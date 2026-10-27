@@ -1,5 +1,7 @@
 # 实施计划 v0.2
 
+> **2026-10-27最新执行顺序已获用户确认**：E5多克隆收尾 → 当前拓扑维护/网络边界 → 上下游职责及服务认证契约 → 下游实际联调 → E3并发 → E8/E7。用户已将OCR目标副本设为14，目前7 running/7 pending，等待管理员新增独立克隆；自动补齐取决于新节点容量和接入结果，尚未验收14 running。详见[当前执行与扩容记录](NEXT-STEPS-20261027.md)。
+
 > **E5当前执行基线（2026-10-23修订六）**：共享码直接读取批次统一配置→本机boot/manual应用→GPUStack原生注册。无E5数据库、VM登记、独立会话凭据或GPU UUID关联。后续日期记录若有更早会话/登记设想，仅为历史。见 [当前设计](E5-DESIGN.md)、[开发计划](E5-IMPLEMENTATION.md)和 [部署测试](E5-TEST-DEPLOYMENT.md)。
 
 2026-10-20 · 当前执行计划；P0已通过受控试点验收，P1本地适配器及故障窗口已验收（[收尾报告](../../results/maas-p1/REPORT.md)），详见 [P0报告](../../results/maas-p0/REPORT.md)及 [首批实现报告](../../results/maas-p0-p1/REPORT.md)。依据：[DESIGN.md](DESIGN.md)。
