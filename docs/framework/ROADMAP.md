@@ -428,3 +428,12 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 核对通过：cluster3/test1配置保留、母版保护返回PROTECTED_HOST_WORKER_FORBIDDEN、启动单元enabled、无worker实例身份目录/identity/applied/维护receipt、无Docker容器，独立模型目录与缓存及公开marker齐备。单元failed为开机被母版保护拒绝的历史结果，本次不重置或启动它。只读目录属性由克隆创建worker时落实，母版目录准备不等于推理容器挂载验收。
 
 现在可以请管理员保存含model-storage-v1的新快照并创建独立克隆；收到新入口后验收首次启动自动注册、真实挂载和OCR。本轮没有制作快照，也没有验证这个新快照的首启；001/002未操作。旧凭据清理继续暂缓。[安装证据](../../results/maas-e5-storage/tower-installed.json) · [母版核对](../../results/maas-e5-storage/tower-verification.json)。此前母版待连接记录为历史状态，由本节更新。
+
+
+## 后续增强E8：GPUStack v2.3.0适配（2026-10-27）
+
+用户已要求登记为后续增强，优先级高，当前仅完成源码调研。顺序：先完成当前E5的2.2.3新版快照克隆验收，再在独立环境适配正式2.3.0；若千节点E7采用2.3基线，先过E8功能门槛再做规模验收，不阻塞E7调研。现网、worker及母版继续保持当前版本，不立即升级。
+
+阶段：兼容性清单 → 独立环境/启动与维护工具适配 → OCR/MaaS全链路回归 → 原生revision/YAML/LB/鉴权能力复用验证 → 分发与挂载隔离回归 → 备份恢复及受控发布。先server后同版worker；母版更新和管理员快照另验，禁止001/002 VM重启。E1–E7业务边界保留，不恢复collector、不附带LLM高级能力或后端合批。
+
+[范围、依赖与验收](ENHANCEMENTS.md#e8-gpustack-230-adaptation) · [调研报告](GPUSTACK-V2.3-RESEARCH.md)。实施/独立验证/现网升级尚未开始。
