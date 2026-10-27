@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-27",
+  "repository": "/Users/4paradigm/dev/gpustack",
+  "baseline": "1cfcbbff02aacdb51f0a390378dd7bcddd9bf365",
+  "release": "63a03ba137842153092749fbda1b670c96b10edf",
+  "head": "47bd0c134410ea89514116aee883aec03ee72996",
+  "describe": "v2.3.0-9-g47bd0c13",
+  "working_tree_clean": true,
+  "post_release_commits": [
+    "47bd0c13 fix(gateway): keep openaiCustomUrl path prefix on unmapped requests",
+    "31d37bfa fix(deps)!: require python 3.11 for security updates",
+    "1b533313 chore(deps-dev): bump black from 26.5.1 to 26.10.1",
+    "02e5d9e6 chore(deps): bump setuptools from 83.0.0 to 84.1.0",
+    "47beb2ae chore(deps-dev): bump virtualenv from 21.7.13 to 21.14.13",
+    "76be814d chore: update arch diagram",
+    "65a01e5d feat(plugins): extension contract with per-plugin context",
+    "80e821bf docs: refresh core feature descriptions",
+    "4aaf598e docs: add contributor avatars before readme licenses"
+  ],
+  "source_checks": {
+    "gpustack/routes/model_revisions.py": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "gpustack/server/scaling_scheduler.py": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "gpustack/routes/plugins/lb/config.py": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "gpustack/worker/tls.py": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "gpustack/gateway/ext_auth.py": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "gpustack/worker/workload_cleaner.py": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "gpustack/routes/workers.py": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "docs/upgrade/docker.md": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "docs/upgrade/cluster.md": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    },
+    "docs/user-guide/model-deployment-management.md": {
+      "exists_in_v2_3_0": true,
+      "changed_after_v2_3_0": false
+    }
+  },
+  "live_deployment_changed": false,
+  "runtime_tests_run": false
+}
