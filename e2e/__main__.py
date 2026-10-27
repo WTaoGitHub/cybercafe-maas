@@ -63,6 +63,9 @@ def main(argv=None):
             if config.get(name):
                 p = Path(config[name]).expanduser()
                 config[name] = str(p if p.is_absolute() else config_path.parent / p)
+        if config.get('operator'):
+            p = Path(config['operator']['key_file']).expanduser()
+            config['operator']['key_file'] = str(p if p.is_absolute() else config_path.parent / p)
         effects = [name for name, allowed in [('write', args.allow_writes),
                     ('inference', args.allow_inference), ('load', args.allow_load)] if allowed]
         ctx = Context(config, output, effects)

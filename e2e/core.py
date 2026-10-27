@@ -123,6 +123,7 @@ class Context:
         self.current = None
         self.blocked = False
         self.resources = []
+        self.pending_tasks = set()
         self.report = {'run_id': self.run_id, 'started_at': time.time(),
                        'selection': [], 'results': [], 'resources': self.resources,
                        'no_automatic_request_retry': True, 'inference_blocked': False}
@@ -153,6 +154,7 @@ class Context:
 
     def save(self):
         self.report['inference_blocked'] = self.blocked
+        self.report['pending_tasks'] = sorted(self.pending_tasks)
         tmp = self.output / '.report.tmp'
         with tmp.open('w') as f:
             os.fchmod(f.fileno(), 0o600)
@@ -205,6 +207,7 @@ class Context:
                 result = Response(response.code, {k.lower(): v for k, v in response.headers.items()}, payload)
                 evidence.update(state='RECEIVED', status=result.status,
                                 request_id=result.headers.get('x-request-id'))
+                code = None
                 if 'json' in result.headers.get('content-type', ''):
                     try:
                         code = result.json().get('error', {}).get('code')
@@ -214,7 +217,7 @@ class Context:
                         evidence['error_code'] = code
                     if code in ('UNKNOWN_BACKEND_ACTIVITY', 'BACKEND_QUARANTINED'):
                         self.blocked = True
-                if inference and result.status >= 500:
+                if inference and result.status >= 500 and code != 'MAINTENANCE_PAUSED':
                     self.blocked = True
                 return result
         except Exception as exc:
@@ -257,6 +260,7 @@ class Context:
                          headers={'Idempotency-Key': idem}).expect(202)
         row = r.json()
         self.track('task', row['id'])
+        self.pending_tasks.add(row['id'])
         check(r.headers.get('location') == '/maas/v1/tasks/' + row['id'], 'Missing task Location')
         return row, idem
 
@@ -268,6 +272,7 @@ class Context:
                 self.blocked = True
                 self.save()
             if row['state'] in ('SUCCEEDED', 'FAILED', 'CANCELLED'):
+                self.pending_tasks.discard(ident)
                 return row
             if time.monotonic() >= deadline:
                 self.blocked = True
@@ -312,6 +317,13 @@ def execute(context, cases):
                     context.blocked = True
                 row.update(status='ERROR', reason='Handler error: ' + type(exc).__name__)
             finally:
+                if context.pending_tasks and not interrupted and not context.blocked:
+                    try:
+                        for ident in list(context.pending_tasks):
+                            context.wait(ident)
+                    except Exception:
+                        context.blocked = True
+                        row.update(status='ERROR', reason='Own task did not settle; inspect recorded task IDs')
                 row['duration_s'] = round(time.time() - row['started_at'], 3)
                 context.save()
                 print(c.case_id, row['status'], row.get('reason', ''), flush=True)

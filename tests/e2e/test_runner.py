@@ -121,3 +121,38 @@ class RunnerTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CatalogTests(unittest.TestCase):
+    def test_metadata_ids_are_unique_and_documented_effects(self):
+        from e2e import cases
+        from e2e.core import CASES
+        self.assertGreaterEqual(len(CASES), 60)
+        self.assertEqual(len(CASES), len({c.case_id for c in CASES}))
+        for c in CASES:
+            self.assertTrue(c.module and c.title and c.labels)
+            self.assertTrue(set(c.effects) <= {'write', 'inference', 'load'})
+        # Every deferred environment-dependent check must explicitly declare requirements.
+        for c in CASES:
+            if 'optional' in c.labels:
+                self.assertTrue(c.requires, c.case_id)
+
+    def test_cli_comma_and_repeated_selectors(self):
+        from e2e.__main__ import values
+        self.assertEqual(values([['A,B', 'C'], ['D']]), ['A', 'B', 'C', 'D'])
+
+    def test_observer_uses_fixed_readonly_operation_and_no_shell(self):
+        import subprocess
+        from unittest.mock import patch
+        from e2e.observer import observe
+        class C:
+            config = {'operator': {'host': '111.4.255.126', 'port': 2023,
+                                    'key_file': '~/.ssh/id_ed25519'}}
+        with patch('e2e.observer.subprocess.run') as run:
+            run.return_value = subprocess.CompletedProcess([], 0, '{"success_events":1}', '')
+            self.assertEqual(observe(C(), 'task_usage', task_id='task_test')['success_events'], 1)
+            args, options = run.call_args
+            self.assertIsInstance(args[0], list)
+            self.assertNotIn('shell', options)
+            self.assertIn('SET TRANSACTION READ ONLY', options['input'])
+            compile(options['input'], '<remote-observer>', 'exec')
