@@ -30,11 +30,12 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
-def main():
+def main(default_base_url='https://127.0.0.1:18832', allow_local_http=False,
+         description=None):
     root = Path(__file__).resolve().parents[1]
-    parser = argparse.ArgumentParser(description=__doc__,
+    parser = argparse.ArgumentParser(description=description or __doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--base-url', default='https://127.0.0.1:18832')
+    parser.add_argument('--base-url', default=default_base_url)
     parser.add_argument('--key-file', type=Path,
                         default=Path.home() / '.maas-credentials/customer-a-key')
     parser.add_argument('--cert-file', type=Path,
@@ -43,9 +44,12 @@ def main():
     args = parser.parse_args()
     base = args.base_url.rstrip('/')
     url = urllib.parse.urlsplit(base)
-    if (url.scheme != 'https' or not url.hostname or url.username is not None
+    local_http = (allow_local_http and url.scheme == 'http'
+                  and url.hostname in ('127.0.0.1', '::1'))
+    if ((url.scheme != 'https' and not local_http) or not url.hostname or url.username is not None
             or url.password is not None or url.query or url.fragment or url.path):
-        parser.error('--base-url must be an HTTPS origin, without path, credentials or query')
+        parser.error('--base-url must be HTTPS (HTTP example also permits loopback HTTP), '
+                     'without path, credentials or query')
 
     try:
         key_path = args.key_file.expanduser()
@@ -56,7 +60,8 @@ def main():
             raise ValueError('Key file must contain only the API key, without Bearer prefix')
         if key.startswith('Bearer '):
             raise ValueError('Remove the Bearer prefix from the key file')
-        context = ssl.create_default_context(cafile=str(args.cert_file.expanduser()))
+        context = (ssl.create_default_context(cafile=str(args.cert_file.expanduser()))
+                   if url.scheme == 'https' else None)
         raw = args.image.expanduser().read_bytes() if args.image else None
         if raw is not None and not 0 < len(raw) <= 10 * 1024 * 1024:
             raise ValueError('Image must be nonempty and at most 10 MiB')
@@ -64,7 +69,7 @@ def main():
         print('Local file/configuration error:', exc, file=sys.stderr)
         return 1
 
-    # No proxy environment, redirects or application retry loop. TLS verification stays enabled.
+    # No proxy environment, redirects or retry loop. HTTPS always verifies its certificate.
     opener = urllib.request.build_opener(
         urllib.request.ProxyHandler({}), NoRedirect(),
         urllib.request.HTTPSHandler(context=context))
@@ -113,7 +118,8 @@ def main():
             print('Non-JSON gateway response.', file=sys.stderr)
     except (urllib.error.URLError, OSError, ValueError) as exc:
         print('Connection, TLS or response error:', exc, file=sys.stderr)
-        print('Check the SSH tunnel, server certificate and address.', file=sys.stderr)
+        print('Check the SSH tunnel and address; for HTTPS also check the certificate.',
+              file=sys.stderr)
     if inference_started:
         print('No automatic retry. If completion is uncertain, retain the request ID/time '
               'and contact operations before sending again.', file=sys.stderr)
