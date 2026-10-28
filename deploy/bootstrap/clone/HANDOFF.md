@@ -39,3 +39,7 @@ python3 scripts/maas/verify_worker_bundle.py --root /path/to/extracted-bundle
 ## 2026-10-28网络母版更新完成（覆盖此前“尚未写入”状态）
 
 6029/tower-1lpDmdmo6已安装clone-network-v1-r2四文件，静态控制端10.11.31.1，接口模式en+，boundary开机enabled、当前inactive，母版无worker/实例身份。管理员下一步保存新快照并创建独立克隆，不回收/重启现有节点代替验收。实际首启及模型网络尚待验证，不能仅凭enable认定已通过。[部署和交接](../../../results/maas-e5-template-network-20261028/REPORT.md)。
+
+## 验证安排调整（2026-10-28用户确认）
+
+当前不单独要求管理员为本轮网络补丁保存快照或新建克隆；后续母版相关更新时合并验证。网络文件已安装，但新快照继承、首启顺序、自动注册、控制端/同伴网络边界和模型推理仍待验收，不标记为完成。若此前保存快照，备注“待验收”；新版镜像批量交付前须完成独立克隆验证。现有两worker继续服务，E3不受此等待阻塞。[部署记录](../../../results/maas-e5-template-network-20261028/REPORT.md)。

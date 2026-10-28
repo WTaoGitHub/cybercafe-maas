@@ -29,3 +29,7 @@ unit和dropin分别安装到`/etc/systemd/system/maas-clone-boundary.service`、
 母版网卡实测enp5s0、现有克隆enp3s0，因此最终策略使用iptables受限接口前缀`en+`，兼容两者；控制端仍精确限定10.11.31.1。程序只接受安全的末尾+，拒绝裸+、嵌入通配符和lo+。若未来硬件出现eth0等非en命名，新克隆可能被阻断，需先审查接口策略，不自动放宽来源。
 
 16项规则测试/完整bootstrap91项通过；systemd-analyze verify通过，隔离network namespace实际IPv4/IPv6加载、重复apply及hook检查通过。宿主防火墙对比忽略生成时间和包/字节计数，仅比较实际规则和链策略；确认未变。当前boundary enabled/inactive，原bootstrap的failed历史状态保留，不当作新增故障，也不通过重启清除。新快照和独立新克隆首启、实际双向网络/模型访问仍待管理员安排。
+
+## 验证安排调整（2026-10-28用户确认）
+
+当前不单独要求管理员为本轮网络补丁保存快照或新建克隆；后续母版相关更新时合并验证。网络文件已安装，但新快照继承、首启顺序、自动注册、控制端/同伴网络边界和模型推理仍待验收，不标记为完成。若此前保存快照，备注“待验收”；新版镜像批量交付前须完成独立克隆验证。现有两worker继续服务，E3不受此等待阻塞。[部署记录](../../../../results/maas-e5-template-network-20261028/REPORT.md)。

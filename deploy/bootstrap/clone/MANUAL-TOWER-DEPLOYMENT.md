@@ -554,3 +554,7 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 若需要撤销母版文件安装，仅在确认仍为无worker母版时disable boundary（不带--now），删除本节四个新文件并daemon-reload；原文件均未覆盖，无需全局iptables-restore。不要在活跃克隆照搬本撤销步骤。备份优先Mac，既有低优先级旧凭据清理未执行。
 
 [实际部署及快照交接](../../../results/maas-e5-template-network-20261028/REPORT.md) · [逐文件摘要](../../../results/maas-e5-template-network-20261028/installed-package.json) · [母版验证](../../../results/maas-e5-template-network-20261028/tower-verification.json)。
+
+## 验证安排调整（2026-10-28用户确认）
+
+当前不单独要求管理员为本轮网络补丁保存快照或新建克隆；后续母版相关更新时合并验证。网络文件已安装，但新快照继承、首启顺序、自动注册、控制端/同伴网络边界和模型推理仍待验收，不标记为完成。若此前保存快照，备注“待验收”；新版镜像批量交付前须完成独立克隆验证。现有两worker继续服务，E3不受此等待阻塞。[部署记录](../../../results/maas-e5-template-network-20261028/REPORT.md)。

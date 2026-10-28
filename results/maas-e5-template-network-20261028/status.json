@@ -19,5 +19,12 @@
     "systemd_verify": true
   },
   "administrator_snapshot_pending": true,
-  "independent_clone_boot_pending": true
+  "independent_clone_boot_pending": true,
+  "validation_schedule": {
+    "decision": "defer_until_next_template_related_update",
+    "authorized_by": "user",
+    "standalone_snapshot_or_clone_not_required_now": true,
+    "must_validate_before_bulk_image_delivery": true,
+    "blocks_E3": false
+  }
 }

@@ -29,3 +29,7 @@ systemd-analyze verify返回0；daemon-reload、enable后服务enabled但inactiv
 下一步由管理员保存**新快照**并启动独立普通克隆，提供SSH入口后验证继承、自动纳管、控制端/同伴端口边界及OCR。当前尚未保存快照或验证真实跨启动；新接口名若非en前缀或桥网段改变需重新核验。控制器/配置服务器迁移仍按静态地址策略后续处理。
 
 证据：[tower-before.json](tower-before.json)、[installation.json](installation.json)、[tower-verification.json](tower-verification.json)、[installed-package.json](installed-package.json)。操作及撤销步骤见[手册第33节](../../deploy/bootstrap/clone/MANUAL-TOWER-DEPLOYMENT.md)。
+
+## 后续验证安排（用户确认）
+
+用户接受暂缓本轮独立克隆首启验证，待下一次母版相关更新后一并验收；不单独安排快照/新VM，也不阻塞E3。现有安装及测试证据保留，snapshot_created/new_clone_boot_verified仍为false。新版镜像批量交付前补验；若管理员此前保存快照，应标为待验收版本。本次无服务器变更。
