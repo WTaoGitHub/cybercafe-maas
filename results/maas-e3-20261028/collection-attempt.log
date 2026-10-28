@@ -1,0 +1,45 @@
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/maas/test_boundary.py _________________
+tests/maas/test_boundary.py:5: in <module>
+    mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1130: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/work/scripts/maas/runtime/boundary.py'
+_____________ ERROR collecting tests/maas/test_p4_release_gate.py ______________
+tests/maas/test_p4_release_gate.py:5: in <module>
+    mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1130: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/work/scripts/maas/render_p4_release.py'
+_____________ ERROR collecting tests/maas/test_stop_inspection.py ______________
+tests/maas/test_stop_inspection.py:5: in <module>
+    spec=importlib.util.spec_from_file_location('inspect_stop',path);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1130: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/work/scripts/maas/runtime/inspect_stop.py'
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/starlette/testclient.py:37
+  /usr/local/lib/python3.11/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+--------------------- generated xml file: /work/tests.xml ----------------------
+=========================== short test summary info ============================
+ERROR tests/maas/test_boundary.py - FileNotFoundError: [Errno 2] No such file...
+ERROR tests/maas/test_p4_release_gate.py - FileNotFoundError: [Errno 2] No su...
+ERROR tests/maas/test_stop_inspection.py - FileNotFoundError: [Errno 2] No su...
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!!
+1 deselected, 1 warning, 3 errors in 0.44s

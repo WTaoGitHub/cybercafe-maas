@@ -1,0 +1,41 @@
+........................................................................ [ 25%]
+..................................................F..................... [ 51%]
+........................................................................ [ 76%]
+..................................................................       [100%]
+=================================== FAILURES ===================================
+______ test_new_process_only_binds_gateway_and_retains_business_contract _______
+
+    def test_new_process_only_binds_gateway_and_retains_business_contract():
+>       template=(Path(__file__).resolve().parents[2]/'deploy/maas/edge.nginx.conf').read_text()
+
+tests/maas/test_container_ingress.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/work/deploy/maas/edge.nginx.conf'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+E       FileNotFoundError: [Errno 2] No such file or directory: '/work/deploy/maas/edge.nginx.conf'
+
+/usr/local/lib/python3.11/pathlib.py:1044: FileNotFoundError
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/starlette/testclient.py:37
+  /usr/local/lib/python3.11/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+--------------------- generated xml file: /work/tests.xml ----------------------
+=========================== short test summary info ============================
+FAILED tests/maas/test_container_ingress.py::test_new_process_only_binds_gateway_and_retains_business_contract
+1 failed, 281 passed, 1 deselected, 1 warning in 22.87s

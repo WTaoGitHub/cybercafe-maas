@@ -65,6 +65,10 @@ services:
       start_period: 10s
   executor:
     <<: *app
+    # Local Docker Compose supports replicas; no container_name/port conflicts.
+    deploy:
+      replicas: ${MAAS_EXECUTOR_REPLICAS:-1}
+    stop_grace_period: ${MAAS_EXECUTOR_STOP_GRACE_PERIOD:-120s}
     command: [python, -m, maas_platform.worker]
   observer:
     <<: *app

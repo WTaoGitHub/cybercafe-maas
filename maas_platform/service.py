@@ -170,8 +170,10 @@ class TaskService:
         with self.db.transaction() as c:
             c.execute("UPDATE backend_activity SET state='COMPLETED',updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN')", (task['token'],))
 
-    def defer_dispatch(self, task):
+    def defer_dispatch(self, task, reason='MAINTENANCE_PAUSED'):
         """Return an unsent attempt to the queue without spending an execution retry."""
+        if reason not in ('MAINTENANCE_PAUSED', 'EXECUTOR_DRAINING'):
+            raise ValueError('Unsupported unsent deferral reason')
         with self.db.transaction() as c:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             row = c.execute("SELECT * FROM tasks WHERE id=%s AND token=%s AND state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until>now() FOR UPDATE", (task['id'],task['token'])).fetchone()
@@ -179,7 +181,7 @@ class TaskService:
                 return False
             state = 'CANCELLED' if row['state']=='CANCEL_REQUESTED' else ('FAILED' if row['deadline']<=datetime.now(timezone.utc) else 'QUEUED')
             code = 'DEADLINE_EXCEEDED' if state=='FAILED' else None
-            c.execute("UPDATE task_attempts SET state='DEFERRED',error_code='MAINTENANCE_PAUSED',ended_at=now() WHERE token=%s", (task['token'],))
+            c.execute("UPDATE task_attempts SET state='DEFERRED',error_code=%s,ended_at=now() WHERE token=%s", (reason,task['token']))
             c.execute('UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now(),updated_at=now() WHERE id=%s', (state,code,row['id']))
             return True
 
