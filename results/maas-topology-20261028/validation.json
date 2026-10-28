@@ -41,5 +41,12 @@
   "new_eight_hour_run": false,
   "mother_updated": false,
   "controller_source_matches": true,
-  "node_source_matches": true
+  "node_source_matches": true,
+  "subsequent_database_regression": {
+    "date": "2026-10-28",
+    "passed": 56,
+    "skipped": 0,
+    "report": "../maas-db-regression-20261028/REPORT.md",
+    "note": "Original local run counts retained above; missing DB cases were later run using existing001 disposable DB"
+  }
 }

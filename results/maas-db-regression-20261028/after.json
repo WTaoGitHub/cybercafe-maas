@@ -1,0 +1,34 @@
+{
+  "all_preexisting_running_container_ids_preserved": true,
+  "controller_boot_id_preserved": true,
+  "test_db_running": true,
+  "test_db_id_preserved": true,
+  "model18_replicas": 4,
+  "running_instances": 4,
+  "differs_from_prior_14_replica_maintenance_baseline": true,
+  "maintenance": {
+    "paused": false,
+    "generation": 32,
+    "reason": "planned global clone maintenance",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "monitor": {
+    "generated_at_unix": 1793174454.0207527,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8481.0,
+      "maas_successful_sync_requests_total": 37.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 1805965.0,
+      "maas_artifact_free_bytes": 392885280768.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  }
+}

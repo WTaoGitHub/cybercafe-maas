@@ -1,0 +1,37 @@
+{
+  "db_id": "c49424ba0a0b97937ee2b6ee74ff950e05eb9a33ec89c06c64889b4f5ddfc09b",
+  "boot_id": "c09de9f0-1b77-4b52-be06-da22a7c36793",
+  "containers": {
+    "/kc-e2e-aliyun-slave3-web": "8ee5035f9ea918f72f00891790584e1e313bcf11bc49a29b6d2fb4b5178a0d8b",
+    "/kc-e2e-aliyun-slave3-server": "f2562275c0e9811c5b997006f4e97d8932eef5a7b278730d2dea0c9b426f4ff5",
+    "/kc-e2e-cold-aliyun-slave3-archive": "767fd4c3be981d92d43b2ea5c3f35a7b600d269ac9ad8d6f2c287d29f0b2b416",
+    "/kc-e2e-aliyun-slave3-postgres": "7be5259a58c0cd14e6ca68d0ca5cbb8d4cefea221b3daec3a494380a14cf8ad5",
+    "/kc-e2e-aliyun-slave3-redis": "43a136ab9e47659d393eb0644c120242eb163d9622e24e27139b1b757c336656",
+    "/maas-container-http": "ec84f9e00b96f9b260f438c631ccb6f42dde49dfd4c6cd7c82cfaf6a7b080f7e",
+    "/maas-tasks-api-1": "47e6ad0f6a8324a7dd0849ebf4b92134e650090e151439fc4925842b346e0e04",
+    "/maas-registry-tls": "dbabfa0944271239e7acdc52d73021e80313fc7c68ad97d445b19487e7ffee95",
+    "/maas-registry-store": "3737c222a95c557df317d65383e557cfee54d071a2e99acddb5f4d7ab8a3994b",
+    "/maas-bootstrap-config": "b2170bcb015503c7369df27e729ef72f5a177e68e1f9d33d1da9362009c5380e",
+    "/maas-tasks-observer-1": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc",
+    "/maas-tasks-executor-1": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+    "/maas-edge": "e768b45f55e7cb8b2b90c401659cfd84e4266df8af4c3fa4d63f407655dc5bbe",
+    "/maas-private-tls": "05be6dbfa0eca903a721049c47682bbc8511afc9715640b4b85cb5e81a6f4af1",
+    "/maas-tasks-db-1": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+    "/wta-maas-p1-test-db": "c49424ba0a0b97937ee2b6ee74ff950e05eb9a33ec89c06c64889b4f5ddfc09b",
+    "/wta-gpustack-server": "74ad75025d057e222345a739dc26cd49e8d7d8d156a548d98b50c6485f2bd435"
+  },
+  "monitor": {
+    "generated_at_unix": 1793173065.0397613,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8481.0,
+      "maas_successful_sync_requests_total": 37.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 1805965.0,
+      "maas_artifact_free_bytes": 392894550016.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  }
+}

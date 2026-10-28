@@ -2,6 +2,8 @@
 
 2026-10-28更新。001仅控制端；当前对象为test1/cluster3、worker7和8、model18、route17、14副本。**全局暂停推理**，不提供E1逐worker排空和其他节点继续服务。当前演练104.875秒通过，见[报告](../../results/maas-topology-20261028/REPORT.md)。2026-10-21旧worker2/models1/9单节点绑定已过期，不得执行旧binder的`bind`，旧journal只保留审计。
 
+> 同日数据库补测后只读发现model18已为4个期望/运行副本，与本页14副本验收快照不同；未确认变更时点/操作者。旧binding批准14，begin会拒绝漂移；下一次维护须先确认目标再audit/bind，不能自动改回14。详见[补测及状态](../../results/maas-db-regression-20261028/REPORT.md)。
+
 ## 权限与材料
 
 命令由001宿主机root执行。MaaS管理命令与GPUStack管理凭据留在001；专用SSH位于`/root/wtaobj/maas-live/maintenance/access-v2`，700目录/600私钥与known_hosts，仅允许001来源执行克隆forced-command actuator的status/arm/stop/restore/disarm。没有任意shell或转发权限，不向业务容器分发。
