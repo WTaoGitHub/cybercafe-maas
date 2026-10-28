@@ -1,0 +1,112 @@
+{
+  "before": {
+    "api": {
+      "id": "47e6ad0f6a8324a7dd0849ebf4b92134e650090e151439fc4925842b346e0e04",
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1"
+    },
+    "db": {
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+      "image": "postgres:16-alpine"
+    },
+    "executor": {
+      "id": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+      "image": "cybercafe-maas-tasks:e6-r1"
+    },
+    "observer": {
+      "id": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc",
+      "image": "cybercafe-maas-tasks:e6-r1"
+    }
+  },
+  "after": {
+    "api": {
+      "id": "fdef3463665c9d323b86c354d7bb614e02506756f1c427ab14a7f298f27250d3",
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1"
+    },
+    "db": {
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+      "image": "postgres:16-alpine"
+    },
+    "executor": {
+      "id": "48f9bb3168bbd5a4237309d78250d93c1e21b9e8af24193dc8f7b13719460a8d",
+      "image": "cybercafe-maas-tasks:e3-r1"
+    },
+    "observer": {
+      "id": "f4ae40f37a8a692967d0d4a0c49ff492892f2872321432a89ebe1f5566af7c32",
+      "image": "cybercafe-maas-tasks:e3-r1"
+    }
+  },
+  "pool": [
+    {
+      "name": "/maas-tasks-api-1",
+      "id": "fdef3463665c9d323b86c354d7bb614e02506756f1c427ab14a7f298f27250d3",
+      "service": "api",
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 2,
+      "project_limit": 2
+    },
+    {
+      "name": "/maas-tasks-executor-1",
+      "id": "48f9bb3168bbd5a4237309d78250d93c1e21b9e8af24193dc8f7b13719460a8d",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 2,
+      "project_limit": 2
+    },
+    {
+      "name": "/maas-tasks-observer-1",
+      "id": "f4ae40f37a8a692967d0d4a0c49ff492892f2872321432a89ebe1f5566af7c32",
+      "service": "observer",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 2,
+      "project_limit": 2
+    }
+  ],
+  "shared_limits": {
+    "global": 2,
+    "project": 2
+  },
+  "probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 34,
+      "reason": "E3 rollout, shared project concurrency2",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "managed": {
+    "paused": false,
+    "generation": 34,
+    "reason": "E3 rollout, shared project concurrency2",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "db_preserved": true,
+  "model_deployment_changed": false,
+  "image_id": "sha256:73999a5e5037a5cc5afddd17048bf44612b3dca00590add5f20168e6cd251c55",
+  "code_sha256": {
+    "worker.py": "665c3c0d7468630368c2c23271807cbd6af1e7eff50fd07ec71b96345777506f",
+    "service.py": "ca8d881076d37c0d4be408db02820a7f8d7a97d80987cd2199efa8db76e166da"
+  }
+}

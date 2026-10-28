@@ -43,3 +43,9 @@ def test_changed_generation_is_not_overwritten(setup_pool,monkeypatch):
     monkeypatch.setattr(pool,'cli',cli)
     with pytest.raises(RuntimeError,match='ownership'):pool.main()
     assert 'resume' not in calls
+
+
+def test_pool_rejects_project_limit_above_global_before_any_mutation(setup_pool,monkeypatch):
+    monkeypatch.setattr('sys.argv',['executor_pool.py','scale','--replicas','4','--global-limit','2','--project-limit','4'])
+    with pytest.raises(SystemExit):pool.main()
+    assert not (setup_pool/'executors/pending.json').exists()

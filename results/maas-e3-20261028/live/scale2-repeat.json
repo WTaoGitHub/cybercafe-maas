@@ -1,0 +1,102 @@
+{
+  "id": "ee16bf645c7a4b48a5d3d01b44dfd4a7",
+  "phase": "COMPLETE",
+  "target_replicas": 2,
+  "started_at": 1793186952.4657645,
+  "before": [
+    {
+      "name": "/maas-tasks-api-1",
+      "id": "fdef3463665c9d323b86c354d7bb614e02506756f1c427ab14a7f298f27250d3",
+      "service": "api",
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 2,
+      "project_limit": 2
+    },
+    {
+      "name": "/maas-tasks-executor-1",
+      "id": "48f9bb3168bbd5a4237309d78250d93c1e21b9e8af24193dc8f7b13719460a8d",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 2,
+      "project_limit": 2
+    },
+    {
+      "name": "/maas-tasks-observer-1",
+      "id": "f4ae40f37a8a692967d0d4a0c49ff492892f2872321432a89ebe1f5566af7c32",
+      "service": "observer",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 2,
+      "project_limit": 2
+    }
+  ],
+  "generation": 39,
+  "after": [
+    {
+      "name": "/maas-tasks-api-1",
+      "id": "fdef3463665c9d323b86c354d7bb614e02506756f1c427ab14a7f298f27250d3",
+      "service": "api",
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 2,
+      "project_limit": 2
+    },
+    {
+      "name": "/maas-tasks-executor-1",
+      "id": "48f9bb3168bbd5a4237309d78250d93c1e21b9e8af24193dc8f7b13719460a8d",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 2,
+      "project_limit": 2
+    },
+    {
+      "name": "/maas-tasks-executor-2",
+      "id": "4ca923866e2dd5582e95363e15ba13e4b591be556443ec41cb8a8a8a9fb6c6d0",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 2,
+      "project_limit": 2
+    },
+    {
+      "name": "/maas-tasks-observer-1",
+      "id": "f4ae40f37a8a692967d0d4a0c49ff492892f2872321432a89ebe1f5566af7c32",
+      "service": "observer",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 2,
+      "project_limit": 2
+    }
+  ],
+  "probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 40,
+      "reason": "executor-pool:ee16bf645c7a4b48a5d3d01b44dfd4a7",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "finished_at": 1793186954.6865494
+}

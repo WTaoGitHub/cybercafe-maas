@@ -1,0 +1,300 @@
+{
+  "observed_at": 1793190612.0086584,
+  "matrix_phase": "INTERRUPTED_REQUIRES_INSPECTION",
+  "matrix_error_class": "HTTPError",
+  "managed": {
+    "paused": true,
+    "generation": 43,
+    "reason": "E3 native replica capacity matrix",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": true,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "replicas": 4,
+  "worker_selector": {
+    "os": "linux",
+    "arch": "amd64"
+  },
+  "original_model_hash_restored": true,
+  "instances": [
+    {
+      "id": 150,
+      "worker_id": 8,
+      "state": "running",
+      "state_message": "",
+      "port": 40014
+    },
+    {
+      "id": 147,
+      "worker_id": 7,
+      "state": "running",
+      "state_message": "",
+      "port": 40011
+    },
+    {
+      "id": 149,
+      "worker_id": 7,
+      "state": "running",
+      "state_message": "",
+      "port": 40039
+    },
+    {
+      "id": 148,
+      "worker_id": 8,
+      "state": "running",
+      "state_message": "",
+      "port": 40048
+    }
+  ],
+  "route": {
+    "id": 17,
+    "name": "maas-ocr-registry-r1",
+    "ready_targets": 1,
+    "state": null,
+    "state_message": null
+  },
+  "containers": [
+    {
+      "name": "/maas-tasks-api-1",
+      "id": "6cce84ca152b9baf8a29b0469230f8f61c24ae8fe02771c167a27f04aca5d25b",
+      "running": true,
+      "restart_count": 0,
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1",
+      "service": "api",
+      "limits": {
+        "MAAS_MAX_RUNNING": "4",
+        "MAAS_MAX_PROJECT_RUNNING": "4"
+      }
+    },
+    {
+      "name": "/maas-tasks-db-1",
+      "id": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+      "running": true,
+      "restart_count": 0,
+      "image": "postgres:16-alpine",
+      "service": "db",
+      "limits": {
+        "MAAS_MAX_RUNNING": null,
+        "MAAS_MAX_PROJECT_RUNNING": null
+      }
+    },
+    {
+      "name": "/maas-tasks-executor-1",
+      "id": "dfe884b27238525a91f5982e941e678452197c1b690df66e535f90492d181a83",
+      "running": true,
+      "restart_count": 0,
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "service": "executor",
+      "limits": {
+        "MAAS_MAX_RUNNING": "4",
+        "MAAS_MAX_PROJECT_RUNNING": "4"
+      }
+    },
+    {
+      "name": "/maas-tasks-executor-2",
+      "id": "00762c1064a6ac6b5849479d34b4581bba3a4dc622d740a26c03a5f68027d03a",
+      "running": true,
+      "restart_count": 0,
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "service": "executor",
+      "limits": {
+        "MAAS_MAX_RUNNING": "4",
+        "MAAS_MAX_PROJECT_RUNNING": "4"
+      }
+    },
+    {
+      "name": "/maas-tasks-executor-3",
+      "id": "526afb57278d9e3af663d9ee6fbd6bb607ace01faa1f4ed640161d56084a28bd",
+      "running": true,
+      "restart_count": 0,
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "service": "executor",
+      "limits": {
+        "MAAS_MAX_RUNNING": "4",
+        "MAAS_MAX_PROJECT_RUNNING": "4"
+      }
+    },
+    {
+      "name": "/maas-tasks-executor-4",
+      "id": "69683ba383adf2d302fe8c6caa8f6e543db61ff76131a1249e5e9046bdb843c1",
+      "running": true,
+      "restart_count": 0,
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "service": "executor",
+      "limits": {
+        "MAAS_MAX_RUNNING": "4",
+        "MAAS_MAX_PROJECT_RUNNING": "4"
+      }
+    },
+    {
+      "name": "/maas-tasks-observer-1",
+      "id": "75a8467df535423476d0e658c73850f79e5276f55cdcf28ace32a676ce3be187",
+      "running": true,
+      "restart_count": 0,
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "service": "observer",
+      "limits": {
+        "MAAS_MAX_RUNNING": "4",
+        "MAAS_MAX_PROJECT_RUNNING": "4"
+      }
+    }
+  ],
+  "executor_logs": {
+    "/maas-tasks-executor-1": [
+      "INFO:maas.worker:executor_started executor=XZ-31-001-a8a45b71e3a2 pid=1 global_limit=4 project_limit=4",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_4a50e8118b15402692c4c5da864403ef attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_4a50e8118b15402692c4c5da864403ef committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_4a50e8118b15402692c4c5da864403ef elapsed_seconds=0.405",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_8d6ae232a87e455d9d2f3445a324fc56 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_8d6ae232a87e455d9d2f3445a324fc56 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_8d6ae232a87e455d9d2f3445a324fc56 elapsed_seconds=0.361",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_0ad881376ea34782a58cd2b25a230e72 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_0ad881376ea34782a58cd2b25a230e72 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_0ad881376ea34782a58cd2b25a230e72 elapsed_seconds=0.526",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_a1d5d28621034979a57e7715e53517e8 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_a1d5d28621034979a57e7715e53517e8 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_a1d5d28621034979a57e7715e53517e8 elapsed_seconds=0.573",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_b245d04ec27a41078c08131d0822ca1e attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_b245d04ec27a41078c08131d0822ca1e committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_b245d04ec27a41078c08131d0822ca1e elapsed_seconds=0.527",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_8d0d72aeee544ca8aa7f132264ce7c04 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_8d0d72aeee544ca8aa7f132264ce7c04 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_8d0d72aeee544ca8aa7f132264ce7c04 elapsed_seconds=0.352",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_25b3057d743f4adc8300c6d7052735d6 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_25b3057d743f4adc8300c6d7052735d6 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_25b3057d743f4adc8300c6d7052735d6 elapsed_seconds=0.347",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_1480a0c53e844a4cb3823a2a45ad4e1a attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_1480a0c53e844a4cb3823a2a45ad4e1a committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_1480a0c53e844a4cb3823a2a45ad4e1a elapsed_seconds=0.331",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_6b5c7446465a4b2d9d6c0ddca43a8db1 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_6b5c7446465a4b2d9d6c0ddca43a8db1 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_6b5c7446465a4b2d9d6c0ddca43a8db1 elapsed_seconds=0.317",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_6d7fe35bf4ce46d0afb2988d6ef5f564 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_6d7fe35bf4ce46d0afb2988d6ef5f564 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_6d7fe35bf4ce46d0afb2988d6ef5f564 elapsed_seconds=0.155",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-a8a45b71e3a2 task=task_4b8088cbcdf64b5f83f69ce06ccb3a7e attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-a8a45b71e3a2 task=task_4b8088cbcdf64b5f83f69ce06ccb3a7e committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-a8a45b71e3a2 task=task_4b8088cbcdf64b5f83f69ce06ccb3a7e elapsed_seconds=0.354"
+    ],
+    "/maas-tasks-executor-2": [
+      "INFO:maas.worker:executor_started executor=XZ-31-001-12d9c63c3ce3 pid=1 global_limit=4 project_limit=4",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_2b27f9b73f034eddb0cc3496f570d00c attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_2b27f9b73f034eddb0cc3496f570d00c committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_2b27f9b73f034eddb0cc3496f570d00c elapsed_seconds=0.549",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_38faa9edd5d944d4b681fae964a02934 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_38faa9edd5d944d4b681fae964a02934 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_38faa9edd5d944d4b681fae964a02934 elapsed_seconds=0.461",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_3e32dfd1e7b74524842acb0e4c8e2b63 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_3e32dfd1e7b74524842acb0e4c8e2b63 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_3e32dfd1e7b74524842acb0e4c8e2b63 elapsed_seconds=0.359",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_a954b29a4e424761821ce89701d77bdd attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_a954b29a4e424761821ce89701d77bdd committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_a954b29a4e424761821ce89701d77bdd elapsed_seconds=0.687",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_def632479afc443b96d5eff22de6e86b attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_def632479afc443b96d5eff22de6e86b committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_def632479afc443b96d5eff22de6e86b elapsed_seconds=0.302",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_a58a2a41f4214a4388fb1301ea4cd74f attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_a58a2a41f4214a4388fb1301ea4cd74f committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_a58a2a41f4214a4388fb1301ea4cd74f elapsed_seconds=0.540",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_5163449f1379487bbab61ccc84f4eb90 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_5163449f1379487bbab61ccc84f4eb90 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_5163449f1379487bbab61ccc84f4eb90 elapsed_seconds=0.409",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_3a644dd01edb4e51bd68cbee2370ce44 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_3a644dd01edb4e51bd68cbee2370ce44 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_3a644dd01edb4e51bd68cbee2370ce44 elapsed_seconds=0.304",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_f030959393bd41ba883a58be698a6a7e attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_f030959393bd41ba883a58be698a6a7e committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_f030959393bd41ba883a58be698a6a7e elapsed_seconds=0.179",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-12d9c63c3ce3 task=task_ec71699f36154826a43c02fd8d6b9c8d attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-12d9c63c3ce3 task=task_ec71699f36154826a43c02fd8d6b9c8d committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-12d9c63c3ce3 task=task_ec71699f36154826a43c02fd8d6b9c8d elapsed_seconds=0.134"
+    ],
+    "/maas-tasks-executor-3": [
+      "INFO:maas.worker:executor_started executor=XZ-31-001-13f60f586d46 pid=1 global_limit=4 project_limit=4",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_424258f9686749dc886a868a7c6eca06 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_424258f9686749dc886a868a7c6eca06 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_424258f9686749dc886a868a7c6eca06 elapsed_seconds=0.575",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_a4acf6c05406499781f170fb41cd77fa attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_a4acf6c05406499781f170fb41cd77fa committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_a4acf6c05406499781f170fb41cd77fa elapsed_seconds=0.673",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_a7a6f1f5d6534bc792a38a156f447cbd attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_a7a6f1f5d6534bc792a38a156f447cbd committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_a7a6f1f5d6534bc792a38a156f447cbd elapsed_seconds=0.581",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_0da07bc74a87484eae8a9878fbebf4da attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_0da07bc74a87484eae8a9878fbebf4da committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_0da07bc74a87484eae8a9878fbebf4da elapsed_seconds=0.526",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_470688ccb0574783bd8e352b52cce83b attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_470688ccb0574783bd8e352b52cce83b committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_470688ccb0574783bd8e352b52cce83b elapsed_seconds=0.342",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_29bc05edec6c4a4fa018cb4507c6600c attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_29bc05edec6c4a4fa018cb4507c6600c committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_29bc05edec6c4a4fa018cb4507c6600c elapsed_seconds=0.332",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_5472e284594642ee955511532ec8e0a4 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_5472e284594642ee955511532ec8e0a4 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_5472e284594642ee955511532ec8e0a4 elapsed_seconds=0.348",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_955f76d0d40e4e659cd967bb20662b27 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_955f76d0d40e4e659cd967bb20662b27 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_955f76d0d40e4e659cd967bb20662b27 elapsed_seconds=0.317",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_516824a47d374e4782b8dc7b871f0565 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_516824a47d374e4782b8dc7b871f0565 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_516824a47d374e4782b8dc7b871f0565 elapsed_seconds=0.156",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_d291e8739ccf4f61b8683c3850407905 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_d291e8739ccf4f61b8683c3850407905 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_d291e8739ccf4f61b8683c3850407905 elapsed_seconds=0.349",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-13f60f586d46 task=task_1f03cb791ae943ca8a83f18a7530be96 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-13f60f586d46 task=task_1f03cb791ae943ca8a83f18a7530be96 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-13f60f586d46 task=task_1f03cb791ae943ca8a83f18a7530be96 elapsed_seconds=0.225"
+    ],
+    "/maas-tasks-executor-4": [
+      "INFO:maas.worker:executor_started executor=XZ-31-001-bfbc8da15de9 pid=1 global_limit=4 project_limit=4",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_d7500ce0ed094e6188508a60b5e46668 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_d7500ce0ed094e6188508a60b5e46668 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_d7500ce0ed094e6188508a60b5e46668 elapsed_seconds=0.553",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_5573c86f2a5a456d9f83c212ac0b525d attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_5573c86f2a5a456d9f83c212ac0b525d committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_5573c86f2a5a456d9f83c212ac0b525d elapsed_seconds=0.314",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_0572e02178e2430eb634f014ae2097da attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_0572e02178e2430eb634f014ae2097da committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_0572e02178e2430eb634f014ae2097da elapsed_seconds=0.440",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_1e062f2a22a1425cb5a258e976e7d1ba attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_1e062f2a22a1425cb5a258e976e7d1ba committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_1e062f2a22a1425cb5a258e976e7d1ba elapsed_seconds=0.526",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_03a7f8e74f2c4f0496892f0c78a379e3 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_03a7f8e74f2c4f0496892f0c78a379e3 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_03a7f8e74f2c4f0496892f0c78a379e3 elapsed_seconds=0.605",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_30f2f15cc0c741838f1b74b49a4c53e3 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_30f2f15cc0c741838f1b74b49a4c53e3 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_30f2f15cc0c741838f1b74b49a4c53e3 elapsed_seconds=0.461",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_dc76f56d468d408880734246e13100f3 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_dc76f56d468d408880734246e13100f3 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_dc76f56d468d408880734246e13100f3 elapsed_seconds=0.369",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_40c99012cd08463fab895d28b2217cb6 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_40c99012cd08463fab895d28b2217cb6 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_40c99012cd08463fab895d28b2217cb6 elapsed_seconds=0.361",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_ed682d909721435bbdc1796fd708d277 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_ed682d909721435bbdc1796fd708d277 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_ed682d909721435bbdc1796fd708d277 elapsed_seconds=0.157",
+      "INFO:maas.worker:task_claimed executor=XZ-31-001-bfbc8da15de9 task=task_554c93e944ca40fabff21e4f0aeee7a6 attempt=1",
+      "INFO:maas.worker:task_finished executor=XZ-31-001-bfbc8da15de9 task=task_554c93e944ca40fabff21e4f0aeee7a6 committed=True outcome=success",
+      "INFO:maas.worker:task_released executor=XZ-31-001-bfbc8da15de9 task=task_554c93e944ca40fabff21e4f0aeee7a6 elapsed_seconds=0.381"
+    ]
+  },
+  "monitor": {
+    "generated_at_unix": 1793190596.1290414,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8691.0,
+      "maas_successful_sync_requests_total": 37.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 128202567.0,
+      "maas_artifact_free_bytes": 392690728960.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  },
+  "controller_boot_id": "c09de9f0-1b77-4b52-be06-da22a7c36793"
+}

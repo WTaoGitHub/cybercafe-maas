@@ -1,0 +1,112 @@
+"""Bounded live OCR executor comparison; verified TLS, unique IDs, no inference retries.
+Keeps native replicas/claim unchanged. Uses native worker metrics, not SSH inventory.
+"""
+import argparse,concurrent.futures,hashlib,json,os,re,ssl,subprocess,sys,threading,time,urllib.request
+from pathlib import Path
+LIVE=Path('/root/wtaobj/maas-live');FIXTURES=Path('/root/wtaobj/maas-endurance-fixtures')
+
+
+def command(args):return subprocess.check_output(args,text=True,stderr=subprocess.PIPE,timeout=20)
+def sql(query):return json.loads(command(['docker','exec','maas-tasks-db-1','psql','-h','127.0.0.1','-p','18835','-U','maas','-d','maas','-tAc',query]))
+def percentile(values,q):
+    a=sorted(values);return a[min(len(a)-1,int((len(a)-1)*q))] if a else None
+
+def atomic(path,value):
+    temp=path.with_suffix('.new');fd=os.open(temp,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
+    with os.fdopen(fd,'w') as f:json.dump(value,f,indent=2);f.flush();os.fsync(f.fileno())
+    os.replace(temp,path)
+
+
+def main():
+    p=argparse.ArgumentParser();p.add_argument('--run-id',required=True);p.add_argument('--executors',type=int,choices=[1,2,4],required=True);p.add_argument('--count',type=int,default=40);a=p.parse_args()
+    if not re.fullmatch(r'[a-z0-9-]{1,60}',a.run_id) or not 4<=a.count<=80:raise ValueError('Bounded run ID/count required')
+    root=LIVE/'e3';root.mkdir(mode=0o700,exist_ok=True);folder=root/a.run_id;folder.mkdir(mode=0o700,exist_ok=False)
+    pool=json.loads(command(['python3','/root/wtaobj/maas-framework/scripts/maas/runtime/executor_pool.py','status']))
+    assert sum(r['service']=='executor' for r in pool['containers'])==a.executors
+    assert all(r['global_limit']>=a.executors and r['project_limit']>=a.executors for r in pool['containers'])
+    assert not pool['managed']['paused'] and not pool['managed']['backend_activity'] and not pool['managed']['sync_activity']
+    sys.path[:0]=[str(Path(__file__).resolve().parents[3]),'/root/wtaobj'];from gpustack_admin import api
+    model=api('/v2/models/18');instances=api('/v2/models/18/instances')['items']
+    assert model['replicas']==4 and len(instances)==4 and all(i['state']=='running' and i['worker_id'] in [7,8] for i in instances)
+    from maas_platform.cluster_maintenance import model_hash
+    baseline_hash=model_hash(model)
+    ctx=ssl.create_default_context(cafile='/root/wtaobj/maas-private-tls/server.crt');key=(LIVE/'secrets/pilot-key').read_text().strip()
+    def request(path,body=None,media='application/json',idem=None):
+        headers={'Authorization':'Bearer '+key,'Content-Type':media}
+        if idem:headers['Idempotency-Key']=idem
+        raw=json.dumps(body).encode() if isinstance(body,dict) else body
+        with urllib.request.urlopen(urllib.request.Request('https://127.0.0.1:18832'+path,data=raw,headers=headers),context=ctx,timeout=35) as r:return r.status,json.load(r)
+    manifest=json.loads((FIXTURES/'manifest.json').read_text());inputs=[]
+    for item in manifest:
+        raw=(FIXTURES/item['file']).read_bytes();assert hashlib.sha256(raw).hexdigest()==item['sha256']
+        code,art=request('/maas/v1/artifacts',raw,item['media_type']);assert code==201
+        inputs.append({**item,'artifact':art['id']})
+    lock=threading.Lock();stop=threading.Event();samples_stop=threading.Event();records=[]
+    summary={'run_id':a.run_id,'executors':a.executors,'clients':a.executors,'count':a.count,'fixture_count':len(inputs),
+             'fixture_manifest_sha256':hashlib.sha256((FIXTURES/'manifest.json').read_bytes()).hexdigest(),
+             'model_replicas':4,'model_sha256':baseline_hash,'instances':[{'id':i['id'],'worker_id':i['worker_id']} for i in instances],
+             'pool':pool,'tls_verified':True,'state':'RUNNING','started_at':time.time(),'records':records}
+    def checkpoint():atomic(folder/'status.json',summary)
+    def one(index,warmup=False):
+        if stop.is_set():raise RuntimeError('Run halted; no new dispatch')
+        item=inputs[index%len(inputs)];idem='e3-'+a.run_id+'-'+('warm-' if warmup else '')+str(index)
+        record={'index':index,'warmup':warmup,'image':item['id'],'source':item['source'],'idempotency_key':idem,'intent_at':time.time()}
+        with lock:records.append(record);checkpoint()
+        start=time.monotonic()
+        try:
+            code,row=request('/maas/v1/tasks',{'model':'ocr.default','input':{'image':{'artifact_id':item['artifact']}},'timeout_seconds':120,'max_attempts':1},idem=idem)
+            assert code==202
+            with lock:record['task']=row['id'];checkpoint()
+            deadline=time.monotonic()+145
+            while True:
+                code,row=request('/maas/v1/tasks/'+record['task']);assert code==200
+                if row['state'] in ('SUCCEEDED','FAILED','CANCELLED'):break
+                if time.monotonic()>deadline:raise RuntimeError('Task deadline')
+                time.sleep(.05)
+            assert row['state']=='SUCCEEDED' and row['attempts']==1
+            code,result=request('/maas/v1/artifacts/'+row['result_artifact_id']);assert code==200
+            assert result['model_revision']=='ocr-registry-r1' and isinstance(result['outputs']['lines'],list)
+            with lock:record.update(state='SUCCEEDED',attempts=1,lines=len(result['outputs']['lines']),e2e_seconds=time.monotonic()-start,finished_at=time.time());checkpoint()
+        except Exception as exc:
+            stop.set()
+            with lock:record.update(state='CLIENT_FAILED',error_class=type(exc).__name__);checkpoint()
+            raise
+    for i in range(2):one(i,True)
+    def sampler():
+        while not samples_stop.is_set():
+            sample={'at':time.time(),'workers':{}}
+            for ident,ip in [(7,'10.11.31.2'),(8,'10.11.31.3')]:
+                try:
+                    with urllib.request.urlopen('http://'+ip+':10151/metrics',timeout=2) as r:lines=r.read().decode().splitlines()
+                    names=['worker_node_gpu_utilization_rate','worker_node_gram_used_bytes','worker_node_gram_allocated_bytes','worker_node_memory_used_bytes','worker_node_cpu_utilization_rate','worker_node_gpu_temperature_celsius']
+                    sample['workers'][str(ident)]={name:float(next(x.rsplit(' ',1)[1] for x in lines if x.startswith('gpustack:'+name+'{'))) for name in names}
+                except Exception as exc:sample['workers'][str(ident)]={'error_class':type(exc).__name__}
+            try:
+                sample['tasks']=sql("SELECT json_build_object('running',(SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')),'unknown',(SELECT count(*) FROM backend_activity WHERE state='UNKNOWN'),'lock_waiters',(SELECT count(*) FROM pg_stat_activity WHERE datname='maas' AND wait_event_type='Lock'))")
+                mem={x.split(':')[0]:int(x.split()[1])*1024 for x in Path('/proc/meminfo').read_text().splitlines() if ':' in x}
+                sample['controller_mem_available_bytes']=mem['MemAvailable'];sample['controller_loadavg']=Path('/proc/loadavg').read_text().split()[:3]
+            except Exception as exc:sample['sample_error_class']=type(exc).__name__
+            with (folder/'samples.jsonl').open('a') as f:f.write(json.dumps(sample)+'\n')
+            samples_stop.wait(1)
+    sampler_thread=threading.Thread(target=sampler);sampler_thread.start();started=time.monotonic()
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=a.executors) as clients:list(clients.map(one,range(a.count)))
+        elapsed=time.monotonic()-started;measured=[r for r in records if not r['warmup']]
+        after=api('/v2/models/18');current=api('/v2/models/18/instances')['items']
+        assert after['replicas']==4 and model_hash(after)==baseline_hash and {i['id'] for i in current}=={i['id'] for i in instances}
+        summary.update(state='COMPLETE',elapsed_seconds=elapsed,throughput_images_per_second=len(measured)/elapsed,
+            e2e_p50_seconds=percentile([r['e2e_seconds'] for r in measured],.5),e2e_p95_seconds=percentile([r['e2e_seconds'] for r in measured],.95),e2e_p99_seconds=percentile([r['e2e_seconds'] for r in measured],.99))
+    finally:
+        stop.set();samples_stop.set();sampler_thread.join(timeout=8)
+        # Namespace-limited reconciliation: no dependence on unrelated customer traffic totals.
+        prefix='e3-'+a.run_id+'-%'
+        summary['database']=sql("SELECT coalesce(json_agg(json_build_object('id',t.id,'state',t.state,'attempts',t.attempts,'created_at',t.created_at,'updated_at',t.updated_at,'success_events',(SELECT count(*) FROM task_usage_events u WHERE u.task_id=t.id),'execution_seconds',(SELECT sum(extract(epoch FROM ended_at-started_at)) FROM task_attempts a WHERE a.task_id=t.id))), '[]'::json) FROM tasks t WHERE t.idempotency_key LIKE '"+prefix+"'")
+        summary['finished_at']=time.time()
+        good=all(r['state']=='SUCCEEDED' and r['attempts']==1 and r['success_events']==1 for r in summary['database'])
+        if len(summary['database'])!=a.count+2 or not good or summary['state']!='COMPLETE':summary['state']='FAILED'
+        checkpoint()
+    print(json.dumps({k:v for k,v in summary.items() if k not in ['records','database','pool']}))
+    if summary['state']!='COMPLETE':raise RuntimeError('Benchmark incomplete; inspect original IDs, do not replay uncertain requests')
+
+
+if __name__=='__main__':main()

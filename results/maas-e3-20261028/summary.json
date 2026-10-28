@@ -1,0 +1,484 @@
+{
+  "status": "INTERRUPTED_REQUIRES_INSPECTION",
+  "reason": "HTTP503 during dual-4 native warmup, no retry",
+  "interrupted_at_beijing": "2026-10-28T20:23:41.424013+08:00",
+  "runs": [
+    {
+      "run": "a1-20261028",
+      "executors": 1,
+      "clients": 1,
+      "images": 40,
+      "throughput": 1.0385360480517907,
+      "p50": 0.9598580391611904,
+      "p95": 1.1599461829755455,
+      "p99": 1.1929005100391805,
+      "database": {
+        "tasks": 42,
+        "success": 42,
+        "events": 42
+      },
+      "max_sampled_running": 1,
+      "max_sampled_lock_waiters": 0,
+      "resources": {
+        "7": {
+          "sample_count": 26,
+          "gpu_used_peak_bytes": 5651824640.0,
+          "gpu_utilization_peak_percent": 44.0
+        },
+        "8": {
+          "sample_count": 26,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_utilization_peak_percent": 36.0
+        }
+      }
+    },
+    {
+      "run": "a2-20261028",
+      "executors": 1,
+      "clients": 1,
+      "images": 40,
+      "throughput": 1.062728801128311,
+      "p50": 0.9366931598633528,
+      "p95": 1.1390361939556897,
+      "p99": 1.1954292790032923,
+      "database": {
+        "tasks": 42,
+        "success": 42,
+        "events": 42
+      },
+      "max_sampled_running": 1,
+      "max_sampled_lock_waiters": 0,
+      "resources": {
+        "7": {
+          "sample_count": 26,
+          "gpu_used_peak_bytes": 5920260096.0,
+          "gpu_utilization_peak_percent": 18.0
+        },
+        "8": {
+          "sample_count": 26,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_utilization_peak_percent": 0.0
+        }
+      }
+    },
+    {
+      "run": "b1-20261028",
+      "executors": 2,
+      "clients": 2,
+      "images": 40,
+      "throughput": 2.6916195898377087,
+      "p50": 0.7388739669695497,
+      "p95": 1.0685505429282784,
+      "p99": 1.1238406589254737,
+      "database": {
+        "tasks": 42,
+        "success": 42,
+        "events": 42
+      },
+      "max_sampled_running": 2,
+      "max_sampled_lock_waiters": 0,
+      "resources": {
+        "7": {
+          "sample_count": 10,
+          "gpu_used_peak_bytes": 5920260096.0,
+          "gpu_utilization_peak_percent": 40.0
+        },
+        "8": {
+          "sample_count": 10,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_utilization_peak_percent": 2.0
+        }
+      }
+    },
+    {
+      "run": "b2-20261028",
+      "executors": 2,
+      "clients": 2,
+      "images": 40,
+      "throughput": 2.6895353424224293,
+      "p50": 0.7541622968856245,
+      "p95": 1.118136813864112,
+      "p99": 1.1366123149637133,
+      "database": {
+        "tasks": 42,
+        "success": 42,
+        "events": 42
+      },
+      "max_sampled_running": 2,
+      "max_sampled_lock_waiters": 0,
+      "resources": {
+        "7": {
+          "sample_count": 10,
+          "gpu_used_peak_bytes": 5920260096.0,
+          "gpu_utilization_peak_percent": 49.0
+        },
+        "8": {
+          "sample_count": 10,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_utilization_peak_percent": 47.0
+        }
+      }
+    },
+    {
+      "run": "c1-20261028",
+      "executors": 4,
+      "clients": 4,
+      "images": 40,
+      "throughput": 5.964049580774075,
+      "p50": 0.5848425088915974,
+      "p95": 1.0611762159969658,
+      "p99": 1.066264480818063,
+      "database": {
+        "tasks": 42,
+        "success": 42,
+        "events": 42
+      },
+      "max_sampled_running": 4,
+      "max_sampled_lock_waiters": 0,
+      "resources": {
+        "7": {
+          "sample_count": 5,
+          "gpu_used_peak_bytes": 6188695552.0,
+          "gpu_utilization_peak_percent": 56.0
+        },
+        "8": {
+          "sample_count": 5,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_utilization_peak_percent": 19.0
+        }
+      }
+    }
+  ],
+  "matrix_points": [
+    {
+      "name": "single7-1",
+      "phase": "COMPLETE",
+      "replicas": 1,
+      "eligible_workers": [
+        7
+      ],
+      "placement": {
+        "7": 1
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "process_start_seconds": 9.313466107007116,
+      "throughput_images_per_second": 4.4786626663206865,
+      "p50_seconds": 0.8894881189335138,
+      "p95_seconds": 1.3838870599865913,
+      "p99_seconds": 1.570586108835414,
+      "resources": {
+        "7": {
+          "sample_count": 22,
+          "gpu_used_peak_bytes": 6188695552.0,
+          "gpu_allocated_peak_bytes": 2147483648.0,
+          "gpu_utilization_peak_percent": 68.0,
+          "measured_phase_samples": 11,
+          "measured_gpu_used_peak_bytes": 2458910720.0
+        },
+        "8": {
+          "sample_count": 0,
+          "gpu_used_peak_bytes": null,
+          "gpu_allocated_peak_bytes": null,
+          "gpu_utilization_peak_percent": null,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        }
+      }
+    },
+    {
+      "name": "single7-2",
+      "phase": "COMPLETE",
+      "replicas": 2,
+      "eligible_workers": [
+        7
+      ],
+      "placement": {
+        "7": 2
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "process_start_seconds": 8.814816920086741,
+      "throughput_images_per_second": 6.470513172648974,
+      "p50_seconds": 0.533369978889823,
+      "p95_seconds": 1.1813465249724686,
+      "p99_seconds": 1.4020263499114662,
+      "resources": {
+        "7": {
+          "sample_count": 19,
+          "gpu_used_peak_bytes": 3919577088.0,
+          "gpu_allocated_peak_bytes": 4294967296.0,
+          "gpu_utilization_peak_percent": 60.0,
+          "measured_phase_samples": 8,
+          "measured_gpu_used_peak_bytes": 3919577088.0
+        },
+        "8": {
+          "sample_count": 0,
+          "gpu_used_peak_bytes": null,
+          "gpu_allocated_peak_bytes": null,
+          "gpu_utilization_peak_percent": null,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        }
+      }
+    },
+    {
+      "name": "single7-4",
+      "phase": "COMPLETE",
+      "replicas": 4,
+      "eligible_workers": [
+        7
+      ],
+      "placement": {
+        "7": 4
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "process_start_seconds": 7.839696506038308,
+      "throughput_images_per_second": 8.575883812895462,
+      "p50_seconds": 0.3536995919421315,
+      "p95_seconds": 0.8949802371207625,
+      "p99_seconds": 0.9539719801396132,
+      "resources": {
+        "7": {
+          "sample_count": 16,
+          "gpu_used_peak_bytes": 7383023616.0,
+          "gpu_allocated_peak_bytes": 8589934592.0,
+          "gpu_utilization_peak_percent": 86.0,
+          "measured_phase_samples": 6,
+          "measured_gpu_used_peak_bytes": 7383023616.0
+        },
+        "8": {
+          "sample_count": 0,
+          "gpu_used_peak_bytes": null,
+          "gpu_allocated_peak_bytes": null,
+          "gpu_utilization_peak_percent": null,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        }
+      }
+    },
+    {
+      "name": "single8-1",
+      "phase": "COMPLETE",
+      "replicas": 1,
+      "eligible_workers": [
+        8
+      ],
+      "placement": {
+        "8": 1
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "process_start_seconds": 5.705443775979802,
+      "throughput_images_per_second": 4.484300342831977,
+      "p50_seconds": 0.8577443689573556,
+      "p95_seconds": 1.4026288781315088,
+      "p99_seconds": 1.5168758248910308,
+      "resources": {
+        "7": {
+          "sample_count": 0,
+          "gpu_used_peak_bytes": null,
+          "gpu_allocated_peak_bytes": null,
+          "gpu_utilization_peak_percent": null,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        },
+        "8": {
+          "sample_count": 19,
+          "gpu_used_peak_bytes": 2458910720.0,
+          "gpu_allocated_peak_bytes": 2147483648.0,
+          "gpu_utilization_peak_percent": 53.0,
+          "measured_phase_samples": 11,
+          "measured_gpu_used_peak_bytes": 2458910720.0
+        }
+      }
+    },
+    {
+      "name": "single8-2",
+      "phase": "COMPLETE",
+      "replicas": 2,
+      "eligible_workers": [
+        8
+      ],
+      "placement": {
+        "8": 2
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "process_start_seconds": 8.31905169901438,
+      "throughput_images_per_second": 7.114663847082054,
+      "p50_seconds": 0.43333598505705595,
+      "p95_seconds": 1.102723296964541,
+      "p99_seconds": 1.3371348700020462,
+      "resources": {
+        "7": {
+          "sample_count": 0,
+          "gpu_used_peak_bytes": null,
+          "gpu_allocated_peak_bytes": null,
+          "gpu_utilization_peak_percent": null,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        },
+        "8": {
+          "sample_count": 17,
+          "gpu_used_peak_bytes": 3921674240.0,
+          "gpu_allocated_peak_bytes": 4294967296.0,
+          "gpu_utilization_peak_percent": 73.0,
+          "measured_phase_samples": 7,
+          "measured_gpu_used_peak_bytes": 3921674240.0
+        }
+      }
+    },
+    {
+      "name": "single8-4",
+      "phase": "COMPLETE",
+      "replicas": 4,
+      "eligible_workers": [
+        8
+      ],
+      "placement": {
+        "8": 4
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "process_start_seconds": 8.309732834110036,
+      "throughput_images_per_second": 8.793498505730797,
+      "p50_seconds": 0.3505543260835111,
+      "p95_seconds": 0.8919806599151343,
+      "p99_seconds": 0.9319754599127918,
+      "resources": {
+        "7": {
+          "sample_count": 0,
+          "gpu_used_peak_bytes": null,
+          "gpu_allocated_peak_bytes": null,
+          "gpu_utilization_peak_percent": null,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        },
+        "8": {
+          "sample_count": 16,
+          "gpu_used_peak_bytes": 7383023616.0,
+          "gpu_allocated_peak_bytes": 8589934592.0,
+          "gpu_utilization_peak_percent": 90.0,
+          "measured_phase_samples": 6,
+          "measured_gpu_used_peak_bytes": 7383023616.0
+        }
+      }
+    },
+    {
+      "name": "dual-2",
+      "phase": "COMPLETE",
+      "replicas": 2,
+      "eligible_workers": [
+        7,
+        8
+      ],
+      "placement": {
+        "7": 1,
+        "8": 1
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "process_start_seconds": 10.875378685072064,
+      "throughput_images_per_second": 7.839369947291512,
+      "p50_seconds": 0.4706106230150908,
+      "p95_seconds": 0.8623070670291781,
+      "p99_seconds": 0.9042311059311032,
+      "resources": {
+        "7": {
+          "sample_count": 20,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_allocated_peak_bytes": 2147483648.0,
+          "gpu_utilization_peak_percent": 55.0,
+          "measured_phase_samples": 7,
+          "measured_gpu_used_peak_bytes": 2188378112.0
+        },
+        "8": {
+          "sample_count": 20,
+          "gpu_used_peak_bytes": 7383023616.0,
+          "gpu_allocated_peak_bytes": 2147483648.0,
+          "gpu_utilization_peak_percent": 41.0,
+          "measured_phase_samples": 7,
+          "measured_gpu_used_peak_bytes": 2188378112.0
+        }
+      }
+    },
+    {
+      "name": "dual-4",
+      "phase": "WARMUP",
+      "replicas": 4,
+      "eligible_workers": [
+        7,
+        8
+      ],
+      "placement": {
+        "7": 2,
+        "8": 2
+      },
+      "clients": null,
+      "requests": null,
+      "successes": null,
+      "process_start_seconds": 8.337172497995198,
+      "throughput_images_per_second": null,
+      "p50_seconds": null,
+      "p95_seconds": null,
+      "p99_seconds": null,
+      "resources": {
+        "7": {
+          "sample_count": 13,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_allocated_peak_bytes": 4294967296.0,
+          "gpu_utilization_peak_percent": 0.0,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        },
+        "8": {
+          "sample_count": 13,
+          "gpu_used_peak_bytes": 2188378112.0,
+          "gpu_allocated_peak_bytes": 4294967296.0,
+          "gpu_utilization_peak_percent": 0.0,
+          "measured_phase_samples": 0,
+          "measured_gpu_used_peak_bytes": null
+        }
+      }
+    }
+  ],
+  "completed_matrix_points": 7,
+  "completed_native_measured_requests": 308,
+  "maas_successful_tasks_and_unique_events": 210,
+  "current_managed": {
+    "paused": true,
+    "generation": 43,
+    "reason": "E3 native replica capacity matrix",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": true,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "current_native_replicas": 4,
+  "current_original_model_hash_matches": true,
+  "candidate_executor_count": 4,
+  "candidate_shared_limits": {
+    "global": 4,
+    "project": 4
+  },
+  "further_work_stopped": true,
+  "matrix_restore_and_resume_not_executed": true,
+  "remaining": [
+    "diagnose native503 before recovery",
+    "complete dual4 and dual8 native matrix",
+    "candidate steady-state validation including post-matrix final config",
+    "final recommendation and acceptance; E3 not complete"
+  ],
+  "telemetry_boundary": "Native metrics sampled about0.5-1seconds; exporter refresh may be slower, so observed peaks are lower bounds. Power not exported, no energy claim. Never divide whole-card memory peak into a per-replica safety claim."
+}

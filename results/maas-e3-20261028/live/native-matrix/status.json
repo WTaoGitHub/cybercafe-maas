@@ -1,0 +1,2038 @@
+{
+  "phase": "INTERRUPTED_REQUIRES_INSPECTION",
+  "started_at": 1793190085.8727007,
+  "original_replicas": 4,
+  "original_model_sha256": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+  "fixture_manifest_sha256": "c25a97281cc93384f550df67e6a2d13ce0d4869da15f4430010a0453a38e725f",
+  "stress_manifest_sha256": "89694fbe28e43112b3959ccffc1a8d79b556dd923ca83ba3047b0b6c48926af2",
+  "points": [
+    {
+      "name": "single7-1",
+      "replicas": 1,
+      "eligible_workers": [
+        7
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 9.313466107007116,
+      "placement": {
+        "7": 1
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 9.824361260980368,
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "seconds": 0.7300426799338311,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "seconds": 0.3427190720103681,
+          "lines": 34
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "seconds": 1.032129324041307,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "seconds": 0.10270453314296901,
+          "lines": 5
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "seconds": 1.3838870599865913,
+          "lines": 112
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "seconds": 1.3290141259785742,
+          "lines": 31
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "seconds": 1.2761301430873573,
+          "lines": 68
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "seconds": 1.104095300892368,
+          "lines": 30
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "seconds": 1.033635526895523,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "seconds": 1.196471651084721,
+          "lines": 102
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "seconds": 1.0362438762094826,
+          "lines": 27
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "seconds": 1.3427936371881515,
+          "lines": 129
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "seconds": 1.3252047768328339,
+          "lines": 89
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "seconds": 1.3403465079609305,
+          "lines": 84
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "seconds": 1.403366331011057,
+          "lines": 82
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "seconds": 1.3676135649438947,
+          "lines": 154
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "seconds": 1.152882980182767,
+          "lines": 20
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "seconds": 1.127401545876637,
+          "lines": 119
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "seconds": 1.2473274089861661,
+          "lines": 97
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "seconds": 1.088089580181986,
+          "lines": 41
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "seconds": 1.0520432649645954,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "seconds": 0.8894881189335138,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "seconds": 0.6611362018156797,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "seconds": 0.5496160828042775,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "seconds": 0.5435540128964931,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "seconds": 0.5699522281065583,
+          "lines": 16
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "seconds": 0.5923648851457983,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "seconds": 0.5878256680443883,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "seconds": 0.5213098528329283,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "seconds": 0.4571514728013426,
+          "lines": 12
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "seconds": 0.42250315798446536,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "seconds": 0.3608341501094401,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "seconds": 0.364178721094504,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "seconds": 0.37215194781310856,
+          "lines": 7
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "seconds": 0.49344278615899384,
+          "lines": 5
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "seconds": 0.28217690996825695,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "seconds": 0.468839256092906,
+          "lines": 9
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "seconds": 0.3926244801841676,
+          "lines": 2
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "seconds": 0.4482114550191909,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "seconds": 0.5042768209241331,
+          "lines": 9
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "seconds": 1.570586108835414,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.9445149381645024,
+          "lines": 46
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "seconds": 1.5959125659428537,
+          "lines": 3
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "seconds": 1.2742024229373783,
+          "lines": 3
+        }
+      ],
+      "throughput_images_per_second": 4.4786626663206865,
+      "p50_seconds": 0.8894881189335138,
+      "p95_seconds": 1.3838870599865913,
+      "p99_seconds": 1.570586108835414
+    },
+    {
+      "name": "single7-2",
+      "replicas": 2,
+      "eligible_workers": [
+        7
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 8.814816920086741,
+      "placement": {
+        "7": 2
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 6.800078884931281,
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "seconds": 0.7607181870844215,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "seconds": 0.3455237620510161,
+          "lines": 34
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "seconds": 0.6838499680161476,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "seconds": 0.10303550702519715,
+          "lines": 5
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "seconds": 1.1641449208837003,
+          "lines": 112
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "seconds": 0.533369978889823,
+          "lines": 31
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "seconds": 0.5574330799281597,
+          "lines": 68
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "seconds": 0.6387893920764327,
+          "lines": 30
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "seconds": 0.8473822569940239,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "seconds": 0.8743568111676723,
+          "lines": 102
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "seconds": 1.0472321810666472,
+          "lines": 27
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "seconds": 0.5206799018196762,
+          "lines": 129
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "seconds": 0.9646799459587783,
+          "lines": 89
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "seconds": 1.1556512350216508,
+          "lines": 84
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "seconds": 1.1813465249724686,
+          "lines": 82
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "seconds": 1.4207395429257303,
+          "lines": 154
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "seconds": 0.20723874121904373,
+          "lines": 20
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "seconds": 1.1838583450298756,
+          "lines": 119
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "seconds": 1.4020263499114662,
+          "lines": 97
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "seconds": 0.29621077701449394,
+          "lines": 41
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "seconds": 0.282509220065549,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "seconds": 0.9042345660272986,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "seconds": 0.30966916494071484,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "seconds": 0.2598881160374731,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "seconds": 0.556873724097386,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "seconds": 0.6025327499955893,
+          "lines": 16
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "seconds": 0.6484042049851269,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "seconds": 0.2770997879561037,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "seconds": 0.43478252505883574,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "seconds": 0.22720365109853446,
+          "lines": 12
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "seconds": 0.33294324297457933,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "seconds": 0.14421345107257366,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "seconds": 0.20700842491351068,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "seconds": 0.32018539286218584,
+          "lines": 7
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "seconds": 0.27026381297037005,
+          "lines": 5
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "seconds": 0.10865629510954022,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "seconds": 0.2673543579876423,
+          "lines": 9
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "seconds": 0.21751438779756427,
+          "lines": 2
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "seconds": 0.43476600502617657,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "seconds": 0.2853092688601464,
+          "lines": 9
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.8913469428662211,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.9849866959266365,
+          "lines": 46
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "seconds": 0.9393890721257776,
+          "lines": 3
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "seconds": 0.6833529649302363,
+          "lines": 3
+        }
+      ],
+      "throughput_images_per_second": 6.470513172648974,
+      "p50_seconds": 0.533369978889823,
+      "p95_seconds": 1.1813465249724686,
+      "p99_seconds": 1.4020263499114662
+    },
+    {
+      "name": "single7-4",
+      "replicas": 4,
+      "eligible_workers": [
+        7
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 7.839696506038308,
+      "placement": {
+        "7": 4
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 5.130666524870321,
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "seconds": 0.884013359900564,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "seconds": 0.2846385568846017,
+          "lines": 34
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "seconds": 0.6862546880729496,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "seconds": 0.3630700260400772,
+          "lines": 5
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "seconds": 0.6307266119401902,
+          "lines": 112
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "seconds": 0.543189262971282,
+          "lines": 31
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "seconds": 0.4513428241480142,
+          "lines": 68
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "seconds": 0.210636667907238,
+          "lines": 30
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "seconds": 0.5768810419831425,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "seconds": 0.6327784960158169,
+          "lines": 102
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "seconds": 0.25724812294356525,
+          "lines": 27
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "seconds": 0.9539719801396132,
+          "lines": 129
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "seconds": 0.6343934759497643,
+          "lines": 89
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "seconds": 0.93188621615991,
+          "lines": 84
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "seconds": 0.3404477508738637,
+          "lines": 82
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "seconds": 0.5843208020087332,
+          "lines": 154
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "seconds": 0.6244757671374828,
+          "lines": 20
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "seconds": 0.4233537479303777,
+          "lines": 119
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "seconds": 0.4837173270061612,
+          "lines": 97
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "seconds": 0.3139580860733986,
+          "lines": 41
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "seconds": 0.5710220891050994,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "seconds": 0.3068516480270773,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "seconds": 0.33192504197359085,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "seconds": 0.3433954990468919,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "seconds": 0.3463145778514445,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "seconds": 0.36083698901347816,
+          "lines": 16
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "seconds": 0.2952979300171137,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "seconds": 0.3536995919421315,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "seconds": 0.23735445691272616,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "seconds": 0.24456495908088982,
+          "lines": 12
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "seconds": 0.27282632514834404,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "seconds": 0.09129982511512935,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "seconds": 0.10040759900584817,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "seconds": 0.34660741104744375,
+          "lines": 7
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "seconds": 0.46047959802672267,
+          "lines": 5
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "seconds": 0.11014533787965775,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "seconds": 0.135494101094082,
+          "lines": 9
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "seconds": 0.08474299008958042,
+          "lines": 2
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "seconds": 0.39779411698691547,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "seconds": 0.31225663516670465,
+          "lines": 9
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.99496925692074,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.8605852120090276,
+          "lines": 46
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "seconds": 0.8949802371207625,
+          "lines": 3
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "seconds": 0.23781006108038127,
+          "lines": 3
+        }
+      ],
+      "throughput_images_per_second": 8.575883812895462,
+      "p50_seconds": 0.3536995919421315,
+      "p95_seconds": 0.8949802371207625,
+      "p99_seconds": 0.9539719801396132
+    },
+    {
+      "name": "single8-1",
+      "replicas": 1,
+      "eligible_workers": [
+        8
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 5.705443775979802,
+      "placement": {
+        "8": 1
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 9.812010043067858,
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "seconds": 1.0383535649161786,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "seconds": 0.3449948509223759,
+          "lines": 34
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "seconds": 0.6629635039716959,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "seconds": 0.10959679493680596,
+          "lines": 5
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "seconds": 1.3792102369479835,
+          "lines": 112
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "seconds": 1.3303690780885518,
+          "lines": 31
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "seconds": 1.336391112068668,
+          "lines": 68
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "seconds": 1.107706482987851,
+          "lines": 30
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "seconds": 1.050022715004161,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "seconds": 1.2252355068922043,
+          "lines": 102
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "seconds": 1.0831539400387555,
+          "lines": 27
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "seconds": 1.4035047350917011,
+          "lines": 129
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "seconds": 1.3633750579319894,
+          "lines": 89
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "seconds": 1.355611294042319,
+          "lines": 84
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "seconds": 1.4026288781315088,
+          "lines": 82
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "seconds": 1.362274948041886,
+          "lines": 154
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "seconds": 1.154429767979309,
+          "lines": 20
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "seconds": 1.1264351881109178,
+          "lines": 119
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "seconds": 1.2406285270117223,
+          "lines": 97
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "seconds": 1.042642791988328,
+          "lines": 41
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "seconds": 1.013576028868556,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "seconds": 0.8577443689573556,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "seconds": 0.6409389399923384,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "seconds": 0.5522066389676183,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "seconds": 0.5355369548778981,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "seconds": 0.5550827928818762,
+          "lines": 16
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "seconds": 0.5762237689923495,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "seconds": 0.6317594749853015,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "seconds": 0.40475232107564807,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "seconds": 0.4640003691893071,
+          "lines": 12
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "seconds": 0.5046734169591218,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "seconds": 0.3080807470250875,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "seconds": 0.39274329389445484,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "seconds": 0.39818991906940937,
+          "lines": 7
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "seconds": 0.4763209009543061,
+          "lines": 5
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "seconds": 0.43761400505900383,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "seconds": 0.4803639641031623,
+          "lines": 9
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "seconds": 0.40652628615498543,
+          "lines": 2
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "seconds": 0.39990394399501383,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "seconds": 0.5151557240169495,
+          "lines": 9
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "seconds": 1.5168758248910308,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.9067389459814876,
+          "lines": 46
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "seconds": 1.5545854920055717,
+          "lines": 3
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "seconds": 1.2365713689941913,
+          "lines": 3
+        }
+      ],
+      "throughput_images_per_second": 4.484300342831977,
+      "p50_seconds": 0.8577443689573556,
+      "p95_seconds": 1.4026288781315088,
+      "p99_seconds": 1.5168758248910308
+    },
+    {
+      "name": "single8-2",
+      "replicas": 2,
+      "eligible_workers": [
+        8
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 8.31905169901438,
+      "placement": {
+        "8": 2
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 6.184410247020423,
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "seconds": 0.9585748920217156,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "seconds": 0.532279817154631,
+          "lines": 34
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "seconds": 0.45223591197282076,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "seconds": 0.10802479996345937,
+          "lines": 5
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "seconds": 1.3371348700020462,
+          "lines": 112
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "seconds": 0.2358243737835437,
+          "lines": 31
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "seconds": 0.5192437989171594,
+          "lines": 68
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "seconds": 0.912355262087658,
+          "lines": 30
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "seconds": 1.102723296964541,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "seconds": 0.43333598505705595,
+          "lines": 102
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "seconds": 0.2368361409753561,
+          "lines": 27
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "seconds": 1.0523059430997819,
+          "lines": 129
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "seconds": 1.3425356629304588,
+          "lines": 89
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "seconds": 0.4472742760553956,
+          "lines": 84
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "seconds": 0.3425712091848254,
+          "lines": 82
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "seconds": 1.26732262596488,
+          "lines": 154
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "seconds": 0.2212713120970875,
+          "lines": 20
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "seconds": 0.4365362348034978,
+          "lines": 119
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "seconds": 0.7481020991690457,
+          "lines": 97
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "seconds": 0.684222067007795,
+          "lines": 41
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "seconds": 0.5996297798119485,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "seconds": 0.45091668609529734,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "seconds": 0.316650683991611,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "seconds": 0.35991811915300786,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "seconds": 0.24310813401825726,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "seconds": 0.35321254492737353,
+          "lines": 16
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "seconds": 0.2845066760201007,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "seconds": 0.4171446771360934,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "seconds": 0.2101437810342759,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "seconds": 0.2421692730858922,
+          "lines": 12
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "seconds": 0.3784135819878429,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "seconds": 0.21068040886893868,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "seconds": 0.2770720908883959,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "seconds": 0.3743901310954243,
+          "lines": 7
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "seconds": 0.6103301830589771,
+          "lines": 5
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "seconds": 0.31428775889799,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "seconds": 0.49026585510000587,
+          "lines": 9
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "seconds": 0.0897310939617455,
+          "lines": 2
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "seconds": 0.43011516495607793,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "seconds": 0.28678121604025364,
+          "lines": 9
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.8947741319425404,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.8471648320555687,
+          "lines": 46
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "seconds": 1.0596785740926862,
+          "lines": 3
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "seconds": 0.7852373258210719,
+          "lines": 3
+        }
+      ],
+      "throughput_images_per_second": 7.114663847082054,
+      "p50_seconds": 0.43333598505705595,
+      "p95_seconds": 1.102723296964541,
+      "p99_seconds": 1.3371348700020462
+    },
+    {
+      "name": "single8-4",
+      "replicas": 4,
+      "eligible_workers": [
+        8
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 8.309732834110036,
+      "placement": {
+        "8": 4
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 5.003696762025356,
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "seconds": 0.4670989599544555,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "seconds": 0.5616679578088224,
+          "lines": 34
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "seconds": 0.94611622299999,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "seconds": 0.1063624108210206,
+          "lines": 5
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "seconds": 0.8919806599151343,
+          "lines": 112
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "seconds": 0.6954526240006089,
+          "lines": 31
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "seconds": 0.45214160601608455,
+          "lines": 68
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "seconds": 0.23877664096653461,
+          "lines": 30
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "seconds": 0.6506613199599087,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "seconds": 0.5044142839033157,
+          "lines": 102
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "seconds": 0.31707372213713825,
+          "lines": 27
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "seconds": 0.6445435348432511,
+          "lines": 129
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "seconds": 0.6292750311549753,
+          "lines": 89
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "seconds": 0.48089116206392646,
+          "lines": 84
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "seconds": 0.713644783012569,
+          "lines": 82
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "seconds": 0.5752335800789297,
+          "lines": 154
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "seconds": 0.21786807593889534,
+          "lines": 20
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "seconds": 0.6451601800508797,
+          "lines": 119
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "seconds": 0.4973138109780848,
+          "lines": 97
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "seconds": 0.34220386506058276,
+          "lines": 41
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "seconds": 0.3448158099781722,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "seconds": 0.3083085441030562,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "seconds": 0.4670069459825754,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "seconds": 0.2622134620323777,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "seconds": 0.4129149098880589,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "seconds": 0.3505543260835111,
+          "lines": 16
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "seconds": 0.2864862410351634,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "seconds": 0.3621235960163176,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "seconds": 0.19042299292050302,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "seconds": 0.2620713640935719,
+          "lines": 12
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "seconds": 0.2587447699625045,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "seconds": 0.08465452399104834,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "seconds": 0.15986409899778664,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "seconds": 0.2555943999905139,
+          "lines": 7
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "seconds": 0.25135422707535326,
+          "lines": 5
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "seconds": 0.11764369206503034,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "seconds": 0.3233787401113659,
+          "lines": 9
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "seconds": 0.1606176698114723,
+          "lines": 2
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "seconds": 0.27102930401451886,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "seconds": 0.3181207561865449,
+          "lines": 9
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.9319754599127918,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.7832340251188725,
+          "lines": 46
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "seconds": 0.8991300240159035,
+          "lines": 3
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "seconds": 0.713939179899171,
+          "lines": 3
+        }
+      ],
+      "throughput_images_per_second": 8.793498505730797,
+      "p50_seconds": 0.3505543260835111,
+      "p95_seconds": 0.8919806599151343,
+      "p99_seconds": 0.9319754599127918
+    },
+    {
+      "name": "dual-2",
+      "replicas": 2,
+      "eligible_workers": [
+        7,
+        8
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 10.875378685072064,
+      "placement": {
+        "7": 1,
+        "8": 1
+      },
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 5.612695955904201,
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "seconds": 0.4706106230150908,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "seconds": 0.5076821751426905,
+          "lines": 34
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "seconds": 0.7996083749458194,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "seconds": 0.0906281229108572,
+          "lines": 5
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "seconds": 0.8872465481981635,
+          "lines": 112
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "seconds": 0.6946553869638592,
+          "lines": 31
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "seconds": 0.6381148910149932,
+          "lines": 68
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "seconds": 0.48778277495875955,
+          "lines": 30
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "seconds": 0.7064398990478367,
+          "lines": 100
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "seconds": 0.6197347769048065,
+          "lines": 102
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "seconds": 0.24052207986824214,
+          "lines": 27
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "seconds": 0.9042311059311032,
+          "lines": 129
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "seconds": 0.6673729228787124,
+          "lines": 89
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "seconds": 0.8623070670291781,
+          "lines": 84
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "seconds": 0.5177801349200308,
+          "lines": 82
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "seconds": 0.6277606040239334,
+          "lines": 154
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "seconds": 0.6721176309511065,
+          "lines": 20
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "seconds": 0.5904544990044087,
+          "lines": 119
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "seconds": 0.6762838519643992,
+          "lines": 97
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "seconds": 0.3906326210126281,
+          "lines": 41
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "seconds": 0.34471745998598635,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "seconds": 0.5327727568801492,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "seconds": 0.4412451640237123,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "seconds": 0.23688683402724564,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "seconds": 0.4239449941087514,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "seconds": 0.32568603195250034,
+          "lines": 16
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "seconds": 0.3465295589994639,
+          "lines": 8
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "seconds": 0.3239963040687144,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "seconds": 0.26698763598687947,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "seconds": 0.30467890412546694,
+          "lines": 12
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "seconds": 0.2500569159165025,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "seconds": 0.23901111702434719,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "seconds": 0.19734937814064324,
+          "lines": 1
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "seconds": 0.30985051090829074,
+          "lines": 7
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "seconds": 0.5613784010056406,
+          "lines": 5
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "seconds": 0.11615397199057043,
+          "lines": 4
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "seconds": 0.36062489403411746,
+          "lines": 9
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "seconds": 0.4528803650755435,
+          "lines": 2
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "seconds": 0.2624786840751767,
+          "lines": 3
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "seconds": 0.411279623163864,
+          "lines": 9
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.8363477950915694,
+          "lines": 46
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "seconds": 0.6858793790452182,
+          "lines": 46
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "seconds": 0.9050241708755493,
+          "lines": 3
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "seconds": 0.5349761410616338,
+          "lines": 3
+        }
+      ],
+      "throughput_images_per_second": 7.839369947291512,
+      "p50_seconds": 0.4706106230150908,
+      "p95_seconds": 0.8623070670291781,
+      "p99_seconds": 0.9042311059311032
+    },
+    {
+      "name": "dual-4",
+      "replicas": 4,
+      "eligible_workers": [
+        7,
+        8
+      ],
+      "phase": "WARMUP",
+      "process_start_seconds": 8.337172497995198,
+      "placement": {
+        "7": 2,
+        "8": 2
+      }
+    }
+  ],
+  "scope": "native GPUStack model18; MaaS paused; cached image/process cold start; no custom collector",
+  "native_preflight": {
+    "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+    "source": "doclaynet",
+    "seconds": 0.4474234979134053,
+    "lines": 46
+  },
+  "generation": 43,
+  "error_class": "HTTPError",
+  "finished_at": 1793190221.4240127
+}
