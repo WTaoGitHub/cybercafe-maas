@@ -1,0 +1,261 @@
+{
+  "hostname": "XZ-31-003",
+  "boot_id": "fe66c1d1-cff6-4daa-90ed-5d5e5e82fbb8",
+  "ip_addresses": [
+    "10.11.31.3",
+    "172.17.0.1"
+  ],
+  "image_id": "tower-e5-registry-v1",
+  "applied": {
+    "code": "APPLIED",
+    "trigger": "boot",
+    "revision": "e5-registry-r1",
+    "fingerprint": "13e89924577998e1f18fc49b94315ae477149db613c5997ccb9dd75afe40dcb1",
+    "cluster_id": 3,
+    "worker_id": 8,
+    "worker_name": "e5-e98c7888ed68fd705b57d535",
+    "native_state": "not_ready",
+    "layout_version": "registry-access-v1",
+    "layout_sha256": "ae2ab5a78f98a54b1232bedde848b8a7e7a9515cffa44549f8debea4711aac37"
+  },
+  "boot_events": [
+    {
+      "code": "APPLIED",
+      "trigger": "boot",
+      "revision": "e5-registry-r1",
+      "fingerprint": "13e89924577998e1f18fc49b94315ae477149db613c5997ccb9dd75afe40dcb1",
+      "cluster_id": 3,
+      "worker_id": 8,
+      "worker_name": "e5-e98c7888ed68fd705b57d535",
+      "native_state": "not_ready",
+      "layout_version": "registry-access-v1",
+      "layout_sha256": "ae2ab5a78f98a54b1232bedde848b8a7e7a9515cffa44549f8debea4711aac37"
+    }
+  ],
+  "bootstrap_unit": {
+    "Result": "success",
+    "ActiveState": "active",
+    "SubState": "exited"
+  },
+  "native_uuid_sha256": "584545e114f485bd13767133dbd16e812117fda49b7b1692434a8b7f0f66576d",
+  "worker_container_id": "64b2e94e8bfcbf9f68ea7a5f3e6377a9fd4dd9856b0e29d4de61fd176163b34e",
+  "worker_started_at": "2026-10-28T10:48:24.949225446Z",
+  "worker_restart_count": 0,
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, GPU-47acf347-08f2-15cf-d2f0-8b58e7a79f33, 580.95.05, 16376 MiB, 2170 MiB",
+  "module_hashes": {
+    "client.py": "f38a99f8354da0fa347c5b5a0e95034c2fe851a3dd9ce122e81428d48ae0ca5e",
+    "worker.py": "c946591779096f9b90620831a57f4a218f393c01d4f8e4c55d1eb82f1e59f535",
+    "registry.py": "10d3a19414c4ebfcdc661a4aeadcabf642d8c2dfaa5a4c8b55ffa29e1eff3ffe",
+    "storage.py": "741d9eb89dd7429d36e6166580fe2e443f62976de21d517192fe4545352114d4"
+  },
+  "ocr_image_id": "sha256:b46b348685e9c49c2b8b44110a8f7858c02afc3c32bf149037f7f200a84f4a6b",
+  "repo_digests": [
+    "10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+  ],
+  "inference_containers": [
+    {
+      "name": "maas-ocr-registry-r1-em8hg-run-0",
+      "id": "66e0e08793e583f5fc97694b78febd1eca8630a4405714cf93f79be71cb32226",
+      "restart_count": 0,
+      "started_at": "2026-10-28T02:51:47.99416636Z",
+      "mounts": [
+        {
+          "source": "/srv/maas/model-cache",
+          "target": "/srv/maas/model-cache",
+          "rw": true
+        },
+        {
+          "source": "/srv/maas/models",
+          "target": "/srv/maas/models",
+          "rw": false
+        }
+      ],
+      "only_public_model_cache_mounts": true,
+      "native_token_env_present": false
+    },
+    {
+      "name": "maas-ocr-registry-r1-obgk1-run-0",
+      "id": "dde2103e8f7b77f60b833a7b53f4fe92349866f1408396a818c5065ddc351361",
+      "restart_count": 0,
+      "started_at": "2026-10-28T02:51:47.933248958Z",
+      "mounts": [
+        {
+          "source": "/srv/maas/model-cache",
+          "target": "/srv/maas/model-cache",
+          "rw": true
+        },
+        {
+          "source": "/srv/maas/models",
+          "target": "/srv/maas/models",
+          "rw": false
+        }
+      ],
+      "only_public_model_cache_mounts": true,
+      "native_token_env_present": false
+    },
+    {
+      "name": "maas-ocr-registry-r1-p7bpe-run-0",
+      "id": "e673d6ca1245d3f7e28a023f7cd32ce549e0590ef0c79f026e45486385557277",
+      "restart_count": 0,
+      "started_at": "2026-10-28T02:51:47.99328516Z",
+      "mounts": [
+        {
+          "source": "/srv/maas/model-cache",
+          "target": "/srv/maas/model-cache",
+          "rw": true
+        },
+        {
+          "source": "/srv/maas/models",
+          "target": "/srv/maas/models",
+          "rw": false
+        }
+      ],
+      "only_public_model_cache_mounts": true,
+      "native_token_env_present": false
+    },
+    {
+      "name": "maas-ocr-registry-r1-ebs74-run-0",
+      "id": "8f0a95a06c9431c156e0c53a163bccf425141ebb5fcd8c33bd6914f492df9e47",
+      "restart_count": 0,
+      "started_at": "2026-10-28T02:51:47.992543112Z",
+      "mounts": [
+        {
+          "source": "/srv/maas/model-cache",
+          "target": "/srv/maas/model-cache",
+          "rw": true
+        },
+        {
+          "source": "/srv/maas/models",
+          "target": "/srv/maas/models",
+          "rw": false
+        }
+      ],
+      "only_public_model_cache_mounts": true,
+      "native_token_env_present": false
+    },
+    {
+      "name": "maas-ocr-registry-r1-vncuq-run-0",
+      "id": "4e09b88fc1fa1364e3243bb184e91518c201890d3adc971eeee67e1a29f3c975",
+      "restart_count": 0,
+      "started_at": "2026-10-28T02:51:47.980048176Z",
+      "mounts": [
+        {
+          "source": "/srv/maas/model-cache",
+          "target": "/srv/maas/model-cache",
+          "rw": true
+        },
+        {
+          "source": "/srv/maas/models",
+          "target": "/srv/maas/models",
+          "rw": false
+        }
+      ],
+      "only_public_model_cache_mounts": true,
+      "native_token_env_present": false
+    },
+    {
+      "name": "maas-ocr-registry-r1-jyxz8-run-0",
+      "id": "6f9c7aeeb4a207e73f0d45cd92491943ba20e803321f5d9de5d70bdfa4268548",
+      "restart_count": 0,
+      "started_at": "2026-10-28T02:51:47.947771074Z",
+      "mounts": [
+        {
+          "source": "/srv/maas/models",
+          "target": "/srv/maas/models",
+          "rw": false
+        },
+        {
+          "source": "/srv/maas/model-cache",
+          "target": "/srv/maas/model-cache",
+          "rw": true
+        }
+      ],
+      "only_public_model_cache_mounts": true,
+      "native_token_env_present": false
+    },
+    {
+      "name": "maas-ocr-registry-r1-112y1-run-0",
+      "id": "402f7bbdc037fa1e80b41e00d2e238277545a97b2e7935fe5a6605b115b89ff6",
+      "restart_count": 0,
+      "started_at": "2026-10-28T02:51:47.988124967Z",
+      "mounts": [
+        {
+          "source": "/srv/maas/models",
+          "target": "/srv/maas/models",
+          "rw": false
+        },
+        {
+          "source": "/srv/maas/model-cache",
+          "target": "/srv/maas/model-cache",
+          "rw": true
+        }
+      ],
+      "only_public_model_cache_mounts": true,
+      "native_token_env_present": false
+    }
+  ],
+  "native_pull_logs": [
+    {
+      "file": "log/serve/110.0.log",
+      "pull_events": [
+        "2026-10-28 10:50:29.645626+08:00 - 263 - gpustack_runtime.deployer.docker - INFO - Pulling image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+        "2026-10-28 10:51:39.647531+08:00 - 263 - gpustack_runtime.deployer.docker - INFO - Pulled image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+      ]
+    },
+    {
+      "file": "log/serve/111.0.log",
+      "pull_events": [
+        "2026-10-28 10:50:34.289096+08:00 - 266 - gpustack_runtime.deployer.docker - INFO - Pulling image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+        "2026-10-28 10:51:39.649749+08:00 - 266 - gpustack_runtime.deployer.docker - INFO - Pulled image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+      ]
+    },
+    {
+      "file": "log/serve/112.0.log",
+      "pull_events": [
+        "2026-10-28 10:50:34.946295+08:00 - 257 - gpustack_runtime.deployer.docker - INFO - Pulling image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+        "2026-10-28 10:51:39.654623+08:00 - 257 - gpustack_runtime.deployer.docker - INFO - Pulled image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+      ]
+    },
+    {
+      "file": "log/serve/113.0.log",
+      "pull_events": [
+        "2026-10-28 10:50:34.730099+08:00 - 260 - gpustack_runtime.deployer.docker - INFO - Pulling image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+        "2026-10-28 10:51:39.652971+08:00 - 260 - gpustack_runtime.deployer.docker - INFO - Pulled image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+      ]
+    },
+    {
+      "file": "log/serve/114.0.log",
+      "pull_events": [
+        "2026-10-28 10:50:28.933735+08:00 - 241 - gpustack_runtime.deployer.docker - INFO - Pulling image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+        "2026-10-28 10:51:39.655954+08:00 - 241 - gpustack_runtime.deployer.docker - INFO - Pulled image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+      ]
+    },
+    {
+      "file": "log/serve/115.0.log",
+      "pull_events": [
+        "2026-10-28 10:50:29.485447+08:00 - 254 - gpustack_runtime.deployer.docker - INFO - Pulling image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+        "2026-10-28 10:51:39.651204+08:00 - 254 - gpustack_runtime.deployer.docker - INFO - Pulled image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+      ]
+    },
+    {
+      "file": "log/serve/116.0.log",
+      "pull_events": [
+        "2026-10-28 10:50:34.946313+08:00 - 245 - gpustack_runtime.deployer.docker - INFO - Pulling image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9",
+        "2026-10-28 10:51:39.648568+08:00 - 245 - gpustack_runtime.deployer.docker - INFO - Pulled image 10.11.31.1:18443/maas/ocr@sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9"
+      ]
+    }
+  ],
+  "registry_auth_metadata": [
+    {
+      "endpoints": [
+        "10.11.31.1:18443"
+      ],
+      "file_mode": "0o600",
+      "directory_mode": "0o700"
+    }
+  ],
+  "registry_trust_sha256": "421f2c184e6339b2e4f1bf01e30ecae84413515bb941c1bba95a4fc947e2a9c8",
+  "only_read_operations": true,
+  "manual_apply_or_pull": false,
+  "cold_cache_before_pull_observed": false
+}

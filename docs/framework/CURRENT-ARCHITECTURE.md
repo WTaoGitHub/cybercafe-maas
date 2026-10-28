@@ -1,6 +1,6 @@
 # 当前系统架构与服务暴露
 
-2026-10-27。按最新部署、001与16487克隆的监听地址及仓库源码核对。实线表示主要调用/控制关系，响应沿原连接返回；第二图虚线表示尚未建立的入口或待核验的边界。当前GPUStack为v2.2.3，E8升级未实施。
+2026-10-28更新：001控制端、16487/worker7及17447/worker8同时在线，14个OCR副本各7个。结合前次入口监听核对及本轮双克隆证据；实线表示主要调用/控制关系，响应沿原连接返回；第二图虚线表示尚未建立的入口或待核验的边界。当前GPUStack为v2.2.3，E8升级未实施。
 
 ## 1. 整体组件架构
 
@@ -39,7 +39,7 @@ flowchart TB
         BOOT["boot / manual引导脚本<br/>验证TLS、签名、兼容性与环境"]
         W["GPUStack worker + Docker<br/>原生注册、状态上报、镜像拉取与部署<br/>管理/代理10150，指标10151"]
         ID[("私有状态与认证<br/>原生身份、SDK只读仓库认证<br/>不共享给OCR容器")]
-        OCR["OCR推理容器 · RTX 4080 SUPER<br/>引擎和权重在镜像内<br/>动态端口，当前40013"]
+        OCR["7个OCR推理副本 · RTX 4080 SUPER<br/>引擎和权重在镜像内<br/>动态端口，当前40013"]
         MODEL[("模型目录 / 缓存<br/>models只读，model-cache可写<br/>当前models仅公开部署标记")]
         BOOT -->|"启动"| W
         BOOT --> ID
@@ -48,13 +48,26 @@ flowchart TB
         OCR --> MODEL
     end
     TEMPLATE -->|"管理员保存快照并创建克隆"| BOOT
+    subgraph NODE8["新增XZ-31-003 · worker8 · test1 · 10.11.31.3 · SSH17447"]
+        BOOT8["boot自动配置 · APPLIED"]
+        W8["GPUStack worker8 · Ready"]
+        OCR8["7个OCR副本 · RTX4080SUPER<br/>models RO / cache RW，身份与认证不共享"]
+        BOOT8 --> W8
+        W8 --> OCR8
+    end
+    TEMPLATE -->|"管理员同快照创建额外克隆"| BOOT8
+    BOOT8 -->|"HTTPS统一配置"| CFG
+    W8 -->|"自动注册/状态"| GS
+    GS -->|"原生调度/推理"| W8
+    W8 -->|"认证拉取固定digest"| REG
+
     BOOT -->|"HTTPS读取配置"| CFG
     W -->|"注册、心跳与状态"| GS
     GS -->|"原生部署控制与推理路由"| W
     W -->|"HTTPS认证拉取固定digest"| REG
 ```
 
-当前客户逻辑模型仍为ocr.default，业务revision为ocr-registry-r1；原生model18/route17/instance103落在worker7。母版只交付镜像，不是运行时配置源，也不需要保持在线。MaaS输入/结果目前在001的artifact卷，不是NFS或仅保留在worker。自建collector已退役，GPUStack自身资源采集保留。
+当前客户逻辑模型仍为ocr.default，业务revision为ocr-registry-r1；原生model18/route17目标14，instance103–109在worker7、110–116在worker8，各7个且全部running。母版只交付镜像，不是运行时配置源，也不需要保持在线。MaaS输入/结果目前在001的artifact卷，不是NFS或仅保留在worker。自建collector已退役，GPUStack自身资源采集保留。
 
 ## 2. 重点：服务暴露与访问边界
 
@@ -124,3 +137,5 @@ TLS18832与HTTP18831是两个平行Nginx入口，都直接转发18830，并非18
 2026-10-27兼容门面上线后，当前客户路径包括/ocr、/v1/ocr、/v1/chat/completions，以及/maas/v1/artifacts、tasks、查询/取消和capabilities。POST /ocr兼容门面已上线，文生图仍未提供；网络监听和worker ACL状态没有因兼容适配而改变。
 
 2026-10-27同机下游接入更新：新增独立maas-container-http入口，不替换原HTTP/TLS进程；只在172.18.0.1监听18831，持久raw规则仅放指定桥接来源到该目的地址和端口。已从下游后端network namespace验证401/200及路径限制，其他桥/内部API/原生管理仍阻断。下游业务渠道须自行更新endpoint，未测试公网或VM重启。见[报告](../../results/maas-container-http/REPORT.md)。
+
+2026-10-28额外克隆正常扩容通过：新worker8无需手动安装/apply/pull/load即补齐7个实例；私有MaaS网关真实覆盖两GPU，异步/结果/单事件通过。当前两克隆IPv4 filter均无MAAS链且INPUT=ACCEPT，本轮未做第三方LAN/公网可达性测试；维护与网络边界仍是下一步。参见[本轮报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。

@@ -1,0 +1,142 @@
+{
+  "deployment": {
+    "id": 18,
+    "name": "maas-ocr-registry-r1",
+    "replicas": 14,
+    "ready_replicas": 14,
+    "cluster_id": 3,
+    "worker_selector": {
+      "os": "linux",
+      "arch": "amd64"
+    },
+    "gpu_selector": null,
+    "placement_strategy": "spread"
+  },
+  "states": {
+    "running": 14
+  },
+  "by_worker": {
+    "7": 7,
+    "8": 7
+  },
+  "instances": [
+    {
+      "id": 116,
+      "state": "running",
+      "worker_id": 8,
+      "port": 40011
+    },
+    {
+      "id": 115,
+      "state": "running",
+      "worker_id": 8,
+      "port": 40046
+    },
+    {
+      "id": 114,
+      "state": "running",
+      "worker_id": 8,
+      "port": 40020
+    },
+    {
+      "id": 113,
+      "state": "running",
+      "worker_id": 8,
+      "port": 40059
+    },
+    {
+      "id": 112,
+      "state": "running",
+      "worker_id": 8,
+      "port": 40037
+    },
+    {
+      "id": 111,
+      "state": "running",
+      "worker_id": 8,
+      "port": 40054
+    },
+    {
+      "id": 110,
+      "state": "running",
+      "worker_id": 8,
+      "port": 40058
+    },
+    {
+      "id": 109,
+      "state": "running",
+      "worker_id": 7,
+      "port": 40004
+    },
+    {
+      "id": 108,
+      "state": "running",
+      "worker_id": 7,
+      "port": 40035
+    },
+    {
+      "id": 107,
+      "state": "running",
+      "worker_id": 7,
+      "port": 40043
+    },
+    {
+      "id": 106,
+      "state": "running",
+      "worker_id": 7,
+      "port": 40050
+    },
+    {
+      "id": 105,
+      "state": "running",
+      "worker_id": 7,
+      "port": 40022
+    },
+    {
+      "id": 104,
+      "state": "running",
+      "worker_id": 7,
+      "port": 40019
+    },
+    {
+      "id": 103,
+      "state": "running",
+      "worker_id": 7,
+      "port": 40013
+    }
+  ],
+  "workers": [
+    {
+      "id": 8,
+      "name": "e5-e98c7888ed68fd705b57d535",
+      "cluster_id": 3,
+      "state": "ready",
+      "unreachable": false,
+      "labels": {
+        "os": "linux",
+        "arch": "amd64",
+        "worker-name": "e5-e98c7888ed68fd705b57d535"
+      }
+    },
+    {
+      "id": 7,
+      "name": "e5-4672ade0506987f34555caed",
+      "cluster_id": 3,
+      "state": "ready",
+      "unreachable": false,
+      "labels": {
+        "os": "linux",
+        "arch": "amd64",
+        "worker-name": "e5-4672ade0506987f34555caed"
+      }
+    }
+  ],
+  "monitor": {
+    "ok": true,
+    "alerts": [],
+    "unknown_backend": 0,
+    "unknown_sync": 0,
+    "age_s": 19.284043550491333
+  },
+  "vm_or_deployment_changes_by_verifier": false
+}

@@ -1,0 +1,20 @@
+{
+  "boot_id": "ec913d05-5caf-428a-937e-90fc537c3d2b",
+  "worker_container_id": "183750f2da8fe42258a09c2dce4c87f83202a61a1e9b250032dc47d68fd49929",
+  "worker_restart_count": 0,
+  "project_maas_chains": [],
+  "input_policy": [
+    "-P INPUT ACCEPT"
+  ],
+  "model_listeners": [
+    "LISTEN 0      2048         0.0.0.0:10150      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:10151      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:40035      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:40043      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:40050      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:40004      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:40013      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:40022      0.0.0.0:*          ",
+    "LISTEN 0      2048         0.0.0.0:40019      0.0.0.0:*          "
+  ]
+}

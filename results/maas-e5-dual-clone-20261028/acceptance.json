@@ -1,0 +1,109 @@
+{
+  "state": "PASSED",
+  "started_at": 1793156978.22943,
+  "step": "complete",
+  "sync_probes": [
+    {
+      "probe": 1,
+      "worker_id": 8,
+      "node": "GPU-47acf347-08f2-15cf-d2f0-8b58e7a79f33",
+      "lines": 46
+    },
+    {
+      "probe": 2,
+      "worker_id": 8,
+      "node": "GPU-47acf347-08f2-15cf-d2f0-8b58e7a79f33",
+      "lines": 46
+    },
+    {
+      "probe": 3,
+      "worker_id": 7,
+      "node": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a",
+      "lines": 46
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "state": "RECEIVED",
+      "status": 200,
+      "request_id": "req_4d314cbe02944320924efccbeeb9297f"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "state": "RECEIVED",
+      "status": 200,
+      "request_id": "req_438475e13d5445ed99af244d4d92e235"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "state": "RECEIVED",
+      "status": 200,
+      "request_id": "req_0add8b706b074efaa6efc3020eef2cae"
+    },
+    {
+      "method": "POST",
+      "path": "/maas/v1/artifacts",
+      "state": "RECEIVED",
+      "status": 201,
+      "request_id": "req_bccf3ae8a41b45849f98f0b442fd5af3"
+    },
+    {
+      "method": "POST",
+      "path": "/maas/v1/tasks",
+      "state": "RECEIVED",
+      "status": 202,
+      "request_id": "req_caa41dd8081b4d3e9adad787751c5a4c"
+    },
+    {
+      "method": "GET",
+      "path": "/maas/v1/tasks/task_1306409a7dd4484f9e82ce1b2138c261",
+      "state": "RECEIVED",
+      "status": 200,
+      "request_id": "req_7cfd2b764f16474d9e45c2be4e09d6f8"
+    },
+    {
+      "method": "GET",
+      "path": "/maas/v1/tasks/task_1306409a7dd4484f9e82ce1b2138c261",
+      "state": "RECEIVED",
+      "status": 200,
+      "request_id": "req_89263f211565439eb45f6546069ae5d1"
+    },
+    {
+      "method": "GET",
+      "path": "/maas/v1/artifacts/art_d3bfcc3636a64c6f8e5fba341d493b25",
+      "state": "RECEIVED",
+      "status": 200,
+      "request_id": "req_e6bbb205fd384e4ab1bb066d31fca0fe"
+    }
+  ],
+  "known_task_id": "task_1306409a7dd4484f9e82ce1b2138c261",
+  "no_automatic_retries": true,
+  "tls_verified": true,
+  "deployment_changes": false,
+  "gateway_workers_observed": [
+    7,
+    8
+  ],
+  "input_artifact_id": "art_d5a24f16807c4dc998a6a23c98e317b2",
+  "idempotency_key": "dual-worker-ebabe235571d4ac684ceb35f87742ccf",
+  "task_state": "SUCCEEDED",
+  "task_error_code": null,
+  "async": {
+    "task_id": "task_1306409a7dd4484f9e82ce1b2138c261",
+    "state": "SUCCEEDED",
+    "attempts": 1,
+    "worker_id": 7,
+    "node": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a",
+    "lines": 46,
+    "revision": "ocr-registry-r1",
+    "result_artifact_id": "art_d3bfcc3636a64c6f8e5fba341d493b25"
+  },
+  "database": {
+    "task_success_events": 1
+  },
+  "finished_at": 1793156981.735753
+}
