@@ -595,6 +595,8 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 
 将大图片列为选型及服务验收维度，分别记录原始文件字节数、宽高/像素数、检测/视觉编码实际尺寸、缩放/切图策略与文字最小尺寸；不能把预处理尺寸当成原图上传硬上限，也不能将可解码当成质量达标。当前代码基线为单图10MiB、2000万像素，未授权提高线上限制。
 
+优先评估现有模型扩展，不将更换模型作为大图支持的前置条件。在独立环境中固定当前ocr.default对应的RapidOCR/PP-OCRv4权重与方向保护，使用相同样本比较两种方案：①提高服务字节数/像素准入限制后整图识别，记录实际缩放尺度；②重叠切图识别并合并结果，验证边界文字、去重、坐标回映及阅读顺序。当前10MiB/2000万像素是MaaS与OCR后端服务主动设置的保护限制，不是模型固有上限；只放宽MaaS入口仍会被后端拒绝，实验需分别核对两层限制。比较识别质量、延迟、吞吐、内存/显存峰值与稳定性后，再确定可对外承诺的文件大小、宽高/像素范围及适用条件；未验证前不承诺超限支持，不修改线上限制。确有不足再与其他候选模型比较。
+
 - PP-OCRv6 small/medium及v5 server历史评估配置均为limit_side_len=736、limit_type=min、max_side_limit=4000；这是旧流水线配置，不是模型最大可接收宽高或当前服务承诺。调整检测尺度/切图须独立验证。
 - [PaddleOCR-VL原版预处理配置](https://huggingface.co/PaddlePaddle/PaddleOCR-VL/blob/main/preprocessor_config.json)max_pixels=2822400（约2.82MP）；属于视觉编码缩放预算，不是原图文件上限，也不能直接推广到其他VL版本或区域解析流水线。
 - [DeepSeek-OCR-2官方配置](https://github.com/deepseek-ai/DeepSeek-OCR-2/blob/main/DeepSeek-OCR2-master/DeepSeek-OCR2-vllm/config.py)为1024全局视图、768局部切块，最多6块；没有据此证明原图分辨率硬上限。
