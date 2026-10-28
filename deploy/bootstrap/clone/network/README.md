@@ -11,3 +11,9 @@ unit和dropin分别安装到`/etc/systemd/system/maas-clone-boundary.service`、
 仅允许配置的控制端从指定物理接口访问受保护TCP/UDP端口；保留loopback，IPv6没有额外外部放行。SSH22、其他业务端口和OUTPUT不修改。规则覆盖pre-DNAT、INPUT与存在时的DOCKER-USER；只管理三个MAAS-CLONE链，不清空全局规则。当前端口范围匹配v2.2.3部署，未来模型端口、overlay/IPv6容器网络或新bridge须重新核验。
 
 **不要打包**当前节点的`/etc/maas/maintenance-node.json`、maintenance SSH私钥、会话/回退journal或带hostname的当前节点策略。维护绑定是当前VM身份的运维材料，不能从母版复制给新克隆。新克隆上线后另做身份核验和维护重绑定。
+
+## 静态地址策略与后续迁移
+
+2026-10-28用户决定：当前母版先预置配置服务器`https://10.11.31.1:18840`及控制端允许IP`10.11.31.1`（示例JSON的controllers列表），原生GPUStack仍为`http://10.11.31.1:18080`。地址来自独立配置文件，不写死在Python程序中；不在本轮实现配置服务器动态下发防火墙策略或自动发现。
+
+001为临时测试VPC。后续下线/替换前按[E5.F1迁移增强](../../../../docs/framework/ENHANCEMENTS.md)清点母版/在线克隆的地址、证书和允许列表，完成新端验证及回退安排后再下线旧端；不能先关闭001再期望克隆自动发现替代机。该增强低优先级暂缓，在实际迁移前处理。当前overlay尚未写入母版，本页仅说明下一次母版集成策略。
