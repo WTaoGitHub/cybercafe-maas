@@ -625,3 +625,35 @@ PP-OCRv5 server调整为第二轮备选：真实拍照样本出现明确需求�
 - PP-StructureV3/MinerU按所选pipeline/backend逐阶段核对，不给工具名称指定一个统一模型分辨率上限。
 
 后续使用4K（3840×2160）、手机12MP（4000×3000）、A4 300dpi（约2480×3508）、A4 600dpi（约4961×7016）、8K（7680×4320）及长截图样本，比较整图缩放与重叠切图的漏字、重复字、坐标回映、表格/阅读顺序、延迟及内存/显存峰值。600dpi A4和8K均超过当前20MP限制，只能在另行确定的独立验证范围内评估；文件大小另行检查，不从像素数推定。产出按模型与硬件配置划分的“可接收上限”和“质量/资源达标范围”，尚未实测的尺寸明确标注。本轮仅调研及登记，不改线上限额、不启动大图压测。
+
+## E11：CPU OCR纳入GPUStack统一管理
+
+状态：**2026-10-28用户要求登记，待设计、实现和实测；本轮仅记录结论，未修改推理代码、镜像或线上部署。** 不改变当前E3→E8/E7等已确认执行顺序，具体优先级待后续安排；与E10模型选型协同，但不作为其前置条件。
+
+### 背景与架构决定
+
+利用空闲CPU和内存提供OCR服务，同时复用GPUStack v2.2.3的模型实例生命周期、健康检查、模型路由及负载均衡。MaaS不另建CPU模型实例管理器、worker健康仲裁或负载均衡器；继续保留现有鉴权、配额、同步/异步任务、结果存储、UNKNOWN和成功执行记录职责。内存用于容纳模型和中间数据，计算仍依赖CPU，不能以可用内存推算吞吐。
+
+已核对本地GPUStack仓库v2.2.3标签的`docs/tutorials/inference-on-cpus.md`、`docs/user-guide/model-deployment-management.md`及CPU后端过滤代码：自定义后端支持纯CPU推理，可使用`custom_framework: cpu`并开启`Allow CPU Offloading`；非OpenAI协议另有Generic Proxy路径。这是版本能力与接入路径证据，尚未证明当前worker拓扑、具体OCR镜像、资源隔离和多副本运行通过。官方强烈建议CPU推理使用CPU worker，带GPU节点的CPU调度行为需单独验证。[CPU推理文档](https://docs.gpustack.ai/2.1/tutorials/inference-on-cpus/)及[自定义后端文档](https://docs.gpustack.ai/2.0/tutorials/using-custom-backends/)为参考，实施以固定v2.2.3源码与实测为准，不套用旧版llama-box结论。
+
+### 首轮实施范围
+
+| 任务 | 内容与交付 |
+|---|---|
+| CPU推理适配 | 优先复用现有RapidOCR、权重、方向保护和OCR协议，增加CPU专用ONNX Runtime镜像；关闭CUDA要求、移除启动对nvidia-smi/GPU UUID的依赖，健康检查明确CPU provider和实例身份。CPU模式显式选择，不将现有GPU实例改成静默CPU回退 |
+| GPUStack登记 | 新增独立CPU自定义后端及部署，例如RapidOCR-CPU-custom、rapidocr-cpu；固定镜像digest、权重和业务revision，复用健康检查、动态端口、期望副本及模型路由管理 |
+| worker与资源策略 | 核对CPU worker注册/筛选、带GPU节点能否明确部署纯CPU实例、标签选择和spread行为；验证RAM调度申报、CPU线程数、容器CPU/内存限额及超额部署行为。调度claim不等于硬隔离，不预设通用RAM环境变量或核数预留已经支持 |
+| MaaS接入 | 优先沿用现有/v1/chat/completions兼容传输、OCR JSON及同步/异步调用链；CPU逻辑模型和revision独立登记，默认ocr.default保持现状。若采用原生/ocr协议，再评估Generic Proxy与connector适配，无需因此另建路由层 |
+| 容量评估 | 在固定样本、尺寸和依赖下比较CPU线程数、副本数与请求并发；测单页耗时、吞吐、P95、CPU、常驻/峰值内存和错误率，评估与同节点GPU实例及控制端组件的资源竞争 |
+| 运维交付 | 提供登记、扩缩容、维护、停止/恢复、日志定位及回退步骤，复用GPUStack状态；故障不自动切换CPU/GPU或模型版本，不自动重放未知完成请求 |
+
+### 验收条件与边界
+
+1. CPU OCR由GPUStack实际创建并管理实例，健康检查通过；运行证据确认使用CPU provider，不依赖CUDA或GPU显存；状态不只停留在配置登记。
+2. 经GPUStack统一鉴权入口完成真实OCR；至少两个CPU副本的请求分配有可核对证据，验证扩缩容、单实例异常后的路由收敛和恢复，记录失败窗口，不承诺无损切换。
+3. MaaS同步/异步、结果读取、权限、配额、维护、UNKNOWN及单次成功计量回归通过；输出文字、坐标、置信度符合当前契约，不产生虚构token计费。
+4. 明确实际可用的CPU worker拓扑、RAM申报与CPU/内存限制；多副本不会仅因每实例线程过多或预算失真耗尽宿主资源。CPU/GPU混跑需要独立竞争测试，不能由CPU-only结果推导。
+5. 报告相同样本下的质量与容量、资源余量和适用场景；历史CPU服务约2.208秒中位响应仅为旧环境小样本，不能作为当前性能承诺。收益不足可保留GPU默认方案。
+6. 实施先在独立验证范围开展；本登记不授权改动现网副本、worker、镜像或默认路由。001为控制端，不能默认占用其空闲CPU开展压测；实际节点先重新只读核对。XZ-31-001/002禁止VM重启及等效操作的长期约束继续有效，未做整机重启不得标为已验证启动持久性。
+
+交付物：CPU镜像和协议适配、GPUStack后端/部署配置、MaaS模型登记、可复现验证报告及运维回退文档。每个独立feature适当验证后分别Git提交，不push；当前仅完成事项登记。
