@@ -1,0 +1,23 @@
+{
+  "status": "TEMPLATE_INSTALLED_AWAITING_SNAPSHOT_AND_CLONE",
+  "ssh_port": 6029,
+  "hostname": "tower-1lpDmdmo6",
+  "network_policy": {
+    "interface": "en+",
+    "controllers": [
+      "10.11.31.1"
+    ]
+  },
+  "unit_enabled": true,
+  "unit_started": false,
+  "host_firewall_changed": false,
+  "vm_or_docker_restarted": false,
+  "test_results": {
+    "boundary": 16,
+    "bootstrap_total": 91,
+    "kernel_namespace_ipv4_ipv6": true,
+    "systemd_verify": true
+  },
+  "administrator_snapshot_pending": true,
+  "independent_clone_boot_pending": true
+}

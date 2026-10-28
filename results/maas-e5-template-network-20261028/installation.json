@@ -1,0 +1,32 @@
+{
+  "installed": true,
+  "enabled_not_started": true,
+  "systemd_verify_returncode": 0,
+  "systemd_verify_diagnostics": "Configuration file /usr/lib/systemd/system/start_appinstaller.service is marked executable. Please remove executable permission bits. Proceeding anyway.\n",
+  "installed_files": {
+    "opt/maas/ops/clone_boundary.py": {
+      "sha256": "d08833402ed69ca48f1bc887500eedd0054dd8cd963e5e51530604f2daa656d1",
+      "mode": "0o644",
+      "uid": 0,
+      "gid": 0
+    },
+    "etc/maas/clone-boundary.json": {
+      "sha256": "f16974dfac573f43a0165cc61ce32baa893fa1caf350e4b774f3d355be92631a",
+      "mode": "0o600",
+      "uid": 0,
+      "gid": 0
+    },
+    "etc/systemd/system/maas-clone-boundary.service": {
+      "sha256": "2d8ef84ba9834dfd9f1119595c47737d4cc93b2366e49454d08df23022e1899d",
+      "mode": "0o644",
+      "uid": 0,
+      "gid": 0
+    },
+    "etc/systemd/system/maas-worker-bootstrap.service.d/20-clone-boundary.conf": {
+      "sha256": "46b47062cdd1d1ad1ad37c6b839935e3566a1e330819fb3f0c8282d7a44f8976",
+      "mode": "0o644",
+      "uid": 0,
+      "gid": 0
+    }
+  }
+}

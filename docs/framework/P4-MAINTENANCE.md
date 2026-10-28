@@ -56,7 +56,7 @@ recover启动同一容器、恢复原maintenance和本窗口记录的副本数�
 python3 /opt/maas/ops/clone_boundary.py status
 ```
 
-开机unit及bootstrap dropin已enable，未做VM重启验收；母版尚未更新。后续通用镜像材料见[network overlay](../../deploy/bootstrap/clone/network/README.md)。E6自建collector保持退役；E1逐节点能力未上线。
+开机unit及bootstrap dropin已enable，未做VM重启验收；母版网络文件随后已通过6029安装，但新快照/独立克隆首启仍待管理员安排。通用镜像材料见[network overlay](../../deploy/bootstrap/clone/network/README.md)。E6自建collector保持退役；E1逐节点能力未上线。
 
 ## 动态副本与并发操作
 

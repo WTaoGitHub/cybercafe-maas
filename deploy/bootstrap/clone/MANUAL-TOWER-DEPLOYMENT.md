@@ -527,3 +527,30 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 ## 32. registry-access-v1新快照首启已验证
 
 2026-10-27端口16487的新克隆worker7由boot自动配置/注册，取证时无OCR镜像，随后由GPUStack使用原model18/route17自动调度拉取并运行instance103。未手动补节点配置或运行apply/pull/load；挂载隔离和MaaS同步异步/下载/单次计量通过。无需为本次QA再更新母版或重做快照。旧节点记录保留，不做VM重启或全局清理。[实际报告](../../../results/maas-e5-registry-clone-20261027/REPORT.md)。
+
+## 33. 2026-10-28：clone-network-v1-r2母版实际安装完成
+
+当前母版入口改为`root@111.4.255.126:6029`，主机tower-1lpDmdmo6（6025超时属先前状态）。用户授权网络隔离文件安装；本次不改驱动/CUDA、bootstrap.json、原业务模块、worker身份或实例配置。
+
+安装前确认无Docker容器、identity/applied/native UUID/token和maintenance-node策略；配置服务器仍https://10.11.31.1:18840，原生GPUStack仍http://10.11.31.1:18080，仓库仍10.11.31.1:18443。先将原文件及防火墙快照备份Mac私有目录`.maas/backups/tower-network-6029-20261028/`，没有把备份或维护SSH key写入母版。
+
+最终公开包为`dist/e5/clone-network-v1-20261028-r2.tar.gz`；安装清单：
+
+| 文件 | 权限 | 用途 |
+|---|---|---|
+| /opt/maas/ops/clone_boundary.py | root:root 644 | 独立防火墙程序 |
+| /etc/maas/clone-boundary.json | root:root 600 | 通用静态策略，不含节点hostname |
+| /etc/systemd/system/maas-clone-boundary.service | root:root 644 | 开机应用规则，位于Docker/network-pre之前 |
+| /etc/systemd/system/maas-worker-bootstrap.service.d/20-clone-boundary.conf | root:root 644 | bootstrap依赖并在执行前再次应用规则 |
+
+母版实际网卡enp5s0与现有克隆enp3s0不同，故策略使用安全接口前缀en+；仅允许10.11.31.1访问受保护端口，保留SSH/本机/出站。不是写死母版专属网卡名，也不是放行整个LAN。未来非en命名需另行核验。
+
+实际操作顺序：复制并核对四文件→systemd-analyze verify两unit（exit0）→systemctl daemon-reload→systemctl enable maas-clone-boundary.service，**没有--now、start/restart、宿主apply或worker注册**。当前boundary enabled/inactive；母版启动保护仍阻止注册，原bootstrap failed历史状态未清除。boot ID、Docker启动时间、无容器/身份及既有文件摘要保持，宿主IPv4/IPv6规则结构未变。
+
+验证：16项规则测试及完整bootstrap91项通过；另在母版独立network namespace内加载IPv4/IPv6真实规则，重复apply无重复INPUT hook，退出后宿主规则不变。此测试不等于真实新克隆开机验收。
+
+现可请管理员保存新快照（建议备注registry-access-v1 + clone-network-v1-r2 / 2026-10-28），启动独立普通克隆并提供SSH入口。image_id仍tower-e5-registry-v1，不因网络补丁更改原签名配置兼容范围。我们将检查四文件继承、boot注册test1、001到worker正常、同伴管理/推理访问阻断、SSH/出站及OCR；不重启001/002代替验证。
+
+若需要撤销母版文件安装，仅在确认仍为无worker母版时disable boundary（不带--now），删除本节四个新文件并daemon-reload；原文件均未覆盖，无需全局iptables-restore。不要在活跃克隆照搬本撤销步骤。备份优先Mac，既有低优先级旧凭据清理未执行。
+
+[实际部署及快照交接](../../../results/maas-e5-template-network-20261028/REPORT.md) · [逐文件摘要](../../../results/maas-e5-template-network-20261028/installed-package.json) · [母版验证](../../../results/maas-e5-template-network-20261028/tower-verification.json)。

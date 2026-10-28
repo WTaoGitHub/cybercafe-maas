@@ -24,3 +24,15 @@ def test_pre_dnat_and_forward_protect_dynamic_tcp_udp_without_ssh():
 @pytest.mark.parametrize('patch',[{'interface':'lo'},{'interface':'eth0;evil'},{'controllers':['0.0.0.0']},{'controllers':['8.8.8.8']},{'controllers':[]},{'bridge_subnets':['0.0.0.0/0']},{'bridge_subnets':['::/0']}])
 def test_invalid_scope_rejected(patch):
  with pytest.raises(ValueError):validate({**CFG,**patch})
+
+
+def test_template_ethernet_prefix_survives_different_predictable_nic_names():
+ cfg=validate({**CFG,'interface':'en+'})
+ assert cfg['interface']=='en+'
+ for chain in ('raw','host','forward'):
+  assert any('-i en+ -s 10.11.31.1/32 -j RETURN' in r for r in render(cfg,4)[chain])
+
+
+@pytest.mark.parametrize('iface',['+','en++','en+;evil','lo+','en*','en+p3s0'])
+def test_interface_wildcard_is_only_a_safe_trailing_prefix(iface):
+ with pytest.raises(ValueError):validate({**CFG,'interface':iface})

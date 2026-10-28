@@ -1,5 +1,8 @@
 # 后续增强计划
 
+> **2026-10-28母版网络文件已安装**：用户提供6029后，tower-1lpDmdmo6已安装clone-network-v1-r2，boundary enabled/inactive，通用策略为控制端10.11.31.1、接口前缀en+（适配母版enp5s0/克隆enp3s0）。静态配置服务器/原生入口保持；未在母版应用规则或启动worker，未重启VM/Docker。systemd、隔离内核及91项bootstrap验证通过。**待管理员保存新快照和独立新克隆首启/网络验收**，此前“未写入母版”为历史状态。E3仍为下一项本系统开发任务。[部署报告](../../results/maas-e5-template-network-20261028/REPORT.md)。
+
+
 > **2026-10-28动态副本维护已修正**：维护不再固定批准14或4副本；每次begin读取GPUStack的当前期望replicas并记录到该窗口journal，恢复按窗口快照执行。单纯改副本数无需重绑；节点、模型、路由等范围校验保留。已发布001并只读预览为4，未停服务；维护窗口避免并行修改部署。详见[验证记录](../../results/maas-runtime-replicas-20261028/REPORT.md)。
 
 

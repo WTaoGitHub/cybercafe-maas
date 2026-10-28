@@ -1,0 +1,116 @@
+{
+  "hostname": "tower-1lpDmdmo6",
+  "boot_id": "174beb82-26c4-4c68-9aac-fafe6693a6b6",
+  "ssh_port": 6029,
+  "static_addresses": {
+    "config_service_url": "https://10.11.31.1:18840",
+    "allowed_server_urls": [
+      "http://10.11.31.1:18080"
+    ],
+    "allowed_registry_endpoints": [
+      "10.11.31.1:18443"
+    ]
+  },
+  "file_hashes": {
+    "/etc/maas/bootstrap.json": "6f075844e9b64fdf8aca04aa0e7258deb170fa0ddad5cf42a86b5009c88f8ce8",
+    "/etc/systemd/system/maas-worker-bootstrap.service": "4c13df678e71725784ec98b44def05b8b6fb7f8883914493fc19da3a3a683b49",
+    "/opt/maas/lib/maas_bootstrap/worker.py": "c946591779096f9b90620831a57f4a218f393c01d4f8e4c55d1eb82f1e59f535"
+  },
+  "new_paths_originally_absent": [
+    "/opt/maas/ops/clone_boundary.py",
+    "/etc/maas/clone-boundary.json",
+    "/etc/systemd/system/maas-clone-boundary.service",
+    "/etc/systemd/system/maas-worker-bootstrap.service.d/20-clone-boundary.conf"
+  ],
+  "rules": {
+    "iptables": "1815de83d43834ae2f7f587e044dc549bd7d9711d27d574c369bca9da95eba97",
+    "ip6tables": "3e512266cf0de451450f7b4c41082d2c7c310da4747dc22fc0d23a8fd2f4b9b6"
+  },
+  "bootstrap_state": "ExecMainStatus=1\nActiveState=failed\nSubState=failed\nUnitFileState=enabled\n",
+  "docker_state": "ExecMainStartTimestampMonotonic=13182040\nActiveState=active\nSubState=running\n",
+  "links": [
+    {
+      "ifindex": 1,
+      "ifname": "lo",
+      "flags": [
+        "LOOPBACK",
+        "UP",
+        "LOWER_UP"
+      ],
+      "mtu": 65536,
+      "qdisc": "noqueue",
+      "operstate": "UNKNOWN",
+      "group": "default",
+      "txqlen": 1000,
+      "addr_info": [
+        {
+          "family": "inet",
+          "local": "127.0.0.1",
+          "prefixlen": 8,
+          "scope": "host",
+          "label": "lo",
+          "valid_life_time": 4294967295,
+          "preferred_life_time": 4294967295
+        }
+      ]
+    },
+    {
+      "ifindex": 2,
+      "ifname": "enp5s0",
+      "flags": [
+        "BROADCAST",
+        "MULTICAST",
+        "UP",
+        "LOWER_UP"
+      ],
+      "mtu": 1500,
+      "qdisc": "pfifo_fast",
+      "operstate": "UP",
+      "group": "default",
+      "txqlen": 1000,
+      "addr_info": [
+        {
+          "family": "inet",
+          "local": "10.11.31.4",
+          "prefixlen": 24,
+          "broadcast": "10.11.31.255",
+          "scope": "global",
+          "label": "enp5s0",
+          "valid_life_time": 4294967295,
+          "preferred_life_time": 4294967295
+        }
+      ]
+    },
+    {
+      "ifindex": 3,
+      "ifname": "docker0",
+      "flags": [
+        "NO-CARRIER",
+        "BROADCAST",
+        "MULTICAST",
+        "UP"
+      ],
+      "mtu": 1500,
+      "qdisc": "noqueue",
+      "operstate": "DOWN",
+      "group": "default",
+      "addr_info": [
+        {
+          "family": "inet",
+          "local": "172.17.0.1",
+          "prefixlen": 16,
+          "broadcast": "172.17.255.255",
+          "scope": "global",
+          "label": "docker0",
+          "valid_life_time": 4294967295,
+          "preferred_life_time": 4294967295
+        }
+      ]
+    }
+  ],
+  "normalized_rule_hashes": {
+    "iptables": "1e45bc7b2322957643dcf5da66a5eab8b77234a0bfa3ad8111572e6f26076cd9",
+    "ip6tables": "3e23bcbb171921b6e1ce681fc71b4911c1d208b508432001ae284a08ac36e5f3"
+  },
+  "rule_comparison": "Excludes generated-time comments and mutable chain packet/byte counters"
+}

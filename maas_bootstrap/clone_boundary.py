@@ -24,7 +24,7 @@ ROOT=Path('/var/lib/maas-network-boundary')
 def validate(cfg):
     if cfg.get('schema_version')!=1:raise ValueError('Invalid boundary schema')
     iface=cfg['interface']
-    if not isinstance(iface,str) or not re.fullmatch(r'[a-zA-Z0-9_.-]{1,15}',iface) or iface=='lo':
+    if not isinstance(iface,str) or not re.fullmatch(r'(?:[a-zA-Z0-9_.-]{1,15}|[a-zA-Z0-9_.-]{1,14}\+)',iface) or iface in ('lo','lo+'):
         raise ValueError('Invalid LAN interface')
     values=cfg['controllers']
     if not isinstance(values,list) or not values:raise ValueError('Explicit controllers required')

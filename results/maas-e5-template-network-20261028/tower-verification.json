@@ -1,0 +1,36 @@
+{
+  "hostname": "tower-1lpDmdmo6",
+  "ssh_port": 6029,
+  "boot_id_unchanged": true,
+  "original_files_unchanged": true,
+  "host_firewall_unchanged": true,
+  "docker_not_restarted": true,
+  "worker_containers": 0,
+  "instance_identity_absent": true,
+  "boundary_enabled": true,
+  "boundary_active": false,
+  "bootstrap_state_unchanged": true,
+  "bootstrap_prior_failed_state": "ExecMainStatus=1\nActiveState=failed\nSubState=failed\nUnitFileState=enabled\n",
+  "template_guard": {
+    "blocked": true,
+    "exception_type": "BootstrapError"
+  },
+  "policy": {
+    "schema_version": 1,
+    "interface": "en+",
+    "controllers": [
+      "10.11.31.1"
+    ],
+    "bridge_subnets": [
+      "172.17.0.0/16"
+    ]
+  },
+  "kernel_namespace_probe": {
+    "isolated_namespace_only": true,
+    "ipv4_ipv6_rules_loaded": true,
+    "repeat_apply_no_duplicate_hooks": true,
+    "interface": "en+"
+  },
+  "snapshot_created": false,
+  "new_clone_boot_verified": false
+}

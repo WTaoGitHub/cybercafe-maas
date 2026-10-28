@@ -1,0 +1,31 @@
+{
+  "archive": "/Users/4paradigm/dev/cybercafe-maas/dist/e5/clone-network-v1-20261028-r2.tar.gz",
+  "sha256": "251e06b4309ec46bafc4139989081aa77e8a7e2ecd88a16f15e0de1fce6811f3",
+  "manifest": {
+    "schema_version": 1,
+    "kind": "clone-network-v1-r2",
+    "interface": "en+",
+    "files": [
+      {
+        "path": "opt/maas/ops/clone_boundary.py",
+        "mode": "0o644",
+        "sha256": "d08833402ed69ca48f1bc887500eedd0054dd8cd963e5e51530604f2daa656d1"
+      },
+      {
+        "path": "etc/maas/clone-boundary.json",
+        "mode": "0o600",
+        "sha256": "f16974dfac573f43a0165cc61ce32baa893fa1caf350e4b774f3d355be92631a"
+      },
+      {
+        "path": "etc/systemd/system/maas-clone-boundary.service",
+        "mode": "0o644",
+        "sha256": "2d8ef84ba9834dfd9f1119595c47737d4cc93b2366e49454d08df23022e1899d"
+      },
+      {
+        "path": "etc/systemd/system/maas-worker-bootstrap.service.d/20-clone-boundary.conf",
+        "mode": "0o644",
+        "sha256": "46b47062cdd1d1ad1ad37c6b839935e3566a1e330819fb3f0c8282d7a44f8976"
+      }
+    ]
+  }
+}
