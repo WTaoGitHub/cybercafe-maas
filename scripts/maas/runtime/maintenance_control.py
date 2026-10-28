@@ -1,46 +1,41 @@
-"""001 host-only operator command. No management key enters the task containers.
-
-Config mode600 supplies task CLI argv and the forced-command node SSH argv.
-Use fresh journal path for each maintenance window. Recovery never resumes tasks.
-"""
-import argparse,fcntl,json,os,subprocess,sys
+"""001-only schema-v2 global multi-worker maintenance; legacy bindings cannot mutate."""
+import argparse,fcntl,json,os,socket,subprocess,sys
 from pathlib import Path
 ROOT=Path('/root/wtaobj/maas-framework')
-sys.path.insert(0,str(ROOT));sys.path.insert(0,str(ROOT/'scripts/maas/p0'))
-from common import admin
-from maas_platform.node_maintenance import NodeMaintenance
+sys.path[:0]=[str(ROOT),'/root/wtaobj']
+from gpustack_admin import api
+from maas_platform.cluster_maintenance import ClusterMaintenance
 from maas_platform.operator_config import private_json
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--config',required=True);p.add_argument('action',choices=['begin','stop','recover','resume','status']);p.add_argument('--reason',default='planned 002 maintenance');a=p.parse_args()
-    path=Path(a.config)
-    if path.stat().st_mode & 0o077:raise RuntimeError('Operator config must be mode600')
-    cfg=private_json(path)
-    def execute(args):
-        return subprocess.check_output(args,text=True,stderr=subprocess.PIPE,timeout=90)
+    p=argparse.ArgumentParser();p.add_argument('--config',required=True);p.add_argument('action',choices=['begin','stop','recover','resume','status']);p.add_argument('--reason',default='planned global clone maintenance');a=p.parse_args()
+    if os.getuid()!=0 or socket.gethostname()!='XZ-31-001':raise RuntimeError('001 root only')
+    path=Path(a.config);cfg=private_json(path)
+    if cfg.get('schema_version')!=2 or cfg.get('scope')!='cluster-global':
+        if a.action=='status':print(json.dumps({'legacy_read_only':True,'journal':private_json(cfg['journal'])}));return
+        raise RuntimeError('Legacy maintenance binding is stale; bind current topology before mutations')
+    def execute(args):return subprocess.check_output(args,text=True,stderr=subprocess.PIPE,timeout=60)
     def tasks(action,reason=None):
         if action=='status':args=['drain-status']
         elif action=='pause':args=['pause','--reason',reason]
-        else:
-            args=['resume','--credential-id',cfg['credential_id'],'--probe-image',cfg['probe_image']]
+        else:args=['resume','--credential-id',cfg['credential_id'],'--probe-image',cfg['probe_image']]
         return json.loads(execute(cfg['task_cli']+args))
-    def node(action):return json.loads(execute(cfg['node_ssh']+[action]))
-    controller=NodeMaintenance(admin,tasks,node,cfg['journal'],wait_seconds=cfg.get('wait_seconds',180))
-    lock=Path(cfg['journal']+'.lock');lock.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
-    fd=os.open(lock,os.O_CREAT|os.O_RDWR,0o600)
-    with os.fdopen(fd,'w') as f:
-        fcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    def node(bound,action,session):
+        args=bound['node_ssh']+[action]+([session] if session else [])
+        return json.loads(execute(args))
+    controller=ClusterMaintenance(api,tasks,node,cfg)
+    fd=os.open('/run/maas-global-maintenance.lock',os.O_CREAT|os.O_RDWR,0o600)
+    with os.fdopen(fd,'w') as handle:
+        fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)
         if a.action=='begin':
-            if Path(cfg['journal']).exists():raise RuntimeError('Session already started; inspect/recover its journal')
-            if cfg.get('recovery_unit'):
-                execute(['systemd-run','--quiet','--unit',cfg['recovery_unit'],'--on-active=480s',
-                    '/usr/bin/python3',str(Path(__file__).resolve()),'--config',str(path.resolve()),'recover'])
-            value=controller.begin(cfg['worker_id'],cfg['model_ids'],a.reason)
-        elif a.action=='status':value=controller.state()
+            if Path(cfg['journal']).exists():raise RuntimeError('Existing journal; inspect original session')
+            execute(['systemd-run','--quiet','--unit',cfg['recovery_unit'],'--on-active=480s',
+                     '/usr/bin/python3',str(Path(__file__).resolve()),'--config',str(path),'recover'])
+            value=controller.begin(a.reason)
+        elif a.action=='status':value={'journal':controller.state(),'managed':tasks('status')}
         else:value=getattr(controller,a.action)()
-        if a.action=='resume' and cfg.get('recovery_unit'):
-            execute(['systemctl','stop',cfg['recovery_unit']+'.timer'])
+        if value.get('phase')=='RESUMED':execute(['systemctl','stop',cfg['recovery_unit']+'.timer'])
     print(json.dumps(value))
 
 

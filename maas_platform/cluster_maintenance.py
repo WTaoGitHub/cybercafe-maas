@@ -116,6 +116,7 @@ class ClusterMaintenance:
                 raise RuntimeError('Baseline instances must be healthy on approved workers')
             models.append({'id':m['id'],'name':m['name'],'replicas':m['replicas'],'sha256':model_hash(m),
                            'placement':dict(Counter(str(i['worker_id']) for i in instances))})
+        if self.cfg.get('approved_route_hashes') and self.route_hashes()!=self.cfg['approved_route_hashes']:raise RuntimeError('Route changed since binding approval')
         ident=uuid.uuid4().hex
         self.path.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
         state={'phase':'PREPARED','session':ident,'models':models,'workers':bounds,'events':[],

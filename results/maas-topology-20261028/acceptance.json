@@ -1,0 +1,243 @@
+{
+  "session": "20261028T060538Z-9d63bec846",
+  "started_at": 1793167577.9739604,
+  "scope": "live Compose, original task DB and volumes; cluster-wide inference pause; no host shutdown",
+  "usage_before": {
+    "tasks": 8479,
+    "sync": 34
+  },
+  "containers_before": {
+    "api": "47e6ad0f6a8324a7dd0849ebf4b92134e650090e151439fc4925842b346e0e04",
+    "db": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+    "executor": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+    "observer": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc"
+  },
+  "baseline_sync": {
+    "status": 200,
+    "lines": 46
+  },
+  "baseline_idempotency_key": "maint-baseline-20261028T060538Z-9d63bec846",
+  "baseline_task": {
+    "id": "task_812742e627bd4c1ba12dd56d0fec0ad7",
+    "state": "SUCCEEDED"
+  },
+  "phase": "RESUMED",
+  "approved_replicas": {
+    "18": 14
+  },
+  "queued_idempotency_key": "maint-queued-20261028T060538Z-9d63bec846",
+  "queued_task": "task_98e2b7ad5ae3485fac409c7bb589be9b",
+  "stop_proof": {
+    "7": {
+      "running_worker_containers": [],
+      "running_workload_containers": [],
+      "gpu_compute_processes": [],
+      "backend_stop_observed": true,
+      "vm_powered_off": false,
+      "safe_to_poweroff": false
+    },
+    "8": {
+      "running_worker_containers": [],
+      "running_workload_containers": [],
+      "gpu_compute_processes": [],
+      "backend_stop_observed": true,
+      "vm_powered_off": false,
+      "safe_to_poweroff": false
+    }
+  },
+  "seconds_to_stop": 31.435,
+  "held_stopped_5s": true,
+  "sync_during_stop": {
+    "status": 503,
+    "code": "MAINTENANCE_PAUSED"
+  },
+  "during_stop": {
+    "controller_healthy": true,
+    "queued_waited": true,
+    "old_result_readable": true
+  },
+  "recover_kept_admission_paused": true,
+  "resume_probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 32,
+      "reason": "planned global clone maintenance",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "total_window_seconds": 104.875,
+  "queued_after_resume": {
+    "state": "SUCCEEDED",
+    "attempts": 1,
+    "lines": 46
+  },
+  "containers_after": {
+    "api": "47e6ad0f6a8324a7dd0849ebf4b92134e650090e151439fc4925842b346e0e04",
+    "db": "ac7b6e9e9cf1cc94012ca60622ac70d98abfaf834e3ff4215b2956169b219732",
+    "executor": "e40fa07b37913028ef675b8b6beca3847f7c657c5b45df8c49eb0c822cdbd39b",
+    "observer": "ccf8683dd7d8698cb9a76b11e780ae7e007d6b45147969b83afba3ccb910e6dc"
+  },
+  "usage_after": {
+    "tasks": 8481,
+    "sync": 35
+  },
+  "usage_delta": {
+    "tasks": 2,
+    "sync": 1
+  },
+  "usage_delta_is_global_only": true,
+  "queued_success_usage_events": 1,
+  "node_final": {
+    "7": {
+      "running_worker_containers": [
+        "maas-gpustack-worker"
+      ],
+      "running_workload_containers": [
+        "maas-ocr-registry-r1-ns8zh-run-0",
+        "maas-ocr-registry-r1-2a59m-run-0",
+        "maas-ocr-registry-r1-rgbkz-run-0",
+        "maas-ocr-registry-r1-pez72-run-0",
+        "maas-ocr-registry-r1-2zc1f-run-0",
+        "maas-ocr-registry-r1-q6wh2-run-0",
+        "maas-ocr-registry-r1-rg5gg-run-0",
+        "maas-gpustack-worker"
+      ],
+      "gpu_compute_processes": [
+        {
+          "pid": 93877,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 94063,
+          "name": "python3",
+          "memory_mib": "878"
+        },
+        {
+          "pid": 94251,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 94435,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 94618,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 94803,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 94988,
+          "name": "python3",
+          "memory_mib": "304"
+        }
+      ],
+      "backend_stop_observed": false,
+      "vm_powered_off": false,
+      "safe_to_poweroff": false,
+      "identity_verified": true,
+      "worker_id": 7,
+      "boot_id": "ec913d05-5caf-428a-937e-90fc537c3d2b",
+      "container_id": "183750f2da8fe42258a09c2dce4c87f83202a61a1e9b250032dc47d68fd49929",
+      "maintenance_session": "a6781e9332ab44e0b8b1af55c9a956ae",
+      "node_session_active": false
+    },
+    "8": {
+      "running_worker_containers": [
+        "maas-gpustack-worker"
+      ],
+      "running_workload_containers": [
+        "maas-gpustack-worker",
+        "maas-ocr-registry-r1-jpn4h-run-0",
+        "maas-ocr-registry-r1-1xg48-run-0",
+        "maas-ocr-registry-r1-f4obc-run-0",
+        "maas-ocr-registry-r1-72aub-run-0",
+        "maas-ocr-registry-r1-p6qdj-run-0",
+        "maas-ocr-registry-r1-kriup-run-0",
+        "maas-ocr-registry-r1-6nncz-run-0"
+      ],
+      "gpu_compute_processes": [
+        {
+          "pid": 19267,
+          "name": "python3",
+          "memory_mib": "306"
+        },
+        {
+          "pid": 19456,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 19640,
+          "name": "python3",
+          "memory_mib": "306"
+        },
+        {
+          "pid": 19827,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 20012,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 20200,
+          "name": "python3",
+          "memory_mib": "304"
+        },
+        {
+          "pid": 20384,
+          "name": "python3",
+          "memory_mib": "878"
+        }
+      ],
+      "backend_stop_observed": false,
+      "vm_powered_off": false,
+      "safe_to_poweroff": false,
+      "identity_verified": true,
+      "worker_id": 8,
+      "boot_id": "fe66c1d1-cff6-4daa-90ed-5d5e5e82fbb8",
+      "container_id": "64b2e94e8bfcbf9f68ea7a5f3e6377a9fd4dd9856b0e29d4de61fd176163b34e",
+      "maintenance_session": "a6781e9332ab44e0b8b1af55c9a956ae",
+      "node_session_active": false
+    }
+  },
+  "final_status": {
+    "paused": false,
+    "generation": 32,
+    "reason": "planned global clone maintenance",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "final_alerts": [],
+  "controller_watchdog_active": false,
+  "journal_mode": "0o600",
+  "config_mode": "0o600",
+  "ok": true,
+  "finished_at": 1793167688.0685635
+}

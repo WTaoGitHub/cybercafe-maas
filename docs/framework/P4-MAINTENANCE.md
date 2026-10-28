@@ -1,59 +1,55 @@
-# 常驻环境维护：正式绑定与操作
+# 常驻环境全局维护：当前schema-v2绑定
 
-> E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
+2026-10-28更新。001仅控制端；当前对象为test1/cluster3、worker7和8、model18、route17、14副本。**全局暂停推理**，不提供E1逐worker排空和其他节点继续服务。当前演练104.875秒通过，见[报告](../../results/maas-topology-20261028/REPORT.md)。2026-10-21旧worker2/models1/9单节点绑定已过期，不得执行旧binder的`bind`，旧journal只保留审计。
 
+## 权限与材料
 
-2026-10-21。当前方案为**整个目标集群暂停推理、维护002**，不是E1逐节点持续服务。001控制端、数据库、Nginx与SSH保持在线。新功能代码在001宿主机运行，不把管理key或SSH私钥挂入应用。
+命令由001宿主机root执行。MaaS管理命令与GPUStack管理凭据留在001；专用SSH位于`/root/wtaobj/maas-live/maintenance/access-v2`，700目录/600私钥与known_hosts，仅允许001来源执行克隆forced-command actuator的status/arm/stop/restore/disarm。没有任意shell或转发权限，不向业务容器分发。
 
-## 正式绑定
-
-已将 `/root/wtaobj/maas-live/maintenance/binding.json` 绑定到：
-
-| 项目 | 值 |
-|---|---|
-| 任务CLI | 当前Compose `exec -T api python -m maas_platform.cli`，读取正式app.env，操作正式maas任务库 |
-| 目标worker | 2 / XZ-31-002 |
-| 模型范围 | 已批准的模型1、9，必须覆盖整个目标集群；集合变化时拒绝执行，需重新审查配置 |
-| 恢复身份/图片 | pilot-ocr / /run/maas-probe/upright.png |
-| 可信状态 | /root/wtaobj/maas-runtime/health.json，恢复前等待新鲜健康状态 |
-| 节点控制 | 已固定主机公钥、来源受限和forced-command的002专用SSH通道 |
-
-正式绑定文件root/600，仅保存命令参数和私有文件路径，不写入key值。首次安装命令为 `python3 scripts/maas/runtime/bind_maintenance.py bind`；已存在绑定时拒绝覆盖，日常不重复执行。变更模型、路径或节点必须先审查范围。
+每克隆`/etc/maas/maintenance-node.json`为600，绑定当前hostname/IP、boot ID、worker容器完整ID、镜像ID、原生UUID哈希及worker ID/name。**不能进入母版快照**。克隆回收、身份变更或容器替换后先重新核验，不复用旧绑定；备份优先Mac私有目录，禁止打印key。
 
 ## 每次维护
 
-在001以root操作，从 `/root/wtaobj/maas-framework` 执行。先确认试点key未过期、collector健康、无其他运维正在改模型；可信节点及SSH直连推理应停止。以下命令会暂停两个节点的模型推理，不关闭VM或切Windows。
+先确认无外部直接GPUStack/Playground推理客户端，当前克隆网络边界有效；MaaS暂停只能控制MaaS请求。审核当前对象集合：有新worker/model/route或UI变更时停止并重新审计，不照抄旧ID。
 
-```sh
-# 为本次窗口分配新配置，保存此路径供所有后续命令使用。
-MAAS_MAINT_CONFIG=$(python3 scripts/maas/runtime/bind_maintenance.py new-session)
-
-python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_MAINT_CONFIG" begin
-python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_MAINT_CONFIG" stop
-python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_MAINT_CONFIG" status
-
-# 完成节点维护后，先恢复部署，再通过探针恢复接单。
-python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_MAINT_CONFIG" recover
-python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_MAINT_CONFIG" resume
+```bash
+cd /root/wtaobj/maas-framework
+python3 scripts/maas/runtime/bind_cluster_maintenance.py audit --workers 7 8 --models 18 --routes 17 --cluster 3
+# 仅在对象/当前基线已经过审阅、上次会话RESUMED时更新binding；不会改变部署。
+python3 scripts/maas/runtime/bind_cluster_maintenance.py bind --workers 7 8 --models 18 --routes 17 --cluster 3
+python3 scripts/maas/runtime/bind_maintenance.py new-session
 ```
 
-new-session输出本窗口绝对配置路径。`active.json`记录当前路径；每窗口保存独立operator.json和journal.json。上一窗口未RESUMED（包括配置已创建但尚未begin）时，禁止另开窗口。不要覆盖旧journal或删除active记录来绕过检查。
+保存new-session输出的绝对operator.json路径到本次运维变量；每个窗口只分配一次，未begin的已分配窗口继续使用原文件，不重新分配。
 
-- **begin**：记录原副本/节点分布和配置摘要；暂停受控准入、等待在途；UNKNOWN拒绝部署变更；设置worker maintenance。maintenance本身不代表实例或GPU已停。
-- **stop**：集群模型副本归零，等待实例和真实工作负载清除，再停止002原worker/旧Agent并检查GPU。
-- **recover**：恢复002同一个worker、原maintenance及副本数/节点分布；有界纠偏；始终保持接单暂停。
-- **resume**：等待collector新鲜健康状态，执行真实OCR探针，通过generation复核后开放接单并撤销恢复定时器。
+```bash
+MAAS_WINDOW_CONFIG=/root/wtaobj/maas-live/maintenance/sessions/本次窗口/operator.json
+python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_WINDOW_CONFIG" begin --reason 'planned maintenance'
+python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_WINDOW_CONFIG" status
+python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_WINDOW_CONFIG" stop
+# 这里只允许已授权的容器/进程层维护；禁止VM/系统或Docker daemon重启。
+python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_WINDOW_CONFIG" recover
+python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_WINDOW_CONFIG" resume
+```
 
-## 恢复保护与异常处理
+begin校验完整cluster范围和实际身份，pause/排空后为两节点arm恢复保护，再开启GPUStack maintenance。stop把目标全部模型副本降0，等待原生实例、真实推理容器和GPU计算进程消失，才停止原worker容器。**worker stopped不代表GPU空闲**，本流程保留实际停止核对，但只在维护窗口按需执行，不引入周期collector或每次推理SSH。
 
-begin自动在001设置480秒best-effort recover定时器；002在arm后设置600秒独立worker恢复定时器。定时器只尝试恢复部署/worker，不自动resume接单，不自动解除UNKNOWN，也不等于宿主机高可用或带外开机。
+recover启动同一容器、恢复原maintenance和副本数，等待原分布7/7全部running，接单仍暂停；resume真实业务探针通过后开放接单，并取消两节点保护及001 timer。记录RESUMED后才允许下次分配窗口。任务队列/下载保留；同步暂停返回503。
 
-命令失败先查看同一配置的status和journal。保留正式库、artifact、配置和恢复材料；不要跳过阶段、盲目重试推理或直接删容器。若无UNKNOWN、无配置漂移且可验证恢复，使用同一窗口recover，再resume。真实探针失败继续保持暂停，先修复权限、版本、collector或服务可用性。若配置已生成但还未begin，可继续使用该窗口配置启动维护，不重新分配。
+## 失败和保护
 
-成功后journal为RESUMED，002恢复保护解除，001恢复timer停止。下一次维护重新new-session，保留历史审计。单窗口文件锁阻止并发阶段操作；allocation锁和active记录阻止重复创建窗口。具备root权限的人工绕过仍需运维纪律约束。
+001 watchdog在begin后480秒触发recover；节点watchdog在arm后600秒仅恢复原worker容器。**它们不会自动开放MaaS接单，不会解除UNKNOWN，不会重启VM。** 维护需超过保护时限时不要擅自停保护继续长时间操作，应另行设计受控窗口。
 
-## 本轮验收
+命令失败先看同一config的status与600 journal，核对timer、真实节点及MaaS generation；不盲目重放begin、创建新session或重试推理。无UNKNOWN/配置漂移且有安全证据时，在同一会话显式recover，再resume。探针失败保持暂停。ADMISSION_RESUMED表示探针已成功但可能未完成disarm，确认generation未变后重跑同会话resume仅完成清理，不重复探针。不得为“恢复”强行覆盖用户UI更改。
 
-详见 [常驻维护演练报告](../../results/maas-p4-maintenance/REPORT.html)。该演练直接使用常驻API、执行器、正式任务库和原命名卷；没有临时API/身份/任务库，没有停止001控制端，没有重启Docker daemon。
+全局文件锁阻止并发维护动作；active/session约束阻止跨窗口覆盖。root仍可绕开限制，需运维纪律。本轮四个MaaS容器未重建，原正式库/卷保留；模型推理容器在副本0→14过程中由GPUStack重新创建。
 
-E1局部维护/故障隔离、E2批处理、E3多执行器均不包含在本轮实现中；网络规则启动持久性、HTTPS、独立监控、备份恢复和8小时负载仍是P4后续工作。
+## 网络规则运维
+
+当前两克隆已安装`/opt/maas/ops/clone_boundary.py`及root600策略。`status`只核对规则；apply重复执行仅管理自己的链。guarded-apply先arm180秒回退，确认控制端和SSH可用且同伴被阻断后confirm；失败保留回退，不停用所有防火墙。rollback只删除MAAS-CLONE链/hooks及新dropin，不恢复全局iptables备份。策略改动必须先私有备份并审查端口/网段，不能直接从旧镜像复制节点hostname策略。
+
+```bash
+python3 /opt/maas/ops/clone_boundary.py status
+```
+
+开机unit及bootstrap dropin已enable，未做VM重启验收；母版尚未更新。后续通用镜像材料见[network overlay](../../deploy/bootstrap/clone/network/README.md)。E6自建collector保持退役；E1逐节点能力未上线。

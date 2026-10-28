@@ -1,0 +1,123 @@
+{
+  "phase": "RESUMED",
+  "session": "a6781e9332ab44e0b8b1af55c9a956ae",
+  "models": [
+    {
+      "id": 18,
+      "name": "maas-ocr-registry-r1",
+      "replicas": 14,
+      "sha256": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+      "placement": {
+        "7": 7,
+        "8": 7
+      }
+    }
+  ],
+  "workers": [
+    {
+      "id": 7,
+      "name": "e5-4672ade0506987f34555caed",
+      "ip": "10.11.31.2",
+      "cluster_id": 3,
+      "boot_id": "ec913d05-5caf-428a-937e-90fc537c3d2b",
+      "container_id": "183750f2da8fe42258a09c2dce4c87f83202a61a1e9b250032dc47d68fd49929"
+    },
+    {
+      "id": 8,
+      "name": "e5-e98c7888ed68fd705b57d535",
+      "ip": "10.11.31.3",
+      "cluster_id": 3,
+      "boot_id": "fe66c1d1-cff6-4daa-90ed-5d5e5e82fbb8",
+      "container_id": "64b2e94e8bfcbf9f68ea7a5f3e6377a9fd4dd9856b0e29d4de61fd176163b34e"
+    }
+  ],
+  "events": [
+    {
+      "phase": "PAUSED",
+      "at": 1793167582.5073817
+    },
+    {
+      "phase": "ARMED",
+      "at": 1793167583.8618495
+    },
+    {
+      "phase": "MAINTENANCE_ENABLED",
+      "at": 1793167584.6636734
+    },
+    {
+      "phase": "SCALING_DOWN",
+      "at": 1793167585.1033292
+    },
+    {
+      "phase": "REPLICAS_ZERO",
+      "at": 1793167585.5132453
+    },
+    {
+      "phase": "STOPPED",
+      "at": 1793167611.9549098
+    },
+    {
+      "phase": "RECOVERING",
+      "at": 1793167618.1735427
+    },
+    {
+      "phase": "RECOVERED",
+      "at": 1793167680.1856031
+    },
+    {
+      "phase": "ADMISSION_RESUMED",
+      "at": 1793167683.584475
+    },
+    {
+      "phase": "RESUMED",
+      "at": 1793167685.3800962
+    }
+  ],
+  "route_hashes": {
+    "17": "0fdeccef6a0c8563ee14085554691ee8ef86850c78a266dcc7d8315fabd2331d"
+  },
+  "maintenance_value": {
+    "enabled": true,
+    "message": "maas-global:a6781e9332ab44e0b8b1af55c9a956ae:planned global clone maintenance"
+  },
+  "generation": 31,
+  "proofs": {
+    "7": {
+      "running_worker_containers": [],
+      "running_workload_containers": [],
+      "gpu_compute_processes": [],
+      "backend_stop_observed": true,
+      "vm_powered_off": false,
+      "safe_to_poweroff": false
+    },
+    "8": {
+      "running_worker_containers": [],
+      "running_workload_containers": [],
+      "gpu_compute_processes": [],
+      "backend_stop_observed": true,
+      "vm_powered_off": false,
+      "safe_to_poweroff": false
+    }
+  },
+  "probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 32,
+      "reason": "planned global clone maintenance",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "resumed_generation": 32
+}

@@ -1,0 +1,43 @@
+{
+  "maas_unit_tests": {
+    "passed": 209,
+    "skipped": 56,
+    "warning": "Starlette anyio alias deprecation; database-specific cases skipped without local test DB"
+  },
+  "bootstrap_unit_tests": {
+    "passed": 84
+  },
+  "kernel_namespace": {
+    "host": "XZ-31-003",
+    "isolated_network_namespace": true,
+    "ipv4_ipv6_load": true,
+    "repeat_apply_no_duplicate_input_hooks": true,
+    "host_docker_restarted": false
+  },
+  "real_maintenance": {
+    "passed": true,
+    "scope": "global",
+    "worker_ids": [
+      7,
+      8
+    ],
+    "model_ids": [
+      18
+    ],
+    "route_ids": [
+      17
+    ],
+    "seconds": 104.875
+  },
+  "source_sha256": {
+    "maas_bootstrap/clone_boundary.py": "63b0d5c2308747747e4ad0aeaef74a7322245c4f0054f8e084abe08044f86887",
+    "maas_bootstrap/node_control.py": "6c803703c8b6a6b866dfe6b8907d5aee37ebec4ebe643762cf585d56aa746579",
+    "maas_platform/cluster_maintenance.py": "47bd0fd4eedd31e2226022e1a049f3aed6bfc1ed594328c864f43782fa1187fa",
+    "scripts/maas/runtime/maintenance_control.py": "e0f92a873b45973ded849df8dd21c9be9612f5a58c0f9e9242f06d107139eae1",
+    "scripts/maas/runtime/bind_cluster_maintenance.py": "7098d5b12bb5fdea0d933e1703e2140daa54c535a18c1c27db83972232318a17",
+    "scripts/maas/runtime/exercise_cluster_maintenance.py": "d8dafa168eb80e6589ea6c0c29d5ad2af47ab4bf62b2feb43088fd8190f44d90"
+  },
+  "vm_restart_tested": false,
+  "new_eight_hour_run": false,
+  "mother_updated": false
+}

@@ -1,0 +1,142 @@
+{
+  "workers": [
+    {
+      "id": 7,
+      "name": "e5-4672ade0506987f34555caed",
+      "ip": "10.11.31.2",
+      "state": "ready",
+      "maintenance": null
+    },
+    {
+      "id": 8,
+      "name": "e5-e98c7888ed68fd705b57d535",
+      "ip": "10.11.31.3",
+      "state": "ready",
+      "maintenance": null
+    }
+  ],
+  "replicas": 14,
+  "instances": [
+    {
+      "id": 117,
+      "worker_id": 8,
+      "port": 40035,
+      "state": "running"
+    },
+    {
+      "id": 125,
+      "worker_id": 8,
+      "port": 40045,
+      "state": "running"
+    },
+    {
+      "id": 121,
+      "worker_id": 8,
+      "port": 40063,
+      "state": "running"
+    },
+    {
+      "id": 126,
+      "worker_id": 7,
+      "port": 40030,
+      "state": "running"
+    },
+    {
+      "id": 128,
+      "worker_id": 7,
+      "port": 40011,
+      "state": "running"
+    },
+    {
+      "id": 119,
+      "worker_id": 8,
+      "port": 40018,
+      "state": "running"
+    },
+    {
+      "id": 123,
+      "worker_id": 8,
+      "port": 40025,
+      "state": "running"
+    },
+    {
+      "id": 118,
+      "worker_id": 7,
+      "port": 40047,
+      "state": "running"
+    },
+    {
+      "id": 129,
+      "worker_id": 8,
+      "port": 40038,
+      "state": "running"
+    },
+    {
+      "id": 130,
+      "worker_id": 7,
+      "port": 40010,
+      "state": "running"
+    },
+    {
+      "id": 122,
+      "worker_id": 7,
+      "port": 40001,
+      "state": "running"
+    },
+    {
+      "id": 120,
+      "worker_id": 7,
+      "port": 40006,
+      "state": "running"
+    },
+    {
+      "id": 127,
+      "worker_id": 8,
+      "port": 40061,
+      "state": "running"
+    },
+    {
+      "id": 124,
+      "worker_id": 7,
+      "port": 40039,
+      "state": "running"
+    }
+  ],
+  "controller_to_workers": [
+    {
+      "worker": 7,
+      "address": "10.11.31.2",
+      "allowed_ports": [
+        10150,
+        10151,
+        40030
+      ],
+      "model_health": 200
+    },
+    {
+      "worker": 8,
+      "address": "10.11.31.3",
+      "allowed_ports": [
+        10150,
+        10151,
+        40035
+      ],
+      "model_health": 200
+    }
+  ],
+  "monitor": {
+    "generated_at_unix": 1793167983.9950588,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8481.0,
+      "maas_successful_sync_requests_total": 35.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 1805965.0,
+      "maas_artifact_free_bytes": 392924049408.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  },
+  "controller_boot_id": "c09de9f0-1b77-4b52-be06-da22a7c36793"
+}

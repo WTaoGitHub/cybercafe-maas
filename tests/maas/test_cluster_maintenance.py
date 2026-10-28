@@ -102,3 +102,9 @@ def test_disarm_failure_can_finish_without_repeating_probe(tmp_path):
  assert e.c.state()['phase']=='ADMISSION_RESUMED' and not e.paused and e.resume_calls==1
  e.c.node=original
  assert e.c.resume()['phase']=='RESUMED' and e.resume_calls==1
+
+
+def test_route_change_since_binding_refuses_before_pause(tmp_path):
+ e=Env(tmp_path);e.c.cfg['approved_route_hashes']={'17':'stale'}
+ with pytest.raises(RuntimeError,match='Route changed'):e.c.begin('test')
+ assert not e.paused and not e.mutations and not e.c.path.exists()
