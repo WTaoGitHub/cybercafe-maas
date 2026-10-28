@@ -1,0 +1,52 @@
+{
+  "status": "PREPARED_NOT_DEPLOYED",
+  "archive": "/Users/4paradigm/dev/cybercafe-maas/dist/e5/clone-network-v1-20261028.tar.gz",
+  "archive_sha256": "8e396b928f62b6db7187abf11e123496b699d954de3b9030bc5f4596db1aec24",
+  "manifest": {
+    "schema_version": 1,
+    "kind": "clone-network-v1",
+    "source_commit": "b25259b08da743f747bcbe4faf5b87247c734ac0",
+    "files": [
+      {
+        "path": "opt/maas/ops/clone_boundary.py",
+        "source": "maas_bootstrap/clone_boundary.py",
+        "mode": "0o644",
+        "sha256": "63b0d5c2308747747e4ad0aeaef74a7322245c4f0054f8e084abe08044f86887"
+      },
+      {
+        "path": "etc/maas/clone-boundary.json",
+        "source": "deploy/bootstrap/clone/network/clone-boundary.example.json",
+        "mode": "0o600",
+        "sha256": "b0f5ba61aff05116305c4d53e58ebb0dcd115ace213a81f32dad04ec2a61c328"
+      },
+      {
+        "path": "etc/systemd/system/maas-clone-boundary.service",
+        "source": "deploy/bootstrap/clone/network/maas-clone-boundary.service",
+        "mode": "0o644",
+        "sha256": "2d8ef84ba9834dfd9f1119595c47737d4cc93b2366e49454d08df23022e1899d"
+      },
+      {
+        "path": "etc/systemd/system/maas-worker-bootstrap.service.d/20-clone-boundary.conf",
+        "source": "deploy/bootstrap/clone/network/20-clone-boundary.conf",
+        "mode": "0o644",
+        "sha256": "46b47062cdd1d1ad1ad37c6b839935e3566a1e330819fb3f0c8282d7a44f8976"
+      }
+    ],
+    "config_server_url": "https://10.11.31.1:18840",
+    "native_server_url": "http://10.11.31.1:18080",
+    "controller_addresses": [
+      "10.11.31.1"
+    ],
+    "policy_has_per_clone_identity": false,
+    "private_keys_included": false,
+    "does_not_execute_installation": true
+  },
+  "source_tests": {
+    "passed": 9
+  },
+  "ssh_connection": "111.4.255.126:6025",
+  "ssh_result": "timeout via MCP and local OpenSSH",
+  "template_modified": false,
+  "snapshot_created": false,
+  "clone_boot_verified": false
+}
