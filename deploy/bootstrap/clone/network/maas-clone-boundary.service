@@ -1,0 +1,14 @@
+[Unit]
+Description=Clone pre-DNAT inference boundary
+DefaultDependencies=no
+After=local-fs.target
+Before=network-pre.target docker.service docker.socket
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/maas/ops/clone_boundary.py apply
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

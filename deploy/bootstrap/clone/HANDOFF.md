@@ -31,3 +31,7 @@ python3 scripts/maas/verify_worker_bundle.py --root /path/to/extracted-bundle
 ```
 
 逐文件哈希用于完整性核对，不等于第三方数字签名。公开证书与配置地址仅用于当前测试；正式迁移到稳定局域网控制机时须更新交付材料。
+
+## 2026-10-28后续快照事项：克隆网络边界
+
+当前worker7/8已现场应用隔离规则，但尚未写入母版。下次更新母版前参考[network overlay](network/README.md)，只预置通用网络策略和unit，不复制当前节点维护身份或专用私钥。新快照与独立克隆启动验证仍由管理员安排。
