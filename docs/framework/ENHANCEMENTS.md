@@ -586,3 +586,16 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 5. 交付选型报告、可复现配置、原始结果及推荐/不替换理由；确有收益再另行安排受控接入与回退。模型实验与E3的执行器并发、副本和显存claim矩阵分开记录，不直接改现网claim，不自动重放未知完成请求、不解除UNKNOWN、不恢复collector。
 
 长期约束继续适用：001/002禁止VM重启及等效操作；资源不足或驱动不兼容不构成重启/升级授权。独立feature完成适当验证后分别Git提交，不push。本项当前仅登记，未部署。
+
+
+### E10补充：大图片支持（2026-10-28用户需求）
+
+将大图片列为选型及服务验收维度，分别记录原始文件字节数、宽高/像素数、检测/视觉编码实际尺寸、缩放/切图策略与文字最小尺寸；不能把预处理尺寸当成原图上传硬上限，也不能将可解码当成质量达标。当前代码基线为单图10MiB、2000万像素，未授权提高线上限制。
+
+- PP-OCRv6 small/medium及v5 server历史评估配置均为limit_side_len=736、limit_type=min、max_side_limit=4000；这是旧流水线配置，不是模型最大可接收宽高或当前服务承诺。调整检测尺度/切图须独立验证。
+- [PaddleOCR-VL原版预处理配置](https://huggingface.co/PaddlePaddle/PaddleOCR-VL/blob/main/preprocessor_config.json)max_pixels=2822400（约2.82MP）；属于视觉编码缩放预算，不是原图文件上限，也不能直接推广到其他VL版本或区域解析流水线。
+- [DeepSeek-OCR-2官方配置](https://github.com/deepseek-ai/DeepSeek-OCR-2/blob/main/DeepSeek-OCR2-master/DeepSeek-OCR2-vllm/config.py)为1024全局视图、768局部切块，最多6块；没有据此证明原图分辨率硬上限。
+- [Unlimited-OCR-2 Transformers源码](https://huggingface.co/baidu/Unlimited-OCR-2/blob/main/modeling_unlimitedocr.py)默认1024全局视图、640局部块、最多16块；infer_multi默认关闭切图。定制SGLang实际处理器还需独立核对，不能用Transformers默认值替代SGLang验收。超长文档能力不等于单张超高分辨率无损编码。
+- PP-StructureV3/MinerU按所选pipeline/backend逐阶段核对，不给工具名称指定一个统一模型分辨率上限。
+
+后续使用4K（3840×2160）、手机12MP（4000×3000）、A4 300dpi（约2480×3508）、A4 600dpi（约4961×7016）、8K（7680×4320）及长截图样本，比较整图缩放与重叠切图的漏字、重复字、坐标回映、表格/阅读顺序、延迟及内存/显存峰值。600dpi A4和8K均超过当前20MP限制，只能在另行确定的独立验证范围内评估；文件大小另行检查，不从像素数推定。产出按模型与硬件配置划分的“可接收上限”和“质量/资源达标范围”，尚未实测的尺寸明确标注。本轮仅调研及登记，不改线上限额、不启动大图压测。
