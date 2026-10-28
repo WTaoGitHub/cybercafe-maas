@@ -108,3 +108,54 @@ def test_route_change_since_binding_refuses_before_pause(tmp_path):
  e=Env(tmp_path);e.c.cfg['approved_route_hashes']={'17':'stale'}
  with pytest.raises(RuntimeError,match='Route changed'):e.c.begin('test')
  assert not e.paused and not e.mutations and not e.c.path.exists()
+
+
+@pytest.mark.parametrize('replicas',[1,4,6,14])
+def test_runtime_replicas_override_stale_binding_and_restore_session_snapshot(tmp_path,replicas):
+ e=Env(tmp_path)
+ # Binding (including old approved_replicas=14) may predate a legitimate UI change.
+ e.model['replicas']=replicas
+ preview=e.c.snapshot()
+ assert preview['models'][0]['replicas']==replicas and not e.paused and not e.mutations
+ assert not e.c.path.exists()
+ begun=e.c.begin('runtime')
+ assert begun['replica_source']=='runtime-at-begin' and begun['models'][0]['replicas']==replicas
+ # Editing persistent binding after begin must not rewrite this window's recovery target.
+ e.c.cfg['approved_replicas']={'18':99}
+ e.c.stop();e.c.recover()
+ assert e.model['replicas']==replicas and e.paused
+ assert e.c.resume()['phase']=='RESUMED'
+
+
+def test_manual_zero_after_begin_is_a_conflict_not_an_owned_scale_down(tmp_path):
+ e=Env(tmp_path);e.model['replicas']=4;e.c.begin('runtime');e.mutations=[]
+ e.model['replicas']=0
+ with pytest.raises(RuntimeError,match='drift'):e.c.stop()
+ assert not e.mutations and all(e.running.values())
+
+
+def test_new_replica_target_during_stopped_window_is_not_overwritten(tmp_path):
+ e=Env(tmp_path);e.model['replicas']=4;e.c.begin('runtime');e.c.stop();e.mutations=[]
+ e.model['replicas']=6
+ with pytest.raises(RuntimeError,match='drift'):e.c.recover()
+ assert not e.mutations and e.model['replicas']==6 and e.paused
+
+
+def test_runtime_snapshot_still_rejects_non_replica_model_changes(tmp_path):
+ e=Env(tmp_path);e.model['replicas']=4;e.model['env']['claim']='changed'
+ with pytest.raises(RuntimeError,match='Model changed'):e.c.begin('runtime')
+ assert not e.paused and not e.c.path.exists()
+
+
+def test_native_scheduler_can_choose_new_distribution_on_approved_workers(tmp_path):
+ e=Env(tmp_path);e.model['replicas']=4;e.c.begin('runtime');e.c.stop()
+ original=e.c.api
+ def api(path,*args):
+  result=original(path,*args)
+  if path=='/v2/models/18/instances':
+   for i,row in enumerate(result['items']):row['worker_id']=7+i%2
+  return result
+ e.c.api=api
+ result=e.c.recover()
+ assert result['phase']=='RECOVERED' and result['restored_placement']=={'18':{'7':2,'8':2}}
+ assert result['models'][0]['placement']=={'7':4} and e.paused

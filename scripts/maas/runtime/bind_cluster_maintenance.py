@@ -32,7 +32,7 @@ def main():
                       'boot_id':evidence['boot_id'],'container_id':evidence['container_id'],'node_ssh':ssh})
     cfg={'schema_version':2,'scope':'cluster-global','cluster_id':a.cluster,'workers':bound,'model_ids':a.models,
          'route_ids':a.routes,'model_hashes':{str(m['id']):model_hash(m) for m in models},
-         'approved_replicas':{str(m['id']):m['replicas'] for m in models},'credential_id':'pilot-ocr',
+         'replica_source':'runtime-at-begin','credential_id':'pilot-ocr',
          'probe_image':'/run/maas-probe/upright.png','task_cli':task_cli,'wait_seconds':180}
     probe=ClusterMaintenance(api,None,None,{**cfg,'journal':'unused'})
     cfg['approved_route_hashes']=probe.route_hashes()
@@ -45,7 +45,7 @@ def main():
         with os.fdopen(fd,'w') as f:json.dump(cfg,f,indent=2);f.flush();os.fsync(f.fileno())
         os.replace(tmp,OPS/'binding.json')
     print(json.dumps({'action':a.action,'schema_version':2,'cluster':a.cluster,'workers':[b['id'] for b in bound],
-                      'model_ids':a.models,'route_ids':a.routes,'approved_replicas':cfg['approved_replicas'],'node_identities_verified':True}))
+                      'model_ids':a.models,'route_ids':a.routes,'observed_replicas':{str(m['id']):m['replicas'] for m in models},'replica_source':'runtime-at-begin','node_identities_verified':True}))
 
 
 if __name__=='__main__':main()

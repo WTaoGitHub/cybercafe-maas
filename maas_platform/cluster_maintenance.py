@@ -64,7 +64,9 @@ class ClusterMaintenance:
             originals={m['id']:m for m in self.state()['models']}
             for m in rows:
                 old=originals[m['id']]
-                if model_hash(m)!=old['sha256'] or m['replicas'] not in (0,old['replicas']):
+                phase=self.state()['phase']
+                allowed=(old['replicas'],) if phase in ('PREPARED','PAUSED','ARMED','MAINTENANCE_ENABLED','RECOVERED','ADMISSION_RESUMED','RESUMED') else (0,old['replicas'])
+                if model_hash(m)!=old['sha256'] or m['replicas'] not in allowed:
                     raise RuntimeError('Model configuration/replica drift; refuse overwrite')
         return rows
 
@@ -96,8 +98,8 @@ class ClusterMaintenance:
         self.worker(bound)
         self.api('/v2/workers/'+str(bound['id']),{'name':bound['name'],'labels':bound['labels'],'maintenance':value},'PUT')
 
-    def begin(self,reason):
-        if self.path.exists():raise RuntimeError('Journal exists; inspect original session')
+    def snapshot(self):
+        """Read and verify runtime baseline without pausing or changing deployment."""
         rows=self.models(baseline=True)
         bounds=self.cfg['workers'];ids={b['id'] for b in bounds}
         active={w['id'] for w in self.api('/v2/workers')['items'] if w.get('cluster_id')==self.cfg['cluster_id'] and w['state']=='ready'}
@@ -110,17 +112,24 @@ class ClusterMaintenance:
                 raise RuntimeError('Actual clone identity differs from binding')
         models=[]
         for m in rows:
-            if self.cfg.get('model_hashes',{}).get(str(m['id']))!=model_hash(m) or self.cfg['approved_replicas'][str(m['id'])]!=m['replicas']:raise RuntimeError('Model changed since binding approval')
+            if self.cfg.get('model_hashes',{}).get(str(m['id']))!=model_hash(m):raise RuntimeError('Model changed since binding approval')
+            if type(m['replicas']) is not int or m['replicas']<0:raise RuntimeError('Invalid runtime replica count')
             instances=self.api('/v2/models/'+str(m['id'])+'/instances')['items']
             if len(instances)!=m['replicas'] or any(i['state']!='running' or i['worker_id'] not in ids for i in instances):
                 raise RuntimeError('Baseline instances must be healthy on approved workers')
             models.append({'id':m['id'],'name':m['name'],'replicas':m['replicas'],'sha256':model_hash(m),
                            'placement':dict(Counter(str(i['worker_id']) for i in instances))})
         if self.cfg.get('approved_route_hashes') and self.route_hashes()!=self.cfg['approved_route_hashes']:raise RuntimeError('Route changed since binding approval')
+        return {'replica_source':'runtime-at-begin','models':models,'workers':bounds,'route_hashes':self.route_hashes()}
+
+    def begin(self,reason):
+        if self.path.exists():raise RuntimeError('Journal exists; inspect original session')
+        baseline=self.snapshot()
+        models=baseline['models'];bounds=baseline['workers']
         ident=uuid.uuid4().hex
         self.path.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
         state={'phase':'PREPARED','session':ident,'models':models,'workers':bounds,'events':[],
-               'route_hashes':self.route_hashes(),'maintenance_value':{'enabled':True,'message':'maas-global:'+ident+':'+reason}}
+               'replica_source':baseline['replica_source'],'route_hashes':baseline['route_hashes'],'maintenance_value':{'enabled':True,'message':'maas-global:'+ident+':'+reason}}
         with self.path.open('x') as f:os.fchmod(f.fileno(),0o600);json.dump(state,f);f.flush();os.fsync(f.fileno())
         self.tasks('pause',reason);status=self.tasks('status');self.event('PAUSED',generation=status['generation'])
         def drained():
@@ -174,11 +183,12 @@ class ClusterMaintenance:
             for m in self.models():
                 rows=self.api('/v2/models/'+str(m['id'])+'/instances')['items']
                 if len(rows)!=originals[m['id']]['replicas'] or any(i['state']!='running' for i in rows):return False
-                placement=dict(Counter(str(i['worker_id']) for i in rows))
-                if placement!=originals[m['id']]['placement']:raise RuntimeError('Restored distribution differs; admission remains paused for review')
+                if any(i['worker_id'] not in {b['id'] for b in s['workers']} for i in rows):
+                    raise RuntimeError('Restored instance outside approved workers; admission remains paused')
             return True
         self.wait(ready)
-        return self.event('RECOVERED')
+        return self.event('RECOVERED',restored_placement={str(m['id']):dict(Counter(str(i['worker_id']) for i in
+            self.api('/v2/models/'+str(m['id'])+'/instances')['items'])) for m in s['models']})
 
     def resume(self):
         s=self.state()

@@ -1,0 +1,12 @@
+{
+  "source_sha256": {
+    "maas_platform/cluster_maintenance.py": "2acc80492e7ff7e007f87ba844d1e3f6f9fb6855c87202407ef0eb59e4978fe9",
+    "scripts/maas/runtime/maintenance_control.py": "574c22f36443f3de5806cde6e5015666013b67d23ad4384fe70518e55f9d21a0",
+    "scripts/maas/runtime/bind_cluster_maintenance.py": "f90c7e80a7cbe48df30e22ae20aded86a7848f6e74eb10be3778c2fa2c737ef6",
+    "scripts/maas/runtime/exercise_cluster_maintenance.py": "db523261b1f7469672e08adb13e2964c399ee2ab35ce09d67a0e2805bd023494"
+  },
+  "future_binding_replica_source": "runtime-at-begin",
+  "historic_session_unchanged": true,
+  "maintenance_started": false,
+  "paused": false
+}

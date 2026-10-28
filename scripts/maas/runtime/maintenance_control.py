@@ -9,7 +9,7 @@ from maas_platform.operator_config import private_json
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--config',required=True);p.add_argument('action',choices=['begin','stop','recover','resume','status']);p.add_argument('--reason',default='planned global clone maintenance');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--config',required=True);p.add_argument('action',choices=['plan','begin','stop','recover','resume','status']);p.add_argument('--reason',default='planned global clone maintenance');a=p.parse_args()
     if os.getuid()!=0 or socket.gethostname()!='XZ-31-001':raise RuntimeError('001 root only')
     path=Path(a.config);cfg=private_json(path)
     if cfg.get('schema_version')!=2 or cfg.get('scope')!='cluster-global':
@@ -24,7 +24,11 @@ def main():
     def node(bound,action,session):
         args=bound['node_ssh']+[action]+([session] if session else [])
         return json.loads(execute(args))
-    controller=ClusterMaintenance(api,tasks,node,cfg)
+    controller=ClusterMaintenance(api,tasks,node,{**cfg,'journal':cfg.get('journal','/run/maas-maintenance-plan-unused')})
+    if a.action=='plan':
+        value=controller.snapshot()
+        print(json.dumps({'read_only':True,'replica_source':value['replica_source'],'models':value['models'],
+                          'worker_ids':[w['id'] for w in value['workers']]}));return
     fd=os.open('/run/maas-global-maintenance.lock',os.O_CREAT|os.O_RDWR,0o600)
     with os.fdopen(fd,'w') as handle:
         fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)

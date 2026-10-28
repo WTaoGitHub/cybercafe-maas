@@ -1,0 +1,20 @@
+{
+  "read_only": true,
+  "replica_source": "runtime-at-begin",
+  "models": [
+    {
+      "id": 18,
+      "name": "maas-ocr-registry-r1",
+      "replicas": 4,
+      "sha256": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+      "placement": {
+        "7": 3,
+        "8": 1
+      }
+    }
+  ],
+  "worker_ids": [
+    7,
+    8
+  ]
+}

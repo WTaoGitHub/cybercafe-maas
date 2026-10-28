@@ -59,8 +59,8 @@ def main():
         code,first=request('/maas/v1/tasks',taskbody,idem=report['baseline_idempotency_key']);assert code==202
         first=wait_task(first['id']);report['baseline_task']={'id':first['id'],'state':first['state']};checkpoint()
         start=time.monotonic();begun=control('begin');assert begun['phase']=='MAINTENANCE_ENABLED'
-        report['approved_replicas']={str(m['id']):m['replicas'] for m in begun['models']}
-        assert report['approved_replicas']=={'18':14}
+        report['runtime_replicas']={str(m['id']):m['replicas'] for m in begun['models']}
+        report['replica_source']=begun['replica_source']
         report['queued_idempotency_key']='maint-queued-'+active['session'];checkpoint()
         code,queued=request('/maas/v1/tasks',taskbody,idem=report['queued_idempotency_key']);assert code==202 and queued['state']=='QUEUED'
         report['queued_task']=queued['id'];checkpoint()
