@@ -1,6 +1,7 @@
 {
   "schema_version": 2,
-  "status": "PLANNED_NOT_EXECUTABLE_BY_CURRENT_TOOLS",
+  "status": "T0_TOOLS_VALIDATED_LIVE_STAGES_PENDING",
+  "tooling_status": {"case_id": "T0-TOOLS", "state": "COMPLETE", "evidence": "../../results/maas-e3-t0-tools-20261029/tool-validation.json", "supported_live_driver": "unchanged_pure_async_single_point_with_explicit_execute_and_hashed_prerequisites", "adaptive_stage_orchestration_implemented": false, "live_capacity_results_produced": false},
   "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
   "profile_scope": {
     "logical_model": "ocr.default",

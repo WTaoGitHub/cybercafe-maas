@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "case_id": "T0-TOOLS",
+  "state": "COMPLETE",
+  "generated_at": "2026-10-29T12:24:57.144686+00:00",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "scope": "tooling_and_isolated_mock_validation_no_live_ocr_capacity_claim",
+  "local": {
+    "tests": 90,
+    "passed": 90,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1.488,
+    "junit_sha256": "146e8d106a503901716d63e46801dad10b216c471b89726580f08a0d3d3f9b70"
+  },
+  "database": {
+    "case_id": "T0-DATABASE",
+    "state": "COMPLETE",
+    "scope": "isolated_postgresql_and_mock_model_only",
+    "tests": 64,
+    "passed": 63,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 52.326,
+    "junit_sha256": "40eb2b1bb02b4df551178227802d59f86f76f7b7a577193471029b66f0f66459",
+    "skips": [
+      {
+        "case_id": "test_real_postgres_interruption",
+        "reason": "Requires the isolated host-side database interruption harness"
+      }
+    ],
+    "new_tuning_cases": [
+      "test_observer_is_readonly_persistent_and_scoped_to_due_valid_work",
+      "test_continuous_http_supply_real_database_commits_and_postwindow_results",
+      "test_higher_limits_are_atomic_across_independent_processes[6]",
+      "test_higher_limits_are_atomic_across_independent_processes[8]",
+      "test_higher_limits_are_atomic_across_independent_processes[12]",
+      "test_sync_and_async_processes_share_global_and_per_project_limits[6]",
+      "test_sync_and_async_processes_share_global_and_per_project_limits[8]",
+      "test_sync_and_async_processes_share_global_and_per_project_limits[12]",
+      "test_same_project_two_keys_cannot_multiply_atomic_queue_allowance",
+      "test_ready_inputs_remain_pinned_after_ttl_but_deleted_inputs_are_not_supply",
+      "test_boundaries_count_committed_ids_not_updated_at_timestamps"
+    ],
+    "real_ocr_called": false,
+    "production_configuration_changed": false,
+    "temporary_test_container_cpu_limit": 2,
+    "temporary_test_container_ram_limit_bytes": 2147483648
+  },
+  "read_only_runtime": {
+    "state": "READ_ONLY_PROBE_COMPLETE",
+    "parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "generation": 56,
+    "worker_count": 2,
+    "instance_count": 4,
+    "native_gpu_evidence_present": true,
+    "native_resource_samples": 2,
+    "gpustack_version": "v2.2.3",
+    "configuration_changed": false,
+    "ocr_called": false,
+    "system_python_modified": false
+  },
+  "isolated_tool_environment": {
+    "python": "3.12.3",
+    "locked_httpx": "0.28.1",
+    "locked_psycopg": "3.2.9",
+    "read_only_native_probe_passed": true,
+    "read_only_test_database_connection_passed": true,
+    "cli_plan_passed": true,
+    "system_python_modified": false
+  },
+  "production_app_model_quota_configuration_changed": false,
+  "vm_rebooted": false,
+  "real_ocr_called": false,
+  "custom_collector_created": false,
+  "code_commits": [
+    "6d67bb2",
+    "918a8b4",
+    "8ffa049",
+    "d9b9dec",
+    "8394d91",
+    "e1e62c4"
+  ],
+  "source_sha256": {
+    "maas_bench/__init__.py": "a4294fa734050e037b20046996d9e7539d240ed638f6d7a1a6f6dbda9fae5bc4",
+    "maas_bench/__main__.py": "4e096e265613784e571551a032a898cabc56885b105b49aa4e3a9e40c83d8e91",
+    "maas_bench/backend.py": "1bec8d0668ed62e3f2dfc3e0bb3edb7b15bf257f468e43e83f067f3ec2256163",
+    "maas_bench/contracts.py": "9476a119f0d47d87c0a50a7bb01c53fa43b566adc9ef54c88568c8e2c06e8785",
+    "maas_bench/load.py": "cdd969bd25ffcd86a2b22add0057faf81720ecdb0532c3b2990ab00bfb86b157",
+    "maas_bench/matrix.py": "d669680325f14f986df3d4f20407b5dae92b6892b0f3976ee9a41c018e6a8691",
+    "maas_bench/runtime.py": "54387e3beecb572ef00a0b69fc4148eb01d09101c9fa7ad1baa39a68f694e618",
+    "maas_bench/saturation.py": "e0a97e51b63d4f8904e4f0438ae724aebadf6790fbf1752e758bb511f9e837a3",
+    "maas_bench/snapshot.py": "f4e2700a1ed5a8b7ae90a858620047de8e958e0eedc01d72b1b4031acb0f5339",
+    "requirements-bench.txt": "ceaa42c5dc39cd5cafa35080bcc7ef10d141f6fb26e292c293f49f9d088c9610",
+    "requirements-maas-tested-lock.txt": "93abf6fbfefddfe97ddce846816d2f9352c8e0c95b873513b713f11aff500e14",
+    "scripts/maas/runtime/benchmark_executors.py": "ea28f55ccdbb5670582b4553b70152979f5f8e969f7b7e80881338656815273e",
+    "scripts/maas/runtime/benchmark_mixed_ingress.py": "d92ca23f480795f81a424c95f4b50dd1782ad25209c070f6060e789fe410b226",
+    "scripts/maas/runtime/executor_pool.py": "eb1f534d641ea7d0f34a41e99593606dd68ce1061c772dfb4fdc654162ab8af5",
+    "scripts/maas/runtime/replica_capacity_matrix.py": "db197c59a07a3ebf8902d15a7ee0b6adb5a0674715a0d6b3355127f3dfff29da",
+    "tests/maas/test_multi_executor_integration.py": "128da8c5d681c4184c7af4d9353a0a55807b5acca90f96b85d7ad625a507fc4d",
+    "tests/maas/test_saturation.py": "76e513904bae8717da0a7e4b5d0c6fe8bbaa7aede643a1c15b53a7c6a861de5e",
+    "tests/maas/test_tuning_contracts.py": "c2b3aac90c18c6e426a57caa65a746a58ae0d8d3c391da0b965053a147b1f20d",
+    "tests/maas/test_tuning_integration.py": "3a841b2b5d419a8516d0e96c7ddd2a210451db99cd7a6b9b3897343c408db278",
+    "tests/maas/test_tuning_plan.py": "7dcae3263dbaee2a6894ef68260a48076981eca339ad8708b9f807da6649ee9a"
+  },
+  "not_executed": [
+    "T0-BASELINE three real OCR repetitions",
+    "T1 native duration matrix",
+    "T2 live R/E matrix",
+    "T3 mixed candidate runs",
+    "T4 live arrival/queue sweeps",
+    "T5 peak/claim tuning",
+    "T6 live finalists/soak"
+  ],
+  "limitations": [
+    "Discrete snapshots do not prove continuous occupancy",
+    "Runtime profile snapshot is private; published summary omits identifiers and secrets",
+    "Full adaptive live orchestration remains stage-specific; CLI executes unchanged pure-async points only",
+    "Skipped host-side database-stop test is not claimed passed"
+  ]
+}
