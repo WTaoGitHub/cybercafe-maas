@@ -31,7 +31,7 @@ def test_conditional_skip_only_satisfies_its_named_dependency():
     p=matrix.plan(matrix.load(),case_ids=['T4-QUEUE'],ledger={
         'T3-LIMITS':{'state':'COMPLETE'},'T3-EXTEND':{'state':'SKIPPED_CONDITION_NOT_MET'}})
     assert p['stages'][0]['planning_state']=='ADAPTIVE_SELECTION_REQUIRED'
-    assert not p['stages'][0]['execution_implemented']
+    assert p['stages'][0]['execution_implemented']
     p=matrix.plan(matrix.load(),case_ids=['T0-BASELINE'],ledger={'T0-TOOLS':{'state':'SKIPPED_CONDITION_NOT_MET'}})
     assert p['stages'][0]['unresolved_dependencies']==['T0-TOOLS']
 

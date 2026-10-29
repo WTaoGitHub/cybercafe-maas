@@ -22,7 +22,10 @@ def plan(matrix,case_ids=(),modules=(),labels=(),ledger=None):
     entrypoints={'T0-TOOLS':'pytest tests/maas','T0-BASELINE':'python -m maas_bench run-async',
         'T1-NATIVE':'python scripts/maas/runtime/native_tuning_matrix.py --execute',
         'T2-ASYNC':'python scripts/maas/runtime/async_tuning_matrix.py --execute',
-        'T3-LIMITS':'python scripts/maas/runtime/admission_tuning.py --execute'}
+        'T3-LIMITS':'python scripts/maas/runtime/admission_tuning.py --execute',
+        'T3-EXTEND':'python scripts/maas/runtime/extended_tuning.py --execute',
+        'T4-QUEUE':'python scripts/maas/runtime/queue_tuning.py --execute',
+        **{k:'python scripts/maas/runtime/http_ingress_tuning.py --execute' for k in ('T4-HTTP-ACCEPT','T4-HTTP-REJECT','T4-HTTP-RECOVER')}}
     for stage in select(matrix,case_ids,modules,labels):
         unresolved=[]
         for dep in stage['depends_on']:
