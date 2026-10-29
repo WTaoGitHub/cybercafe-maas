@@ -1,0 +1,100 @@
+{
+  "case_id": "T0-BASELINE",
+  "state": "COMPLETE",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "warmup_tasks": 4,
+  "rounds": [
+    {
+      "run_id": "t0-baseline-20261029-r1",
+      "measurement_seconds": 60.00370407104492,
+      "measured_successes": 538,
+      "accepted_tasks": 553,
+      "throughput_per_second": 8.966113147998383,
+      "supply": {
+        "sample_count": 1083,
+        "ready_queue_min": 6,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.06394535815343261,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.0735735610000003,
+        "elapsed_seconds": 71.94515436096117,
+        "process_peak_rss_bytes": 61538304
+      },
+      "result_verification": {
+        "downloaded_results": 553,
+        "download_seconds": 9.906526356935501
+      },
+      "private_summary_sha256": "dfdb7cd8d097d6644d6de28c248288ac270281ceb971bf9e6823d0d90712842d"
+    },
+    {
+      "run_id": "t0-baseline-20261029-r2",
+      "measurement_seconds": 60.004132986068726,
+      "measured_successes": 536,
+      "accepted_tasks": 555,
+      "throughput_per_second": 8.932718020014457,
+      "supply": {
+        "sample_count": 1079,
+        "ready_queue_min": 5,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.06555831199511886,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.1592497760000002,
+        "elapsed_seconds": 72.48327496298589,
+        "process_peak_rss_bytes": 58802176
+      },
+      "result_verification": {
+        "downloaded_results": 555,
+        "download_seconds": 10.253559334902093
+      },
+      "private_summary_sha256": "344555a4a021044625d8b7be271f98aaf5b90caad725bda41dc2201081214dbd"
+    },
+    {
+      "run_id": "t0-baseline-20261029-r3",
+      "measurement_seconds": 60.003129959106445,
+      "measured_successes": 514,
+      "accepted_tasks": 531,
+      "throughput_per_second": 8.566219801372082,
+      "supply": {
+        "sample_count": 1077,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.06437528203241527,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.065830906,
+        "elapsed_seconds": 72.14691627188586,
+        "process_peak_rss_bytes": 62513152
+      },
+      "result_verification": {
+        "downloaded_results": 531,
+        "download_seconds": 9.859813037095591
+      },
+      "private_summary_sha256": "38415af66b695eb321cad9d05dd0afdb2a324dad290b7521df9db39da8696e63"
+    }
+  ],
+  "mean_throughput_per_second": 8.82168365646164,
+  "measured_successes": 1588,
+  "accepted_tasks": 1639,
+  "quality_reference_images": 40,
+  "configuration_changed": false,
+  "vm_rebooted": false,
+  "continuous_occupancy_proven": false
+}
