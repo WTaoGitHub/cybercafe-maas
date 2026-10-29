@@ -1,0 +1,35 @@
+{
+  "case_id": "T0-DATABASE",
+  "state": "COMPLETE",
+  "scope": "isolated_postgresql_and_mock_model_only",
+  "tests": 64,
+  "passed": 63,
+  "skipped": 1,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 52.326,
+  "junit_sha256": "40eb2b1bb02b4df551178227802d59f86f76f7b7a577193471029b66f0f66459",
+  "skips": [
+    {
+      "case_id": "test_real_postgres_interruption",
+      "reason": "Requires the isolated host-side database interruption harness"
+    }
+  ],
+  "new_tuning_cases": [
+    "test_observer_is_readonly_persistent_and_scoped_to_due_valid_work",
+    "test_continuous_http_supply_real_database_commits_and_postwindow_results",
+    "test_higher_limits_are_atomic_across_independent_processes[6]",
+    "test_higher_limits_are_atomic_across_independent_processes[8]",
+    "test_higher_limits_are_atomic_across_independent_processes[12]",
+    "test_sync_and_async_processes_share_global_and_per_project_limits[6]",
+    "test_sync_and_async_processes_share_global_and_per_project_limits[8]",
+    "test_sync_and_async_processes_share_global_and_per_project_limits[12]",
+    "test_same_project_two_keys_cannot_multiply_atomic_queue_allowance",
+    "test_ready_inputs_remain_pinned_after_ttl_but_deleted_inputs_are_not_supply",
+    "test_boundaries_count_committed_ids_not_updated_at_timestamps"
+  ],
+  "real_ocr_called": false,
+  "production_configuration_changed": false,
+  "temporary_test_container_cpu_limit": 2,
+  "temporary_test_container_ram_limit_bytes": 2147483648
+}

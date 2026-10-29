@@ -36,6 +36,15 @@ def child(settings,action,start,out):
     elif action=='intent-crash':
         row=s.claim();assert row;s.begin_backend(row);out.put({'intent':row['id']})
         time.sleep(30)
+    elif action.startswith('admit:'):
+        from maas_platform.schemas import TaskCreate
+        from maas_platform.errors import ServiceError
+        _,key,idem=action.split(':')
+        try:
+            row,created=s.submit(s.auth.authenticate('gpustack_registered_'+key),
+                TaskCreate(model='mock.echo',input={'text':'quota'},max_attempts=1),idem)
+            out.put({'result':{'created':created,'id':row['id']}})
+        except ServiceError as exc:out.put({'result':{'error_code':exc.code}})
     else:raise AssertionError(action)
 
 

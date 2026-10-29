@@ -1,6 +1,7 @@
 """T0 validation only: disposable PostgreSQL and mock model, never real OCR."""
 import threading
 import time
+import json
 
 import pytest
 
@@ -9,6 +10,8 @@ from maas_bench.backend import DatabaseObserver,TaskBackend
 from maas_bench.contracts import Parameters
 from maas_bench.saturation import RunPolicy,SaturationRunner
 from maas_platform.worker import Worker
+from maas_platform.sync_ingress import SyncIngress
+from test_multi_executor_integration import group
 
 
 def observer_for(settings,prefix='e3-unit12345:'):
@@ -67,3 +70,74 @@ def test_continuous_http_supply_real_database_commits_and_postwindow_results(env
         halt.set()
         for worker in workers:worker.join(10);assert not worker.is_alive()
         obs.close()
+
+
+@pytest.mark.parametrize('limit',[6,8,12])
+def test_higher_limits_are_atomic_across_independent_processes(env,limit):
+    client,s,settings,*_=env
+    settings.max_running=settings.max_project_running=limit
+    for i in range(limit+4):assert submit(client,'claim'+str(i)).status_code==202
+    with group(settings,['claim']*(limit+3)) as (_,q):
+        rows=[q.get(timeout=15)['result'] for _ in range(limit+3)]
+    accepted=[r for r in rows if r]
+    assert len(accepted)==limit and len({r['id'] for r in accepted})==limit
+
+
+@pytest.mark.parametrize('limit',[6,8,12])
+def test_sync_and_async_processes_share_global_and_per_project_limits(env,limit):
+    client,s,settings,auth,_=env
+    settings.max_running=limit;settings.max_project_running=limit//2
+    token=SyncIngress(s).begin(auth.authenticate('gpustack_registered_a'),'mock.echo',30)
+    for i in range(limit):
+        assert submit(client,'a'+str(i)).status_code==202
+        assert submit(client,'b'+str(i),key='b').status_code==202
+    with group(settings,['claim']*(limit+3)) as (_,q):
+        rows=[q.get(timeout=15)['result'] for _ in range(limit+3)]
+    accepted=[r for r in rows if r]
+    assert len(accepted)==limit-1
+    assert sum(r['project']=='a' for r in accepted)+1==limit//2
+    assert sum(r['project']=='b' for r in accepted)==limit//2
+    SyncIngress(s).finish(token,True)
+
+
+def test_same_project_two_keys_cannot_multiply_atomic_queue_allowance(env):
+    client,s,settings,*_=env
+    settings.max_queued=settings.max_project_queued=4
+    keyfile=settings.bindings_file.parent/'key-c';keyfile.write_text('gpustack_registered_c');keyfile.chmod(0o600)
+    data=json.loads(settings.bindings_file.read_text())
+    data['credentials'].append({'id':'c','project':'a','secret_file':str(keyfile),'models':['mock.echo']})
+    settings.bindings_file.write_text(json.dumps(data))
+    actions=['admit:'+('a' if i%2 else 'c')+':submit'+str(i) for i in range(12)]
+    with group(settings,actions) as (_,q):rows=[q.get(timeout=15)['result'] for _ in actions]
+    assert sum(r.get('created',False) for r in rows)==4
+    assert sum(r.get('error_code')=='QUEUE_FULL' for r in rows)==8
+    with s.db.transaction() as c:
+        assert c.execute('SELECT count(*) n FROM tasks').fetchone()['n']==4
+
+
+def test_ready_inputs_remain_pinned_after_ttl_but_deleted_inputs_are_not_supply(env):
+    client,s,settings,*_=env
+    art=client.post('/maas/v1/artifacts',headers=headers(),content=b'pinned-input').json()['id']
+    assert submit(client,'e3-unit12345:pinned',max_attempts=1,input={'artifact_id':art}).status_code==202
+    obs=observer_for(settings)
+    try:
+        with s.db.transaction() as c:c.execute("UPDATE artifacts SET expires_at=now()-interval '1 second' WHERE id=%s",(art,))
+        assert obs.snapshot()['ready']==1
+        with s.db.transaction() as c:c.execute('UPDATE artifacts SET deleted_at=now() WHERE id=%s',(art,))
+        assert obs.snapshot()['ready']==0
+    finally:obs.close()
+
+
+def test_boundaries_count_committed_ids_not_updated_at_timestamps(env):
+    client,s,settings,*_=env
+    task=submit(client,'e3-unit12345:commit-race',max_attempts=1).json()['id']
+    obs=observer_for(settings)
+    import psycopg
+    connection=psycopg.connect(settings.database_url)
+    try:
+        connection.execute("UPDATE tasks SET state='SUCCEEDED',attempts=1,updated_at=now()-interval '1 hour' WHERE id=%s",(task,))
+        connection.execute("INSERT INTO task_usage_events(task_id,project,quantity) VALUES(%s,'a',1)",(task,))
+        assert obs.snapshot(True)['success_ids']==[]
+        connection.commit()
+        assert obs.snapshot(True)['success_ids']==[task]
+    finally:connection.close();obs.close()
