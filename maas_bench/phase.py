@@ -1,6 +1,7 @@
 """Shared stage journal and explicit parameter transitions for the pilot only."""
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from .backend import DatabaseObserver
@@ -40,13 +41,23 @@ class Phase:
     def record(self):replace_private(self.output/'status.json',self.status)
 
     def point_config(self,point,run_id,**extra):
+        tag=self.config.get('run_tag','r1')
+        if not re.fullmatch(r'[a-z0-9-]{1,10}',tag):raise ValueError('Bounded fresh phase attempt tag required')
+        run_id=run_id+'-'+tag
+        if not re.fullmatch(r'[a-z0-9-]{8,64}',run_id):raise ValueError('Bounded fresh point run ID required')
+        snap=self.output/(run_id+'-before-private.json');cfgpath=self.output/(run_id+'-config-private.json')
+        if snap.exists() or cfgpath.exists() or (Path(self.template['output_parent'])/run_id).exists():raise FileExistsError('Point evidence already exists; no parameter change')
+        with self.observer.lock:
+            count=self.observer.connection.execute('SELECT count(*)::int n FROM tasks WHERE project=%s AND starts_with(idempotency_key,%s)',
+                (self.template['project'],'e3-'+run_id+':')).fetchone()['n']
+        if count:raise ValueError('Point task namespace already exists; no parameter change or replay')
         target=Parameters(**point['parameters']);snapshot=self.controller.change(target)
-        snap=self.output/(run_id+'-before-private.json');save_private(snap,snapshot)
+        save_private(snap,snapshot)
         cfg={**self.template,'case_id':self.case_id,'point_id':point['point_id'],'run_id':run_id,
             'parameters':target.to_dict(),'snapshot_file':str(snap),'selection_file':str(self.selection_file),
             'selection_sha256':self.selection_sha,'completed_stages':self.prerequisites,'load_mode':point.get('mode','async_saturation'),**extra}
         if 'arrival_policy' in point:cfg['arrival_policy']=point['arrival_policy']
-        save_private(self.output/(run_id+'-config-private.json'),cfg);return cfg
+        save_private(cfgpath,cfg);return cfg
 
     def completed(self,row):
         self.controller.check_fixed(self.probe.capture());self.controller.quiet()
