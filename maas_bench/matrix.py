@@ -25,6 +25,9 @@ def plan(matrix,case_ids=(),modules=(),labels=(),ledger=None):
         'T3-LIMITS':'python scripts/maas/runtime/admission_tuning.py --execute',
         'T3-EXTEND':'python scripts/maas/runtime/extended_tuning.py --execute',
         'T4-QUEUE':'python scripts/maas/runtime/queue_tuning.py --execute',
+        'T5-CLAIM':'python scripts/maas/runtime/claim_tuning.py --execute',
+        'T6-CONFIRM':'python scripts/maas/runtime/confirmation_tuning.py --execute',
+        'T6-SOAK':'python scripts/maas/runtime/soak_tuning.py --execute',
         **{k:'python scripts/maas/runtime/http_ingress_tuning.py --execute' for k in ('T4-HTTP-ACCEPT','T4-HTTP-REJECT','T4-HTTP-RECOVER')}}
     for stage in select(matrix,case_ids,modules,labels):
         unresolved=[]
