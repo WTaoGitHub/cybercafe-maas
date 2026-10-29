@@ -1,0 +1,22 @@
+{
+  "at": 1793262170.8120575,
+  "generation": 48,
+  "paused": false,
+  "unknown": 0,
+  "model_hash": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+  "replicas": 4,
+  "placement": {
+    "7": 2,
+    "8": 2
+  },
+  "executors": 4,
+  "global_limit": 4,
+  "project_limit": 4,
+  "boundary_ok": true,
+  "monitor_ok": true,
+  "tools": {
+    "benchmark_executors.py": "12cf9da38534523e3d3d87b7d06caafc14fea1e17b365328385ef7b6927006fc",
+    "replica_capacity_matrix.py": "c6b245e8070eb7723f7419d307df1190c074276bd3ef10b20e46c289d29d9b37",
+    "executor_pool.py": "a7f1acf7a41666dbc8ce8c72e0b3f2bbce88cb86c8d0381e869c95f97050e397"
+  }
+}

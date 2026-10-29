@@ -1,0 +1,94 @@
+{
+  "status": "PILOT_ACCEPTED",
+  "native_points": 6,
+  "native_measured_requests": 264,
+  "native_warmup_and_preflight_requests": 14,
+  "async_successes_including_warmup": 914,
+  "sync_accepted": 18,
+  "sync_capacity_rejected": 18,
+  "mixed_overlap_samples": 26,
+  "max_mixed_inflight": 4,
+  "native_mean_by_replicas": {
+    "4": 8.610987876607542,
+    "8": 8.977617687106498
+  },
+  "async_mean_by_executors": {
+    "2": 2.6871512203351298,
+    "4": 5.431630986601018
+  },
+  "native_8_vs_4_difference_percent": 4.257697441369501,
+  "observed_native_resources": {
+    "4": {
+      "7": {
+        "samples": 18,
+        "observed_gpu_used_peak_gib": 3.90234375,
+        "observed_cpu_peak_percent": 11.378968253968253,
+        "observed_ram_peak_gib": 4.851024627685547,
+        "observed_gpu_utilization_peak_percent": 70.0
+      },
+      "8": {
+        "samples": 18,
+        "observed_gpu_used_peak_gib": 3.650390625,
+        "observed_cpu_peak_percent": 8.49747474747475,
+        "observed_ram_peak_gib": 4.649524688720703,
+        "observed_gpu_utilization_peak_percent": 71.0
+      }
+    },
+    "8": {
+      "7": {
+        "samples": 17,
+        "observed_gpu_used_peak_gib": 6.7529296875,
+        "observed_cpu_peak_percent": 10.575396825396824,
+        "observed_ram_peak_gib": 6.384319305419922,
+        "observed_gpu_utilization_peak_percent": 63.0
+      },
+      "8": {
+        "samples": 17,
+        "observed_gpu_used_peak_gib": 6.8759765625,
+        "observed_cpu_peak_percent": 10.241228070175438,
+        "observed_ram_peak_gib": 6.75921630859375,
+        "observed_gpu_utilization_peak_percent": 76.0
+      }
+    }
+  },
+  "steady_seconds": 121.58251612610184,
+  "steady_throughput": 5.921904093950786,
+  "observed_db_lock_waiters_peak": 1,
+  "recommendation": {
+    "model_replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "vram_claim_bytes": 2147483648
+  },
+  "final": {
+    "at": 1793263166.6637256,
+    "generation": 56,
+    "paused": false,
+    "unknown": 0,
+    "monitor_ok": true,
+    "boundary_ok": true,
+    "replicas": 4,
+    "model_hash": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+    "placement": {
+      "7": 2,
+      "8": 2
+    },
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "probe_lines": 46,
+    "probe_request_id": "req_6fbcbe4648a14d2b900020222052428c",
+    "model_vram_claim_bytes": 2147483648,
+    "native_workers_ready": true,
+    "sync_successes": 18,
+    "sync_capacity_rejected": 18
+  },
+  "boundaries": [
+    "No new eight-hour or production SLA validation",
+    "No lower VRAM claim experiment",
+    "No power-cost or per-container CPU/RAM allocation result",
+    "No multi-host artifact or thousand-node proof",
+    "GW issue remains under observation"
+  ]
+}

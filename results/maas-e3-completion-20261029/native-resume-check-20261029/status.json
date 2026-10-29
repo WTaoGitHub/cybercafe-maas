@@ -1,0 +1,1142 @@
+{
+  "run_id": "native-resume-check-20261029",
+  "profile": "remaining",
+  "repeats": 1,
+  "phase": "COMPLETE",
+  "started_at": 1793262182.8551612,
+  "original_replicas": 4,
+  "original_model_sha256": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+  "fixture_manifest_sha256": "c25a97281cc93384f550df67e6a2d13ce0d4869da15f4430010a0453a38e725f",
+  "stress_manifest_sha256": "89694fbe28e43112b3959ccffc1a8d79b556dd923ca83ba3047b0b6c48926af2",
+  "points": [
+    {
+      "name": "dual-4-r1",
+      "replicas": 4,
+      "eligible_workers": [
+        7,
+        8
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 7.293478662148118,
+      "placement": {
+        "7": 2,
+        "8": 2
+      },
+      "warmup_records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "request_id": "ec73621d-06d9-47c4-9add-bb79fee747ed",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262193.1448026,
+          "http_status": 200,
+          "seconds": 0.6928253918886185,
+          "lines": 46,
+          "finished_at": 1793262193.8414652
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "request_id": "8955d28c-eda2-4d2b-9eb3-8affa974412c",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262193.8765628,
+          "http_status": 200,
+          "seconds": 0.2780434777960181,
+          "lines": 34,
+          "finished_at": 1793262194.1573093
+        }
+      ],
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "request_id": "329ebd6e-1275-4cca-a9d2-98f5edb7b4f4",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.1641016,
+          "http_status": 200,
+          "seconds": 0.6803545509465039,
+          "lines": 46,
+          "finished_at": 1793262194.8509474
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "request_id": "b4478af4-0769-4a6a-823d-ed3f10fde913",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.1649175,
+          "http_status": 200,
+          "seconds": 0.28446960099972785,
+          "lines": 34,
+          "finished_at": 1793262194.4591272
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "request_id": "d7d35efe-cfb3-40e6-a26c-546f11a4479c",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.1652188,
+          "http_status": 200,
+          "seconds": 0.6739671460818499,
+          "lines": 100,
+          "finished_at": 1793262194.8541234
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "request_id": "8ffff4c9-acfc-478e-9861-c60c53d084f6",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.165595,
+          "http_status": 200,
+          "seconds": 0.3424302989151329,
+          "lines": 5,
+          "finished_at": 1793262194.5247476
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "request_id": "becfc362-77dc-44a8-a983-2c581b19dd87",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.461497,
+          "http_status": 200,
+          "seconds": 0.8551229941658676,
+          "lines": 112,
+          "finished_at": 1793262195.3225996
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "request_id": "039ed349-d0ff-41e7-b642-afda82759bb7",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.5267751,
+          "http_status": 200,
+          "seconds": 0.5036124158650637,
+          "lines": 31,
+          "finished_at": 1793262195.0332882
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "request_id": "3883791d-4b69-4f1e-932a-0b2f8c3ae776",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.854198,
+          "http_status": 200,
+          "seconds": 0.40693654608912766,
+          "lines": 68,
+          "finished_at": 1793262195.2638311
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "request_id": "aa8dde58-9d02-449e-9343-df9330d9276f",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262194.8552248,
+          "http_status": 200,
+          "seconds": 0.6031536320224404,
+          "lines": 30,
+          "finished_at": 1793262195.4628353
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "request_id": "53989103-08ed-4d06-bc22-304ed5fb810d",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262195.035932,
+          "http_status": 200,
+          "seconds": 0.6608172450214624,
+          "lines": 100,
+          "finished_at": 1793262195.7028198
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "request_id": "b1a080ec-8631-4731-bc6f-04d66f72cf8e",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262195.2660267,
+          "http_status": 200,
+          "seconds": 0.5289296940900385,
+          "lines": 102,
+          "finished_at": 1793262195.7999794
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "request_id": "a8ce4cd9-22b4-4d9b-bad5-055f675ec8f5",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262195.3243504,
+          "http_status": 200,
+          "seconds": 0.2744556409306824,
+          "lines": 27,
+          "finished_at": 1793262195.6013083
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "request_id": "8e983e50-371b-4c5a-8cf1-067812c1081a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262195.4650838,
+          "http_status": 200,
+          "seconds": 0.6489452549722046,
+          "lines": 129,
+          "finished_at": 1793262196.1177695
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "request_id": "c40bc00c-cb60-4f3d-bcbf-767c1a7fef61",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262195.6035068,
+          "http_status": 200,
+          "seconds": 0.5465392367914319,
+          "lines": 89,
+          "finished_at": 1793262196.1553829
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "request_id": "8c5cd31c-afac-42c2-8525-6f1ea0339500",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262195.705133,
+          "http_status": 200,
+          "seconds": 0.45870442292653024,
+          "lines": 84,
+          "finished_at": 1793262196.1682415
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "request_id": "31343e3c-9e56-4fa1-81a5-0345ac9d1fa0",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262195.8024647,
+          "http_status": 200,
+          "seconds": 0.556301485048607,
+          "lines": 82,
+          "finished_at": 1793262196.3618183
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "request_id": "8cbd9c5a-c16a-41b6-8fcc-7041892d8392",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.1214323,
+          "http_status": 200,
+          "seconds": 0.5205784861464053,
+          "lines": 154,
+          "finished_at": 1793262196.647288
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "request_id": "2ecb772f-e209-4383-8baf-cf43c283b6fc",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.1567316,
+          "http_status": 200,
+          "seconds": 0.3795706620439887,
+          "lines": 20,
+          "finished_at": 1793262196.5376577
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "request_id": "6f3e90c3-59e2-4b95-bc2d-5191ff918b43",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.169686,
+          "http_status": 200,
+          "seconds": 0.34723555902019143,
+          "lines": 119,
+          "finished_at": 1793262196.5181906
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "request_id": "ef17179a-ba94-42b9-a1fb-d8212db9faa1",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.3654504,
+          "http_status": 200,
+          "seconds": 0.7087778830900788,
+          "lines": 97,
+          "finished_at": 1793262197.0785468
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "request_id": "86b96ca3-665a-4c2a-8b65-5dea9a1029e2",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.520694,
+          "http_status": 200,
+          "seconds": 0.30576560995541513,
+          "lines": 41,
+          "finished_at": 1793262196.8299243
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "request_id": "befab3dd-9cbd-4fe8-ae89-d3511b303cd1",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.539632,
+          "http_status": 200,
+          "seconds": 0.418938318034634,
+          "lines": 4,
+          "finished_at": 1793262196.969353
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "request_id": "09c0a076-7ae3-4fd4-a948-8ca125212b5f",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.6499772,
+          "http_status": 200,
+          "seconds": 0.3066396249923855,
+          "lines": 8,
+          "finished_at": 1793262196.9617407
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "request_id": "c9111470-915c-4762-bdd8-09c2de612d78",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.832714,
+          "http_status": 200,
+          "seconds": 0.28957568807527423,
+          "lines": 3,
+          "finished_at": 1793262197.136322
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "request_id": "df774d4c-38d1-461a-9e7d-562da166af7f",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.9643836,
+          "http_status": 200,
+          "seconds": 0.24116343818604946,
+          "lines": 1,
+          "finished_at": 1793262197.2104523
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "request_id": "13cb7fbc-3ba2-4db6-abd4-3f81f94e8de2",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262196.9704697,
+          "http_status": 200,
+          "seconds": 0.34970245393924415,
+          "lines": 1,
+          "finished_at": 1793262197.3251529
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "request_id": "263c5828-5891-49bc-8e71-cad777173930",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.081418,
+          "http_status": 200,
+          "seconds": 0.31546215899288654,
+          "lines": 16,
+          "finished_at": 1793262197.4081416
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "request_id": "eb56ba30-a82f-452a-ad86-37afa3571dfe",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.1376712,
+          "http_status": 200,
+          "seconds": 0.36414627404883504,
+          "lines": 8,
+          "finished_at": 1793262197.5042565
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "request_id": "14faa6c0-e96e-4706-af55-1c21755803eb",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.2132075,
+          "http_status": 200,
+          "seconds": 0.31681190291419625,
+          "lines": 1,
+          "finished_at": 1793262197.543058
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "request_id": "a545acd5-ff09-4bd4-a08d-705a0a97f8c1",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.32677,
+          "http_status": 200,
+          "seconds": 0.2437207770999521,
+          "lines": 3,
+          "finished_at": 1793262197.5729516
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "request_id": "536d6a26-4aa8-4444-b8ab-75a7b0bd618a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.410975,
+          "http_status": 200,
+          "seconds": 0.2963564449455589,
+          "lines": 12,
+          "finished_at": 1793262197.7146742
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "request_id": "ca80469d-4966-4a55-b785-a66f19f29b7a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.5071328,
+          "http_status": 200,
+          "seconds": 0.34639076003804803,
+          "lines": 4,
+          "finished_at": 1793262197.8619668
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "request_id": "dddd4124-7189-4c3d-961c-89310df54381",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.544514,
+          "http_status": 200,
+          "seconds": 0.08883455884642899,
+          "lines": 1,
+          "finished_at": 1793262197.6345868
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "request_id": "f232e138-8cc3-4127-941b-f5eae75b1ac2",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.5777647,
+          "http_status": 200,
+          "seconds": 0.09656199999153614,
+          "lines": 1,
+          "finished_at": 1793262197.6761217
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "request_id": "ac7471dc-190e-4fe9-bcee-77582681bf69",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.6375442,
+          "http_status": 200,
+          "seconds": 0.26522428286261857,
+          "lines": 7,
+          "finished_at": 1793262197.911722
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "request_id": "07d56f5a-59d6-4cd9-9ab7-6eb3cf8f4542",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.677989,
+          "http_status": 200,
+          "seconds": 0.31217259308323264,
+          "lines": 5,
+          "finished_at": 1793262197.9947832
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "request_id": "9cd4d870-c1f9-425f-a48e-6d5c1ac764dc",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.7164009,
+          "http_status": 200,
+          "seconds": 0.11234219511970878,
+          "lines": 4,
+          "finished_at": 1793262197.8302546
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "request_id": "53f493c4-28e0-4423-aaa1-25186f310bdc",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.8333933,
+          "http_status": 200,
+          "seconds": 0.2345378960017115,
+          "lines": 9,
+          "finished_at": 1793262198.0713084
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "request_id": "062d581c-3e8c-48c1-acf3-deeee76fb413",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.8642972,
+          "http_status": 200,
+          "seconds": 0.08855239092372358,
+          "lines": 2,
+          "finished_at": 1793262197.9548702
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "request_id": "cd815339-5cb8-47cb-8dd3-962f8a0c7883",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.914688,
+          "http_status": 200,
+          "seconds": 0.26393150398507714,
+          "lines": 3,
+          "finished_at": 1793262198.187782
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "request_id": "b0b2fc24-d958-48eb-9330-47e8fee6cd77",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.9563704,
+          "http_status": 200,
+          "seconds": 0.264988134149462,
+          "lines": 9,
+          "finished_at": 1793262198.2231278
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "request_id": "2f771bd2-1e37-45c2-a0e4-4f3c636fbd1b",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262197.9967344,
+          "http_status": 200,
+          "seconds": 0.7957262031268328,
+          "lines": 46,
+          "finished_at": 1793262198.806283
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "request_id": "355fd4e4-d2ba-40a6-bbf8-6fdd87bbdd43",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262198.0731812,
+          "http_status": 200,
+          "seconds": 0.7093647071160376,
+          "lines": 46,
+          "finished_at": 1793262198.785744
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "request_id": "560fe696-2e67-4ae4-bbd4-16521f022116",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262198.1908963,
+          "http_status": 200,
+          "seconds": 0.480712765827775,
+          "lines": 3,
+          "finished_at": 1793262198.6959915
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "request_id": "340c0a98-7102-422f-8492-4742317aa432",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262198.224629,
+          "http_status": 200,
+          "seconds": 0.6922462680377066,
+          "lines": 3,
+          "finished_at": 1793262198.920522
+        }
+      ],
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 4.762831854866818,
+      "throughput_images_per_second": 9.238201418981307,
+      "p50_seconds": 0.34723555902019143,
+      "p95_seconds": 0.7087778830900788,
+      "p99_seconds": 0.7957262031268328
+    },
+    {
+      "name": "dual-8-r1",
+      "replicas": 8,
+      "eligible_workers": [
+        7,
+        8
+      ],
+      "phase": "COMPLETE",
+      "process_start_seconds": 7.290965900989249,
+      "placement": {
+        "7": 4,
+        "8": 4
+      },
+      "warmup_records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "request_id": "66de76fa-76c7-4861-a2e9-04c6d6093a2a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262206.9982412,
+          "http_status": 200,
+          "seconds": 0.6836116898339242,
+          "lines": 46,
+          "finished_at": 1793262207.684506
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "request_id": "82b02b11-3fd6-4147-be1c-31e37fb3a253",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262207.6874638,
+          "http_status": 200,
+          "seconds": 0.5221259719692171,
+          "lines": 34,
+          "finished_at": 1793262208.213459
+        }
+      ],
+      "records": [
+        {
+          "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+          "source": "doclaynet",
+          "request_id": "15c372b1-2581-4f66-ba52-4aecb4439956",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.219579,
+          "http_status": 200,
+          "seconds": 0.7116104990709573,
+          "lines": 46,
+          "finished_at": 1793262208.937631
+        },
+        {
+          "image": "doclaynet_0c5f7e308a2050fa31707bd82774a713ad6cf4e58fa3960870c30f6a256d95fb",
+          "source": "doclaynet",
+          "request_id": "2201db84-3245-4234-898c-0821ce0137aa",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.2199576,
+          "http_status": 200,
+          "seconds": 0.5380844362080097,
+          "lines": 34,
+          "finished_at": 1793262208.7696755
+        },
+        {
+          "image": "doclaynet_67dfd048813d1e584dd64487afe582c1e4d577a1831679572b00a53dfae153db",
+          "source": "doclaynet",
+          "request_id": "b5b4b869-3ebb-4f1d-895f-731fe960f68e",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.220135,
+          "http_status": 200,
+          "seconds": 0.6293414880055934,
+          "lines": 100,
+          "finished_at": 1793262208.866571
+        },
+        {
+          "image": "doclaynet_78eed462f4050a80e4e7892331bcbff42fb8aef229abb223ed7c0f09c34ea533",
+          "source": "doclaynet",
+          "request_id": "a50955fc-b3d1-4382-b251-5bb27a7f83d6",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.2210188,
+          "http_status": 200,
+          "seconds": 0.3480175230652094,
+          "lines": 5,
+          "finished_at": 1793262208.5894897
+        },
+        {
+          "image": "doclaynet_aa4fb8bda35615ad99a236306346e48fbaab514cdd9e159e9d7e0c4265ebe5e2",
+          "source": "doclaynet",
+          "request_id": "95213ca2-489a-4025-9da3-6691e5174db3",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.5939612,
+          "http_status": 200,
+          "seconds": 0.8471907491330057,
+          "lines": 112,
+          "finished_at": 1793262209.4472005
+        },
+        {
+          "image": "doclaynet_fb0ac24cc3e25bf9f793a33abbe0a0a4390b7e5bc937563c886851e57aa3b09a",
+          "source": "doclaynet",
+          "request_id": "ba333abb-ee1b-43b3-a178-970f0386d865",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.7731586,
+          "http_status": 200,
+          "seconds": 0.2280389340594411,
+          "lines": 31,
+          "finished_at": 1793262209.0055566
+        },
+        {
+          "image": "doclaynet_7a5867ce59161f0eee063f4637ec9cb06e1d241f9f5d55d2d47373f1dc12b30e",
+          "source": "doclaynet",
+          "request_id": "44323ee1-dd93-4998-9b32-6682768cfd07",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.8703299,
+          "http_status": 200,
+          "seconds": 0.45223500998690724,
+          "lines": 68,
+          "finished_at": 1793262209.32764
+        },
+        {
+          "image": "doclaynet_ff4bda6278a9ea97941eac59b388165be8b0ee49e7f3a0cb7590f7c542a03fdb",
+          "source": "doclaynet",
+          "request_id": "c0cf3abf-5e75-402c-b2f5-6ab05e20402a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262208.9420192,
+          "http_status": 200,
+          "seconds": 0.24753441102802753,
+          "lines": 30,
+          "finished_at": 1793262209.193287
+        },
+        {
+          "image": "doclaynet_dcec5787f4527ca8332b4055204ef874ba064033624fd47a11df5889b4f1f155",
+          "source": "doclaynet",
+          "request_id": "f76e1e96-6110-4dac-ba85-3b2e28ca7b73",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262209.0088015,
+          "http_status": 200,
+          "seconds": 0.9035931960679591,
+          "lines": 100,
+          "finished_at": 1793262209.9181726
+        },
+        {
+          "image": "doclaynet_8d4a38494b4efd9c3cb0d80015ce44d33ef8a71cf15de33f6419ce8055bd7b82",
+          "source": "doclaynet",
+          "request_id": "e30e286c-adcb-420e-a7e1-8142aae06569",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262209.1965623,
+          "http_status": 200,
+          "seconds": 0.5277265140321106,
+          "lines": 102,
+          "finished_at": 1793262209.7299745
+        },
+        {
+          "image": "doclaynet_55f1450523a00c6685b430e30c08663ccc02c38747da2c9b472dca68af32adac",
+          "source": "doclaynet",
+          "request_id": "0087621f-37b0-4c4c-8c46-fb0e6c7b3e8a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262209.3311954,
+          "http_status": 200,
+          "seconds": 0.2855017310939729,
+          "lines": 27,
+          "finished_at": 1793262209.6210396
+        },
+        {
+          "image": "doclaynet_9e17a6b7be69a8c941ba18cf54080e0531476aa5ab1a0715bcd3b24ea3319727",
+          "source": "doclaynet",
+          "request_id": "104bbb0d-efdf-40c1-b6f6-781e75d76df4",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262209.450061,
+          "http_status": 200,
+          "seconds": 0.5532161109149456,
+          "lines": 129,
+          "finished_at": 1793262210.006026
+        },
+        {
+          "image": "doclaynet_3a3a10d0cf6465204e4f84f7b49daa83d85a1c0a3695347d268fda4690d87f67",
+          "source": "doclaynet",
+          "request_id": "3aa2b774-81bb-4d57-beea-5e02726d842f",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262209.625813,
+          "http_status": 200,
+          "seconds": 0.7329044251237065,
+          "lines": 89,
+          "finished_at": 1793262210.3650293
+        },
+        {
+          "image": "doclaynet_cb545060025ba0d03ce51fc7ca3c57c8a48d1d56751c21115e3faf85366df584",
+          "source": "doclaynet",
+          "request_id": "70ecb0de-96cc-49b9-9117-17d6195bfad8",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262209.7333171,
+          "http_status": 200,
+          "seconds": 0.4366437380667776,
+          "lines": 84,
+          "finished_at": 1793262210.1743114
+        },
+        {
+          "image": "doclaynet_edee955fd6438327e257ddd89c75258d19754ec7e90a1c0e2c0ff6019913d5be",
+          "source": "doclaynet",
+          "request_id": "bb8c2612-3ff4-4948-b858-b02e6937d18a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262209.9218986,
+          "http_status": 200,
+          "seconds": 0.2965404118876904,
+          "lines": 82,
+          "finished_at": 1793262210.2224445
+        },
+        {
+          "image": "doclaynet_fd05b9ec9879b810a14e472723b952f37cf68bc50e74b77e6f7d21435a211e87",
+          "source": "doclaynet",
+          "request_id": "bc0f3780-18af-4db7-b712-637ad985e08e",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.0096765,
+          "http_status": 200,
+          "seconds": 0.6248248401097953,
+          "lines": 154,
+          "finished_at": 1793262210.6403995
+        },
+        {
+          "image": "doclaynet_9e00950eb4ee8066645a373688aaa077fe6c796b77bd62f27973f752da56a555",
+          "source": "doclaynet",
+          "request_id": "0cce6a98-0b03-42db-844c-31b6aba3115a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.1775851,
+          "http_status": 200,
+          "seconds": 0.21418685093522072,
+          "lines": 20,
+          "finished_at": 1793262210.3934813
+        },
+        {
+          "image": "doclaynet_3325a6a5515fd0777249c791f57d5c56acace0828aa75af7d16e45e818c3d1e3",
+          "source": "doclaynet",
+          "request_id": "ab4895f9-cc18-4a6a-b0f7-2f53ad1fb161",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.224403,
+          "http_status": 200,
+          "seconds": 0.4490455440245569,
+          "lines": 119,
+          "finished_at": 1793262210.675512
+        },
+        {
+          "image": "doclaynet_76652bc40615f98875be7089426dc080ab930f5c2a39f17c3c2238491d9d607c",
+          "source": "doclaynet",
+          "request_id": "652ce626-4442-4bec-a6c5-79d86badd363",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.3691552,
+          "http_status": 200,
+          "seconds": 0.45378246810287237,
+          "lines": 97,
+          "finished_at": 1793262210.8286953
+        },
+        {
+          "image": "doclaynet_694dd3c87e655e94bff1a61b12dbefaec79a73fcb899c3121df99155455d4a73",
+          "source": "doclaynet",
+          "request_id": "17a041d6-ac93-4b45-b108-c6db31fb5cbb",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.3951442,
+          "http_status": 200,
+          "seconds": 0.31012397911399603,
+          "lines": 41,
+          "finished_at": 1793262210.7071197
+        },
+        {
+          "image": "rctw17_image_4853",
+          "source": "rctw17",
+          "request_id": "3b6a0e8d-1e50-40b6-b08d-c65c1bb70e90",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.6441262,
+          "http_status": 200,
+          "seconds": 0.30724950693547726,
+          "lines": 4,
+          "finished_at": 1793262210.9619143
+        },
+        {
+          "image": "rctw17_image_1941",
+          "source": "rctw17",
+          "request_id": "9b0669c8-aa6a-4767-ba1f-dbb394c9c4b9",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.6780202,
+          "http_status": 200,
+          "seconds": 0.2932780161499977,
+          "lines": 8,
+          "finished_at": 1793262210.9747195
+        },
+        {
+          "image": "rctw17_image_7667",
+          "source": "rctw17",
+          "request_id": "268207e4-7814-4a9d-a679-03b713e6d36f",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.7087774,
+          "http_status": 200,
+          "seconds": 0.28201574506238103,
+          "lines": 3,
+          "finished_at": 1793262210.9948728
+        },
+        {
+          "image": "rctw17_image_5630",
+          "source": "rctw17",
+          "request_id": "0f48de76-d150-4e10-821b-18038c0fb1f5",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.8319097,
+          "http_status": 200,
+          "seconds": 0.2986040711402893,
+          "lines": 1,
+          "finished_at": 1793262211.1384988
+        },
+        {
+          "image": "rctw17_image_2345",
+          "source": "rctw17",
+          "request_id": "ca7a1617-bce9-4150-89cb-dac4746f504b",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.9655414,
+          "http_status": 200,
+          "seconds": 0.3048531848471612,
+          "lines": 1,
+          "finished_at": 1793262211.2800248
+        },
+        {
+          "image": "rctw17_image_7919",
+          "source": "rctw17",
+          "request_id": "49b0f2ad-f22d-4df9-81a2-c1fec044980f",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.9787009,
+          "http_status": 200,
+          "seconds": 0.3433373880106956,
+          "lines": 16,
+          "finished_at": 1793262211.3311336
+        },
+        {
+          "image": "rctw17_image_5003",
+          "source": "rctw17",
+          "request_id": "1f211e19-f5a2-44ea-863c-c1d151274ae1",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262210.9969034,
+          "http_status": 200,
+          "seconds": 0.3121978179551661,
+          "lines": 8,
+          "finished_at": 1793262211.3123965
+        },
+        {
+          "image": "rctw17_image_6180",
+          "source": "rctw17",
+          "request_id": "7bf3e3c3-2905-46ff-be32-47c29ba7e78c",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.1428893,
+          "http_status": 200,
+          "seconds": 0.3196146220434457,
+          "lines": 1,
+          "finished_at": 1793262211.4761403
+        },
+        {
+          "image": "rctw17_image_3926",
+          "source": "rctw17",
+          "request_id": "eabcdf88-fe76-4768-a67e-c305db7df7dc",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.283728,
+          "http_status": 200,
+          "seconds": 0.10861214506439865,
+          "lines": 3,
+          "finished_at": 1793262211.3970692
+        },
+        {
+          "image": "rctw17_image_1727",
+          "source": "rctw17",
+          "request_id": "e2feb9ae-9cb5-4168-b6e4-9f99bf4ff21a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.316272,
+          "http_status": 200,
+          "seconds": 0.23837373196147382,
+          "lines": 12,
+          "finished_at": 1793262211.5622976
+        },
+        {
+          "image": "rctw17_image_1463",
+          "source": "rctw17",
+          "request_id": "141f51db-6b9a-4098-b6a3-72be76a5b280",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.3348222,
+          "http_status": 200,
+          "seconds": 0.2414323838893324,
+          "lines": 4,
+          "finished_at": 1793262211.5833778
+        },
+        {
+          "image": "rctw17_image_5801",
+          "source": "rctw17",
+          "request_id": "9bc799f1-ff57-4da8-8cec-65caeed42746",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.3989031,
+          "http_status": 200,
+          "seconds": 0.08333594095893204,
+          "lines": 1,
+          "finished_at": 1793262211.483944
+        },
+        {
+          "image": "rctw17_image_3413",
+          "source": "rctw17",
+          "request_id": "68b79fbc-cca5-4577-9121-1c3bf0ae8fa5",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.4799154,
+          "http_status": 200,
+          "seconds": 0.15543288295157254,
+          "lines": 1,
+          "finished_at": 1793262211.6392038
+        },
+        {
+          "image": "rctw17_image_3962",
+          "source": "rctw17",
+          "request_id": "a26fddec-2d6a-4cac-abfd-09419bb60525",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.487537,
+          "http_status": 200,
+          "seconds": 0.27779414993710816,
+          "lines": 7,
+          "finished_at": 1793262211.7761152
+        },
+        {
+          "image": "rctw17_image_4246",
+          "source": "rctw17",
+          "request_id": "ce1b63cb-c27f-40d2-810b-826875748912",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.5640223,
+          "http_status": 200,
+          "seconds": 0.25013487809337676,
+          "lines": 5,
+          "finished_at": 1793262211.81721
+        },
+        {
+          "image": "rctw17_image_5446",
+          "source": "rctw17",
+          "request_id": "ac23e5ad-715c-483b-abea-a494eab78ea6",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.5849736,
+          "http_status": 200,
+          "seconds": 0.08493470400571823,
+          "lines": 4,
+          "finished_at": 1793262211.6715438
+        },
+        {
+          "image": "rctw17_image_7955",
+          "source": "rctw17",
+          "request_id": "c9e23489-290c-457d-9efd-4f6fdb2695c7",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.6431155,
+          "http_status": 200,
+          "seconds": 0.16565722692757845,
+          "lines": 9,
+          "finished_at": 1793262211.8150806
+        },
+        {
+          "image": "rctw17_image_2301",
+          "source": "rctw17",
+          "request_id": "20b82736-3569-48a4-b389-e01c242c63f2",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.6738005,
+          "http_status": 200,
+          "seconds": 0.08136644586920738,
+          "lines": 2,
+          "finished_at": 1793262211.7576048
+        },
+        {
+          "image": "rctw17_image_4702",
+          "source": "rctw17",
+          "request_id": "38f34871-8dc8-4bf5-8fa4-98938d871c83",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.7613986,
+          "http_status": 200,
+          "seconds": 0.42672720295377076,
+          "lines": 3,
+          "finished_at": 1793262212.2035108
+        },
+        {
+          "image": "rctw17_image_6361",
+          "source": "rctw17",
+          "request_id": "ceed3875-4b67-40a5-b697-e29d6fbb3632",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.7803388,
+          "http_status": 200,
+          "seconds": 0.29114017402753234,
+          "lines": 9,
+          "finished_at": 1793262212.0764067
+        },
+        {
+          "image": "doclaynet-large-png",
+          "source": "doclaynet-derived-stress",
+          "request_id": "fa782f5e-236a-482a-a1f5-62b9e431b7fa",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.8172715,
+          "http_status": 200,
+          "seconds": 1.0046749250032008,
+          "lines": 46,
+          "finished_at": 1793262212.830203
+        },
+        {
+          "image": "doclaynet-large-jpeg",
+          "source": "doclaynet-derived-stress",
+          "request_id": "bd086b3c-28d7-4013-a4db-6e0c6a648c6a",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262211.8196597,
+          "http_status": 200,
+          "seconds": 0.6821156330406666,
+          "lines": 46,
+          "finished_at": 1793262212.5120337
+        },
+        {
+          "image": "rctw-large-png",
+          "source": "rctw-derived-stress",
+          "request_id": "bc22cbb4-5911-4c80-9b29-778149a0f5cd",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262212.0819497,
+          "http_status": 200,
+          "seconds": 0.4690460739657283,
+          "lines": 3,
+          "finished_at": 1793262212.5748463
+        },
+        {
+          "image": "rctw-large-jpeg",
+          "source": "rctw-derived-stress",
+          "request_id": "0623fd9d-2480-401f-93ca-e9a40d67d5d4",
+          "state": "SUCCEEDED",
+          "intent_at": 1793262212.2061477,
+          "http_status": 200,
+          "seconds": 0.23632286582142115,
+          "lines": 3,
+          "finished_at": 1793262212.4454834
+        }
+      ],
+      "clients": 4,
+      "requests": 44,
+      "successes": 44,
+      "elapsed_seconds": 4.615599547978491,
+      "throughput_images_per_second": 9.532889398793452,
+      "p50_seconds": 0.30724950693547726,
+      "p95_seconds": 0.7329044251237065,
+      "p99_seconds": 0.9035931960679591
+    }
+  ],
+  "scope": "native GPUStack model18; MaaS paused; cached image/process cold start; no custom collector",
+  "preflight_records": [
+    {
+      "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+      "source": "doclaynet",
+      "request_id": "5178a8f6-477f-4379-aa7e-f7cec86931fe",
+      "state": "SUCCEEDED",
+      "intent_at": 1793262182.8562768,
+      "http_status": 200,
+      "seconds": 0.6911197279114276,
+      "lines": 46,
+      "finished_at": 1793262183.549044
+    }
+  ],
+  "native_preflight": {
+    "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+    "source": "doclaynet",
+    "request_id": "5178a8f6-477f-4379-aa7e-f7cec86931fe",
+    "state": "SUCCEEDED",
+    "intent_at": 1793262182.8562768,
+    "http_status": 200,
+    "seconds": 0.6911197279114276,
+    "lines": 46,
+    "finished_at": 1793262183.549044
+  },
+  "generation": 49,
+  "restored_instances": [
+    {
+      "id": 186,
+      "worker_id": 8
+    },
+    {
+      "id": 184,
+      "worker_id": 8
+    },
+    {
+      "id": 185,
+      "worker_id": 7
+    },
+    {
+      "id": 183,
+      "worker_id": 7
+    }
+  ],
+  "probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 50,
+      "reason": "E3 native replica capacity matrix",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "finished_at": 1793262225.7169447
+}

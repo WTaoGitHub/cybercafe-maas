@@ -1,0 +1,135 @@
+{
+  "id": "bb2291ee01694622a336b8898f6d661f",
+  "phase": "COMPLETE",
+  "target_replicas": 4,
+  "started_at": 1793263032.07677,
+  "before": [
+    {
+      "name": "/maas-tasks-api-1",
+      "id": "6cce84ca152b9baf8a29b0469230f8f61c24ae8fe02771c167a27f04aca5d25b",
+      "service": "api",
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-executor-1",
+      "id": "dfe884b27238525a91f5982e941e678452197c1b690df66e535f90492d181a83",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-executor-2",
+      "id": "00762c1064a6ac6b5849479d34b4581bba3a4dc622d740a26c03a5f68027d03a",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-observer-1",
+      "id": "75a8467df535423476d0e658c73850f79e5276f55cdcf28ace32a676ce3be187",
+      "service": "observer",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 4,
+      "project_limit": 4
+    }
+  ],
+  "requested_limits": null,
+  "generation": 55,
+  "after": [
+    {
+      "name": "/maas-tasks-api-1",
+      "id": "6cce84ca152b9baf8a29b0469230f8f61c24ae8fe02771c167a27f04aca5d25b",
+      "service": "api",
+      "image": "cybercafe-maas-tasks:consumer-ocr-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-executor-1",
+      "id": "dfe884b27238525a91f5982e941e678452197c1b690df66e535f90492d181a83",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-executor-2",
+      "id": "00762c1064a6ac6b5849479d34b4581bba3a4dc622d740a26c03a5f68027d03a",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-executor-3",
+      "id": "dfe27737feb268b0eda477dd06b6d8f771e8eefc0ac8cf0382815d308cda72d6",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-executor-4",
+      "id": "81482c1e8891c38e2e18de461a9df3211b9270271c69dbec676bf70eb3085286",
+      "service": "executor",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": 120,
+      "global_limit": 4,
+      "project_limit": 4
+    },
+    {
+      "name": "/maas-tasks-observer-1",
+      "id": "75a8467df535423476d0e658c73850f79e5276f55cdcf28ace32a676ce3be187",
+      "service": "observer",
+      "image": "cybercafe-maas-tasks:e3-r1",
+      "running": true,
+      "stop_timeout": null,
+      "global_limit": 4,
+      "project_limit": 4
+    }
+  ],
+  "probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 56,
+      "reason": "executor-pool:bb2291ee01694622a336b8898f6d661f",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "finished_at": 1793263034.911384,
+  "model_hash_unchanged": true,
+  "model_instance_ids_unchanged": true
+}

@@ -1,0 +1,839 @@
+{
+  "run_id": "mixed-final-20261029",
+  "state": "COMPLETE",
+  "started_at": 1793263079.886347,
+  "generation": 56,
+  "global_limit": 4,
+  "project_limit": 4,
+  "async_count": 24,
+  "sync_attempts": 36,
+  "tls_verified": true,
+  "records": [
+    {
+      "kind": "sync",
+      "index": 24,
+      "state": "SUCCEEDED",
+      "started_at": 1793263079.9394302,
+      "http_status": 200,
+      "request_id": "req_22701535837d4502b39e534fd4444bee",
+      "finished_at": 1793263080.5611558
+    },
+    {
+      "kind": "sync",
+      "index": 12,
+      "state": "SUCCEEDED",
+      "started_at": 1793263079.9396226,
+      "http_status": 200,
+      "request_id": "req_e552e5c205ef4e6c90fbc77ba30ec910",
+      "finished_at": 1793263080.4825017
+    },
+    {
+      "kind": "async",
+      "index": 0,
+      "state": "SUCCEEDED",
+      "started_at": 1793263079.9396565,
+      "task": "task_ce7b01ad470940f39b28d252a353eb49",
+      "request_id": "req_de9dd2d76a194ac99203e81a4ba9ec04",
+      "lines": 46,
+      "finished_at": 1793263080.9409158
+    },
+    {
+      "kind": "sync",
+      "index": 0,
+      "state": "SUCCEEDED",
+      "started_at": 1793263079.939687,
+      "http_status": 200,
+      "request_id": "req_2024285d5d62497fac4b0f20f2a88df7",
+      "finished_at": 1793263080.4972382
+    },
+    {
+      "kind": "async",
+      "index": 1,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.032574,
+      "task": "task_058161b824a14fb9b89a4f71dd8d86c6",
+      "request_id": "req_24cc6bdd2917451bbd521a79cc49f3a7",
+      "lines": 46,
+      "finished_at": 1793263081.5168371
+    },
+    {
+      "kind": "async",
+      "index": 2,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.0679255,
+      "task": "task_127fb090616449cba27f3af01f59a9bf",
+      "request_id": "req_1398cc605dde450783920d96c77f3a88",
+      "lines": 46,
+      "finished_at": 1793263082.03457
+    },
+    {
+      "kind": "async",
+      "index": 3,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.0918806,
+      "task": "task_b5e1b6f551674a49ba027e169fd26a9e",
+      "request_id": "req_da9301bc19d64a8a8d564f1cdf7a3102",
+      "lines": 46,
+      "finished_at": 1793263082.5229015
+    },
+    {
+      "kind": "async",
+      "index": 4,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.1100101,
+      "task": "task_25289050aadd4908966d8346982ec588",
+      "request_id": "req_b8142d421ce84ea4b21469333b0be2c3",
+      "lines": 46,
+      "finished_at": 1793263083.0671022
+    },
+    {
+      "kind": "async",
+      "index": 5,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.1381447,
+      "task": "task_8f0a910e21b44b6bbbf4918142636791",
+      "request_id": "req_7b6b6afd67ab4d2a873193a3a601f645",
+      "lines": 46,
+      "finished_at": 1793263083.401639
+    },
+    {
+      "kind": "async",
+      "index": 6,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.1849928,
+      "task": "task_b8e617af435945f4b2fd95972dd3168c",
+      "request_id": "req_bf10f31b05fe452c9275aacf5c09fd15",
+      "lines": 46,
+      "finished_at": 1793263083.6067944
+    },
+    {
+      "kind": "async",
+      "index": 7,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.2313874,
+      "task": "task_b1a26c16763f419d9142eaf1c588f703",
+      "request_id": "req_f629a5999ffc4c9fa445f082f2fee70d",
+      "lines": 46,
+      "finished_at": 1793263084.2362366
+    },
+    {
+      "kind": "async",
+      "index": 8,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.2534544,
+      "task": "task_dc44bc7a564848bbb266c1a9f03f4f92",
+      "request_id": "req_c06edb7a4a5540a9800c98b2fb4d0b0f",
+      "lines": 46,
+      "finished_at": 1793263084.5761044
+    },
+    {
+      "kind": "async",
+      "index": 9,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.2999957,
+      "task": "task_c4ca7d6f881b402e81168f50adfd4dc1",
+      "request_id": "req_68e6802023d4455b8f3e08f5e2a2f6a2",
+      "lines": 46,
+      "finished_at": 1793263084.754246
+    },
+    {
+      "kind": "async",
+      "index": 10,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.3392525,
+      "task": "task_d0d8bdd1dbd74a4094779e416dd0c5ff",
+      "request_id": "req_7ecaa004946b4f839595d73197f7da53",
+      "lines": 46,
+      "finished_at": 1793263084.925925
+    },
+    {
+      "kind": "async",
+      "index": 11,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.360027,
+      "task": "task_31beffba91ae40f2a032672a17a5db1c",
+      "request_id": "req_72337dd2eae84c5782c6b3cd3a1c70f9",
+      "lines": 46,
+      "finished_at": 1793263085.133467
+    },
+    {
+      "kind": "async",
+      "index": 12,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.3975852,
+      "task": "task_4dec1a191b1f4ae79178f8242c0bec64",
+      "request_id": "req_f4595a2776664fa19eda8a0171073fd6",
+      "lines": 46,
+      "finished_at": 1793263085.31965
+    },
+    {
+      "kind": "async",
+      "index": 13,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.455749,
+      "task": "task_d658497242aa49da8f95627b42588677",
+      "request_id": "req_5b4651cb9bf14af895305033d1602c56",
+      "lines": 46,
+      "finished_at": 1793263085.4283872
+    },
+    {
+      "kind": "sync",
+      "index": 13,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.4844742,
+      "http_status": 200,
+      "request_id": "req_8ffd1cadfd7f41a78f1a9f885f1cf441",
+      "finished_at": 1793263080.958243
+    },
+    {
+      "kind": "sync",
+      "index": 1,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.4987302,
+      "http_status": 200,
+      "request_id": "req_92aba7e01e0a45f19f2752fd78450e41",
+      "finished_at": 1793263081.0260034
+    },
+    {
+      "kind": "async",
+      "index": 14,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.5371923,
+      "task": "task_15d8bf8b16e445b698366af1a7b4a01d",
+      "request_id": "req_c16a8c686c0e4a63bee6714af43e1d59",
+      "lines": 46,
+      "finished_at": 1793263085.4634063
+    },
+    {
+      "kind": "sync",
+      "index": 25,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.5624387,
+      "http_status": 200,
+      "request_id": "req_c6f2f19f706044d59ee16c3b36988606",
+      "finished_at": 1793263081.0704958
+    },
+    {
+      "kind": "async",
+      "index": 15,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.567483,
+      "task": "task_e906a8792ff44d1e961ffc0d3e9671ec",
+      "request_id": "req_bbfb1e08573b4560a588c06476b75d44",
+      "lines": 46,
+      "finished_at": 1793263085.692543
+    },
+    {
+      "kind": "async",
+      "index": 16,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.6211278,
+      "task": "task_9a301f9f64234a489e2f991823dbab22",
+      "request_id": "req_0069c7e4564d4214ab755db0043ea5ee",
+      "lines": 46,
+      "finished_at": 1793263085.9053526
+    },
+    {
+      "kind": "async",
+      "index": 17,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.6523376,
+      "task": "task_3135766db53341c0be0457dfb705be6a",
+      "request_id": "req_a112719044334a3393e26d7aa22e4ffd",
+      "lines": 46,
+      "finished_at": 1793263085.9987788
+    },
+    {
+      "kind": "async",
+      "index": 18,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.6798682,
+      "task": "task_ed11cc07eb8c4c9299b6d9e64c577f13",
+      "request_id": "req_753c2d5d98ea419a8e54ac03b7b889d6",
+      "lines": 46,
+      "finished_at": 1793263086.0500565
+    },
+    {
+      "kind": "async",
+      "index": 19,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.7072008,
+      "task": "task_685699e2fcb8495190c9bf9425f886ff",
+      "request_id": "req_9b7f56e4c43b452e9526237701793c70",
+      "lines": 46,
+      "finished_at": 1793263086.4304886
+    },
+    {
+      "kind": "async",
+      "index": 20,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.725249,
+      "task": "task_d698475e0b5e454bb60ec40d3deff0be",
+      "request_id": "req_09729278d396427a8ce135c1df37e438",
+      "lines": 46,
+      "finished_at": 1793263086.4684255
+    },
+    {
+      "kind": "async",
+      "index": 21,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.7632985,
+      "task": "task_5ab4afde82ce4a0e9f1685c07d580a36",
+      "request_id": "req_dc244b896f194087af535470a041f312",
+      "lines": 46,
+      "finished_at": 1793263086.76611
+    },
+    {
+      "kind": "async",
+      "index": 22,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.8146331,
+      "task": "task_f6eea90c05424e499011ed5f004a1abb",
+      "request_id": "req_767d477468f249d79760a44752e20c40",
+      "lines": 46,
+      "finished_at": 1793263086.8047452
+    },
+    {
+      "kind": "async",
+      "index": 23,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.8743699,
+      "task": "task_0f9c43fce2094c34b1633d07ed845a6f",
+      "request_id": "req_41ae9b9d9bd6453c8505701e81118233",
+      "lines": 46,
+      "finished_at": 1793263086.9086392
+    },
+    {
+      "kind": "sync",
+      "index": 14,
+      "state": "SUCCEEDED",
+      "started_at": 1793263080.959732,
+      "http_status": 200,
+      "request_id": "req_fea005bb57a3475d9dc0092877fec5f6",
+      "finished_at": 1793263081.7634368
+    },
+    {
+      "kind": "sync",
+      "index": 2,
+      "state": "SUCCEEDED",
+      "started_at": 1793263081.0278702,
+      "http_status": 200,
+      "request_id": "req_e86fb12ae3a0408d83c192747ad88d52",
+      "finished_at": 1793263082.114287
+    },
+    {
+      "kind": "sync",
+      "index": 26,
+      "state": "SUCCEEDED",
+      "started_at": 1793263081.0732288,
+      "http_status": 200,
+      "request_id": "req_54ec96123b4d4e2caca17437c19bc0ce",
+      "finished_at": 1793263081.5532236
+    },
+    {
+      "kind": "sync",
+      "index": 27,
+      "state": "SUCCEEDED",
+      "started_at": 1793263081.5546298,
+      "http_status": 200,
+      "request_id": "req_7f1bcd8877bd456b8984b7e4ff18e6d7",
+      "finished_at": 1793263082.2726583
+    },
+    {
+      "kind": "sync",
+      "index": 15,
+      "state": "SUCCEEDED",
+      "started_at": 1793263081.765825,
+      "http_status": 200,
+      "request_id": "req_3385e40e69bb4e1086c629cb4ee72725",
+      "finished_at": 1793263082.6894526
+    },
+    {
+      "kind": "sync",
+      "index": 3,
+      "state": "SUCCEEDED",
+      "started_at": 1793263082.1157293,
+      "http_status": 200,
+      "request_id": "req_8d7f54c630df414b9aeb79add5a73c97",
+      "finished_at": 1793263082.6698022
+    },
+    {
+      "kind": "sync",
+      "index": 28,
+      "state": "SUCCEEDED",
+      "started_at": 1793263082.2751958,
+      "http_status": 200,
+      "request_id": "req_b8b1b5655ba94dcbbe58cd67e3323bfd",
+      "finished_at": 1793263083.0596347
+    },
+    {
+      "kind": "sync",
+      "index": 4,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263082.6715293,
+      "http_status": 429,
+      "request_id": "req_0b2840792da3437eb9fe8022fd0147e3",
+      "finished_at": 1793263082.7460983
+    },
+    {
+      "kind": "sync",
+      "index": 16,
+      "state": "SUCCEEDED",
+      "started_at": 1793263082.6908345,
+      "http_status": 200,
+      "request_id": "req_d74fe8411f19477f81c23d876844806d",
+      "finished_at": 1793263083.6715586
+    },
+    {
+      "kind": "sync",
+      "index": 5,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263082.7473888,
+      "http_status": 429,
+      "request_id": "req_5412b53f172745869f5adf7ccc2b2eec",
+      "finished_at": 1793263082.7696292
+    },
+    {
+      "kind": "sync",
+      "index": 6,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263082.7718525,
+      "http_status": 429,
+      "request_id": "req_803d32f1f116480db64e920c2da2e584",
+      "finished_at": 1793263082.847648
+    },
+    {
+      "kind": "sync",
+      "index": 7,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263082.8491888,
+      "http_status": 429,
+      "request_id": "req_dc54fb3616e74493aa146c0e1f708f77",
+      "finished_at": 1793263082.8776157
+    },
+    {
+      "kind": "sync",
+      "index": 8,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263082.8804996,
+      "http_status": 429,
+      "request_id": "req_cf77e820d5c949ec95a6a81ae01f7009",
+      "finished_at": 1793263082.9211829
+    },
+    {
+      "kind": "sync",
+      "index": 9,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263082.9236052,
+      "http_status": 429,
+      "request_id": "req_07173063bdef4be58fd46c808e4dbaaf",
+      "finished_at": 1793263082.9725323
+    },
+    {
+      "kind": "sync",
+      "index": 10,
+      "state": "SUCCEEDED",
+      "started_at": 1793263082.974595,
+      "http_status": 200,
+      "request_id": "req_d6d6987bc3134cfcaa1f2000741936c8",
+      "finished_at": 1793263083.5077593
+    },
+    {
+      "kind": "sync",
+      "index": 29,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.0614753,
+      "http_status": 429,
+      "request_id": "req_084b9de2bcf34a36981623933c503f4f",
+      "finished_at": 1793263083.0977206
+    },
+    {
+      "kind": "sync",
+      "index": 30,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.099102,
+      "http_status": 429,
+      "request_id": "req_876764c6f92c49dbb442a4baeef0ac23",
+      "finished_at": 1793263083.1195219
+    },
+    {
+      "kind": "sync",
+      "index": 31,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.120924,
+      "http_status": 429,
+      "request_id": "req_b879e5562cd34784bbdcc9646f368d72",
+      "finished_at": 1793263083.1538208
+    },
+    {
+      "kind": "sync",
+      "index": 32,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.156373,
+      "http_status": 429,
+      "request_id": "req_4877f9c4aa65496889ea7dd35cb3e01b",
+      "finished_at": 1793263083.1973228
+    },
+    {
+      "kind": "sync",
+      "index": 33,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.1991255,
+      "http_status": 429,
+      "request_id": "req_a15a379be28c44a1ad09d3ede28423a0",
+      "finished_at": 1793263083.285146
+    },
+    {
+      "kind": "sync",
+      "index": 34,
+      "state": "SUCCEEDED",
+      "started_at": 1793263083.287627,
+      "http_status": 200,
+      "request_id": "req_a719fb87189346ae9910c6fd3b1eda25",
+      "finished_at": 1793263083.814669
+    },
+    {
+      "kind": "sync",
+      "index": 11,
+      "state": "SUCCEEDED",
+      "started_at": 1793263083.5106015,
+      "http_status": 200,
+      "request_id": "req_2ee01cd81b304d12afd53642ea148e2e",
+      "finished_at": 1793263084.1204317
+    },
+    {
+      "kind": "sync",
+      "index": 17,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.673297,
+      "http_status": 429,
+      "request_id": "req_28fe11db65d44f7dbcfe7cd6e9b41c6a",
+      "finished_at": 1793263083.7051258
+    },
+    {
+      "kind": "sync",
+      "index": 18,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.7066877,
+      "http_status": 429,
+      "request_id": "req_87ac78079efc40b78d150a03d9948cf4",
+      "finished_at": 1793263083.7288635
+    },
+    {
+      "kind": "sync",
+      "index": 19,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.7301676,
+      "http_status": 429,
+      "request_id": "req_bd00c142463549b1a331aa2553af7fb3",
+      "finished_at": 1793263083.7539003
+    },
+    {
+      "kind": "sync",
+      "index": 20,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.7551906,
+      "http_status": 429,
+      "request_id": "req_edd4d657a8b1426cb5eefe28e90e87c5",
+      "finished_at": 1793263083.779348
+    },
+    {
+      "kind": "sync",
+      "index": 21,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.7806745,
+      "http_status": 429,
+      "request_id": "req_9bb9739fd9f04c209f7c69d62131bd77",
+      "finished_at": 1793263083.80264
+    },
+    {
+      "kind": "sync",
+      "index": 22,
+      "state": "SUCCEEDED",
+      "started_at": 1793263083.804446,
+      "http_status": 200,
+      "request_id": "req_f4043e3b6d224dd6b3441cfa17884bf1",
+      "finished_at": 1793263084.86843
+    },
+    {
+      "kind": "sync",
+      "index": 35,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263083.8171778,
+      "http_status": 429,
+      "request_id": "req_c3ff8cfc5d8247f9a3229f178116fdee",
+      "finished_at": 1793263083.8699486
+    },
+    {
+      "kind": "sync",
+      "index": 23,
+      "state": "CAPACITY_REJECTED",
+      "started_at": 1793263084.8725433,
+      "http_status": 429,
+      "request_id": "req_f09f314d019043f1a8db2f0a59f1eeaf",
+      "finished_at": 1793263084.9227629
+    }
+  ],
+  "sample_errors": [],
+  "attribution": "Async by unique idempotency namespace; sync by token difference in an idle test window, not a persisted request-ID mapping.",
+  "tasks": [
+    {
+      "id": "task_058161b824a14fb9b89a4f71dd8d86c6",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_127fb090616449cba27f3af01f59a9bf",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_b5e1b6f551674a49ba027e169fd26a9e",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_25289050aadd4908966d8346982ec588",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_8f0a910e21b44b6bbbf4918142636791",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_b8e617af435945f4b2fd95972dd3168c",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_b1a26c16763f419d9142eaf1c588f703",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_c4ca7d6f881b402e81168f50adfd4dc1",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_d0d8bdd1dbd74a4094779e416dd0c5ff",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_31beffba91ae40f2a032672a17a5db1c",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_4dec1a191b1f4ae79178f8242c0bec64",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_d658497242aa49da8f95627b42588677",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_15d8bf8b16e445b698366af1a7b4a01d",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_ce7b01ad470940f39b28d252a353eb49",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_dc44bc7a564848bbb266c1a9f03f4f92",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_e906a8792ff44d1e961ffc0d3e9671ec",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_9a301f9f64234a489e2f991823dbab22",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_ed11cc07eb8c4c9299b6d9e64c577f13",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_3135766db53341c0be0457dfb705be6a",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_685699e2fcb8495190c9bf9425f886ff",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_d698475e0b5e454bb60ec40d3deff0be",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_f6eea90c05424e499011ed5f004a1abb",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_5ab4afde82ce4a0e9f1685c07d580a36",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    },
+    {
+      "id": "task_0f9c43fce2094c34b1633d07ed845a6f",
+      "state": "SUCCEEDED",
+      "attempts": 1,
+      "events": 1
+    }
+  ],
+  "sync_rows": [
+    {
+      "token": "0ca976f863eb42b0ab76c738a7d16f8d",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "8d7490f493094878b25d1f52de2ba48b",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "930a3a790f5d43c4b8a0529d718130e4",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "dc2be7f2c4124cb3bd34fff649fabc58",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "e6e79f62f8ee45809dfdec6336f6e705",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "e0088e28e8b34c608d8994c46f9bc234",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "7f94a713f0624b50b1105be1dcb79bcc",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "b135ef87ed604184bd481efead4b43d5",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "40161e19e1814b88b1ff3db823d296ab",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "758af85902034330b83fa09efd1be868",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "c08fe15b18bf419da91fabc4135ccc04",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "92c079c8364f4c1c978b1a5304243e93",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "43a775768dec423a9a51cd7c63cfee92",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "29ee8785e04049fdadcca602216ecf35",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "4697c5c1943543518489f9dc7a43f642",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "d59247b3457540008f34de58270b07ae",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "a4cc56e6b9e44944afbfa0bf2fc68c16",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    },
+    {
+      "token": "e11cee7a73524ce4b4a6ad7d2df45212",
+      "state": "COMPLETED",
+      "outcome": "SUCCEEDED",
+      "events": 1
+    }
+  ],
+  "sample_count": 41,
+  "mixed_overlap_samples": 26,
+  "max_combined_inflight": 4,
+  "finished_at": 1793263087.089631
+}
