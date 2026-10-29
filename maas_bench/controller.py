@@ -9,7 +9,7 @@ import time
 import uuid
 
 from .contracts import Parameters
-from .snapshot import RuntimeFence,digest,save_private
+from .snapshot import RuntimeFence,digest,save_private,replace_private
 from maas_platform.cluster_maintenance import model_hash
 
 
@@ -55,8 +55,7 @@ class PilotController:
         pool_changes=int(any(parameters.to_dict()[k]!=current['parameters'][k] for k in ('executors','global_limit','project_limit','global_queue','project_queue')))
         expected_generation=current['generation']+2*(model_changes+pool_changes)
         path=self.output/(op['id']+'.json')
-        from benchmark_executors import atomic
-        def record(state):op.update(state=state,at=time.time());atomic(path,op)
+        def record(state):op.update(state=state,at=time.time());replace_private(path,op)
         record('PREPARED')
         try:
             if parameters.replicas!=current['parameters']['replicas']:

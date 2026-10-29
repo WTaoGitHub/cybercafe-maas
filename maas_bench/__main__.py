@@ -32,6 +32,8 @@ def execute(config):
     policy=RunPolicy(**config.get('policy',{}))
     if policy.seconds<60 or policy.min_successes<200:raise ValueError('Live formal windows require >=60 seconds AND >=200 successes')
     if policy.max_seconds>300:raise ValueError('Use an explicitly designed soak driver for longer windows')
+    if config.get('load_mode','async_saturation') not in ('async_saturation','mixed_20','mixed_50'):
+        raise ValueError('This driver only supports asynchronous or mixed saturation')
     matrix.validate_execution(config,digest(fixture_data))
     # The operator keeps original full model/app.env/maintenance bindings on the
     # Mac first. This receipt is an explicit precondition, not automatic proof.
@@ -47,7 +49,7 @@ def execute(config):
         with loglock:
             log.write(json.dumps(row)+'\n');log.flush()
             if row['kind']!='sample':os.fsync(log.fileno())
-    observer=None;watcher=None;halt=threading.Event()
+    observer=None;watcher=None;traffic=None;halt=threading.Event()
     try:
         observer=DatabaseObserver(read_secret(config['database_dsn_file']),config['project'],config['logical_model'],config['revision'],'e3-'+run_id+':')
         initial=observer.snapshot()
@@ -62,8 +64,14 @@ def execute(config):
                 if quality['input_sha256']!=digest(fixture_data) or quality['profile_id']!=config['profile_id']:
                     raise ValueError('Different quality reference profile')
                 fixtures=[{**f,'expected_text_sha256':quality['items'][f['id']]['text_sha256']} for f in fixtures]
-            backend=TaskBackend(client,observer,fixtures);backend.prepare()
+            mixed=config.get('load_mode','async_saturation').startswith('mixed_')
+            backend=TaskBackend(client,observer,fixtures,allow_sync=mixed);backend.prepare()
             runner=SaturationRunner(backend,parameters,policy,initial['generation'],emit)
+            if mixed:
+                from .sync_load import SyncTraffic
+                traffic=SyncTraffic(config,observer,runner._fail,emit)
+                backend.stop_auxiliary=traffic.stop
+                traffic.start()
             resources=ResourceGuard(current['workers'])
             def watch():
                 try:
@@ -96,6 +104,9 @@ def execute(config):
         raise
     finally:
         halt.set()
+        if traffic:
+            traffic.halt.set()
+            if traffic.thread.ident is not None:traffic.thread.join(timeout=40)
         if watcher:watcher.join(timeout=30)
         if observer:observer.close()
         log.close()

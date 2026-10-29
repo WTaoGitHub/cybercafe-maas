@@ -87,12 +87,13 @@ class TaskBackend:
     Input fixtures are already uploaded. Only acceptance happens during the
     window; task reconciliation/result verification belongs to the drain phase.
     """
-    def __init__(self,client,observer,fixtures,timeout_seconds=120):
+    def __init__(self,client,observer,fixtures,timeout_seconds=120,allow_sync=False):
         if not fixtures or not all(isinstance(f,dict) and isinstance(f.get('input'),dict) for f in fixtures):
             raise ValueError('Prepared input fixtures required')
         if type(timeout_seconds) is not int or not 1<=timeout_seconds<=3600:raise ValueError('Invalid task deadline')
         self.client=client;self.observer=observer;self.fixtures=fixtures;self.timeout=timeout_seconds
         self.last_download_seconds=0.
+        self.allow_sync=allow_sync
 
     def prepare(self):
         self.observer.fresh()
@@ -110,7 +111,8 @@ class TaskBackend:
 
     def snapshot(self,include_ids=False):
         row=self.observer.snapshot(include_ids)
-        if row['global_queued']!=row['own_queued'] or row['running']!=row['own_running'] or row['sync_running']:
+        if (row['global_queued']!=row['own_queued'] or row['running']!=row['own_running']
+                or (row['sync_running'] and not self.allow_sync) or row['sync_running']!=row['project_sync_running']):
             raise RuntimeError('Foreign traffic during pure async experiment')
         return row
 

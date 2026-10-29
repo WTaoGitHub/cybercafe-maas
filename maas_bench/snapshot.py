@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import os
+import uuid
 from pathlib import Path
 
 from maas_platform.cluster_maintenance import model_hash
@@ -32,6 +33,15 @@ def read_secret(path):
     value=p.read_text().strip()
     if not value:raise ValueError('Empty secret file')
     return value
+
+
+def replace_private(path,value):
+    """Replace an operation journal; immutable run evidence uses save_private."""
+    p=Path(path);temp=p.with_name(p.name+'.'+uuid.uuid4().hex+'.tmp')
+    try:
+        save_private(temp,value);os.replace(temp,p)
+    finally:
+        if temp.exists():temp.unlink()
 
 
 class RuntimeFence:

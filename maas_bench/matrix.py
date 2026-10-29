@@ -21,7 +21,8 @@ def plan(matrix,case_ids=(),modules=(),labels=(),ledger=None):
     result=[];ledger=ledger or {}
     entrypoints={'T0-TOOLS':'pytest tests/maas','T0-BASELINE':'python -m maas_bench run-async',
         'T1-NATIVE':'python scripts/maas/runtime/native_tuning_matrix.py --execute',
-        'T2-ASYNC':'python scripts/maas/runtime/async_tuning_matrix.py --execute'}
+        'T2-ASYNC':'python scripts/maas/runtime/async_tuning_matrix.py --execute',
+        'T3-LIMITS':'python scripts/maas/runtime/admission_tuning.py --execute'}
     for stage in select(matrix,case_ids,modules,labels):
         unresolved=[]
         for dep in stage['depends_on']:
@@ -55,21 +56,34 @@ def validate_execution(config,manifest_sha256):
     """Only completed, hashed prerequisite artifacts unlock an async point."""
     import hashlib
     m=load();stage_id=config['case_id']
-    if stage_id not in ('T0-BASELINE','T2-ASYNC'):raise ValueError('Live driver supports unchanged pure-async points only')
+    adaptive={'T3-LIMITS','T3-EXTEND','T4-QUEUE','T6-CONFIRM','T6-SOAK'}
+    if stage_id not in {'T0-BASELINE','T2-ASYNC'}|adaptive:raise ValueError('Unsupported live stage')
     if config['profile_id']!=m['profile_id']:raise ValueError('Unexpected experiment profile')
     ledger=config.get('completed_stages',{})
     stage=next(s for s in m['stages'] if s['case_id']==stage_id)
     for dependency in stage['depends_on']:
         entry=ledger.get(dependency,{})
-        if entry.get('state')!='COMPLETE':raise ValueError('Unresolved prerequisite')
+        skipped=dependency=='T3-EXTEND' and entry.get('state')=='SKIPPED_CONDITION_NOT_MET'
+        if entry.get('state')!='COMPLETE' and not skipped:raise ValueError('Unresolved prerequisite')
         proof_raw=Path(entry['proof_file']).read_bytes()
         if hashlib.sha256(proof_raw).hexdigest()!=entry['proof_sha256']:raise ValueError('Prerequisite evidence changed')
         proof=json.loads(proof_raw)
-        if proof.get('case_id')!=dependency or proof.get('state')!='COMPLETE':raise ValueError('Wrong prerequisite evidence')
+        if proof.get('case_id')!=dependency or proof.get('state')!=entry['state']:raise ValueError('Wrong prerequisite evidence')
         if dependency!='T0-TOOLS' and (proof.get('profile_id')!=config['profile_id'] or proof.get('input_sha256')!=manifest_sha256):
             raise ValueError('Prerequisite belongs to another model/input profile')
-    points=plan(m,case_ids=[stage_id],ledger=ledger)['stages'][0]['points']
+    if stage_id in adaptive:
+        raw=Path(config['selection_file']).read_bytes()
+        if hashlib.sha256(raw).hexdigest()!=config['selection_sha256']:raise ValueError('Adaptive selection evidence changed')
+        selection=json.loads(raw)
+        if selection.get('case_id')!=stage_id or selection.get('profile_id')!=config['profile_id'] or selection.get('input_sha256')!=manifest_sha256:
+            raise ValueError('Adaptive selection belongs to another stage/profile')
+        if stage_id=='T3-EXTEND' and not selection.get('condition',{}).get('trigger_met'):raise ValueError('Conditional expansion not justified')
+        points=selection['points']
+    else:points=plan(m,case_ids=[stage_id],ledger=ledger)['stages'][0]['points']
     point=next((p for p in points if p['point_id']==config['point_id']),None)
     if point is None:raise ValueError('Unknown approved point')
-    if {k:v for k,v in point.items() if k!='point_id'}!=config['parameters']:
+    values=point.get('parameters') if stage_id in adaptive else {k:v for k,v in point.items() if k!='point_id'}
+    if values!=config['parameters']:
         raise ValueError('Parameters differ from selected matrix point')
+    if stage_id in adaptive and point.get('mode','async_saturation')!=config.get('load_mode','async_saturation'):
+        raise ValueError('Load mode differs from selected point')

@@ -173,7 +173,8 @@ class SaturationRunner:
                     estimated=row['ready']+credits+len(pending)
                     if estimated<=self.low:refilling=True
                     if estimated>=self.high:refilling=False
-                    if start is None and row['ready']>=self.low and row['running']>=self.parameters.async_slots:
+                    busy=row['running']+(row['sync_running'] if getattr(self.backend,'allow_sync',False) else 0)
+                    if start is None and row['ready']>=self.low and busy>=self.parameters.async_slots:
                         self.sample_stop.set();sampler.join(timeout=p.max_sample_gap+1)
                         if sampler.is_alive():raise RuntimeError('Observer failed to stop')
                         with self.lock:
@@ -206,13 +207,17 @@ class SaturationRunner:
             measured=set(end['success_ids'])-set(start['success_ids'])
             if len(measured)!=end['successes']-start['successes']:raise RuntimeError('Inconsistent boundary counters')
             summary.update(state='DRAINING',measurement_seconds=duration,measured_successes=len(measured),
-                           throughput_per_second=len(measured)/duration,measured_task_ids=sorted(measured))
+                           throughput_per_second=len(measured)/duration,measured_task_ids=sorted(measured),
+                           window_start_db_epoch=start['db_at'],window_end_db_epoch=end['db_at'])
         except Exception as exc:
             summary.update(state=getattr(exc,'status','INTERRUPTED_REQUIRES_INSPECTION'),error_class=type(exc).__name__)
             self._fail(exc)
         finally:
             self.stop.set();self.sample_stop.set();sampler.join(timeout=p.max_sample_gap+1)
             pool.shutdown(wait=True,cancel_futures=True)
+            if hasattr(self.backend,'stop_auxiliary'):
+                try:summary['auxiliary']=self.backend.stop_auxiliary()
+                except Exception as exc:self._fail(exc)
             if self.failure and summary['state']=='DRAINING':summary.update(state='INTERRUPTED_REQUIRES_INSPECTION',error_class=type(self.failure).__name__)
             summary.update(submitted_intents=sequence,accepted_task_ids=list(self.accepted),supply=self.monitor.evidence())
         # No result download can starve the measurement: this phase is separate.
