@@ -43,9 +43,8 @@ def execute_arrivals(config):
     try:
         initial=observer.snapshot()
         if any(initial[k] for k in ('global_queued','running','sync_running','unknown','sync_unknown')):raise RuntimeError('Exclusive idle arrival window required')
-        fixtures=manifest['fixtures'];quality=read_private(config['expected_text_file'])
-        if quality['profile_id']!=config['profile_id'] or quality['input_sha256']!=digest(manifest):raise ValueError('Quality reference changed')
-        fixtures=[{**f,'expected_text_sha256':quality['items'][f['id']]['text_sha256']} for f in fixtures]
+        from .fixtures import prepared_fixtures
+        fixtures,workload=prepared_fixtures(config,manifest)
         with httpx.Client(base_url=config['base_url'],headers={'Authorization':'Bearer '+read_secret(config['customer_key_file'])},timeout=10,
             trust_env=False,transport=httpx.HTTPTransport(retries=0,verify=config.get('ca_file',True))) as client:
             backend=TaskBackend(client,observer,fixtures);backend.prepare();admission=AdmissionBackend(backend,emit)
@@ -92,12 +91,14 @@ def execute_arrivals(config):
             http=[r['outcome'] for r in result['records']]
             summary={k:v for k,v in result.items() if k!='records'}
             summary.update(case_id=config['case_id'],point_id=config['point_id'],parameters=p.to_dict(),
+                **workload,
                 accepted=len(rows),queue_full_rejections=rejected,drain_seconds=drain,download_verification=downloads,
                 queue_peak=max((s['project_queued'] for s in samples),default=0),
                 first_queue=samples[0]['project_queued'] if samples else None,last_queue=samples[-1]['project_queued'] if samples else None,
                 sample_count=len(samples),accepted_task_ids=admission.accepted,
                 wait_p95=quantile([r['waiting'] for r in timings],.95),wait_p99=quantile([r['waiting'] for r in timings],.99),
                 execution_p95=quantile([r['executing'] for r in timings],.95),total_p95=quantile([r['total'] for r in timings],.95),
+                total_p99=quantile([r['total'] for r in timings],.99),
                 response_latency={str(code):{'count':sum(r['http_status']==code for r in http),
                     'p95':quantile([r['seconds'] for r in http if r['http_status']==code],.95),
                     'p99':quantile([r['seconds'] for r in http if r['http_status']==code],.99)} for code in (202,429)},

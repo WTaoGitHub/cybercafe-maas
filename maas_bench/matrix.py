@@ -92,3 +92,5 @@ def validate_execution(config,manifest_sha256):
         raise ValueError('Load mode differs from selected point')
     if stage_id in adaptive and 'arrival_policy' in point and point['arrival_policy']!=config.get('arrival_policy'):
         raise ValueError('Arrival policy differs from selected point')
+    if stage_id in adaptive and point.get('workload_sha256')!=config.get('workload_sha256'):
+        raise ValueError('Workload differs from selected point')

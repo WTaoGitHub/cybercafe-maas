@@ -58,12 +58,8 @@ def execute(config):
         with httpx.Client(base_url=config['base_url'],headers={'Authorization':'Bearer '+read_secret(config['customer_key_file'])},
             verify=config.get('ca_file',True),timeout=10,trust_env=False,follow_redirects=False,
             transport=httpx.HTTPTransport(retries=0,verify=config.get('ca_file',True))) as client:
-            fixtures=fixture_data['fixtures']
-            if config.get('expected_text_file'):
-                quality=read_private(config['expected_text_file'])
-                if quality['input_sha256']!=digest(fixture_data) or quality['profile_id']!=config['profile_id']:
-                    raise ValueError('Different quality reference profile')
-                fixtures=[{**f,'expected_text_sha256':quality['items'][f['id']]['text_sha256']} for f in fixtures]
+            from .fixtures import prepared_fixtures
+            fixtures,workload=prepared_fixtures(config,fixture_data)
             mixed=config.get('load_mode','async_saturation').startswith('mixed_')
             backend=TaskBackend(client,observer,fixtures,allow_sync=mixed);backend.prepare()
             runner=SaturationRunner(backend,parameters,policy,initial['generation'],emit)
@@ -94,7 +90,7 @@ def execute(config):
             if runner.failure and summary['state']=='COMPLETE':raise runner.failure
             after=probe.capture();save_private(folder/'after.json',after);fence.check(after)
             summary.update(profile_id=config['profile_id'],input_sha256=digest(fixture_data),
-                point_id=config['point_id'],generator=generator,configuration_changed_by_harness=False,restore_required=False)
+                case_id=config['case_id'],point_id=config['point_id'],generator=generator,configuration_changed_by_harness=False,restore_required=False,**workload)
             save_private(folder/'summary.json',summary)
             return {'run_id':run_id,'state':summary['state'],'measured_successes':summary.get('measured_successes'),
                 'throughput_per_second':summary.get('throughput_per_second'),'private_evidence_directory':str(folder)}
