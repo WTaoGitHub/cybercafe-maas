@@ -18,11 +18,15 @@ python3 -m venv /private/path/to/tool-env
 .venv-maas/bin/python -m maas_bench plan --case-id T0-BASELINE
 .venv-maas/bin/python -m maas_bench plan --module native-capacity --label gpu
 .venv-maas/bin/python -m maas_bench plan --case-id T1-NATIVE --case-id T2-ASYNC
+.venv-maas/bin/python -m maas_bench plan --module http-ingress
+.venv-maas/bin/python -m maas_bench plan --case-id T4-HTTP-REJECT
 ```
 
 同类选择条件取并集，不同类条件取交集。未知条件直接拒绝。输出包括前置依赖、3个基线重复、12个原生粗筛点和9个异步粗筛点；没有证据的依赖标记BLOCKED。条件扩展必须明确执行或记录`SKIPPED_CONDITION_NOT_MET`，不能把所有跳过都当作通过。
 
 `plan`只规划，不连接服务、不改配置。T3以后的候选必须依据前阶段证据选择，不会自动填成“最佳”。矩阵不是一键执行所有阶段的生产调度器。
+
+2026-10-29新增的三个T4-HTTP用例只支持规划选择，专用HTTP驱动与隔离API环境待实施；当前`run-async`不能执行。HTTP请求并发与执行器/槽位分开，32/64只作为条件候选，未扩大现有16工具边界。设计见[HTTP接入专项](E3-HTTP-INGRESS-PLAN.md)。
 
 ## 异步单点运行
 
