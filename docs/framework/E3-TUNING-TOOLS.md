@@ -26,6 +26,8 @@ python3 -m venv /private/path/to/tool-env
 
 `plan`只规划，不连接服务、不改配置。T3以后的候选必须依据前阶段证据选择，不会自动填成“最佳”。矩阵不是一键执行所有阶段的生产调度器。
 
+T1现提供专用`native_tuning_matrix.py --config <private.json> --execute`，持有维护锁并排空后测量完整12点，正常完成恢复原配置/真实探针，故障保留暂停现场。T2提供`async_tuning_matrix.py --config <private.json> --execute`，复用受控副本/执行器变更，运行9个有持续供给的异步点，逐图片比对固定文本基线并在结束恢复原值。两者缺少`--execute`只做dry-run；依赖哈希证据、Mac备份和动态运行快照仍须满足。具体实测进度见[执行记录](../../results/maas-e3-tune-20261029/REPORT.md)，不能把驱动可用当作所有点通过。
+
 2026-10-29新增的三个T4-HTTP用例只支持规划选择，专用HTTP驱动与隔离API环境待实施；当前`run-async`不能执行。HTTP请求并发与执行器/槽位分开，32/64只作为条件候选，未扩大现有16工具边界。设计见[HTTP接入专项](E3-HTTP-INGRESS-PLAN.md)。
 
 ## 异步单点运行

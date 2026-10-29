@@ -19,6 +19,9 @@ def select(matrix,case_ids=(),modules=(),labels=()):
 
 def plan(matrix,case_ids=(),modules=(),labels=(),ledger=None):
     result=[];ledger=ledger or {}
+    entrypoints={'T0-TOOLS':'pytest tests/maas','T0-BASELINE':'python -m maas_bench run-async',
+        'T1-NATIVE':'python scripts/maas/runtime/native_tuning_matrix.py --execute',
+        'T2-ASYNC':'python scripts/maas/runtime/async_tuning_matrix.py --execute'}
     for stage in select(matrix,case_ids,modules,labels):
         unresolved=[]
         for dep in stage['depends_on']:
@@ -40,7 +43,8 @@ def plan(matrix,case_ids=(),modules=(),labels=(),ledger=None):
                 points.append(point)
         result.append({'case_id':stage['case_id'],'module':stage['module'],'labels':stage['labels'],
             'unresolved_dependencies':unresolved,'planning_state':'BLOCKED' if unresolved else 'ADAPTIVE_SELECTION_REQUIRED' if not points and stage['case_id']!='T0-TOOLS' else 'PLANNED',
-            'points':points,'execution_implemented':stage['case_id'] in ('T0-TOOLS','T0-BASELINE','T2-ASYNC')})
+            'points':points,'execution_implemented':stage['case_id'] in entrypoints,
+            'execution_entrypoint':entrypoints.get(stage['case_id'])})
     return {'profile_id':matrix['profile_id'],'mode':'PLAN_ONLY_NO_MUTATIONS','stages':result}
 
 

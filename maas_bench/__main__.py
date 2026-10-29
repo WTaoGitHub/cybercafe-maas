@@ -20,6 +20,7 @@ def execute(config):
     from .backend import DatabaseObserver,TaskBackend
     from .runtime import ControllerProbe
     from .saturation import RunPolicy,SaturationRunner
+    from .resources import ResourceGuard
     run_id=config['run_id']
     if not re.fullmatch(r'[a-z0-9-]{8,64}',run_id):raise ValueError('Fresh bounded run ID required')
     original=read_private(config['snapshot_file']);fence=RuntimeFence(original)
@@ -55,15 +56,26 @@ def execute(config):
         with httpx.Client(base_url=config['base_url'],headers={'Authorization':'Bearer '+read_secret(config['customer_key_file'])},
             verify=config.get('ca_file',True),timeout=10,trust_env=False,follow_redirects=False,
             transport=httpx.HTTPTransport(retries=0,verify=config.get('ca_file',True))) as client:
-            backend=TaskBackend(client,observer,fixture_data['fixtures']);backend.prepare()
+            fixtures=fixture_data['fixtures']
+            if config.get('expected_text_file'):
+                quality=read_private(config['expected_text_file'])
+                if quality['input_sha256']!=digest(fixture_data) or quality['profile_id']!=config['profile_id']:
+                    raise ValueError('Different quality reference profile')
+                fixtures=[{**f,'expected_text_sha256':quality['items'][f['id']]['text_sha256']} for f in fixtures]
+            backend=TaskBackend(client,observer,fixtures);backend.prepare()
             runner=SaturationRunner(backend,parameters,policy,initial['generation'],emit)
+            resources=ResourceGuard(current['workers'])
             def watch():
                 try:
                     while not halt.is_set():
                         fence.check(probe.capture())
-                        emit({'kind':'resources','at_monotonic':time.monotonic(),'workers':probe.resources(current)})
+                        rows=probe.resources(current);controller=resources.controller();now=time.monotonic()
+                        resources.check(rows,controller,now)
+                        emit({'kind':'resources','at_monotonic':now,'workers':rows,'controller':controller})
                         halt.wait(.5)
-                except Exception as exc:runner._fail(exc)
+                except Exception as exc:
+                    emit({'kind':'guard_failed','error_class':type(exc).__name__,'private_message':str(exc)})
+                    runner._fail(exc)
             watcher=threading.Thread(target=watch,name='bench-native-guard');watcher.start()
             cpu_before=time.process_time();run_started=time.monotonic()
             summary=runner.run()

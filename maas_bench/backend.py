@@ -70,7 +70,7 @@ class DatabaseObserver:
 
     def reconcile(self,task_ids):
         with self.lock:
-            return self.connection.execute("""SELECT t.id,t.state,t.attempts,t.result_artifact_id,
+            return self.connection.execute("""SELECT t.id,t.state,t.attempts,t.result_artifact_id,t.idempotency_key,
               (SELECT count(*)::int FROM task_usage_events e WHERE e.task_id=t.id) events
               FROM tasks t WHERE t.id=ANY(%s) AND t.project=%s AND starts_with(t.idempotency_key,%s)
               AND t.model=%s AND t.revision=%s ORDER BY t.id""",(list(task_ids),*self.scope)).fetchall()
@@ -142,5 +142,9 @@ class TaskBackend:
                 raise RuntimeError('Result envelope/revision/usage mismatch')
             if self.observer.scope[2].startswith('ocr.') and not isinstance(result['outputs'].get('lines'),list):
                 raise RuntimeError('OCR result schema mismatch')
+            if any('expected_text_sha256' in f for f in self.fixtures):
+                sequence=int(row['idempotency_key'].rsplit(':',1)[1]);expected=self.fixtures[sequence%len(self.fixtures)]['expected_text_sha256']
+                actual=hashlib.sha256('\n'.join(line['text'] for line in result['outputs']['lines']).encode()).hexdigest()
+                if actual!=expected:raise RuntimeError('OCR text differs from fixed reference')
         self.last_download_seconds=time.monotonic()-started
         return {'downloaded_results':len(rows),'download_seconds':self.last_download_seconds}

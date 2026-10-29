@@ -169,6 +169,18 @@ def test_result_download_rejects_wrong_revision_even_when_http_succeeded():
         with pytest.raises(RuntimeError,match='mismatch'):backend.verify_results(rows)
 
 
+def test_async_quality_matches_the_image_associated_with_its_sequence():
+    import hashlib
+    class Observer:scope=('a','e3-test12345:','ocr.default','1')
+    result={'outputs':{'lines':[{'text':'first'}]},'model_revision':'1','attempt':1,'usage':{'unit':'task','quantity':1}}
+    fixtures=[{'input':{'text':'x'},'expected_text_sha256':hashlib.sha256(t.encode()).hexdigest()} for t in ('first','second')]
+    with httpx.Client(base_url='http://test',transport=httpx.MockTransport(lambda _:httpx.Response(200,json=result))) as client:
+        backend=TaskBackend(client,Observer(),fixtures)
+        assert backend.verify_results([{'result_artifact_id':'art_example','idempotency_key':'e3-test12345:0'}])['downloaded_results']==1
+        with pytest.raises(RuntimeError,match='fixed reference'):
+            backend.verify_results([{'result_artifact_id':'art_example','idempotency_key':'e3-test12345:1'}])
+
+
 @pytest.mark.parametrize('kw',[{'seconds':float('nan')},{'sample_seconds':.2},{'min_successes':20,'max_submissions':10}])
 def test_policy_rejects_unbounded_or_unmeasurable_parameters(kw):
     with pytest.raises(ValueError):RunPolicy(**kw)
