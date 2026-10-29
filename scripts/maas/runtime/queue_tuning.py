@@ -37,12 +37,13 @@ def run(config):
         for q in (10,25,50,100,200):
             normal=[v for v in rows if v['parameters']['project_queue']==q and '-rate0.' in v['point_id']]
             allq=[v for v in rows if v['parameters']['project_queue']==q]
-            if len(normal)==2 and all(v['queue_full_rejections']==0 for v in normal) and max(v['wait_p95'] or 0 for v in allq)<=5:
+            slots=min(candidate['parameters'][k] for k in ('executors','global_limit','project_limit'))
+            if q>2*slots and len(normal)==2 and all(v['queue_full_rejections']==0 for v in normal) and max(v['wait_p95'] or 0 for v in allq)<=5:
                 eligible.append(q)
         if not eligible:raise RuntimeError('No queue candidate meets predeclared five-second waiting budget')
         q=min(eligible);params={**candidate['parameters'],'global_queue':q,'project_queue':q}
         phase.finish(reference_mu=candidate['screening_throughput'],selected_candidate={'parameters':params,'waiting_budget_seconds':5},
-            queue_rejections_are_expected=True,capacity_ranked=False)
+            queue_rejections_are_expected=True,capacity_ranked=False,selection_rule='smallest tested Q above 2*execution_slots with no normal 0.5/0.8mu rejection and all-case wait P95 <=5s; reserve refill margin')
     except BaseException as exc:phase.interrupted(exc);raise
     finally:phase.close()
 
