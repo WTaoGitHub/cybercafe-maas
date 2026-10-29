@@ -1,0 +1,25 @@
+{
+  "case_id": "T3-RESTORE-RECOVERY",
+  "state": "COMPLETE",
+  "attempt": 1,
+  "measurement_requests_replayed": 0,
+  "owned_generation": 121,
+  "placement_counts": [
+    2,
+    2
+  ],
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 124,
+  "fixed_application_environment_matched": true,
+  "real_resume_probes_passed": 2,
+  "unknown": 0,
+  "vm_worker_docker_daemon_restarts": 0
+}

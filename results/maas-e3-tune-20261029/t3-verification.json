@@ -1,0 +1,35 @@
+{
+  "case_id": "T3-LIMITS-VERIFICATION",
+  "state": "COMPLETE",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "points": 64,
+  "modes": {
+    "async_saturation": 16,
+    "sync_prepared": 16,
+    "mixed_20": 16,
+    "mixed_50": 16
+  },
+  "async_accepted": 23010,
+  "sync_successes": 10879,
+  "sync_capacity_rejections": 8051,
+  "window_successes": 30791,
+  "all_business_attempts_and_success_events_once": true,
+  "all_download_checks_completed": true,
+  "supply_scope": "discrete DB samples; not mathematical continuous occupancy proof",
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 124,
+  "physical_backend_exactly_once_proven": false,
+  "original_measurement_verification_state": "MEASUREMENTS_COMPLETE_RESTORATION_PENDING",
+  "original_run_state": "INTERRUPTED_REQUIRES_INSPECTION",
+  "restoration_recovery_state": "COMPLETE",
+  "mac_private_archive_sha256": "b78951d4a2a2b13261429e29867959e35e6cbbc9e5a07490b3caf042a3a4d21e"
+}
