@@ -17,4 +17,3 @@ def test_queue_sweep_has_explicit_boundaries_and_independent_rates():
     normal=[p for p in points if p.get('fraction') is not None]
     assert len(normal)==20 and all(p['arrival_policy']['seconds']==180 for p in normal)
     assert {p['arrival_policy']['rate'] for p in normal}=={10,16,20,24}
-
