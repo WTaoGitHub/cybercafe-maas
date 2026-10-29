@@ -56,7 +56,7 @@ def validate_execution(config,manifest_sha256):
     """Only completed, hashed prerequisite artifacts unlock an async point."""
     import hashlib
     m=load();stage_id=config['case_id']
-    adaptive={'T3-LIMITS','T3-EXTEND','T4-QUEUE','T6-CONFIRM','T6-SOAK'}
+    adaptive={'T3-LIMITS','T3-EXTEND','T4-QUEUE','T4-HTTP-ACCEPT','T4-HTTP-REJECT','T4-HTTP-RECOVER','T6-CONFIRM','T6-SOAK'}
     if stage_id not in {'T0-BASELINE','T2-ASYNC'}|adaptive:raise ValueError('Unsupported live stage')
     if config['profile_id']!=m['profile_id']:raise ValueError('Unexpected experiment profile')
     ledger=config.get('completed_stages',{})
