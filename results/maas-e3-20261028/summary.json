@@ -480,5 +480,15 @@
     "candidate steady-state validation including post-matrix final config",
     "final recommendation and acceptance; E3 not complete"
   ],
-  "telemetry_boundary": "Native metrics sampled about0.5-1seconds; exporter refresh may be slower, so observed peaks are lower bounds. Power not exported, no energy claim. Never divide whole-card memory peak into a per-replica safety claim."
+  "telemetry_boundary": "Native metrics sampled about0.5-1seconds; exporter refresh may be slower, so observed peaks are lower bounds. Power not exported, no energy claim. Never divide whole-card memory peak into a per-replica safety claim.",
+  "subsequent_debug": {
+    "date": "2026-10-29",
+    "admission_restored": true,
+    "generation": 44,
+    "failure_layer": "gateway-to-worker8-proxy connection",
+    "root_cause_confirmed": false,
+    "reproduced": false,
+    "e3_resumed": false,
+    "report": "../maas-e3-debug-20261029/REPORT.md"
+  }
 }

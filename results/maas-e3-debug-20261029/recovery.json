@@ -1,0 +1,48 @@
+{
+  "started_at": 1793240718.7771733,
+  "before": {
+    "paused": true,
+    "generation": 43,
+    "reason": "E3 native replica capacity matrix",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": true,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "scope": "restore admission after one-shot diagnostics, not resume E3 load",
+  "probe": {
+    "maintenance": {
+      "paused": false,
+      "generation": 44,
+      "reason": "E3 native replica capacity matrix",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "after": {
+    "paused": false,
+    "generation": 44,
+    "reason": "E3 native replica capacity matrix",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "state": "RESUMED",
+  "finished_at": 1793240720.2939956
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "start_time": "2026-10-29T02:22:29.278Z",
+    "request_id": "2c4aa7b1-f38c-96df-9953-5760f85c4239",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-151.static",
+    "upstream_host": "10.11.31.3:10150",
+    "path": "/v1/chat/completions",
+    "duration": "708"
+  }
+]

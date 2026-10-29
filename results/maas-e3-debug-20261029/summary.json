@@ -1,0 +1,74 @@
+{
+  "diagnosis": "original request failed connecting from gateway to worker8 proxy, new instance150, not a missing model route; deeper transient trigger unconfirmed",
+  "root_cause_confirmed": false,
+  "failure": {
+    "start_time": "2026-10-28T12:23:38.398Z",
+    "request_id": "b3ab8c65-7d57-4f33-9595-b6183148824b",
+    "method": "POST",
+    "path": "/v1/chat/completions",
+    "response_code": "503",
+    "response_flags": "UF",
+    "response_code_details": "upstream_reset_before_response_started{local_connection_failure}",
+    "upstream_cluster": "outbound|80||model-18-150.static",
+    "upstream_host": "10.11.31.3:10150",
+    "upstream_transport_failure_reason": "-",
+    "duration": "3023",
+    "upstream_service_time": "-",
+    "route_name": "ai-route-route-17.internal",
+    "bytes_sent": "97"
+  },
+  "current_layer_probes": {
+    "total": 16,
+    "passed": 16,
+    "inference_requests": 12
+  },
+  "recreation": {
+    "state": "COMPLETE_NO_FAILURE_REPRODUCED",
+    "sequence": [
+      4,
+      2,
+      0,
+      4
+    ],
+    "successful_new_requests": 5,
+    "original_config_matches": true
+  },
+  "tcp": {
+    "packets": 111,
+    "syns": 30,
+    "synacks": 30,
+    "resets": 5,
+    "payload_recorded": false
+  },
+  "admission_restored": true,
+  "generation": 44,
+  "model_replicas": 4,
+  "unknown_backend": 0,
+  "unknown_sync": 0,
+  "monitor": {
+    "generated_at_unix": 1793240846.2671473,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8691.0,
+      "maas_successful_sync_requests_total": 37.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 128202567.0,
+      "maas_artifact_free_bytes": 392606507008.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  },
+  "e3_resumed": false,
+  "vm_or_daemon_restarted": false,
+  "source_reference": {
+    "gpustack_tag": "v2.2.3",
+    "commit": "1cfcbbff02aacdb51f0a390378dd7bcddd9bf365",
+    "files": [
+      "gpustack/gateway/utils.py:model_instance_registry/_worker_reserve_proxy_registry",
+      "gpustack/routes/worker/proxy.py:set_port_from_model_name/proxy",
+      "gpustack/worker/worker.py:_serve"
+    ]
+  },
+  "envoy_reference": "https://www.envoyproxy.io/docs/envoy/v1.35.5/configuration/observability/access_log/usage"
+}

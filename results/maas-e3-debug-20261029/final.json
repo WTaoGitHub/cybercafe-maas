@@ -1,0 +1,75 @@
+{
+  "observed_at": 1793240847.0388944,
+  "managed": {
+    "paused": false,
+    "generation": 44,
+    "reason": "E3 native replica capacity matrix",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "model_replicas": 4,
+  "model_hash": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+  "instances": [
+    {
+      "id": 152,
+      "worker_id": 7,
+      "port": 40009,
+      "state": "running"
+    },
+    {
+      "id": 154,
+      "worker_id": 7,
+      "port": 40042,
+      "state": "running"
+    },
+    {
+      "id": 151,
+      "worker_id": 8,
+      "port": 40035,
+      "state": "running"
+    },
+    {
+      "id": 153,
+      "worker_id": 8,
+      "port": 40036,
+      "state": "running"
+    }
+  ],
+  "health": [
+    {
+      "instance": 152,
+      "status": 200
+    },
+    {
+      "instance": 154,
+      "status": 200
+    },
+    {
+      "instance": 151,
+      "status": 200
+    },
+    {
+      "instance": 153,
+      "status": 200
+    }
+  ],
+  "controller_boot_id": "c09de9f0-1b77-4b52-be06-da22a7c36793",
+  "monitor": {
+    "generated_at_unix": 1793240846.2671473,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8691.0,
+      "maas_successful_sync_requests_total": 37.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 128202567.0,
+      "maas_artifact_free_bytes": 392606507008.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  }
+}

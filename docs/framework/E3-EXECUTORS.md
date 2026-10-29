@@ -1,5 +1,8 @@
 # E3首轮：同机多执行器
 
+> **2026-10-29调试及服务恢复**：原503日志定位为Higress/Envoy连接worker8代理10.11.31.3:10150失败（新实例150，UF/local_connection_failure），非无匹配模型路由。16项分层检查、一次4→2→0→4重建的5次新请求均成功，未复现，底层触发原因尚未证实。正式恢复探针46行通过后MaaS已恢复接单（generation44），UNKNOWN=0、监控正常；原4副本/选择器保持，4个候选executor不变。**未修复定因、未自动续跑E3，E3未完成验收。** 下方paused43为昨日历史现场。[调试报告](../../results/maas-e3-debug-20261029/REPORT.md)。
+
+
 2026-10-28。多个独立进程、每进程单任务，共享正式PostgreSQL与artifact卷。GPUStack继续路由到模型副本；不绑定执行器与GPU，不要求后端合批，不恢复collector。
 
 ## 运行配置

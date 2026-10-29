@@ -1,0 +1,98 @@
+[
+  {
+    "start_time": "2026-10-29T02:18:03.817Z",
+    "request_id": "92ebdd03-3704-4aee-970a-e263d85227a5",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-148.static",
+    "upstream_host": "10.11.31.3:10150",
+    "upstream_local_address": "172.17.0.2:59460",
+    "duration": "411"
+  },
+  {
+    "start_time": "2026-10-29T02:18:04.240Z",
+    "request_id": "4ae79747-a052-4341-954b-f3402211d80b",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-149.static",
+    "upstream_host": "10.11.31.2:10150",
+    "upstream_local_address": "172.17.0.2:54798",
+    "duration": "438"
+  },
+  {
+    "start_time": "2026-10-29T02:18:04.688Z",
+    "request_id": "a9b0629b-b5d7-4dd3-8b61-8a4a6f63348b",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-150.static",
+    "upstream_host": "10.11.31.3:10150",
+    "upstream_local_address": "172.17.0.2:59470",
+    "duration": "435"
+  },
+  {
+    "start_time": "2026-10-29T02:18:05.134Z",
+    "request_id": "95620456-0aa2-49a4-b0d4-79c877e98be4",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-149.static",
+    "upstream_host": "10.11.31.2:10150",
+    "upstream_local_address": "172.17.0.2:54812",
+    "duration": "430"
+  },
+  {
+    "start_time": "2026-10-29T02:22:19.754Z",
+    "request_id": "de855ba1-0149-4ffc-9ece-3fde4728d0e2",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-149.static",
+    "upstream_host": "10.11.31.2:10150",
+    "upstream_local_address": "172.17.0.2:37160",
+    "duration": "438"
+  },
+  {
+    "start_time": "2026-10-29T02:22:29.993Z",
+    "request_id": "cda5a489-3420-4391-bccc-b708179f2370",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-151.static",
+    "upstream_host": "10.11.31.3:10150",
+    "upstream_local_address": "172.17.0.2:57452",
+    "duration": "436"
+  },
+  {
+    "start_time": "2026-10-29T02:22:30.438Z",
+    "request_id": "ae419908-74a4-4e72-be63-773a4cd30fc4",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-151.static",
+    "upstream_host": "10.11.31.3:10150",
+    "upstream_local_address": "172.17.0.2:57460",
+    "duration": "420"
+  },
+  {
+    "start_time": "2026-10-29T02:22:30.866Z",
+    "request_id": "bb56ded9-3882-431e-957a-a21a4941cf90",
+    "path": "/v1/chat/completions",
+    "response_code": "200",
+    "response_flags": "-",
+    "response_code_details": "via_upstream",
+    "upstream_cluster": "outbound|80||model-18-152.static",
+    "upstream_host": "10.11.31.2:10150",
+    "upstream_local_address": "172.17.0.2:33542",
+    "duration": "670"
+  }
+]

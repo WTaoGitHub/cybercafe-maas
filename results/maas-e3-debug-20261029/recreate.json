@@ -1,0 +1,91 @@
+{
+  "started_at": 1793240538.9443676,
+  "generation": 43,
+  "original_replicas": 4,
+  "original_model_sha256": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+  "phase": "COMPLETE_NO_FAILURE_REPRODUCED",
+  "requests": [
+    {
+      "label": "immediate-ready-2",
+      "request_id": "de855ba1-0149-4ffc-9ece-3fde4728d0e2",
+      "intent_at": 1793240539.7524137,
+      "status": 200,
+      "lines": 46,
+      "node": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a",
+      "finished_at": 1793240540.1954918
+    },
+    {
+      "label": "immediate-ready-4",
+      "request_id": "2c4aa7b1-f38c-46df-9953-5760f85c4239",
+      "intent_at": 1793240549.2737193,
+      "status": 200,
+      "lines": 46,
+      "node": "GPU-47acf347-08f2-15cf-d2f0-8b58e7a79f33",
+      "finished_at": 1793240549.9899166
+    },
+    {
+      "label": "steady-new-0",
+      "request_id": "cda5a489-3420-4391-bccc-b708179f2370",
+      "intent_at": 1793240549.9917817,
+      "status": 200,
+      "lines": 46,
+      "node": "GPU-47acf347-08f2-15cf-d2f0-8b58e7a79f33",
+      "finished_at": 1793240550.4320877
+    },
+    {
+      "label": "steady-new-1",
+      "request_id": "ae419908-74a4-4e72-be63-773a4cd30fc4",
+      "intent_at": 1793240550.4340968,
+      "status": 200,
+      "lines": 46,
+      "node": "GPU-47acf347-08f2-15cf-d2f0-8b58e7a79f33",
+      "finished_at": 1793240550.8611343
+    },
+    {
+      "label": "steady-new-2",
+      "request_id": "bb56ded9-3882-431e-957a-a21a4941cf90",
+      "intent_at": 1793240550.8631601,
+      "status": 200,
+      "lines": 46,
+      "node": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a",
+      "finished_at": 1793240551.5387034
+    }
+  ],
+  "tcp_interface": "enp3s0",
+  "payload_recorded": false,
+  "target": 4,
+  "change_at": 1793240540.6123388,
+  "ready_at": 1793240549.2699587,
+  "instances": [
+    {
+      "id": 152,
+      "worker_id": 7,
+      "port": 40009,
+      "state": "running",
+      "updated_at": "2026-10-29T02:22:29.030393Z"
+    },
+    {
+      "id": 154,
+      "worker_id": 7,
+      "port": 40042,
+      "state": "running",
+      "updated_at": "2026-10-29T02:22:29.077663Z"
+    },
+    {
+      "id": 151,
+      "worker_id": 8,
+      "port": 40035,
+      "state": "running",
+      "updated_at": "2026-10-29T02:22:27.106930Z"
+    },
+    {
+      "id": 153,
+      "worker_id": 8,
+      "port": 40036,
+      "state": "running",
+      "updated_at": "2026-10-29T02:22:27.042242Z"
+    }
+  ],
+  "finished_at": 1793240551.5407116,
+  "original_config_matches": true
+}
