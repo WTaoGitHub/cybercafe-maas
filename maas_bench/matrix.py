@@ -87,3 +87,5 @@ def validate_execution(config,manifest_sha256):
         raise ValueError('Parameters differ from selected matrix point')
     if stage_id in adaptive and point.get('mode','async_saturation')!=config.get('load_mode','async_saturation'):
         raise ValueError('Load mode differs from selected point')
+    if stage_id in adaptive and 'arrival_policy' in point and point['arrival_policy']!=config.get('arrival_policy'):
+        raise ValueError('Arrival policy differs from selected point')
