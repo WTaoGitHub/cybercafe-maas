@@ -31,7 +31,7 @@ def render(directory):
     summary=assess(evidence);(directory/'SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
     rows=[];sections=[]
     for stage,name in FILES.items():
-        value=evidence.get(stage,{});state=value.get('state','PENDING');points=value.get('points',value.get('runs',[]))
+        value=evidence.get(stage,{});state=value.get('state','PENDING');points=value.get('points',value.get('rounds',value.get('runs',[])))
         rows.append('<tr><td>'+html.escape(stage)+'</td><td>'+html.escape(state)+'</td><td>'+str(len(points))+'</td></tr>')
         if value:
             sections.append('<details><summary>'+html.escape(stage)+' · '+html.escape(state)+'</summary><pre>'+html.escape(json.dumps(value,ensure_ascii=False,indent=2))+'</pre><a href="'+name+'">JSON evidence</a></details>')

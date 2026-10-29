@@ -1,0 +1,24 @@
+{
+  "state": "INCOMPLETE",
+  "gates": {
+    "T0-BASELINE": true,
+    "T1-NATIVE": true,
+    "T2-ASYNC": true,
+    "T3-LIMITS": false,
+    "T3-EXTEND": false,
+    "T4-QUEUE": false,
+    "T4-HTTP-ACCEPT": false,
+    "T4-HTTP-REJECT": false,
+    "T4-HTTP-RECOVER": false,
+    "T5-CLAIM": false,
+    "T6-CONFIRM": false,
+    "T6-SOAK": false,
+    "T6-SOAK-COVERAGE": false,
+    "JOINT-TUPLE": false,
+    "RESTORED": false
+  },
+  "automatic_production_promotion": false,
+  "selected_parameters": null,
+  "maximum_capacity_proven": false,
+  "production_sla_proven": false
+}
