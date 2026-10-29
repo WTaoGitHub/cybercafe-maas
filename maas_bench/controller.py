@@ -97,20 +97,28 @@ class PilotController:
                 self.quiet();observed=self.observer.snapshot()
                 if not observed['paused'] or observed['generation']!=generation:raise RuntimeError('Pause changed during observation')
             owned()
-            expected=change_model(self.api,current['model'],count,current['model']['worker_selector'])
-            until=time.monotonic()+180;path='/v2/models/'+str(expected['id'])
+            expected=current['model'];path='/v2/models/'+str(expected['id'])
             workers={w['id'] for w in current['workers']}
-            while True:
-                owned();model=self.api(path)
-                if model['replicas']!=count or model_hash(model)!=model_hash(expected):raise RuntimeError('External model drift')
-                rows=self.api(path+'/instances')['items']
-                if any(r['state']=='error' for r in rows):raise RuntimeError('Instance error during convergence')
-                if len(rows)==count and all(r['state']=='running' and r['worker_id'] in workers for r in rows):
-                    distribution=[sum(r['worker_id']==i for r in rows) for i in workers]
-                    if len(set(distribution))!=1:raise RuntimeError('Unbalanced worker placement')
-                    break
-                if time.monotonic()>=until:raise RuntimeError('Convergence deadline; keep paused')
-                time.sleep(.5)
+            def wait_ready(target):
+                until=time.monotonic()+180
+                while True:
+                    owned();model=self.api(path)
+                    if model['replicas']!=target or model_hash(model)!=model_hash(expected):raise RuntimeError('External model drift')
+                    rows=self.api(path+'/instances')['items']
+                    if any(r['state']=='error' for r in rows):raise RuntimeError('Instance error during convergence')
+                    if len(rows)==target and all(r['state']=='running' and r['worker_id'] in workers for r in rows):
+                        distribution=[sum(r['worker_id']==i for r in rows) for i in workers]
+                        if len(set(distribution))!=1:raise RuntimeError('Unbalanced worker placement')
+                        return
+                    if time.monotonic()>=until:raise RuntimeError('Convergence deadline; keep paused')
+                    time.sleep(.5)
+            # GPUStack scale-down does not promise to retain an equal number
+            # on each GPU. This experiment requires a balanced layout: rebuild
+            # only this model inside the already owned, drained pause, as T1
+            # does, instead of treating a normal native shrink as rebalance.
+            if count<expected['replicas']:
+                expected=change_model(self.api,expected,0,expected['worker_selector']);wait_ready(0)
+            expected=change_model(self.api,expected,count,expected['worker_selector']);wait_ready(count)
             owned();self.pool.cli('resume','--credential-id','pilot-ocr','--probe-image','/run/maas-probe/upright.png')
 
     def restore(self):
