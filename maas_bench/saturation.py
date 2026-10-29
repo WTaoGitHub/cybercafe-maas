@@ -116,7 +116,9 @@ class SaturationRunner:
             self.monitor.observe(row,started,finished,self.measuring)
             self.latest=(row,accepted_before,finished)
             self.samples.append({'at_monotonic':finished,'ready':row['ready'],'running':row['running'],
-                                 'sync_running':row['sync_running'],'successes':row['successes'],'measuring':self.measuring})
+                                 'sync_running':row['sync_running'],'successes':row['successes'],'measuring':self.measuring,
+                                 'snapshot_seconds':finished-started,'db_at':row['db_at'],
+                                 'idle_async_slots':max(0,self.parameters.async_slots-row.get('own_running',row['running']))})
             self.emit({'kind':'sample',**self.samples[-1]})
         return row
 
@@ -138,6 +140,7 @@ class SaturationRunner:
                 self.accepted_set.add(task)
                 self.accepted.append(task)
                 record.update(task_id=task,state='ACCEPTED',accepted_monotonic=time.monotonic())
+                record['acceptance_seconds']=record['accepted_monotonic']-record['intent_monotonic']
                 self.records.append(record);self.emit({'kind':'accepted',**record})
             return record
         except Exception as exc:
@@ -225,6 +228,7 @@ class SaturationRunner:
                 if any(r['attempts']!=1 or r['events']!=1 for r in rows):raise RuntimeError('Attempt/event mismatch')
                 if {r['id'] for r in rows}!=self.accepted_set:raise RuntimeError('Accepted task reconciliation mismatch')
                 downloads=self.backend.verify_results(rows) if hasattr(self.backend,'verify_results') else {}
+                if self.failure:raise self.failure
                 summary.update(state='COMPLETE',reconciliation=rows,
                                tail_completions=len(self.accepted_set-set(end['success_ids'])),result_verification=downloads)
             except Exception as exc:summary.update(state='INTERRUPTED_REQUIRES_INSPECTION',error_class=type(exc).__name__)

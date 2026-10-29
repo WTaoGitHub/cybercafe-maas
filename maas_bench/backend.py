@@ -1,5 +1,6 @@
 """Temporary benchmark adapters. No migrations, SSH polling or background service."""
 import re
+import hashlib
 import threading
 import time
 
@@ -41,6 +42,8 @@ class DatabaseObserver:
                   AND a.project=t.project AND a.kind='input' AND a.deleted_at IS NULL)))::int ready,
               count(*) FILTER(WHERE t.state IN ('FAILED','CANCELLED','CANCEL_REQUESTED'))::int failed,
               count(*) FILTER(WHERE t.state='SUCCEEDED')::int successes,
+              count(*) FILTER(WHERE t.state IN ('QUEUED','RETRY_WAIT'))::int own_queued,
+              count(*) FILTER(WHERE t.state IN ('RUNNING','CANCEL_REQUESTED'))::int own_running,
               count(*) FILTER(WHERE t.max_attempts<>1)::int retry_policy_drift,
               CASE WHEN %s THEN array_agg(t.id ORDER BY t.id) FILTER(WHERE t.state='SUCCEEDED') END success_ids
               FROM own t)
@@ -97,8 +100,18 @@ class TaskBackend:
         response=self.client.get('/maas/v1/models/'+model+'/capabilities')
         if response.status_code!=200 or response.json().get('revision')!=revision:
             raise RuntimeError('Capability/revision preflight failed')
+        for fixture in self.fixtures:
+            ident=fixture['input'].get('artifact_id')
+            if ident:
+                response=self.client.get('/maas/v1/artifacts/'+ident)
+                if response.status_code!=200 or hashlib.sha256(response.content).hexdigest()!=fixture.get('sha256'):
+                    raise RuntimeError('Prepared input artifact checksum/readability failed')
 
-    def snapshot(self,include_ids=False):return self.observer.snapshot(include_ids)
+    def snapshot(self,include_ids=False):
+        row=self.observer.snapshot(include_ids)
+        if row['global_queued']!=row['own_queued'] or row['running']!=row['own_running'] or row['sync_running']:
+            raise RuntimeError('Foreign traffic during pure async experiment')
+        return row
 
     def submit(self,sequence):
         project,prefix,model,revision=self.observer.scope
