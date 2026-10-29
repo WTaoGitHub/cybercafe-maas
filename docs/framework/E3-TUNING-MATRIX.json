@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "PLANNED_NOT_EXECUTABLE_BY_CURRENT_TOOLS",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "profile_scope": {
+    "logical_model": "ocr.default",
+    "revision": "ocr-registry-r1",
+    "recognition_model": "PP-OCRv4",
+    "rapidocr_version": "1.4.4",
+    "onnxruntime_gpu_version": "1.20.2",
+    "gpu_count": 2,
+    "gpu_class": "RTX 4080 SUPER 16GiB",
+    "direction_policy": "guarded",
+    "capture_before_execution": ["image_digest", "weight_hashes", "driver", "worker_identity", "cpu_ram", "model_snapshot", "app_env_snapshot", "input_manifest_hashes"],
+    "parameter_results_transferable_to_other_models": false
+  },
+  "baseline": {"replicas": 4, "executors": 4, "global_limit": 4, "project_limit": 4, "global_queue": 1000, "project_queue": 100, "vram_claim_bytes": 2147483648},
+  "fixed_inputs": {"media_types": ["image/png", "image/jpeg"], "max_bytes": 10485760, "max_pixels": 20000000, "task_deadline_seconds": 120, "task_max_attempts": 1},
+  "tool_guardrails": {"initial_explicit_max_clients_executors_limits": 16, "initial_model_replicas": [4, 6, 8], "conditional_model_replicas": [10, 12], "conditional_executors_limits": [12]},
+  "sampling_contract": {"measure_min_seconds": 60, "measure_min_successes": 200, "measure_max_seconds": 300, "finalist_repeats": 3, "finalist_min_seconds_per_repeat": 300, "tie_max_repeats": 5, "final_soak_seconds": 7200},
+  "stages": [
+    {"case_id": "T0-TOOLS", "module": "tooling", "labels": ["local", "safety", "prerequisite"], "depends_on": [], "kind": "implementation_and_independent_db_validation"},
+    {"case_id": "T0-BASELINE", "module": "baseline", "labels": ["live", "baseline"], "depends_on": ["T0-TOOLS"], "kind": "baseline", "repeats": 3},
+    {"case_id": "T1-NATIVE", "module": "native-capacity", "labels": ["live", "gpu", "changes-model", "screen"], "depends_on": ["T0-BASELINE"], "kind": "cartesian", "dimensions": {"replicas": [4, 6, 8], "native_clients": [4, 6, 8, 12]}, "vram_claim_bytes": 2147483648, "maas_paused": true},
+    {"case_id": "T2-ASYNC", "module": "async-capacity", "labels": ["live", "gpu", "changes-pool", "changes-model", "screen"], "depends_on": ["T1-NATIVE"], "kind": "cartesian", "dimensions": {"replicas": [4, 6, 8], "executors": [4, 6, 8]}, "global_limit": 8, "project_limit": 8, "effective_queue": 100, "vram_claim_bytes": 2147483648},
+    {"case_id": "T3-LIMITS", "module": "admission", "labels": ["live", "changes-limits", "mixed", "adaptive"], "depends_on": ["T2-ASYNC"], "kind": "top_two_profiles", "global_project_limits": [4, 6, 8], "sync_async_percentages": [[0, 100], [100, 0], [20, 80], [50, 50]], "project_control_policies": ["equal_global", "ceil_half_global", "two"]},
+    {"case_id": "T3-EXTEND", "module": "admission", "labels": ["live", "conditional", "adaptive"], "depends_on": ["T3-LIMITS"], "kind": "conditional", "trigger": "repeatable_gain_at_eight_at_least_five_percent_and_resource_headroom_without_plateau", "executors": 12, "global_limit": 12, "project_limit": 12, "replicas_from_runtime_evidence": [8, 10, 12]},
+    {"case_id": "T4-QUEUE", "module": "queue", "labels": ["live", "changes-queue", "arrival-rate", "burst", "adaptive"], "depends_on": ["T3-LIMITS", "T3-EXTEND"], "conditional_dependency_resolved_by": "execution_or_SKIPPED_CONDITION_NOT_MET", "kind": "finalist_queue_sweep", "effective_queue_limits": [10, 25, 50, 100, 200], "arrival_rate_multipliers": [0.5, 0.8, 1.0, 1.2], "burst_rate_multiplier": 2, "burst_seconds": 10, "burst_task_counts": [25, 50, 100, 200], "waiting_budgets_seconds": [5, 15, 30], "normal_min_seconds": 180, "overload_max_seconds": 300, "expected_rejections": ["SYNC_CAPACITY", "QUEUE_FULL"]},
+    {"case_id": "T5-CLAIM", "module": "vram-budget", "labels": ["live", "changes-model", "peak-measurement", "adaptive"], "depends_on": ["T4-QUEUE"], "kind": "measurement_gated", "baseline_bytes": 2147483648, "unapproved_example_candidates_bytes": [2013265920, 1879048192], "minimum_card_headroom_bytes": 1073741824, "minimum_card_headroom_fraction": 0.1, "skip_lower_claim_when_peak_evidence_insufficient": true},
+    {"case_id": "T6-CONFIRM", "module": "confirmation", "labels": ["live", "repeatability", "adaptive"], "depends_on": ["T5-CLAIM"], "kind": "top_two_final_tuples", "near_best_band_fraction": 0.05},
+    {"case_id": "T6-SOAK", "module": "soak", "labels": ["live", "long-running", "mixed", "final"], "depends_on": ["T6-CONFIRM"], "kind": "selected_tuple_soak", "seconds": 7200, "automatic_production_promotion": false}
+  ],
+  "provisional_experimental_thresholds_not_sla": {"normal_no_backlog_p95_seconds": 1.5, "normal_no_backlog_p99_seconds": 3, "sustained_cpu_high_fraction": 0.8, "minimum_available_ram_bytes": 2147483648, "minimum_available_ram_fraction": 0.1},
+  "stop_conditions": ["unexpected_5xx_or_503", "unknown", "oom", "instance_error", "connection_failure", "required_sampling_failure", "external_generation_or_model_drift", "quota_violation", "metering_mismatch"],
+  "operational_constraints": {"vm_reboot_forbidden": true, "docker_daemon_restart_forbidden": true, "gpustack_worker_restart_forbidden": true, "restore_custom_collector_forbidden": true, "automatic_replay_unknown_forbidden": true, "normal_finish_restore_runtime_snapshot": true, "backup_to_private_mac_directory_first": true},
+  "result_tuple_fields": ["profile_id", "replicas", "executors", "global_limit", "project_limit", "global_queue", "project_queue", "vram_claim_bytes", "validated_input_envelope", "sustained_arrival_envelope", "latency", "resource_headroom", "evidence"]
+}

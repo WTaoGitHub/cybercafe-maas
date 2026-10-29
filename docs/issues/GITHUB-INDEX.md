@@ -1,6 +1,6 @@
 # GitHub Issue 索引
 
-2026-10-29已将现有增强计划与未关闭问题登记到私有仓库 [WTaoGitHub/cybercafe-maas](https://github.com/WTaoGitHub/cybercafe-maas/issues)。首次登记20项（19开放、E6关闭）；本轮E3试点验收完成后按completed关闭#4，更新为18项OPEN、2项CLOSED。GW/#1保持开放观察。
+2026-10-29已将现有增强计划与未关闭问题登记到私有仓库 [WTaoGitHub/cybercafe-maas](https://github.com/WTaoGitHub/cybercafe-maas/issues)。首次登记20项（19开放、E6关闭）；E3基础试点曾按completed关闭#4，随后用户追加E3-TUNE参数组合调优，复用并重新打开#4，当前19项OPEN、1项CLOSED。原基础验收有效，GW/#1保持开放观察。
 
 Issue正文包含当前状态、既有优先级/排期、待办、验收条件及固定提交的源文档链接；不将历史待办误当最新状态。GitHub记录不改变现网、不授权复测，也不更改既定排期。
 
@@ -9,7 +9,7 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 | GW-20261028-001 | [#1 [GW-20261028-001] 副本重建后GPUStack原生网关首次OCR请求503](https://github.com/WTaoGitHub/cybercafe-maas/issues/1) | OPEN |
 | E1 | [#2 [E1] 逐 worker 排空与突发故障隔离](https://github.com/WTaoGitHub/cybercafe-maas/issues/2) | OPEN |
 | E2 | [#3 [E2] 批次处理与结果打包服务](https://github.com/WTaoGitHub/cybercafe-maas/issues/3) | OPEN |
-| E3 | [#4 [E3] 完成多执行器并发、显存预算与容量验收](https://github.com/WTaoGitHub/cybercafe-maas/issues/4) | CLOSED（两GPU试点范围） |
+| E3 | [#4 [E3] 完成多执行器并发、显存预算与容量验收](https://github.com/WTaoGitHub/cybercafe-maas/issues/4) | OPEN（基础试点通过，TUNE待实施） |
 | E4 | [#5 [E4] 同步持久幂等与原结果复用](https://github.com/WTaoGitHub/cybercafe-maas/issues/5) | OPEN |
 | E5 | [#6 [E5] 克隆自动接入收尾与异常矩阵](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) | OPEN |
 | E6 | [#7 [E6] 退役自建 collector（已完成归档）](https://github.com/WTaoGitHub/cybercafe-maas/issues/7) | CLOSED |
@@ -30,7 +30,7 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 ## 状态和职责
 
 - GW-20261028-001仍未关闭：已修复控制端可复现的返回包误拦截，三轮回归通过；原始503缺源端口证据，保持观察，generation48已接单。详见[后续报告](../../results/maas-gateway-503-followup-20261029/REPORT.md)，不上传原始私有规则。
-- E3当前两GPU试点范围已验收：264次原生测量、914异步任务唯一计量、同步18成功/18容量拒绝、约122秒稳态及4→2→4排空扩缩容通过；保留4副本/4执行器/额度4/2GiB，generation56已接单。GW原问题独立观察，不把短时验证当生产SLA。[完成报告](../../results/maas-e3-completion-20261029/REPORT.md)。
+- E3两GPU基础试点已验收：[报告](../../results/maas-e3-completion-20261029/REPORT.md)。随后追加[E3-TUNE设计](../framework/E3-TUNING-PLAN.md)，#4重新跟踪待实施范围：4/6/8及条件更高副本/执行器/并发，队列和claim，模型专属profile及整组复核。本轮仅计划，不把基础试点等同性能最优，也不启动负载。
 - E5正常首启/冷拉取/双克隆与当前拓扑隔离已通过，异常矩阵及E5.F1–F5、新快照网络继承另列。E5.NET是跟踪编号，不新增或重排增强范围。
 - E6已完成，创建后按completed关闭归档，不能当作待开发任务。
 - AUTH为服务级认证解耦的跟踪编号，低优先级暂缓；实际下游联调不属于本系统执行队列。
