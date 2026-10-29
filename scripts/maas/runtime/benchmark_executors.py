@@ -1,8 +1,11 @@
 """Bounded live OCR executor comparison; verified TLS, unique IDs, no inference retries.
 Keeps native replicas/claim unchanged. Uses native worker metrics, not SSH inventory.
+This fixed-count legacy comparison does not establish continuously supplied saturation.
 """
 import argparse,concurrent.futures,hashlib,json,math,os,re,ssl,subprocess,sys,threading,time,urllib.request
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[3]))
+from maas_bench.contracts import integer,parallel_arg
 LIVE=Path('/root/wtaobj/maas-live');FIXTURES=Path('/root/wtaobj/maas-endurance-fixtures')
 
 
@@ -38,7 +41,7 @@ def worker_metrics(lines,names):
 
 def bounded_map(function,items,workers,stop=None):
     """Keep at most workers submitted calls; drain in-flight work after first failure."""
-    if not 1<=workers<=4:raise ValueError('Client limit must be between one and four')
+    integer(workers,'clients')
     stop=stop if stop is not None else threading.Event()
     iterator=iter(enumerate(items));results={};pending={};failure=None
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
@@ -68,16 +71,21 @@ def atomic(path,value):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--run-id',required=True);p.add_argument('--executors',type=int,choices=[1,2,4],required=True);p.add_argument('--count',type=int,default=40);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--run-id',required=True);p.add_argument('--executors',type=parallel_arg,required=True);p.add_argument('--clients',type=parallel_arg);p.add_argument('--model-id',type=int,default=18);p.add_argument('--model-replicas',type=parallel_arg);p.add_argument('--logical-model',default='ocr.default');p.add_argument('--count',type=int,default=40);a=p.parse_args()
+    a.clients=a.clients or a.executors
+    if a.model_id<=0 or not re.fullmatch(r'[A-Za-z0-9_.-]{1,128}',a.logical_model):p.error('Valid model identity required')
     if not re.fullmatch(r'[a-z0-9-]{1,60}',a.run_id) or not 4<=a.count<=1000:raise ValueError('Bounded run ID/count required')
     root=LIVE/'e3';root.mkdir(mode=0o700,exist_ok=True);folder=root/a.run_id;folder.mkdir(mode=0o700,exist_ok=False)
     pool=json.loads(command(['python3','/root/wtaobj/maas-framework/scripts/maas/runtime/executor_pool.py','status']))
     assert sum(r['service']=='executor' for r in pool['containers'])==a.executors
-    assert all(r['global_limit']>=a.executors and r['project_limit']>=a.executors for r in pool['containers'])
     assert not pool['managed']['paused'] and not pool['managed']['backend_activity'] and not pool['managed']['sync_activity']
     sys.path[:0]=[str(Path(__file__).resolve().parents[3]),'/root/wtaobj'];from gpustack_admin import api
-    model=api('/v2/models/18');instances=api('/v2/models/18/instances')['items']
-    assert model['replicas']==4 and len(instances)==4 and all(i['state']=='running' and i['worker_id'] in [7,8] for i in instances)
+    model_path='/v2/models/'+str(a.model_id);model=api(model_path);instances=api(model_path+'/instances')['items']
+    integer(model['replicas'],'runtime replicas')
+    if a.model_replicas is not None and model['replicas']!=a.model_replicas:raise RuntimeError('Runtime replica count differs from candidate')
+    assert len(instances)==model['replicas'] and all(i['state']=='running' for i in instances)
+    workers={i:api('/v2/workers/'+str(i)) for i in {row['worker_id'] for row in instances}}
+    assert all(w['state']=='ready' for w in workers.values())
     from maas_platform.cluster_maintenance import model_hash
     baseline_hash=model_hash(model)
     ctx=ssl.create_default_context(cafile='/root/wtaobj/maas-private-tls/server.crt');key=(LIVE/'secrets/pilot-key').read_text().strip()
@@ -87,14 +95,16 @@ def main():
         raw=json.dumps(body).encode() if isinstance(body,dict) else body
         with urllib.request.urlopen(urllib.request.Request('https://127.0.0.1:18832'+path,data=raw,headers=headers),context=ctx,timeout=35) as r:return r.status,json.load(r)
     manifest=json.loads((FIXTURES/'manifest.json').read_text());inputs=[]
+    code,capability=request('/maas/v1/models/'+a.logical_model+'/capabilities');assert code==200
+    revision=capability['revision']
     for item in manifest:
         raw=(FIXTURES/item['file']).read_bytes();assert hashlib.sha256(raw).hexdigest()==item['sha256']
         code,art=request('/maas/v1/artifacts',raw,item['media_type']);assert code==201
         inputs.append({**item,'artifact':art['id']})
     lock=threading.Lock();stop=threading.Event();samples_stop=threading.Event();records=[]
-    summary={'run_id':a.run_id,'executors':a.executors,'clients':a.executors,'count':a.count,'fixture_count':len(inputs),
+    summary={'run_id':a.run_id,'executors':a.executors,'clients':a.clients,'count':a.count,'fixture_count':len(inputs),
              'fixture_manifest_sha256':hashlib.sha256((FIXTURES/'manifest.json').read_bytes()).hexdigest(),
-             'model_replicas':4,'model_sha256':baseline_hash,'instances':[{'id':i['id'],'worker_id':i['worker_id']} for i in instances],
+             'model_id':a.model_id,'logical_model':a.logical_model,'model_revision':revision,'model_replicas':model['replicas'],'model_sha256':baseline_hash,'instances':[{'id':i['id'],'worker_id':i['worker_id']} for i in instances],
              'pool':pool,'tls_verified':True,'state':'RUNNING','started_at':time.time(),'records':records,'sample_errors':[]}
     def checkpoint():atomic(folder/'status.json',summary)
     def one(index,warmup=False):
@@ -104,7 +114,7 @@ def main():
         with lock:records.append(record);checkpoint()
         start=time.monotonic()
         try:
-            code,row=request('/maas/v1/tasks',{'model':'ocr.default','input':{'image':{'artifact_id':item['artifact']}},'timeout_seconds':120,'max_attempts':1},idem=idem)
+            code,row=request('/maas/v1/tasks',{'model':a.logical_model,'input':{'image':{'artifact_id':item['artifact']}},'timeout_seconds':120,'max_attempts':1},idem=idem)
             assert code==202
             with lock:record['task']=row['id'];checkpoint()
             deadline=time.monotonic()+145
@@ -115,7 +125,7 @@ def main():
                 time.sleep(.05)
             assert row['state']=='SUCCEEDED' and row['attempts']==1
             code,result=request('/maas/v1/artifacts/'+row['result_artifact_id']);assert code==200
-            assert result['model_revision']=='ocr-registry-r1' and isinstance(result['outputs']['lines'],list)
+            assert result['model_revision']==revision and isinstance(result['outputs']['lines'],list)
             with lock:record.update(state='SUCCEEDED',attempts=1,lines=len(result['outputs']['lines']),e2e_seconds=time.monotonic()-start,finished_at=time.time());checkpoint()
         except Exception as exc:
             stop.set()
@@ -125,7 +135,8 @@ def main():
     def sampler():
         while not samples_stop.is_set():
             sample={'at':time.time(),'workers':{}}
-            for ident,ip in [(7,'10.11.31.2'),(8,'10.11.31.3')]:
+            for ident,worker in workers.items():
+                ip=worker['ip']
                 try:
                     with urllib.request.urlopen('http://'+ip+':10151/metrics',timeout=2) as r:lines=r.read().decode().splitlines()
                     names=['worker_node_gpu_utilization_rate','worker_node_gram_used_bytes','worker_node_gram_allocated_bytes','worker_node_memory_used_bytes','worker_node_cpu_utilization_rate','worker_node_gpu_temperature_celsius']
@@ -146,10 +157,10 @@ def main():
             samples_stop.wait(1)
     sampler_thread=threading.Thread(target=sampler);sampler_thread.start();started=time.monotonic()
     try:
-        bounded_map(one,range(a.count),a.executors,stop)
+        bounded_map(one,range(a.count),a.clients,stop)
         elapsed=time.monotonic()-started;measured=[r for r in records if not r['warmup']]
-        after=api('/v2/models/18');current=api('/v2/models/18/instances')['items']
-        assert after['replicas']==4 and model_hash(after)==baseline_hash and {i['id'] for i in current}=={i['id'] for i in instances}
+        after=api(model_path);current=api(model_path+'/instances')['items']
+        assert after['replicas']==model['replicas'] and model_hash(after)==baseline_hash and {i['id'] for i in current}=={i['id'] for i in instances}
         summary.update(state='COMPLETE',elapsed_seconds=elapsed,throughput_images_per_second=len(measured)/elapsed,
             e2e_p50_seconds=percentile([r['e2e_seconds'] for r in measured],.5),e2e_p95_seconds=percentile([r['e2e_seconds'] for r in measured],.95),e2e_p99_seconds=percentile([r['e2e_seconds'] for r in measured],.99))
     finally:

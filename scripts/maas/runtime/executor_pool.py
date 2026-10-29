@@ -1,6 +1,8 @@
 """001-only bounded executor scaling, paused and drained; never mutates GPUStack models."""
 import argparse,fcntl,json,os,socket,subprocess,sys,time,uuid
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[3]))
+from maas_bench.contracts import parallel_arg,queue_arg
 ROOT=Path('/root/wtaobj/maas-framework');LIVE=Path('/root/wtaobj/maas-live')
 LOCK=Path('/run/maas-global-maintenance.lock')
 COMPOSE=['docker','compose','--env-file',str(LIVE/'app.env'),'-f',str(ROOT/'deploy/maas/compose.yaml')]
@@ -17,21 +19,24 @@ def save(path,value):
 def inventory():
     ids=run(COMPOSE+['ps','-aq']).split();rows=json.loads(run(['docker','inspect',*ids]))
     apps=[r for r in rows if r['Config']['Labels'].get('com.docker.compose.service') in ('api','executor','observer')]
-    public=[];limits=set()
+    public=[];limits=set();queues=set()
     for r in apps:
         env=dict(x.split('=',1) for x in r['Config']['Env'])
         pair=(int(env['MAAS_MAX_RUNNING']),int(env['MAAS_MAX_PROJECT_RUNNING']));limits.add(pair)
+        queue_pair=(int(env.get('MAAS_MAX_QUEUED',1000)),int(env.get('MAAS_MAX_PROJECT_QUEUED',100)));queues.add(queue_pair)
         public.append({'name':r['Name'],'id':r['Id'],'service':r['Config']['Labels']['com.docker.compose.service'],
                        'image':r['Config']['Image'],'running':r['State']['Running'],'stop_timeout':r['Config'].get('StopTimeout'),
-                       'global_limit':pair[0],'project_limit':pair[1]})
+                       'global_limit':pair[0],'project_limit':pair[1],'global_queue':queue_pair[0],'project_queue':queue_pair[1]})
     if len(limits)!=1:raise RuntimeError('API/executor/observer limits disagree; do not scale')
+    if len(queues)!=1:raise RuntimeError('API/executor/observer queue limits disagree; do not scale')
     if not all(r['running'] for r in public):raise RuntimeError('Existing application container is stopped')
     return public
 
 
-def set_count(count,limits=None):
+def set_count(count,limits=None,queues=None):
     p=LIVE/'app.env';lines=p.read_text().splitlines();settings={'MAAS_EXECUTOR_REPLICAS':str(count)}
     if limits:settings.update(MAAS_MAX_RUNNING=str(limits[0]),MAAS_MAX_PROJECT_RUNNING=str(limits[1]))
+    if queues:settings.update(MAAS_MAX_QUEUED=str(queues[0]),MAAS_MAX_PROJECT_QUEUED=str(queues[1]))
     lines=[x for x in lines if not any(x.startswith(k+'=') for k in settings)]+[k+'='+v for k,v in settings.items()]
     temp=p.with_suffix('.pool-new');fd=os.open(temp,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
     with os.fdopen(fd,'w') as f:f.write('\n'.join(lines)+'\n');f.flush();os.fsync(f.fileno())
@@ -39,8 +44,9 @@ def set_count(count,limits=None):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('action',choices=['status','scale']);p.add_argument('--replicas',type=int,choices=range(1,5));p.add_argument('--global-limit',type=int,choices=range(1,5));p.add_argument('--project-limit',type=int,choices=range(1,5));a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('action',choices=['status','scale']);p.add_argument('--replicas',type=parallel_arg);p.add_argument('--global-limit',type=parallel_arg);p.add_argument('--project-limit',type=parallel_arg);p.add_argument('--global-queue',type=queue_arg);p.add_argument('--project-queue',type=queue_arg);a=p.parse_args()
     if (a.global_limit is None)!=(a.project_limit is None) or (a.global_limit and a.project_limit>a.global_limit):p.error('Supply both consistent limits')
+    if (a.global_queue is None)!=(a.project_queue is None) or (a.global_queue and a.project_queue>a.global_queue):p.error('Supply both consistent queue limits')
     if os.getuid()!=0 or socket.gethostname()!='XZ-31-001':raise RuntimeError('001 root only')
     if a.action=='status':print(json.dumps({'containers':inventory(),'managed':cli('drain-status')}));return
     if a.replicas is None:p.error('--replicas required')
@@ -56,7 +62,7 @@ def main():
         if pending.exists() and json.loads(pending.read_text()).get('phase')!='COMPLETE':raise RuntimeError('Previous pool change incomplete; inspect before recovery')
         before=inventory();status=cli('drain-status')
         if status['paused']:raise RuntimeError('Already paused; do not take ownership of another window')
-        op={'id':uuid.uuid4().hex,'phase':'PREPARED','target_replicas':a.replicas,'started_at':time.time(),'before':before,'requested_limits':[a.global_limit,a.project_limit] if a.global_limit else None}
+        op={'id':uuid.uuid4().hex,'phase':'PREPARED','target_replicas':a.replicas,'started_at':time.time(),'before':before,'requested_limits':[a.global_limit,a.project_limit] if a.global_limit else None,'requested_queues':[a.global_queue,a.project_queue] if a.global_queue else None}
         save(pending,op)
         try:
             paused=cli('pause','--reason','executor-pool:'+op['id']);generation=paused['generation']
@@ -70,8 +76,9 @@ def main():
                 if time.monotonic()>deadline:raise RuntimeError('Drain deadline; admission remains paused')
                 time.sleep(.5)
             limits=(a.global_limit,a.project_limit) if a.global_limit else None
-            set_count(a.replicas,limits)
-            run(COMPOSE+['up','-d','--no-build','--no-deps']+(['api','executor','observer'] if limits else ['executor']))
+            queues=(a.global_queue,a.project_queue) if a.global_queue else None
+            set_count(a.replicas,limits,queues)
+            run(COMPOSE+['up','-d','--no-build','--no-deps']+(['api','executor','observer'] if limits or queues else ['executor']))
             deadline=time.monotonic()+30
             while True:
                 try:
@@ -83,6 +90,7 @@ def main():
             after=inventory();executors=[x for x in after if x['service']=='executor']
             if len(executors)!=a.replicas or any((x['stop_timeout'] or 0)<90 for x in executors):raise RuntimeError('Executor count/grace mismatch')
             if limits and any((x['global_limit'],x['project_limit'])!=limits for x in after):raise RuntimeError('Candidate limits were not applied consistently')
+            if queues and any((x['global_queue'],x['project_queue'])!=queues for x in after):raise RuntimeError('Candidate queue limits were not applied consistently')
             op.update(phase='SCALED',after=after);save(pending,op)
             if cli('drain-status')['generation']!=generation:raise RuntimeError('Maintenance ownership changed before probe')
             op['probe']=cli('resume','--credential-id','pilot-ocr','--probe-image','/run/maas-probe/upright.png')

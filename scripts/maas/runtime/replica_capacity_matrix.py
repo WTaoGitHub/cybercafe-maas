@@ -1,5 +1,5 @@
 """Controlled native-runtime capacity matrix; MaaS stays paused until original config restored.
-Only model18 replicas/worker_selector change. No VM, worker or Docker daemon operation.
+Only selected model replicas/worker_selector change. No VM, worker or Docker daemon operation.
 Any exception stops the matrix and leaves admission paused for operator inspection.
 """
 import argparse,re,uuid,base64,copy,fcntl,json,os,sys,threading,time,urllib.request
@@ -7,35 +7,55 @@ from pathlib import Path
 sys.path[:0]=[str(Path(__file__).resolve().parents[3]),'/root/wtaobj']
 from maas_platform.cluster_maintenance import model_hash
 from benchmark_executors import atomic,command,percentile,bounded_map,worker_metrics
+from maas_bench.contracts import integer,parallel_arg
 LIVE=Path('/root/wtaobj/maas-live');ROOT=Path('/root/wtaobj/maas-framework');FIXTURES=Path('/root/wtaobj/maas-endurance-fixtures')
 COMPOSE=['docker','compose','--env-file',str(LIVE/'app.env'),'-f',str(ROOT/'deploy/maas/compose.yaml')]
 
 
 def change_model(api,expected,replicas,selector):
-    if type(replicas) is not int or not 0<=replicas<=8:raise ValueError('Bounded replicas required')
-    current=api('/v2/models/18')
+    integer(replicas,'replicas',minimum=0)
+    path='/v2/models/'+str(expected['id']);current=api(path)
     if current['replicas']!=expected['replicas'] or model_hash(current)!=model_hash(expected):
         raise RuntimeError('Deployment changed externally; refuse overwrite')
     desired=copy.deepcopy(current);desired.update(replicas=replicas,worker_selector=selector)
-    result=api('/v2/models/18',desired,'PUT')
+    result=api(path,desired,'PUT')
     if result['replicas']!=replicas or model_hash(result)!=model_hash(desired):raise RuntimeError('Unconfirmed deployment change; inspect without replay')
     return result
+
+
+def planned_points(profile,worker_ids,counts,clients,repeats):
+    if not worker_ids or len(worker_ids)!=len(set(worker_ids)):raise ValueError('Unique worker IDs required')
+    for count in counts:integer(count,'replicas')
+    for client in clients:integer(client,'clients')
+    if not counts or not clients or not 1<=repeats<=3:raise ValueError('Bounded matrix required')
+    if profile=='tuning':base=[('dual-'+str(n)+'-c'+str(c),n,worker_ids,c) for n in counts for c in clients]
+    elif profile=='remaining':base=[('dual-'+str(n),n,worker_ids,clients[0]) for n in [4,8]]
+    else:base=[('single'+str(i)+'-'+str(n),n,[i],clients[0]) for i in worker_ids for n in [1,2,4]]+[('dual-'+str(n),n,worker_ids,clients[0]) for n in [2,4,8]]
+    return [(name+'-r'+str(r+1),n,ids,c) for r in range(repeats) for name,n,ids,c in base]
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-id',default='native-matrix')
-    parser.add_argument('--profile',choices=['all','remaining'],default='all')
+    parser.add_argument('--profile',choices=['all','remaining','tuning'],default='all')
+    parser.add_argument('--model-id',type=int,default=18)
+    parser.add_argument('--worker-ids',type=int,nargs='+')
+    parser.add_argument('--replica-counts',type=parallel_arg,nargs='+',default=[4,6,8])
+    parser.add_argument('--clients',type=parallel_arg,nargs='+',default=[4])
     parser.add_argument('--repeats',type=int,choices=range(1,4),default=1)
     args=parser.parse_args()
     if not re.fullmatch(r'[a-z0-9-]{1,60}',args.run_id):parser.error('Bounded run ID required')
+    if args.model_id<=0 or (args.worker_ids and any(i<=0 for i in args.worker_ids)):parser.error('Positive model/worker IDs required')
     if os.getuid()!=0:raise RuntimeError('Controller root only')
     from gpustack_admin import api
     folder=LIVE/'e3'/args.run_id;folder.mkdir(mode=0o700,exist_ok=False)
     def cli(*args):return json.loads(command(COMPOSE+['exec','-T','api','python','-m','maas_platform.cli',*args]))
-    model=api('/v2/models/18');assert model['replicas']==4 and model['env']['GPUSTACK_MODEL_VRAM_CLAIM']=='2147483648'
+    model_path='/v2/models/'+str(args.model_id);model=api(model_path);integer(model['replicas'],'runtime replicas')
+    assert model['env']['GPUSTACK_MODEL_VRAM_CLAIM']=='2147483648'
     original=copy.deepcopy(model);atomic(folder/'original-private.json',original)
-    workers={i:api('/v2/workers/'+str(i)) for i in [7,8]};assert all(w['state']=='ready' for w in workers.values())
+    worker_ids=args.worker_ids or sorted({r['worker_id'] for r in api(model_path+'/instances')['items']})
+    points=planned_points(args.profile,worker_ids,args.replica_counts,args.clients,args.repeats)
+    workers={i:api('/v2/workers/'+str(i)) for i in worker_ids};assert all(w['state']=='ready' for w in workers.values())
     manifest=json.loads((FIXTURES/'manifest.json').read_text());inputs=[]
     for item in manifest:
         raw=(FIXTURES/item['file']).read_bytes();assert hashlib_sha(raw)==item['sha256']
@@ -49,7 +69,7 @@ def main():
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
     summary={'run_id':args.run_id,'profile':args.profile,'repeats':args.repeats,'phase':'PREPARED','started_at':time.time(),'original_replicas':original['replicas'],'original_model_sha256':model_hash(original),
         'fixture_manifest_sha256':hashlib_sha((FIXTURES/'manifest.json').read_bytes()),'stress_manifest_sha256':hashlib_sha((stress_root/'manifest.json').read_bytes()),'points':[],
-        'scope':'native GPUStack model18; MaaS paused; cached image/process cold start; no custom collector'}
+        'model_id':args.model_id,'worker_ids':worker_ids,'scope':'native GPUStack; MaaS paused; cached image/process cold start; no custom collector; fixed-count legacy tool is not a sustained-supply proof'}
     checkpoint_lock=threading.RLock()
     def checkpoint():
         with checkpoint_lock:atomic(folder/'status.json',summary)
@@ -59,7 +79,7 @@ def main():
             if test():return
             time.sleep(.5)
         raise RuntimeError('Convergence deadline; stop matrix, keep paused')
-    def instances():return api('/v2/models/18/instances')['items']
+    def instances():return api(model_path+'/instances')['items']
     stop=threading.Event();abort=threading.Event();sample_errors=[];native_target=[];sample_context={'point':None,'phase':'PREPARED'}
     def sample():
         while not stop.is_set():
@@ -112,10 +132,7 @@ def main():
         sampling=threading.Thread(target=sample);sampling.start()
         try:
             # First single-GPU points, then dual-GPU points; keep conservative 2GiB claim.
-            points=[('single7-'+str(n),n,[7]) for n in [1,2,4]]+[('single8-'+str(n),n,[8]) for n in [1,2,4]]+[('dual-'+str(n),n,[7,8]) for n in [2,4,8]]
-            if args.profile=='remaining':points=[('dual-'+str(n),n,[7,8]) for n in [4,8]]
-            points=[(name+'-r'+str(r+1),n,ids) for r in range(args.repeats) for name,n,ids in points]
-            for name,count,ids in points:
+            for name,count,ids,clients in points:
                 guard();point={'name':name,'replicas':count,'eligible_workers':ids,'phase':'SCALING_ZERO'};summary['points'].append(point);summary['phase']='EXPERIMENT';checkpoint();sample_context.update(point=name,phase='SCALING_ZERO')
                 model=change_model(api,model,0,model['worker_selector']);wait(lambda:not instances())
                 point['phase']='PROCESS_COLD_START';sample_context['phase']=point['phase'];checkpoint()
@@ -131,17 +148,17 @@ def main():
                 point['warmup_records']=[];native_target=point['warmup_records']
                 for item in inputs[:2]:native(item)
                 point['phase']='MEASURE';sample_context['phase']='MEASURE';checkpoint();start=time.monotonic()
-                # Fixed four native clients separate runtime capacity from the MaaS executor poll loop.
+                # Independent native client count, separate from model replicas and executor count.
                 point['records']=[];native_target=point['records']
-                rows=bounded_map(native,inputs,4,abort)
-                point.update(phase='COMPLETE',clients=4,requests=len(rows),successes=len(rows),elapsed_seconds=time.monotonic()-start,records=rows)
+                rows=bounded_map(native,inputs,clients,abort)
+                point.update(phase='COMPLETE',clients=clients,requests=len(rows),successes=len(rows),elapsed_seconds=time.monotonic()-start,records=rows)
                 point.update(throughput_images_per_second=len(rows)/point['elapsed_seconds'],p50_seconds=percentile([r['seconds'] for r in rows],.5),p95_seconds=percentile([r['seconds'] for r in rows],.95),p99_seconds=percentile([r['seconds'] for r in rows],.99));checkpoint()
                 print(json.dumps({'point':name,'state':'COMPLETE','placement':point['placement'],'throughput':point['throughput_images_per_second']}),flush=True)
             guard();stop.set();sampling.join(timeout=8);guard();summary['phase']='RESTORING';sample_context.update(point='restore',phase='RESTORING');checkpoint()
             model=change_model(api,model,0,model['worker_selector']);wait(lambda:not instances());guard()
             model=change_model(api,model,original['replicas'],original['worker_selector'])
             wait(lambda:len(instances())==original['replicas'] and all(r['state']=='running' for r in instances()))
-            assert model_hash(api('/v2/models/18'))==model_hash(original)
+            assert model_hash(api(model_path))==model_hash(original)
             summary['restored_instances']=[{'id':r['id'],'worker_id':r['worker_id']} for r in instances()]
             summary['probe']=cli('resume','--credential-id','pilot-ocr','--probe-image','/run/maas-probe/upright.png')
             summary['phase']='COMPLETE';summary['finished_at']=time.time();checkpoint()
