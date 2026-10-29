@@ -1,0 +1,51 @@
+{
+  "case_id": "T4-INTERRUPTION-RESTORATION",
+  "state": "COMPLETE",
+  "reason": "no queue candidate meets frozen selection criteria",
+  "measurement_requests_replayed": 0,
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 164,
+  "placement_counts": [
+    2,
+    2
+  ],
+  "fixed_profile_matched": true,
+  "real_resume_probes_passed": 2,
+  "paused": false,
+  "unknown": 0,
+  "active_tasks": 0,
+  "vm_worker_docker_daemon_restarts": 0,
+  "remaining_tuning_stages_started": false,
+  "post_restore_readonly_check": {
+    "generation": 164,
+    "parameters_matched": true,
+    "native_replicas": 4,
+    "placement_counts": [
+      2,
+      2
+    ],
+    "paused": false,
+    "active_tasks": 0,
+    "backend_activity_count": 0,
+    "sync_activity_count": 0,
+    "tuning_sequence_process_count": 0,
+    "temporary_tuning_containers": [],
+    "monitor_ok": true,
+    "monitor_alerts": [],
+    "unstarted_stage_directories": true
+  },
+  "private_mac_backup": {
+    "bytes": 8703419,
+    "sha256": "d9df01f68c92014c3db05506f190642c1c5d7fbd0f355483eb49b38979a341fd",
+    "members": 341,
+    "safe_extraction": true
+  }
+}

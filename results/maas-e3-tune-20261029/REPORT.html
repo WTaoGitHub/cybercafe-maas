@@ -1,7 +1,7 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>E3 参数调优验收</title><style>
     body{margin:0;background:#f3f5f8;color:#17263b;font:16px/1.65 system-ui,sans-serif}main{max-width:1120px;margin:auto;padding:36px 24px}h1{font-size:32px;margin-bottom:8px}.card,details{background:white;border:1px solid #dce3eb;border-radius:12px;padding:20px;margin:18px 0}table{border-collapse:collapse;width:100%}th,td{padding:10px;border-bottom:1px solid #e4e9f0;text-align:left}summary{font-weight:650;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}a{color:#245db8}.status{font-size:22px;font-weight:700}</style><main>
-    <h1>PP-OCRv4 · E3 参数调优</h1><div class="card"><div class="status">INCOMPLETE</div><p>两张 RTX 4080 SUPER，GPUStack v2.2.3，固定模型流水线。普通集与边界混合集分别计量；受理、拒绝、OCR完成分开统计。</p><p>未完成阶段不算通过；2小时运行不替代8小时或生产SLA。未自动发布推荐配置，不重启VM、worker或Docker引擎。</p></div>
-    <div class="card"><table><thead><tr><th>阶段</th><th>证据状态</th><th>点/轮数</th></tr></thead><tbody><tr><td>T0-BASELINE</td><td>COMPLETE</td><td>3</td></tr><tr><td>T1-NATIVE</td><td>COMPLETE</td><td>12</td></tr><tr><td>T2-ASYNC</td><td>COMPLETE</td><td>9</td></tr><tr><td>T3-LIMITS</td><td>COMPLETE</td><td>64</td></tr><tr><td>T3-EXTEND</td><td>COMPLETE</td><td>3</td></tr><tr><td>T4-QUEUE</td><td>PENDING</td><td>0</td></tr><tr><td>T4-HTTP-ACCEPT</td><td>PENDING</td><td>0</td></tr><tr><td>T4-HTTP-REJECT</td><td>PENDING</td><td>0</td></tr><tr><td>T4-HTTP-RECOVER</td><td>PENDING</td><td>0</td></tr><tr><td>T5-CLAIM</td><td>PENDING</td><td>0</td></tr><tr><td>T6-CONFIRM</td><td>PENDING</td><td>0</td></tr><tr><td>T6-SOAK</td><td>PENDING</td><td>0</td></tr></tbody></table></div><div class="card"><h2>最终门槛</h2><pre>{
+    <h1>PP-OCRv4 · E3 参数调优</h1><div class="card"><div class="status">INCOMPLETE</div><p>两张 RTX 4080 SUPER，GPUStack v2.2.3，固定模型流水线。受理、拒绝、OCR完成分开统计；普通集与边界混合集的证据按实际已执行阶段区分。</p><p>未完成阶段不算通过；2小时运行不替代8小时或生产SLA。未自动发布推荐配置，不重启VM、worker或Docker引擎。</p></div>
+    <div class="card"><h2>本轮已中断，未形成最终推荐</h2><p>T4-QUEUE 未通过阶段门槛，后续阶段未继续。已恢复测试前参数，真实探针通过。</p><p>这里的运行恢复与最终门槛 RESTORED 分开：后者要求完成 T6 两小时运行后的恢复，本轮尚未执行。</p><p><a href="REPORT.md">完整分析与下一步</a> · <a href="ARTIFACT-LIFECYCLE-FINDING.md">文件清理诊断与因果边界</a></p></div><div class="card"><h2>T4 队列选型结果</h2><p>参考 μ 来自前阶段短时粗筛，不能视为当前稳定容量。选型要求正常到达零拒绝、各负载等待 P95 ≤ 5 秒并保留补量储备；没有队列满足全部选型条件。</p><table><thead><tr><th>队列上限</th><th>0.5μ 拒绝数</th><th>0.8μ 拒绝数</th><th>各负载最大等待 P95 / 秒</th><th>选型</th></tr></thead><tbody><tr><td>10</td><td>41</td><td>222</td><td>5.701</td><td>未通过</td></tr><tr><td>25</td><td>31</td><td>250</td><td>9.622</td><td>未通过</td></tr><tr><td>50</td><td>20</td><td>260</td><td>11.832</td><td>未通过</td></tr><tr><td>100</td><td>0</td><td>169</td><td>15.551</td><td>未通过</td></tr><tr><td>200</td><td>0</td><td>94</td><td>32.307</td><td>未通过</td></tr></tbody></table><p>50,590 个已受理任务全部成功；11,305 次队列拒绝独立统计，不算执行失败或成功吞吐。冻结的 5 秒预算未调整。</p></div><div class="card"><table><thead><tr><th>阶段</th><th>证据状态</th><th>点/轮数</th></tr></thead><tbody><tr><td>T0-BASELINE</td><td>COMPLETE</td><td>3</td></tr><tr><td>T1-NATIVE</td><td>COMPLETE</td><td>12</td></tr><tr><td>T2-ASYNC</td><td>COMPLETE</td><td>9</td></tr><tr><td>T3-LIMITS</td><td>COMPLETE</td><td>64</td></tr><tr><td>T3-EXTEND</td><td>COMPLETE</td><td>3</td></tr><tr><td>T4-QUEUE</td><td>INTERRUPTED_REQUIRES_INSPECTION</td><td>45</td></tr><tr><td>T4-HTTP-ACCEPT</td><td>NOT_RUN_DEPENDENCY_FAILED</td><td>0</td></tr><tr><td>T4-HTTP-REJECT</td><td>NOT_RUN_DEPENDENCY_FAILED</td><td>0</td></tr><tr><td>T4-HTTP-RECOVER</td><td>NOT_RUN_DEPENDENCY_FAILED</td><td>0</td></tr><tr><td>T5-CLAIM</td><td>NOT_RUN_DEPENDENCY_FAILED</td><td>0</td></tr><tr><td>T6-CONFIRM</td><td>NOT_RUN_DEPENDENCY_FAILED</td><td>0</td></tr><tr><td>T6-SOAK</td><td>NOT_RUN_DEPENDENCY_FAILED</td><td>0</td></tr></tbody></table></div><div class="card"><h2>最终门槛</h2><pre>{
   &quot;state&quot;: &quot;INCOMPLETE&quot;,
   &quot;gates&quot;: {
     &quot;T0-BASELINE&quot;: true,
@@ -23,7 +23,20 @@
   &quot;automatic_production_promotion&quot;: false,
   &quot;selected_parameters&quot;: null,
   &quot;maximum_capacity_proven&quot;: false,
-  &quot;production_sla_proven&quot;: false
+  &quot;production_sla_proven&quot;: false,
+  &quot;interrupted_stages&quot;: [
+    &quot;T4-QUEUE&quot;
+  ],
+  &quot;not_run_stages&quot;: [
+    &quot;T4-HTTP-ACCEPT&quot;,
+    &quot;T4-HTTP-REJECT&quot;,
+    &quot;T4-HTTP-RECOVER&quot;,
+    &quot;T5-CLAIM&quot;,
+    &quot;T6-CONFIRM&quot;,
+    &quot;T6-SOAK&quot;
+  ],
+  &quot;runtime_restored_after_interruption&quot;: true,
+  &quot;restoration_scope&quot;: &quot;runtime recovery evidence is separate from final T6 soak restoration gate&quot;
 }</pre></div><details><summary>T0-BASELINE · COMPLETE</summary><pre>{
   &quot;case_id&quot;: &quot;T0-BASELINE&quot;,
   &quot;state&quot;: &quot;COMPLETE&quot;,
@@ -2609,4 +2622,2502 @@
       &quot;screening_throughput&quot;: 18.796933283461126
     }
   ]
-}</pre><a href="t3-extend.json">JSON evidence</a></details><p>采样只能支持其实际分辨率内的观察，不能证明任意时刻不断粮。数字只适用于本profile和已测输入；其他模型、硬件或GPUStack版本需要重新验证。</p></main></html>
+}</pre><a href="t3-extend.json">JSON evidence</a></details><details><summary>T4-QUEUE · INTERRUPTED_REQUIRES_INSPECTION</summary><pre>{
+  &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+  &quot;profile_id&quot;: &quot;ppocrv4-ortgpu-2x4080s-r1&quot;,
+  &quot;input_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+  &quot;state&quot;: &quot;INTERRUPTED_REQUIRES_INSPECTION&quot;,
+  &quot;planned_points&quot;: 45,
+  &quot;points&quot;: [
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 25,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 25,
+      &quot;measurement_seconds&quot;: 0.16754485294222832,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-burst25&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 11,
+      &quot;queue_full_rejections&quot;: 14,
+      &quot;drain_seconds&quot;: 7.0791685548610985,
+      &quot;queue_peak&quot;: 8,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 126,
+      &quot;wait_p95&quot;: 5.701355,
+      &quot;wait_p99&quot;: 5.701355,
+      &quot;execution_p95&quot;: 6.843667,
+      &quot;total_p95&quot;: 7.014309,
+      &quot;total_p99&quot;: 7.014309,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 11,
+          &quot;p95&quot;: 0.11906266608275473,
+          &quot;p99&quot;: 0.11906266608275473
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 14,
+          &quot;p95&quot;: 0.13125477987341583,
+          &quot;p99&quot;: 0.13125477987341583
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 50,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 50,
+      &quot;measurement_seconds&quot;: 0.6241485020145774,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-burst50&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 21,
+      &quot;queue_full_rejections&quot;: 29,
+      &quot;drain_seconds&quot;: 1.5327195639256388,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 41,
+      &quot;wait_p95&quot;: 0.645787,
+      &quot;wait_p99&quot;: 0.645787,
+      &quot;execution_p95&quot;: 1.337485,
+      &quot;total_p95&quot;: 1.651247,
+      &quot;total_p99&quot;: 1.651247,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 21,
+          &quot;p95&quot;: 0.3852428561076522,
+          &quot;p99&quot;: 0.3852428561076522
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 29,
+          &quot;p95&quot;: 0.3963388369884342,
+          &quot;p99&quot;: 0.3967598560266197
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 100,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 100,
+      &quot;measurement_seconds&quot;: 0.6552923270501196,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-burst100&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 22,
+      &quot;queue_full_rejections&quot;: 78,
+      &quot;drain_seconds&quot;: 1.3238945349585265,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 38,
+      &quot;wait_p95&quot;: 0.621211,
+      &quot;wait_p99&quot;: 0.62256,
+      &quot;execution_p95&quot;: 0.905422,
+      &quot;total_p95&quot;: 1.319155,
+      &quot;total_p99&quot;: 1.332578,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 22,
+          &quot;p95&quot;: 0.12219158397056162,
+          &quot;p99&quot;: 0.1259874829556793
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 78,
+          &quot;p95&quot;: 0.1289894520305097,
+          &quot;p99&quot;: 0.14353934209793806
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 200,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 200,
+      &quot;measurement_seconds&quot;: 1.2235900168307126,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-burst200&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 32,
+      &quot;queue_full_rejections&quot;: 168,
+      &quot;drain_seconds&quot;: 1.2555414999369532,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 50,
+      &quot;wait_p95&quot;: 0.605796,
+      &quot;wait_p99&quot;: 0.613468,
+      &quot;execution_p95&quot;: 1.161838,
+      &quot;total_p95&quot;: 1.485359,
+      &quot;total_p99&quot;: 1.695477,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 32,
+          &quot;p95&quot;: 0.11425134586170316,
+          &quot;p99&quot;: 0.11684614699333906
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 168,
+          &quot;p95&quot;: 0.11838424298912287,
+          &quot;p99&quot;: 0.1297234280500561
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 1662,
+      &quot;target_rate&quot;: 9.231687017752053,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 1662,
+      &quot;measurement_seconds&quot;: 180.00033148005605,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-rate0.5&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 1621,
+      &quot;queue_full_rejections&quot;: 41,
+      &quot;drain_seconds&quot;: 0.38115971302613616,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3114,
+      &quot;wait_p95&quot;: 0.503216,
+      &quot;wait_p99&quot;: 1.511866,
+      &quot;execution_p95&quot;: 1.28862,
+      &quot;total_p95&quot;: 1.90021,
+      &quot;total_p99&quot;: 3.309933,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 1621,
+          &quot;p95&quot;: 0.04034435818903148,
+          &quot;p99&quot;: 0.05034462106414139
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 41,
+          &quot;p95&quot;: 0.02240740996785462,
+          &quot;p99&quot;: 0.023138488875702024
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 2659,
+      &quot;target_rate&quot;: 14.770699228403286,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 2659,
+      &quot;measurement_seconds&quot;: 180.00064746802673,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-rate0.8&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2437,
+      &quot;queue_full_rejections&quot;: 222,
+      &quot;drain_seconds&quot;: 0.8651729258708656,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3205,
+      &quot;wait_p95&quot;: 0.940084,
+      &quot;wait_p99&quot;: 1.117786,
+      &quot;execution_p95&quot;: 1.261484,
+      &quot;total_p95&quot;: 2.124647,
+      &quot;total_p99&quot;: 2.386107,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2437,
+          &quot;p95&quot;: 0.03737323894165456,
+          &quot;p99&quot;: 0.04840912204235792
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 222,
+          &quot;p95&quot;: 0.022871227003633976,
+          &quot;p99&quot;: 0.03183648409321904
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3324,
+      &quot;target_rate&quot;: 18.463374035504106,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3324,
+      &quot;measurement_seconds&quot;: 180.02189710293896,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-rate1.0&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2884,
+      &quot;queue_full_rejections&quot;: 440,
+      &quot;drain_seconds&quot;: 0.5338753168471158,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3224,
+      &quot;wait_p95&quot;: 1.061772,
+      &quot;wait_p99&quot;: 1.202376,
+      &quot;execution_p95&quot;: 1.346068,
+      &quot;total_p95&quot;: 2.295199,
+      &quot;total_p99&quot;: 2.540161,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2884,
+          &quot;p95&quot;: 0.03948781616054475,
+          &quot;p99&quot;: 0.05783961503766477
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 440,
+          &quot;p95&quot;: 0.024788130074739456,
+          &quot;p99&quot;: 0.03242908697575331
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3989,
+      &quot;target_rate&quot;: 22.15604884260493,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3989,
+      &quot;measurement_seconds&quot;: 180.01363724796101,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-rate1.2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 3095,
+      &quot;queue_full_rejections&quot;: 894,
+      &quot;drain_seconds&quot;: 2.1033903220668435,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3244,
+      &quot;wait_p95&quot;: 1.188604,
+      &quot;wait_p99&quot;: 1.441351,
+      &quot;execution_p95&quot;: 1.456882,
+      &quot;total_p95&quot;: 2.476714,
+      &quot;total_p99&quot;: 2.887813,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 3095,
+          &quot;p95&quot;: 0.036940661957487464,
+          &quot;p99&quot;: 0.05866234400309622
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 894,
+          &quot;p95&quot;: 0.031943306094035506,
+          &quot;p99&quot;: 0.0417162599042058
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 370,
+      &quot;target_rate&quot;: 36.92674807100821,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 370,
+      &quot;measurement_seconds&quot;: 10.019821543013677,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q10-burst-rate2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 10,
+        &quot;project_queue&quot;: 10,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 105,
+      &quot;queue_full_rejections&quot;: 265,
+      &quot;drain_seconds&quot;: 1.7718171700835228,
+      &quot;queue_peak&quot;: 10,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 208,
+      &quot;wait_p95&quot;: 1.544753,
+      &quot;wait_p99&quot;: 1.74739,
+      &quot;execution_p95&quot;: 1.657201,
+      &quot;total_p95&quot;: 3.162107,
+      &quot;total_p99&quot;: 3.235994,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 105,
+          &quot;p95&quot;: 0.031124266097322106,
+          &quot;p99&quot;: 0.03774243197403848
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 265,
+          &quot;p95&quot;: 0.02939751697704196,
+          &quot;p99&quot;: 0.03977364883758128
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 25,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 25,
+      &quot;measurement_seconds&quot;: 0.18942467612214386,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-burst25&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 25,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 10.628971713129431,
+      &quot;queue_peak&quot;: 24,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 179,
+      &quot;wait_p95&quot;: 9.621523,
+      &quot;wait_p99&quot;: 9.635528,
+      &quot;execution_p95&quot;: 9.026238,
+      &quot;total_p95&quot;: 10.122923,
+      &quot;total_p99&quot;: 10.327266,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 25,
+          &quot;p95&quot;: 0.14451707294210792,
+          &quot;p99&quot;: 0.14471948402933776
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 50,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 50,
+      &quot;measurement_seconds&quot;: 0.31165834004059434,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-burst50&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 31,
+      &quot;queue_full_rejections&quot;: 19,
+      &quot;drain_seconds&quot;: 2.584198693977669,
+      &quot;queue_peak&quot;: 24,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 50,
+      &quot;wait_p95&quot;: 1.364014,
+      &quot;wait_p99&quot;: 1.44438,
+      &quot;execution_p95&quot;: 1.735164,
+      &quot;total_p95&quot;: 2.128051,
+      &quot;total_p99&quot;: 2.435821,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 31,
+          &quot;p95&quot;: 0.13123930781148374,
+          &quot;p99&quot;: 0.13719858299009502
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 19,
+          &quot;p95&quot;: 0.07450875802896917,
+          &quot;p99&quot;: 0.07450875802896917
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 100,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 100,
+      &quot;measurement_seconds&quot;: 0.6203685831278563,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-burst100&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 39,
+      &quot;queue_full_rejections&quot;: 61,
+      &quot;drain_seconds&quot;: 2.3763832750264555,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 54,
+      &quot;wait_p95&quot;: 1.440264,
+      &quot;wait_p99&quot;: 1.448207,
+      &quot;execution_p95&quot;: 1.060021,
+      &quot;total_p95&quot;: 2.035201,
+      &quot;total_p99&quot;: 2.057565,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 39,
+          &quot;p95&quot;: 0.1325459519866854,
+          &quot;p99&quot;: 0.13927564793266356
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 61,
+          &quot;p95&quot;: 0.11291612684726715,
+          &quot;p99&quot;: 0.11747726402245462
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 200,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 200,
+      &quot;measurement_seconds&quot;: 1.183055971050635,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-burst200&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 47,
+      &quot;queue_full_rejections&quot;: 153,
+      &quot;drain_seconds&quot;: 1.7709422870539129,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 56,
+      &quot;wait_p95&quot;: 1.377369,
+      &quot;wait_p99&quot;: 1.405133,
+      &quot;execution_p95&quot;: 0.883889,
+      &quot;total_p95&quot;: 1.857216,
+      &quot;total_p99&quot;: 1.903021,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 47,
+          &quot;p95&quot;: 0.13878390309400856,
+          &quot;p99&quot;: 0.14501687604933977
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 153,
+          &quot;p95&quot;: 0.11366023682057858,
+          &quot;p99&quot;: 0.11816930212080479
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 1662,
+      &quot;target_rate&quot;: 9.231687017752053,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 1662,
+      &quot;measurement_seconds&quot;: 180.0009804549627,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-rate0.5&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 1631,
+      &quot;queue_full_rejections&quot;: 31,
+      &quot;drain_seconds&quot;: 0.4132902389392257,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3001,
+      &quot;wait_p95&quot;: 1.611577,
+      &quot;wait_p99&quot;: 4.243368,
+      &quot;execution_p95&quot;: 1.428726,
+      &quot;total_p95&quot;: 2.91717,
+      &quot;total_p99&quot;: 5.594831,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 1631,
+          &quot;p95&quot;: 0.037340809125453234,
+          &quot;p99&quot;: 0.05097095505334437
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 31,
+          &quot;p95&quot;: 0.027946084970608354,
+          &quot;p99&quot;: 0.029071137076243758
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 2659,
+      &quot;target_rate&quot;: 14.770699228403286,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 2659,
+      &quot;measurement_seconds&quot;: 180.0011115791276,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-rate0.8&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2409,
+      &quot;queue_full_rejections&quot;: 250,
+      &quot;drain_seconds&quot;: 0.8871269710361958,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3082,
+      &quot;wait_p95&quot;: 2.704915,
+      &quot;wait_p99&quot;: 3.526567,
+      &quot;execution_p95&quot;: 1.442127,
+      &quot;total_p95&quot;: 4.046958,
+      &quot;total_p99&quot;: 4.534715,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2409,
+          &quot;p95&quot;: 0.03872964601032436,
+          &quot;p99&quot;: 0.0520035601221025
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 250,
+          &quot;p95&quot;: 0.022453682962805033,
+          &quot;p99&quot;: 0.028345684055238962
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3324,
+      &quot;target_rate&quot;: 18.463374035504106,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3324,
+      &quot;measurement_seconds&quot;: 180.00065091089346,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-rate1.0&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2804,
+      &quot;queue_full_rejections&quot;: 520,
+      &quot;drain_seconds&quot;: 0.4351733741350472,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3126,
+      &quot;wait_p95&quot;: 2.910784,
+      &quot;wait_p99&quot;: 3.903641,
+      &quot;execution_p95&quot;: 1.531168,
+      &quot;total_p95&quot;: 4.358744,
+      &quot;total_p99&quot;: 5.341851,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2804,
+          &quot;p95&quot;: 0.03808903996832669,
+          &quot;p99&quot;: 0.05629811203107238
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 520,
+          &quot;p95&quot;: 0.02403782494366169,
+          &quot;p99&quot;: 0.031221369979903102
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3989,
+      &quot;target_rate&quot;: 22.15604884260493,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3989,
+      &quot;measurement_seconds&quot;: 180.0171850991901,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-rate1.2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 3085,
+      &quot;queue_full_rejections&quot;: 904,
+      &quot;drain_seconds&quot;: 2.814489278011024,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3148,
+      &quot;wait_p95&quot;: 3.10647,
+      &quot;wait_p99&quot;: 4.167282,
+      &quot;execution_p95&quot;: 1.636328,
+      &quot;total_p95&quot;: 4.560209,
+      &quot;total_p99&quot;: 5.103405,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 3085,
+          &quot;p95&quot;: 0.03680408396758139,
+          &quot;p99&quot;: 0.06248857104219496
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 904,
+          &quot;p95&quot;: 0.02882821299135685,
+          &quot;p99&quot;: 0.03674995619803667
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 370,
+      &quot;target_rate&quot;: 36.92674807100821,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 370,
+      &quot;measurement_seconds&quot;: 10.00920630292967,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q25-burst-rate2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 25,
+        &quot;project_queue&quot;: 25,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 145,
+      &quot;queue_full_rejections&quot;: 225,
+      &quot;drain_seconds&quot;: 4.977887406945229,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 256,
+      &quot;wait_p95&quot;: 3.820673,
+      &quot;wait_p99&quot;: 3.855609,
+      &quot;execution_p95&quot;: 2.075831,
+      &quot;total_p95&quot;: 5.244774,
+      &quot;total_p99&quot;: 5.428632,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 145,
+          &quot;p95&quot;: 0.1810936329420656,
+          &quot;p99&quot;: 0.32909297104924917
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 225,
+          &quot;p95&quot;: 0.029830025043338537,
+          &quot;p99&quot;: 0.03606281499378383
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 25,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 25,
+      &quot;measurement_seconds&quot;: 0.2242498139385134,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-burst25&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 25,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 12.687187114963308,
+      &quot;queue_peak&quot;: 24,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 207,
+      &quot;wait_p95&quot;: 11.83203,
+      &quot;wait_p99&quot;: 11.848534,
+      &quot;execution_p95&quot;: 10.574506,
+      &quot;total_p95&quot;: 12.509632,
+      &quot;total_p99&quot;: 12.511886,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 25,
+          &quot;p95&quot;: 0.1641626649070531,
+          &quot;p99&quot;: 0.16917090909555554
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 50,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 50,
+      &quot;measurement_seconds&quot;: 0.35600821301341057,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-burst50&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 50,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 2.5452459058724344,
+      &quot;queue_peak&quot;: 42,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 54,
+      &quot;wait_p95&quot;: 1.78719,
+      &quot;wait_p99&quot;: 1.847097,
+      &quot;execution_p95&quot;: 0.836898,
+      &quot;total_p95&quot;: 2.378173,
+      &quot;total_p99&quot;: 2.488428,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 50,
+          &quot;p95&quot;: 0.13484653388150036,
+          &quot;p99&quot;: 0.14245442720130086
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 100,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 100,
+      &quot;measurement_seconds&quot;: 0.6927154178265482,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-burst100&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 64,
+      &quot;queue_full_rejections&quot;: 36,
+      &quot;drain_seconds&quot;: 3.5553989571053535,
+      &quot;queue_peak&quot;: 50,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 78,
+      &quot;wait_p95&quot;: 2.537247,
+      &quot;wait_p99&quot;: 2.619979,
+      &quot;execution_p95&quot;: 1.1056,
+      &quot;total_p95&quot;: 3.302813,
+      &quot;total_p99&quot;: 3.600142,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 64,
+          &quot;p95&quot;: 0.13333072792738676,
+          &quot;p99&quot;: 0.15222435491159558
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 36,
+          &quot;p95&quot;: 0.12560912407934666,
+          &quot;p99&quot;: 0.1259984909556806
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 200,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 200,
+      &quot;measurement_seconds&quot;: 1.1630552541464567,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-burst200&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 70,
+      &quot;queue_full_rejections&quot;: 130,
+      &quot;drain_seconds&quot;: 3.5661232999991626,
+      &quot;queue_peak&quot;: 50,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 86,
+      &quot;wait_p95&quot;: 2.563989,
+      &quot;wait_p99&quot;: 2.780514,
+      &quot;execution_p95&quot;: 1.234196,
+      &quot;total_p95&quot;: 3.487888,
+      &quot;total_p99&quot;: 3.728669,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 70,
+          &quot;p95&quot;: 0.11618584813550115,
+          &quot;p99&quot;: 0.12656013295054436
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 130,
+          &quot;p95&quot;: 0.1127918940037489,
+          &quot;p99&quot;: 0.11629284010268748
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 1662,
+      &quot;target_rate&quot;: 9.231687017752053,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 1662,
+      &quot;measurement_seconds&quot;: 180.0005903779529,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-rate0.5&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 1642,
+      &quot;queue_full_rejections&quot;: 20,
+      &quot;drain_seconds&quot;: 0.4333089080173522,
+      &quot;queue_peak&quot;: 50,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 2916,
+      &quot;wait_p95&quot;: 3.895134,
+      &quot;wait_p99&quot;: 6.268001,
+      &quot;execution_p95&quot;: 1.645597,
+      &quot;total_p95&quot;: 5.272728,
+      &quot;total_p99&quot;: 7.497371,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 1642,
+          &quot;p95&quot;: 0.03791595506481826,
+          &quot;p99&quot;: 0.04835842899046838
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 20,
+          &quot;p95&quot;: 0.022780889179557562,
+          &quot;p99&quot;: 0.022780889179557562
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 2659,
+      &quot;target_rate&quot;: 14.770699228403286,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 2659,
+      &quot;measurement_seconds&quot;: 180.0005940780975,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-rate0.8&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2399,
+      &quot;queue_full_rejections&quot;: 260,
+      &quot;drain_seconds&quot;: 2.0689496798440814,
+      &quot;queue_peak&quot;: 50,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3028,
+      &quot;wait_p95&quot;: 6.299523,
+      &quot;wait_p99&quot;: 7.07425,
+      &quot;execution_p95&quot;: 1.666672,
+      &quot;total_p95&quot;: 7.322297,
+      &quot;total_p99&quot;: 8.333319,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2399,
+          &quot;p95&quot;: 0.037683394039049745,
+          &quot;p99&quot;: 0.05406882497482002
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 260,
+          &quot;p95&quot;: 0.022655554115772247,
+          &quot;p99&quot;: 0.032581198029220104
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3324,
+      &quot;target_rate&quot;: 18.463374035504106,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3324,
+      &quot;measurement_seconds&quot;: 180.0037187980488,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-rate1.0&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2727,
+      &quot;queue_full_rejections&quot;: 597,
+      &quot;drain_seconds&quot;: 2.33252892899327,
+      &quot;queue_peak&quot;: 50,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3055,
+      &quot;wait_p95&quot;: 6.823971,
+      &quot;wait_p99&quot;: 8.08737,
+      &quot;execution_p95&quot;: 1.734919,
+      &quot;total_p95&quot;: 8.44862,
+      &quot;total_p99&quot;: 9.800918,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2727,
+          &quot;p95&quot;: 0.036410520086064935,
+          &quot;p99&quot;: 0.05185115896165371
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 597,
+          &quot;p95&quot;: 0.024111401988193393,
+          &quot;p99&quot;: 0.03078501601703465
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3989,
+      &quot;target_rate&quot;: 22.15604884260493,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3989,
+      &quot;measurement_seconds&quot;: 180.02075112401508,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-rate1.2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2931,
+      &quot;queue_full_rejections&quot;: 1058,
+      &quot;drain_seconds&quot;: 6.604034245014191,
+      &quot;queue_peak&quot;: 50,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3097,
+      &quot;wait_p95&quot;: 7.068645,
+      &quot;wait_p99&quot;: 7.434283,
+      &quot;execution_p95&quot;: 1.829716,
+      &quot;total_p95&quot;: 7.912188,
+      &quot;total_p99&quot;: 9.161352,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2931,
+          &quot;p95&quot;: 0.03681553294882178,
+          &quot;p99&quot;: 0.06801639287732542
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 1058,
+          &quot;p95&quot;: 0.02994698192924261,
+          &quot;p99&quot;: 0.03849947080016136
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 370,
+      &quot;target_rate&quot;: 36.92674807100821,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 370,
+      &quot;measurement_seconds&quot;: 10.012666888069361,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q50-burst-rate2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 50,
+        &quot;project_queue&quot;: 50,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 151,
+      &quot;queue_full_rejections&quot;: 219,
+      &quot;drain_seconds&quot;: 6.550833525136113,
+      &quot;queue_peak&quot;: 50,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 272,
+      &quot;wait_p95&quot;: 7.340491,
+      &quot;wait_p99&quot;: 7.624172,
+      &quot;execution_p95&quot;: 1.935736,
+      &quot;total_p95&quot;: 8.923628,
+      &quot;total_p99&quot;: 9.156629,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 151,
+          &quot;p95&quot;: 0.03218221408315003,
+          &quot;p99&quot;: 0.03789282194338739
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 219,
+          &quot;p95&quot;: 0.02756123198196292,
+          &quot;p99&quot;: 0.03566329996101558
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 25,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 25,
+      &quot;measurement_seconds&quot;: 0.19378034607507288,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-burst25&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 25,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 13.702703275950626,
+      &quot;queue_peak&quot;: 25,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 215,
+      &quot;wait_p95&quot;: 13.069109,
+      &quot;wait_p99&quot;: 13.150986,
+      &quot;execution_p95&quot;: 11.334325,
+      &quot;total_p95&quot;: 13.624223,
+      &quot;total_p99&quot;: 13.627687,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 25,
+          &quot;p95&quot;: 0.1415327989961952,
+          &quot;p99&quot;: 0.14990812679752707
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 50,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 50,
+      &quot;measurement_seconds&quot;: 0.34969920897856355,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-burst50&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 50,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 2.9499802719801664,
+      &quot;queue_peak&quot;: 42,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 61,
+      &quot;wait_p95&quot;: 2.014071,
+      &quot;wait_p99&quot;: 2.148476,
+      &quot;execution_p95&quot;: 1.314661,
+      &quot;total_p95&quot;: 2.583613,
+      &quot;total_p99&quot;: 2.908063,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 50,
+          &quot;p95&quot;: 0.1364489251282066,
+          &quot;p99&quot;: 0.15222193393856287
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 100,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 100,
+      &quot;measurement_seconds&quot;: 0.6818211220670491,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-burst100&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 100,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 5.520098089007661,
+      &quot;queue_peak&quot;: 85,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 112,
+      &quot;wait_p95&quot;: 3.935618,
+      &quot;wait_p99&quot;: 4.149302,
+      &quot;execution_p95&quot;: 1.166409,
+      &quot;total_p95&quot;: 4.666255,
+      &quot;total_p99&quot;: 5.351793,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 100,
+          &quot;p95&quot;: 0.13119361409917474,
+          &quot;p99&quot;: 0.14938205014914274
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 200,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 200,
+      &quot;measurement_seconds&quot;: 1.2217650699894875,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-burst200&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 121,
+      &quot;queue_full_rejections&quot;: 79,
+      &quot;drain_seconds&quot;: 6.004609799012542,
+      &quot;queue_peak&quot;: 100,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 132,
+      &quot;wait_p95&quot;: 4.973381,
+      &quot;wait_p99&quot;: 5.020807,
+      &quot;execution_p95&quot;: 1.236673,
+      &quot;total_p95&quot;: 5.386524,
+      &quot;total_p99&quot;: 5.835727,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 121,
+          &quot;p95&quot;: 0.12612470192834735,
+          &quot;p99&quot;: 0.13646667590364814
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 79,
+          &quot;p95&quot;: 0.10108216595835984,
+          &quot;p99&quot;: 0.10608834796585143
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 1662,
+      &quot;target_rate&quot;: 9.231687017752053,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 1662,
+      &quot;measurement_seconds&quot;: 180.00038045016117,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-rate0.5&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 1662,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 0.5069843409582973,
+      &quot;queue_peak&quot;: 76,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 2824,
+      &quot;wait_p95&quot;: 5.241729,
+      &quot;wait_p99&quot;: 7.20613,
+      &quot;execution_p95&quot;: 1.754206,
+      &quot;total_p95&quot;: 6.436613,
+      &quot;total_p99&quot;: 8.396871,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 1662,
+          &quot;p95&quot;: 0.03797904890961945,
+          &quot;p99&quot;: 0.049703550059348345
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 2659,
+      &quot;target_rate&quot;: 14.770699228403286,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 2659,
+      &quot;measurement_seconds&quot;: 180.00051972200163,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-rate0.8&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2490,
+      &quot;queue_full_rejections&quot;: 169,
+      &quot;drain_seconds&quot;: 11.872665011091158,
+      &quot;queue_peak&quot;: 100,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3086,
+      &quot;wait_p95&quot;: 10.816612,
+      &quot;wait_p99&quot;: 11.868072,
+      &quot;execution_p95&quot;: 1.814498,
+      &quot;total_p95&quot;: 11.806615,
+      &quot;total_p99&quot;: 12.913963,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2490,
+          &quot;p95&quot;: 0.03533909609541297,
+          &quot;p99&quot;: 0.049962934106588364
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 169,
+          &quot;p95&quot;: 0.021937167970463634,
+          &quot;p99&quot;: 0.028093599947169423
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3324,
+      &quot;target_rate&quot;: 18.463374035504106,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3324,
+      &quot;measurement_seconds&quot;: 180.00531752593815,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-rate1.0&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2707,
+      &quot;queue_full_rejections&quot;: 617,
+      &quot;drain_seconds&quot;: 2.0965051539242268,
+      &quot;queue_peak&quot;: 100,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 2929,
+      &quot;wait_p95&quot;: 14.002088,
+      &quot;wait_p99&quot;: 15.751292,
+      &quot;execution_p95&quot;: 1.974775,
+      &quot;total_p95&quot;: 14.84986,
+      &quot;total_p99&quot;: 16.633095,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2707,
+          &quot;p95&quot;: 0.036383793922141194,
+          &quot;p99&quot;: 0.057650635950267315
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 617,
+          &quot;p95&quot;: 0.02517249481752515,
+          &quot;p99&quot;: 0.031100241001695395
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3989,
+      &quot;target_rate&quot;: 22.15604884260493,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3989,
+      &quot;measurement_seconds&quot;: 180.0189148960635,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-rate1.2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2709,
+      &quot;queue_full_rejections&quot;: 1280,
+      &quot;drain_seconds&quot;: 5.545460460009053,
+      &quot;queue_peak&quot;: 100,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 2951,
+      &quot;wait_p95&quot;: 15.550545,
+      &quot;wait_p99&quot;: 17.855991,
+      &quot;execution_p95&quot;: 2.062331,
+      &quot;total_p95&quot;: 17.173271,
+      &quot;total_p99&quot;: 19.123103,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2709,
+          &quot;p95&quot;: 0.03603954380378127,
+          &quot;p99&quot;: 0.056514536030590534
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 1280,
+          &quot;p95&quot;: 0.027290872065350413,
+          &quot;p99&quot;: 0.03782276809215546
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 370,
+      &quot;target_rate&quot;: 36.92674807100821,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 370,
+      &quot;measurement_seconds&quot;: 10.00753874098882,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q100-burst-rate2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 100,
+        &quot;project_queue&quot;: 100,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 157,
+      &quot;queue_full_rejections&quot;: 213,
+      &quot;drain_seconds&quot;: 9.63414823799394,
+      &quot;queue_peak&quot;: 100,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 315,
+      &quot;wait_p95&quot;: 13.79079,
+      &quot;wait_p99&quot;: 13.81366,
+      &quot;execution_p95&quot;: 2.219847,
+      &quot;total_p95&quot;: 14.179523,
+      &quot;total_p99&quot;: 14.326418,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 157,
+          &quot;p95&quot;: 0.02952256891876459,
+          &quot;p99&quot;: 0.04210625891573727
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 213,
+          &quot;p95&quot;: 0.02701111906208098,
+          &quot;p99&quot;: 0.03155157691799104
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 25,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 25,
+      &quot;measurement_seconds&quot;: 0.4498748618643731,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-burst25&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 25,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 16.992161899106577,
+      &quot;queue_peak&quot;: 24,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 262,
+      &quot;wait_p95&quot;: 16.337638,
+      &quot;wait_p99&quot;: 16.360907,
+      &quot;execution_p95&quot;: 14.046501,
+      &quot;total_p95&quot;: 16.882069,
+      &quot;total_p99&quot;: 16.929757,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 25,
+          &quot;p95&quot;: 0.39391064597293735,
+          &quot;p99&quot;: 0.4014860950410366
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 50,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 50,
+      &quot;measurement_seconds&quot;: 0.3405816489830613,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-burst50&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 50,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 2.6607689699158072,
+      &quot;queue_peak&quot;: 44,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 54,
+      &quot;wait_p95&quot;: 1.910828,
+      &quot;wait_p99&quot;: 1.941152,
+      &quot;execution_p95&quot;: 0.781103,
+      &quot;total_p95&quot;: 2.542889,
+      &quot;total_p99&quot;: 2.574512,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 50,
+          &quot;p95&quot;: 0.13676554709672928,
+          &quot;p99&quot;: 0.1446004791650921
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 100,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 100,
+      &quot;measurement_seconds&quot;: 0.6743710439186543,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-burst100&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 100,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 5.624328234931454,
+      &quot;queue_peak&quot;: 88,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 108,
+      &quot;wait_p95&quot;: 4.015462,
+      &quot;wait_p99&quot;: 4.333292,
+      &quot;execution_p95&quot;: 1.292958,
+      &quot;total_p95&quot;: 4.852414,
+      &quot;total_p99&quot;: 5.314405,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 100,
+          &quot;p95&quot;: 0.14011753886006773,
+          &quot;p99&quot;: 0.1533502370584756
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;bounded_burst&quot;,
+      &quot;target_arrivals&quot;: 200,
+      &quot;target_rate&quot;: null,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 200,
+      &quot;measurement_seconds&quot;: 1.2834513410925865,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-burst200&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 200,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 8.810105510987341,
+      &quot;queue_peak&quot;: 176,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 184,
+      &quot;wait_p95&quot;: 7.815598,
+      &quot;wait_p99&quot;: 8.125073,
+      &quot;execution_p95&quot;: 1.049897,
+      &quot;total_p95&quot;: 8.327961,
+      &quot;total_p99&quot;: 8.714779,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 200,
+          &quot;p95&quot;: 0.1352007589302957,
+          &quot;p99&quot;: 0.18350654188543558
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 1662,
+      &quot;target_rate&quot;: 9.231687017752053,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 1662,
+      &quot;measurement_seconds&quot;: 180.00049926899374,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-rate0.5&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 1662,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 0.31342116091400385,
+      &quot;queue_peak&quot;: 113,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 2751,
+      &quot;wait_p95&quot;: 9.027869,
+      &quot;wait_p99&quot;: 10.982794,
+      &quot;execution_p95&quot;: 2.179575,
+      &quot;total_p95&quot;: 10.237517,
+      &quot;total_p99&quot;: 12.110091,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 1662,
+          &quot;p95&quot;: 0.037012712098658085,
+          &quot;p99&quot;: 0.049630007008090615
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 2659,
+      &quot;target_rate&quot;: 14.770699228403286,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 2659,
+      &quot;measurement_seconds&quot;: 180.000659778947,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-rate0.8&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2565,
+      &quot;queue_full_rejections&quot;: 94,
+      &quot;drain_seconds&quot;: 16.72748973988928,
+      &quot;queue_peak&quot;: 200,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3061,
+      &quot;wait_p95&quot;: 15.260742,
+      &quot;wait_p99&quot;: 16.266807,
+      &quot;execution_p95&quot;: 2.209756,
+      &quot;total_p95&quot;: 16.161737,
+      &quot;total_p99&quot;: 17.102239,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2565,
+          &quot;p95&quot;: 0.035107159055769444,
+          &quot;p99&quot;: 0.050366459880024195
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 94,
+          &quot;p95&quot;: 0.02129976195283234,
+          &quot;p99&quot;: 0.024494406068697572
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3324,
+      &quot;target_rate&quot;: 18.463374035504106,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3324,
+      &quot;measurement_seconds&quot;: 180.0057122418657,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-rate1.0&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2626,
+      &quot;queue_full_rejections&quot;: 698,
+      &quot;drain_seconds&quot;: 17.47804606379941,
+      &quot;queue_peak&quot;: 200,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 3040,
+      &quot;wait_p95&quot;: 25.910193,
+      &quot;wait_p99&quot;: 26.690594,
+      &quot;execution_p95&quot;: 2.355761,
+      &quot;total_p95&quot;: 26.716353,
+      &quot;total_p99&quot;: 27.454411,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2626,
+          &quot;p95&quot;: 0.0352906989865005,
+          &quot;p99&quot;: 0.05880792299285531
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 698,
+          &quot;p95&quot;: 0.024115556851029396,
+          &quot;p99&quot;: 0.033492083894088864
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 3989,
+      &quot;target_rate&quot;: 22.15604884260493,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 3989,
+      &quot;measurement_seconds&quot;: 180.03055118094198,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-rate1.2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 2468,
+      &quot;queue_full_rejections&quot;: 1521,
+      &quot;drain_seconds&quot;: 10.566691000014544,
+      &quot;queue_peak&quot;: 200,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 2902,
+      &quot;wait_p95&quot;: 32.307131,
+      &quot;wait_p99&quot;: 32.71392,
+      &quot;execution_p95&quot;: 2.511805,
+      &quot;total_p95&quot;: 32.882842,
+      &quot;total_p99&quot;: 33.40758,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 2468,
+          &quot;p95&quot;: 0.03508686809800565,
+          &quot;p99&quot;: 0.05690566706471145
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 1521,
+          &quot;p95&quot;: 0.026344932848587632,
+          &quot;p99&quot;: 0.03339471505023539
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    },
+    {
+      &quot;state&quot;: &quot;COMPLETE&quot;,
+      &quot;mode&quot;: &quot;independent_arrivals&quot;,
+      &quot;target_arrivals&quot;: 370,
+      &quot;target_rate&quot;: 36.92674807100821,
+      &quot;unsent&quot;: [],
+      &quot;late_sent_calls&quot;: 0,
+      &quot;actual_completed_calls&quot;: 370,
+      &quot;measurement_seconds&quot;: 10.013287907931954,
+      &quot;error_class&quot;: null,
+      &quot;not_scheduled_after_stop&quot;: 0,
+      &quot;case_id&quot;: &quot;T4-QUEUE&quot;,
+      &quot;point_id&quot;: &quot;T4-Q200-burst-rate2&quot;,
+      &quot;parameters&quot;: {
+        &quot;replicas&quot;: 10,
+        &quot;executors&quot;: 12,
+        &quot;global_limit&quot;: 12,
+        &quot;project_limit&quot;: 12,
+        &quot;global_queue&quot;: 200,
+        &quot;project_queue&quot;: 200,
+        &quot;vram_claim_bytes&quot;: 2147483648
+      },
+      &quot;workload_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+      &quot;workload_kind&quot;: &quot;ordinary_fixed_40&quot;,
+      &quot;accepted&quot;: 370,
+      &quot;queue_full_rejections&quot;: 0,
+      &quot;drain_seconds&quot;: 10.211273280903697,
+      &quot;queue_peak&quot;: 191,
+      &quot;first_queue&quot;: 0,
+      &quot;last_queue&quot;: 0,
+      &quot;sample_count&quot;: 345,
+      &quot;wait_p95&quot;: 9.209784,
+      &quot;wait_p99&quot;: 9.48992,
+      &quot;execution_p95&quot;: 1.462772,
+      &quot;total_p95&quot;: 9.599251,
+      &quot;total_p99&quot;: 10.290072,
+      &quot;response_latency&quot;: {
+        &quot;202&quot;: {
+          &quot;count&quot;: 370,
+          &quot;p95&quot;: 0.03251548600383103,
+          &quot;p99&quot;: 0.05163195705972612
+        },
+        &quot;429&quot;: {
+          &quot;count&quot;: 0,
+          &quot;p95&quot;: null,
+          &quot;p99&quot;: null
+        }
+      },
+      &quot;natural_empty_queue_allowed&quot;: true,
+      &quot;maximum_sustained_capacity_claim&quot;: false
+    }
+  ],
+  &quot;error_class&quot;: &quot;RuntimeError&quot;,
+  &quot;failure_classification&quot;: &quot;NO_QUALIFIED_QUEUE_WITH_FROZEN_5S_WAITING_BUDGET&quot;,
+  &quot;measurement_points_complete&quot;: true,
+  &quot;queue_selection_passed&quot;: false,
+  &quot;original_stage_sha256&quot;: &quot;ab46db73c609d39e4dbff3551529a4f6896a04ec86e7436bc9a6f00991097c0e&quot;,
+  &quot;reference_mu&quot;: 18.463374035504106,
+  &quot;selection_rule&quot;: &quot;Q &gt; 2*min(E,G,P); no rejection at nominal 0.5mu/0.8mu; every load wait P95 &lt;= 5 seconds&quot;,
+  &quot;nominal_reference_is_current_stable_capacity&quot;: false,
+  &quot;selected_candidate&quot;: null
+}</pre><a href="t4-queue.json">JSON evidence</a></details><details><summary>T4-HTTP-ACCEPT · NOT_RUN_DEPENDENCY_FAILED</summary><pre>{
+  &quot;case_id&quot;: &quot;T4-HTTP-ACCEPT&quot;,
+  &quot;state&quot;: &quot;NOT_RUN_DEPENDENCY_FAILED&quot;,
+  &quot;blocked_by&quot;: &quot;T4-QUEUE&quot;,
+  &quot;reason&quot;: &quot;No queue candidate satisfies the frozen selection gate; stop on unmet prerequisite.&quot;,
+  &quot;points&quot;: [],
+  &quot;live_measurements_performed&quot;: false,
+  &quot;tool_validation_is_live_acceptance&quot;: false
+}</pre><a href="t4-http-accept.json">JSON evidence</a></details><details><summary>T4-HTTP-REJECT · NOT_RUN_DEPENDENCY_FAILED</summary><pre>{
+  &quot;case_id&quot;: &quot;T4-HTTP-REJECT&quot;,
+  &quot;state&quot;: &quot;NOT_RUN_DEPENDENCY_FAILED&quot;,
+  &quot;blocked_by&quot;: &quot;T4-QUEUE&quot;,
+  &quot;reason&quot;: &quot;No queue candidate satisfies the frozen selection gate; stop on unmet prerequisite.&quot;,
+  &quot;points&quot;: [],
+  &quot;live_measurements_performed&quot;: false,
+  &quot;tool_validation_is_live_acceptance&quot;: false
+}</pre><a href="t4-http-reject.json">JSON evidence</a></details><details><summary>T4-HTTP-RECOVER · NOT_RUN_DEPENDENCY_FAILED</summary><pre>{
+  &quot;case_id&quot;: &quot;T4-HTTP-RECOVER&quot;,
+  &quot;state&quot;: &quot;NOT_RUN_DEPENDENCY_FAILED&quot;,
+  &quot;blocked_by&quot;: &quot;T4-QUEUE&quot;,
+  &quot;reason&quot;: &quot;No queue candidate satisfies the frozen selection gate; stop on unmet prerequisite.&quot;,
+  &quot;points&quot;: [],
+  &quot;live_measurements_performed&quot;: false,
+  &quot;tool_validation_is_live_acceptance&quot;: false
+}</pre><a href="t4-http-recover.json">JSON evidence</a></details><details><summary>T5-CLAIM · NOT_RUN_DEPENDENCY_FAILED</summary><pre>{
+  &quot;case_id&quot;: &quot;T5-CLAIM&quot;,
+  &quot;state&quot;: &quot;NOT_RUN_DEPENDENCY_FAILED&quot;,
+  &quot;blocked_by&quot;: &quot;T4-QUEUE&quot;,
+  &quot;reason&quot;: &quot;No queue candidate satisfies the frozen selection gate; stop on unmet prerequisite.&quot;,
+  &quot;points&quot;: [],
+  &quot;live_measurements_performed&quot;: false,
+  &quot;tool_validation_is_live_acceptance&quot;: false
+}</pre><a href="t5-claim.json">JSON evidence</a></details><details><summary>T6-CONFIRM · NOT_RUN_DEPENDENCY_FAILED</summary><pre>{
+  &quot;case_id&quot;: &quot;T6-CONFIRM&quot;,
+  &quot;state&quot;: &quot;NOT_RUN_DEPENDENCY_FAILED&quot;,
+  &quot;blocked_by&quot;: &quot;T4-QUEUE&quot;,
+  &quot;reason&quot;: &quot;No queue candidate satisfies the frozen selection gate; stop on unmet prerequisite.&quot;,
+  &quot;points&quot;: [],
+  &quot;live_measurements_performed&quot;: false,
+  &quot;tool_validation_is_live_acceptance&quot;: false
+}</pre><a href="t6-confirm.json">JSON evidence</a></details><details><summary>T6-SOAK · NOT_RUN_DEPENDENCY_FAILED</summary><pre>{
+  &quot;case_id&quot;: &quot;T6-SOAK&quot;,
+  &quot;state&quot;: &quot;NOT_RUN_DEPENDENCY_FAILED&quot;,
+  &quot;blocked_by&quot;: &quot;T4-QUEUE&quot;,
+  &quot;reason&quot;: &quot;No queue candidate satisfies the frozen selection gate; stop on unmet prerequisite.&quot;,
+  &quot;points&quot;: [],
+  &quot;live_measurements_performed&quot;: false,
+  &quot;tool_validation_is_live_acceptance&quot;: false
+}</pre><a href="t6-soak.json">JSON evidence</a></details><details><summary>T4-QUEUE-VERIFICATION</summary><pre>{
+  &quot;case_id&quot;: &quot;T4-QUEUE-VERIFICATION&quot;,
+  &quot;state&quot;: &quot;MEASUREMENTS_VERIFIED&quot;,
+  &quot;profile_id&quot;: &quot;ppocrv4-ortgpu-2x4080s-r1&quot;,
+  &quot;input_sha256&quot;: &quot;613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214&quot;,
+  &quot;points&quot;: 45,
+  &quot;requests&quot;: 61895,
+  &quot;accepted&quot;: 50590,
+  &quot;rejected&quot;: 11305,
+  &quot;all_accepted_succeeded_attempt_one_usage_one&quot;: true,
+  &quot;all_download_checks_completed&quot;: true,
+  &quot;rejected_fresh_keys_have_no_task&quot;: true,
+  &quot;queue_limits_respected&quot;: true,
+  &quot;queue_policy_analysis&quot;: [
+    {
+      &quot;queue&quot;: 10,
+      &quot;normal_rejections&quot;: {
+        &quot;0.5&quot;: 41,
+        &quot;0.8&quot;: 222
+      },
+      &quot;maximum_wait_p95&quot;: 5.701355,
+      &quot;checks&quot;: {
+        &quot;refill_reserve&quot;: false,
+        &quot;normal_zero_rejections&quot;: false,
+        &quot;all_wait_p95_within_5s&quot;: false
+      },
+      &quot;eligible&quot;: false
+    },
+    {
+      &quot;queue&quot;: 25,
+      &quot;normal_rejections&quot;: {
+        &quot;0.5&quot;: 31,
+        &quot;0.8&quot;: 250
+      },
+      &quot;maximum_wait_p95&quot;: 9.621523,
+      &quot;checks&quot;: {
+        &quot;refill_reserve&quot;: true,
+        &quot;normal_zero_rejections&quot;: false,
+        &quot;all_wait_p95_within_5s&quot;: false
+      },
+      &quot;eligible&quot;: false
+    },
+    {
+      &quot;queue&quot;: 50,
+      &quot;normal_rejections&quot;: {
+        &quot;0.5&quot;: 20,
+        &quot;0.8&quot;: 260
+      },
+      &quot;maximum_wait_p95&quot;: 11.83203,
+      &quot;checks&quot;: {
+        &quot;refill_reserve&quot;: true,
+        &quot;normal_zero_rejections&quot;: false,
+        &quot;all_wait_p95_within_5s&quot;: false
+      },
+      &quot;eligible&quot;: false
+    },
+    {
+      &quot;queue&quot;: 100,
+      &quot;normal_rejections&quot;: {
+        &quot;0.5&quot;: 0,
+        &quot;0.8&quot;: 169
+      },
+      &quot;maximum_wait_p95&quot;: 15.550545,
+      &quot;checks&quot;: {
+        &quot;refill_reserve&quot;: true,
+        &quot;normal_zero_rejections&quot;: false,
+        &quot;all_wait_p95_within_5s&quot;: false
+      },
+      &quot;eligible&quot;: false
+    },
+    {
+      &quot;queue&quot;: 200,
+      &quot;normal_rejections&quot;: {
+        &quot;0.5&quot;: 0,
+        &quot;0.8&quot;: 94
+      },
+      &quot;maximum_wait_p95&quot;: 32.307131,
+      &quot;checks&quot;: {
+        &quot;refill_reserve&quot;: true,
+        &quot;normal_zero_rejections&quot;: false,
+        &quot;all_wait_p95_within_5s&quot;: false
+      },
+      &quot;eligible&quot;: false
+    }
+  ],
+  &quot;eligible_queues&quot;: [],
+  &quot;original_stage_state&quot;: &quot;INTERRUPTED_REQUIRES_INSPECTION&quot;,
+  &quot;physical_backend_exactly_once_proven&quot;: false
+}</pre><a href="t4-verification.json">JSON evidence</a></details><details><summary>RUNTIME-RESTORATION</summary><pre>{
+  &quot;case_id&quot;: &quot;T4-INTERRUPTION-RESTORATION&quot;,
+  &quot;state&quot;: &quot;COMPLETE&quot;,
+  &quot;reason&quot;: &quot;no queue candidate meets frozen selection criteria&quot;,
+  &quot;measurement_requests_replayed&quot;: 0,
+  &quot;restored_parameters&quot;: {
+    &quot;replicas&quot;: 4,
+    &quot;executors&quot;: 4,
+    &quot;global_limit&quot;: 4,
+    &quot;project_limit&quot;: 4,
+    &quot;global_queue&quot;: 1000,
+    &quot;project_queue&quot;: 100,
+    &quot;vram_claim_bytes&quot;: 2147483648
+  },
+  &quot;restored_generation&quot;: 164,
+  &quot;placement_counts&quot;: [
+    2,
+    2
+  ],
+  &quot;fixed_profile_matched&quot;: true,
+  &quot;real_resume_probes_passed&quot;: 2,
+  &quot;paused&quot;: false,
+  &quot;unknown&quot;: 0,
+  &quot;active_tasks&quot;: 0,
+  &quot;vm_worker_docker_daemon_restarts&quot;: 0,
+  &quot;remaining_tuning_stages_started&quot;: false,
+  &quot;post_restore_readonly_check&quot;: {
+    &quot;generation&quot;: 164,
+    &quot;parameters_matched&quot;: true,
+    &quot;native_replicas&quot;: 4,
+    &quot;placement_counts&quot;: [
+      2,
+      2
+    ],
+    &quot;paused&quot;: false,
+    &quot;active_tasks&quot;: 0,
+    &quot;backend_activity_count&quot;: 0,
+    &quot;sync_activity_count&quot;: 0,
+    &quot;tuning_sequence_process_count&quot;: 0,
+    &quot;temporary_tuning_containers&quot;: [],
+    &quot;monitor_ok&quot;: true,
+    &quot;monitor_alerts&quot;: [],
+    &quot;unstarted_stage_directories&quot;: true
+  },
+  &quot;private_mac_backup&quot;: {
+    &quot;bytes&quot;: 8703419,
+    &quot;sha256&quot;: &quot;d9df01f68c92014c3db05506f190642c1c5d7fbd0f355483eb49b38979a341fd&quot;,
+    &quot;members&quot;: 341,
+    &quot;safe_extraction&quot;: true
+  }
+}</pre><a href="runtime-restoration.json">JSON evidence</a></details><p>采样只能支持其实际分辨率内的观察，不能证明任意时刻不断粮。数字只适用于本profile和已测输入；其他模型、硬件或GPUStack版本需要重新验证。</p></main></html>

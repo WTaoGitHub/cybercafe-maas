@@ -20,5 +20,18 @@
   "automatic_production_promotion": false,
   "selected_parameters": null,
   "maximum_capacity_proven": false,
-  "production_sla_proven": false
+  "production_sla_proven": false,
+  "interrupted_stages": [
+    "T4-QUEUE"
+  ],
+  "not_run_stages": [
+    "T4-HTTP-ACCEPT",
+    "T4-HTTP-REJECT",
+    "T4-HTTP-RECOVER",
+    "T5-CLAIM",
+    "T6-CONFIRM",
+    "T6-SOAK"
+  ],
+  "runtime_restored_after_interruption": true,
+  "restoration_scope": "runtime recovery evidence is separate from final T6 soak restoration gate"
 }

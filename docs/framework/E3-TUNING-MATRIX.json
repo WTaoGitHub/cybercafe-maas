@@ -1,13 +1,13 @@
 {
   "schema_version": 2,
-  "status": "T4_QUEUE_RUNNING",
+  "status": "INTERRUPTED_T4_QUEUE_SELECTION_NO_QUALIFIED_CANDIDATE",
   "tooling_status": {
     "case_id": "T0-TOOLS",
     "state": "COMPLETE",
     "evidence": "../../results/maas-e3-t0-tools-20261029/tool-validation.json",
-    "supported_live_driver": "unchanged_pure_async_single_point_with_explicit_execute_and_hashed_prerequisites",
-    "adaptive_stage_orchestration_implemented": false,
-    "live_capacity_results_produced": false
+    "supported_live_driver": "guarded_per_stage_drivers_with_hashed_dependencies_and_stop_on_first_unmet_gate",
+    "adaptive_stage_orchestration_implemented": true,
+    "live_capacity_results_produced": true
   },
   "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
   "profile_scope": {
@@ -541,5 +541,31 @@
     "latency",
     "resource_headroom",
     "evidence"
-  ]
+  ],
+  "execution_status": {
+    "as_of": "2026-10-30",
+    "completed": [
+      "T0-BASELINE",
+      "T1-NATIVE",
+      "T2-ASYNC",
+      "T3-LIMITS",
+      "T3-EXTEND"
+    ],
+    "stopped_at": "T4-QUEUE",
+    "completed_queue_points": 45,
+    "queue_selection_passed": false,
+    "not_run": [
+      "T4-HTTP-ACCEPT",
+      "T4-HTTP-REJECT",
+      "T4-HTTP-RECOVER",
+      "T5-CLAIM",
+      "T6-CONFIRM",
+      "T6-SOAK"
+    ],
+    "baseline_restored": true,
+    "restored_generation": 164,
+    "final_joint_recommendation": null,
+    "automatic_resume": false,
+    "evidence": "../../results/maas-e3-tune-20261029/REPORT.md"
+  }
 }

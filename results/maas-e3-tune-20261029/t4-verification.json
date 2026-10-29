@@ -1,0 +1,89 @@
+{
+  "case_id": "T4-QUEUE-VERIFICATION",
+  "state": "MEASUREMENTS_VERIFIED",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "points": 45,
+  "requests": 61895,
+  "accepted": 50590,
+  "rejected": 11305,
+  "all_accepted_succeeded_attempt_one_usage_one": true,
+  "all_download_checks_completed": true,
+  "rejected_fresh_keys_have_no_task": true,
+  "queue_limits_respected": true,
+  "queue_policy_analysis": [
+    {
+      "queue": 10,
+      "normal_rejections": {
+        "0.5": 41,
+        "0.8": 222
+      },
+      "maximum_wait_p95": 5.701355,
+      "checks": {
+        "refill_reserve": false,
+        "normal_zero_rejections": false,
+        "all_wait_p95_within_5s": false
+      },
+      "eligible": false
+    },
+    {
+      "queue": 25,
+      "normal_rejections": {
+        "0.5": 31,
+        "0.8": 250
+      },
+      "maximum_wait_p95": 9.621523,
+      "checks": {
+        "refill_reserve": true,
+        "normal_zero_rejections": false,
+        "all_wait_p95_within_5s": false
+      },
+      "eligible": false
+    },
+    {
+      "queue": 50,
+      "normal_rejections": {
+        "0.5": 20,
+        "0.8": 260
+      },
+      "maximum_wait_p95": 11.83203,
+      "checks": {
+        "refill_reserve": true,
+        "normal_zero_rejections": false,
+        "all_wait_p95_within_5s": false
+      },
+      "eligible": false
+    },
+    {
+      "queue": 100,
+      "normal_rejections": {
+        "0.5": 0,
+        "0.8": 169
+      },
+      "maximum_wait_p95": 15.550545,
+      "checks": {
+        "refill_reserve": true,
+        "normal_zero_rejections": false,
+        "all_wait_p95_within_5s": false
+      },
+      "eligible": false
+    },
+    {
+      "queue": 200,
+      "normal_rejections": {
+        "0.5": 0,
+        "0.8": 94
+      },
+      "maximum_wait_p95": 32.307131,
+      "checks": {
+        "refill_reserve": true,
+        "normal_zero_rejections": false,
+        "all_wait_p95_within_5s": false
+      },
+      "eligible": false
+    }
+  ],
+  "eligible_queues": [],
+  "original_stage_state": "INTERRUPTED_REQUIRES_INSPECTION",
+  "physical_backend_exactly_once_proven": false
+}

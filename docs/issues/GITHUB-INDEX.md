@@ -1,6 +1,6 @@
 # GitHub Issue 索引
 
-2026-10-29已将现有增强计划与未关闭问题登记到私有仓库 [WTaoGitHub/cybercafe-maas](https://github.com/WTaoGitHub/cybercafe-maas/issues)。首次登记20项（19开放、E6关闭）；E3基础试点曾按completed关闭#4，随后用户追加E3-TUNE参数组合调优，复用并重新打开#4，当前19项OPEN、1项CLOSED。原基础验收有效，GW/#1保持开放观察。
+2026-10-29已将现有增强计划与未关闭问题登记到私有仓库 [WTaoGitHub/cybercafe-maas](https://github.com/WTaoGitHub/cybercafe-maas/issues)。首次登记20项（19开放、E6关闭）；E3基础试点曾按completed关闭#4，随后用户追加E3-TUNE参数组合调优，复用并重新打开#4，随后新增文件清理扫描/锁竞争Issue #21，目前共21项（20 OPEN、1 CLOSED）。原基础验收有效，GW/#1保持开放观察。
 
 Issue正文包含当前状态、既有优先级/排期、待办、验收条件及固定提交的源文档链接；不将历史待办误当最新状态。GitHub记录不改变现网、不授权复测，也不更改既定排期。
 
@@ -9,7 +9,7 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 | GW-20261028-001 | [#1 [GW-20261028-001] 副本重建后GPUStack原生网关首次OCR请求503](https://github.com/WTaoGitHub/cybercafe-maas/issues/1) | OPEN |
 | E1 | [#2 [E1] 逐 worker 排空与突发故障隔离](https://github.com/WTaoGitHub/cybercafe-maas/issues/2) | OPEN |
 | E2 | [#3 [E2] 批次处理与结果打包服务](https://github.com/WTaoGitHub/cybercafe-maas/issues/3) | OPEN |
-| E3 | [#4 [E3] 完成多执行器并发、显存预算与容量验收](https://github.com/WTaoGitHub/cybercafe-maas/issues/4) | OPEN（基础试点通过，TUNE待实施） |
+| E3 | [#4 [E3] 完成多执行器并发、显存预算与容量验收](https://github.com/WTaoGitHub/cybercafe-maas/issues/4) | OPEN（基础试点通过，TUNE停于T4选型） |
 | E4 | [#5 [E4] 同步持久幂等与原结果复用](https://github.com/WTaoGitHub/cybercafe-maas/issues/5) | OPEN |
 | E5 | [#6 [E5] 克隆自动接入收尾与异常矩阵](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) | OPEN |
 | E6 | [#7 [E6] 退役自建 collector（已完成归档）](https://github.com/WTaoGitHub/cybercafe-maas/issues/7) | CLOSED |
@@ -26,6 +26,7 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 | E5.F5 | [#18 [E5.F5] 按节点角色实施worker启动保护](https://github.com/WTaoGitHub/cybercafe-maas/issues/18) | OPEN |
 | AUTH | [#19 [AUTH] MaaS服务身份与GPUStack内部凭据解耦](https://github.com/WTaoGitHub/cybercafe-maas/issues/19) | OPEN |
 | E5.NET | [#20 [E5.NET] 母版网络隔离补丁的新快照继承与首启验收](https://github.com/WTaoGitHub/cybercafe-maas/issues/20) | OPEN |
+| E3-GC | [#21 Bound orphan GC scan work and reduce shared artifact lifecycle lock contention](https://github.com/WTaoGitHub/cybercafe-maas/issues/21) | OPEN（高优先级，待实现） |
 
 ## 状态和职责
 
@@ -42,3 +43,5 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 2026-10-29 E3新复测因测试采样工具对零副本可选指标处理错误而中断，未出现新503、未完成新容量点。修正已发布，服务恢复且未自动重开，见[记录](../../results/maas-e3-final-20261029/REPORT.md)。
 
 2026-10-29新增[PP-OCRv4部署参数优化专项](../framework/ENHANCEMENTS.md#pp-ocrv4-tuning)，在E10/#11跟踪参数配置化、线程、缩放、质量和能效验证，与E3/#4的副本/并发验收互相引用。当前仅登记，先取得E3固定参数基线，不改变主线顺序，不启动线上调参。
+
+2026-10-30 E3-TUNE：T0–T3（含12档）完成，T4队列45点完成但无合格队列，HTTP/T5/T6未运行；已按中断规则恢复原4/4/4/4、2+2、generation164并通过真实探针。#4继续开放，文件生命周期性能风险在#21单独跟踪，不能视为所有拒绝的已证实根因。详见[本轮报告](../../results/maas-e3-tune-20261029/REPORT.md)。
