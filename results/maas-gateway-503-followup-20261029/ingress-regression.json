@@ -1,0 +1,45 @@
+{
+  "started_at": 1793257120.5703876,
+  "checks": [
+    {
+      "target": "198.18.245.1",
+      "port": 40062,
+      "reachable": false
+    },
+    {
+      "target": "fd42:245::1",
+      "port": 40062,
+      "reachable": false
+    },
+    {
+      "target": "10.11.31.1",
+      "port": 18080,
+      "reachable": false
+    },
+    {
+      "target": "10.11.31.1",
+      "port": 18830,
+      "reachable": false
+    },
+    {
+      "target": "10.11.31.1",
+      "port": 18835,
+      "reachable": false
+    },
+    {
+      "target": "10.11.31.1",
+      "port": 18840,
+      "reachable": false
+    },
+    {
+      "target": "172.17.0.2",
+      "port": 80,
+      "reachable": false
+    }
+  ],
+  "original_flows_not_globally_trusted": true,
+  "ssh_reachable": true,
+  "ok": true,
+  "namespace_removed": true,
+  "host_firewall_unchanged": true
+}

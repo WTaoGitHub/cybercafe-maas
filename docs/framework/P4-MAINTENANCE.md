@@ -1,5 +1,8 @@
 # 常驻环境全局维护：当前schema-v2绑定
 
+> **2026-10-29网关后续修复**：已稳定复现控制端防火墙误丢弃落入受保护端口范围的出站返回包；将早期过滤迁至conntrack之后的mangle/PREROUTING，并仅允许ESTABLISHED/REPLY。26项本地回归、15项隔离内核检查、三轮副本重建15次OCR、实际入站隔离及一笔异步单计量均通过。MaaS已恢复接单（generation46）、UNKNOWN=0、监控正常；四模型副本和四候选executor保留，未重启VM/Docker/worker。原始单次503缺少源端口证据，Issue #1保持开放观察；母版/克隆网络文件未更新，E3剩余矩阵未自动续跑。[详细报告](../../results/maas-gateway-503-followup-20261029/REPORT.md)。
+
+
 2026-10-28更新。001仅控制端；当前对象为test1/cluster3、worker7和8、model18、route17、14副本。**全局暂停推理**，不提供E1逐worker排空和其他节点继续服务。当前演练104.875秒通过，见[报告](../../results/maas-topology-20261028/REPORT.md)。2026-10-21旧worker2/models1/9单节点绑定已过期，不得执行旧binder的`bind`，旧journal只保留审计。
 
 > **同日最新修正**：用户确认副本数是随时可调的runtime配置。维护绑定不再批准固定副本数；每次begin从GPUStack读取期望replicas，写入该窗口journal，按该值停止/恢复。当前4只是本次只读观察，不是新的固定值。副本数变化无需重新bind；节点/模型/路由或镜像等绑定范围变化仍须审核。详见[动态副本验证](../../results/maas-runtime-replicas-20261028/REPORT.md)。

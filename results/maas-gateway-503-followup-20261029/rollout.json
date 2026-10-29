@@ -1,0 +1,26 @@
+{
+  "phase": "APPLIED_PAUSED",
+  "started_at": 1793256482.4236476,
+  "scope": "controller firewall/source only",
+  "containers_restarted": false,
+  "vm_restarted": false,
+  "generation": 45,
+  "timer_was_active": true,
+  "refresh": {
+    "action": "refresh",
+    "node": "XZ-31-001",
+    "pre_dnat_fence": true,
+    "early_table": "mangle",
+    "trusted_bridge_count": 1
+  },
+  "boundary_status": {
+    "early_table": "mangle",
+    "early_hooks_first": {
+      "iptables": true,
+      "ip6tables": true
+    },
+    "ok": true
+  },
+  "runtime_unchanged": true,
+  "finished_at": 1793256485.1974568
+}

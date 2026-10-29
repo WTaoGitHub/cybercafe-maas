@@ -1,0 +1,96 @@
+{
+  "artifacts": [
+    {
+      "file": "REPORT.html",
+      "bytes": 6826,
+      "sha256": "da2dff5357d574763df207a7cd558e6893da53b9c8667417953d7ad4b1bb7406"
+    },
+    {
+      "file": "REPORT.md",
+      "bytes": 7405,
+      "sha256": "5d9a494cce7f3e6b0118a3fe5b7ce9a6148c4cf2da917d7f5863b3c0c22ceed7"
+    },
+    {
+      "file": "async-regression.json",
+      "bytes": 361,
+      "sha256": "18091d7f618ff878e49cfee205fd3b189c77da1cf15386725f86a74f4c16c1cd"
+    },
+    {
+      "file": "expected-source-hashes.json",
+      "bytes": 667,
+      "sha256": "57a151a5e91ee32d614bccbb496d473de8341ab066de08c0e97396f30283fa91"
+    },
+    {
+      "file": "final.json",
+      "bytes": 1422,
+      "sha256": "7014eee77ce5eb214bc1666fc68d9a48f7410b30db8963c1d4e606ea8207d300"
+    },
+    {
+      "file": "ingress-regression.json",
+      "bytes": 830,
+      "sha256": "18c142bc0021a9a0f94109ec1be9dc38042110e2c1724487b0b1f0de9d4dd788"
+    },
+    {
+      "file": "kernel-regression.json",
+      "bytes": 2717,
+      "sha256": "ec4e9115f50e7f8e01566114ee35b57c42b7390460128cc81c1644b718f8ef07"
+    },
+    {
+      "file": "probe-access.json",
+      "bytes": 4751,
+      "sha256": "bcdbdb20df5fcf207ffeb0f567a7ec84504648019b82bd20486f0b613cd85703"
+    },
+    {
+      "file": "recovery.json",
+      "bytes": 495,
+      "sha256": "5fa3e608d6331396802cf5d55f71285dca64404ee21f92224c59a6c0140a4f58"
+    },
+    {
+      "file": "recreate.json",
+      "bytes": 5467,
+      "sha256": "2be735cfb193cb8097c6e284df02744fb843b0553a7f2661b8c3e9a300bd86ac"
+    },
+    {
+      "file": "rollout.json",
+      "bytes": 597,
+      "sha256": "4ba8e41ee361d60f9eaf01392d40463be4a8f813f1dc41954b1e56cced302291"
+    },
+    {
+      "file": "summary.json",
+      "bytes": 918,
+      "sha256": "d03e5eda8e735f9606a39449c1c98b9143f4a5e54b31e22333f018a632e43406"
+    },
+    {
+      "file": "tcp-probe-after.json",
+      "bytes": 508,
+      "sha256": "00aa6ddd66d476f23bd5200433aba34d0af5eed0395e4a339e1147ca9be58b64"
+    },
+    {
+      "file": "tcp-probe-before.json",
+      "bytes": 1424,
+      "sha256": "b5515819027f81f7eba56ee5e327f934367646a87d5ab44276e6e5184e23f102"
+    },
+    {
+      "file": "tcp-probe-initial.json",
+      "bytes": 1696,
+      "sha256": "0f52eb13f4accf1f9f87e12d2bc4ad1ac42ec61c43bc463ed0b112e8fddc2caa"
+    },
+    {
+      "file": "tcp.jsonl",
+      "bytes": 48507,
+      "sha256": "6dcc7d1d93f7fbc53e1742f0e5aee0aaf4ddd87d855e841be4d21f7ed85c52cb"
+    },
+    {
+      "file": "workers-after.json",
+      "bytes": 614,
+      "sha256": "c0a7bf636a386692a215e48a2020a9572d0cc1e1b5bf091e7c84f6dfdab22453"
+    },
+    {
+      "file": "workers-before.json",
+      "bytes": 970,
+      "sha256": "7483d04f457903312e4a490ed7674fe7d4edfb4ab5bdc40237f99a9f156ad987"
+    }
+  ],
+  "private_backup": "Mac ignored .maas/backups/gateway-boundary-20261029/before.tar.gz; root-only rollback materials on controller",
+  "raw_firewall_rules_in_git": false
+}

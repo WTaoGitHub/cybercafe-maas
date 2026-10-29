@@ -1,0 +1,30 @@
+[
+  {
+    "worker": 7,
+    "boot_id": "ec913d05-5caf-428a-937e-90fc537c3d2b",
+    "tcp_ext": {
+      "ListenOverflows": 0,
+      "ListenDrops": 0,
+      "TCPReqQFullDrop": 0,
+      "TCPSynRetrans": 155
+    },
+    "worker_containers": [
+      "183750f2da8f"
+    ],
+    "boot_and_worker_unchanged": true
+  },
+  {
+    "worker": 8,
+    "boot_id": "fe66c1d1-cff6-4daa-90ed-5d5e5e82fbb8",
+    "tcp_ext": {
+      "ListenOverflows": 0,
+      "ListenDrops": 0,
+      "TCPReqQFullDrop": 0,
+      "TCPSynRetrans": 1085
+    },
+    "worker_containers": [
+      "64b2e94e8bfc"
+    ],
+    "boot_and_worker_unchanged": true
+  }
+]

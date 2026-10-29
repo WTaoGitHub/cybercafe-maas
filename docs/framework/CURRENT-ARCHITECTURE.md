@@ -1,5 +1,8 @@
 # 当前系统架构与服务暴露
 
+> **2026-10-29网关后续修复**：已稳定复现控制端防火墙误丢弃落入受保护端口范围的出站返回包；将早期过滤迁至conntrack之后的mangle/PREROUTING，并仅允许ESTABLISHED/REPLY。26项本地回归、15项隔离内核检查、三轮副本重建15次OCR、实际入站隔离及一笔异步单计量均通过。MaaS已恢复接单（generation46）、UNKNOWN=0、监控正常；四模型副本和四候选executor保留，未重启VM/Docker/worker。原始单次503缺少源端口证据，Issue #1保持开放观察；母版/克隆网络文件未更新，E3剩余矩阵未自动续跑。[详细报告](../../results/maas-gateway-503-followup-20261029/REPORT.md)。
+
+
 > 2026-10-28母版补充：SSH_PORT_REDACTED/tower已安装隔离文件并enable，未对母版应用宿主规则。新快照与独立克隆启动仍待管理员安排；当前worker7/8规则不变。[实际部署](../../results/maas-e5-template-network-20261028/REPORT.md)。
 
 2026-10-28更新：001控制端、SSH_PORT_REDACTED/worker7及SSH_PORT_REDACTED/worker8同时在线，14个OCR副本各7个。结合前次入口监听核对及本轮双克隆证据；实线表示主要调用/控制关系，响应沿原连接返回；第二图虚线表示非客户调用路径或尚未建立的入口。当前两克隆网络边界和全局维护已验收；母版快照尚未更新。当前GPUStack为v2.2.3，E8升级未实施。

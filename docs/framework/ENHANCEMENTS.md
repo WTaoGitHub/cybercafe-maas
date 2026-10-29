@@ -1,5 +1,8 @@
 # 后续增强计划
 
+> **2026-10-29网关后续修复**：已稳定复现控制端防火墙误丢弃落入受保护端口范围的出站返回包；将早期过滤迁至conntrack之后的mangle/PREROUTING，并仅允许ESTABLISHED/REPLY。26项本地回归、15项隔离内核检查、三轮副本重建15次OCR、实际入站隔离及一笔异步单计量均通过。MaaS已恢复接单（generation46）、UNKNOWN=0、监控正常；四模型副本和四候选executor保留，未重启VM/Docker/worker。原始单次503缺少源端口证据，Issue #1保持开放观察；母版/克隆网络文件未更新，E3剩余矩阵未自动续跑。[详细报告](../../results/maas-gateway-503-followup-20261029/REPORT.md)。
+
+
 > 2026-10-29：现有计划及网关问题已登记为20个GitHub Issue（19开放、E6完成归档），见[编号索引](../issues/GITHUB-INDEX.md)。本次只登记，不变更排期或现网。
 
 > 2026-10-29：新增 [E12：KubeEdge多网吧边缘管理候选](#e12kubeedge多网吧边缘管理候选)，仅记录供未来讨论，不启动实现，不调整当前排期。

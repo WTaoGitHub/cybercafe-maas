@@ -1,0 +1,59 @@
+{
+  "at": 1793257425.2300658,
+  "maintenance": {
+    "paused": false,
+    "generation": 46,
+    "reason": "Gateway reply-direction firewall repair",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "model_hash_matches_original": true,
+  "model_replicas": 4,
+  "instances": [
+    {
+      "id": 165,
+      "worker_id": 7,
+      "state": "running",
+      "port": 40048
+    },
+    {
+      "id": 163,
+      "worker_id": 7,
+      "state": "running",
+      "port": 40058
+    },
+    {
+      "id": 166,
+      "worker_id": 8,
+      "state": "running",
+      "port": 40063
+    },
+    {
+      "id": 164,
+      "worker_id": 8,
+      "state": "running",
+      "port": 40024
+    }
+  ],
+  "monitor": {
+    "generated_at_unix": 1793257396.9720879,
+    "ok": true,
+    "alerts": [],
+    "metrics": {
+      "maas_successful_tasks_total": 8692.0,
+      "maas_successful_sync_requests_total": 37.0,
+      "maas_unknown_backend_activity": 0.0,
+      "maas_unknown_sync_activity": 0.0,
+      "maas_artifact_live_bytes": 127662329.0,
+      "maas_artifact_free_bytes": 392500056064.0,
+      "maas_oldest_queue_seconds": 0.0
+    }
+  },
+  "vm_restarted": false,
+  "docker_or_worker_restarted": false,
+  "e3_capacity_test_resumed": false
+}

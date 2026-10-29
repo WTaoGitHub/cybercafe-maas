@@ -1,7 +1,7 @@
-"""One bounded replica recreation with TCP-header-only evidence. Never resumes MaaS.
+"""Bounded replica recreations with TCP-header-only evidence. Never resumes MaaS.
 Any failed POST stops; the original failed business request is never replayed.
 """
-import base64,fcntl,json,os,socket,struct,subprocess,sys,threading,time,urllib.request,uuid
+import argparse,re,base64,fcntl,json,os,socket,struct,subprocess,sys,threading,time,urllib.request,uuid
 from pathlib import Path
 sys.path[:0]=['/root/wtaobj/maas-framework','/root/wtaobj']
 from replica_capacity_matrix import change_model
@@ -22,9 +22,14 @@ def tcp_metadata(frame,now):
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--run-id',default='recreate-debug-20261029')
+    parser.add_argument('--cycles',type=int,choices=range(1,4),default=1)
+    args=parser.parse_args()
+    if not re.fullmatch(r'[a-z0-9-]{1,60}',args.run_id):parser.error('Bounded alphanumeric run ID required')
     os.umask(0o077)
     from gpustack_admin import api
-    folder=LIVE/'e3/recreate-debug-20261029';folder.mkdir(mode=0o700,exist_ok=False)
+    folder=LIVE/'e3'/args.run_id;folder.mkdir(mode=0o700,exist_ok=False)
     compose=['docker','compose','--env-file',str(LIVE/'app.env'),'-f','/root/wtaobj/maas-framework/deploy/maas/compose.yaml']
     def managed():return json.loads(command(compose+['exec','-T','api','python','-m','maas_platform.cli','drain-status']))
     m=api('/v2/models/18');assert m['replicas']==4
@@ -32,18 +37,18 @@ def main():
     route=json.loads(command(['ip','-j','route','get','10.11.31.3']))[0];interface=route['dev']
     # Open capture before touching replicas; permission/route failure stops without deployment writes.
     raw=socket.socket(socket.AF_PACKET,socket.SOCK_RAW,socket.htons(3));raw.bind((interface,0));raw.settimeout(.2)
-    stop=threading.Event();report={'started_at':time.time(),'generation':generation,'original_replicas':4,'original_model_sha256':model_hash(m),'phase':'PREPARED','requests':[],'tcp_interface':interface,'payload_recorded':False}
+    stop=threading.Event();report={'started_at':time.time(),'generation':generation,'requested_cycles':args.cycles,'original_replicas':4,'original_model_sha256':model_hash(m),'phase':'PREPARED','requests':[],'tcp_interface':interface,'payload_recorded':False}
     def save():atomic(folder/'status.json',report)
     def capture():
         count=0
         with (folder/'tcp.jsonl').open('w') as f:
             while not stop.is_set() and count<20000:
-                try:frame=raw.recv(65535)
+                try:frame=raw.recv(96)
                 except socket.timeout:continue
                 except OSError:break
                 value=tcp_metadata(frame,time.time())
                 if value:f.write(json.dumps(value)+'\n');f.flush();count+=1
-    t=threading.Thread(target=capture);t.start()
+    t=threading.Thread(target=capture)
     key=(LIVE/'secrets/pilot-key').read_text().strip();img=(Path('/root/wtaobj/maas-endurance-fixtures')/json.loads(Path('/root/wtaobj/maas-endurance-fixtures/manifest.json').read_text())[0]['file']).read_bytes()
     payload={'model':m['name'],'stream':False,'messages':[{'role':'user','content':[{'type':'image_url','image_url':{'url':'data:image/png;base64,'+base64.b64encode(img).decode()}}]}]}
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -68,14 +73,17 @@ def main():
             r.update(lines=46,node=content.get('node'),finished_at=time.time());save()
         except Exception as e:
             r.update(error_class=type(e).__name__,http_status=getattr(e,'code',None),failed_at=time.time());save();raise
+    t.start()
     try:
         with open('/run/maas-global-maintenance.lock','a') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);check();save()
-            for count in [2,0,4]:
-                report.update(phase='SCALING',target=count,change_at=time.time());save()
-                check();m=change_model(api,m,count,m['worker_selector']);wait(count)
-                if count:report['phase']='FIRST_REQUEST';save();infer('immediate-ready-'+str(count))
-            for index in range(3):infer('steady-new-'+str(index))
+            for cycle in range(args.cycles):
+                report['cycle']=cycle+1;save()
+                for count in [2,0,4]:
+                    report.update(phase='SCALING',target=count,change_at=time.time());save()
+                    check();m=change_model(api,m,count,m['worker_selector']);wait(count)
+                    if count:report['phase']='FIRST_REQUEST';save();infer('cycle-'+str(cycle+1)+'-immediate-ready-'+str(count))
+                for index in range(3):infer('cycle-'+str(cycle+1)+'-steady-new-'+str(index))
             report.update(phase='COMPLETE_NO_FAILURE_REPRODUCED',finished_at=time.time(),original_config_matches=model_hash(api('/v2/models/18'))==model_hash(original));save()
     except Exception as e:
         report.update(phase='FAILED_STOP',error_class=type(e).__name__,http_status=getattr(e,'code',None),finished_at=time.time());save();raise

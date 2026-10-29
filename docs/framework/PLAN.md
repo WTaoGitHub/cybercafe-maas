@@ -1,5 +1,8 @@
 # 实施计划 v0.2
 
+> **2026-10-29网关后续修复**：已稳定复现控制端防火墙误丢弃落入受保护端口范围的出站返回包；将早期过滤迁至conntrack之后的mangle/PREROUTING，并仅允许ESTABLISHED/REPLY。26项本地回归、15项隔离内核检查、三轮副本重建15次OCR、实际入站隔离及一笔异步单计量均通过。MaaS已恢复接单（generation46）、UNKNOWN=0、监控正常；四模型副本和四候选executor保留，未重启VM/Docker/worker。原始单次503缺少源端口证据，Issue #1保持开放观察；母版/克隆网络文件未更新，E3剩余矩阵未自动续跑。[详细报告](../../results/maas-gateway-503-followup-20261029/REPORT.md)。
+
+
 > **2026-10-29调试及服务恢复**：原503日志定位为Higress/Envoy连接worker8代理10.11.31.3:10150失败（新实例150，UF/local_connection_failure），非无匹配模型路由。16项分层检查、一次4→2→0→4重建的5次新请求均成功，未复现，底层触发原因尚未证实。正式恢复探针46行通过后MaaS已恢复接单（generation44），UNKNOWN=0、监控正常；原4副本/选择器保持，4个候选executor不变。**未修复定因、未自动续跑E3，E3未完成验收。** 下方paused43为昨日历史现场。[调试报告](../../results/maas-e3-debug-20261029/REPORT.md)。
 
 

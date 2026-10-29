@@ -1,0 +1,20 @@
+{
+  "maintenance": {
+    "paused": false,
+    "generation": 46,
+    "reason": "Gateway reply-direction firewall repair",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "probes": [
+    {
+      "model": "ocr.default",
+      "revision": "ocr-registry-r1",
+      "lines": 46
+    }
+  ]
+}

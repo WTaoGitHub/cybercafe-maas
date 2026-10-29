@@ -1,4 +1,5 @@
 import importlib.util,struct,sys
+import pytest
 from pathlib import Path
 root=Path(__file__).resolve().parents[2];sys.path.insert(0,str(root/'scripts/maas/runtime'))
 spec=importlib.util.spec_from_file_location('gateway_recreate',root/'scripts/maas/runtime/debug_gateway_recreate.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -21,3 +22,10 @@ def test_non_connection_packets_and_other_ports_are_ignored():
     assert m.tcp_metadata(frame(flags=16),1) is None
     assert m.tcp_metadata(frame(port=22),1) is None
     assert m.tcp_metadata(b'bad',1) is None
+
+
+@pytest.mark.parametrize('args',[['--cycles','4'],['--cycles','0'],['--run-id','../escape']])
+def test_invalid_recreation_bounds_rejected_before_remote_operations(monkeypatch,args):
+    monkeypatch.setattr(sys,'argv',['debug_gateway_recreate.py',*args])
+    with pytest.raises(SystemExit) as exc:m.main()
+    assert exc.value.code==2
