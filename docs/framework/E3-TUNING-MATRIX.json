@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "PLANNED_NOT_EXECUTABLE_BY_CURRENT_TOOLS",
   "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
   "profile_scope": {
@@ -18,6 +18,21 @@
   "fixed_inputs": {"media_types": ["image/png", "image/jpeg"], "max_bytes": 10485760, "max_pixels": 20000000, "task_deadline_seconds": 120, "task_max_attempts": 1},
   "tool_guardrails": {"initial_explicit_max_clients_executors_limits": 16, "initial_model_replicas": [4, 6, 8], "conditional_model_replicas": [10, 12], "conditional_executors_limits": [12]},
   "sampling_contract": {"measure_min_seconds": 60, "measure_min_successes": 200, "measure_max_seconds": 300, "finalist_repeats": 3, "finalist_min_seconds_per_repeat": 300, "tie_max_repeats": 5, "final_soak_seconds": 7200},
+  "saturation_contract": {
+    "definition": "continuously_ready_backlog_during_formal_saturated_async_measurement",
+    "effective_async_slots": "min(executors,global_limit,project_limit)",
+    "ready_queue": {"scope": ["test_project", "target_model", "target_revision"], "states": ["QUEUED", "RETRY_WAIT"], "next_run_due_required": true, "deadline_live_required": true, "valid_input_required": true, "running_and_unconfirmed_submissions_excluded": true},
+    "refill": {"initial_low_watermark_slots_multiplier": 2, "initial_high_watermark_slots_multiplier": 4, "strictly_below_effective_queue_limit": true, "reserve_for_unconfirmed_submissions": true, "bound_by_waiting_deadline_budget": true, "independent_of_result_download_and_reconciliation": true, "prefill_before_measurement": true},
+    "observation": {"planned_queue_sample_interval_ms_max": 100, "record_actual_interval_and_max_gap": true, "record_empty_events_and_generator_idle": true, "sampling_alone_is_not_continuous_proof": true},
+    "invalid_on_observed_ready_queue_zero": true,
+    "invalid_status": "INVALID_UNDERSUPPLIED",
+    "unverifiable_status": "INCONCLUSIVE_SUPPLY_EVIDENCE",
+    "no_cherry_picked_busy_windows": true,
+    "no_automatic_restart_or_replay": true,
+    "native_and_sync_supply_rule": "continuously_prepared_requests_for_target_clients_not_maas_async_queue",
+    "exempt_modes": ["fixed_arrival_latency", "queue_limit_rejection", "intentional_drain", "business_arrival_subsegment"],
+    "mixed_rule": "record_offered_accepted_completed_mix_and_sync_starvation_without_emptying_async_backlog"
+  },
   "stages": [
     {"case_id": "T0-TOOLS", "module": "tooling", "labels": ["local", "safety", "prerequisite"], "depends_on": [], "kind": "implementation_and_independent_db_validation"},
     {"case_id": "T0-BASELINE", "module": "baseline", "labels": ["live", "baseline"], "depends_on": ["T0-TOOLS"], "kind": "baseline", "repeats": 3},
@@ -33,5 +48,5 @@
   "provisional_experimental_thresholds_not_sla": {"normal_no_backlog_p95_seconds": 1.5, "normal_no_backlog_p99_seconds": 3, "sustained_cpu_high_fraction": 0.8, "minimum_available_ram_bytes": 2147483648, "minimum_available_ram_fraction": 0.1},
   "stop_conditions": ["unexpected_5xx_or_503", "unknown", "oom", "instance_error", "connection_failure", "required_sampling_failure", "external_generation_or_model_drift", "quota_violation", "metering_mismatch"],
   "operational_constraints": {"vm_reboot_forbidden": true, "docker_daemon_restart_forbidden": true, "gpustack_worker_restart_forbidden": true, "restore_custom_collector_forbidden": true, "automatic_replay_unknown_forbidden": true, "normal_finish_restore_runtime_snapshot": true, "backup_to_private_mac_directory_first": true},
-  "result_tuple_fields": ["profile_id", "replicas", "executors", "global_limit", "project_limit", "global_queue", "project_queue", "vram_claim_bytes", "validated_input_envelope", "sustained_arrival_envelope", "latency", "resource_headroom", "evidence"]
+  "result_tuple_fields": ["profile_id", "replicas", "executors", "global_limit", "project_limit", "global_queue", "project_queue", "vram_claim_bytes", "validated_input_envelope", "sustained_arrival_envelope", "supply_mode_and_validity", "ready_queue_min_and_empty_events", "actual_sampling_gaps", "latency", "resource_headroom", "evidence"]
 }
