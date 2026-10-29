@@ -1,7 +1,7 @@
 """Bounded live OCR executor comparison; verified TLS, unique IDs, no inference retries.
 Keeps native replicas/claim unchanged. Uses native worker metrics, not SSH inventory.
 """
-import argparse,concurrent.futures,hashlib,json,os,re,ssl,subprocess,sys,threading,time,urllib.request
+import argparse,concurrent.futures,hashlib,json,math,os,re,ssl,subprocess,sys,threading,time,urllib.request
 from pathlib import Path
 LIVE=Path('/root/wtaobj/maas-live');FIXTURES=Path('/root/wtaobj/maas-endurance-fixtures')
 
@@ -10,6 +10,23 @@ def command(args):return subprocess.check_output(args,text=True,stderr=subproces
 def sql(query):return json.loads(command(['docker','exec','maas-tasks-db-1','psql','-h','127.0.0.1','-p','18835','-U','maas','-d','maas','-tAc',query]))
 def percentile(values,q):
     a=sorted(values);return a[min(len(a)-1,int((len(a)-1)*q))] if a else None
+
+
+def worker_metrics(lines,names):
+    """Read the validated single-GPU workers; absent optional gauges remain unknown."""
+    optional={'worker_node_gram_allocated_bytes','worker_node_gpu_temperature_celsius'}
+    values={}
+    for name in names:
+        pattern=re.compile(r'^gpustack:'+re.escape(name)+r'(?:\{.*\})?\s+(\S+)(?:\s+\d+)?\s*$')
+        for line in lines:
+            match=pattern.match(line)
+            if match:
+                value=float(match.group(1))
+                if not math.isfinite(value):raise ValueError('Non-finite native metric')
+                values[name]=value;break
+        if name not in values and name not in optional:
+            raise ValueError('Required native worker metric is missing')
+    return {name:values.get(name) for name in names}
 
 
 def bounded_map(function,items,workers,stop=None):
@@ -105,7 +122,8 @@ def main():
                 try:
                     with urllib.request.urlopen('http://'+ip+':10151/metrics',timeout=2) as r:lines=r.read().decode().splitlines()
                     names=['worker_node_gpu_utilization_rate','worker_node_gram_used_bytes','worker_node_gram_allocated_bytes','worker_node_memory_used_bytes','worker_node_cpu_utilization_rate','worker_node_gpu_temperature_celsius']
-                    sample['workers'][str(ident)]={name:float(next(x.rsplit(' ',1)[1] for x in lines if x.startswith('gpustack:'+name+'{'))) for name in names}
+                    sample['workers'][str(ident)]=worker_metrics(lines,names)
+                    sample['workers'][str(ident)]['missing_optional_metrics']=[n for n in names if sample['workers'][str(ident)][n] is None]
                 except Exception as exc:sample['workers'][str(ident)]={'error_class':type(exc).__name__}
             try:
                 sample['tasks']=sql("SELECT json_build_object('running',(SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')),'unknown',(SELECT count(*) FROM backend_activity WHERE state='UNKNOWN'),'lock_waiters',(SELECT count(*) FROM pg_stat_activity WHERE datname='maas' AND wait_event_type='Lock'))")

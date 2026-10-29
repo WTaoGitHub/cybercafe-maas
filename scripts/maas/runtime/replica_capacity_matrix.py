@@ -6,7 +6,7 @@ import argparse,re,uuid,base64,copy,fcntl,json,os,sys,threading,time,urllib.requ
 from pathlib import Path
 sys.path[:0]=[str(Path(__file__).resolve().parents[3]),'/root/wtaobj']
 from maas_platform.cluster_maintenance import model_hash
-from benchmark_executors import atomic,command,percentile,bounded_map
+from benchmark_executors import atomic,command,percentile,bounded_map,worker_metrics
 LIVE=Path('/root/wtaobj/maas-live');ROOT=Path('/root/wtaobj/maas-framework');FIXTURES=Path('/root/wtaobj/maas-endurance-fixtures')
 COMPOSE=['docker','compose','--env-file',str(LIVE/'app.env'),'-f',str(ROOT/'deploy/maas/compose.yaml')]
 
@@ -68,7 +68,8 @@ def main():
                 try:
                     with opener.open('http://'+w['ip']+':10151/metrics',timeout=2) as r:lines=r.read().decode().splitlines()
                     names=['worker_node_gpu_utilization_rate','worker_node_gram_used_bytes','worker_node_gram_allocated_bytes','worker_node_cpu_utilization_rate','worker_node_memory_used_bytes']
-                    row['workers'][str(ident)]={n:float(next(x.rsplit(' ',1)[1] for x in lines if x.startswith('gpustack:'+n+'{'))) for n in names}
+                    row['workers'][str(ident)]=worker_metrics(lines,names)
+                    row['workers'][str(ident)]['missing_optional_metrics']=[n for n in names if row['workers'][str(ident)][n] is None]
                 except Exception as e:
                     row['workers'][str(ident)]={'error_class':type(e).__name__};sample_errors.append({'worker':ident,'error_class':type(e).__name__});abort.set()
             with (folder/'samples.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
