@@ -33,6 +33,8 @@ class Settings:
     max_project_storage_bytes: int = 2 * 1024**3
     orphan_grace_seconds: int = 3600
     cleanup_batch_size: int = 200
+    cleanup_time_budget_ms: int = 100
+    cleanup_interval_seconds: int = 5
     min_free_bytes: int = 2 * 1024 * 1024 * 1024
 
     @classmethod
@@ -40,7 +42,8 @@ class Settings:
         values = {}
         integers = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
                     'max_running','max_project_running','lease_seconds','result_ttl_seconds',
-                    'input_ttl_seconds','min_free_bytes','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size')
+                    'input_ttl_seconds','min_free_bytes','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size',
+                    'cleanup_time_budget_ms','cleanup_interval_seconds')
         for name in integers:
             value = os.getenv('MAAS_' + name.upper())
             if value is not None:
@@ -59,7 +62,8 @@ class Settings:
 
     def __post_init__(self):
         positive = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
-                    'max_running','max_project_running','lease_seconds','result_ttl_seconds','input_ttl_seconds','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size')
+                    'max_running','max_project_running','lease_seconds','result_ttl_seconds','input_ttl_seconds','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size',
+                    'cleanup_time_budget_ms','cleanup_interval_seconds')
         if any(not isinstance(getattr(self,name),int) or getattr(self,name)<=0 for name in positive):
             raise ValueError('Limits and retention periods must be positive integers')
         if not math.isfinite(self.heartbeat_seconds) or not 0<self.heartbeat_seconds<self.lease_seconds/2:

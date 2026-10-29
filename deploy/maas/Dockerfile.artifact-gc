@@ -1,0 +1,6 @@
+# Offline source-only update; verify the approved base image ID before building.
+ARG BASE_IMAGE=cybercafe-maas-tasks:consumer-ocr-r1
+FROM ${BASE_IMAGE}
+USER root
+COPY maas_platform /app/maas_platform
+USER 10001

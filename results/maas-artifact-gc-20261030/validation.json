@@ -1,0 +1,54 @@
+{
+  "state": "INDEPENDENT_VALIDATION_PASSED",
+  "production_deployed": false,
+  "issue": 21,
+  "main_disposable_postgresql": {
+    "tests": 78,
+    "passed": 77,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 1,
+    "skip_scope": "historical database interruption test requires host harness",
+    "seconds": 21.152
+  },
+  "final_gc_and_consumer_regression": {
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 4.079
+  },
+  "local_config_process_and_executor_script_tests": {
+    "passed": 24,
+    "failed": 0
+  },
+  "known_old_file_case": {
+    "files": 3000,
+    "maximum_visited_per_pass": 200,
+    "bulk_metadata_queries_per_pass": 1,
+    "upload_and_finish_completed_during_held_gc_metadata_read": true
+  },
+  "checks": [
+    "cursor progress",
+    "cooperative budget retains candidates",
+    "query failure retains candidates",
+    "nonblocking busy lock preserves pending work",
+    "active input pin",
+    "young file and symlink protection",
+    "one coordinator across processes",
+    "crash releases leadership",
+    "original upload commit race"
+  ],
+  "test_harness_interruption": {
+    "first_process_crash_test": "shared multiprocessing Event wait interrupted; replaced with independent pipes",
+    "first_run_preserved": true,
+    "final_retest_passed": true,
+    "business_runtime_unchanged": true
+  },
+  "source_tar_sha256": "8df15905aedea67890062e9261d6893cc419ebc7f2355111fc05123db610b254",
+  "business_source_sha256": "a0e982e3ba242d2117f13c9a2797255ce4ca799c6626f332fa45f5c50eef44c3",
+  "production_speedup_proven": false,
+  "old_t4_reclassified": false,
+  "vm_restarts": 0
+}

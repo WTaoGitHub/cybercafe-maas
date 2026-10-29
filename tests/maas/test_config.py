@@ -20,7 +20,8 @@ def test_configurable_pilot_limits(monkeypatch,tmp_path):
  ('MAAS_MAX_RUNNING','0'),('MAAS_MAX_QUEUED','-1'),('MAAS_HEARTBEAT_SECONDS','nan'),
  ('MAAS_HEARTBEAT_SECONDS','30'),('MAAS_MAX_PROJECT_RUNNING','3'),('MAAS_MAX_INPUT_BYTES','bad'),
  ('MAAS_MIN_FREE_BYTES','-1'),('MAAS_RESULT_TTL_SECONDS','0'),('MAAS_MAX_STORAGE_BYTES','0'),
- ('MAAS_MAX_PROJECT_STORAGE_BYTES','999999999999'),('MAAS_ORPHAN_GRACE_SECONDS','0'),('MAAS_CLEANUP_BATCH_SIZE','0')])
+ ('MAAS_MAX_PROJECT_STORAGE_BYTES','999999999999'),('MAAS_ORPHAN_GRACE_SECONDS','0'),('MAAS_CLEANUP_BATCH_SIZE','0'),
+ ('MAAS_CLEANUP_TIME_BUDGET_MS','0'),('MAAS_CLEANUP_INTERVAL_SECONDS','-1')])
 def test_invalid_limits_rejected(monkeypatch,tmp_path,name,value):
  env(monkeypatch,tmp_path);monkeypatch.setenv(name,value)
  with pytest.raises(ValueError):Settings.from_env()
@@ -29,6 +30,11 @@ def test_invalid_limits_rejected(monkeypatch,tmp_path,name,value):
 def test_reject_non_postgres_database(monkeypatch,tmp_path):
  env(monkeypatch,tmp_path);monkeypatch.setenv('MAAS_DATABASE_URL','sqlite:///tasks.db')
  with pytest.raises(ValueError):Settings.from_env()
+
+
+def test_gc_budget_and_interval_from_env(monkeypatch,tmp_path):
+ env(monkeypatch,tmp_path);monkeypatch.setenv('MAAS_CLEANUP_TIME_BUDGET_MS','75');monkeypatch.setenv('MAAS_CLEANUP_INTERVAL_SECONDS','10')
+ c=Settings.from_env();assert c.cleanup_time_budget_ms==75 and c.cleanup_interval_seconds==10
 
 
 def test_invalid_model_runtime_rejected(monkeypatch,tmp_path):

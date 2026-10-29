@@ -1,4 +1,4 @@
-import hashlib, json, uuid, time, re, stat
+import hashlib, json, uuid
 from datetime import datetime, timezone
 from psycopg.types.json import Jsonb
 from pydantic import ValidationError
@@ -6,6 +6,7 @@ from .artifacts import ArtifactStore, serialized_artifacts
 from .db import Database
 from .errors import ServiceError
 from .adapters import adapter_for
+from .artifact_gc import ArtifactGC
 
 ACTIVE = ('QUEUED', 'RETRY_WAIT', 'RUNNING', 'CANCEL_REQUESTED')
 
@@ -23,6 +24,7 @@ class TaskService:
         self.settings, self.auth = settings, auth
         self.db = Database(settings.database_url)
         self.store = ArtifactStore(settings)
+        self.gc = ArtifactGC(self)
 
     def model(self, name):
         value = self.settings.catalog().get(name)
@@ -263,31 +265,11 @@ class TaskService:
                 c.execute('UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now(),updated_at=now() WHERE id=%s', (state, code, row['id']))
             return len(rows)
 
-    @serialized_artifacts
-    def cleanup(self):
-        with self.db.transaction() as c:
-            rows = c.execute("""SELECT * FROM artifacts a WHERE a.expires_at<=now() AND a.deleted_at IS NULL
-                AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.input_artifact_id=a.id AND t.state IN ('QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED')) ORDER BY a.expires_at LIMIT %s FOR UPDATE OF a SKIP LOCKED""",(self.settings.cleanup_batch_size,)).fetchall()
-            for row in rows:
-                self.store.remove(row['id'])
-                c.execute('UPDATE artifacts SET deleted_at=now() WHERE id=%s', (row['id'],))
-            return len(rows)
+    def cleanup(self, *, blocking=True):
+        return self.gc.expired(blocking=blocking)
 
-    @serialized_artifacts
-    def cleanup_orphans(self):
-        """Bounded GC of old, owned-format regular files only; never follows symlinks."""
-        removed=0
-        cutoff=time.time()-self.settings.orphan_grace_seconds
-        with self.db.transaction() as c:
-            for path in self.store.root.iterdir():
-                if removed>=self.settings.cleanup_batch_size:break
-                if not re.fullmatch(r'\.?art_[0-9a-f]{32}',path.name):continue
-                info=path.lstat()
-                if not stat.S_ISREG(info.st_mode) or info.st_mtime>cutoff:continue
-                ident=path.name.lstrip('.')
-                if c.execute('SELECT 1 FROM artifacts WHERE id=%s AND deleted_at IS NULL',(ident,)).fetchone():continue
-                path.unlink();removed+=1
-        return removed
+    def cleanup_orphans(self, *, blocking=True):
+        return self.gc.orphans(blocking=blocking)
 
     def pause(self, paused, reason=''):
         with self.db.transaction() as c:

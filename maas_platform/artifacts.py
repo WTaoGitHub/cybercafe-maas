@@ -1,6 +1,20 @@
 from pathlib import Path
 import hashlib, os, shutil, uuid, fcntl
 from functools import wraps
+from contextlib import contextmanager
+
+
+@contextmanager
+def lifecycle_lock(store, *, blocking=True):
+    """The same cross-process lock for writers and final GC rechecks."""
+    with (store.root / '.lifecycle.lock').open('a+b') as lock:
+        os.chmod(lock.fileno(),0o600)
+        try:
+            fcntl.flock(lock,fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
+        except BlockingIOError:
+            yield False
+            return
+        yield True
 
 
 def serialized_artifacts(method):
@@ -11,9 +25,7 @@ def serialized_artifacts(method):
     """
     @wraps(method)
     def locked(self,*args,**kwargs):
-        with (self.store.root / ".lifecycle.lock").open("a+b") as lock:
-            os.chmod(lock.fileno(),0o600)
-            fcntl.flock(lock,fcntl.LOCK_EX)
+        with lifecycle_lock(self.store):
             return method(self,*args,**kwargs)
     return locked
 

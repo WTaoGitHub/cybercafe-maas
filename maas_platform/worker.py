@@ -4,6 +4,7 @@ from .adapters import adapter_for, ExecutionContext
 from .config import Settings
 from .errors import ServiceError
 from .service import TaskService, fingerprint
+from .artifact_gc import PeriodicArtifactCleanup
 
 log = logging.getLogger('maas.worker')
 
@@ -72,15 +73,17 @@ def main():
     worker = Worker(service, stop_claiming=stop)
     log.info('executor_started executor=%s pid=%s global_limit=%s project_limit=%s',
              worker.executor_id, os.getpid(), settings.max_running, settings.max_project_running)
-    last_clean = 0
-    while not stop.is_set():
-        try:
-            worked = worker.run_once()
-            if not stop.is_set() and time.monotonic()-last_clean > 60:
-                service.cleanup(); service.cleanup_orphans(); last_clean=time.monotonic()
-            if not worked: stop.wait(.5)
-        except Exception:
-            log.error('worker_loop_unavailable executor=%s', worker.executor_id); stop.wait(2)
+    cleanup = PeriodicArtifactCleanup(service)
+    try:
+        while not stop.is_set():
+            try:
+                worked = worker.run_once()
+                if not stop.is_set(): cleanup.tick()
+                if not worked: stop.wait(.5)
+            except Exception:
+                log.error('worker_loop_unavailable executor=%s', worker.executor_id); stop.wait(2)
+    finally:
+        cleanup.close()
     log.info('executor_stopped executor=%s', worker.executor_id)
 
 if __name__ == '__main__': main()
