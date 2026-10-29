@@ -2,11 +2,11 @@
 Only model18 replicas/worker_selector change. No VM, worker or Docker daemon operation.
 Any exception stops the matrix and leaves admission paused for operator inspection.
 """
-import base64,concurrent.futures,copy,fcntl,json,os,sys,threading,time,urllib.request
+import argparse,re,uuid,base64,copy,fcntl,json,os,sys,threading,time,urllib.request
 from pathlib import Path
 sys.path[:0]=[str(Path(__file__).resolve().parents[3]),'/root/wtaobj']
 from maas_platform.cluster_maintenance import model_hash
-from benchmark_executors import atomic,command,percentile
+from benchmark_executors import atomic,command,percentile,bounded_map
 LIVE=Path('/root/wtaobj/maas-live');ROOT=Path('/root/wtaobj/maas-framework');FIXTURES=Path('/root/wtaobj/maas-endurance-fixtures')
 COMPOSE=['docker','compose','--env-file',str(LIVE/'app.env'),'-f',str(ROOT/'deploy/maas/compose.yaml')]
 
@@ -23,9 +23,15 @@ def change_model(api,expected,replicas,selector):
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--run-id',default='native-matrix')
+    parser.add_argument('--profile',choices=['all','remaining'],default='all')
+    parser.add_argument('--repeats',type=int,choices=range(1,4),default=1)
+    args=parser.parse_args()
+    if not re.fullmatch(r'[a-z0-9-]{1,60}',args.run_id):parser.error('Bounded run ID required')
     if os.getuid()!=0:raise RuntimeError('Controller root only')
     from gpustack_admin import api
-    folder=LIVE/'e3/native-matrix';folder.mkdir(mode=0o700,exist_ok=False)
+    folder=LIVE/'e3'/args.run_id;folder.mkdir(mode=0o700,exist_ok=False)
     def cli(*args):return json.loads(command(COMPOSE+['exec','-T','api','python','-m','maas_platform.cli',*args]))
     model=api('/v2/models/18');assert model['replicas']==4 and model['env']['GPUSTACK_MODEL_VRAM_CLAIM']=='2147483648'
     original=copy.deepcopy(model);atomic(folder/'original-private.json',original)
@@ -40,10 +46,13 @@ def main():
         raw=(stress_root/item['file']).read_bytes();assert hashlib_sha(raw)==item['sha256']
         inputs.append({**item,'url':'data:'+item['media_type']+';base64,'+base64.b64encode(raw).decode()})
     key=(LIVE/'secrets/pilot-key').read_text().strip()
-    summary={'phase':'PREPARED','started_at':time.time(),'original_replicas':original['replicas'],'original_model_sha256':model_hash(original),
+    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    summary={'run_id':args.run_id,'profile':args.profile,'repeats':args.repeats,'phase':'PREPARED','started_at':time.time(),'original_replicas':original['replicas'],'original_model_sha256':model_hash(original),
         'fixture_manifest_sha256':hashlib_sha((FIXTURES/'manifest.json').read_bytes()),'stress_manifest_sha256':hashlib_sha((stress_root/'manifest.json').read_bytes()),'points':[],
         'scope':'native GPUStack model18; MaaS paused; cached image/process cold start; no custom collector'}
-    def checkpoint():atomic(folder/'status.json',summary)
+    checkpoint_lock=threading.RLock()
+    def checkpoint():
+        with checkpoint_lock:atomic(folder/'status.json',summary)
     def wait(test,seconds=180):
         end=time.monotonic()+seconds
         while time.monotonic()<end:
@@ -51,29 +60,43 @@ def main():
             time.sleep(.5)
         raise RuntimeError('Convergence deadline; stop matrix, keep paused')
     def instances():return api('/v2/models/18/instances')['items']
-    stop=threading.Event();sample_context={'point':None,'phase':'PREPARED'}
+    stop=threading.Event();abort=threading.Event();sample_errors=[];native_target=[];sample_context={'point':None,'phase':'PREPARED'}
     def sample():
         while not stop.is_set():
             row={'at':time.time(),**sample_context,'workers':{}}
             for ident,w in workers.items():
                 try:
-                    with urllib.request.urlopen('http://'+w['ip']+':10151/metrics',timeout=2) as r:lines=r.read().decode().splitlines()
+                    with opener.open('http://'+w['ip']+':10151/metrics',timeout=2) as r:lines=r.read().decode().splitlines()
                     names=['worker_node_gpu_utilization_rate','worker_node_gram_used_bytes','worker_node_gram_allocated_bytes','worker_node_cpu_utilization_rate','worker_node_memory_used_bytes']
                     row['workers'][str(ident)]={n:float(next(x.rsplit(' ',1)[1] for x in lines if x.startswith('gpustack:'+n+'{'))) for n in names}
-                except Exception as e:row['workers'][str(ident)]={'error_class':type(e).__name__}
+                except Exception as e:
+                    row['workers'][str(ident)]={'error_class':type(e).__name__};sample_errors.append({'worker':ident,'error_class':type(e).__name__});abort.set()
             with (folder/'samples.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
             stop.wait(.5)
     def native(item):
+        if abort.is_set():raise RuntimeError('Matrix halted; do not send another inference')
+        record={'image':item['id'],'source':item['source'],'request_id':str(uuid.uuid4()),'state':'SENDING','intent_at':time.time()}
+        with checkpoint_lock:native_target.append(record);checkpoint()
         body={'model':original['name'],'stream':False,'messages':[{'role':'user','content':[{'type':'image_url','image_url':{'url':item['url']}}]}]}
-        request=urllib.request.Request('http://127.0.0.1:18080/v1/chat/completions',data=json.dumps(body).encode(),headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'})
+        request=urllib.request.Request('http://127.0.0.1:18080/v1/chat/completions',data=json.dumps(body).encode(),headers={'Authorization':'Bearer '+key,'Content-Type':'application/json','X-Request-ID':record['request_id']})
         t=time.monotonic()
-        with urllib.request.urlopen(request,timeout=35) as r:value=json.load(r);assert r.status==200
-        lines=json.loads(value['choices'][0]['message']['content'])['lines'];assert isinstance(lines,list)
-        return {'image':item['id'],'source':item['source'],'seconds':time.monotonic()-t,'lines':len(lines)}
+        try:
+            with opener.open(request,timeout=35) as response:value=json.load(response);assert response.status==200
+            lines=json.loads(value['choices'][0]['message']['content'])['lines'];assert isinstance(lines,list)
+            with checkpoint_lock:
+                record.update(state='SUCCEEDED',http_status=200,seconds=time.monotonic()-t,lines=len(lines),finished_at=time.time());checkpoint()
+            return record
+        except Exception as exc:
+            abort.set()
+            with checkpoint_lock:
+                record.update(state='FAILED_STOP',error_class=type(exc).__name__,http_status=getattr(exc,'code',None),failed_at=time.time());checkpoint()
+            raise
     def guard():
+        if abort.is_set():raise RuntimeError('Sampling or inference failed; keep paused')
         status=cli('drain-status')
         if status['generation']!=summary['generation'] or not status['managed_requests_drained']:raise RuntimeError('Pause ownership/UNKNOWN changed; stop experiment')
     checkpoint()
+    summary['preflight_records']=native_target
     summary['native_preflight']=native(inputs[0]);checkpoint()
     sampling=None
     with open('/run/maas-global-maintenance.lock','a') as lock:
@@ -89,6 +112,8 @@ def main():
         try:
             # First single-GPU points, then dual-GPU points; keep conservative 2GiB claim.
             points=[('single7-'+str(n),n,[7]) for n in [1,2,4]]+[('single8-'+str(n),n,[8]) for n in [1,2,4]]+[('dual-'+str(n),n,[7,8]) for n in [2,4,8]]
+            if args.profile=='remaining':points=[('dual-'+str(n),n,[7,8]) for n in [4,8]]
+            points=[(name+'-r'+str(r+1),n,ids) for r in range(args.repeats) for name,n,ids in points]
             for name,count,ids in points:
                 guard();point={'name':name,'replicas':count,'eligible_workers':ids,'phase':'SCALING_ZERO'};summary['points'].append(point);summary['phase']='EXPERIMENT';checkpoint();sample_context.update(point=name,phase='SCALING_ZERO')
                 model=change_model(api,model,0,model['worker_selector']);wait(lambda:not instances())
@@ -102,14 +127,16 @@ def main():
                     return len(rows)==count and all(r['state']=='running' and r['worker_id'] in ids for r in rows)
                 wait(ready);point['process_start_seconds']=time.monotonic()-start;point['placement']={str(i):sum(r['worker_id']==i for r in instances()) for i in ids}
                 point['phase']='WARMUP';sample_context['phase']='WARMUP';checkpoint()
+                point['warmup_records']=[];native_target=point['warmup_records']
                 for item in inputs[:2]:native(item)
                 point['phase']='MEASURE';sample_context['phase']='MEASURE';checkpoint();start=time.monotonic()
                 # Fixed four native clients separate runtime capacity from the MaaS executor poll loop.
-                with concurrent.futures.ThreadPoolExecutor(max_workers=4) as clients:rows=list(clients.map(native,inputs))
+                point['records']=[];native_target=point['records']
+                rows=bounded_map(native,inputs,4,abort)
                 point.update(phase='COMPLETE',clients=4,requests=len(rows),successes=len(rows),elapsed_seconds=time.monotonic()-start,records=rows)
                 point.update(throughput_images_per_second=len(rows)/point['elapsed_seconds'],p50_seconds=percentile([r['seconds'] for r in rows],.5),p95_seconds=percentile([r['seconds'] for r in rows],.95),p99_seconds=percentile([r['seconds'] for r in rows],.99));checkpoint()
                 print(json.dumps({'point':name,'state':'COMPLETE','placement':point['placement'],'throughput':point['throughput_images_per_second']}),flush=True)
-            guard();summary['phase']='RESTORING';sample_context.update(point='restore',phase='RESTORING');checkpoint()
+            guard();stop.set();sampling.join(timeout=8);guard();summary['phase']='RESTORING';sample_context.update(point='restore',phase='RESTORING');checkpoint()
             model=change_model(api,model,0,model['worker_selector']);wait(lambda:not instances());guard()
             model=change_model(api,model,original['replicas'],original['worker_selector'])
             wait(lambda:len(instances())==original['replicas'] and all(r['state']=='running' for r in instances()))
@@ -118,7 +145,7 @@ def main():
             summary['probe']=cli('resume','--credential-id','pilot-ocr','--probe-image','/run/maas-probe/upright.png')
             summary['phase']='COMPLETE';summary['finished_at']=time.time();checkpoint()
         except Exception as exc:
-            summary.update(phase='INTERRUPTED_REQUIRES_INSPECTION',error_class=type(exc).__name__,finished_at=time.time());checkpoint()
+            summary.update(phase='INTERRUPTED_REQUIRES_INSPECTION',error_class=type(exc).__name__,sample_errors=sample_errors,finished_at=time.time());checkpoint()
             raise
         finally:
             stop.set()

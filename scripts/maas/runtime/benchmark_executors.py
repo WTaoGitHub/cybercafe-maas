@@ -11,6 +11,32 @@ def sql(query):return json.loads(command(['docker','exec','maas-tasks-db-1','psq
 def percentile(values,q):
     a=sorted(values);return a[min(len(a)-1,int((len(a)-1)*q))] if a else None
 
+
+def bounded_map(function,items,workers,stop=None):
+    """Keep at most workers submitted calls; drain in-flight work after first failure."""
+    if not 1<=workers<=4:raise ValueError('Client limit must be between one and four')
+    stop=stop if stop is not None else threading.Event()
+    iterator=iter(enumerate(items));results={};pending={};failure=None
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
+        def fill():
+            while len(pending)<workers and not stop.is_set():
+                try:index,item=next(iterator)
+                except StopIteration:return
+                pending[pool.submit(function,item)]=index
+        fill()
+        while pending:
+            done,_=concurrent.futures.wait(pending,return_when=concurrent.futures.FIRST_COMPLETED)
+            for future in done:
+                index=pending.pop(future)
+                try:results[index]=future.result()
+                except BaseException as exc:
+                    stop.set()
+                    if failure is None:failure=exc
+            if failure is None:fill()
+        if failure is not None:raise failure
+    if stop.is_set():raise RuntimeError('Concurrent run halted; no further dispatch')
+    return [results[i] for i in sorted(results)]
+
 def atomic(path,value):
     temp=path.with_suffix('.new');fd=os.open(temp,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
     with os.fdopen(fd,'w') as f:json.dump(value,f,indent=2);f.flush();os.fsync(f.fileno())
@@ -19,7 +45,7 @@ def atomic(path,value):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--run-id',required=True);p.add_argument('--executors',type=int,choices=[1,2,4],required=True);p.add_argument('--count',type=int,default=40);a=p.parse_args()
-    if not re.fullmatch(r'[a-z0-9-]{1,60}',a.run_id) or not 4<=a.count<=80:raise ValueError('Bounded run ID/count required')
+    if not re.fullmatch(r'[a-z0-9-]{1,60}',a.run_id) or not 4<=a.count<=1000:raise ValueError('Bounded run ID/count required')
     root=LIVE/'e3';root.mkdir(mode=0o700,exist_ok=True);folder=root/a.run_id;folder.mkdir(mode=0o700,exist_ok=False)
     pool=json.loads(command(['python3','/root/wtaobj/maas-framework/scripts/maas/runtime/executor_pool.py','status']))
     assert sum(r['service']=='executor' for r in pool['containers'])==a.executors
@@ -90,7 +116,7 @@ def main():
             samples_stop.wait(1)
     sampler_thread=threading.Thread(target=sampler);sampler_thread.start();started=time.monotonic()
     try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=a.executors) as clients:list(clients.map(one,range(a.count)))
+        bounded_map(one,range(a.count),a.executors,stop)
         elapsed=time.monotonic()-started;measured=[r for r in records if not r['warmup']]
         after=api('/v2/models/18');current=api('/v2/models/18/instances')['items']
         assert after['replicas']==4 and model_hash(after)==baseline_hash and {i['id'] for i in current}=={i['id'] for i in instances}
