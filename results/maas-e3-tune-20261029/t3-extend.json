@@ -1,0 +1,123 @@
+{
+  "case_id": "T3-EXTEND",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "state": "COMPLETE",
+  "planned_points": 3,
+  "points": [
+    {
+      "point_id": "T3-E12-R8",
+      "parameters": {
+        "replicas": 8,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "throughput_per_second": 16.863640759141763,
+      "state": "COMPLETE",
+      "supply": {
+        "sample_count": 953,
+        "ready_queue_min": 19,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.0809056309517473,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "measurement_seconds": 60.01076602935791
+    },
+    {
+      "point_id": "T3-E12-R10",
+      "parameters": {
+        "replicas": 10,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "throughput_per_second": 18.463374035504106,
+      "state": "COMPLETE",
+      "supply": {
+        "sample_count": 953,
+        "ready_queue_min": 21,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08161532389931381,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "measurement_seconds": 60.0106999874115
+    },
+    {
+      "point_id": "T3-E12-R12",
+      "parameters": {
+        "replicas": 12,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "throughput_per_second": 18.796933283461126,
+      "state": "COMPLETE",
+      "supply": {
+        "sample_count": 945,
+        "ready_queue_min": 20,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08978662500157952,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "measurement_seconds": 60.00978899002075
+    }
+  ],
+  "condition": {
+    "trigger_met": true,
+    "paired_gains_fraction": [
+      0.2312023475197671,
+      0.2182128781144972
+    ],
+    "resource_guards_passed": true,
+    "comparison": "same R; E/G/P=8 vs 6, two interleaved independent windows"
+  },
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 148,
+  "screened_candidates": [
+    {
+      "parameters": {
+        "replicas": 10,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "screening_throughput": 18.463374035504106
+    },
+    {
+      "parameters": {
+        "replicas": 12,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "screening_throughput": 18.796933283461126
+    }
+  ]
+}

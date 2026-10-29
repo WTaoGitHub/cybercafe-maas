@@ -1,0 +1,88 @@
+{
+  "case_id": "T3-LIMITS",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "state": "COMPLETE",
+  "planned_points": 4,
+  "points": [
+    {
+      "point_id": "T3-GATE-r1-E6",
+      "parameters": {
+        "replicas": 8,
+        "executors": 6,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "repeat": 1,
+      "throughput_per_second": 12.398138000068217,
+      "state": "COMPLETE"
+    },
+    {
+      "point_id": "T3-GATE-r1-E8",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "repeat": 1,
+      "throughput_per_second": 15.264616610558019,
+      "state": "COMPLETE"
+    },
+    {
+      "point_id": "T3-GATE-r2-E8",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "repeat": 2,
+      "throughput_per_second": 15.063088394997797,
+      "state": "COMPLETE"
+    },
+    {
+      "point_id": "T3-GATE-r2-E6",
+      "parameters": {
+        "replicas": 8,
+        "executors": 6,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "repeat": 2,
+      "throughput_per_second": 12.364906549265726,
+      "state": "COMPLETE"
+    }
+  ],
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 136,
+  "condition": {
+    "trigger_met": true,
+    "paired_gains_fraction": [
+      0.2312023475197671,
+      0.2182128781144972
+    ],
+    "resource_guards_passed": true,
+    "comparison": "same R; E/G/P=8 vs 6, two interleaved independent windows"
+  }
+}
