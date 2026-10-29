@@ -1,0 +1,33 @@
+{
+  "phase": "RESTORED_AFTER_ABORT",
+  "reason": "Optional allocation metric omitted when replicas are zero; no inference failure",
+  "failed_run_preserved": true,
+  "replicas": 4,
+  "placement": {
+    "7": 2,
+    "8": 2
+  },
+  "model_hash_matches_original": true,
+  "recovery": {
+    "maintenance": {
+      "paused": false,
+      "generation": 48,
+      "reason": "E3 native replica capacity matrix",
+      "active_tasks": [],
+      "backend_activity": [],
+      "sync_activity": [],
+      "managed_requests_drained": false,
+      "safe_to_poweroff": false,
+      "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+    },
+    "probes": [
+      {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "lines": 46
+      }
+    ]
+  },
+  "finished_at": 1793259403.1293252,
+  "capacity_test_resumed": false
+}

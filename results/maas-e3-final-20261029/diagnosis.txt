@@ -1,0 +1,8 @@
+run {"phase": "INTERRUPTED_REQUIRES_INSPECTION", "error_class": "RuntimeError", "sample_errors": [{"worker": 8, "error_class": "StopIteration"}], "generation": 47, "points": [{"name": "dual-4-r1", "replicas": 4, "eligible_workers": [7, 8], "phase": "PROCESS_COLD_START"}], "started_at": 1793259165.6444566, "finished_at": 1793259168.4985535}
+model {"replicas": 0, "instances": []}
+maas {"paused": true, "generation": 47, "reason": "E3 native replica capacity matrix", "active_tasks": [], "backend_activity": [], "sync_activity": [], "managed_requests_drained": true, "safe_to_poweroff": false, "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"}
+worker {"id": 7, "state": "ready"}
+metrics {"worker": 7, "http": 200, "present_counts": {"worker_node_gpu_utilization_rate": 1, "worker_node_gram_used_bytes": 1, "worker_node_gram_allocated_bytes": 0, "worker_node_cpu_utilization_rate": 1, "worker_node_memory_used_bytes": 1}, "metric_names": ["gpustack:worker_node_cpu_utilization_rate", "gpustack:worker_node_memory_used_bytes", "gpustack:worker_node_gpu_utilization_rate", "gpustack:worker_node_gram_used_bytes"]}
+worker {"id": 8, "state": "ready"}
+metrics {"worker": 8, "http": 200, "present_counts": {"worker_node_gpu_utilization_rate": 1, "worker_node_gram_used_bytes": 1, "worker_node_gram_allocated_bytes": 0, "worker_node_cpu_utilization_rate": 1, "worker_node_memory_used_bytes": 1}, "metric_names": ["gpustack:worker_node_cpu_utilization_rate", "gpustack:worker_node_memory_used_bytes", "gpustack:worker_node_gpu_utilization_rate", "gpustack:worker_node_gram_used_bytes"]}
+monitor {"generated_at_unix": 1793259237.0290124, "ok": true, "alerts": []}

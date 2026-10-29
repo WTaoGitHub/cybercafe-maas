@@ -1,0 +1,49 @@
+{
+  "at": 1793258783.1108272,
+  "maintenance": {
+    "paused": false,
+    "generation": 46,
+    "reason": "Gateway reply-direction firewall repair",
+    "active_tasks": [],
+    "backend_activity": [],
+    "sync_activity": [],
+    "managed_requests_drained": false,
+    "safe_to_poweroff": false,
+    "external_boundary": "must close direct GPUStack, Playground and worker inference access separately"
+  },
+  "model_replicas": 4,
+  "model_hash": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+  "instances": [
+    {
+      "id": 165,
+      "worker_id": 7,
+      "state": "running"
+    },
+    {
+      "id": 163,
+      "worker_id": 7,
+      "state": "running"
+    },
+    {
+      "id": 166,
+      "worker_id": 8,
+      "state": "running"
+    },
+    {
+      "id": 164,
+      "worker_id": 8,
+      "state": "running"
+    }
+  ],
+  "workers_ready": true,
+  "claim_bytes": 2147483648,
+  "boundary": {
+    "early_table": "mangle",
+    "early_hooks_first": {
+      "iptables": true,
+      "ip6tables": true
+    },
+    "ok": true
+  },
+  "monitor_ok": true
+}

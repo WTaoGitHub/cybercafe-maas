@@ -1,0 +1,56 @@
+{
+  "run_id": "native-final-20261029",
+  "profile": "remaining",
+  "repeats": 3,
+  "phase": "INTERRUPTED_REQUIRES_INSPECTION",
+  "started_at": 1793259165.6444566,
+  "original_replicas": 4,
+  "original_model_sha256": "1efc71e16409735d6ee9226291e13ba78b2d9436efa862978879881972e5dbe2",
+  "fixture_manifest_sha256": "c25a97281cc93384f550df67e6a2d13ce0d4869da15f4430010a0453a38e725f",
+  "stress_manifest_sha256": "89694fbe28e43112b3959ccffc1a8d79b556dd923ca83ba3047b0b6c48926af2",
+  "points": [
+    {
+      "name": "dual-4-r1",
+      "replicas": 4,
+      "eligible_workers": [
+        7,
+        8
+      ],
+      "phase": "PROCESS_COLD_START"
+    }
+  ],
+  "scope": "native GPUStack model18; MaaS paused; cached image/process cold start; no custom collector",
+  "preflight_records": [
+    {
+      "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+      "source": "doclaynet",
+      "request_id": "8fb05689-2b77-45a9-b05b-ff6758e4c15c",
+      "state": "SUCCEEDED",
+      "intent_at": 1793259165.645643,
+      "http_status": 200,
+      "seconds": 0.4272146378643811,
+      "lines": 46,
+      "finished_at": 1793259166.0745316
+    }
+  ],
+  "native_preflight": {
+    "image": "doclaynet_a5c8842acf7bcf594695f43548ae05fdbf5e3938a6508b9bb3e99a87b8c454ec",
+    "source": "doclaynet",
+    "request_id": "8fb05689-2b77-45a9-b05b-ff6758e4c15c",
+    "state": "SUCCEEDED",
+    "intent_at": 1793259165.645643,
+    "http_status": 200,
+    "seconds": 0.4272146378643811,
+    "lines": 46,
+    "finished_at": 1793259166.0745316
+  },
+  "generation": 47,
+  "error_class": "RuntimeError",
+  "sample_errors": [
+    {
+      "worker": 8,
+      "error_class": "StopIteration"
+    }
+  ],
+  "finished_at": 1793259168.4985535
+}
