@@ -1,0 +1,13 @@
+{
+  "state": "CHARACTERIZED",
+  "scope": "disposable database and local files, mock auth, no inference",
+  "old_known_valid_files": 3000,
+  "configured_cleanup_batch_size": 200,
+  "scanned_database_exists_queries": 3000,
+  "removed_orphans": 0,
+  "gc_seconds": 0.16858139215037227,
+  "baseline_upload_seconds": 0.008329004049301147,
+  "upload_during_gc_seconds": 0.17426569107919931,
+  "finding": "removal budget does not bound visited known files; exclusive lifecycle lock blocks concurrent artifact writes",
+  "production_causality_proven": false
+}
