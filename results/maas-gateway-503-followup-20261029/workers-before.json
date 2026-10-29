@@ -1,0 +1,38 @@
+[
+  {
+    "worker": 7,
+    "tcp_ext": {
+      "ListenOverflows": 0,
+      "ListenDrops": 0,
+      "TCPReqQFullDoCookies": 0,
+      "TCPReqQFullDrop": 0,
+      "TCPSynRetrans": 155
+    },
+    "boot_id": "ec913d05-5caf-428a-937e-90fc537c3d2b",
+    "listen": [
+      "State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess",
+      "LISTEN 0      2048         0.0.0.0:10150      0.0.0.0:*          "
+    ],
+    "worker_containers": [
+      "183750f2da8f Up 24 hours"
+    ]
+  },
+  {
+    "worker": 8,
+    "tcp_ext": {
+      "ListenOverflows": 0,
+      "ListenDrops": 0,
+      "TCPReqQFullDoCookies": 0,
+      "TCPReqQFullDrop": 0,
+      "TCPSynRetrans": 1049
+    },
+    "boot_id": "fe66c1d1-cff6-4daa-90ed-5d5e5e82fbb8",
+    "listen": [
+      "State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess",
+      "LISTEN 0      2048         0.0.0.0:10150      0.0.0.0:*          "
+    ],
+    "worker_containers": [
+      "64b2e94e8bfc Up 24 hours"
+    ]
+  }
+]

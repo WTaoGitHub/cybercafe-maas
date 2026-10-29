@@ -1,0 +1,112 @@
+{
+  "started_at": 1793256161.7542503,
+  "checks": [
+    {
+      "label": "baseline-dnat",
+      "expected": true,
+      "ok": true,
+      "error_class": null,
+      "seconds": 0.00039471290074288845
+    },
+    {
+      "label": "legacy-ipv4-normal-reply",
+      "expected": true,
+      "ok": true,
+      "error_class": null,
+      "seconds": 0.00045177084393799305
+    },
+    {
+      "label": "legacy-ipv4-overlap-dropped",
+      "expected": false,
+      "ok": false,
+      "error_class": "TimeoutError",
+      "seconds": 0.5006434260867536
+    },
+    {
+      "label": "legacy-ipv6-overlap-dropped",
+      "expected": false,
+      "ok": false,
+      "error_class": "TimeoutError",
+      "seconds": 0.5006639021448791
+    },
+    {
+      "label": "fixed-ipv4-overlap-reply",
+      "expected": true,
+      "ok": true,
+      "error_class": null,
+      "seconds": 0.0001923080999404192
+    },
+    {
+      "label": "fixed-ipv6-overlap-reply",
+      "expected": true,
+      "ok": true,
+      "error_class": null,
+      "seconds": 0.00019361916929483414
+    },
+    {
+      "label": "fixed-ipv4-normal-reply",
+      "expected": true,
+      "ok": true,
+      "error_class": null,
+      "seconds": 0.00016519101336598396
+    },
+    {
+      "label": "fixed-ipv6-normal-reply",
+      "expected": true,
+      "ok": true,
+      "error_class": null,
+      "seconds": 0.00023539899848401546
+    },
+    {
+      "label": "untrusted-host-inbound-blocked",
+      "expected": false,
+      "ok": false,
+      "error_class": "TimeoutError",
+      "seconds": 0.5006296359933913
+    },
+    {
+      "label": "untrusted-ipv6-inbound-blocked",
+      "expected": false,
+      "ok": false,
+      "error_class": "TimeoutError",
+      "seconds": 0.5006187879480422
+    },
+    {
+      "label": "untrusted-published-dnat-blocked",
+      "expected": false,
+      "ok": false,
+      "error_class": "TimeoutError",
+      "seconds": 0.5006883330643177
+    },
+    {
+      "label": "untrusted-direct-container-blocked",
+      "expected": false,
+      "ok": false,
+      "error_class": "TimeoutError",
+      "seconds": 0.5006339701358229
+    },
+    {
+      "label": "source-service-port-not-trusted",
+      "expected": false,
+      "ok": false,
+      "error_class": "TimeoutError",
+      "seconds": 0.500441329088062
+    },
+    {
+      "label": "ssh-port-unaffected",
+      "expected": true,
+      "ok": true,
+      "error_class": null,
+      "seconds": 0.00026195100508630276
+    },
+    {
+      "label": "existing-untrusted-original-flow-blocked",
+      "expected": false,
+      "ok": false
+    }
+  ],
+  "scope": "three disposable namespaces only; no host rules or VMs changed",
+  "ok": true,
+  "host_firewall_unchanged": true,
+  "namespaces_removed": true
+}

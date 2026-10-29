@@ -1,5 +1,5 @@
 import pytest
-from maas_platform.boundary_policy import rules,CHAIN,native_sources
+from maas_platform.boundary_policy import rules,CHAIN,TABLE,REPLY_MATCH,native_sources
 
 
 def test_boot_fence_is_pre_dnat_and_does_not_trust_stale_bridge():
@@ -23,3 +23,15 @@ def test_native_cidrs_only_open_controller_published_port_before_dnat():
  for bad in ['0.0.0.0/0','::/0','bad']:
   with pytest.raises(ValueError):native_sources({**cfg,'native_server_cidrs':[bad]})
  with pytest.raises(ValueError):native_sources({**cfg,'node':'XZ-31-002'})
+
+
+def test_only_tracked_reply_direction_bypasses_service_port_fence():
+ assert TABLE=='mangle'
+ cfg={'interface':'eth1','bridge_subnets':['172.17.0.0/16']}
+ for family in (4,6):
+  rows=rules(cfg,family)
+  reply=[r for r in rows if 'ESTABLISHED' in r]
+  assert reply==[f'-A {CHAIN} {REPLY_MATCH} -j RETURN']
+  assert '--ctdir REPLY' in reply[0]
+  assert rows.index(reply[0]) < next(i for i,r in enumerate(rows) if '-j DROP' in r)
+  assert not any('--ctstate RELATED' in r or '--syn' in r for r in rows)

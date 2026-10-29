@@ -1,0 +1,49 @@
+{
+  "started_at": 1793255434.464291,
+  "before": [
+    "[0:0] -A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP",
+    "[0:0] -A MAAS-P4-EARLY -d 172.17.0.0/16 -p tcp -m multiport --dports 80,8820,11435,40000:40063 -j DROP",
+    "[2:120] -A MAAS-E5-CONFIG -j DROP",
+    "[0:0] -A MAAS-P3-DOCKER -p tcp -j REJECT --reject-with tcp-reset",
+    "[0:0] -A MAAS-P3-HOST -p tcp -j REJECT --reject-with tcp-reset"
+  ],
+  "checks": [
+    {
+      "worker": 7,
+      "source_port": 39017,
+      "protected_overlap": false,
+      "outcome": "CONNECTED",
+      "seconds": 0.00015457510016858578
+    },
+    {
+      "worker": 7,
+      "source_port": 41555,
+      "protected_overlap": true,
+      "outcome": "CONNECTED",
+      "seconds": 0.0001324908807873726
+    },
+    {
+      "worker": 8,
+      "source_port": 39017,
+      "protected_overlap": false,
+      "outcome": "OSError",
+      "errno": 98,
+      "seconds": 0.0001566619612276554
+    },
+    {
+      "worker": 8,
+      "source_port": 41555,
+      "protected_overlap": true,
+      "outcome": "OSError",
+      "errno": 98,
+      "seconds": 0.0001732069067656994
+    }
+  ],
+  "after": [
+    "[0:0] -A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP",
+    "[0:0] -A MAAS-P4-EARLY -d 172.17.0.0/16 -p tcp -m multiport --dports 80,8820,11435,40000:40063 -j DROP",
+    "[2:120] -A MAAS-E5-CONFIG -j DROP",
+    "[0:0] -A MAAS-P3-DOCKER -p tcp -j REJECT --reject-with tcp-reset",
+    "[0:0] -A MAAS-P3-HOST -p tcp -j REJECT --reject-with tcp-reset"
+  ]
+}

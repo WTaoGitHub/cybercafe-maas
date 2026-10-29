@@ -1,0 +1,34 @@
+{
+  "worker": 8,
+  "before": [
+    "[0:0] -A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP",
+    "[0:0] -A MAAS-P4-EARLY -d 172.17.0.0/16 -p tcp -m multiport --dports 80,8820,11435,40000:40063 -j DROP",
+    "[2:120] -A MAAS-E5-CONFIG -j DROP",
+    "[0:0] -A MAAS-P3-DOCKER -p tcp -j REJECT --reject-with tcp-reset",
+    "[0:0] -A MAAS-P3-HOST -p tcp -j REJECT --reject-with tcp-reset"
+  ],
+  "checks": [
+    {
+      "source_port": 39019,
+      "protected_overlap": false,
+      "outcome": "CONNECTED",
+      "seconds": 0.00014806492254137993
+    },
+    {
+      "source_port": 41557,
+      "protected_overlap": true,
+      "outcome": "TimeoutError",
+      "errno": null,
+      "stage": "connect",
+      "seconds": 1.50157257495448
+    }
+  ],
+  "note": "Fresh source ports avoid prior TIME_WAIT; bind failures are not connection evidence.",
+  "after": [
+    "[3:180] -A MAAS-P4-EARLY -p tcp -m addrtype --dst-type LOCAL -m multiport --dports 8820,10150:10151,10161,11435,18080,18830:18835,40000:40063,41000:41999 -j DROP",
+    "[0:0] -A MAAS-P4-EARLY -d 172.17.0.0/16 -p tcp -m multiport --dports 80,8820,11435,40000:40063 -j DROP",
+    "[2:120] -A MAAS-E5-CONFIG -j DROP",
+    "[0:0] -A MAAS-P3-DOCKER -p tcp -j REJECT --reject-with tcp-reset",
+    "[0:0] -A MAAS-P3-HOST -p tcp -j REJECT --reject-with tcp-reset"
+  ]
+}

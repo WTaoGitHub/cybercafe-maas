@@ -6,7 +6,7 @@ loopback proxies/tunnels remain trusted operator paths and must be audited separ
 import argparse,ipaddress,json,os,socket,subprocess,time,sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[3]))
-from maas_platform.boundary_policy import native_sources
+from maas_platform.boundary_policy import native_sources,REPLY_MATCH
 ROOT=Path('/root/wtaobj/maas-boundary');STATE=ROOT/'state.json'
 HOST='MAAS-P3-HOST';DOCKER='MAAS-P3-DOCKER'
 PORTS='8820,10150:10151,10161,11435,18080,18830,40000:40063,41000:41999'
@@ -57,8 +57,8 @@ def inventory():
 
 
 def chain_rules(inv,family):
-    """No blanket ESTABLISHED accept: existing untrusted inference flows are fenced too."""
-    lines=[f'-A {HOST} -i lo -j RETURN']
+    """Trust reply-direction flows only; untrusted original-direction traffic stays fenced."""
+    lines=[f'-A {HOST} -i lo -j RETURN',f'-A {HOST} {REPLY_MATCH} -j RETURN']
     if family==4:
         for cidr in native_sources(inv):
             lines.append(f'-A {HOST} -i {inv["interface"]} -s {cidr} -d 10.11.31.1/32 -p tcp --dport 18080 -j RETURN')
@@ -68,6 +68,7 @@ def chain_rules(inv,family):
             lines.append(f'-A {HOST} -i docker0 -s {address}/32 -j RETURN')
     lines.append(f'-A {HOST} -p tcp -j REJECT --reject-with tcp-reset')
     if family==4:
+        lines.append(f'-A {DOCKER} {REPLY_MATCH} -j RETURN')
         for cidr in native_sources(inv):
             lines.append(f'-A {DOCKER} -i {inv["interface"]} -s {cidr} -p tcp -m conntrack --ctdir ORIGINAL --ctorigdst 10.11.31.1 --ctorigdstport 18080 -j RETURN')
         for address in NODES.values():lines.append(f'-A {DOCKER} -i {inv["interface"]} -s {address}/32 -j RETURN')

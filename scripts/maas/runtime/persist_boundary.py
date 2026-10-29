@@ -1,27 +1,32 @@
-"""Own raw chain protects pre-DNAT startup, while P3 maintains runtime fences."""
+"""Own post-conntrack/pre-DNAT chain protects startup and outbound reply traffic."""
 import argparse,fcntl,ipaddress,json,os,socket,subprocess,sys
 from pathlib import Path
 ROOT=Path('/root/wtaobj/maas-framework');sys.path.insert(0,str(ROOT))
-from maas_platform.boundary_policy import CHAIN,rules
+from maas_platform.boundary_policy import CHAIN,TABLE,rules
 import boundary
 CFG=Path('/root/wtaobj/maas-boundary/persistent.json')
 
 
 def run(*args,check=True,input=None):return subprocess.run(args,input=input,text=True,capture_output=True,check=check,timeout=25)
 def apply_raw(cfg,trust):
+    # Keep the callable name for existing ingress tools. Conntrack is unavailable
+    # at the raw hook; mangle PREROUTING runs after it and before destination NAT.
     for family,binary in ((4,'iptables'),(6,'ip6tables')):
-        if run(binary,'-w','3','-t','raw','-S',CHAIN,check=False).returncode:run(binary,'-w','3','-t','raw','-N',CHAIN)
+        if run(binary,'-w','3','-t',TABLE,'-S',CHAIN,check=False).returncode:run(binary,'-w','3','-t',TABLE,'-N',CHAIN)
         # Atomic table transaction: never flush global rules or expose an empty chain.
-        text='*raw\n-F '+CHAIN+'\n'+'\n'.join(rules(cfg,family,trust))+'\nCOMMIT\n'
+        text='*'+TABLE+'\n-F '+CHAIN+'\n'+'\n'.join(rules(cfg,family,trust))+'\nCOMMIT\n'
         run(binary+'-restore','-w','3','--noflush',input=text)
-        listing=run(binary,'-t','raw','-S','PREROUTING').stdout
+        listing=run(binary,'-t',TABLE,'-S','PREROUTING').stdout
         entries=[x for x in listing.splitlines() if x.startswith('-A ')]
         hook='-A PREROUTING -j '+CHAIN
-        if not entries or entries[0]!=hook:run(binary,'-w','3','-t','raw','-I','PREROUTING','1','-j',CHAIN)
-        entries=[x for x in run(binary,'-t','raw','-S','PREROUTING').stdout.splitlines() if x.startswith('-A ')]
+        if not entries or entries[0]!=hook:run(binary,'-w','3','-t',TABLE,'-I','PREROUTING','1','-j',CHAIN)
+        entries=[x for x in run(binary,'-t',TABLE,'-S','PREROUTING').stdout.splitlines() if x.startswith('-A ')]
         for index in range(len(entries),1,-1):
-            if entries[index-1]==hook:run(binary,'-w','3','-t','raw','-D','PREROUTING',str(index))
-        assert run(binary,'-w','3','-t','raw','-C','PREROUTING','-j',CHAIN).returncode==0
+            if entries[index-1]==hook:run(binary,'-w','3','-t',TABLE,'-D','PREROUTING',str(index))
+        assert run(binary,'-w','3','-t',TABLE,'-C','PREROUTING','-j',CHAIN).returncode==0
+        # Install the effective replacement before removing only our legacy hook.
+        while run(binary,'-w','3','-t','raw','-C','PREROUTING','-j',CHAIN,check=False).returncode==0:
+            run(binary,'-w','3','-t','raw','-D','PREROUTING','-j',CHAIN)
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['install','boot','refresh','status']);a=p.parse_args()
@@ -42,9 +47,10 @@ def main():
         if a.action=='status':
             verdict={}
             for binary in ('iptables','ip6tables'):
-                entries=[x for x in run(binary,'-t','raw','-S','PREROUTING').stdout.splitlines() if x.startswith('-A ')]
-                verdict[binary]=bool(entries and entries[0]=='-A PREROUTING -j '+CHAIN)
-            print(json.dumps({'raw_hooks_first':verdict,'ok':all(verdict.values())}));return
+                entries=[x for x in run(binary,'-t',TABLE,'-S','PREROUTING').stdout.splitlines() if x.startswith('-A ')]
+                legacy=run(binary,'-t','raw','-C','PREROUTING','-j',CHAIN,check=False).returncode==0
+                verdict[binary]=bool(entries and entries[0]=='-A PREROUTING -j '+CHAIN and not legacy)
+            print(json.dumps({'early_table':TABLE,'early_hooks_first':verdict,'ok':all(verdict.values())}));return
         trust=[]
         if a.action in ('refresh','install'):
             inv=boundary.inventory()
@@ -63,7 +69,7 @@ def main():
                 if not status['rules_ok'] or not status['inventory_matches']:raise RuntimeError('Runtime policy not verified')
                 state=json.loads(boundary.STATE.read_text());boundary.run(['systemctl','stop',state['timer']+'.timer'],False);state['confirmed']=True;boundary.write(state)
         apply_raw(cfg,trust)
-        print(json.dumps({'action':a.action,'node':cfg['node'],'pre_dnat_fence':True,'trusted_bridge_count':len(trust)}))
+        print(json.dumps({'action':a.action,'node':cfg['node'],'pre_dnat_fence':True,'early_table':TABLE,'trusted_bridge_count':len(trust)}))
 
 
 if __name__=='__main__':main()
