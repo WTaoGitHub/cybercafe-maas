@@ -1,5 +1,7 @@
 # MaaS 受控 OCR 部署
 
+> **2026-10-29服务接入约定**：当前按单业务下游使用，最终用户/用户Key/用户限流和收费由下游负责；MaaS保留服务凭据映射、项目隔离和全局/项目容量保护。现有代码已支持，本次只完善文档，未修改容器、凭据或额度。当前4执行器及并发4/4，队列1000/100；模板默认值不等同实际部署。[接入策略](../../docs/framework/SERVICE-ACCESS-POLICY.md) · [当前API](../../docs/api/README.md)。
+
 > E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](../../docs/framework/E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
 
 
@@ -12,6 +14,8 @@
 Python **3.11**、PostgreSQL 16。Mac现有Python3.9不能直接运行本包，请使用Python3.11环境或Docker。运行依赖见根目录requirements-maas.txt；测试需要pytest（目前也固定在该文件）。
 
 ## 身份与凭据
+
+本节的凭据交付对象是下游服务；下游新增最终用户时不要求新增MaaS绑定。多份Key可共用一个project并共享额度；保留已有测试/维护探针绑定。合并或重命名既有project会影响历史任务、文件及幂等范围，不属于本次单项目约定。当前仍复用GPUStack推理Key，独立MaaS服务凭据解耦保持后续增强。
 
 复用GPUStack inference key，不提供新密码/用户注册。管理员将一个已有、限定模型的非管理员key以600权限保存；按bindings.example.json登记project映射及该服务允许的能力。**mock.echo是本地受控验证能力，其授权由登记文件明确授予，不代表GPUStack实际部署了mock模型。**
 

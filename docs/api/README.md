@@ -1,8 +1,8 @@
 # MaaS 对外 API 文档（当前版本）
 
-> 当前基线：API consumer-ocr-r1、执行器/Observer e6-r1、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。
+> 当前基线：API consumer-ocr-r1、执行器/Observer e3-r1、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。
 
-文档日期：2026-10-27；当日只读核对001的容器版本、监听和运行限额。API镜像consumer-ocr-r1已上线，执行器/observer保持e6-r1；GPUStack v2.2.3。消费者兼容入口及最新验收见[OCR对接契约](CONSUMER-OCR.md)与[发布报告](../../results/maas-consumer-ocr/REPORT.md)。
+文档更新：2026-10-29；当日只读核对001的应用版本、四执行器及运行额度，接口/监听沿用此前消费者兼容发布。本次未部署或新增接口。消费者兼容契约见[OCR对接](CONSUMER-OCR.md)，容量验证见[E3试点报告](../../results/maas-e3-completion-20261029/REPORT.md)。
 
 **当前提供：消费者兼容同步OCR、原Chat同步OCR、异步OCR任务、输入/结果文件上传下载、任务查询/取消、模型能力查询。** 不包含E1候选接口；无文生图、音频、视频、批次或ZIP接口。
 
@@ -31,6 +31,10 @@ Authorization: Bearer <registered_inference_api_key>
 key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack侧有效且有相应模型权限。仅有任意GPUStack key不够，不接受管理key替代客户key。
 
 资源按project隔离：同project不同key可访问该project的已知task/artifact ID；跨project通常返回404。客户端 `X-Project`、`X-User-ID`等头不用于选择身份。模型提交/推理/能力查询另校验模型权限。
+
+当前业务面向一个下游服务：最终用户、用户Key、用户限流、套餐和收费由下游负责；下游使用服务持有的已登记推理Key接入MaaS，不为每个最终用户复制一份MaaS绑定。`project`是MaaS的资源归属，不是GPUStack cluster或下游用户账号。多份服务Key可以绑定同一项目，额度共享，不按Key叠加；当前并未实现独立MaaS Key与GPUStack内部Key解耦。
+
+项目及额度由管理员交付时告知，正常请求不需提交项目名。当前没有“我的项目/额度”查询接口。技术测试/维护探针可保留独立绑定，不自动合并既有project或迁移历史任务。[职责、额度与交付约定](../framework/SERVICE-ACCESS-POLICY.md)。
 
 没有自助注册、客户key创建、客户额度查询或管理员HTTP业务接口。
 
@@ -304,7 +308,7 @@ confidence/polygon是兼容同步门面的转换字段，不会改变原Chat及�
 
 ## 9. 限制、保留与失败语义
 
-下表限额已与2026-10-27的001 API运行配置核对；单次模型预算取当前登记目录。部署配置可以调整，不构成吞吐/SLA承诺。
+下表限额已与2026-10-29的001 API/执行器/observer配置核对；单次模型预算取当前登记目录。部署配置可以调整，不构成吞吐/SLA承诺；模板和代码默认值可能与现部署不同。
 
 | 项目 | 当前值/行为 |
 |---|---|
@@ -312,11 +316,13 @@ confidence/polygon是兼容同步门面的转换字段，不会改变原Chat及�
 | 同步JSON | /ocr、/v1/ocr和Chat默认20MiB（含base64开销）；其他非上传POST默认64KiB |
 | Nginx请求体 | 20MiB；各层更小的有效限制优先 |
 | 上游输出/保存结果 | 默认20MiB |
-| 并发 | 默认全局2、每project1，受控同步/异步共享；当前单异步执行器 |
-| 等待队列 | 默认全局1000、每project100 |
-| 存储 | 默认全局10GiB、每project2GiB未删除artifact元数据字节 |
+| 并发 | 当前全局4、每project4，同步/异步共享；当前4个单任务执行器。代码默认仍为全局2/项目1，不随执行器数自动调整 |
+| 等待队列 | 当前全局1000、每project100；统计QUEUED/RETRY_WAIT，满额新任务429/QUEUE_FULL |
+| 存储 | 当前全局10GiB、每project2GiB未删除artifact元数据字节 |
 | 输入TTL | 默认上传起24小时；活动任务引用期间清理保护 |
 | 结果TTL | 默认结果创建起24小时，过期下载410 |
+
+单个项目的有效上限取全局/项目两者较小值，当前为最多4个执行槽、100个等待任务和2GiB已登记artifact。其他项目也共享全局额度，项目上限不是保底资源。每项目额度当前是统一配置，尚无按项目单独定制的政策表。执行槽统计异步RUNNING/CANCEL_REQUESTED与同步DISPATCHING；排队时间计入任务总deadline。异步202是持久受理，不代表已开始或已结束执行。
 
 活动任务可继续读取已过上传TTL但被引用保护的输入；客户下载接口仍按TTL判断，不能据此认为输入永久可下载。任务记录和结果TTL分开：任务SUCCEEDED不保证24小时后结果仍存在。没有公开删除artifact接口，未引用上传等待TTL清理。
 

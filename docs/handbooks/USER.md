@@ -1,5 +1,7 @@
 # 普通用户手册
 
+> **2026-10-29读者说明**：本手册中的调用方指持有MaaS接入凭据的下游服务/集成开发者；最终用户使用下游自身的账号、Key和业务入口。MaaS只校验已登记服务凭据及模型权限，并按项目共享容量保护。项目及额度由管理员交付，当前没有公开身份/额度查询接口；参见[接入约定](../framework/SERVICE-ACCESS-POLICY.md)及[最新API](../api/README.md)。
+
 > E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](../framework/E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
 
 

@@ -1,5 +1,7 @@
 # 管理员用户手册
 
+> **2026-10-29角色约定**：当前业务开通对象为下游服务，最终用户/用户Key/用户限流和收费由下游负责。MaaS按服务凭据映射到项目，保留共享容量与存储保护；不要求为下游每个最终用户建Key/project。当前实际4执行器、并发4/4，详细交付口径见[接入与容量约定](../framework/SERVICE-ACCESS-POLICY.md)，接口及限额以[当前API](../api/README.md)为准。本次未部署或更改既有绑定。
+
 > E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](../framework/E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
 
 
@@ -28,7 +30,7 @@ Playground可做人工诊断：进入Chat、选对应原生OCR路由、上传一
 
 **Playground不经过MaaS任务系统**：没有MaaS任务ID、输入/结果TTL、统一队列、取消或MaaS成功计量保证。客户受控同步入口只支持stream=false。不要用Playground可用来代替整个异步链路可用的验收；维护前须停止管理侧旁路推理。
 
-## 3. 为新用户开通OCR
+## 3. 为下游服务开通OCR
 
 1. 确认用户需要普通文字提取；当前不提供PDF直接处理、视频、图像生成或用户批处理门户。
 2. 在GPUStack准备非管理员推理身份与API key，限制到实际批准的OCR上游路由，并设置到期时间；确认GPUStack原生模型访问检查通过。
@@ -57,7 +59,7 @@ Playground可做人工诊断：进入Chat、选对应原生OCR路由、上传一
 
 一个key不能同时登记到多个project；credential ID和key指纹都必须唯一，否则整个绑定校验会拒绝。请求的 `X-Project`/`X-User-ID`不能改变身份；仅把project写进请求也不会创建项目。
 
-## 4. 用户交付清单
+## 4. 下游接入交付清单
 
 交付：
 
