@@ -101,7 +101,8 @@ class TaskBackend:
         if response.status_code!=200 or response.json().get('revision')!=revision:
             raise RuntimeError('Capability/revision preflight failed')
         for fixture in self.fixtures:
-            ident=fixture['input'].get('artifact_id')
+            payload=fixture['input']
+            ident=payload.get('artifact_id') or (payload.get('image') or {}).get('artifact_id')
             if ident:
                 response=self.client.get('/maas/v1/artifacts/'+ident)
                 if response.status_code!=200 or hashlib.sha256(response.content).hexdigest()!=fixture.get('sha256'):
@@ -135,5 +136,11 @@ class TaskBackend:
             response=self.client.get('/maas/v1/artifacts/'+artifact)
             if response.status_code!=200 or not isinstance(response.json(),dict):
                 raise RuntimeError('Result download/integrity verification failed')
+            result=response.json()
+            if (result.get('model_revision')!=self.observer.scope[3] or result.get('attempt')!=1
+                    or result.get('usage')!={'unit':'task','quantity':1} or not isinstance(result.get('outputs'),dict)):
+                raise RuntimeError('Result envelope/revision/usage mismatch')
+            if self.observer.scope[2].startswith('ocr.') and not isinstance(result['outputs'].get('lines'),list):
+                raise RuntimeError('OCR result schema mismatch')
         self.last_download_seconds=time.monotonic()-started
         return {'downloaded_results':len(rows),'download_seconds':self.last_download_seconds}

@@ -98,8 +98,10 @@ def independent_arrivals(invoke,rate,seconds,clients,max_lateness=.05,max_calls=
             for f in pending:
                 try:f.result()
                 except Exception as exc:error=error or type(exc).__name__
-    return {'state':'INTERRUPTED_REQUIRES_INSPECTION' if error else 'INCONCLUSIVE_GENERATOR' if unsent else 'COMPLETE',
+    late=sum(r['lateness_seconds']>max_lateness for r in records)
+    return {'state':'INTERRUPTED_REQUIRES_INSPECTION' if error else 'INCONCLUSIVE_GENERATOR' if unsent or late else 'COMPLETE',
         'error_class':error,'mode':'independent_arrivals','target_rate':rate,'target_arrivals':target,
         'actual_completed_calls':len(records),'unsent':unsent,'not_scheduled_after_stop':target-len(records)-len(unsent),
+        'late_sent_calls':late,
         'max_observed_lateness_seconds':max((r['lateness_seconds'] for r in records),default=0),
         'measurement_seconds':seconds,'records':records}

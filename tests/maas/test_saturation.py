@@ -141,6 +141,34 @@ def test_http_idempotent_reuse_is_not_a_new_acceptance():
         with pytest.raises(RuntimeError):TaskBackend(client,Observer(),[{'input':{'text':'x'}}]).submit(0)
 
 
+def test_ocr_nested_artifact_is_checked_before_measurement():
+    import hashlib
+    class Observer:
+        scope=('a','e3-test12345:','ocr.default','1')
+        def fresh(self):pass
+    seen=[]
+    def upstream(request):
+        seen.append(request.url.path)
+        return httpx.Response(200,content=b'image-bytes') if request.url.path.endswith('/art_example') else httpx.Response(200,json={'revision':'1'})
+    fixture={'input':{'image':{'artifact_id':'art_example'}},'sha256':hashlib.sha256(b'image-bytes').hexdigest()}
+    with httpx.Client(base_url='http://test',transport=httpx.MockTransport(upstream)) as client:
+        backend=TaskBackend(client,Observer(),[fixture]);backend.prepare()
+        assert seen==['/maas/v1/models/ocr.default/capabilities','/maas/v1/artifacts/art_example']
+        fixture['sha256']='bad'
+        with pytest.raises(RuntimeError,match='checksum'):backend.prepare()
+
+
+def test_result_download_rejects_wrong_revision_even_when_http_succeeded():
+    class Observer:scope=('a','e3-test12345:','ocr.default','1')
+    result={'outputs':{'lines':[]},'model_revision':'1','attempt':1,'usage':{'unit':'task','quantity':1}}
+    with httpx.Client(base_url='http://test',transport=httpx.MockTransport(lambda _:httpx.Response(200,json=result))) as client:
+        backend=TaskBackend(client,Observer(),[{'input':{'text':'x'}}])
+        rows=[{'result_artifact_id':'art_example'}]
+        assert backend.verify_results(rows)['downloaded_results']==1
+        result['model_revision']='changed'
+        with pytest.raises(RuntimeError,match='mismatch'):backend.verify_results(rows)
+
+
 @pytest.mark.parametrize('kw',[{'seconds':float('nan')},{'sample_seconds':.2},{'min_successes':20,'max_submissions':10}])
 def test_policy_rejects_unbounded_or_unmeasurable_parameters(kw):
     with pytest.raises(ValueError):RunPolicy(**kw)
