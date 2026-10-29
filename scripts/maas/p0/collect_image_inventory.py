@@ -1,11 +1,12 @@
 """Local trusted operator inventory. No key contents are read or forwarded."""
+import os
 import argparse,json,re,shlex,subprocess,time
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('--image',required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
 if not re.fullmatch(r'[A-Za-z0-9_./:@-]+',a.image):raise SystemExit('Invalid image reference')
 root=Path(__file__).resolve().parents[3]
 commands={'XZ-31-001':['ssh','-S',str(root/'service-validation/ssh-001.sock'),'-o','ProxyCommand=false','root@10.11.31.1'],
-          'XZ-31-002':['ssh','-p','16721','-i',str(Path.home()/'.ssh/id_ed25519'),'-o','BatchMode=yes','root@111.4.255.126']}
+          'XZ-31-002':['ssh','-F',os.environ.get('MAAS_SSH_CONFIG',str(Path(__file__).resolve().parents[2] / '.maas/ssh/config')),'-o','BatchMode=yes',os.environ.get('MAAS_LEGACY_WORKER_SSH_ALIAS','maas-legacy-worker')]}
 result={}
 for name,command in commands.items():
  ident=subprocess.check_output(command+[shlex.join(['docker','image','inspect','--format','{{.Id}}',a.image])],text=True).strip()

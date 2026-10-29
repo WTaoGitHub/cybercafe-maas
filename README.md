@@ -15,7 +15,7 @@
 ## 本地访问
 
 ```sh
-ssh -N -L 18080:127.0.0.1:18080 -p 2023 -i ~/.ssh/id_ed25519 root@111.4.255.126
+ssh -N -L 18080:127.0.0.1:18080 -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 ```
 
 然后访问 http://127.0.0.1:18080 。用户名 admin；初始密码在 001 的
@@ -154,3 +154,5 @@ CPU 原服务未调优，CPU/GPU 两环境依赖和线程设置不完全相同�
 入口重试、OCR/generic用量、多组织权限、版本固定预检和协议参数已验收，累计42项测试通过。详情见 [P0报告](results/maas-p0/REPORT.md)。仍未上线真实OCR异步服务，下一步收尾P1后进入P2。
 
 当前消费者接入协议：[对外API文档](docs/api/README.md)（仅记录已实现接口）。
+
+运维连接使用本机私有配置，参见[私有连接信息管理](docs/handbooks/PRIVATE-CONNECTIONS.md)。仓库示例不包含真实VPC入口。

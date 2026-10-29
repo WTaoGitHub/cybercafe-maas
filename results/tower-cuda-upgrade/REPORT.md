@@ -1,6 +1,6 @@
 # tower驱动与CUDA升级（不重启）
 
-用户授权仅在tower-mNST8iPdv（111.4.255.126:6025）安装NVIDIA 580.95.05和CUDA Toolkit 13.0，后续激活由管理员统一安排。XZ-31-001/002未参与。
+用户授权仅在tower-mNST8iPdv（192.0.2.10:SSH_PORT_REDACTED）安装NVIDIA 580.95.05和CUDA Toolkit 13.0，后续激活由管理员统一安排。XZ-31-001/002未参与。
 
 ## 驱动阶段
 

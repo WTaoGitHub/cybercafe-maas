@@ -1,8 +1,8 @@
 # 母版网络隔离交付准备
 
-> **最新状态：TEMPLATE_INSTALLED，待管理员新快照/独立克隆验证。** 用户随后提供6029，实际母版tower-1lpDmdmo6已完成安装；下文“等待6025”的准备记录保留为历史。最终包为-r2，不能使用最初绑定enp3s0的准备包冒充实际安装版本。
+> **最新状态：TEMPLATE_INSTALLED，待管理员新快照/独立克隆验证。** 用户随后提供SSH_PORT_REDACTED，实际母版tower-1lpDmdmo6已完成安装；下文“等待SSH_PORT_REDACTED”的准备记录保留为历史。最终包为-r2，不能使用最初绑定enp3s0的准备包冒充实际安装版本。
 
-2026-10-28用户授权将网络隔离规则写入tower母版。**当前状态：PREPARED_NOT_DEPLOYED。** MCP及本地OpenSSH访问111.4.255.126:6025均超时；用户回复“等待连接恢复”。未取得当前母版身份、配置或依赖检查结果，因此未上传、安装或修改母版，不把本地打包当作部署成功。
+2026-10-28用户授权将网络隔离规则写入tower母版。**当前状态：PREPARED_NOT_DEPLOYED。** MCP及本地OpenSSH访问192.0.2.10:SSH_PORT_REDACTED均超时；用户回复“等待连接恢复”。未取得当前母版身份、配置或依赖检查结果，因此未上传、安装或修改母版，不把本地打包当作部署成功。
 
 公开交付包已在Mac准备：`dist/e5/clone-network-v1-20261028.tar.gz`；SHA256及逐文件清单见[package.json](package.json)。归档含通用独立防火墙脚本、root600策略（controllers=[10.11.31.1]、当前示例接口enp3s0/桥172.17.0.0/16）、boundary unit和bootstrap dropin；不含节点hostname、维护身份、SSH私钥或注册码。配置服务器/原生服务地址保留现有母版静态值，本包不覆盖bootstrap.json。
 
@@ -18,9 +18,9 @@
 
 实际母版部署及管理员快照仍待完成；E5.F1迁移优化继续暂缓，地址先静态预置。
 
-## 6029实际部署完成
+## SSH_PORT_REDACTED实际部署完成
 
-新端口ED25519公钥与此前可信6025记录一致后加入本地known_hosts；主机身份/无容器/无实例身份及现有静态地址核对通过，变更前备份已保存Mac私有目录。四文件清单/权限及包摘要见installed-package.json，安装结果见installation.json。源码允许受限接口前缀，策略采用en+，兼容母版enp5s0与已验克隆enp3s0；controller仍精确为10.11.31.1，不放行整个网段。
+新端口ED25519公钥与此前可信SSH_PORT_REDACTED记录一致后加入本地known_hosts；主机身份/无容器/无实例身份及现有静态地址核对通过，变更前备份已保存Mac私有目录。四文件清单/权限及包摘要见installed-package.json，安装结果见installation.json。源码允许受限接口前缀，策略采用en+，兼容母版enp5s0与已验克隆enp3s0；controller仍精确为10.11.31.1，不放行整个网段。
 
 systemd-analyze verify返回0；daemon-reload、enable后服务enabled但inactive，未在母版应用宿主防火墙，也未启动worker。隔离network namespace内实际加载IPv4/IPv6规则并重复执行，两INPUT协议hook无重复、DOCKER-USER hook存在；namespace退出后宿主规则结构保持。比较忽略iptables-save时间注释和自然变化的包/字节计数。16项规则测试及完整bootstrap91项通过（1项已有Starlette弃用警告）。
 

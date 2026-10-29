@@ -1,6 +1,6 @@
 # 新快照无OCR缓存克隆首启验收 · 2026-10-27
 
-结论：端口16487对应的新独立克隆已完成“boot读取配置 → 独立原生注册 → 自动准备registry信任/只读认证 → 原生调度 → 首次拉取OCR镜像 → OCR/MaaS服务”的完整链路。没有手动补节点配置、传镜像或运行bootstrap apply/pull/load，模型18及路由17也未修改。实际VM/快照由管理员操作，我们未重启VM。
+结论：端口SSH_PORT_REDACTED对应的新独立克隆已完成“boot读取配置 → 独立原生注册 → 自动准备registry信任/只读认证 → 原生调度 → 首次拉取OCR镜像 → OCR/MaaS服务”的完整链路。没有手动补节点配置、传镜像或运行bootstrap apply/pull/load，模型18及路由17也未修改。实际VM/快照由管理员操作，我们未重启VM。
 
 ## 实际观测
 
@@ -25,7 +25,7 @@ APPLIED中的native_state=not_ready是注册刚完成时的快照，不是最终
 
 当前GPU RTX4080SUPER、580.95.05，UUID为GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a，与旧worker6观测值一致，新VM boot和worker身份不同。这提供一例“同GPU UUID跨独立VM再次出现”的实测，不证明任意平台/重绑定都稳定，也不证明PCI直通、vGPU机制或UUID并发排他。原生身份继续独立，不把GPU UUID当认证凭据或worker主键。
 
-SSH新端口初次未在known_hosts登记；扫描的ED25519公钥与已信任母版6025一致后才加入新端口别名，未关闭host-key验证。共享SSH主机密钥是既有快照环境的事实，不代表完成了系统身份泛化。
+SSH新端口初次未在known_hosts登记；扫描的ED25519公钥与已信任母版SSH_PORT_REDACTED一致后才加入新端口别名，未关闭host-key验证。共享SSH主机密钥是既有快照环境的事实，不代表完成了系统身份泛化。
 
 ## 证据与边界
 

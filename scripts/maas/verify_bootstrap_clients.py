@@ -1,18 +1,18 @@
 """LAN read tests from existing nodes, with secrets kept only in SSH/stdin memory.
 Does not install worker code, write node credentials or register a worker.
 """
-import json,subprocess
+import json,os,subprocess
 from pathlib import Path
-BASE=['ssh','-i','/Users/4paradigm/.ssh/id_ed25519','-o','BatchMode=yes','-o','ConnectTimeout=8']
+BASE=['ssh','-F',os.environ.get('MAAS_SSH_CONFIG',str(Path(__file__).resolve().parents[2]/'.maas/ssh/config')),'-o','BatchMode=yes','-o','ConnectTimeout=8']
 
-def remote(port,code):
-    p=subprocess.run(BASE+['-p',str(port),'root@111.4.255.126','python3 -'],input=code,capture_output=True,text=True,timeout=30)
-    if p.returncode:raise RuntimeError('Remote verification failed on port '+str(port))
+def remote(alias,code):
+    p=subprocess.run(BASE+[alias,'python3 -'],input=code,capture_output=True,text=True,timeout=30)
+    if p.returncode:raise RuntimeError('Remote verification failed for configured alias '+alias)
     return json.loads(p.stdout)
 
 def main():
     # Never print this result, put it on disk or use it as shell text/arguments.
-    bundle=remote(2023,"from pathlib import Path\nimport json\np=Path('/root/wtaobj/maas-bootstrap/operator')\nprint(json.dumps({'cert':(p/'server.crt').read_text(),'code':(p/'shared-code').read_text().strip()}))\n")
+    bundle=remote('maas-controller',"from pathlib import Path\nimport json\np=Path('/root/wtaobj/maas-bootstrap/operator')\nprint(json.dumps({'cert':(p/'server.crt').read_text(),'code':(p/'shared-code').read_text().strip()}))\n")
     template='''import json,ssl,urllib.request,urllib.error,socket
 bundle=PAYLOAD
 ctx=ssl.create_default_context(cadata=bundle['cert'])
@@ -35,8 +35,8 @@ except OSError:r['native_server_tcp_reachable']=False
 print(json.dumps(r))
 '''
     result={}
-    for host,port in [('XZ-31-002',16721),('tower-mNST8iPdv',6025)]:
-        result[host]=remote(port,template.replace('PAYLOAD',repr(bundle)))
+    for host,alias in [('XZ-31-002','maas-legacy-worker'),('tower-mNST8iPdv','maas-template-legacy')]:
+        result[host]=remote(alias,template.replace('PAYLOAD',repr(bundle)))
     Path('results/maas-e5-preparation/bootstrap-lan-clients.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
 if __name__=='__main__':main()

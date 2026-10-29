@@ -2,8 +2,8 @@
 """HTTP example through an authorized SSH tunnel; Python 3, no dependencies.
 
 Keep this command running in another Mac terminal:
-  ssh -N -o ExitOnForwardFailure=yes -p 2023 -i ~/.ssh/id_ed25519 \
-      -L 127.0.0.1:18831:127.0.0.1:18831 root@111.4.255.126
+  ssh -N -o ExitOnForwardFailure=yes -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" \
+      -L 127.0.0.1:18831:127.0.0.1:18831 "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 
 Permission check only:
   python3 examples/verify_customer_ocr_http.py

@@ -1,9 +1,10 @@
 """Run locally after creating the p2-r1 archive on 001. No SSH keys are copied."""
+import os
 from pathlib import Path
 import shlex,subprocess
 root=Path(__file__).resolve().parents[3]
 first=['ssh','-S',str(root/'service-validation/ssh-001.sock'),'-o','ProxyCommand=false','root@10.11.31.1']
-second=['ssh','-p','16721','-i',str(Path.home()/'.ssh/id_ed25519'),'-o','BatchMode=yes','root@111.4.255.126']
+second=['ssh','-F',os.environ.get('MAAS_SSH_CONFIG',str(Path(__file__).resolve().parents[2] / '.maas/ssh/config')),'-o','BatchMode=yes',os.environ.get('MAAS_LEGACY_WORKER_SSH_ALIAS','maas-legacy-worker')]
 server=subprocess.Popen(first+['python3 /root/wtaobj/maas-framework/scripts/maas/p2/serve_image.py'],stdout=subprocess.PIPE,text=True)
 try:
     url=server.stdout.readline().strip()

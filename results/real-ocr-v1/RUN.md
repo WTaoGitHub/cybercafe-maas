@@ -6,7 +6,7 @@ API key 从 `.gpustack-api-key` 读取，不写入报告或日志。
 在单独终端建立转发（18081 避免占用 Playground 的 18080）：
 
 ```sh
-ssh -N -L 127.0.0.1:18081:127.0.0.1:18080 -p 2023 -i ~/.ssh/id_ed25519 root@111.4.255.126
+ssh -N -L 127.0.0.1:18081:127.0.0.1:18080 -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 ```
 
 运行：

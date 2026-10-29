@@ -2,7 +2,7 @@
 
 ## 已确认的启动结果
 
-管理员已保存更新后的母版快照并创建独立克隆，公网SSH端口仍16482、hostname仍XZ-31-002、内网仍10.11.31.2。名称/地址复用不作为旧实例身份依据。当前新worker ID6、名称e5-ba71e774d9ca94c0138c01fa，与旧ID5和旧名称不同；GPU也不同，因此不能据此证明同一GPU UUID跨VM重绑定的稳定性。
+管理员已保存更新后的母版快照并创建独立克隆，公网SSH端口仍SSH_PORT_REDACTED、hostname仍XZ-31-002、内网仍10.11.31.2。名称/地址复用不作为旧实例身份依据。当前新worker ID6、名称e5-ba71e774d9ca94c0138c01fa，与旧ID5和旧名称不同；GPU也不同，因此不能据此证明同一GPU UUID跨VM重绑定的稳定性。
 
 在任何手动apply之前读取开机日志及applied.json：trigger=boot、APPLIED、cluster3/test1、e5-pilot-r1、布局model-storage-v1。server实际ready，worker容器restart count=0，三模块SHA与母版安装版本一致。确认本次自动接入成功，不是手动补救注册。原生v2.2.3保持，没有启动E8升级。证据见[startup.json](startup.json)。
 

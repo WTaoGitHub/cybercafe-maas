@@ -142,8 +142,8 @@ class CatalogTests(unittest.TestCase):
         from unittest.mock import patch
         from e2e.observer import observe
         class C:
-            config = {'operator': {'host': '111.4.255.126', 'port': 2023,
-                                    'key_file': '~/.ssh/id_ed25519'}}
+            config = {'operator': {'host': '192.0.2.10', 'port': 22,
+                                    'key_file': '~/.ssh/maas_operator_key'}}
         with patch('e2e.observer.subprocess.run') as run:
             run.return_value = subprocess.CompletedProcess([], 0, '{"success_events":1}', '')
             self.assertEqual(observe(C(), 'task_usage', task_id='task_test')['success_events'], 1)

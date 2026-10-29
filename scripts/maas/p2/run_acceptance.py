@@ -1,9 +1,10 @@
 """Local coordinator for a controlled fault in ONLY the dedicated P2 OCR containers."""
+import os
 import json,shlex,subprocess,time
 from pathlib import Path
 root=Path(__file__).resolve().parents[3]
 first=['ssh','-S',str(root/'service-validation/ssh-001.sock'),'-o','ProxyCommand=false','root@10.11.31.1']
-second=['ssh','-p','16721','-i',str(Path.home()/'.ssh/id_ed25519'),'-o','BatchMode=yes','root@111.4.255.126']
+second=['ssh','-F',os.environ.get('MAAS_SSH_CONFIG',str(Path(__file__).resolve().parents[2] / '.maas/ssh/config')),'-o','BatchMode=yes',os.environ.get('MAAS_LEGACY_WORKER_SSH_ALIAS','maas-legacy-worker')]
 folder='/root/wtaobj/maas-p2/'
 paused=[]
 def call(cmd,remote):return subprocess.check_output(cmd+[remote],text=True)

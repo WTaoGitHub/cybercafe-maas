@@ -19,7 +19,7 @@
 ## 限制与下一步
 
 1. 本次模型分发和元数据目录为人工准备，worker容器重建后元数据需要重新准备；规范的模型卷/分发尚未实现。不能因此宣称新克隆会自动具备模型文件及立即提供OCR。
-2. 常驻维护binding仍指向旧worker2/model1、9，新目标为worker5/model12，SSH入口16482。先重绑及校验，再执行维护；当前不要直接运行旧绑定维护命令。
+2. 常驻维护binding仍指向旧worker2/model1、9，新目标为worker5/model12，SSH入口SSH_PORT_REDACTED。先重绑及校验，再执行维护；当前不要直接运行旧绑定维护命令。
 3. 尚未做两克隆同时在线、故障迁移、当前版本长时间负载、其他GPU型号或生产验收。母版5070兼容问题未修改。
 4. 只变更新建test1模型/route、推理key对新route的许可及MaaS catalog；旧route、模型、历史任务/结果保留。回退材料在001私有目录和Mac .maas/backups/e5-ocr-activation-20261026，旧route无ready目标时不自动恢复流量。
 

@@ -1,6 +1,6 @@
 # 第二独立克隆与14副本自动扩容验收
 
-报告日期：2026-10-28（Asia/Shanghai，以用户客户端日期为准）。用户提供新SSH端口17447并要求验证。本轮通过的是E5双克隆同时在线的正常自动接入/扩容及真实业务，不是完整异常矩阵、E1或E3验收。
+报告日期：2026-10-28（Asia/Shanghai，以用户客户端日期为准）。用户提供新SSH端口SSH_PORT_REDACTED并要求验证。本轮通过的是E5双克隆同时在线的正常自动接入/扩容及真实业务，不是完整异常矩阵、E1或E3验收。
 
 ## 结论
 
@@ -8,7 +8,7 @@
 
 | 项目 | 原克隆 | 新克隆 |
 |---|---|---|
-| SSH端口 | 16487 | 17447 |
+| SSH端口 | SSH_PORT_REDACTED | SSH_PORT_REDACTED |
 | hostname / LAN | XZ-31-002 / 10.11.31.2 | XZ-31-003 / 10.11.31.3 |
 | GPUStack worker | 7 / e5-4672ade0506987f34555caed | 8 / e5-e98c7888ed68fd705b57d535 |
 | 原生状态 | ready，unreachable=false | ready，unreachable=false |

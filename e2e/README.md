@@ -34,8 +34,8 @@ chmod 600 .maas/e2e-config.json
 
 ```bash
 ssh -N -o ExitOnForwardFailure=yes \
-  -p 2023 -i ~/.ssh/id_ed25519 \
-  -L 127.0.0.1:18832:127.0.0.1:18832 root@111.4.255.126
+  -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" \
+  -L 127.0.0.1:18832:127.0.0.1:18832 "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 ```
 
 默认`base_url=https://127.0.0.1:18832`。不要添加`/v1`或API路径。TLS始终验证证书，不读HTTP代理环境，不跟随重定向。HTTP仅允许127.0.0.1/::1；若用授权HTTP转发，将base_url改成`http://127.0.0.1:18831`，该模式不读取cert_file。
@@ -115,10 +115,10 @@ python3 -m e2e run --all --config .maas/e2e-config.json \
 ```json
 {
   "operator": {
-    "host": "111.4.255.126",
-    "port": 2023,
+    "host": "192.0.2.10",
+    "port": 22,
     "user": "root",
-    "key_file": "~/.ssh/id_ed25519"
+    "key_file": "~/.ssh/maas_operator_key"
   }
 }
 ```

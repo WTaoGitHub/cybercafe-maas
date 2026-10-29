@@ -15,7 +15,7 @@
 > **2026-10-28用户确认暂缓独立克隆验证**：本轮不单独安排网络补丁的新快照/克隆首启验收；后续有母版相关更新时合并验证。当前状态为“网络文件已安装，镜像继承和首启验收待完成”，不阻塞E3。现有两worker隔离已验证，新版镜像批量交付前仍须补验；若提前保存快照，应标为待验收版本。本次仅调整计划，不操作服务器或快照。
 
 
-> **2026-10-28母版网络文件已安装**：用户提供6029后，tower-1lpDmdmo6已安装clone-network-v1-r2，boundary enabled/inactive，通用策略为控制端10.11.31.1、接口前缀en+（适配母版enp5s0/克隆enp3s0）。静态配置服务器/原生入口保持；未在母版应用规则或启动worker，未重启VM/Docker。systemd、隔离内核及91项bootstrap验证通过。**待管理员保存新快照和独立新克隆首启/网络验收**，此前“未写入母版”为历史状态。E3仍为下一项本系统开发任务。[部署报告](../../results/maas-e5-template-network-20261028/REPORT.md)。
+> **2026-10-28母版网络文件已安装**：用户提供SSH_PORT_REDACTED后，tower-1lpDmdmo6已安装clone-network-v1-r2，boundary enabled/inactive，通用策略为控制端10.11.31.1、接口前缀en+（适配母版enp5s0/克隆enp3s0）。静态配置服务器/原生入口保持；未在母版应用规则或启动worker，未重启VM/Docker。systemd、隔离内核及91项bootstrap验证通过。**待管理员保存新快照和独立新克隆首启/网络验收**，此前“未写入母版”为历史状态。E3仍为下一项本系统开发任务。[部署报告](../../results/maas-e5-template-network-20261028/REPORT.md)。
 
 
 > **2026-10-28动态副本维护已修正**：维护不再固定批准14或4副本；每次begin读取GPUStack的当前期望replicas并记录到该窗口journal，恢复按窗口快照执行。单纯改副本数无需重绑；节点、模型、路由等范围校验保留。已发布001并只读预览为4，未停服务；维护窗口避免并行修改部署。详见[验证记录](../../results/maas-runtime-replicas-20261028/REPORT.md)。
@@ -30,7 +30,7 @@
 > **2026-10-28维护/网络收尾已验收**：当前schema-v2显式绑定test1/worker7、8/model18/route17。已在两克隆应用隔离规则，001可访问、克隆间管理/推理直连受阻；常驻全局暂停→副本0→实际GPU停止→恢复14副本7/7→真实探针→恢复接单通过，窗口104.875秒，UNKNOWN=0。001与两克隆未做VM或Docker daemon重启。该能力为全局维护，E1未部署。母版网络overlay已准备但尚未发布新快照/验证跨启动。该项后被用户降为低优先级，实际下游联调随后明确归下游团队，本系统下一项为E3。[验收报告](../../results/maas-topology-20261028/REPORT.md)，[当前运维手册](P4-MAINTENANCE.md)。
 
 
-> **2026-10-28更新**：17447新克隆自动成为worker8；worker7/8同时ready、各7个OCR副本，目标14已全部running。3次MaaS同步探针实际覆盖两GPU，异步/结果/单事件计量通过。本轮未手动apply/pull/load或改变部署。下一步为表中第2项：现拓扑维护绑定与两克隆网络边界。正常双克隆门槛通过不等于E5全部异常项通过。[验收报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
+> **2026-10-28更新**：SSH_PORT_REDACTED新克隆自动成为worker8；worker7/8同时ready、各7个OCR副本，目标14已全部running。3次MaaS同步探针实际覆盖两GPU，异步/结果/单事件计量通过。本轮未手动apply/pull/load或改变部署。下一步为表中第2项：现拓扑维护绑定与两克隆网络边界。正常双克隆门槛通过不等于E5全部异常项通过。[验收报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
 
 > 2026-10-27：用户确认新的后续执行顺序，E5正常单克隆首启已通过，下一步为第二独立克隆与当前拓扑收尾；原E6/P4/E5阶段排期保留作历史。OCR目标14副本，实测7 running/7 pending；详见[最新执行顺序与扩容条件](NEXT-STEPS-20261027.md)。服务级认证为新讨论的待设计事项，未改变当前客户key实现。
 
@@ -396,11 +396,11 @@ GPUStack调度预算不是CUDA实际占用，也不是强制显存硬上限；�
 
 ### E5新版快照正常首启门槛通过（2026-10-27）
 
-端口16487的新独立克隆worker7以boot自动完成配置/身份/registry接入，无OCR镜像缓存，原生model18/instance103调度及拉取后，OCR/MaaS同步异步/下载/单次计量通过。未手动改模型/路由/节点配置或apply/pull/load；无VM重启。正常无人值守首启本例通过；双克隆、F1–F5、权重/NFS、仓库HA/RPO、千节点等未由本轮补齐。GPU同UUID跨boot再现仅为一例观测。[报告](../../results/maas-e5-registry-clone-20261027/REPORT.md)。
+端口SSH_PORT_REDACTED的新独立克隆worker7以boot自动完成配置/身份/registry接入，无OCR镜像缓存，原生model18/instance103调度及拉取后，OCR/MaaS同步异步/下载/单次计量通过。未手动改模型/路由/节点配置或apply/pull/load；无VM重启。正常无人值守首启本例通过；双克隆、F1–F5、权重/NFS、仓库HA/RPO、千节点等未由本轮补齐。GPU同UUID跨boot再现仅为一例观测。[报告](../../results/maas-e5-registry-clone-20261027/REPORT.md)。
 
 ### E5双克隆同时在线与14副本门槛通过（2026-10-28）
 
-17447新克隆自动boot接入test1为worker8；worker7/8同时ready，各7个OCR实例，合计14 running/0 pending。两节点身份独立，模块/registry信任/不可变镜像一致；真实MaaS网关覆盖两GPU，异步/下载/单事件通过，UNKNOWN=0。没有人工apply/pull/load、改变deployment或重启。冷缓存前后快照、重复manual apply和异常矩阵未在本轮重复。按已确认顺序进入现拓扑维护和网络边界；两克隆filter未发现MAAS链，不能声称已隔离。不关闭E1/E3/E5.F1–F5或千节点事项。[报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
+SSH_PORT_REDACTED新克隆自动boot接入test1为worker8；worker7/8同时ready，各7个OCR实例，合计14 running/0 pending。两节点身份独立，模块/registry信任/不可变镜像一致；真实MaaS网关覆盖两GPU，异步/下载/单事件通过，UNKNOWN=0。没有人工apply/pull/load、改变deployment或重启。冷缓存前后快照、重复manual apply和异常矩阵未在本轮重复。按已确认顺序进入现拓扑维护和网络边界；两克隆filter未发现MAAS链，不能声称已隔离。不关闭E1/E3/E5.F1–F5或千节点事项。[报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
 
 ## E6：退役自建collector，复用GPUStack服务状态
 

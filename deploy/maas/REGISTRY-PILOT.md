@@ -1,6 +1,6 @@
 # GPUStack原生私有仓库试点操作
 
-本轮001控制端和端口16482的新克隆（worker5/test1）使用独立探针。不停止OCR，不重启VM或Docker，不修改worker启动参数；新建测试registry与模型是独立资源。本轮已完成并清理，详细结果见[报告](../../results/maas-e5-registry/REPORT.md)。
+本轮001控制端和端口SSH_PORT_REDACTED的新克隆（worker5/test1）使用独立探针。不停止OCR，不重启VM或Docker，不修改worker启动参数；新建测试registry与模型是独立资源。本轮已完成并清理，详细结果见[报告](../../results/maas-e5-registry/REPORT.md)。
 
 ## 组件与端口
 

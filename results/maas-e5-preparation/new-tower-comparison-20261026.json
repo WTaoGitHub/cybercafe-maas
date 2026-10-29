@@ -64,7 +64,7 @@
     "18080 connectivity is required for a worker; mother-only connectivity policy remains separate."
   ],
   "next": [
-    "Confirm with administrator whether the 6025 endpoint is the new template or a test clone.",
+    "Confirm with administrator whether the SSH_PORT_REDACTED endpoint is the new template or a test clone.",
     "Resolve GPU module compatibility before claiming GPU readiness; remediation and any activation/reboot require a separate scoped plan.",
     "If this is a worker clone, investigate its path to native 18080.",
     "002 name/IP guard patch remains pending deployment to the confirmed template."

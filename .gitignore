@@ -24,3 +24,11 @@ service-validation/*.sock
 
 # Generated E5 public handoff bundles (checksums/evidence are committed separately).
 /dist/e5/
+
+# Private operator connections and diagnostic logs; keep local, never publish.
+/.codex/config.toml
+/.codex/ssh-servers.json
+/ssh-config.proposed.json
+/codex-mcp.proposed.toml
+/service-validation/*.log
+/outputs/01a142cd-dc71-7d61-883e-4c15f1285ea7/服务器清单与操作计划.xlsx

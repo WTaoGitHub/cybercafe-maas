@@ -2,8 +2,8 @@
 """Verify a customer key, optionally sending one OCR request. Python 3, no dependencies.
 
 First establish the authorized SSH tunnel to 001, for example:
-  ssh -N -o ExitOnForwardFailure=yes -p 2023 -i ~/.ssh/id_ed25519 \
-      -L 127.0.0.1:18832:127.0.0.1:18832 root@111.4.255.126
+  ssh -N -o ExitOnForwardFailure=yes -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" \
+      -L 127.0.0.1:18832:127.0.0.1:18832 "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 
 Permission check only:
   python3 examples/verify_customer_ocr.py

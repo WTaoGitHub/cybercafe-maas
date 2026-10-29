@@ -5,7 +5,7 @@
 在本机终端 A 执行并保持运行：
 
 ```sh
-ssh -N -L 127.0.0.1:18080:127.0.0.1:18080 -p 2023 -i ~/.ssh/id_ed25519 root@111.4.255.126
+ssh -N -L 127.0.0.1:18080:127.0.0.1:18080 -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 ```
 
 如 18080 已占用，可把左侧端口改成 18081，后续 --base-url 对应调整。
@@ -13,7 +13,7 @@ ssh -N -L 127.0.0.1:18080:127.0.0.1:18080 -p 2023 -i ~/.ssh/id_ed25519 root@111.
 初始密码可在自己的终端读取（不要提交进仓库或聊天）：
 
 ```sh
-ssh -p 2023 -i ~/.ssh/id_ed25519 root@111.4.255.126 'cat /root/wtaobj/gpustack-server/initial_admin_password'
+ssh -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" "${MAAS_SSH_USER}@${MAAS_SSH_HOST}" 'cat /root/wtaobj/gpustack-server/initial_admin_password'
 ```
 
 如已经改过密码，应使用新密码。管理界面中查看 Model Deployments / Model Routes，rapidocr-gpu 应有两个运行中的副本和同名路由。

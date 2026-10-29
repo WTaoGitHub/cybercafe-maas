@@ -1,6 +1,6 @@
 # 克隆网络隔离 overlay
 
-2026-10-28已在worker7/8部署并验证；随后通过6029在母版tower-1lpDmdmo6完成文件安装和开机enable。**尚未由管理员保存新快照，也未验证新克隆首启继承规则。** 详见[实际部署](../../../../results/maas-e5-template-network-20261028/REPORT.md)。
+2026-10-28已在worker7/8部署并验证；随后通过SSH_PORT_REDACTED在母版tower-1lpDmdmo6完成文件安装和开机enable。**尚未由管理员保存新快照，也未验证新克隆首启继承规则。** 详见[实际部署](../../../../results/maas-e5-template-network-20261028/REPORT.md)。
 
 源程序为仓库`maas_bootstrap/clone_boundary.py`，目标`/opt/maas/ops/clone_boundary.py`。依赖Python3、iptables/ip6tables及raw/multiport/addrtype模块；IPv6规则安装失败时不得认定部署成功。示例JSON在母版不固定hostname；按实际LAN接口、控制机IPv4和Docker桥网段审阅后安装为`/etc/maas/clone-boundary.json`，root:root/600。
 
@@ -20,11 +20,11 @@ unit和dropin分别安装到`/etc/systemd/system/maas-clone-boundary.service`、
 
 ## 2026-10-28部署进度
 
-用户已授权母版安装；当前6025连接超时，用户要求等待恢复。公开包已准备并完成9项规则测试及归档校验，**尚未安装母版**。待恢复后先核对真实母版和网络环境、备份到Mac，再安装文件及enable（不带--now），不在母版应用规则或启动worker。[准备记录](../../../../results/maas-e5-template-network-20261028/REPORT.md)。
+用户已授权母版安装；当前SSH_PORT_REDACTED连接超时，用户要求等待恢复。公开包已准备并完成9项规则测试及归档校验，**尚未安装母版**。待恢复后先核对真实母版和网络环境、备份到Mac，再安装文件及enable（不带--now），不在母版应用规则或启动worker。[准备记录](../../../../results/maas-e5-template-network-20261028/REPORT.md)。
 
-## 6029母版安装完成（最新）
+## SSH_PORT_REDACTED母版安装完成（最新）
 
-6025超时为此前状态；用户提供6029后，匹配已知SSH主机公钥，核对主机tower-1lpDmdmo6、无容器/实例身份，备份Mac后安装本包四文件，daemon-reload及enable完成，未start/apply。实际归档为`dist/e5/clone-network-v1-20261028-r2.tar.gz`，摘要及逐文件权限见[installed-package.json](../../../../results/maas-e5-template-network-20261028/installed-package.json)。旧enp3s0准备包不是最终安装版本。
+SSH_PORT_REDACTED超时为此前状态；用户提供SSH_PORT_REDACTED后，匹配已知SSH主机公钥，核对主机tower-1lpDmdmo6、无容器/实例身份，备份Mac后安装本包四文件，daemon-reload及enable完成，未start/apply。实际归档为`dist/e5/clone-network-v1-20261028-r2.tar.gz`，摘要及逐文件权限见[installed-package.json](../../../../results/maas-e5-template-network-20261028/installed-package.json)。旧enp3s0准备包不是最终安装版本。
 
 母版网卡实测enp5s0、现有克隆enp3s0，因此最终策略使用iptables受限接口前缀`en+`，兼容两者；控制端仍精确限定10.11.31.1。程序只接受安全的末尾+，拒绝裸+、嵌入通配符和lo+。若未来硬件出现eth0等非en命名，新克隆可能被阻断，需先审查接口策略，不自动放宽来源。
 

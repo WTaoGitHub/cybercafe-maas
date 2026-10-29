@@ -1,6 +1,7 @@
 """Temporary local test collector. Missing refresh fails closed after 30 seconds.
 Production needs an always-on trusted collector; this command is not that deployment.
 """
+import os
 import argparse,json,shlex,subprocess,tempfile,time
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('--loop',action='store_true');a=p.parse_args()
@@ -11,7 +12,7 @@ while True:
         path=Path(folder)/'inventory.json'
         subprocess.run(['python3',str(root/'scripts/maas/p0/collect_image_inventory.py'),'--image','quay.io/cybercafe-maas-ocr:p2-r1','--output',str(path)],check=True,stdout=subprocess.DEVNULL)
         inventory=json.loads(path.read_text())
-        second=['ssh','-p','16721','-i',str(Path.home()/'.ssh/id_ed25519'),'-o','BatchMode=yes','root@111.4.255.126']
+        second=['ssh','-F',os.environ.get('MAAS_SSH_CONFIG',str(Path(__file__).resolve().parents[2] / '.maas/ssh/config')),'-o','BatchMode=yes',os.environ.get('MAAS_LEGACY_WORKER_SSH_ALIAS','maas-legacy-worker')]
         runtime_ok=True
         for name,command in [('XZ-31-001',ssh),('XZ-31-002',second)]:
             names=subprocess.check_output(command+['docker ps --format "{{.Names}}"'],text=True).splitlines()

@@ -11,7 +11,7 @@
 |---|---|
 | 001 | XZ-31-001，10.11.31.1；控制端+worker+API/单执行器/observer/DB/artifact |
 | 002 | XZ-31-002，10.11.31.2；worker |
-| SSH入口 | 111.4.255.126，001端口2023，002端口16721；本地私钥认证 |
+| SSH入口 | 192.0.2.10，001端口SSH_PORT_REDACTED，002端口SSH_PORT_REDACTED；本地私钥认证 |
 | GPUStack | 固定v2.2.3；001私有18080；已有server/worker容器，不新建daemon |
 | 远程源码 | `/root/wtaobj/maas-framework` |
 | 正式应用配置 | `/root/wtaobj/maas-live/app.env`、catalog.json、secrets、probes、maintenance |
@@ -36,7 +36,7 @@
 本机授权运维可建立隧道：
 
 ```sh
-ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:18832:127.0.0.1:18832 -p 2023 -i ~/.ssh/id_ed25519 root@111.4.255.126
+ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:18832:127.0.0.1:18832 -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 ```
 
 管理UI另外按需转发18080；不要给普通客户root SSH权限来使用API。管理员应提供受控转发方式或已批准的私有访问环境。普通用户拿到地址、公共证书和推理key即可调用，不应接触app.env。

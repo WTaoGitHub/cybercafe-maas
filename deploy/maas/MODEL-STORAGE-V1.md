@@ -1,6 +1,6 @@
 # model-storage-v1 部署与回退记录
 
-适用本轮独立新克隆：公网端口16482、boot 2026-10-26 16:49:33、原生worker5/test1。相同XZ-31-002名称不代表同一个VM。严禁001/002的OS/VM重启；本流程只有已授权的容器维护。
+适用本轮独立新克隆：公网端口SSH_PORT_REDACTED、boot 2026-10-26 16:49:33、原生worker5/test1。相同XZ-31-002名称不代表同一个VM。严禁001/002的OS/VM重启；本流程只有已授权的容器维护。
 
 ## 文件与契约
 
@@ -24,7 +24,7 @@ maas_bootstrap/storage.py创建并检查独立模型发布目录、缓存及公�
 
 ## 母版恢复后的待执行步骤
 
-用户确认6025暂不可达，等待通知，不持续重试、不推断母版已更新。恢复后先只读确认hostname属于tower、源码/身份现状及缓存镜像，不能沿用失效主机身份判断。
+用户确认SSH_PORT_REDACTED暂不可达，等待通知，不持续重试、不推断母版已更新。恢复后先只读确认hostname属于tower、源码/身份现状及缓存镜像，不能沿用失效主机身份判断。
 
 新包路径dist/e5/e5-worker-template-model-storage-v1-e202112.tar.gz，SHA256 b351d0c68f38c325307dd6686a1f8301c58f137ce110e1da45d188bf1fd2b453；包含storage.py等16项公开载荷。先核对母版旧源文件SHA并备份Mac，再安装三模块及公开路径配置，准备目录，确认母版guard拒绝worker、无native实例身份/维护receipt/运行容器。不要在母版执行apply。源码漂移应停下复核，不强制覆盖。
 
@@ -44,4 +44,4 @@ maas_bootstrap/storage.py创建并检查独立模型发布目录、缓存及公�
 
 ## 母版实际安装：19:18更新
 
-用户通知恢复后，6025对应tower-icDC5YcU3；旧摘要匹配，Mac私有备份位于.maas/backups/model-storage-v1-20261026/tower-icDC5YcU3。使用上述安装脚本--role template完成三模块和公开目录配置，随后只读核对源码、保护、无实例身份/容器和启动单元enabled。未运行apply或重启服务。此前待恢复段落为历史执行计划，现已完成；下一步管理员保存新快照，创建独立克隆验证首启。
+用户通知恢复后，SSH_PORT_REDACTED对应tower-icDC5YcU3；旧摘要匹配，Mac私有备份位于.maas/backups/model-storage-v1-20261026/tower-icDC5YcU3。使用上述安装脚本--role template完成三模块和公开目录配置，随后只读核对源码、保护、无实例身份/容器和启动单元enabled。未运行apply或重启服务。此前待恢复段落为历史执行计划，现已完成；下一步管理员保存新快照，创建独立克隆验证首启。

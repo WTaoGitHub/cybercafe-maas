@@ -15,7 +15,7 @@
 | 管理员平台 | 母版准备检查通过后，保存新快照并创建/首次启动独立A/B |
 | 新克隆A/B | 验证自动注册、GPU/模型及手动apply |
 
-当前入口：tower `root@111.4.255.126:6025`；001 `root@111.4.255.126:2023`。本地SSH私钥为`/Users/4paradigm/.ssh/id_ed25519`，仅用于登录，不复制进母版。
+当前入口：tower `"${MAAS_SSH_USER}@${MAAS_SSH_HOST}":SSH_PORT_REDACTED`；001 `"${MAAS_SSH_USER}@${MAAS_SSH_HOST}":SSH_PORT_REDACTED`。本地SSH私钥为`~/.ssh/maas_operator_key`，仅用于登录，不复制进母版。
 
 需要材料：
 
@@ -38,14 +38,14 @@ p=Path('/Users/4paradigm/dev/cybercafe-maas/dist/e5/e5-worker-template-tower-e5-
 print(hashlib.sha256(p.read_bytes()).hexdigest())
 PY
 
-ssh -p 6025 -i /Users/4paradigm/.ssh/id_ed25519 root@111.4.255.126 \
+ssh -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" "${MAAS_SSH_USER}@${MAAS_SSH_HOST}" \
   'install -d -m 700 /root/e5-install-input'
 
-scp -P 6025 -i /Users/4paradigm/.ssh/id_ed25519 \
+scp -P "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" \
   /Users/4paradigm/dev/cybercafe-maas/dist/e5/e5-worker-template-tower-e5-pilot-v1.tar.gz \
-  root@111.4.255.126:/root/e5-install-input/
+  "${MAAS_SSH_USER}@${MAAS_SSH_HOST}":/root/e5-install-input/
 
-ssh -p 6025 -i /Users/4paradigm/.ssh/id_ed25519 root@111.4.255.126
+ssh -p "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" "${MAAS_SSH_USER}@${MAAS_SSH_HOST}"
 ```
 
 接下来在 **tower的root终端**执行。每一步成功后再继续；不要把整份手册拼成无检查的大脚本。
@@ -160,14 +160,14 @@ install -o root -g root -m 644 results/maas-e5-preparation/bootstrap-release-sig
 umask 077
 E5_TRANSFER_DIR="$(mktemp -d /tmp/maas-e5-transfer.XXXXXX)"
 
-scp -P 2023 -i /Users/4paradigm/.ssh/id_ed25519 \
-  root@111.4.255.126:/root/wtaobj/maas-bootstrap/operator/shared-code \
+scp -P "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" \
+  "${MAAS_SSH_USER}@${MAAS_SSH_HOST}":/root/wtaobj/maas-bootstrap/operator/shared-code \
   "$E5_TRANSFER_DIR/shared-code"
 chmod 600 "$E5_TRANSFER_DIR/shared-code"
 
-scp -P 6025 -i /Users/4paradigm/.ssh/id_ed25519 \
+scp -P "$MAAS_SSH_PORT" -i "$MAAS_SSH_KEY" \
   "$E5_TRANSFER_DIR/shared-code" \
-  root@111.4.255.126:/root/e5-install-input/shared-code
+  "${MAAS_SSH_USER}@${MAAS_SSH_HOST}":/root/e5-install-input/shared-code
 ```
 
 两次SCP均成功后清理Mac临时副本：
@@ -413,14 +413,14 @@ docker ps --filter name=maas-gpustack-worker --format '{{.Names}} {{.Status}}'
 
 用户授权后源码596516e已完成最小兼容修正，38项bootstrap测试通过：允许新克隆使用XZ-31-002或10.11.31.2，仍拒绝001/tower名称及001地址。E5.F5通用角色改造仍为后续计划，本次没有实现角色系统。
 
-本轮6025公网SSH和经001访问原10.11.31.3:22均超时，未向tower写入补丁。当前暂停保存最终试验快照；等待管理员确认母版在线及有效入口。原f7de733包未重建，保留旧限制，不能将源码已修改理解为母版已更新。
+本轮SSH_PORT_REDACTED公网SSH和经001访问原10.11.31.3:22均超时，未向tower写入补丁。当前暂停保存最终试验快照；等待管理员确认母版在线及有效入口。原f7de733包未重建，保留旧限制，不能将源码已修改理解为母版已更新。
 
 恢复后只替换/opt/maas/lib/maas_bootstrap/worker.py，先核对远端版本和Mac备份，再原子安装并确认新摘要、语法/导入、单元enabled/inactive和无实例身份。不要启动服务或apply，不清理旧凭据；本地补丁目录dist/e5/002-guard-patch-596516e，after SHA256为0d02619f9eff5624edf68aaba1f18b5b63254a94dde54dc755f971eba8a3ac9d。记录本轮实际未部署，不覆盖此前首次安装证据。
 
 
 ## 21. 2026-10-26：管理员确认新母版，002兼容补丁已部署
 
-当前6025入口对应的新母版为tower-8CbKAhaaf，管理员已确认其角色。源码fbd3d3e在允许新克隆复用XZ-31-002名称/10.11.31.2地址的同时，将新母版名称纳入保护；001名称及10.11.31.1保护保留。该补丁已原子替换母版的/opt/maas/lib/maas_bootstrap/worker.py，旧文件优先备份到Mac。此前SSH不可达、补丁未部署的记录为历史状态。
+当前SSH_PORT_REDACTED入口对应的新母版为tower-8CbKAhaaf，管理员已确认其角色。源码fbd3d3e在允许新克隆复用XZ-31-002名称/10.11.31.2地址的同时，将新母版名称纳入保护；001名称及10.11.31.1保护保留。该补丁已原子替换母版的/opt/maas/lib/maas_bootstrap/worker.py，旧文件优先备份到Mac。此前SSH不可达、补丁未部署的记录为历史状态。
 
 38项本地bootstrap测试通过；远端摘要、导入、真实母版拒绝、模拟002复用允许和控制端IP拒绝均已核验。cluster3配置保持不变，无容器、无E5/native注册身份。单元enabled/failed为此前开机尝试留下的状态，本轮未启动、重启或重置单元，未运行apply，未修改驱动、旧凭据或001/002。真实克隆启动注册尚未验证，模拟保护测试不等于注册验收。
 
@@ -479,7 +479,7 @@ GPU仍不可用：当前PCI 10de:2f04要求NVIDIA open kernel modules，实际�
 
 ## 26. 第二版真实克隆首启自动接入通过（2026-10-26）
 
-用户确认端口16482现为新建VM，虽然复用XZ-31-002名称及10.11.31.2地址，不能视为旧002或先前004。只读检查启动时间16:49:33；worker模块SHA256 bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994匹配封版前母版，证明保护及注册确认修正已随镜像带入。
+用户确认端口SSH_PORT_REDACTED现为新建VM，虽然复用XZ-31-002名称及10.11.31.2地址，不能视为旧002或先前004。只读检查启动时间16:49:33；worker模块SHA256 bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994匹配封版前母版，证明保护及注册确认修正已随镜像带入。
 
 E5于16:49:46自动开始、16:50:00完成，trigger=boot、code=APPLIED、NRestarts=0，单元enabled/active(exited)，符合oneshot成功状态。新worker ID5、随机名称e5-9c5be5b92f10f84b714a5dbe自动加入test1(cluster3)，本机原生身份文件存在。首启记录native_state=not_ready是注册时的瞬时快照；随后本机个体token的me=true查询及001管理查询均显示ready/unreachable=false，不将旧快照误读为当前不可用。
 
@@ -492,7 +492,7 @@ E5于16:49:46自动开始、16:50:00完成，trigger=boot、code=APPLIED、NRest
 
 ## 27. 独立模型存储版本：母版尚待部署
 
-model-storage-v1已在独立新克隆完成容器维护、身份保持、只读模型/可写缓存、身份卷排除及MaaS OCR验收；母版6025当前不通，用户会通知恢复。不要据此通知管理员直接保存含本轮改动的新快照：当前母版文件还未安装本版本。
+model-storage-v1已在独立新克隆完成容器维护、身份保持、只读模型/可写缓存、身份卷排除及MaaS OCR验收；母版SSH_PORT_REDACTED当前不通，用户会通知恢复。不要据此通知管理员直接保存含本轮改动的新快照：当前母版文件还未安装本版本。
 
 新安装文件清单必须包含maas_bootstrap/storage.py；三模块client.py/storage.py/worker.py更新及模型目录配置须一起核对。公开交付包、SHA、具体部署/回退步骤见[MODEL-STORAGE-V1.md](../../maas/MODEL-STORAGE-V1.md)。该文档为本轮最新操作入口，覆盖前文仅放行002/保护tower-*的封版状态；旧历史原包不含本轮能力。
 
@@ -500,11 +500,11 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 
 ## 28. model-storage-v1母版实际安装完成
 
-2026-10-26 19:18，北京时间：恢复入口6025对应tower-icDC5YcU3。Mac备份后已安装client.py/storage.py/worker.py及独立目录配置。摘要、母版保护、无实例身份/容器和enabled启动单元核对通过；未运行apply、未重启。第27节“尚待部署”为此前历史状态。现在请管理员保存新快照、创建独立克隆，提供新SSH入口后再验收新版首启及OCR。不得重启001/002代替。证据见[母版核对](../../../results/maas-e5-storage/tower-verification.json)。
+2026-10-26 19:18，北京时间：恢复入口SSH_PORT_REDACTED对应tower-icDC5YcU3。Mac备份后已安装client.py/storage.py/worker.py及独立目录配置。摘要、母版保护、无实例身份/容器和enabled启动单元核对通过；未运行apply、未重启。第27节“尚待部署”为此前历史状态。现在请管理员保存新快照、创建独立克隆，提供新SSH入口后再验收新版首启及OCR。不得重启001/002代替。证据见[母版核对](../../../results/maas-e5-storage/tower-verification.json)。
 
 ## 29. 新快照克隆已验证，业务镜像另行交付
 
-2026-10-27管理员已保存快照并启动新克隆16482。实际worker6/test1由boot自动接入，挂载隔离和重复apply通过；与旧worker5区分，不因为同名同IP当作同一VM。无需在克隆docker cp模型占位目录。
+2026-10-27管理员已保存快照并启动新克隆SSH_PORT_REDACTED。实际worker6/test1由boot自动接入，挂载隔离和重复apply通过；与旧worker5区分，不因为同名同IP当作同一VM。无需在克隆docker cp模型占位目录。
 
 重要：本次新快照未缓存OCR镜像，历史测试镜像引用远程404；离线从001缓存交付后，OCR/MaaS同步异步验收通过。后续还需建设稳定仓库和凭据/证书接入，不能要求管理员反复复制旧worker缓存或把此例写成自动分发成功。母版不用为本次离线补镜像修改；新源端准备好后再实测无缓存克隆。详见[报告](../../../results/maas-e5-clone-storage-20261027/REPORT.md)。
 
@@ -518,7 +518,7 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 
 ## 31. registry-access-v1母版实际更新完成
 
-2026-10-27：用户授权后，6025母版tower-KuGJk9WU8已备份Mac并安装client.py/worker.py/registry.py；storage.py保持。bootstrap.json改为image_id=tower-e5-registry-v1及allowed_registry_endpoints=[10.11.31.1:18443]，其余接入配置保留。第30节“母版未更新”为此前状态，现由本节覆盖。
+2026-10-27：用户授权后，SSH_PORT_REDACTED母版tower-KuGJk9WU8已备份Mac并安装client.py/worker.py/registry.py；storage.py保持。bootstrap.json改为image_id=tower-e5-registry-v1及allowed_registry_endpoints=[10.11.31.1:18443]，其余接入配置保留。第30节“母版未更新”为此前状态，现由本节覆盖。
 
 实际导入、源码摘要、内存签名配置读取、布局计算、母版guard、启动单元enabled和无实例/auth目录均通过；没有运行apply、启动worker或重启VM/Docker。reader/publisher和原生实例身份没有写入母版。仅缓存worker镜像，不预装OCR，保留首次拉取验证条件。
 
@@ -526,13 +526,13 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 
 ## 32. registry-access-v1新快照首启已验证
 
-2026-10-27端口16487的新克隆worker7由boot自动配置/注册，取证时无OCR镜像，随后由GPUStack使用原model18/route17自动调度拉取并运行instance103。未手动补节点配置或运行apply/pull/load；挂载隔离和MaaS同步异步/下载/单次计量通过。无需为本次QA再更新母版或重做快照。旧节点记录保留，不做VM重启或全局清理。[实际报告](../../../results/maas-e5-registry-clone-20261027/REPORT.md)。
+2026-10-27端口SSH_PORT_REDACTED的新克隆worker7由boot自动配置/注册，取证时无OCR镜像，随后由GPUStack使用原model18/route17自动调度拉取并运行instance103。未手动补节点配置或运行apply/pull/load；挂载隔离和MaaS同步异步/下载/单次计量通过。无需为本次QA再更新母版或重做快照。旧节点记录保留，不做VM重启或全局清理。[实际报告](../../../results/maas-e5-registry-clone-20261027/REPORT.md)。
 
 ## 33. 2026-10-28：clone-network-v1-r2母版实际安装完成
 
-当前母版入口改为`root@111.4.255.126:6029`，主机tower-1lpDmdmo6（6025超时属先前状态）。用户授权网络隔离文件安装；本次不改驱动/CUDA、bootstrap.json、原业务模块、worker身份或实例配置。
+当前母版入口改为`"${MAAS_SSH_USER}@${MAAS_SSH_HOST}":SSH_PORT_REDACTED`，主机tower-1lpDmdmo6（SSH_PORT_REDACTED超时属先前状态）。用户授权网络隔离文件安装；本次不改驱动/CUDA、bootstrap.json、原业务模块、worker身份或实例配置。
 
-安装前确认无Docker容器、identity/applied/native UUID/token和maintenance-node策略；配置服务器仍https://10.11.31.1:18840，原生GPUStack仍http://10.11.31.1:18080，仓库仍10.11.31.1:18443。先将原文件及防火墙快照备份Mac私有目录`.maas/backups/tower-network-6029-20261028/`，没有把备份或维护SSH key写入母版。
+安装前确认无Docker容器、identity/applied/native UUID/token和maintenance-node策略；配置服务器仍https://10.11.31.1:18840，原生GPUStack仍http://10.11.31.1:18080，仓库仍10.11.31.1:18443。先将原文件及防火墙快照备份Mac私有目录`.maas/backups/tower-network-SSH_PORT_REDACTED-20261028/`，没有把备份或维护SSH key写入母版。
 
 最终公开包为`dist/e5/clone-network-v1-20261028-r2.tar.gz`；安装清单：
 

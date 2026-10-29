@@ -1,9 +1,10 @@
 """Local orchestrator. Existing node 002 only; management SSH and rollback timers retained."""
+import os
 import argparse,json,shlex,subprocess,time
 from pathlib import Path
 REPO=Path(__file__).resolve().parents[3]
 FIRST=['ssh','-S',str(REPO/'service-validation/ssh-001.sock'),'-o','ProxyCommand=false','root@10.11.31.1']
-SECOND=['ssh','-p','16721','-i',str(Path.home()/'.ssh/id_ed25519'),'-o','BatchMode=yes','root@111.4.255.126']
+SECOND=['ssh','-F',os.environ.get('MAAS_SSH_CONFIG',str(Path(__file__).resolve().parents[2] / '.maas/ssh/config')),'-o','BatchMode=yes',os.environ.get('MAAS_LEGACY_WORKER_SSH_ALIAS','maas-legacy-worker')]
 BASE='/root/wtaobj/maas-framework/scripts/maas/offline/'
 OUTPUT=REPO/'results/maas-worker-offline';OUTPUT.mkdir(parents=True,exist_ok=True)
 

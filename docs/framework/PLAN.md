@@ -9,7 +9,7 @@
 > **2026-10-28用户确认暂缓独立克隆验证**：本轮不单独安排网络补丁的新快照/克隆首启验收；后续有母版相关更新时合并验证。当前状态为“网络文件已安装，镜像继承和首启验收待完成”，不阻塞E3。现有两worker隔离已验证，新版镜像批量交付前仍须补验；若提前保存快照，应标为待验收版本。本次仅调整计划，不操作服务器或快照。
 
 
-> **2026-10-28母版网络文件已安装**：用户提供6029后，tower-1lpDmdmo6已安装clone-network-v1-r2，boundary enabled/inactive，通用策略为控制端10.11.31.1、接口前缀en+（适配母版enp5s0/克隆enp3s0）。静态配置服务器/原生入口保持；未在母版应用规则或启动worker，未重启VM/Docker。systemd、隔离内核及91项bootstrap验证通过。**待管理员保存新快照和独立新克隆首启/网络验收**，此前“未写入母版”为历史状态。E3仍为下一项本系统开发任务。[部署报告](../../results/maas-e5-template-network-20261028/REPORT.md)。
+> **2026-10-28母版网络文件已安装**：用户提供SSH_PORT_REDACTED后，tower-1lpDmdmo6已安装clone-network-v1-r2，boundary enabled/inactive，通用策略为控制端10.11.31.1、接口前缀en+（适配母版enp5s0/克隆enp3s0）。静态配置服务器/原生入口保持；未在母版应用规则或启动worker，未重启VM/Docker。systemd、隔离内核及91项bootstrap验证通过。**待管理员保存新快照和独立新克隆首启/网络验收**，此前“未写入母版”为历史状态。E3仍为下一项本系统开发任务。[部署报告](../../results/maas-e5-template-network-20261028/REPORT.md)。
 
 
 > **2026-10-28地址策略决定**：母版暂预置配置服务器和控制端静态地址，当前为001/10.11.31.1，地址与网络允许列表分开保存在配置文件。控制端/配置服务器迁移、稳定寻址及允许列表切换纳入E5.F1，低优先级暂缓，在实际替换或下线001之前处理；不提前实现动态发现/下发，不改变E3顺序。本次仅记录，未修改母版或现有服务器。
@@ -27,7 +27,7 @@
 > **2026-10-28维护/网络收尾已验收**：当前schema-v2显式绑定test1/worker7、8/model18/route17。已在两克隆应用隔离规则，001可访问、克隆间管理/推理直连受阻；常驻全局暂停→副本0→实际GPU停止→恢复14副本7/7→真实探针→恢复接单通过，窗口104.875秒，UNKNOWN=0。001与两克隆未做VM或Docker daemon重启。该能力为全局维护，E1未部署。母版网络overlay已准备但尚未发布新快照/验证跨启动。该项后被用户降为低优先级，实际下游联调随后明确归下游团队，本系统下一项为E3。[验收报告](../../results/maas-topology-20261028/REPORT.md)，[当前运维手册](P4-MAINTENANCE.md)。
 
 
-> **2026-10-28更新**：17447新克隆自动成为worker8；worker7/8同时ready、各7个OCR副本，目标14已全部running。3次MaaS同步探针实际覆盖两GPU，异步/结果/单事件计量通过。本轮未手动apply/pull/load或改变部署。下一步为表中第2项：现拓扑维护绑定与两克隆网络边界。正常双克隆门槛通过不等于E5全部异常项通过。[验收报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
+> **2026-10-28更新**：SSH_PORT_REDACTED新克隆自动成为worker8；worker7/8同时ready、各7个OCR副本，目标14已全部running。3次MaaS同步探针实际覆盖两GPU，异步/结果/单事件计量通过。本轮未手动apply/pull/load或改变部署。下一步为表中第2项：现拓扑维护绑定与两克隆网络边界。正常双克隆门槛通过不等于E5全部异常项通过。[验收报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
 
 > **2026-10-27最新执行顺序已获用户确认**：E5多克隆收尾 → 当前拓扑维护/网络边界 → 上下游职责及服务认证契约 → 下游实际联调 → E3并发 → E8/E7。用户已将OCR目标副本设为14，目前7 running/7 pending，等待管理员新增独立克隆；自动补齐取决于新节点容量和接入结果，尚未验收14 running。详见[当前执行与扩容记录](NEXT-STEPS-20261027.md)。
 
@@ -362,14 +362,14 @@ GPUStack223 worker.worker_uuid读取运行内存或本机data_dir/worker_uuid，
 
 用户授权应用当前002相关最小改动。源码提交596516e已移除worker.py对XZ-31-002名称、10.11.31.2地址的禁止启动判断；保留XZ-31-001、tower名称及10.11.31.1控制端地址保护。bootstrap测试38项通过，新增测试覆盖旧名称/旧地址分别和同时复用，以及混入控制端地址仍拒绝。
 
-**尚未部署到tower，当前不能通知管理员保存最终试验快照。** 本轮MCP连接111.4.255.126:6025超时，直接SSH同样连接超时；001仍可连接，但从001到原tower内网10.11.31.3:22也超时。未读取或修改tower文件，不能假定其当前环境未发生其他变化；未操作旧002或重启任何VM。
+**尚未部署到tower，当前不能通知管理员保存最终试验快照。** 本轮MCP连接192.0.2.10:SSH_PORT_REDACTED超时，直接SSH同样连接超时；001仍可连接，但从001到原tower内网10.11.31.3:22也超时。未读取或修改tower文件，不能假定其当前环境未发生其他变化；未操作旧002或重启任何VM。
 
 本地补丁及摘要已准备在dist/e5/002-guard-patch-596516e（不含凭据）；[状态记录](../../results/maas-e5-preparation/002-guard-patch-status.json)。原f7de733公开包保持历史内容，仍含旧保护，不能通过重装旧包获得本修正。待管理员确认母版在线/当前SSH入口后，先核对目标版本、优先备份旧worker.py到Mac，再仅替换模块并核验；不启动worker、不清理旧凭据。部署验证通过后再明确通知保存快照。
 
 
 ## 2026-10-26：管理员确认新母版，002兼容补丁已部署
 
-当前6025入口对应的新母版为tower-8CbKAhaaf，管理员已确认其角色。源码fbd3d3e在允许新克隆复用XZ-31-002名称/10.11.31.2地址的同时，将新母版名称纳入保护；001名称及10.11.31.1保护保留。该补丁已原子替换母版的/opt/maas/lib/maas_bootstrap/worker.py，旧文件优先备份到Mac。此前SSH不可达、补丁未部署的记录为历史状态。
+当前SSH_PORT_REDACTED入口对应的新母版为tower-8CbKAhaaf，管理员已确认其角色。源码fbd3d3e在允许新克隆复用XZ-31-002名称/10.11.31.2地址的同时，将新母版名称纳入保护；001名称及10.11.31.1保护保留。该补丁已原子替换母版的/opt/maas/lib/maas_bootstrap/worker.py，旧文件优先备份到Mac。此前SSH不可达、补丁未部署的记录为历史状态。
 
 38项本地bootstrap测试通过；远端摘要、导入、真实母版拒绝、模拟002复用允许和控制端IP拒绝均已核验。cluster3配置保持不变，无容器、无E5/native注册身份。单元enabled/failed为此前开机尝试留下的状态，本轮未启动、重启或重置单元，未运行apply，未修改驱动、旧凭据或001/002。真实克隆启动注册尚未验证，模拟保护测试不等于注册验收。
 
@@ -404,7 +404,7 @@ GPU仍不可用：当前PCI 10de:2f04要求NVIDIA open kernel modules，实际�
 
 ## 第一版真实克隆004首启检查（2026-10-26）
 
-新入口111.4.255.126:16482实际为XZ-31-004（10.11.31.4），15:06:12启动。worker模块摘要匹配第一版，未安装后续保护补丁。RTX 4080 SUPER 16GB、闭源580.95.05可正常读取GPU；Toolkit1.20.1。此为宿主机识别结果，不代替容器GPU/模型验证。
+新入口192.0.2.10:SSH_PORT_REDACTED实际为XZ-31-004（10.11.31.4），15:06:12启动。worker模块摘要匹配第一版，未安装后续保护补丁。RTX 4080 SUPER 16GB、闭源580.95.05可正常读取GPU；Toolkit1.20.1。此为宿主机识别结果，不代替容器GPU/模型验证。
 
 E5开机入口已触发并自动重试5次，最终NATIVE_SERVER_UNREACHABLE、enabled/failed。按代码顺序已通过配置拉取/验证、Docker/GPU环境检查，在原生Server网络检查失败；18840可连、18080超时。无容器、无注册身份，test1仍0 worker。因此配置引导部分有效，自动注册首启验收未通过，不能归因为002或tower名称保护。
 
@@ -439,7 +439,7 @@ E5开机入口已触发并自动重试5次，最终NATIVE_SERVER_UNREACHABLE、e
 
 ## 第二版真实克隆首启自动接入通过（2026-10-26）
 
-用户确认端口16482现为新建VM，虽然复用XZ-31-002名称及10.11.31.2地址，不能视为旧002或先前004。只读检查启动时间16:49:33；worker模块SHA256 bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994匹配封版前母版，证明保护及注册确认修正已随镜像带入。
+用户确认端口SSH_PORT_REDACTED现为新建VM，虽然复用XZ-31-002名称及10.11.31.2地址，不能视为旧002或先前004。只读检查启动时间16:49:33；worker模块SHA256 bf34d3d93ae362f3de985a31a81eea5495dcd5739fa6243be251391bfcc6f994匹配封版前母版，证明保护及注册确认修正已随镜像带入。
 
 E5于16:49:46自动开始、16:50:00完成，trigger=boot、code=APPLIED、NRestarts=0，单元enabled/active(exited)，符合oneshot成功状态。新worker ID5、随机名称e5-9c5be5b92f10f84b714a5dbe自动加入test1(cluster3)，本机原生身份文件存在。首启记录native_state=not_ready是注册时的瞬时快照；随后本机个体token的me=true查询及001管理查询均显示ready/unreachable=false，不将旧快照误读为当前不可用。
 
@@ -458,7 +458,7 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 
 发现的实际部署缺口：原宿主机模型目录没有挂入bootstrap worker，实例93路径检查失败。试点改用专用公开元数据目录，在宿主机与现有worker分别准备，移除失败实例后由GPUStack生成94；OCR程序/权重仍在镜像内。此为人工分发和容器文件系统准备，重建worker需重新准备，不是规范模型卷或自动模型分发完成。后续需完善模型目录生命周期与分发；本次未更改母版。
 
-另一待办：常驻维护binding仍引用旧worker2/model1、9，不适用于当前worker5/model12及SSH16482。先重绑并校验，不能直接调用旧绑定。双克隆并行、故障迁移、当前版本长测、5070及生产验收仍未完成。
+另一待办：常驻维护binding仍引用旧worker2/model1、9，不适用于当前worker5/model12及SSHSSH_PORT_REDACTED。先重绑并校验，不能直接调用旧绑定。双克隆并行、故障迁移、当前版本长测、5070及生产验收仍未完成。
 
 [端到端报告](../../results/maas-e5-ocr/REPORT.md) · [试点操作手册](../../deploy/maas/E5-OCR-PILOT.md)。
 
@@ -493,15 +493,15 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 
 核心源码e202112：独立只读发布目录/srv/maas/models、可写缓存/srv/maas/model-cache，原生mirrored保留vendor排除项并排除/var/lib/gpustack，显式自身容器名；新版本/摘要核对实际挂载及关键env，旧布局返回NEEDS_MAINTENANCE。根目录重叠、秘密路径、symlink及其他用户可写根拒绝。57项bootstrap测试通过，离线构建与公开交付包已包含storage.py。
 
-新克隆16482已完成容器级维护：显式暂停/排空，原model12降0，停止保留旧worker容器，原生UUID/name/token/JWT字节及worker ID5保持，创建新worker，重复apply=UNCHANGED。无VM/Docker引擎重启。当前model16/route15/revision ocr-e5-r2使用公开新路径；旧版本保留停用，不覆盖原revision。实际推理容器只有模型RO与缓存RW两个卷，身份文件/socket不可见，RO写失败EROFS、缓存写入宿主机可见。同步/异步/下载/一次计量均通过，MaaS已恢复、UNKNOWN=0。
+新克隆SSH_PORT_REDACTED已完成容器级维护：显式暂停/排空，原model12降0，停止保留旧worker容器，原生UUID/name/token/JWT字节及worker ID5保持，创建新worker，重复apply=UNCHANGED。无VM/Docker引擎重启。当前model16/route15/revision ocr-e5-r2使用公开新路径；旧版本保留停用，不覆盖原revision。实际推理容器只有模型RO与缓存RW两个卷，身份文件/socket不可见，RO写失败EROFS、缓存写入宿主机可见。同步/异步/下载/一次计量均通过，MaaS已恢复、UNKNOWN=0。
 
-母版6025无法连接，用户确认暂时不可达并会通知恢复；未向母版写入本轮改动，不反复尝试。公开包已生成并核验，等待恢复后备份/安装/确认母版无身份，再由管理员保存新快照并起独立克隆。此处未做新快照/真实首启、NFS、HF下载或强隔离验收。原通用维护binding仍旧，独立待重绑；本轮不是通用E1实现。
+母版SSH_PORT_REDACTED无法连接，用户确认暂时不可达并会通知恢复；未向母版写入本轮改动，不反复尝试。公开包已生成并核验，等待恢复后备份/安装/确认母版无身份，再由管理员保存新快照并起独立克隆。此处未做新快照/真实首启、NFS、HF下载或强隔离验收。原通用维护binding仍旧，独立待重绑；本轮不是通用E1实现。
 
 [本轮报告](../../results/maas-e5-storage/REPORT.md) · [部署与回退](../../deploy/maas/MODEL-STORAGE-V1.md)。
 
 ## model-storage-v1母版安装完成（2026-10-26 19:18 北京时间）
 
-用户通知母版恢复后，确认6025现为tower-icDC5YcU3，boot为19:10:12；旧源码摘要符合预期。旧client/worker/bootstrap配置已优先私有备份Mac，随后安装e202112三模块和公开存储配置，未运行apply、未启动worker、未重启VM或Docker。
+用户通知母版恢复后，确认SSH_PORT_REDACTED现为tower-icDC5YcU3，boot为19:10:12；旧源码摘要符合预期。旧client/worker/bootstrap配置已优先私有备份Mac，随后安装e202112三模块和公开存储配置，未运行apply、未启动worker、未重启VM或Docker。
 
 核对通过：cluster3/test1配置保留、母版保护返回PROTECTED_HOST_WORKER_FORBIDDEN、启动单元enabled、无worker实例身份目录/identity/applied/维护receipt、无Docker容器，独立模型目录与缓存及公开marker齐备。单元failed为开机被母版保护拒绝的历史结果，本次不重置或启动它。只读目录属性由克隆创建worker时落实，母版目录准备不等于推理容器挂载验收。
 
@@ -519,7 +519,7 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 
 ## model-storage-v1新快照克隆实际验收（2026-10-27）
 
-用户确认管理员保存新快照并启动新克隆，SSH16482、hostname XZ-31-002和10.11.31.2复用，实际为独立新worker6（e5-ba71e774d9ca94c0138c01fa）。手动apply之前已取得trigger=boot/APPLIED及原生ready证据，三模块摘要与母版一致，layout=model-storage-v1。后续手动apply=UNCHANGED，身份/worker容器和boot ID不变。新GPU RTX4080SUPER、580.95.05，与旧GPU UUID不同；不据此宣称同GPU跨VM复用已验证。
+用户确认管理员保存新快照并启动新克隆，SSHSSH_PORT_REDACTED、hostname XZ-31-002和10.11.31.2复用，实际为独立新worker6（e5-ba71e774d9ca94c0138c01fa）。手动apply之前已取得trigger=boot/APPLIED及原生ready证据，三模块摘要与母版一致，layout=model-storage-v1。后续手动apply=UNCHANGED，身份/worker容器和boot ID不变。新GPU RTX4080SUPER、580.95.05，与旧GPU UUID不同；不据此宣称同GPU跨VM复用已验证。
 
 首次部署OCR发现新克隆无业务镜像，历史quay.io/cybercafe-maas-ocr:p2-r1远程引用404；停止新部署失败重试并暂停排空MaaS。随后通过LAN SSH从001缓存离线交付精确镜像，未启用旧临时registry、修改authorized_keys或长期分发凭据，未重启VM/Docker。model17/route16、revision ocr-e5-r3现为服务目标，旧model16副本0保留。模型RO/缓存RW及身份/socket排除实测通过；同步/异步/结果下载46行、一次计量通过，MaaS恢复接单、UNKNOWN=0。
 
@@ -540,14 +540,14 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 
 ## registry-access-v1母版实际更新完成（2026-10-27）
 
-用户授权后，6025母版tower-KuGJk9WU8已备份并安装client/worker/registry，storage保持；image_id=tower-e5-registry-v1，registry allowlist仅10.11.31.1:18443。实际源码导入/摘要、内存读取及验证e5-registry-r1、registry-access-v1布局计算、母版保护与enabled启动单元均通过。无实例身份、registry-auth/generations或Docker容器，未运行apply或重启VM/Docker，未触碰001/002服务。OCR未预置，仅缓存固定worker镜像。
+用户授权后，SSH_PORT_REDACTED母版tower-KuGJk9WU8已备份并安装client/worker/registry，storage保持；image_id=tower-e5-registry-v1，registry allowlist仅10.11.31.1:18443。实际源码导入/摘要、内存读取及验证e5-registry-r1、registry-access-v1布局计算、母版保护与enabled启动单元均通过。无实例身份、registry-auth/generations或Docker容器，未运行apply或重启VM/Docker，未触碰001/002服务。OCR未预置，仅缓存固定worker镜像。
 
 下一步由管理员保存新快照、启动普通独立克隆，验证首次自动配置/注册/调度/认证拉取/OCR。既有旧快照不随文件更新而改变，真实新版首启尚未验证。当前replicas=1，若保留worker6需安排测试部署或额外副本。E8与其他增强不因此启动。[母版报告](../../results/maas-e5-registry-template/REPORT.md)。
 
 
 ## 无OCR镜像缓存的新快照首启验收通过（2026-10-27）
 
-管理员启动端口16487的新克隆，开机自动读取e5-registry-r1并以独立worker7加入test1，自动生成registry信任/只读认证。首次取证时新旧OCR镜像均不存在。旧worker6已离线，GPUStack使用同一model18/route17及稳定标签自行将instance103调度到7，原生拉取固定镜像并进入running；没有手动补节点配置、apply/pull/load，也未改模型/路由/MaaS revision。
+管理员启动端口SSH_PORT_REDACTED的新克隆，开机自动读取e5-registry-r1并以独立worker7加入test1，自动生成registry信任/只读认证。首次取证时新旧OCR镜像均不存在。旧worker6已离线，GPUStack使用同一model18/route17及稳定标签自行将instance103调度到7，原生拉取固定镜像并进入running；没有手动补节点配置、apply/pull/load，也未改模型/路由/MaaS revision。
 
 真实模型RO/cache RW及身份/认证排除通过；私有TLS同步/异步/下载46行及单次计量通过。worker7 ready、MaaS正常接单、UNKNOWN=0，VM/worker容器未重启。新版快照完整无人值守正常首启门槛本轮通过；母版无需为QA再次更新。旧worker记录保留，双克隆、轮换、独立权重/NFS、容量和E8不因此完成。GPU UUID与旧6相同而VM boot/worker不同，只记录一个再现案例，不证明普适稳定或并发排他。[验收报告](../../results/maas-e5-registry-clone-20261027/REPORT.md)。
 
@@ -566,7 +566,7 @@ test1新worker ID5上已部署独立maas-ocr-e5-r1（model12/route14/instance94�
 
 ## 2026-10-28 E5第二克隆与自动14副本验收通过
 
-新17447/XZ-31-003/10.11.31.3由boot自动接入test1为worker8，剩余7个pending原生调度及registry拉取后全部running；原worker7保留7个，合计14。两节点独立身份、相同批准模块/证书/镜像及14个容器的模型RO/cache RW/身份排除检查通过。真实网关3次请求覆盖两GPU、异步一次成功及结果/唯一事件通过，UNKNOWN=0。本轮没有apply/pull/load或部署/副本/并发变更，没有重启。下一步先维护绑定/网络边界收尾，不提前执行E3调参或E8升级；新克隆首次取证时镜像已存在，冷缓存前后快照本轮未捕获。详见[验收报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
+新SSH_PORT_REDACTED/XZ-31-003/10.11.31.3由boot自动接入test1为worker8，剩余7个pending原生调度及registry拉取后全部running；原worker7保留7个，合计14。两节点独立身份、相同批准模块/证书/镜像及14个容器的模型RO/cache RW/身份排除检查通过。真实网关3次请求覆盖两GPU、异步一次成功及结果/唯一事件通过，UNKNOWN=0。本轮没有apply/pull/load或部署/副本/并发变更，没有重启。下一步先维护绑定/网络边界收尾，不提前执行E3调参或E8升级；新克隆首次取证时镜像已存在，冷缓存前后快照本轮未捕获。详见[验收报告](../../results/maas-e5-dual-clone-20261028/REPORT.md)。
 
 ## 2026-10-28后续增强E9：生产编排与入口收敛
 

@@ -1,0 +1,53 @@
+[
+  {
+    "name": "controller-example",
+    "host": "192.0.2.10",
+    "port": 22,
+    "username": "ssh-user",
+    "privateKey": "/path/to/private/ssh-key",
+    "transportMode": "exec",
+    "allowedLocalPaths": [
+      "/path/to/project"
+    ],
+    "allowedRemotePaths": [
+      "/path/to/remote/workspace"
+    ],
+    "blacklist": [
+      "^\\s*(reboot|shutdown|poweroff|halt)(\\s|$)"
+    ]
+  },
+  {
+    "name": "worker-example",
+    "host": "192.0.2.10",
+    "port": 22,
+    "username": "ssh-user",
+    "privateKey": "/path/to/private/ssh-key",
+    "transportMode": "exec",
+    "allowedLocalPaths": [
+      "/path/to/project"
+    ],
+    "allowedRemotePaths": [
+      "/path/to/remote/workspace"
+    ],
+    "blacklist": [
+      "^\\s*(reboot|shutdown|poweroff|halt)(\\s|$)"
+    ]
+  },
+  {
+    "name": "template-example",
+    "host": "192.0.2.10",
+    "port": 22,
+    "username": "ssh-user",
+    "privateKey": "/path/to/private/ssh-key",
+    "transportMode": "exec",
+    "allowedLocalPaths": [
+      "/path/to/project"
+    ],
+    "allowedRemotePaths": [
+      "/path/to/remote/workspace"
+    ],
+    "blacklist": [
+      "^\\s*(reboot|shutdown|poweroff|halt)(\\s|$)"
+    ]
+  }
+]

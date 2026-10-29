@@ -1,9 +1,0 @@
-# Project-scoped SSH MCP. Contains paths only; private keys stay outside Git.
-[mcp_servers.cybercafe_ssh]
-command = "npx"
-args = ["-y", "@fangjunjie/ssh-mcp-server@1.10.0", "--config-file", "/Users/4paradigm/dev/cybercafe-maas/.codex/ssh-servers.json"]
-startup_timeout_sec = 60
-
-[mcp_servers.cybercafe_ssh.env]
-PATH = "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-NPM_CONFIG_REGISTRY = "https://registry.npmjs.org"

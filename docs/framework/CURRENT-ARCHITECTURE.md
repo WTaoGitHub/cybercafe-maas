@@ -1,8 +1,8 @@
 # 当前系统架构与服务暴露
 
-> 2026-10-28母版补充：6029/tower已安装隔离文件并enable，未对母版应用宿主规则。新快照与独立克隆启动仍待管理员安排；当前worker7/8规则不变。[实际部署](../../results/maas-e5-template-network-20261028/REPORT.md)。
+> 2026-10-28母版补充：SSH_PORT_REDACTED/tower已安装隔离文件并enable，未对母版应用宿主规则。新快照与独立克隆启动仍待管理员安排；当前worker7/8规则不变。[实际部署](../../results/maas-e5-template-network-20261028/REPORT.md)。
 
-2026-10-28更新：001控制端、16487/worker7及17447/worker8同时在线，14个OCR副本各7个。结合前次入口监听核对及本轮双克隆证据；实线表示主要调用/控制关系，响应沿原连接返回；第二图虚线表示非客户调用路径或尚未建立的入口。当前两克隆网络边界和全局维护已验收；母版快照尚未更新。当前GPUStack为v2.2.3，E8升级未实施。
+2026-10-28更新：001控制端、SSH_PORT_REDACTED/worker7及SSH_PORT_REDACTED/worker8同时在线，14个OCR副本各7个。结合前次入口监听核对及本轮双克隆证据；实线表示主要调用/控制关系，响应沿原连接返回；第二图虚线表示非客户调用路径或尚未建立的入口。当前两克隆网络边界和全局维护已验收；母版快照尚未更新。当前GPUStack为v2.2.3，E8升级未实施。
 
 ## 1. 整体组件架构
 
@@ -50,7 +50,7 @@ flowchart TB
         OCR --> MODEL
     end
     TEMPLATE -->|"管理员保存快照并创建克隆"| BOOT
-    subgraph NODE8["新增XZ-31-003 · worker8 · test1 · 10.11.31.3 · SSH17447"]
+    subgraph NODE8["新增XZ-31-003 · worker8 · test1 · 10.11.31.3 · SSHSSH_PORT_REDACTED"]
         BOOT8["boot自动配置 · APPLIED"]
         W8["GPUStack worker8 · Ready"]
         OCR8["7个OCR副本 · RTX4080SUPER<br/>models RO / cache RW，身份与认证不共享"]
@@ -77,7 +77,7 @@ flowchart TB
 flowchart TB
     REMOTE["远程下游消费者"]
     TEST["受控测试客户端<br/>需要信任MaaS自签证书"]
-    SSH["授权SSH本地转发<br/>111.4.255.126:2023 → 001<br/>需先建立；不是公网业务API"]
+    SSH["授权SSH本地转发<br/>192.0.2.10:SSH_PORT_REDACTED → 001<br/>需先建立；不是公网业务API"]
     FUTURE["客户局域网 / 公网业务入口<br/>尚未部署"]
     REMOTE -. "直接业务接入待安排" .-> FUTURE
     TEST --> SSH
@@ -132,7 +132,7 @@ TLS18832与HTTP18831是两个平行Nginx入口，都直接转发18830，并非18
 | 001 10.11.31.1及127.0.0.1:18080 | GPUStack原生HTTP入口 | 内部注册/管理/推理及受控运维；客户直用会绕过MaaS业务层，不作为消费者配置入口 |
 | 当前worker7/8 0.0.0.0:10150、10151 | worker代理与指标 | 仅001从指定LAN接口放行，其他来源按IPv4/IPv6规则阻断；SSH不变 |
 | 当前worker7/8 40000–40063 | 当前OCR动态实例端口 | 仅001可访问；两克隆互访实际模型端口均受阻，非客户API |
-| 公网111.4.255.126:2023 / :16487 / :17447 | 已知SSH映射到001 / worker7 / worker8 | 运维入口，不能将SSH映射等同于已开放客户API；供应商其他映射未做完整核验 |
+| 公网192.0.2.10:SSH_PORT_REDACTED / :SSH_PORT_REDACTED / :SSH_PORT_REDACTED | 已知SSH映射到001 / worker7 / worker8 | 运维入口，不能将SSH映射等同于已开放客户API；供应商其他映射未做完整核验 |
 
 2026-10-28规则已应用到当前两克隆：raw pre-DNAT、INPUT及存在的DOCKER-USER覆盖，001管理/指标/模型健康可达；克隆间直连实测阻断。全局维护停止/恢复后仍有效。未全量扫描供应商公网映射或第三方LAN；IPv6规则安装和隔离内核验证通过，但未做IPv6真实模型调用。当前unit已enable及bootstrap依赖已配置，未做VM重启/新快照跨启动验证；未来克隆仍需母版overlay发布。
 

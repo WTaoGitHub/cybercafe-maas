@@ -1,6 +1,6 @@
 # 新克隆上的OCR端到端试点
 
-控制端001运行GPUStack v2.2.3和现有MaaS；本轮独立新克隆使用端口16482、hostname XZ-31-002、worker ID5、test1(cluster3)。不能据hostname把它当成旧VM。001/002均不执行整机重启；本流程也不重启Docker引擎，不恢复自建collector。
+控制端001运行GPUStack v2.2.3和现有MaaS；本轮独立新克隆使用端口SSH_PORT_REDACTED、hostname XZ-31-002、worker ID5、test1(cluster3)。不能据hostname把它当成旧VM。001/002均不执行整机重启；本流程也不重启Docker引擎，不恢复自建collector。
 
 ## 镜像与部署边界
 
@@ -28,6 +28,6 @@
 
 这次是单克隆端到端试点；不代表双克隆并发、大规模容量、容灾或生产上线验收。正式模型分发/共享存储/registry仍需后续设计，不能把本次临时传输写成自动分发已完成。
 
-旧常驻维护binding仍指向worker ID2、model IDs[1,9]；不能直接用于新ID5/model12。先更新维护目标及SSH端口16482并作校验，再安排维护演练。不要仅按复用的XZ-31-002名称或10.11.31.2地址复用旧维护操作。
+旧常驻维护binding仍指向worker ID2、model IDs[1,9]；不能直接用于新ID5/model12。先更新维护目标及SSH端口SSH_PORT_REDACTED并作校验，再安排维护演练。不要仅按复用的XZ-31-002名称或10.11.31.2地址复用旧维护操作。
 
 仓库/模型目录的正式方案以[GPUStack v2.2.3原生能力核对](../../docs/framework/GPUSTACK-223-DISTRIBUTION-REVIEW.md)为准：复用原生registry pull、mirrored mounts及模型下载；补独立模型挂载并排除原生身份目录，不再以docker cp/临时HTTP作为正式分发方案。当前环境尚未实施这项整改。
