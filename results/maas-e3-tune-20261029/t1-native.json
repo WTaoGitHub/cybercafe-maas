@@ -1,0 +1,238 @@
+{
+  "case_id": "T1-NATIVE",
+  "state": "COMPLETE",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "points": [
+    {
+      "point_id": "T1-NATIVE-4-4",
+      "replicas": 4,
+      "clients": 4,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00171238090843,
+      "measured_successes": 613,
+      "throughput_per_second": 10.216375094572244,
+      "p50_seconds": 0.3143639590125531,
+      "p95_seconds": 0.8528422208037227,
+      "p99_seconds": 1.100814620964229,
+      "maximum_refill_gap_seconds": 0.00010599405504763126,
+      "tail_completions": 4,
+      "placement_counts": [
+        2,
+        2
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-4-6",
+      "replicas": 4,
+      "clients": 6,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.001577459974214,
+      "measured_successes": 730,
+      "throughput_per_second": 12.166346801248144,
+      "p50_seconds": 0.41536257811821997,
+      "p95_seconds": 1.0885626662056893,
+      "p99_seconds": 1.4531460569705814,
+      "maximum_refill_gap_seconds": 0.00020815199241042137,
+      "tail_completions": 6,
+      "placement_counts": [
+        2,
+        2
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-4-8",
+      "replicas": 4,
+      "clients": 8,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00077152997255,
+      "measured_successes": 841,
+      "throughput_per_second": 14.016486431010144,
+      "p50_seconds": 0.49150934210047126,
+      "p95_seconds": 1.2511329539120197,
+      "p99_seconds": 1.537109554046765,
+      "maximum_refill_gap_seconds": 0.0002066739834845066,
+      "tail_completions": 8,
+      "placement_counts": [
+        2,
+        2
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-4-12",
+      "replicas": 4,
+      "clients": 12,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00015375902876,
+      "measured_successes": 889,
+      "throughput_per_second": 14.816628696826035,
+      "p50_seconds": 0.637309601996094,
+      "p95_seconds": 1.9642791550140828,
+      "p99_seconds": 2.5769809090998024,
+      "maximum_refill_gap_seconds": 0.0002811518497765064,
+      "tail_completions": 12,
+      "placement_counts": [
+        2,
+        2
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-6-4",
+      "replicas": 6,
+      "clients": 4,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00182554102503,
+      "measured_successes": 664,
+      "throughput_per_second": 11.066329966010843,
+      "p50_seconds": 0.29493627697229385,
+      "p95_seconds": 0.7694598201196641,
+      "p99_seconds": 0.9842936701606959,
+      "maximum_refill_gap_seconds": 0.00011340202763676643,
+      "tail_completions": 4,
+      "placement_counts": [
+        3,
+        3
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-6-6",
+      "replicas": 6,
+      "clients": 6,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00164050096646,
+      "measured_successes": 852,
+      "throughput_per_second": 14.199611758719774,
+      "p50_seconds": 0.36084001092240214,
+      "p95_seconds": 0.9239124169107527,
+      "p99_seconds": 1.2337713700253516,
+      "maximum_refill_gap_seconds": 0.00014090095646679401,
+      "tail_completions": 6,
+      "placement_counts": [
+        3,
+        3
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-6-8",
+      "replicas": 6,
+      "clients": 8,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00154532492161,
+      "measured_successes": 973,
+      "throughput_per_second": 16.21624901043782,
+      "p50_seconds": 0.4169682760257274,
+      "p95_seconds": 1.0834137110505253,
+      "p99_seconds": 1.4713995868805796,
+      "maximum_refill_gap_seconds": 0.0009949649684131145,
+      "tail_completions": 8,
+      "placement_counts": [
+        3,
+        3
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-6-12",
+      "replicas": 6,
+      "clients": 12,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00104089593515,
+      "measured_successes": 1102,
+      "throughput_per_second": 18.366348042382985,
+      "p50_seconds": 0.5408974839374423,
+      "p95_seconds": 1.4525067210197449,
+      "p99_seconds": 2.0145165608264506,
+      "maximum_refill_gap_seconds": 0.00028994795866310596,
+      "tail_completions": 12,
+      "placement_counts": [
+        3,
+        3
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-8-4",
+      "replicas": 8,
+      "clients": 4,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00011780089699,
+      "measured_successes": 690,
+      "throughput_per_second": 11.499977421539073,
+      "p50_seconds": 0.29200070118531585,
+      "p95_seconds": 0.6575515859294683,
+      "p99_seconds": 0.9051787690259516,
+      "maximum_refill_gap_seconds": 0.00012662610970437527,
+      "tail_completions": 4,
+      "placement_counts": [
+        4,
+        4
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-8-6",
+      "replicas": 8,
+      "clients": 6,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00038466695696,
+      "measured_successes": 921,
+      "throughput_per_second": 15.349901590001096,
+      "p50_seconds": 0.3206495901104063,
+      "p95_seconds": 0.7962558940052986,
+      "p99_seconds": 1.0893302408512682,
+      "maximum_refill_gap_seconds": 0.00014374684542417526,
+      "tail_completions": 6,
+      "placement_counts": [
+        4,
+        4
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-8-8",
+      "replicas": 8,
+      "clients": 8,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.001863135024905,
+      "measured_successes": 1058,
+      "throughput_per_second": 17.63278579565329,
+      "p50_seconds": 0.3862270750105381,
+      "p95_seconds": 1.0104771871119738,
+      "p99_seconds": 1.24125956883654,
+      "maximum_refill_gap_seconds": 0.0002320529893040657,
+      "tail_completions": 8,
+      "placement_counts": [
+        4,
+        4
+      ]
+    },
+    {
+      "point_id": "T1-NATIVE-8-12",
+      "replicas": 8,
+      "clients": 12,
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00206478405744,
+      "measured_successes": 1216,
+      "throughput_per_second": 20.265969252496316,
+      "p50_seconds": 0.4782191792037338,
+      "p95_seconds": 1.4789374701213092,
+      "p99_seconds": 1.8715367780532688,
+      "maximum_refill_gap_seconds": 0.000266288872808218,
+      "tail_completions": 12,
+      "placement_counts": [
+        4,
+        4
+      ]
+    }
+  ],
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 58,
+  "text_baseline_matched": true,
+  "new_image_or_weight": false,
+  "continuous_supply_proven": false,
+  "vm_rebooted": false
+}
