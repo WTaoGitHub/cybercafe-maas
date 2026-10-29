@@ -1,0 +1,83 @@
+{
+  "issue_id": "GW-20261028-001",
+  "private_backup_directory": "/Users/4paradigm/dev/cybercafe-maas/.maas/backups/e3-debug-20261029",
+  "files": [
+    {
+      "file": "gateway-controller-pilot.tgz",
+      "bytes": 4159364,
+      "sha256": "c1775b78dd0e85df3b42090bcce892cb26e6e47d4bf595cf556a2b4611cf00bc",
+      "visibility": "private_mac_backup_not_committed"
+    },
+    {
+      "file": "higress-access-20261028-1223-raw.jsonl",
+      "bytes": 224246,
+      "sha256": "36ef8d8471ae9dd0d2fb68ba1625c97aa674d4106ea53666d1aea4786005ac82",
+      "visibility": "private_mac_backup_not_committed"
+    },
+    {
+      "file": "worker7-window.json",
+      "bytes": 7880,
+      "sha256": "104a607f5a726f5a4133bcf6fa3a98d3bfe509712fc6ac5539b103814c3f2319",
+      "visibility": "private_mac_backup_not_committed"
+    },
+    {
+      "file": "worker8-window.json",
+      "bytes": 9472,
+      "sha256": "b921a2e55e66b80a503e58b641513bb41c2a97b586f784c5365813db8d078f05",
+      "visibility": "private_mac_backup_not_committed"
+    }
+  ],
+  "raw_access_window_lines": 234,
+  "public_evidence": [
+    {
+      "file": "access-window.json",
+      "bytes": 132905,
+      "sha256": "12341af0eb06c50868bc3d3ab98c72e33ebbf6924b69f67ef561cb87aa203501"
+    },
+    {
+      "file": "routing-timeline.json",
+      "bytes": 1667,
+      "sha256": "dbe34e8a77e87a4fb20945bd630ca891a951143ce8f9acaea6b8f28c6e90e2d3"
+    },
+    {
+      "file": "worker7-window.json",
+      "bytes": 551,
+      "sha256": "36535148f7612781cb0c5933ceeebafa4158ba8ab65e5c8d5bc844925a7d4bcb"
+    },
+    {
+      "file": "worker8-window.json",
+      "bytes": 551,
+      "sha256": "759ff1a0ff399fffaa7ec798a9b3003d9d114d3072e15cf97c134283cbfe05ef"
+    },
+    {
+      "file": "layers.json",
+      "bytes": 6243,
+      "sha256": "2f30f58caa1dab2b52d1f7123636d2b8e39a597ae8c2783e9cf4517d3f6ec208"
+    },
+    {
+      "file": "probe-access.json",
+      "bytes": 3379,
+      "sha256": "ad42c33d9bf706df33a2d29b61fac7c72ded887870ebddb8ad9b67ff35836559"
+    },
+    {
+      "file": "recreate.json",
+      "bytes": 2490,
+      "sha256": "0a004ab417d1720be299e22190c59a799888250a52f090c459939aae4b81ce8e"
+    },
+    {
+      "file": "tcp-summary.json",
+      "bytes": 6586,
+      "sha256": "6d9070c57bf3371188a1a9f821fe7bc6069b9d5ebd3c1c22faf8067592b66f51"
+    },
+    {
+      "file": "recovery.json",
+      "bytes": 1442,
+      "sha256": "ec2275c459e61486d4b32a503a6457d785624be0023ad5bf7a320a96c96e4615"
+    },
+    {
+      "file": "final.json",
+      "bytes": 1671,
+      "sha256": "a7bab01d18bf77d146e7542a957c95c8d29023ec5a4a25187d9db39e39e746e0"
+    }
+  ]
+}

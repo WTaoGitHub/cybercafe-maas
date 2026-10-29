@@ -59,3 +59,7 @@ v2.2.3源码和实际Envoy端点共同确认当前调用路径：MaaS或本次�
 建议后续受控E3复测沿用新请求ID及短时TCP元数据，补采当次Envoy连接失败计数和两端网络/连接池证据，遇503即停并保留服务端响应头/错误体摘要。若要反馈上游，可提交脱敏访问记录、明确实例/代理地址、配置推送时间及最小复现步骤。无需恢复collector，也不为每次MaaS推理增加SSH预检。
 
 证据：summary.json、layers.json、probe-access.json、recreate.json、tcp-summary.json、recovery.json、final.json。2项TCP元数据解析/不记录凭据单元测试通过；真实调试检查及复现结果如上，不等于全套E2E或E3最终验收。
+
+## 问题跟踪
+
+已登记[GW-20261028-001](../../docs/issues/GW-20261028-001.md)，状态OPEN：服务恢复但根因未确认，不能以未复现关闭。[日志归档与校验清单](log-manifest.json)包含脱敏证据及Mac私有原始备份的大小、SHA256和位置。
