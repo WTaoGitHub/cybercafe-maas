@@ -567,5 +567,14 @@
     "final_joint_recommendation": null,
     "automatic_resume": false,
     "evidence": "../../results/maas-e3-tune-20261029/REPORT.md"
+  },
+  "post_interruption_gc_fix": {
+    "source_commit": "0e945d0",
+    "state": "DEPLOYED_NEW_BASELINE_VERIFIED",
+    "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+    "evidence": "../../results/maas-artifact-gc-20261030/REPORT.md",
+    "old_selection_reclassified": false,
+    "higher_stages_executed_on_new_profile": false,
+    "automatic_resume": false
   }
 }

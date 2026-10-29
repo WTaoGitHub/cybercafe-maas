@@ -1,0 +1,119 @@
+{
+  "state": "COMPLETE",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "source_commit": "0e945d0",
+  "framework_image_id": "sha256:cefb4c38d2f5ca2b355b24985ce81cf879ae11f0c6c649b532b9b4632f779bd7",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "generation": 166,
+  "rounds": [
+    {
+      "point_id": "T0-BASELINE-r1",
+      "state": "COMPLETE",
+      "measurement_seconds": 60.03104209899902,
+      "measured_successes": 527,
+      "throughput_per_second": 8.77879146477098,
+      "supply": {
+        "sample_count": 811,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08981416188180447,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "result_verification": {
+        "downloaded_results": 541,
+        "download_seconds": 10.594028939958662
+      },
+      "accepted_tasks": 541
+    },
+    {
+      "point_id": "T0-BASELINE-r2",
+      "state": "COMPLETE",
+      "measurement_seconds": 60.02053999900818,
+      "measured_successes": 522,
+      "throughput_per_second": 8.697022719366169,
+      "supply": {
+        "sample_count": 806,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10477473796345294,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "result_verification": {
+        "downloaded_results": 540,
+        "download_seconds": 10.78040318004787
+      },
+      "accepted_tasks": 540
+    },
+    {
+      "point_id": "T0-BASELINE-r3",
+      "state": "COMPLETE",
+      "measurement_seconds": 60.036794900894165,
+      "measured_successes": 534,
+      "throughput_per_second": 8.894545434703858,
+      "supply": {
+        "sample_count": 806,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10656459303572774,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "result_verification": {
+        "downloaded_results": 548,
+        "download_seconds": 9.579695539083332
+      },
+      "accepted_tasks": 548
+    }
+  ],
+  "accepted_tasks": 1629,
+  "all_accepted_succeeded_attempt_and_metering_one": true,
+  "all_results_downloaded_and_reference_text_verified": true,
+  "runtime_parameters_unchanged": true,
+  "actual_application_source_hashes_verified": true,
+  "actual_gc_indexes_verified": [
+    "artifacts_live_expiry",
+    "tasks_active_input"
+  ],
+  "gc_observed_passes": 126,
+  "gc_observed_coordinators": 1,
+  "gc_max_visited_per_pass": 200,
+  "executor_loop_errors": 0,
+  "unknown": 0,
+  "paused": false,
+  "old_t4_reclassified": false,
+  "maximum_capacity_proven": false,
+  "production_speedup_proven": false,
+  "automatic_tuning_resume": false,
+  "orphan_scan_observed_seconds_max": 0.01803412986919284,
+  "gc_observation_scope": "executor logs from new application start through final verification; duration is orphan scanning only, TTL pass separate",
+  "weighted_window_throughput": 8.79012863783906,
+  "measured_successes": 1583,
+  "private_evidence_backup": {
+    "verified": true,
+    "sha256": "cf0f7df6d0d79b7cc3a1d2ac266457d305d649cedd39d45a254aaff9da36c345",
+    "bytes": 478688,
+    "private_mac_copy": true
+  },
+  "verification_record_sha256": "8f1a7553b6b2bc27c2793672adc3ec07727b24e2d5075047e9cf4bed87908cf7",
+  "post_verification_checks": {
+    "monitor_ok": true,
+    "alerts": [],
+    "monitor_file_age_seconds": 14.02,
+    "actual_api_gc_settings": {
+      "batch_size": 200,
+      "time_budget_ms": 100,
+      "interval_seconds": 5
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "state": "DEPLOYED",
+  "image": "cybercafe-maas-tasks:artifact-gc-r1",
+  "source_commit": "0e945d0",
+  "parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "generation": 166,
+  "replica_placement_counts": [
+    2,
+    2
+  ],
+  "native_instances_unchanged": true,
+  "other_services_unchanged": true,
+  "vm_and_docker_daemon_unchanged": true,
+  "coordinator_locks": 1,
+  "real_resume_probes_passed": 1,
+  "unknown": 0,
+  "paused": false,
+  "backup_verified_on_mac": true,
+  "database_change": "additive indexes only",
+  "automatic_tuning_resume": false,
+  "image_id": "sha256:cefb4c38d2f5ca2b355b24985ce81cf879ae11f0c6c649b532b9b4632f779bd7",
+  "baseline_validation": "COMPLETE",
+  "post_baseline_monitor_ok": true
+}

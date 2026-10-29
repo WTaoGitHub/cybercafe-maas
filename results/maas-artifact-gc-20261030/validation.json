@@ -50,5 +50,6 @@
   "business_source_sha256": "a0e982e3ba242d2117f13c9a2797255ce4ca799c6626f332fa45f5c50eef44c3",
   "production_speedup_proven": false,
   "old_t4_reclassified": false,
-  "vm_restarts": 0
+  "vm_restarts": 0,
+  "snapshot_scope": "independent validation before deployment; see deployment.json and baseline.json for final runtime evidence"
 }

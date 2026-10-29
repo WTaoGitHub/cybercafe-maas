@@ -26,7 +26,7 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 | E5.F5 | [#18 [E5.F5] 按节点角色实施worker启动保护](https://github.com/WTaoGitHub/cybercafe-maas/issues/18) | OPEN |
 | AUTH | [#19 [AUTH] MaaS服务身份与GPUStack内部凭据解耦](https://github.com/WTaoGitHub/cybercafe-maas/issues/19) | OPEN |
 | E5.NET | [#20 [E5.NET] 母版网络隔离补丁的新快照继承与首启验收](https://github.com/WTaoGitHub/cybercafe-maas/issues/20) | OPEN |
-| E3-GC | [#21 Bound orphan GC scan work and reduce shared artifact lifecycle lock contention](https://github.com/WTaoGitHub/cybercafe-maas/issues/21) | OPEN（高优先级，待实现） |
+| E3-GC | [#21 Bound orphan GC scan work and reduce shared artifact lifecycle lock contention](https://github.com/WTaoGitHub/cybercafe-maas/issues/21) | OPEN（修复已上线，新profile容量影响待确认） |
 
 ## 状态和职责
 
@@ -45,3 +45,5 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 2026-10-29新增[PP-OCRv4部署参数优化专项](../framework/ENHANCEMENTS.md#pp-ocrv4-tuning)，在E10/#11跟踪参数配置化、线程、缩放、质量和能效验证，与E3/#4的副本/并发验收互相引用。当前仅登记，先取得E3固定参数基线，不改变主线顺序，不启动线上调参。
 
 2026-10-30 E3-TUNE：T0–T3（含12档）完成，T4队列45点完成但无合格队列，HTTP/T5/T6未运行；已按中断规则恢复原4/4/4/4、2+2、generation164并通过真实探针。#4继续开放，文件生命周期性能风险在#21单独跟踪，不能视为所有拒绝的已证实根因。详见[本轮报告](../../results/maas-e3-tune-20261029/REPORT.md)。
+
+2026-10-30 #21有界扫描/单协调者/锁竞争修复已上线，新profile三轮60秒基线及1,629任务对账通过。#21保留跟踪后续容量影响，#4仍待新profile候选/队列及后续验收，旧失败不改判。见[修复报告](../../results/maas-artifact-gc-20261030/REPORT.md)。
