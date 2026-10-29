@@ -12,6 +12,13 @@ def percentile(values,q):
     a=sorted(values);return a[min(len(a)-1,int((len(a)-1)*q))] if a else None
 
 
+def check_activity(value,limit,generation):
+    """Stop dispatch on quarantine, quota violation or a changed maintenance owner."""
+    if value['unknown'] or value['sync_unknown']:raise RuntimeError('UNKNOWN activity; stop new load')
+    if value['running']+value['sync_running']>limit:raise RuntimeError('Shared quota exceeded')
+    if value['paused'] or value['generation']!=generation:raise RuntimeError('Maintenance changed during benchmark')
+
+
 def worker_metrics(lines,names):
     """Read the validated single-GPU workers; absent optional gauges remain unknown."""
     optional={'worker_node_gram_allocated_bytes','worker_node_gpu_temperature_celsius'}
@@ -88,7 +95,7 @@ def main():
     summary={'run_id':a.run_id,'executors':a.executors,'clients':a.executors,'count':a.count,'fixture_count':len(inputs),
              'fixture_manifest_sha256':hashlib.sha256((FIXTURES/'manifest.json').read_bytes()).hexdigest(),
              'model_replicas':4,'model_sha256':baseline_hash,'instances':[{'id':i['id'],'worker_id':i['worker_id']} for i in instances],
-             'pool':pool,'tls_verified':True,'state':'RUNNING','started_at':time.time(),'records':records}
+             'pool':pool,'tls_verified':True,'state':'RUNNING','started_at':time.time(),'records':records,'sample_errors':[]}
     def checkpoint():atomic(folder/'status.json',summary)
     def one(index,warmup=False):
         if stop.is_set():raise RuntimeError('Run halted; no new dispatch')
@@ -124,12 +131,17 @@ def main():
                     names=['worker_node_gpu_utilization_rate','worker_node_gram_used_bytes','worker_node_gram_allocated_bytes','worker_node_memory_used_bytes','worker_node_cpu_utilization_rate','worker_node_gpu_temperature_celsius']
                     sample['workers'][str(ident)]=worker_metrics(lines,names)
                     sample['workers'][str(ident)]['missing_optional_metrics']=[n for n in names if sample['workers'][str(ident)][n] is None]
-                except Exception as exc:sample['workers'][str(ident)]={'error_class':type(exc).__name__}
+                except Exception as exc:
+                    stop.set();sample['workers'][str(ident)]={'error_class':type(exc).__name__}
+                    with lock:summary['sample_errors'].append({'worker':ident,'error_class':type(exc).__name__})
             try:
-                sample['tasks']=sql("SELECT json_build_object('running',(SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')),'unknown',(SELECT count(*) FROM backend_activity WHERE state='UNKNOWN'),'lock_waiters',(SELECT count(*) FROM pg_stat_activity WHERE datname='maas' AND wait_event_type='Lock'))")
+                sample['tasks']=sql("SELECT json_build_object('running',(SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')),'sync_running',(SELECT count(*) FROM sync_activity WHERE state='DISPATCHING'),'unknown',(SELECT count(*) FROM backend_activity WHERE state='UNKNOWN'),'sync_unknown',(SELECT count(*) FROM sync_activity WHERE state='UNKNOWN'),'paused',(SELECT paused FROM maintenance WHERE id=1),'generation',(SELECT generation FROM maintenance WHERE id=1),'lock_waiters',(SELECT count(*) FROM pg_stat_activity WHERE datname='maas' AND wait_event_type='Lock'))")
+                check_activity(sample['tasks'],pool['containers'][0]['global_limit'],pool['managed']['generation'])
                 mem={x.split(':')[0]:int(x.split()[1])*1024 for x in Path('/proc/meminfo').read_text().splitlines() if ':' in x}
                 sample['controller_mem_available_bytes']=mem['MemAvailable'];sample['controller_loadavg']=Path('/proc/loadavg').read_text().split()[:3]
-            except Exception as exc:sample['sample_error_class']=type(exc).__name__
+            except Exception as exc:
+                stop.set();sample['sample_error_class']=type(exc).__name__
+                with lock:summary['sample_errors'].append({'component':'activity','error_class':type(exc).__name__})
             with (folder/'samples.jsonl').open('a') as f:f.write(json.dumps(sample)+'\n')
             samples_stop.wait(1)
     sampler_thread=threading.Thread(target=sampler);sampler_thread.start();started=time.monotonic()
@@ -147,7 +159,7 @@ def main():
         summary['database']=sql("SELECT coalesce(json_agg(json_build_object('id',t.id,'state',t.state,'attempts',t.attempts,'created_at',t.created_at,'updated_at',t.updated_at,'success_events',(SELECT count(*) FROM task_usage_events u WHERE u.task_id=t.id),'execution_seconds',(SELECT sum(extract(epoch FROM ended_at-started_at)) FROM task_attempts a WHERE a.task_id=t.id))), '[]'::json) FROM tasks t WHERE t.idempotency_key LIKE '"+prefix+"'")
         summary['finished_at']=time.time()
         good=all(r['state']=='SUCCEEDED' and r['attempts']==1 and r['success_events']==1 for r in summary['database'])
-        if len(summary['database'])!=a.count+2 or not good or summary['state']!='COMPLETE':summary['state']='FAILED'
+        if len(summary['database'])!=a.count+2 or not good or summary['state']!='COMPLETE' or summary['sample_errors']:summary['state']='FAILED'
         checkpoint()
     print(json.dumps({k:v for k,v in summary.items() if k not in ['records','database','pool']}))
     if summary['state']!='COMPLETE':raise RuntimeError('Benchmark incomplete; inspect original IDs, do not replay uncertain requests')
