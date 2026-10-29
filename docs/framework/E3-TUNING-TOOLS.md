@@ -7,6 +7,13 @@
 在仓库根目录使用`.venv-maas/bin/python`；控制端使用包含httpx/psycopg的独立工具环境。
 
 ```shell
+python3 -m venv /private/path/to/tool-env
+/private/path/to/tool-env/bin/python -m pip install -r requirements-bench.txt
+```
+
+专用环境只需httpx/psycopg，依赖沿用已测版本锁，不需要安装FastAPI、OCR模型或向系统Python装包。离线部署可先按控制端Python/CPU平台下载锁定wheel，再用`--no-index --find-links /private/wheels`安装。2026-10-29已在独立测试目录创建专用环境，并完成真实只读运行时/两节点原生指标和独立测试库只读连接检查；正式应用目录/镜像和系统Python均未改变。
+
+```shell
 .venv-maas/bin/python -m maas_bench plan
 .venv-maas/bin/python -m maas_bench plan --case-id T0-BASELINE
 .venv-maas/bin/python -m maas_bench plan --module native-capacity --label gpu

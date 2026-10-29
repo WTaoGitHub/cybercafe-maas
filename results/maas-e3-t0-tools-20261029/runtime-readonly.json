@@ -1,0 +1,21 @@
+{
+  "state": "READ_ONLY_PROBE_COMPLETE",
+  "parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "generation": 56,
+  "worker_count": 2,
+  "instance_count": 4,
+  "native_gpu_evidence_present": true,
+  "native_resource_samples": 2,
+  "gpustack_version": "v2.2.3",
+  "configuration_changed": false,
+  "ocr_called": false,
+  "system_python_modified": false
+}

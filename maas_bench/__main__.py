@@ -11,13 +11,12 @@ import sys
 
 from . import matrix
 from .contracts import Parameters
-from .snapshot import RuntimeFence,digest,read_private,save_private
+from .snapshot import RuntimeFence,digest,read_private,read_secret,save_private
 
 
 def execute(config):
     """No config scaling, automatic restore, resume, or inference retries here."""
     import httpx
-    from maas_platform.config import private_text
     from .backend import DatabaseObserver,TaskBackend
     from .runtime import ControllerProbe
     from .saturation import RunPolicy,SaturationRunner
@@ -49,11 +48,11 @@ def execute(config):
             if row['kind']!='sample':os.fsync(log.fileno())
     observer=None;watcher=None;halt=threading.Event()
     try:
-        observer=DatabaseObserver(private_text(config['database_dsn_file']),config['project'],config['logical_model'],config['revision'],'e3-'+run_id+':')
+        observer=DatabaseObserver(read_secret(config['database_dsn_file']),config['project'],config['logical_model'],config['revision'],'e3-'+run_id+':')
         initial=observer.snapshot()
         if any(initial[k] for k in ('global_queued','running','sync_running','unknown','sync_unknown')):
             raise RuntimeError('Unisolated active traffic or UNKNOWN at experiment start')
-        with httpx.Client(base_url=config['base_url'],headers={'Authorization':'Bearer '+private_text(config['customer_key_file'])},
+        with httpx.Client(base_url=config['base_url'],headers={'Authorization':'Bearer '+read_secret(config['customer_key_file'])},
             verify=config.get('ca_file',True),timeout=10,trust_env=False,follow_redirects=False,
             transport=httpx.HTTPTransport(retries=0,verify=config.get('ca_file',True))) as client:
             backend=TaskBackend(client,observer,fixture_data['fixtures']);backend.prepare()

@@ -1,0 +1,5 @@
+# Dedicated temporary controller tools environment; never install into system Python.
+# Transitive versions share the tested MaaS lock. No FastAPI/model runtime needed.
+-c requirements-maas-tested-lock.txt
+httpx==0.28.1
+psycopg[binary]==3.2.9

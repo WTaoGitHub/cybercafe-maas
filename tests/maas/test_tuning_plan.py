@@ -9,7 +9,7 @@ import pytest
 
 from maas_bench import matrix
 from maas_bench.load import independent_arrivals,prepared_requests
-from maas_bench.snapshot import RuntimeFence,read_private,save_private
+from maas_bench.snapshot import RuntimeFence,read_private,read_secret,save_private
 
 
 def test_selectors_are_or_within_type_and_and_between_types():
@@ -73,6 +73,15 @@ def test_private_evidence_never_overwrites_previous_run(tmp_path):
     with pytest.raises(FileExistsError):save_private(p,{'new':'bad'})
     p.chmod(0o644)
     with pytest.raises(ValueError):read_private(p)
+
+
+def test_tool_secret_reader_is_small_private_and_requires_nonempty_data(tmp_path):
+    p=tmp_path/'key';p.write_text(' test-secret\n');p.chmod(0o600)
+    assert read_secret(p)=='test-secret'
+    p.write_text('')
+    with pytest.raises(ValueError):read_secret(p)
+    p.write_text('test-secret');p.chmod(0o644)
+    with pytest.raises(ValueError):read_secret(p)
 
 
 def test_cli_dry_run_does_not_import_controller_or_send_inference(tmp_path,monkeypatch,capsys):

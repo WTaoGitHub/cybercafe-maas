@@ -25,6 +25,15 @@ def read_private(path):
     return json.loads(p.read_text())
 
 
+def read_secret(path):
+    p=Path(path)
+    if p.is_symlink() or not p.is_file() or p.stat().st_mode & 0o077:
+        raise ValueError('Regular private secret file required')
+    value=p.read_text().strip()
+    if not value:raise ValueError('Empty secret file')
+    return value
+
+
 class RuntimeFence:
     def __init__(self,snapshot):
         self.original=copy.deepcopy(snapshot);self.expected=copy.deepcopy(snapshot)
