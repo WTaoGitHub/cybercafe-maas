@@ -1,0 +1,43 @@
+{
+  "state": "COMPLETE",
+  "case_id": "T5-CLAIM",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "source_files_verified": 258,
+  "boundary_images": 10,
+  "native_boundary_requests": 20,
+  "boundary_same_model_text_consistent": true,
+  "blank_false_positives": 0,
+  "mixed_workload_images": 50,
+  "ordinary_fraction": 0.8,
+  "boundary_fraction": 0.2,
+  "candidate_replicas": [
+    10,
+    12
+  ],
+  "vram_claim_bytes": 2147483648,
+  "lower_claim_tested": false,
+  "per_process_peak_proven": false,
+  "native_observed_card_memory": [
+    {
+      "gpu": "GPU-1",
+      "max_observed_vram_bytes": 7029653504.0,
+      "gpu_total_bytes": null
+    },
+    {
+      "gpu": "GPU-2",
+      "max_observed_vram_bytes": 7897874432.0,
+      "gpu_total_bytes": null
+    }
+  ],
+  "resources_samples": 47,
+  "power_measured": false,
+  "power_limitation": "GPUStack native metrics/status did not expose power; no energy or cost claim",
+  "startup_scope": "inference container cold, local images and weights warm; no VM/worker/Docker daemon restart",
+  "metric_limit": "HTTP polling does not increase freshness of GPUStack native gauges; observed card maxima are not guaranteed startup/process peaks",
+  "runtime_restored": true,
+  "restored_generation": 340,
+  "monitor_ok": true,
+  "unknown": 0,
+  "vm_worker_docker_daemon_restarts": 0,
+  "proof_sha256": "d3ffe8cfd8b885cb80fba131bf43257091a4e6b69b72bcdfd0427046cc83351a"
+}
