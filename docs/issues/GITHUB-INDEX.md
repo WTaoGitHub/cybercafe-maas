@@ -1,6 +1,6 @@
 # GitHub Issue 索引
 
-2026-10-29已将现有增强计划与未关闭问题登记到私有仓库 [WTaoGitHub/cybercafe-maas](https://github.com/WTaoGitHub/cybercafe-maas/issues)。首次登记20项（19开放、E6关闭）；E3基础试点曾按completed关闭#4，随后用户追加E3-TUNE参数组合调优，复用并重新打开#4，随后新增文件清理扫描/锁竞争Issue #21，目前共21项（20 OPEN、1 CLOSED）。原基础验收有效，GW/#1保持开放观察。
+2026-10-29已将现有增强计划与未关闭问题登记到私有仓库 [WTaoGitHub/cybercafe-maas](https://github.com/WTaoGitHub/cybercafe-maas/issues)。首次登记20项（19开放、E6关闭）；E3基础试点曾按completed关闭#4，随后用户追加E3-TUNE参数组合调优，复用并重新打开#4，随后新增文件清理扫描/锁竞争Issue #21，2026-10-30再登记E13/#22，目前共22项（21 OPEN、1 CLOSED）。原基础验收有效，GW/#1保持开放观察。
 
 Issue正文包含当前状态、既有优先级/排期、待办、验收条件及固定提交的源文档链接；不将历史待办误当最新状态。GitHub记录不改变现网、不授权复测，也不更改既定排期。
 
@@ -27,6 +27,7 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 | AUTH | [#19 [AUTH] MaaS服务身份与GPUStack内部凭据解耦](https://github.com/WTaoGitHub/cybercafe-maas/issues/19) | OPEN |
 | E5.NET | [#20 [E5.NET] 母版网络隔离补丁的新快照继承与首启验收](https://github.com/WTaoGitHub/cybercafe-maas/issues/20) | OPEN |
 | E3-GC | [#21 Bound orphan GC scan work and reduce shared artifact lifecycle lock contention](https://github.com/WTaoGitHub/cybercafe-maas/issues/21) | OPEN（修复已上线，新profile容量影响待确认） |
+| E13 | [#22 [E13] 任务查询返回输入与结果文件的生命周期状态](https://github.com/WTaoGitHub/cybercafe-maas/issues/22) | OPEN（中优先级，待实现） |
 
 ## 状态和职责
 
