@@ -1,0 +1,56 @@
+{
+  "state": "TOOL_FIX_VALIDATED_BASELINE_RESTORED_T3_NOT_RETESTED",
+  "source_commit": "1c2239c",
+  "local_regression_passed": 48,
+  "independent_tests": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 2.797,
+    "uses_real_postgres_and_api": true,
+    "inference_mocked": true,
+    "history_rows": 15000,
+    "statement_timeout_ms": 200
+  },
+  "source_files_verified": 256,
+  "behavior": "history identity discovery only; usage checks only on new tokens in batches of 256; exact token-set and once-usage checks preserved",
+  "limitations": [
+    "Identity discovery still reads the project/model historical token set; not constant cost or a thousand-worker scalability claim",
+    "No real OCR T3 rerun or capacity claim; original interruption remains failed",
+    "No production API/executor source, database settings, migrations or observer timeout modified"
+  ],
+  "restoration": {
+    "state": "COMPLETE",
+    "parameters_before": {
+      "replicas": 6,
+      "executors": 8,
+      "global_limit": 4,
+      "project_limit": 2,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "parameters_after": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "generation_before": 200,
+    "generation_after": 204,
+    "restoration_guard": "exact interrupted snapshot and fixed profile; no active/queued/sync/UNKNOWN; owned transitions",
+    "formal_load_started": false,
+    "old_failed_evidence_changed": false,
+    "vm_worker_docker_engine_restarted": false
+  },
+  "monitor_ok_after_restoration": true,
+  "alerts_after_restoration": [],
+  "private_mac_evidence_backup": {
+    "sha256": "a9458df4348549d08af5416672bfaba51d7f7e80034ee07848e6a378b5c687e4",
+    "bytes": 18348,
+    "private_mac_copy_verified": true
+  }
+}
