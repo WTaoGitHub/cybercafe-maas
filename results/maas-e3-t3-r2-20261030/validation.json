@@ -1,0 +1,1831 @@
+{
+  "case_id": "T3-LIMITS",
+  "state": "COMPLETE",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+  "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+  "points": [
+    {
+      "point_id": "T3-R6-E8-G4-P4-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.023223876953125,
+      "measured_successes": 544,
+      "throughput_per_second": 9.063158638649488,
+      "supply": {
+        "sample_count": 894,
+        "ready_queue_min": 6,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.0845699030905962,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.983912,
+      "all_accepted_execution_p95": 0.791969
+    },
+    {
+      "point_id": "T3-R6-E8-G4-P4-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.000674941111356,
+      "measured_successes": 574,
+      "throughput_per_second": 9.56655905226669,
+      "sync_success_p95_seconds": 0.7626329050399363,
+      "sync_success_p99_seconds": 0.9381696379277855
+    },
+    {
+      "point_id": "T3-R6-E8-G4-P4-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01153302192688,
+      "measured_successes": 533,
+      "throughput_per_second": 8.881626133517596,
+      "supply": {
+        "sample_count": 868,
+        "ready_queue_min": 6,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09188310499303043,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 26,
+      "sync_rejections": 153,
+      "sync_success_p95_seconds": 0.5482330839149654,
+      "combined_successes": 559,
+      "combined_throughput": 9.314876188811137,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G4-P4-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.011014223098755,
+      "measured_successes": 490,
+      "throughput_per_second": 8.165167783673198,
+      "supply": {
+        "sample_count": 863,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09484202414751053,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 85,
+      "sync_rejections": 361,
+      "sync_success_p95_seconds": 0.6178080518729985,
+      "combined_successes": 575,
+      "combined_throughput": 9.58157444002467,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G4-P2-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.009061098098755,
+      "measured_successes": 300,
+      "throughput_per_second": 4.999245022507189,
+      "supply": {
+        "sample_count": 876,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.0871331188827753,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.838269,
+      "all_accepted_execution_p95": 0.589663
+    },
+    {
+      "point_id": "T3-R6-E8-G4-P2-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.0018336919602,
+      "measured_successes": 331,
+      "throughput_per_second": 5.516498074030553,
+      "sync_success_p95_seconds": 0.5741337859071791,
+      "sync_success_p99_seconds": 0.7556035490706563
+    },
+    {
+      "point_id": "T3-R6-E8-G4-P2-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01225399971008,
+      "measured_successes": 294,
+      "throughput_per_second": 4.898999461033746,
+      "supply": {
+        "sample_count": 850,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09184073098003864,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 11,
+      "sync_rejections": 166,
+      "sync_success_p95_seconds": 0.5495625499170274,
+      "combined_successes": 305,
+      "combined_throughput": 5.082295359235689,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G4-P2-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01228213310242,
+      "measured_successes": 259,
+      "throughput_per_second": 4.315783216268277,
+      "supply": {
+        "sample_count": 850,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09024596214294434,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 51,
+      "sync_rejections": 394,
+      "sync_success_p95_seconds": 0.521746524143964,
+      "combined_successes": 310,
+      "combined_throughput": 5.165609254992918,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P6-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.009347915649414,
+      "measured_successes": 747,
+      "throughput_per_second": 12.448060609657036,
+      "supply": {
+        "sample_count": 891,
+        "ready_queue_min": 10,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08803179790265858,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 2.022311,
+      "all_accepted_execution_p95": 0.858974
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P6-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00293519417755,
+      "measured_successes": 777,
+      "throughput_per_second": 12.949366518246544,
+      "sync_success_p95_seconds": 0.8733977328520268,
+      "sync_success_p99_seconds": 1.1984425080008805
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P6-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.012640953063965,
+      "measured_successes": 706,
+      "throughput_per_second": 11.764188157494424,
+      "supply": {
+        "sample_count": 861,
+        "ready_queue_min": 9,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09416615194641054,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 45,
+      "sync_rejections": 134,
+      "sync_success_p95_seconds": 0.8643754520453513,
+      "combined_successes": 751,
+      "combined_throughput": 12.514030178864466,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P6-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01245594024658,
+      "measured_successes": 647,
+      "throughput_per_second": 10.781095188708946,
+      "supply": {
+        "sample_count": 860,
+        "ready_queue_min": 9,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09272672096267343,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 120,
+      "sync_rejections": 325,
+      "sync_success_p95_seconds": 0.8379524929914623,
+      "combined_successes": 767,
+      "combined_throughput": 12.780680076877529,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P3-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00980806350708,
+      "measured_successes": 433,
+      "throughput_per_second": 7.215487167393794,
+      "supply": {
+        "sample_count": 876,
+        "ready_queue_min": 5,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.0862572758924216,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.898741,
+      "all_accepted_execution_p95": 0.682297
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P3-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00084777409211,
+      "measured_successes": 458,
+      "throughput_per_second": 7.633225479153326,
+      "sync_success_p95_seconds": 0.6735006920062006,
+      "sync_success_p99_seconds": 0.84713070304133
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P3-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.0191388130188,
+      "measured_successes": 411,
+      "throughput_per_second": 6.847815682267831,
+      "supply": {
+        "sample_count": 852,
+        "ready_queue_min": 5,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09044294408522546,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 18,
+      "sync_rejections": 160,
+      "sync_success_p95_seconds": 0.5841378329787403,
+      "combined_successes": 429,
+      "combined_throughput": 7.147720018717517,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P3-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.02762508392334,
+      "measured_successes": 381,
+      "throughput_per_second": 6.347077690768742,
+      "supply": {
+        "sample_count": 849,
+        "ready_queue_min": 5,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09433690505102277,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 65,
+      "sync_rejections": 381,
+      "sync_success_p95_seconds": 0.7389188159722835,
+      "combined_successes": 446,
+      "combined_throughput": 7.429912467409079,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P2-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00900197029114,
+      "measured_successes": 303,
+      "throughput_per_second": 5.049242447824866,
+      "supply": {
+        "sample_count": 873,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08146190899424255,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.792905,
+      "all_accepted_execution_p95": 0.58416
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P2-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00090120616369,
+      "measured_successes": 327,
+      "throughput_per_second": 5.449918141669652,
+      "sync_success_p95_seconds": 0.5905672230292112,
+      "sync_success_p99_seconds": 0.713016765890643
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P2-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01114797592163,
+      "measured_successes": 292,
+      "throughput_per_second": 4.865762609926403,
+      "supply": {
+        "sample_count": 841,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08883380400948226,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 15,
+      "sync_rejections": 164,
+      "sync_success_p95_seconds": 0.5562448080163449,
+      "combined_successes": 307,
+      "combined_throughput": 5.115716168655499,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G6-P2-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01111388206482,
+      "measured_successes": 274,
+      "throughput_per_second": 4.565820933410283,
+      "supply": {
+        "sample_count": 839,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09933995502069592,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 37,
+      "sync_rejections": 408,
+      "sync_success_p95_seconds": 0.5940572668332607,
+      "combined_successes": 311,
+      "combined_throughput": 5.182373395221161,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P8-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01478815078735,
+      "measured_successes": 904,
+      "throughput_per_second": 15.062954112721302,
+      "supply": {
+        "sample_count": 883,
+        "ready_queue_min": 14,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08835229696705937,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 2.0952,
+      "all_accepted_execution_p95": 1.071396
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P8-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.0012399868574,
+      "measured_successes": 880,
+      "throughput_per_second": 14.666363565032226,
+      "sync_success_p95_seconds": 1.112387390108779,
+      "sync_success_p99_seconds": 1.392129953019321
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P8-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01702308654785,
+      "measured_successes": 832,
+      "throughput_per_second": 13.862733558114174,
+      "supply": {
+        "sample_count": 853,
+        "ready_queue_min": 11,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08880653697997332,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 55,
+      "sync_rejections": 124,
+      "sync_success_p95_seconds": 0.9178287719842046,
+      "combined_successes": 887,
+      "combined_throughput": 14.77914022361451,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P8-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.011740922927856,
+      "measured_successes": 727,
+      "throughput_per_second": 12.114296116382873,
+      "supply": {
+        "sample_count": 847,
+        "ready_queue_min": 14,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.12277877610176802,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 172,
+      "sync_rejections": 273,
+      "sync_success_p95_seconds": 1.0452251809183508,
+      "combined_successes": 899,
+      "combined_throughput": 14.980401937590374,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P4-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01035213470459,
+      "measured_successes": 559,
+      "throughput_per_second": 9.315059487490071,
+      "supply": {
+        "sample_count": 875,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08572864811867476,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.905964,
+      "all_accepted_execution_p95": 0.757704
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P4-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00199401797727,
+      "measured_successes": 589,
+      "throughput_per_second": 9.816340434011726,
+      "sync_success_p95_seconds": 0.7307645271066576,
+      "sync_success_p99_seconds": 0.9144604939501733
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P4-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01751899719238,
+      "measured_successes": 529,
+      "throughput_per_second": 8.814093098795814,
+      "supply": {
+        "sample_count": 842,
+        "ready_queue_min": 6,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10191541304811835,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 34,
+      "sync_rejections": 144,
+      "sync_success_p95_seconds": 0.5735967189539224,
+      "combined_successes": 563,
+      "combined_throughput": 9.380594356563408,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P4-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.012813091278076,
+      "measured_successes": 488,
+      "throughput_per_second": 8.131596818462143,
+      "supply": {
+        "sample_count": 836,
+        "ready_queue_min": 6,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09360237186774611,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 88,
+      "sync_rejections": 355,
+      "sync_success_p95_seconds": 0.6306249930057675,
+      "combined_successes": 576,
+      "combined_throughput": 9.597950343102857,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P2-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.014939069747925,
+      "measured_successes": 305,
+      "throughput_per_second": 5.082067977200415,
+      "supply": {
+        "sample_count": 860,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08673396683298051,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.77154,
+      "all_accepted_execution_p95": 0.574839
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P2-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.001130397897214,
+      "measured_successes": 331,
+      "throughput_per_second": 5.516562734818079,
+      "sync_success_p95_seconds": 0.5966891490388662,
+      "sync_success_p99_seconds": 0.714698018040508
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P2-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.02506995201111,
+      "measured_successes": 291,
+      "throughput_per_second": 4.847974358591317,
+      "supply": {
+        "sample_count": 826,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09829785604961216,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 2.959204962389004,
+      "sync_successes": 17,
+      "sync_rejections": 161,
+      "sync_success_p95_seconds": 0.5884883450344205,
+      "combined_successes": 308,
+      "combined_throughput": 5.131189355484968,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R6-E8-G8-P2-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01404094696045,
+      "measured_successes": 271,
+      "throughput_per_second": 4.515609942671682,
+      "supply": {
+        "sample_count": 826,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09550442500039935,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.39801240597251,
+      "sync_successes": 45,
+      "sync_rejections": 400,
+      "sync_success_p95_seconds": 0.5083383780438453,
+      "combined_successes": 316,
+      "combined_throughput": 5.265434471897606,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P4-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.010079860687256,
+      "measured_successes": 567,
+      "throughput_per_second": 9.448412688606386,
+      "supply": {
+        "sample_count": 865,
+        "ready_queue_min": 6,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09359346493147314,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.877476,
+      "all_accepted_execution_p95": 0.694553
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P4-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.000068907858804,
+      "measured_successes": 585,
+      "throughput_per_second": 9.749988802485804,
+      "sync_success_p95_seconds": 0.7148893510457128,
+      "sync_success_p99_seconds": 0.9368668859824538
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P4-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.015658140182495,
+      "measured_successes": 541,
+      "throughput_per_second": 9.01431421007416,
+      "supply": {
+        "sample_count": 833,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09609100013040006,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 34,
+      "sync_rejections": 152,
+      "sync_success_p95_seconds": 0.7040528871584684,
+      "combined_successes": 575,
+      "combined_throughput": 9.580833032888432,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P4-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.0130341053009,
+      "measured_successes": 490,
+      "throughput_per_second": 8.164892965421968,
+      "supply": {
+        "sample_count": 826,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09963711188174784,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 95,
+      "sync_rejections": 369,
+      "sync_success_p95_seconds": 0.6248932708986104,
+      "combined_successes": 585,
+      "combined_throughput": 9.747882417901737,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P2-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01087784767151,
+      "measured_successes": 305,
+      "throughput_per_second": 5.082411904958233,
+      "supply": {
+        "sample_count": 854,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08358025108464062,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.781394,
+      "all_accepted_execution_p95": 0.581928
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P2-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.000076713971794,
+      "measured_successes": 333,
+      "throughput_per_second": 5.5499929039666815,
+      "sync_success_p95_seconds": 0.5739455970469862,
+      "sync_success_p99_seconds": 0.6038978470023721
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P2-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01283884048462,
+      "measured_successes": 304,
+      "throughput_per_second": 5.065582729856162,
+      "supply": {
+        "sample_count": 820,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09581811213865876,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 5,
+      "sync_rejections": 180,
+      "sync_success_p95_seconds": 0.5238500989507884,
+      "combined_successes": 309,
+      "combined_throughput": 5.148898235281428,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G4-P2-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 4,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01307797431946,
+      "measured_successes": 281,
+      "throughput_per_second": 4.6823127472356,
+      "supply": {
+        "sample_count": 820,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09598385402932763,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 34,
+      "sync_rejections": 429,
+      "sync_success_p95_seconds": 0.5536820408888161,
+      "combined_successes": 315,
+      "combined_throughput": 5.24885592661642,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P6-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.010478019714355,
+      "measured_successes": 811,
+      "throughput_per_second": 13.514306613814577,
+      "supply": {
+        "sample_count": 864,
+        "ready_queue_min": 9,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09009137703105807,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.885635,
+      "all_accepted_execution_p95": 0.790383
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P6-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.0001505180262,
+      "measured_successes": 816,
+      "throughput_per_second": 13.599965882666316,
+      "sync_success_p95_seconds": 0.8357161800377071,
+      "sync_success_p99_seconds": 1.043592931004241
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P6-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.028292179107666,
+      "measured_successes": 762,
+      "throughput_per_second": 12.694014311225192,
+      "supply": {
+        "sample_count": 828,
+        "ready_queue_min": 9,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09771768003702164,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 32,
+      "sync_rejections": 153,
+      "sync_success_p95_seconds": 0.6087394440546632,
+      "combined_successes": 794,
+      "combined_throughput": 13.227096277050922,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P6-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01280093193054,
+      "measured_successes": 666,
+      "throughput_per_second": 11.097632332731976,
+      "supply": {
+        "sample_count": 822,
+        "ready_queue_min": 10,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10081437998451293,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 140,
+      "sync_rejections": 323,
+      "sync_success_p95_seconds": 0.7174751809798181,
+      "combined_successes": 806,
+      "combined_throughput": 13.430467958231189,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P3-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.03862714767456,
+      "measured_successes": 447,
+      "throughput_per_second": 7.4452068815719645,
+      "supply": {
+        "sample_count": 853,
+        "ready_queue_min": 4,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08577442984096706,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.851204,
+      "all_accepted_execution_p95": 0.615584
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P3-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00193883990869,
+      "measured_successes": 476,
+      "throughput_per_second": 7.933076983895749,
+      "sync_success_p95_seconds": 0.6206500828266144,
+      "sync_success_p99_seconds": 0.8447484248317778
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P3-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.030587911605835,
+      "measured_successes": 413,
+      "throughput_per_second": 6.879826008169976,
+      "supply": {
+        "sample_count": 819,
+        "ready_queue_min": 5,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09834895306266844,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 31,
+      "sync_rejections": 154,
+      "sync_success_p95_seconds": 0.6438502259552479,
+      "combined_successes": 444,
+      "combined_throughput": 7.3962294131415725,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P3-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 3,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.013351917266846,
+      "measured_successes": 376,
+      "throughput_per_second": 6.265272443344704,
+      "supply": {
+        "sample_count": 814,
+        "ready_queue_min": 4,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.0983179030008614,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 77,
+      "sync_rejections": 386,
+      "sync_success_p95_seconds": 0.6324504159856588,
+      "combined_successes": 453,
+      "combined_throughput": 7.548320257540294,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P2-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01166296005249,
+      "measured_successes": 308,
+      "throughput_per_second": 5.1323356962299815,
+      "supply": {
+        "sample_count": 847,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08815477509051561,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.777376,
+      "all_accepted_execution_p95": 0.564133
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P2-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.000385742867365,
+      "measured_successes": 331,
+      "throughput_per_second": 5.516631199981045,
+      "sync_success_p95_seconds": 0.5750262311194092,
+      "sync_success_p99_seconds": 0.6583644379861653
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P2-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01325011253357,
+      "measured_successes": 290,
+      "throughput_per_second": 4.832266198817892,
+      "supply": {
+        "sample_count": 813,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.0963900990318507,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 19,
+      "sync_rejections": 167,
+      "sync_success_p95_seconds": 0.5538008159492165,
+      "combined_successes": 309,
+      "combined_throughput": 5.148862949774926,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G6-P2-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 6,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01323580741882,
+      "measured_successes": 236,
+      "throughput_per_second": 3.9324658439901308,
+      "supply": {
+        "sample_count": 810,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09513455396518111,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 76,
+      "sync_rejections": 387,
+      "sync_success_p95_seconds": 0.5752171440981328,
+      "combined_successes": 312,
+      "combined_throughput": 5.1988531496818675,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P8-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.027304887771606,
+      "measured_successes": 934,
+      "throughput_per_second": 15.559585787604947,
+      "supply": {
+        "sample_count": 855,
+        "ready_queue_min": 14,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09029037388972938,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 2.016816,
+      "all_accepted_execution_p95": 1.045304
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P8-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00209922809154,
+      "measured_successes": 965,
+      "throughput_per_second": 16.08277064326793,
+      "sync_success_p95_seconds": 0.9543076900299639,
+      "sync_success_p99_seconds": 1.2969570739660412
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P8-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.02189803123474,
+      "measured_successes": 852,
+      "throughput_per_second": 14.194819356705922,
+      "supply": {
+        "sample_count": 816,
+        "ready_queue_min": 12,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.12039707507938147,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 76,
+      "sync_rejections": 109,
+      "sync_success_p95_seconds": 0.9741486820857972,
+      "combined_successes": 928,
+      "combined_throughput": 15.46102390026185,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P8-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01439094543457,
+      "measured_successes": 763,
+      "throughput_per_second": 12.713617317115222,
+      "supply": {
+        "sample_count": 811,
+        "ready_queue_min": 12,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.143206489039585,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 194,
+      "sync_rejections": 269,
+      "sync_success_p95_seconds": 0.8816159460693598,
+      "combined_successes": 957,
+      "combined_throughput": 15.946175324350286,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P4-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.0117449760437,
+      "measured_successes": 568,
+      "throughput_per_second": 9.464813933118291,
+      "supply": {
+        "sample_count": 847,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08569220709614456,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.824299,
+      "all_accepted_execution_p95": 0.686214
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P4-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00096539221704,
+      "measured_successes": 605,
+      "throughput_per_second": 10.08317109641834,
+      "sync_success_p95_seconds": 0.6484903551172465,
+      "sync_success_p99_seconds": 0.863637613831088
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P4-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.012300968170166,
+      "measured_successes": 534,
+      "throughput_per_second": 8.898175730392799,
+      "supply": {
+        "sample_count": 809,
+        "ready_queue_min": 6,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10834120796062052,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 35,
+      "sync_rejections": 149,
+      "sync_success_p95_seconds": 0.6346190061885864,
+      "combined_successes": 569,
+      "combined_throughput": 9.481389495493449,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P4-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01224613189697,
+      "measured_successes": 501,
+      "throughput_per_second": 8.348296094415213,
+      "supply": {
+        "sample_count": 806,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09618326602503657,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 82,
+      "sync_rejections": 382,
+      "sync_success_p95_seconds": 0.5611300601158291,
+      "combined_successes": 583,
+      "combined_throughput": 9.714683878331476,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P2-async_saturation",
+      "mode": "async_saturation",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01029109954834,
+      "measured_successes": 304,
+      "throughput_per_second": 5.06579778951094,
+      "supply": {
+        "sample_count": 834,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.08742171083576977,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "all_accepted_wait_p95": 1.83697,
+      "all_accepted_execution_p95": 0.585289
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P2-sync_prepared",
+      "mode": "sync_prepared",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.00141627085395,
+      "measured_successes": 328,
+      "throughput_per_second": 5.466537631701336,
+      "sync_success_p95_seconds": 0.5833319451194257,
+      "sync_success_p99_seconds": 0.7585565899498761
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P2-mixed_20",
+      "mode": "mixed_20",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.014129877090454,
+      "measured_successes": 292,
+      "throughput_per_second": 4.865520846474305,
+      "supply": {
+        "sample_count": 802,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10233958484604955,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 3.075590165916385,
+      "sync_successes": 19,
+      "sync_rejections": 167,
+      "sync_success_p95_seconds": 0.5246323000174016,
+      "combined_successes": 311,
+      "combined_throughput": 5.182112956347632,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    },
+    {
+      "point_id": "T3-R8-E8-G8-P2-mixed_50",
+      "mode": "mixed_50",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 2,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.03291702270508,
+      "measured_successes": 287,
+      "throughput_per_second": 4.780710554035774,
+      "supply": {
+        "sample_count": 801,
+        "ready_queue_min": 3,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.1007710478734225,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "sync_offered_rate": 7.688975414790963,
+      "sync_successes": 25,
+      "sync_rejections": 437,
+      "sync_success_p95_seconds": 0.6022272510454059,
+      "combined_successes": 312,
+      "combined_throughput": 5.197148755606833,
+      "sync_scope": "HTTP responses in common epoch window; all-project-token usage reconciliation includes tail"
+    }
+  ],
+  "planned_points": 64,
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 244,
+  "tool_fix_commit": "1c2239c",
+  "runtime_verification": {
+    "state": "COMPLETE",
+    "points": 64,
+    "original_parameters_restored": true,
+    "parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "generation_before": 204,
+    "generation_after": 244,
+    "idle": true,
+    "unknown": 0,
+    "paused": false,
+    "monitor_ok": true,
+    "alerts": [],
+    "runtime_image_binding_verified": true,
+    "source_files_verified": 256,
+    "formal_application_image_changed": false,
+    "vm_worker_engine_restart": false,
+    "old_failed_evidence_unchanged": true,
+    "observation_ssh_transient_once_recovered_without_job_restart": true
+  },
+  "async_accepted_tasks": 24096,
+  "async_all_succeeded_attempt_and_usage_one": true,
+  "async_all_results_downloaded_text_verified": true,
+  "sync_successes_including_tails": 10643,
+  "sync_capacity_rejections_including_tails": 8331,
+  "sync_once_usage_verified": true,
+  "pure_sync_points": 16,
+  "pure_async_points": 16,
+  "mixed_points": 32,
+  "sampled_ready_queue_min": 3,
+  "max_observed_sample_gap_seconds": 0.143206489039585,
+  "single_project_only": true,
+  "multi_project_global_sharing_verified": false,
+  "old_interruption_preserved": true,
+  "next_phases_started": false,
+  "final_production_recommendation": false,
+  "private_mac_evidence_backup": {
+    "verified": true,
+    "bytes": 13232745,
+    "sha256": "68aa2f9a2d74275dfd688c2f14ed62c6a0bc978827d90fc0773cca2d2fade8c3",
+    "private_mac_copy": true
+  }
+}
