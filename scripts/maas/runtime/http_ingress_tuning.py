@@ -73,6 +73,15 @@ def run(config):
     params=queue['selected_candidate']['parameters'];q=min(params['global_queue'],params['project_queue'])
     previous=config['queue_proof_file'];cases=[]
     for case in ('T4-HTTP-ACCEPT','T4-HTTP-REJECT','T4-HTTP-RECOVER'):
+        if case=='T4-HTTP-RECOVER':
+            from scripts.maas.runtime.http_recovery_continuity import run as recover
+            folder=out/case.lower()
+            try:
+                result=recover({**config,'output_directory':str(folder),'reject_proof_file':previous})
+                previous=str(folder/'status.json');cases.append({'case_id':case,'state':result['state'],'proof_file':previous})
+            except BaseException as exc:
+                state.update(state='INTERRUPTED_REQUIRES_INSPECTION',error_class=type(exc).__name__);replace_private(out/'status.json',state);raise
+            continue
         tiers=[c for c in (1,2,4,8,16) if c<=q] if case.endswith('ACCEPT') else [16] if case.endswith('REJECT') else [1]
         points=[]
         for c in tiers:
