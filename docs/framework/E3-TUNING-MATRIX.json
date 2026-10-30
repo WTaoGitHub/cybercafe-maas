@@ -576,5 +576,14 @@
     "old_selection_reclassified": false,
     "higher_stages_executed_on_new_profile": false,
     "automatic_resume": false
+  },
+  "next_queue_policy": {
+    "policy_id": "E3-T4-QOS-V2",
+    "file": "E3-QUEUE-QOS-V2.json",
+    "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+    "state": "EXPERIMENT_TARGETS_DEFINED_NOT_EXECUTABLE",
+    "execution_enabled": false,
+    "driver_v2_implemented": false,
+    "old_v1_gate_unchanged": true
   }
 }

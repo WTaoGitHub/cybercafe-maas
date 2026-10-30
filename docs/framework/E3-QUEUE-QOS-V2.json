@@ -1,0 +1,137 @@
+{
+  "policy_id": "E3-T4-QOS-V2",
+  "defined_on": "2026-10-30",
+  "state": "EXPERIMENT_TARGETS_DEFINED_NOT_EXECUTABLE",
+  "scope": "internal experimental targets; no consumer SLA or capacity promise",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "execution_enabled": false,
+  "driver_v2_implemented": false,
+  "old_v1_results_reclassified": false,
+  "ordinary_inputs": "same fixed 40 ordinary images and order; input hash recorded per run; no substitution after seeing results",
+  "reference_mu": {
+    "scope": "one exact framework/model/input/hardware/R/E/G/P/M tuple",
+    "source": "minimum successful completion throughput across 3 valid independent saturation windows",
+    "window_min_seconds": 60,
+    "window_min_successes": 200,
+    "supply_evidence_required": true,
+    "old_profile_reference_allowed": false,
+    "http_202_or_429_rate_allowed": false,
+    "validity": "capture fingerprints and source proofs; drift invalidates reference"
+  },
+  "queue_candidates": [
+    10,
+    25,
+    50,
+    100,
+    200
+  ],
+  "single_project_main_sweep": {
+    "global_queue_equals_project_queue": true,
+    "start_requires_idle_empty_queue_no_unknown": true,
+    "refill_reserve": "Q > 2*min(E,G,P)"
+  },
+  "classes": [
+    {
+      "id": "normal",
+      "arrival_rate_multipliers": [
+        0.5,
+        0.8
+      ],
+      "measurement_seconds": 180,
+      "queue_wait_p95_max_seconds": 5,
+      "queue_full_rejections_allowed": false,
+      "natural_empty_queue_allowed": true,
+      "selected_candidate_independent_repeats": 3
+    },
+    {
+      "id": "bounded_burst",
+      "counts": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "http_clients": 16,
+      "queue_wait_p95_max_seconds": 15,
+      "queue_full_rejections_allowed": true,
+      "acceptance_floor": "accepted >= min(submitted_count, effective_queue_capacity_at_idle_start)",
+      "submission_span_must_be_reported": true,
+      "instantaneous_arrival_claim": false
+    },
+    {
+      "id": "short_rate_burst",
+      "arrival_rate_multiplier": 2,
+      "measurement_seconds": 10,
+      "http_clients": 16,
+      "queue_wait_p95_max_seconds": 15,
+      "queue_full_rejections_allowed": true
+    },
+    {
+      "id": "capacity_edge_and_overload",
+      "arrival_rate_multipliers": [
+        1.0,
+        1.2
+      ],
+      "measurement_seconds": 180,
+      "queue_wait_p95_max_seconds": 30,
+      "queue_full_rejections_allowed": true,
+      "interpretation": "1.0 is near-capacity diagnostic, not an overload guarantee; a point without a full queue does not prove queue-full behavior"
+    }
+  ],
+  "common": {
+    "accepted_success_fraction": 1,
+    "task_max_attempts": 1,
+    "task_deadline_seconds": 120,
+    "model_runtime_budget_changed": false,
+    "unexpected_5xx_allowed": false,
+    "unknown_allowed": false,
+    "lost_task_allowed": false,
+    "duplicate_usage_allowed": false,
+    "rejected_fresh_requests_create_task": false,
+    "automatic_request_retry": false,
+    "generator_late_or_unsent": "INCONCLUSIVE_GENERATOR; do not lower actual arrivals silently",
+    "drain_deadline_seconds": 150,
+    "drain_clock": "stop new submissions to all accepted tasks terminal; downloads measured separately",
+    "timeout_extension_allowed": false,
+    "early_guard_stop": "preserve failure and inspect accepted intents; no automatic replay/resume",
+    "http_client_budget": 16
+  },
+  "measurement": {
+    "queue_wait": "database task created_at to attempt started_at; accepted tasks only",
+    "wait_p99_and_max_required": true,
+    "waiting_is_total_latency": false,
+    "end_to_end": "report submission, queue, execution/result commit observation, polling and download separately; updated_at alone is not durable completion or client latency proof",
+    "empty_accepted_set": "cannot pass latency on an empty sample",
+    "counts": [
+      "target",
+      "sent",
+      "unsent",
+      "accepted",
+      "queue_full_rejected",
+      "other_errors",
+      "succeeded",
+      "failed"
+    ]
+  },
+  "selection": {
+    "rule": "smallest tested queue satisfying reserve, all scenario-specific budgets and correctness; confirm normals 3 independent times before final T4 gate",
+    "all_rejections_successful_configuration": false,
+    "saturated_capacity_ranking": false,
+    "mixed_parameter_best_values_may_be_combined": false,
+    "no_eligible_candidate": "stop with no recommendation; preserve original failed run; revise policy only as a new explicit version before retest"
+  },
+  "prerequisites": [
+    "bind new profile and proofs without accepting old-profile stage results",
+    "implement versioned policy validation and classification before mutations",
+    "independent tests for thresholds and mixed profiles",
+    "revalidate candidate tuple and per-tuple conservative mu on new framework",
+    "freeze policy JSON SHA256 in every run; record all point outcomes including rejected candidates"
+  ],
+  "not_in_scope": [
+    "business SLA commitment",
+    "production limit changes",
+    "write lock enhancement or new monitoring",
+    "T4 HTTP capacity acceptance",
+    "T5 or T6 execution"
+  ]
+}
