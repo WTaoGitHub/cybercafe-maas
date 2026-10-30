@@ -1,0 +1,328 @@
+{
+  "case_id": "T2-ASYNC",
+  "state": "COMPLETE",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+  "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+  "points": [
+    {
+      "point_id": "T2-ASYNC-4-4",
+      "parameters": {
+        "replicas": 4,
+        "executors": 4,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.03588819503784,
+      "measured_successes": 536,
+      "accepted_tasks": 556,
+      "throughput_per_second": 8.927993173994587,
+      "supply": {
+        "sample_count": 806,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09102938487194479,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 2.7660463379999998,
+        "elapsed_seconds": 72.69833704386838,
+        "process_peak_rss_bytes": 58683392
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-4-6",
+      "parameters": {
+        "replicas": 4,
+        "executors": 6,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.042157888412476,
+      "measured_successes": 684,
+      "accepted_tasks": 708,
+      "throughput_per_second": 11.391995625327201,
+      "supply": {
+        "sample_count": 811,
+        "ready_queue_min": 10,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09383530495688319,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.1663371700000003,
+        "elapsed_seconds": 76.17557730595581,
+        "process_peak_rss_bytes": 64155648
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-4-8",
+      "parameters": {
+        "replicas": 4,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.02091884613037,
+      "measured_successes": 774,
+      "accepted_tasks": 814,
+      "throughput_per_second": 12.895504015595403,
+      "supply": {
+        "sample_count": 807,
+        "ready_queue_min": 14,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.0942368139512837,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.538449150999999,
+        "elapsed_seconds": 79.03787341993302,
+        "process_peak_rss_bytes": 71192576
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-6-4",
+      "parameters": {
+        "replicas": 6,
+        "executors": 4,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01712703704834,
+      "measured_successes": 554,
+      "accepted_tasks": 567,
+      "throughput_per_second": 9.230698424768283,
+      "supply": {
+        "sample_count": 801,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09423720790073276,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 2.7924499439999995,
+        "elapsed_seconds": 72.93835231219418,
+        "process_peak_rss_bytes": 71454720
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-6-6",
+      "parameters": {
+        "replicas": 6,
+        "executors": 6,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.03077793121338,
+      "measured_successes": 761,
+      "accepted_tasks": 782,
+      "throughput_per_second": 12.676830556352215,
+      "supply": {
+        "sample_count": 805,
+        "ready_queue_min": 10,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10818607010878623,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.369656926000001,
+        "elapsed_seconds": 77.46554940892383,
+        "process_peak_rss_bytes": 71467008
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-6-8",
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.016119956970215,
+      "measured_successes": 888,
+      "accepted_tasks": 920,
+      "throughput_per_second": 14.79602481194502,
+      "supply": {
+        "sample_count": 804,
+        "ready_queue_min": 14,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10112174297682941,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.728005317000001,
+        "elapsed_seconds": 79.27775144390762,
+        "process_peak_rss_bytes": 71778304
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-8-4",
+      "parameters": {
+        "replicas": 8,
+        "executors": 4,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.01769995689392,
+      "measured_successes": 564,
+      "accepted_tasks": 582,
+      "throughput_per_second": 9.397227824543053,
+      "supply": {
+        "sample_count": 799,
+        "ready_queue_min": 5,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09470753092318773,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 2.9111108409999993,
+        "elapsed_seconds": 73.52982474700548,
+        "process_peak_rss_bytes": 71778304
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-8-6",
+      "parameters": {
+        "replicas": 8,
+        "executors": 6,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.021137952804565,
+      "measured_successes": 783,
+      "accepted_tasks": 804,
+      "throughput_per_second": 13.045404114391891,
+      "supply": {
+        "sample_count": 798,
+        "ready_queue_min": 9,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09689753293059766,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.4334280560000003,
+        "elapsed_seconds": 77.52525421301834,
+        "process_peak_rss_bytes": 72945664
+      }
+    },
+    {
+      "point_id": "T2-ASYNC-8-8",
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "state": "COMPLETE",
+      "measurement_seconds": 60.02100086212158,
+      "measured_successes": 923,
+      "accepted_tasks": 956,
+      "throughput_per_second": 15.377950829581925,
+      "supply": {
+        "sample_count": 801,
+        "ready_queue_min": 13,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09603679296560585,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "generator": {
+        "cpu_seconds": 3.868344772999997,
+        "elapsed_seconds": 80.69341149996035,
+        "process_peak_rss_bytes": 72945664
+      }
+    }
+  ],
+  "screened_candidates": [
+    {
+      "parameters": {
+        "replicas": 6,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "screening_throughput": 14.79602481194502
+    },
+    {
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "screening_throughput": 15.377950829581925
+    }
+  ],
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 194,
+  "accepted_tasks": 6689,
+  "all_accepted_succeeded_attempt_and_metering_one": true,
+  "all_results_downloaded_and_reference_text_verified": true,
+  "all_windows_sampled_backlog_positive": true,
+  "monitor_ok_after_restoration": true,
+  "private_mac_evidence_backup": {
+    "verified": true,
+    "sha256": "1eb7d8e13702087e951d7bebc7e24411c9e97268b4edef4cdf96f7f02db33d88",
+    "bytes": 3128411,
+    "private_mac_copy": true
+  },
+  "final_recommendation": false
+}
