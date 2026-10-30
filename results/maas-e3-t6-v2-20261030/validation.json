@@ -1,0 +1,66 @@
+{
+  "state": "STOPPED_PREFLIGHT_CONSTRAINT",
+  "reason": "Fixed ordinary input lifetime cannot cover remaining T6; preserve expiry and quota policy",
+  "accepted": 6121,
+  "intents": 6121,
+  "unconfirmed_intents": 0,
+  "succeeded": 6121,
+  "exactly_once_attempt_and_metering": true,
+  "downloaded_and_text_verified": 6121,
+  "formal_five_minute_points": 0,
+  "two_hour_soak_started": false,
+  "unknown": 0,
+  "runtime_restored": true,
+  "restored_generation": 348,
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "vm_worker_docker_daemon_restarts": 0,
+  "requests_replayed": 0,
+  "inputs_expiry_changed": false,
+  "quota_changed": false,
+  "case_id": "T6-CONFIRM_AND_SOAK",
+  "completion": false,
+  "diagnosis": {
+    "diagnostics_completed": 2,
+    "input_lifetime": {
+      "count": 40,
+      "minimum_remaining_seconds": 5284.617438
+    },
+    "storage": {
+      "current_bytes": 1666787681,
+      "expired_bytes": 0,
+      "expired_count": 0,
+      "earliest_result_expiry_seconds": 5365.888491,
+      "project_quota_bytes": 2147483648,
+      "soak_quota_budget_fraction": 0.9,
+      "observed_ordinary_mean_result_bytes": 7411.68583564777
+    },
+    "input_renewal_api_available": false,
+    "source_evidence": [
+      "maas_platform/service.py:82 requires unexpired input on new submission",
+      "maas_platform/service.py:116-117 rejects expired download",
+      "maas_platform/api.py provides upload/download, no renewal route",
+      "scripts/maas/runtime/soak_tuning.py:42-44 refuses insufficient budget without cleanup or quota increase"
+    ],
+    "blocked_before_two_hour_soak": true,
+    "input_expiry_or_quota_changed": false,
+    "automatic_replay": false
+  },
+  "monitor_ok": true,
+  "monitor_alerts": [],
+  "source_files_verified": 258,
+  "claim_proof_sha256": "d3ffe8cfd8b885cb80fba131bf43257091a4e6b69b72bcdfd0427046cc83351a",
+  "interrupted_status_sha256": "7fce8d12619e6c8026a9133bb3a6d5f2ad0e3acf6dfd588a03844bf6f3e98d9f",
+  "final_checked_at_utc": "2026-10-30T11:34:27.892166+00:00",
+  "throughput_conclusion": null,
+  "production_promoted": false,
+  "sla_claim": false,
+  "old_failed_evidence_changed": false
+}
