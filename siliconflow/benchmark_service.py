@@ -11,18 +11,20 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'local-results/service-benchmark'
+MODEL = 'deepseek-ai/DeepSeek-OCR'
+PROMPT = '<image>\nFree OCR.'
 
 
 def call(image, max_tokens=2048):
     key = (ROOT / '.mykey').read_text().strip()
-    payload = {'model': 'deepseek-ai/DeepSeek-OCR', 'stream': False,
+    payload = {'model': MODEL, 'stream': False,
                'temperature': 0, 'max_tokens': max_tokens,
                'messages': [{'role': 'user', 'content': [
                    {'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(image.read_bytes()).decode()}},
-                   {'type': 'text', 'text': '<image>\nFree OCR.'}]}]}
+                   {'type': 'text', 'text': PROMPT}]}]}
     body = json.dumps(payload).encode()
     start = time.monotonic()
-    record = {'image': image.name, 'request_bytes': len(body), 'max_tokens': max_tokens}
+    record = {'model': MODEL, 'prompt': PROMPT, 'image': image.name, 'request_bytes': len(body), 'max_tokens': max_tokens}
     req = urllib.request.Request('https://api.siliconflow.cn/v1/chat/completions', data=body,
                                  headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
     try:
@@ -64,9 +66,18 @@ def run_group(label, image, concurrency, count, max_tokens=2048):
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--model', default=MODEL)
+    parser.add_argument('--prompt', default=PROMPT)
+    parser.add_argument('--label', default='ramp')
+    args = parser.parse_args()
+    if not args.label or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in args.label):
+        parser.error('--label must contain only letters, digits, hyphens or underscores')
+    MODEL, PROMPT = args.model, args.prompt
     image = ROOT / 'local-results/smoke-test.png'
     for c in (1, 2, 4, 8, 16, 32):
-        records = run_group('ramp-c' + str(c), image, c, max(4, c * 2))
+        records = run_group(args.label + '-c' + str(c), image, c, max(4, c * 2))
         if any(r['status'] != 200 for r in records):
             print('STOP: error observed; no higher concurrency and no retries', flush=True)
             break
