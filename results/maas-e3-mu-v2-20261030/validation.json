@@ -1,0 +1,243 @@
+{
+  "case_id": "T3-MU",
+  "state": "COMPLETE",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+  "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+  "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+  "points": [
+    {
+      "point_id": "T3-MU-c0-r1",
+      "state": "COMPLETE",
+      "parameters": {
+        "replicas": 10,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "measurement_seconds": 60.01713800430298,
+      "measured_successes": 1211,
+      "throughput_per_second": 20.177569945324223,
+      "supply": {
+        "sample_count": 842,
+        "ready_queue_min": 21,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10101760900579393,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "run_id": "t3-mu-000-capacity-muv2r1",
+      "source_summary_sha256": "fab33da7c0c443c3c0cc7ab2692a0a46f9087fde42e8b25d21e378b2bd0bfe9d"
+    },
+    {
+      "point_id": "T3-MU-c0-r2",
+      "state": "COMPLETE",
+      "parameters": {
+        "replicas": 10,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "measurement_seconds": 60.020427942276,
+      "measured_successes": 1212,
+      "throughput_per_second": 20.193124933491443,
+      "supply": {
+        "sample_count": 873,
+        "ready_queue_min": 20,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09952425491064787,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "run_id": "t3-mu-001-capacity-muv2r1",
+      "source_summary_sha256": "605f09d4070bc9c95bc5589e483d57ce49c2fbfd938ae379bc6ff7635e9871d1"
+    },
+    {
+      "point_id": "T3-MU-c0-r3",
+      "state": "COMPLETE",
+      "parameters": {
+        "replicas": 10,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "measurement_seconds": 60.020203828811646,
+      "measured_successes": 1217,
+      "throughput_per_second": 20.276505615860646,
+      "supply": {
+        "sample_count": 873,
+        "ready_queue_min": 21,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09621906280517578,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "run_id": "t3-mu-002-capacity-muv2r1",
+      "source_summary_sha256": "b8378e833f1e3f3e998ce252906ca56ff05a9f1758f1d1bc5ca02231376f44d9"
+    },
+    {
+      "point_id": "T3-MU-c1-r1",
+      "state": "COMPLETE",
+      "parameters": {
+        "replicas": 12,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "measurement_seconds": 60.01626420021057,
+      "measured_successes": 1257,
+      "throughput_per_second": 20.944322622393244,
+      "supply": {
+        "sample_count": 871,
+        "ready_queue_min": 20,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09340159804560244,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "run_id": "t3-mu-003-capacity-muv2r1",
+      "source_summary_sha256": "4dead2dbf9f483c699848b12cd561e00ad78feda2cb5ffeb70a9a92eeb966289"
+    },
+    {
+      "point_id": "T3-MU-c1-r2",
+      "state": "COMPLETE",
+      "parameters": {
+        "replicas": 12,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "measurement_seconds": 60.01706004142761,
+      "measured_successes": 1244,
+      "throughput_per_second": 20.727439816967237,
+      "supply": {
+        "sample_count": 870,
+        "ready_queue_min": 20,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09672748693265021,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "run_id": "t3-mu-004-capacity-muv2r1",
+      "source_summary_sha256": "bd50d235d6f0a4c7566a5927731c2452b18b666319a9fbc0b271fbcb3613911b"
+    },
+    {
+      "point_id": "T3-MU-c1-r3",
+      "state": "COMPLETE",
+      "parameters": {
+        "replicas": 12,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "measurement_seconds": 60.02368497848511,
+      "measured_successes": 1275,
+      "throughput_per_second": 21.241614880142915,
+      "supply": {
+        "sample_count": 866,
+        "ready_queue_min": 21,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.09857978415675461,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "run_id": "t3-mu-005-capacity-muv2r1",
+      "source_summary_sha256": "13c869f8a33a8858348bf1aca3cd9bc8a6bebc4e8f7c3129d45d6b75a4dce2a2"
+    }
+  ],
+  "reference_candidates": [
+    {
+      "parameters": {
+        "replicas": 10,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "conservative_mu": 20.177569945324223
+    },
+    {
+      "parameters": {
+        "replicas": 12,
+        "executors": 12,
+        "global_limit": 12,
+        "project_limit": 12,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "conservative_mu": 20.727439816967237
+    }
+  ],
+  "fixed_profile_sha256": "87598b9c552aed10adb4960a0eb5d00b6a24c9c92cf3a2c6d5d3e3161402967a",
+  "rate_kind": "minimum of three independently verified successful completion windows",
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 278,
+  "verification": {
+    "state": "COMPLETE",
+    "windows": 6,
+    "original_parameters_restored": true,
+    "parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "generation_before": 268,
+    "generation_after": 278,
+    "idle": true,
+    "unknown": 0,
+    "paused": false,
+    "monitor_ok": true,
+    "alerts": [],
+    "runtime_image_binding_verified": true,
+    "source_files_verified": 256,
+    "vm_worker_engine_restart": false,
+    "next_stages_started": false
+  },
+  "accepted_tasks": 7704,
+  "all_accepted_succeeded_attempt_and_metering_one": true,
+  "all_results_downloaded_text_verified": true,
+  "source_summaries_hash_verified": true,
+  "sampled_ready_queue_min": 20,
+  "max_observed_sample_gap_seconds": 0.10101760900579393,
+  "private_mac_evidence_backup": {
+    "verified": true,
+    "bytes": 2010857,
+    "sha256": "9c9594c2690e900bd8b6761a65e1fbdeb0cf4a5eff411874e0a177057aec4e66",
+    "private_mac_copy": true
+  },
+  "queue_v2_started": false,
+  "final_production_recommendation": false
+}
