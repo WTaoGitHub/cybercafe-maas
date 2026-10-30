@@ -4,6 +4,7 @@ import base64
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import json
+import mimetypes
 from pathlib import Path
 import time
 import urllib.error
@@ -20,7 +21,7 @@ def call(image, max_tokens=2048):
     payload = {'model': MODEL, 'stream': False,
                'temperature': 0, 'max_tokens': max_tokens,
                'messages': [{'role': 'user', 'content': [
-                   {'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(image.read_bytes()).decode()}},
+                   {'type': 'image_url', 'image_url': {'url': 'data:' + (mimetypes.guess_type(image.name)[0] or 'application/octet-stream') + ';base64,' + base64.b64encode(image.read_bytes()).decode()}},
                    {'type': 'text', 'text': PROMPT}]}]}
     body = json.dumps(payload).encode()
     start = time.monotonic()
