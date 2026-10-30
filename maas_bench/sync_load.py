@@ -26,12 +26,25 @@ class SyncTraffic:
                 'text_sha256':quality[item['id']]['text_sha256']})
         self.thread=threading.Thread(target=self._run,name='sync-side-traffic')
 
-    def _rows(self):
+    def _rows(self, tokens=None):
         project,_,model,_=self.observer.scope
         with self.observer.lock:
-            return self.observer.connection.execute("""SELECT s.token,s.state,s.outcome,
-              (SELECT count(*)::int FROM sync_usage_events u WHERE u.token=s.token) events
-              FROM sync_activity s WHERE s.project=%s AND s.model=%s AND NOT s.is_probe""",(project,model)).fetchall()
+            if tokens is None:
+                # Baseline/difference discovery needs identity only. Never join
+                # usage for historical rows unrelated to this measurement.
+                return self.observer.connection.execute("""SELECT s.token
+                  FROM sync_activity s WHERE s.project=%s AND s.model=%s AND NOT s.is_probe""",
+                  (project,model)).fetchall()
+            tokens=sorted(set(tokens))
+            rows=[]
+            for offset in range(0,len(tokens),256):
+                rows.extend(self.observer.connection.execute("""SELECT s.token,s.state,s.outcome,
+                  (SELECT count(*)::int FROM sync_usage_events u WHERE u.token=s.token) events
+                  FROM sync_activity s WHERE s.token=ANY(%s) AND s.project=%s
+                  AND s.model=%s AND NOT s.is_probe""",(tokens[offset:offset+256],project,model)).fetchall())
+            if len(rows)!=len(tokens) or {r['token'] for r in rows}!=set(tokens):
+                raise RuntimeError('Synchronous token set changed during reconciliation')
+            return rows
 
     def start(self):
         self.before={r['token'] for r in self._rows()};self.started=time.time();self.started_monotonic=time.monotonic();self.thread.start()
@@ -84,7 +97,8 @@ class SyncTraffic:
         if self.thread.ident is not None:self.thread.join(timeout=40)
         if self.thread.is_alive():raise RuntimeError('Synchronous requests still in flight')
         if self.failure:raise self.failure
-        rows=[r for r in self._rows() if r['token'] not in self.before]
+        tokens={r['token'] for r in self._rows()}-self.before
+        rows=self._rows(tokens)
         successes=[r for r in self.records if r['http_status']==200]
         if len(rows)!=len(successes) or any(r['state']!='COMPLETED' or r['outcome']!='SUCCEEDED' or r['events']!=1 for r in rows):
             raise RuntimeError('Synchronous task/usage window mismatch')
