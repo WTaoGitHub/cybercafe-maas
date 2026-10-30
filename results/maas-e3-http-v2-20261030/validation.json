@@ -1,0 +1,1384 @@
+{
+  "state": "FIRST_PASS_HTTP_ENVELOPE_AND_CONTINUOUS_RECOVERY_VERIFIED",
+  "isolated_profile": {
+    "state": "COMPLETE",
+    "profile_id": "real-api-pg-tls-auth-mocked-ocr-cpu4-r1",
+    "production_capacity_claim": false,
+    "authentication": "unchanged real GPUStack binding and model authorization; no stub/cache",
+    "execution": "16 controlled mock consumers, G/P=12, original claim/finish/auth logic",
+    "isolated_limits": {
+      "G": 12,
+      "P": 12,
+      "Qg": 100,
+      "Qp": 100
+    },
+    "acceptance": [
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 1,
+        "measurement_seconds": 60.000197045039386,
+        "measured_successes": 813,
+        "tail_completions": 1,
+        "throughput_per_second": 13.549955500808078,
+        "scheduled_calls": 814,
+        "maximum_refill_gap_seconds": 3.977981396019459e-05,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 813,
+            "p95": 0.09752745507284999,
+            "p99": 0.11124261887744069
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "accept",
+        "queue_peak": 1,
+        "db_peak_connections": 17,
+        "db_peak_lock_waiters": 15,
+        "query_probe_count": 58,
+        "query_probe_p95": 0.03545976593159139,
+        "drain_seconds": 17.566449851030484,
+        "rejected_without_task": 0,
+        "stable_202_window": true
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 2,
+        "measurement_seconds": 60.00150868203491,
+        "measured_successes": 2644,
+        "tail_completions": 2,
+        "throughput_per_second": 44.06555865138841,
+        "scheduled_calls": 2646,
+        "maximum_refill_gap_seconds": 0.00018008193001151085,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 2042,
+            "p95": 0.05997224897146225,
+            "p99": 0.07304956391453743
+          },
+          "429": {
+            "count": 602,
+            "p95": 0.0555379509460181,
+            "p99": 0.06314158393070102
+          }
+        },
+        "kind": "accept",
+        "queue_peak": 100,
+        "db_peak_connections": 17,
+        "db_peak_lock_waiters": 15,
+        "query_probe_count": 55,
+        "query_probe_p95": 0.039408257929608226,
+        "drain_seconds": 45.20897019398399,
+        "rejected_without_task": 602,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 4,
+        "measurement_seconds": 60.00168012082577,
+        "measured_successes": 4732,
+        "tail_completions": 4,
+        "throughput_per_second": 78.86445830301987,
+        "scheduled_calls": 4736,
+        "maximum_refill_gap_seconds": 0.00020865211263298988,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 1756,
+            "p95": 0.06597591191530228,
+            "p99": 0.08057391294278204
+          },
+          "429": {
+            "count": 2976,
+            "p95": 0.06256786407902837,
+            "p99": 0.07212923699989915
+          }
+        },
+        "kind": "accept",
+        "queue_peak": 100,
+        "db_peak_connections": 15,
+        "db_peak_lock_waiters": 13,
+        "query_probe_count": 55,
+        "query_probe_p95": 0.03652833495289087,
+        "drain_seconds": 39.60032973205671,
+        "rejected_without_task": 2978,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 8,
+        "measurement_seconds": 60.00039958185516,
+        "measured_successes": 7204,
+        "tail_completions": 8,
+        "throughput_per_second": 120.06586706430161,
+        "scheduled_calls": 7212,
+        "maximum_refill_gap_seconds": 0.0002994290553033352,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 1342,
+            "p95": 0.08609069301746786,
+            "p99": 0.13264605798758566
+          },
+          "429": {
+            "count": 5862,
+            "p95": 0.0799284630920738,
+            "p99": 0.09062710078433156
+          }
+        },
+        "kind": "accept",
+        "queue_peak": 100,
+        "db_peak_connections": 22,
+        "db_peak_lock_waiters": 20,
+        "query_probe_count": 55,
+        "query_probe_p95": 0.042022335110232234,
+        "drain_seconds": 30.559636946069077,
+        "rejected_without_task": 5868,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 16,
+        "measurement_seconds": 60.002295332960784,
+        "measured_successes": 9356,
+        "tail_completions": 16,
+        "throughput_per_second": 155.92736824620295,
+        "scheduled_calls": 9372,
+        "maximum_refill_gap_seconds": 0.00039696600288152695,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 880,
+            "p95": 0.19001665920950472,
+            "p99": 0.6049403888173401
+          },
+          "429": {
+            "count": 8476,
+            "p95": 0.11742082214914262,
+            "p99": 0.1332496500108391
+          }
+        },
+        "kind": "accept",
+        "queue_peak": 100,
+        "db_peak_connections": 27,
+        "db_peak_lock_waiters": 24,
+        "query_probe_count": 55,
+        "query_probe_p95": 0.04850477119907737,
+        "drain_seconds": 22.467702274909243,
+        "rejected_without_task": 8491,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 1,
+        "measurement_seconds": 60.00151725090109,
+        "measured_successes": 806,
+        "tail_completions": 1,
+        "throughput_per_second": 13.432993646304764,
+        "scheduled_calls": 807,
+        "maximum_refill_gap_seconds": 2.6375986635684967e-05,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 806,
+            "p95": 0.0968607091344893,
+            "p99": 0.11113289301283658
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "accept",
+        "queue_peak": 1,
+        "db_peak_connections": 18,
+        "db_peak_lock_waiters": 15,
+        "query_probe_count": 56,
+        "query_probe_p95": 0.03200910799205303,
+        "drain_seconds": 17.06847397214733,
+        "rejected_without_task": 0,
+        "stable_202_window": true
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 1,
+        "measurement_seconds": 60.00124357105233,
+        "measured_successes": 814,
+        "tail_completions": 1,
+        "throughput_per_second": 13.566385487262055,
+        "scheduled_calls": 815,
+        "maximum_refill_gap_seconds": 0.00011189817450940609,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 814,
+            "p95": 0.09694702713750303,
+            "p99": 0.11225642613135278
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "accept",
+        "queue_peak": 1,
+        "db_peak_connections": 18,
+        "db_peak_lock_waiters": 15,
+        "query_probe_count": 56,
+        "query_probe_p95": 0.03234078292734921,
+        "drain_seconds": 17.237800244009122,
+        "rejected_without_task": 0,
+        "stable_202_window": true
+      }
+    ],
+    "rates": [
+      {
+        "state": "COMPLETE",
+        "mode": "independent_arrivals",
+        "target_arrivals": 407,
+        "target_rate": 6.774977750404039,
+        "unsent": [],
+        "late_sent_calls": 0,
+        "actual_completed_calls": 407,
+        "measurement_seconds": 60.035656990949064,
+        "error_class": null,
+        "not_scheduled_after_stop": 0,
+        "http_groups": {
+          "202": {
+            "count": 407,
+            "p95": 0.12236948893405497,
+            "p99": 0.13371021603234112
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "rate",
+        "clients": 16,
+        "queue_peak": 1,
+        "db_peak_connections": 18,
+        "db_peak_lock_waiters": 16,
+        "query_probe_count": 56,
+        "query_probe_p95": 0.03891949588432908,
+        "drain_seconds": 8.611190767027438,
+        "rejected_without_task": 0,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "independent_arrivals",
+        "target_arrivals": 651,
+        "target_rate": 10.839964400646464,
+        "unsent": [],
+        "late_sent_calls": 0,
+        "actual_completed_calls": 651,
+        "measurement_seconds": 60.05873208399862,
+        "error_class": null,
+        "not_scheduled_after_stop": 0,
+        "http_groups": {
+          "202": {
+            "count": 651,
+            "p95": 0.11606803187169135,
+            "p99": 0.14353394298814237
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "rate",
+        "clients": 16,
+        "queue_peak": 1,
+        "db_peak_connections": 18,
+        "db_peak_lock_waiters": 15,
+        "query_probe_count": 56,
+        "query_probe_p95": 0.04230202198959887,
+        "drain_seconds": 13.081243748078123,
+        "rejected_without_task": 0,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "independent_arrivals",
+        "target_arrivals": 813,
+        "target_rate": 13.549955500808078,
+        "unsent": [],
+        "late_sent_calls": 0,
+        "actual_completed_calls": 813,
+        "measurement_seconds": 60.00060265092179,
+        "error_class": null,
+        "not_scheduled_after_stop": 0,
+        "http_groups": {
+          "202": {
+            "count": 813,
+            "p95": 0.1095534258056432,
+            "p99": 0.12757613882422447
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "rate",
+        "clients": 16,
+        "queue_peak": 3,
+        "db_peak_connections": 18,
+        "db_peak_lock_waiters": 16,
+        "query_probe_count": 56,
+        "query_probe_p95": 0.03751463093794882,
+        "drain_seconds": 16.978815513197333,
+        "rejected_without_task": 0,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "independent_arrivals",
+        "target_arrivals": 976,
+        "target_rate": 16.259946600969695,
+        "unsent": [],
+        "late_sent_calls": 0,
+        "actual_completed_calls": 976,
+        "measurement_seconds": 60.036968163913116,
+        "error_class": null,
+        "not_scheduled_after_stop": 0,
+        "http_groups": {
+          "202": {
+            "count": 976,
+            "p95": 0.10425222688354552,
+            "p99": 0.11668117786757648
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "rate",
+        "clients": 16,
+        "queue_peak": 2,
+        "db_peak_connections": 18,
+        "db_peak_lock_waiters": 15,
+        "query_probe_count": 55,
+        "query_probe_p95": 0.0431688129901886,
+        "drain_seconds": 20.546377311926335,
+        "rejected_without_task": 0,
+        "stable_202_window": false
+      }
+    ],
+    "rejection": [
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 1,
+        "measurement_seconds": 10.001146276947111,
+        "measured_successes": 235,
+        "tail_completions": 1,
+        "throughput_per_second": 23.497306557917348,
+        "scheduled_calls": 236,
+        "maximum_refill_gap_seconds": 4.082196392118931e-05,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          },
+          "429": {
+            "count": 235,
+            "p95": 0.05384031403809786,
+            "p99": 0.05606373795308173
+          }
+        },
+        "kind": "reject",
+        "queue_peak": 0,
+        "db_peak_connections": 2,
+        "db_peak_lock_waiters": 0,
+        "query_probe_count": 9,
+        "query_probe_p95": 0.03863289603032172,
+        "rejected_without_task": 236,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 2,
+        "measurement_seconds": 10.000404912047088,
+        "measured_successes": 535,
+        "tail_completions": 2,
+        "throughput_per_second": 53.49783380825979,
+        "scheduled_calls": 537,
+        "maximum_refill_gap_seconds": 0.0004477498587220907,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          },
+          "429": {
+            "count": 535,
+            "p95": 0.056479303166270256,
+            "p99": 0.061530329985544086
+          }
+        },
+        "kind": "reject",
+        "queue_peak": 0,
+        "db_peak_connections": 3,
+        "db_peak_lock_waiters": 1,
+        "query_probe_count": 10,
+        "query_probe_p95": 0.040218169102445245,
+        "rejected_without_task": 537,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 4,
+        "measurement_seconds": 10.001520381076261,
+        "measured_successes": 1434,
+        "tail_completions": 4,
+        "throughput_per_second": 143.37820104963757,
+        "scheduled_calls": 1438,
+        "maximum_refill_gap_seconds": 0.0002724500373005867,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          },
+          "429": {
+            "count": 1434,
+            "p95": 0.036953167989850044,
+            "p99": 0.04953943891450763
+          }
+        },
+        "kind": "reject",
+        "queue_peak": 0,
+        "db_peak_connections": 5,
+        "db_peak_lock_waiters": 2,
+        "query_probe_count": 10,
+        "query_probe_p95": 0.03166511305607855,
+        "rejected_without_task": 1438,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 8,
+        "measurement_seconds": 10.00107712787576,
+        "measured_successes": 1920,
+        "tail_completions": 8,
+        "throughput_per_second": 191.97932137213806,
+        "scheduled_calls": 1928,
+        "maximum_refill_gap_seconds": 0.00031096581369638443,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          },
+          "429": {
+            "count": 1920,
+            "p95": 0.04983351705595851,
+            "p99": 0.0615749869029969
+          }
+        },
+        "kind": "reject",
+        "queue_peak": 0,
+        "db_peak_connections": 6,
+        "db_peak_lock_waiters": 4,
+        "query_probe_count": 10,
+        "query_probe_p95": 0.042476283852010965,
+        "rejected_without_task": 1928,
+        "stable_202_window": false
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "timed_prepared_native_or_sync",
+        "clients": 16,
+        "measurement_seconds": 10.000393226975575,
+        "measured_successes": 2008,
+        "tail_completions": 16,
+        "throughput_per_second": 200.79210431281018,
+        "scheduled_calls": 2024,
+        "maximum_refill_gap_seconds": 0.0007361008320003748,
+        "continuous_supply_proven": false,
+        "errors": [],
+        "http_groups": {
+          "202": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          },
+          "429": {
+            "count": 2008,
+            "p95": 0.09729249612428248,
+            "p99": 0.1271980667952448
+          }
+        },
+        "kind": "reject",
+        "queue_peak": 0,
+        "db_peak_connections": 10,
+        "db_peak_lock_waiters": 6,
+        "query_probe_count": 9,
+        "query_probe_p95": 0.0887549992185086,
+        "rejected_without_task": 2024,
+        "stable_202_window": false
+      }
+    ],
+    "recovery": [
+      {
+        "state": "COMPLETE",
+        "mode": "bounded_burst",
+        "target_arrivals": 3,
+        "target_rate": null,
+        "unsent": [],
+        "late_sent_calls": 0,
+        "actual_completed_calls": 3,
+        "measurement_seconds": 0.23336990596726537,
+        "error_class": null,
+        "not_scheduled_after_stop": 0,
+        "http_groups": {
+          "202": {
+            "count": 3,
+            "p95": 0.0708362280856818,
+            "p99": 0.0708362280856818
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "kind": "recovery",
+        "clients": 1,
+        "queue_peak": 0,
+        "db_peak_connections": 15,
+        "db_peak_lock_waiters": 13,
+        "query_probe_count": 1,
+        "query_probe_p95": 0.024233563104644418,
+        "drain_seconds": 0.22757194703444839,
+        "rejected_without_task": 0,
+        "stable_202_window": false
+      }
+    ],
+    "full_queue_drain_seconds": 4.876022021053359,
+    "resource_samples": 3859,
+    "controller_cpu_peak": 37.53846153846154,
+    "cgroup_before": {
+      "cpu.stat": "usage_usec 433624\nuser_usec 383363\nsystem_usec 50261\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 5\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+      "cpu.max": "400000 100000",
+      "memory.current": "49217536",
+      "memory.max": "4294967296"
+    },
+    "cgroup_after": {
+      "cpu.stat": "usage_usec 1620135519\nuser_usec 1479681415\nsystem_usec 140454104\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 9712\nnr_throttled 16\nthrottled_usec 8856197\nnr_bursts 0\nburst_usec 0",
+      "cpu.max": "400000 100000",
+      "memory.current": "185946112",
+      "memory.max": "4294967296"
+    }
+  },
+  "isolated_limits": {
+    "api_generator_mock_consumers_shared_cpus": 4,
+    "api_generator_mock_consumers_shared_ram_bytes": 4294967296,
+    "tls_cpus": 1,
+    "tls_ram_bytes": 268435456
+  },
+  "http_version": "HTTP/1.1, persistent clients, transport retries=0; loopback private TLS",
+  "isolated_submit_inflight_peaks": {
+    "0": 1,
+    "1": 2,
+    "2": 4,
+    "3": 8,
+    "4": 16,
+    "5": 1,
+    "6": 1,
+    "7": 2,
+    "8": 3,
+    "9": 6,
+    "10": 3,
+    "11": 1,
+    "12": 2,
+    "13": 4,
+    "14": 8,
+    "15": 16,
+    "16": 1
+  },
+  "inflight_clock_kind": "client intent to response interval, task submission only; query probes separate",
+  "full_queue_samples": {
+    "count": 458,
+    "project_queued_min": 100,
+    "project_queued_max": 100
+  },
+  "main_verification": {
+    "state": "COMPLETE",
+    "isolated_accepted_including_prefill": 11413,
+    "isolated_rejected": 24102,
+    "isolated_min_db_timestamp_slack_seconds": 64.500333,
+    "real_points": [
+      {
+        "case_id": "T4-HTTP-ACCEPT",
+        "point_id": "T4-HTTP-ACCEPT-C1",
+        "accepted": 1,
+        "rejected": 0,
+        "summary_sha256": "df85393663f4fc860bc3d2adf33e5517dfab13a24891f4fa6cca2e814ff17800",
+        "once_success_and_metering_verified": true,
+        "db_updated_before_deadline": true
+      },
+      {
+        "case_id": "T4-HTTP-ACCEPT",
+        "point_id": "T4-HTTP-ACCEPT-C2",
+        "accepted": 2,
+        "rejected": 0,
+        "summary_sha256": "8303baa3f842cae5e0977a3d0d3ed96940620870a291d69063fd4d7eb15e7a2c",
+        "once_success_and_metering_verified": true,
+        "db_updated_before_deadline": true
+      },
+      {
+        "case_id": "T4-HTTP-ACCEPT",
+        "point_id": "T4-HTTP-ACCEPT-C4",
+        "accepted": 4,
+        "rejected": 0,
+        "summary_sha256": "987700bb2e32ffb2855903842993fdd3467021ded4fd4adb066871ca2de68ca5",
+        "once_success_and_metering_verified": true,
+        "db_updated_before_deadline": true
+      },
+      {
+        "case_id": "T4-HTTP-ACCEPT",
+        "point_id": "T4-HTTP-ACCEPT-C8",
+        "accepted": 8,
+        "rejected": 0,
+        "summary_sha256": "19680893b4d09bf922f1bb77eb224a54574db991ab560e96c40461edd6256010",
+        "once_success_and_metering_verified": true,
+        "db_updated_before_deadline": true
+      },
+      {
+        "case_id": "T4-HTTP-ACCEPT",
+        "point_id": "T4-HTTP-ACCEPT-C16",
+        "accepted": 16,
+        "rejected": 0,
+        "summary_sha256": "79eca708342e6540d42d0539c8ff47bfb09d8efbc1eeabe52b3fe9cfb6282ebd",
+        "once_success_and_metering_verified": true,
+        "db_updated_before_deadline": true
+      },
+      {
+        "case_id": "T4-HTTP-REJECT",
+        "point_id": "T4-HTTP-REJECT-C16",
+        "accepted": 37,
+        "rejected": 63,
+        "summary_sha256": "0a66b740fec91c40d104abd61167aaf1fff8b59cf859f027b624cf0277688613",
+        "once_success_and_metering_verified": true,
+        "db_updated_before_deadline": true
+      },
+      {
+        "case_id": "T4-HTTP-RECOVER",
+        "point_id": "T4-HTTP-RECOVER-C1",
+        "accepted": 3,
+        "rejected": 0,
+        "summary_sha256": "fc88205437c097feb78853d044a5a7a9a40d2d696add4ed67a49265557e0128a",
+        "once_success_and_metering_verified": true,
+        "db_updated_before_deadline": true
+      }
+    ],
+    "real_accepted": 71,
+    "real_rejected": 63,
+    "all_success_attempt_and_metering_one": true,
+    "rejected_created_no_tasks": true,
+    "deadline_evidence": "application/database timestamps and runtime protections; no exact COMMIT/client visibility deadline claim",
+    "original_parameters_restored": true,
+    "parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "generation_before": 296,
+    "generation_after": 320,
+    "idle": true,
+    "unknown": 0,
+    "monitor_ok": true,
+    "alerts": [],
+    "ephemeral_containers_absent": true,
+    "source_files_verified": 256,
+    "runtime_image_binding_verified": true,
+    "vm_worker_engine_restart": false,
+    "production_application_image_changed": false,
+    "next_stages_started": false
+  },
+  "initial_real_cases": [
+    {
+      "case_id": "T4-HTTP-ACCEPT",
+      "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+      "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+      "state": "COMPLETE",
+      "planned_points": 5,
+      "points": [
+        {
+          "state": "COMPLETE",
+          "mode": "bounded_burst",
+          "target_arrivals": 1,
+          "target_rate": null,
+          "unsent": [],
+          "late_sent_calls": 0,
+          "actual_completed_calls": 1,
+          "measurement_seconds": 0.032921947073191404,
+          "error_class": null,
+          "not_scheduled_after_stop": 0,
+          "case_id": "T4-HTTP-ACCEPT",
+          "point_id": "T4-HTTP-ACCEPT-C1",
+          "parameters": {
+            "replicas": 10,
+            "executors": 12,
+            "global_limit": 12,
+            "project_limit": 12,
+            "global_queue": 25,
+            "project_queue": 25,
+            "vram_claim_bytes": 2147483648
+          },
+          "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+          "workload_kind": "ordinary_fixed_40",
+          "accepted": 1,
+          "queue_full_rejections": 0,
+          "drain_seconds": 0.6008959379978478,
+          "queue_peak": 1,
+          "first_queue": 0,
+          "last_queue": 0,
+          "sample_count": 10,
+          "wait_p95": 0.056021,
+          "wait_p99": 0.056021,
+          "execution_p95": 0.491103,
+          "total_p95": 0.547124,
+          "total_p99": 0.547124,
+          "response_latency": {
+            "202": {
+              "count": 1,
+              "p95": 0.030391315929591656,
+              "p99": 0.030391315929591656
+            },
+            "429": {
+              "count": 0,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "natural_empty_queue_allowed": true,
+          "maximum_sustained_capacity_claim": false,
+          "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+          "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+        },
+        {
+          "state": "COMPLETE",
+          "mode": "bounded_burst",
+          "target_arrivals": 2,
+          "target_rate": null,
+          "unsent": [],
+          "late_sent_calls": 0,
+          "actual_completed_calls": 2,
+          "measurement_seconds": 0.03390083787962794,
+          "error_class": null,
+          "not_scheduled_after_stop": 0,
+          "case_id": "T4-HTTP-ACCEPT",
+          "point_id": "T4-HTTP-ACCEPT-C2",
+          "parameters": {
+            "replicas": 10,
+            "executors": 12,
+            "global_limit": 12,
+            "project_limit": 12,
+            "global_queue": 25,
+            "project_queue": 25,
+            "vram_claim_bytes": 2147483648
+          },
+          "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+          "workload_kind": "ordinary_fixed_40",
+          "accepted": 2,
+          "queue_full_rejections": 0,
+          "drain_seconds": 0.824767999118194,
+          "queue_peak": 1,
+          "first_queue": 0,
+          "last_queue": 0,
+          "sample_count": 13,
+          "wait_p95": 0.001395,
+          "wait_p99": 0.001395,
+          "execution_p95": 0.333335,
+          "total_p95": 0.388074,
+          "total_p99": 0.388074,
+          "response_latency": {
+            "202": {
+              "count": 2,
+              "p95": 0.024578305892646313,
+              "p99": 0.024578305892646313
+            },
+            "429": {
+              "count": 0,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "natural_empty_queue_allowed": true,
+          "maximum_sustained_capacity_claim": false,
+          "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+          "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+        },
+        {
+          "state": "COMPLETE",
+          "mode": "bounded_burst",
+          "target_arrivals": 4,
+          "target_rate": null,
+          "unsent": [],
+          "late_sent_calls": 0,
+          "actual_completed_calls": 4,
+          "measurement_seconds": 0.058114384999498725,
+          "error_class": null,
+          "not_scheduled_after_stop": 0,
+          "case_id": "T4-HTTP-ACCEPT",
+          "point_id": "T4-HTTP-ACCEPT-C4",
+          "parameters": {
+            "replicas": 10,
+            "executors": 12,
+            "global_limit": 12,
+            "project_limit": 12,
+            "global_queue": 25,
+            "project_queue": 25,
+            "vram_claim_bytes": 2147483648
+          },
+          "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+          "workload_kind": "ordinary_fixed_40",
+          "accepted": 4,
+          "queue_full_rejections": 0,
+          "drain_seconds": 1.0739081350620836,
+          "queue_peak": 4,
+          "first_queue": 0,
+          "last_queue": 0,
+          "sample_count": 18,
+          "wait_p95": 0.317187,
+          "wait_p99": 0.317187,
+          "execution_p95": 0.618957,
+          "total_p95": 0.893552,
+          "total_p99": 0.893552,
+          "response_latency": {
+            "202": {
+              "count": 4,
+              "p95": 0.0473306521307677,
+              "p99": 0.0473306521307677
+            },
+            "429": {
+              "count": 0,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "natural_empty_queue_allowed": true,
+          "maximum_sustained_capacity_claim": false,
+          "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+          "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+        },
+        {
+          "state": "COMPLETE",
+          "mode": "bounded_burst",
+          "target_arrivals": 8,
+          "target_rate": null,
+          "unsent": [],
+          "late_sent_calls": 0,
+          "actual_completed_calls": 8,
+          "measurement_seconds": 0.09911330393515527,
+          "error_class": null,
+          "not_scheduled_after_stop": 0,
+          "case_id": "T4-HTTP-ACCEPT",
+          "point_id": "T4-HTTP-ACCEPT-C8",
+          "parameters": {
+            "replicas": 10,
+            "executors": 12,
+            "global_limit": 12,
+            "project_limit": 12,
+            "global_queue": 25,
+            "project_queue": 25,
+            "vram_claim_bytes": 2147483648
+          },
+          "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+          "workload_kind": "ordinary_fixed_40",
+          "accepted": 8,
+          "queue_full_rejections": 0,
+          "drain_seconds": 1.4460203549824655,
+          "queue_peak": 8,
+          "first_queue": 0,
+          "last_queue": 0,
+          "sample_count": 24,
+          "wait_p95": 0.403462,
+          "wait_p99": 0.403462,
+          "execution_p95": 0.976887,
+          "total_p95": 1.356637,
+          "total_p99": 1.356637,
+          "response_latency": {
+            "202": {
+              "count": 8,
+              "p95": 0.08139470801688731,
+              "p99": 0.08139470801688731
+            },
+            "429": {
+              "count": 0,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "natural_empty_queue_allowed": true,
+          "maximum_sustained_capacity_claim": false,
+          "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+          "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+        },
+        {
+          "state": "COMPLETE",
+          "mode": "bounded_burst",
+          "target_arrivals": 16,
+          "target_rate": null,
+          "unsent": [],
+          "late_sent_calls": 0,
+          "actual_completed_calls": 16,
+          "measurement_seconds": 0.20421385508961976,
+          "error_class": null,
+          "not_scheduled_after_stop": 0,
+          "case_id": "T4-HTTP-ACCEPT",
+          "point_id": "T4-HTTP-ACCEPT-C16",
+          "parameters": {
+            "replicas": 10,
+            "executors": 12,
+            "global_limit": 12,
+            "project_limit": 12,
+            "global_queue": 25,
+            "project_queue": 25,
+            "vram_claim_bytes": 2147483648
+          },
+          "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+          "workload_kind": "ordinary_fixed_40",
+          "accepted": 16,
+          "queue_full_rejections": 0,
+          "drain_seconds": 1.5790565630886704,
+          "queue_peak": 11,
+          "first_queue": 0,
+          "last_queue": 0,
+          "sample_count": 30,
+          "wait_p95": 0.604508,
+          "wait_p99": 0.604508,
+          "execution_p95": 1.146771,
+          "total_p95": 1.605129,
+          "total_p99": 1.605129,
+          "response_latency": {
+            "202": {
+              "count": 16,
+              "p95": 0.1747872771229595,
+              "p99": 0.1747872771229595
+            },
+            "429": {
+              "count": 0,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "natural_empty_queue_allowed": true,
+          "maximum_sustained_capacity_claim": false,
+          "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+          "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+        }
+      ],
+      "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+      "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+      "restored_parameters": {
+        "replicas": 4,
+        "executors": 4,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "restored_generation": 304,
+      "scope": "bounded real OCR bursts, not stable HTTP or GPU capacity",
+      "skipped_queue_budget": [],
+      "queue_full_observed": false
+    },
+    {
+      "case_id": "T4-HTTP-REJECT",
+      "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+      "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+      "state": "COMPLETE",
+      "planned_points": 1,
+      "points": [
+        {
+          "state": "COMPLETE",
+          "mode": "bounded_burst",
+          "target_arrivals": 100,
+          "target_rate": null,
+          "unsent": [],
+          "late_sent_calls": 0,
+          "actual_completed_calls": 100,
+          "measurement_seconds": 0.6909466478973627,
+          "error_class": null,
+          "not_scheduled_after_stop": 0,
+          "case_id": "T4-HTTP-REJECT",
+          "point_id": "T4-HTTP-REJECT-C16",
+          "parameters": {
+            "replicas": 10,
+            "executors": 12,
+            "global_limit": 12,
+            "project_limit": 12,
+            "global_queue": 25,
+            "project_queue": 25,
+            "vram_claim_bytes": 2147483648
+          },
+          "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+          "workload_kind": "ordinary_fixed_40",
+          "accepted": 37,
+          "queue_full_rejections": 63,
+          "drain_seconds": 2.0834816282149404,
+          "queue_peak": 25,
+          "first_queue": 0,
+          "last_queue": 0,
+          "sample_count": 49,
+          "wait_p95": 1.609744,
+          "wait_p99": 1.625926,
+          "execution_p95": 1.173976,
+          "total_p95": 2.253763,
+          "total_p99": 2.254247,
+          "response_latency": {
+            "202": {
+              "count": 37,
+              "p95": 0.16250172490254045,
+              "p99": 0.18126270500943065
+            },
+            "429": {
+              "count": 63,
+              "p95": 0.11600346700288355,
+              "p99": 0.12001958186738193
+            }
+          },
+          "natural_empty_queue_allowed": true,
+          "maximum_sustained_capacity_claim": false,
+          "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+          "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+        }
+      ],
+      "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+      "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+      "restored_parameters": {
+        "replicas": 4,
+        "executors": 4,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "restored_generation": 312,
+      "scope": "bounded real OCR bursts, not stable HTTP or GPU capacity",
+      "skipped_queue_budget": [],
+      "queue_full_observed": true
+    },
+    {
+      "case_id": "T4-HTTP-RECOVER",
+      "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+      "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+      "state": "COMPLETE",
+      "planned_points": 1,
+      "points": [
+        {
+          "state": "COMPLETE",
+          "mode": "bounded_burst",
+          "target_arrivals": 3,
+          "target_rate": null,
+          "unsent": [],
+          "late_sent_calls": 0,
+          "actual_completed_calls": 3,
+          "measurement_seconds": 0.08455100911669433,
+          "error_class": null,
+          "not_scheduled_after_stop": 0,
+          "case_id": "T4-HTTP-RECOVER",
+          "point_id": "T4-HTTP-RECOVER-C1",
+          "parameters": {
+            "replicas": 10,
+            "executors": 12,
+            "global_limit": 12,
+            "project_limit": 12,
+            "global_queue": 25,
+            "project_queue": 25,
+            "vram_claim_bytes": 2147483648
+          },
+          "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+          "workload_kind": "ordinary_fixed_40",
+          "accepted": 3,
+          "queue_full_rejections": 0,
+          "drain_seconds": 0.8382623989600688,
+          "queue_peak": 1,
+          "first_queue": 0,
+          "last_queue": 0,
+          "sample_count": 15,
+          "wait_p95": 0.048658,
+          "wait_p99": 0.048658,
+          "execution_p95": 0.607167,
+          "total_p95": 0.655825,
+          "total_p99": 0.655825,
+          "response_latency": {
+            "202": {
+              "count": 3,
+              "p95": 0.024287106934934855,
+              "p99": 0.024287106934934855
+            },
+            "429": {
+              "count": 0,
+              "p95": null,
+              "p99": null
+            }
+          },
+          "natural_empty_queue_allowed": true,
+          "maximum_sustained_capacity_claim": false,
+          "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+          "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+        }
+      ],
+      "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+      "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+      "restored_parameters": {
+        "replicas": 4,
+        "executors": 4,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 1000,
+        "project_queue": 100,
+        "vram_claim_bytes": 2147483648
+      },
+      "restored_generation": 320,
+      "scope": "bounded real OCR bursts, not stable HTTP or GPU capacity",
+      "skipped_queue_budget": [],
+      "queue_full_observed": false
+    }
+  ],
+  "initial_real_recovery_is_strict_continuity_proof": false,
+  "continuous_real_recovery": {
+    "case_id": "T4-HTTP-RECOVER",
+    "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+    "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+    "state": "COMPLETE",
+    "planned_points": 2,
+    "points": [
+      {
+        "state": "COMPLETE",
+        "mode": "bounded_burst",
+        "target_arrivals": 100,
+        "target_rate": null,
+        "unsent": [],
+        "late_sent_calls": 0,
+        "actual_completed_calls": 100,
+        "measurement_seconds": 0.7373095760121942,
+        "error_class": null,
+        "not_scheduled_after_stop": 0,
+        "case_id": "T4-HTTP-RECOVER",
+        "point_id": "T4-HTTP-RECOVER-CONTINUOUS-PRESSURE",
+        "parameters": {
+          "replicas": 10,
+          "executors": 12,
+          "global_limit": 12,
+          "project_limit": 12,
+          "global_queue": 25,
+          "project_queue": 25,
+          "vram_claim_bytes": 2147483648
+        },
+        "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+        "workload_kind": "ordinary_fixed_40",
+        "accepted": 38,
+        "queue_full_rejections": 62,
+        "drain_seconds": 3.1765041858889163,
+        "queue_peak": 25,
+        "first_queue": 0,
+        "last_queue": 0,
+        "sample_count": 67,
+        "wait_p95": 1.738338,
+        "wait_p99": 1.741487,
+        "execution_p95": 1.332725,
+        "total_p95": 2.734065,
+        "total_p99": 3.071063,
+        "response_latency": {
+          "202": {
+            "count": 38,
+            "p95": 0.1738882448989898,
+            "p99": 0.17758716084063053
+          },
+          "429": {
+            "count": 62,
+            "p95": 0.1313030319288373,
+            "p99": 0.13293665810488164
+          }
+        },
+        "natural_empty_queue_allowed": true,
+        "maximum_sustained_capacity_claim": false,
+        "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+        "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+      },
+      {
+        "state": "COMPLETE",
+        "mode": "bounded_burst",
+        "target_arrivals": 3,
+        "target_rate": null,
+        "unsent": [],
+        "late_sent_calls": 0,
+        "actual_completed_calls": 3,
+        "measurement_seconds": 0.0684694410301745,
+        "error_class": null,
+        "not_scheduled_after_stop": 0,
+        "case_id": "T4-HTTP-RECOVER",
+        "point_id": "T4-HTTP-RECOVER-CONTINUOUS-FRESH",
+        "parameters": {
+          "replicas": 10,
+          "executors": 12,
+          "global_limit": 12,
+          "project_limit": 12,
+          "global_queue": 25,
+          "project_queue": 25,
+          "vram_claim_bytes": 2147483648
+        },
+        "workload_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+        "workload_kind": "ordinary_fixed_40",
+        "accepted": 3,
+        "queue_full_rejections": 0,
+        "drain_seconds": 0.5666857969481498,
+        "queue_peak": 1,
+        "first_queue": 0,
+        "last_queue": 0,
+        "sample_count": 11,
+        "wait_p95": 0.015639,
+        "wait_p99": 0.015639,
+        "execution_p95": 0.488357,
+        "total_p95": 0.518061,
+        "total_p99": 0.518061,
+        "response_latency": {
+          "202": {
+            "count": 3,
+            "p95": 0.02171900006942451,
+            "p99": 0.02171900006942451
+          },
+          "429": {
+            "count": 0,
+            "p95": null,
+            "p99": null
+          }
+        },
+        "natural_empty_queue_allowed": true,
+        "maximum_sustained_capacity_claim": false,
+        "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+        "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18"
+      }
+    ],
+    "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+    "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+    "restored_parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "restored_generation": 328,
+    "continuity_verified": true,
+    "continuity_generation": 324,
+    "boundary_snapshot_sha256": "9022a01dbb828656d550ae88fe9c0e59eadda4aca37a31d7d46fe614bc224a89",
+    "queue_full_observed": true,
+    "scope": "same configuration/model instances/application containers/generation between drained rejection and fresh requests; restoration only after both"
+  },
+  "continuous_verification": {
+    "state": "COMPLETE",
+    "continuity_verified": true,
+    "continuity_generation": 324,
+    "boundary_snapshot_sha256": "9022a01dbb828656d550ae88fe9c0e59eadda4aca37a31d7d46fe614bc224a89",
+    "points": [
+      {
+        "point_id": "T4-HTTP-RECOVER-CONTINUOUS-PRESSURE",
+        "accepted": 38,
+        "rejected": 62,
+        "summary_sha256": "edd07779e4ba94800a57400ec400bc7f7df319284598169ce2974c8d5c72bb95"
+      },
+      {
+        "point_id": "T4-HTTP-RECOVER-CONTINUOUS-FRESH",
+        "accepted": 3,
+        "rejected": 0,
+        "summary_sha256": "4c1cc65e022e889bc816597ccba17ad35182c2f3754dd6a6e66dd89f0d67a07a"
+      }
+    ],
+    "accepted": 41,
+    "rejected": 62,
+    "once_success_usage_verified": true,
+    "rejected_created_no_task": true,
+    "deadline_evidence": "database timestamps, not exact commit/client visibility",
+    "parameters_restored": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "generation_before": 320,
+    "generation_after": 328,
+    "idle": true,
+    "unknown": 0,
+    "monitor_ok": true,
+    "alerts": [],
+    "source_files_verified": 258,
+    "runtime_image_binding_verified": true,
+    "vm_worker_engine_restart": false
+  },
+  "tool_fix_commit": "193a398",
+  "related_local_tests_passed": 24,
+  "private_mac_evidence_backups": [
+    {
+      "sha256": "b11d5d62c34592c8ada5ef369c457bb7d302f7a0b0049306a6848a63165dd261",
+      "bytes": 5978519,
+      "private_mac_backup_verified": true
+    },
+    {
+      "sha256": "9b04a08a31b19fa055e0a1785d5c51122e8e89097faa47ed2a9376ae1c90b04f",
+      "bytes": 38209,
+      "private_mac_backup_verified": true
+    }
+  ],
+  "absolute_maximum_http_concurrency_proven": false,
+  "isolated_results_equal_production_capacity": false,
+  "above_16_tested": false,
+  "large_body_upload_envelope_tested": false,
+  "health_endpoint_latency_under_pressure_measured": false,
+  "production_recommendation_applied": false,
+  "next_stages_started": false
+}
