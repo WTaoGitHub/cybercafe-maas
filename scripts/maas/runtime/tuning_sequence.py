@@ -11,6 +11,9 @@ from maas_bench.snapshot import read_private,save_private,replace_private
 
 
 def run(config):
+    from maas_bench.experiment import matrix_for
+    if matrix_for(read_private(config['template_file'])).get('queue_policy'):
+        raise ValueError('Use explicit v2 MU/queue phases; legacy automatic continuation disabled')
     root=Path(config['output_directory']);root.mkdir(mode=0o700,exist_ok=False)
     source=Path(config['source_root']);template=read_private(config['template_file'])
     template['source_root']=str(source);template_file=root/'template-private.json';save_private(template_file,template)

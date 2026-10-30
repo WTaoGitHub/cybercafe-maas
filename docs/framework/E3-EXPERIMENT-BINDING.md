@@ -19,4 +19,4 @@ python -m maas_bench plan --matrix docs/framework/E3-TUNING-GC-R1-MATRIX.json --
 python scripts/maas/runtime/bind_baseline_proof.py --config /absolute/private/binding.json
 ```
 
-确需导出时显式增加`--write-proof /absolute/private/t0-proof.json`；目录须700，文件600且不能已存在。T1/T2/T3仍须在新profile完成对应验证，不因导入T0而继承旧阶段结果。v2队列规则适配单独交付，不能直接以旧统一5秒驱动声称已执行新标准；HTTP/T5/T6不由本次工具更新自动启动。
+确需导出时显式增加`--write-proof /absolute/private/t0-proof.json`；目录须700，文件600且不能已存在。T1/T2/T3仍须在新profile完成对应验证，不因导入T0而继承旧阶段结果。v2已由reference_mu.py和queue_tuning_v2.py实现，见[E3队列标准](E3-QUEUE-QOS-V2.md)。旧统一5秒驱动及旧自动续跑入口拒绝新矩阵；HTTP/T5/T6不由本次工具更新自动启动。

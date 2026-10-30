@@ -1,0 +1,82 @@
+{
+  "state": "TOOL_VALIDATION_COMPLETE_NO_LIVE_CAPACITY_CLAIM",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "local_regression": {
+    "tests": 74,
+    "passed": 74,
+    "failed": 0
+  },
+  "independent_runs": [
+    {
+      "tests": 39,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "run": "independent-r1",
+      "seconds": 4.307,
+      "junit_sha256": "d3a050a3e706a3176da6980a8bfc204deccd6fe378720be3b012875d785272b7"
+    },
+    {
+      "tests": 40,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "run": "independent-r2",
+      "seconds": 5.808,
+      "junit_sha256": "4adaf4abb243837977b75311fe4212b8652599ffd9c2a2e9592d5b55a8901a09"
+    },
+    {
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "run": "independent-r3",
+      "seconds": 6.064,
+      "junit_sha256": "fcbfa9a5a7c50459510cbe52ed784461e316ef26c0bb07b634630d6a35465518"
+    }
+  ],
+  "final_independent": {
+    "tests": 40,
+    "passed": 40,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": "disposable PostgreSQL; real API/task/result validation; mock inference and stub GPUStack/runtime/resource probes for the arrival point; policy/proof/runtime-image validation separately unit-tested"
+  },
+  "source_files_verified": 201,
+  "source_archive_sha256": "a6934138f5cb3d82bbce20f27724a027a6425631632b24e9fc1ac22c19b292d5",
+  "policy_sha256": "18fbb25dd9b91c26de0fd29ad3f3a9146fc70a24f8a18f9a4231460a8d447e93",
+  "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+  "capabilities": [
+    "explicit matrix/profile/framework-image provenance",
+    "verified prior T0 proof metadata import",
+    "T2 candidate screening",
+    "three-repeat minimum MU calibration",
+    "scenario-specific queue rejection and waiting rules",
+    "bounded-burst acceptance floor",
+    "independent normal confirmations",
+    "no-candidate rejection and guarded original restoration",
+    "fault/unknown stop without auto restore or replay",
+    "post-snapshot database-clock completion observation"
+  ],
+  "observed_test_issues": [
+    "r1 mock fixture generation was 1 while disposable DB generation was 0; safety fence stopped it; corrected to read actual generation",
+    "r2 standalone T2 import relied on script search path; replaced with self-contained private atomic journal writer"
+  ],
+  "old_failures_preserved": true,
+  "private_mac_evidence_backup": {
+    "verified": true,
+    "bytes": 73886,
+    "sha256": "f798c297ade4968b3803eda9619f0239c1a5b72318a696f151907951136c75b3",
+    "members": 213,
+    "non_regular_members_excluded": true,
+    "private_mac_copy": true
+  },
+  "business_source_changed": false,
+  "production_deployed": false,
+  "production_configuration_changed": false,
+  "live_ocr_load_started": false,
+  "live_new_profile_t1_through_t6_passed": false,
+  "automatic_sequence_enabled": false,
+  "write_lock_enhancement_started": false
+}

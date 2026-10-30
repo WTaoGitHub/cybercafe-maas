@@ -1,11 +1,11 @@
 {
   "policy_id": "E3-T4-QOS-V2",
   "defined_on": "2026-10-30",
-  "state": "EXPERIMENT_TARGETS_DEFINED_NOT_EXECUTABLE",
+  "state": "TOOL_IMPLEMENTED_AWAITING_NEW_PROFILE_PREREQUISITES",
   "scope": "internal experimental targets; no consumer SLA or capacity promise",
   "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
-  "execution_enabled": false,
-  "driver_v2_implemented": false,
+  "execution_enabled": true,
+  "driver_v2_implemented": true,
   "old_v1_results_reclassified": false,
   "ordinary_inputs": "same fixed 40 ordinary images and order; input hash recorded per run; no substitution after seeing results",
   "reference_mu": {
@@ -111,7 +111,8 @@
       "other_errors",
       "succeeded",
       "failed"
-    ]
+    ],
+    "completion_observation_sample_seconds": 0.5
   },
   "selection": {
     "rule": "smallest tested queue satisfying reserve, all scenario-specific budgets and correctness; confirm normals 3 independent times before final T4 gate",

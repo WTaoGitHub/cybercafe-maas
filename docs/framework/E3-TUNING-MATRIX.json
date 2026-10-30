@@ -581,9 +581,11 @@
     "policy_id": "E3-T4-QOS-V2",
     "file": "E3-QUEUE-QOS-V2.json",
     "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
-    "state": "EXPERIMENT_TARGETS_DEFINED_NOT_EXECUTABLE",
-    "execution_enabled": false,
-    "driver_v2_implemented": false,
-    "old_v1_gate_unchanged": true
+    "state": "TOOLS_VALIDATED_NEW_PROFILE_PREREQUISITES_PENDING",
+    "execution_enabled": true,
+    "driver_v2_implemented": true,
+    "old_v1_gate_unchanged": true,
+    "live_execution_performed": false,
+    "matrix_file": "E3-TUNING-GC-R1-MATRIX.json"
   }
 }

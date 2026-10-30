@@ -23,7 +23,7 @@ def proof_entry(path,case_id,template,states=('COMPLETE',)):
 
 
 class Phase:
-    def __init__(self,config,case_id,points,prerequisites,condition=None):
+    def __init__(self,config,case_id,points,prerequisites,condition=None,selection_metadata=None):
         self.config=config;self.case_id=case_id;self.template=read_private(config['template_file'])
         self.context=stamp(self.template)
         self.output=Path(config['output_directory']);self.output.mkdir(mode=0o700,exist_ok=False)
@@ -31,6 +31,9 @@ class Phase:
         for dependency,path,states in prerequisites:
             _,entry=proof_entry(path,dependency,self.template,states);self.prerequisites[dependency]=entry
         selection={'case_id':case_id,'profile_id':self.template['profile_id'],'input_sha256':self.input_sha,'points':points,**self.context}
+        if selection_metadata:
+            if set(selection_metadata)-{'qos_policy_id','qos_policy_sha256','reference_mu_sha256'}:raise ValueError('Unsupported selection metadata')
+            selection.update(selection_metadata)
         if condition:selection['condition']=condition
         self.selection_file=self.output/'selection-private.json';save_private(self.selection_file,selection)
         self.selection_sha=hashlib.sha256(self.selection_file.read_bytes()).hexdigest()
@@ -60,6 +63,8 @@ class Phase:
             'parameters':target.to_dict(),'snapshot_file':str(snap),'selection_file':str(self.selection_file),
             'selection_sha256':self.selection_sha,'completed_stages':self.prerequisites,'load_mode':point.get('mode','async_saturation'),**extra}
         if 'arrival_policy' in point:cfg['arrival_policy']=point['arrival_policy']
+        for key in ('qos_class','qos_repeat'):
+            if key in point:cfg[key]=point[key]
         if self.template.get('matrix_file'):
             matrix.validate_execution(cfg,self.input_sha)
         snapshot=self.controller.change(target)
@@ -73,6 +78,14 @@ class Phase:
     def finish(self,**extra):
         self.status['state']='RESTORING';self.record();restored=self.controller.restore()
         self.status.update(state='COMPLETE',restored_parameters=restored['parameters'],restored_generation=restored['generation'],**extra);self.record()
+
+    def reject(self,reason,**extra):
+        # Only a fully reconciled QoS rejection reaches here, never an UNKNOWN
+        # or transport failure. restore() still checks ownership and exact state.
+        self.status.update(state='RESTORING_REJECTED',reason=reason);self.record()
+        restored=self.controller.restore()
+        self.status.update(state='REJECTED_NO_QUALIFIED_CANDIDATE',selection_passed=False,
+            restored_parameters=restored['parameters'],restored_generation=restored['generation'],**extra);self.record()
 
     def interrupted(self,exc):
         self.status.update(state='INTERRUPTED_REQUIRES_INSPECTION',error_class=type(exc).__name__);self.record()

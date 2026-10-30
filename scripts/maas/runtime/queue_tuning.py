@@ -23,7 +23,10 @@ def planned(candidate):
 
 
 def run(config):
-    template=read_private(config['template_file']);proof,_=proof_entry(config['extend_proof_file'],'T3-EXTEND',template,('COMPLETE','SKIPPED_CONDITION_NOT_MET'))
+    template=read_private(config['template_file'])
+    from maas_bench.experiment import matrix_for
+    if matrix_for(template).get('queue_policy'):raise ValueError('Bound v2 policy requires queue_tuning_v2.py; no legacy fallback')
+    proof,_=proof_entry(config['extend_proof_file'],'T3-EXTEND',template,('COMPLETE','SKIPPED_CONDITION_NOT_MET'))
     # Lower resources win within the predeclared 5% screening band.
     candidate=min(proof['screened_candidates'],key=lambda c:(c['parameters']['replicas'],c['parameters']['executors']))
     points=planned(candidate)

@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import sys
 
@@ -12,9 +13,23 @@ from maas_bench.controller import PilotController
 from maas_bench.runtime import ControllerProbe
 from maas_bench.snapshot import read_private,read_secret,save_private
 from maas_bench.__main__ import execute
-from benchmark_executors import atomic
+from maas_bench.snapshot import replace_private as atomic
 from maas_bench.experiment import stamp,check_proof,check_runtime,fresh_namespace
 
+
+
+def screened_candidates(points):
+    if not points:raise ValueError('Completed async capacity points required')
+    for p in points:
+        Parameters(**p['parameters'])
+        value=p['throughput_per_second'];s=p.get('supply',{})
+        if (p['state']!='COMPLETE' or type(value) not in (int,float) or not math.isfinite(value) or value<=0
+            or p['measurement_seconds']<60 or p['measured_successes']<200
+            or s.get('ready_queue_min',0)<=0 or s.get('empty_events')!=[]):
+            raise ValueError('Invalid candidate capacity evidence')
+    best=max(p['throughput_per_second'] for p in points)
+    chosen=sorted((p for p in points if p['throughput_per_second']>=best*.95),key=lambda p:(p['parameters']['replicas'],p['parameters']['executors']))[:2]
+    return [{'parameters':p['parameters'],'screening_throughput':p['throughput_per_second']} for p in chosen]
 
 
 def run(config):
@@ -65,6 +80,7 @@ def run(config):
                 print(json.dumps(row),flush=True)
         result['state']='RESTORING';atomic(output/'status.json',result)
         restored=controller.restore();result['restored_parameters']=restored['parameters'];result['restored_generation']=restored['generation']
+        result['screened_candidates']=screened_candidates(result['points'])
         result['state']='COMPLETE';atomic(output/'status.json',result)
         print(json.dumps({'case_id':'T2-ASYNC','state':'COMPLETE','points':len(result['points'])}),flush=True)
     except BaseException as exc:

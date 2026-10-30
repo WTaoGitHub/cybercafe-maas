@@ -24,11 +24,13 @@ def plan(matrix,case_ids=(),modules=(),labels=(),ledger=None):
         'T2-ASYNC':'python scripts/maas/runtime/async_tuning_matrix.py --execute',
         'T3-LIMITS':'python scripts/maas/runtime/admission_tuning.py --execute',
         'T3-EXTEND':'python scripts/maas/runtime/extended_tuning.py --execute',
+        'T3-MU':'python scripts/maas/runtime/reference_mu.py --execute',
         'T4-QUEUE':'python scripts/maas/runtime/queue_tuning.py --execute',
         'T5-CLAIM':'python scripts/maas/runtime/claim_tuning.py --execute',
         'T6-CONFIRM':'python scripts/maas/runtime/confirmation_tuning.py --execute',
         'T6-SOAK':'python scripts/maas/runtime/soak_tuning.py --execute',
         **{k:'python scripts/maas/runtime/http_ingress_tuning.py --execute' for k in ('T4-HTTP-ACCEPT','T4-HTTP-REJECT','T4-HTTP-RECOVER')}}
+    if matrix.get('queue_policy'):entrypoints['T4-QUEUE']='python scripts/maas/runtime/queue_tuning_v2.py --execute'
     for stage in select(matrix,case_ids,modules,labels):
         unresolved=[]
         for dep in stage['depends_on']:
@@ -67,6 +69,7 @@ def validate_execution(config,manifest_sha256):
     if stage_id not in {'T0-BASELINE','T2-ASYNC'}|adaptive:raise ValueError('Unsupported live stage')
     if config['profile_id']!=m['profile_id']:raise ValueError('Unexpected experiment profile')
     ledger=config.get('completed_stages',{})
+    proofs={}
     stage=next(s for s in m['stages'] if s['case_id']==stage_id)
     for dependency in stage['depends_on']:
         entry=ledger.get(dependency,{})
@@ -75,6 +78,7 @@ def validate_execution(config,manifest_sha256):
         proof_raw=Path(entry['proof_file']).read_bytes()
         if hashlib.sha256(proof_raw).hexdigest()!=entry['proof_sha256']:raise ValueError('Prerequisite evidence changed')
         proof=json.loads(proof_raw)
+        proofs[dependency]=proof
         if proof.get('case_id')!=dependency or proof.get('state')!=entry['state']:raise ValueError('Wrong prerequisite evidence')
         if dependency!='T0-TOOLS':check_proof(proof,config)
         if dependency!='T0-TOOLS' and (proof.get('profile_id')!=config['profile_id'] or proof.get('input_sha256')!=manifest_sha256):
@@ -100,3 +104,6 @@ def validate_execution(config,manifest_sha256):
         raise ValueError('Arrival policy differs from selected point')
     if stage_id in adaptive and point.get('workload_sha256')!=config.get('workload_sha256'):
         raise ValueError('Workload differs from selected point')
+    if stage_id=='T4-QUEUE' and m.get('queue_policy'):
+        from .queue_policy import validate_point
+        validate_point(config,selection,point,proofs['T3-MU'])

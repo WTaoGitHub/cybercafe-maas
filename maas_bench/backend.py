@@ -61,6 +61,12 @@ class DatabaseObserver:
               maintenance.paused,maintenance.generation
             FROM counts CROSS JOIN maintenance WHERE maintenance.id=1
             """,(*self.scope,include_ids,*([self.scope[0]]*3))).fetchone()
+            if row and include_ids:
+                # Query receipt/statement time can precede snapshot acquisition.
+                # Read the DB wall clock AFTER the success snapshot is returned,
+                # giving a conservative upper bound on visible commit time.
+                row['completion_observed_db_at']=self.connection.execute(
+                    'SELECT extract(epoch FROM clock_timestamp())::float8 observed').fetchone()['observed']
         if not row:raise RuntimeError('Missing maintenance singleton')
         if row.pop('scope_drift') or row.pop('retry_policy_drift'):
             raise RuntimeError('Benchmark namespace/model/retry policy drift')
@@ -79,6 +85,18 @@ class DatabaseObserver:
         with self.lock:
             count=self.connection.execute("SELECT count(*) n FROM tasks WHERE project=%s AND starts_with(idempotency_key,%s)",self.scope[:2]).fetchone()['n']
         if count:raise RuntimeError('Run namespace already exists; no resume/replay')
+
+    def task_timings(self):
+        with self.lock:
+            return self.connection.execute("""SELECT t.id,
+              extract(epoch FROM t.created_at)::float8 created_epoch,
+              extract(epoch FROM t.deadline)::float8 deadline_epoch,
+              extract(epoch FROM a.started_at-t.created_at)::float8 waiting,
+              extract(epoch FROM a.ended_at-a.started_at)::float8 executing,
+              extract(epoch FROM t.updated_at-t.created_at)::float8 total
+              FROM tasks t JOIN task_attempts a ON a.task_id=t.id AND a.attempt=t.attempts
+              WHERE t.project=%s AND starts_with(t.idempotency_key,%s) AND t.model=%s AND t.revision=%s
+              AND t.state='SUCCEEDED'""",self.scope).fetchall()
 
 
 class TaskBackend:

@@ -28,6 +28,10 @@ def execute_arrivals(config):
     if original['parameters']!=p.to_dict():raise ValueError('Parameters not applied')
     if mode=='independent_arrivals' and not 10<=policy['seconds']<=300:raise ValueError('Bounded live arrival window required')
     if mode=='bounded_burst' and not 1<=policy['count']<=200:raise ValueError('Bounded live burst required')
+    qos=None
+    if config.get('qos_policy_file') and config['case_id']=='T4-QUEUE':
+        from .queue_policy import load_policy,CompletionClock
+        qos=load_policy(config);clock=CompletionClock()
     folder=Path(config['output_parent'])/config['run_id'];folder.mkdir(mode=0o700,exist_ok=False)
     probe=ControllerProbe(config['source_root'],config['model_id'],config['profile_id'],digest(manifest));fence.check(probe.capture())
     from .experiment import check_runtime,stamp
@@ -51,10 +55,14 @@ def execute_arrivals(config):
             trust_env=False,transport=httpx.HTTPTransport(retries=0,verify=config.get('ca_file',True))) as client:
             backend=TaskBackend(client,observer,fixtures);backend.prepare();admission=AdmissionBackend(backend,emit)
             def sample():
-                previous=time.monotonic()
+                previous=time.monotonic();last_completion_sample=0
                 try:
                     while not halt.is_set():
-                        a=time.monotonic();row=backend.snapshot();b=time.monotonic();monitor.observe(row,a,b,False)
+                        a=time.monotonic();include=bool(qos) and a-last_completion_sample>=.5
+                        row=backend.snapshot(include_ids=include);b=time.monotonic();monitor.observe(row,a,b,False)
+                        if include:
+                            new=clock.observe(row);row['new_success_ids']=new;last_completion_sample=b
+                        row.pop('success_ids',None)
                         if b-previous>.25:raise RuntimeError('Arrival activity sample gap')
                         previous=b;samples.append(row);emit({'kind':'sample',**row});halt.wait(.05)
                 except Exception as exc:fail(exc)
@@ -84,12 +92,9 @@ def execute_arrivals(config):
             for t in threads:t.join(30)
             if errors or any(t.is_alive() for t in threads):raise RuntimeError('Arrival observer incomplete')
             fence.check(probe.capture())
-            with observer.lock:
-                timings=observer.connection.execute('''SELECT extract(epoch FROM a.started_at-t.created_at)::float8 waiting,
-                  extract(epoch FROM a.ended_at-a.started_at)::float8 executing,
-                  extract(epoch FROM t.updated_at-t.created_at)::float8 total FROM tasks t
-                  JOIN task_attempts a ON a.task_id=t.id AND a.attempt=t.attempts
-                  WHERE t.project=%s AND starts_with(t.idempotency_key,%s) AND t.state='SUCCEEDED' ''',observer.scope[:2]).fetchall()
+            if qos:clock.observe(backend.snapshot(include_ids=True))
+            timings=observer.task_timings()
+            if len(timings)!=len(admission.accepted):raise RuntimeError('Accepted timing rows missing')
             http=[r['outcome'] for r in result['records']]
             summary={k:v for k,v in result.items() if k!='records'}
             summary.update(case_id=config['case_id'],point_id=config['point_id'],parameters=p.to_dict(),
@@ -105,6 +110,19 @@ def execute_arrivals(config):
                     'p95':quantile([r['seconds'] for r in http if r['http_status']==code],.95),
                     'p99':quantile([r['seconds'] for r in http if r['http_status']==code],.99)} for code in (202,429)},
                 natural_empty_queue_allowed=True,maximum_sustained_capacity_claim=False)
+            if qos:
+                visible,observations=clock.verify(timings)
+                spans=[r['sent_offset'] for r in result['records']]
+                emit({'kind':'completion_observation_final','observations':observations})
+                log.flush();os.fsync(log.fileno())
+                summary.update(qos_policy_id=qos['policy_id'],qos_policy_sha256=config['qos_policy_sha256'],
+                    qos_class=config['qos_class'],qos_repeat=config.get('qos_repeat'),correctness_verified=True,
+                    wait_max=max((r['waiting'] for r in timings),default=None),
+                    observed_completion_p95=quantile(visible,.95),observed_completion_max=max(visible,default=None),
+                    completion_observation_sample_seconds=.5,task_deadline_seconds=120,
+                    submission_span_seconds=max(spans)-min(spans) if spans else 0,
+                    total_clock_kind='DB_UPDATED_AT_NOT_DURABLE_E2E',
+                    completion_clock_kind='FIRST_COMMITTED_SUCCESS_OBSERVATION_UPPER_BOUND_NOT_CLIENT_LATENCY')
             summary.update(**stamp(config));check_runtime(config,probe.capture())
             save_private(folder/'summary.json',summary);return summary
     except BaseException as exc:

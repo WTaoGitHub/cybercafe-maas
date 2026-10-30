@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "status": "NEW_PROFILE_TOOLING_ONLY_NO_LIVE_EXECUTION",
+  "status": "TOOL_IMPLEMENTED_LIVE_PREREQUISITES_NOT_COMPLETED",
   "tooling_status": {
     "case_id": "T0-TOOLS",
     "state": "COMPLETE",
@@ -330,6 +330,24 @@
       ]
     },
     {
+      "case_id": "T3-MU",
+      "module": "capacity-reference",
+      "labels": [
+        "live",
+        "capacity",
+        "reference",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T3-LIMITS",
+        "T3-EXTEND"
+      ],
+      "kind": "independent_capacity_calibration",
+      "repeats": 3,
+      "min_seconds": 60,
+      "min_successes": 200
+    },
+    {
       "case_id": "T4-QUEUE",
       "module": "queue",
       "labels": [
@@ -341,7 +359,8 @@
       ],
       "depends_on": [
         "T3-LIMITS",
-        "T3-EXTEND"
+        "T3-EXTEND",
+        "T3-MU"
       ],
       "conditional_dependency_resolved_by": "execution_or_SKIPPED_CONDITION_NOT_MET",
       "kind": "finalist_queue_sweep",
@@ -376,7 +395,8 @@
       "expected_rejections": [
         "SYNC_CAPACITY",
         "QUEUE_FULL"
-      ]
+      ],
+      "selection_policy": "E3-T4-QOS-V2"
     },
     {
       "case_id": "T4-HTTP-ACCEPT",
@@ -545,5 +565,9 @@
   "runtime_binding": {
     "application_image_id": "sha256:cefb4c38d2f5ca2b355b24985ce81cf879ae11f0c6c649b532b9b4632f779bd7",
     "application_source_commit": "0e945d0"
+  },
+  "queue_policy": {
+    "policy_id": "E3-T4-QOS-V2",
+    "sha256": "18fbb25dd9b91c26de0fd29ad3f3a9146fc70a24f8a18f9a4231460a8d447e93"
   }
 }

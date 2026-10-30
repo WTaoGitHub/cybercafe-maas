@@ -7,6 +7,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[3]))
 from maas_bench.phase import Phase,proof_entry
 from maas_bench.snapshot import read_private,replace_private
 from maas_bench.__main__ import execute
+from maas_bench.experiment import stamp
 
 
 def extension_condition(rows):
@@ -44,7 +45,7 @@ def run(config):
         folder=Path(config['output_directory']);folder.mkdir(mode=0o700,exist_ok=False)
         result={k:gate.status[k] for k in ('profile_id','input_sha256')}
         result.update(case_id='T3-EXTEND',state='SKIPPED_CONDITION_NOT_MET',condition=condition,
-            screened_candidates=[{'parameters':params,'screening_throughput':base['throughput_per_second']}])
+            screened_candidates=[{'parameters':params,'screening_throughput':base['throughput_per_second']}],**stamp(template))
         replace_private(folder/'status.json',result);return
     points=[{'point_id':'T3-E12-R'+str(r),'parameters':{**params,'replicas':r,'executors':12,'global_limit':12,'project_limit':12},'mode':'async_saturation'} for r in (8,10,12)]
     phase=Phase(config,'T3-EXTEND',points,[('T3-LIMITS',config['limits_proof_file'],('COMPLETE',))],condition)
