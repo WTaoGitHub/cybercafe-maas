@@ -16,6 +16,8 @@ from maas_bench.snapshot import read_private,read_secret,save_private,digest,rep
 from maas_bench.__main__ import execute
 from maas_bench.sync_point import execute_sync
 from benchmark_executors import percentile
+from maas_bench.experiment import stamp,check_proof,check_runtime,fresh_namespace
+
 
 
 def planned(candidates):
@@ -43,24 +45,30 @@ def run(config):
     if not re.fullmatch(r'[a-z0-9-]{1,10}',tag):raise ValueError('Bounded unique attempt tag required')
     template=read_private(config['template_file']);template.update(expected_text_file=config['expected_text_file'],raw_manifest_file=config['raw_manifest_file'])
     if proof['profile_id']!=template['profile_id'] or proof['input_sha256']!=digest(read_private(template['fixture_file'])):raise ValueError('T2/input profile mismatch')
+    check_proof(proof,template);context=stamp(template)
     points=planned(proof['screened_candidates'])
-    selection={'case_id':'T3-LIMITS','profile_id':proof['profile_id'],'input_sha256':proof['input_sha256'],'points':points}
+    selection={'case_id':'T3-LIMITS','profile_id':proof['profile_id'],'input_sha256':proof['input_sha256'],'points':points,**context}
     selection_file=output/'selection-private.json';save_private(selection_file,selection)
     observer=DatabaseObserver(read_secret(template['database_dsn_file']),template['project'],template['logical_model'],template['revision'],'e3-t3-controller-20261029:')
     probe=ControllerProbe(template['source_root'],template['model_id'],template['profile_id'],proof['input_sha256'])
-    controller=PilotController(probe,observer,output/'operations')
-    result={'case_id':'T3-LIMITS','profile_id':proof['profile_id'],'input_sha256':proof['input_sha256'],'state':'RUNNING','points':[],'planned_points':len(points)}
+    controller=PilotController(probe,observer,output/'operations',experiment=template)
+    result={'case_id':'T3-LIMITS','profile_id':proof['profile_id'],'input_sha256':proof['input_sha256'],'state':'RUNNING','points':[],'planned_points':len(points),**context}
     replace_private(output/'status.json',result)
     try:
         for number,point in enumerate(points):
-            target=Parameters(**point['parameters']);snapshot=controller.change(target)
-            snapshot_file=output/(str(number)+'-before-private.json');save_private(snapshot_file,snapshot)
+            target=Parameters(**point['parameters'])
+            snapshot_file=output/(str(number)+'-before-private.json')
             run_id='t3-20261029-'+tag+'-'+str(number).zfill(3)+'-'+point['mode'].replace('_','-')
             cfg={**template,'case_id':'T3-LIMITS','point_id':point['point_id'],'run_id':run_id,'load_mode':point['mode'],
                 'parameters':target.to_dict(),'snapshot_file':str(snapshot_file),'selection_file':str(selection_file),
                 'selection_sha256':hashlib.sha256(selection_file.read_bytes()).hexdigest(),
                 'completed_stages':{'T2-ASYNC':{'state':'COMPLETE','proof_file':str(proof_file),'proof_sha256':config['async_proof_sha256']}}}
             if point['mode'].startswith('mixed_'):cfg['sync_rate']=point['reference_rate']*(.2 if point['mode']=='mixed_20' else .5)
+            fresh_namespace(template,observer,run_id,[snapshot_file,output/(str(number)+'-config-private.json'),Path(template['output_parent'])/run_id])
+            if template.get('matrix_file'):
+                from maas_bench.matrix import validate_execution
+                validate_execution(cfg,proof['input_sha256'])
+            snapshot=controller.change(target);save_private(snapshot_file,snapshot)
             save_private(output/(str(number)+'-config-private.json'),cfg)
             if point['mode']=='sync_prepared':data=execute_sync(cfg)
             else:

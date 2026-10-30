@@ -13,6 +13,8 @@ from maas_bench.runtime import ControllerProbe
 from maas_bench.snapshot import read_private,read_secret,save_private
 from maas_bench.__main__ import execute
 from benchmark_executors import atomic
+from maas_bench.experiment import stamp,check_proof,check_runtime,fresh_namespace
+
 
 
 def run(config):
@@ -23,22 +25,33 @@ def run(config):
     template=read_private(config['template_file'])
     if proof['input_sha256']!=read_private(template['snapshot_file'])['input_sha256'] or proof['profile_id']!=template['profile_id']:
         raise ValueError('T1/input/profile mismatch')
+    check_proof(proof,template);context=stamp(template)
     output=Path(config['output_directory']);output.mkdir(mode=0o700,exist_ok=False)
     observer=DatabaseObserver(read_secret(template['database_dsn_file']),template['project'],template['logical_model'],template['revision'],'e3-t2-controller-20261029:')
     probe=ControllerProbe(template['source_root'],template['model_id'],template['profile_id'],proof['input_sha256'])
-    controller=PilotController(probe,observer,output/'operations')
-    result={'case_id':'T2-ASYNC','profile_id':proof['profile_id'],'input_sha256':proof['input_sha256'],'state':'RUNNING','points':[]}
+    controller=PilotController(probe,observer,output/'operations',experiment=template)
+    result={'case_id':'T2-ASYNC','profile_id':proof['profile_id'],'input_sha256':proof['input_sha256'],'state':'RUNNING','points':[],**context}
     atomic(output/'status.json',result)
     try:
         for replicas in (4,6,8):
             for executors in (4,6,8):
                 target=Parameters(replicas,executors,8,8,1000,100)
-                snapshot=controller.change(target)
                 point='T2-ASYNC-'+str(replicas)+'-'+str(executors);run_id='t2-20261029-r'+str(replicas)+'-e'+str(executors)
-                snapshot_file=output/(point+'-before-private.json');save_private(snapshot_file,snapshot)
+
+                if template.get('matrix_file'):
+                    import re
+                    tag=config.get('run_tag','')
+                    if not re.fullmatch(r'[a-z0-9-]{1,10}',tag):raise ValueError('Explicit fresh run tag required')
+                    run_id+='-'+tag
+                snapshot_file=output/(point+'-before-private.json')
+                fresh_namespace(template,observer,run_id,[snapshot_file,output/(point+'-config-private.json'),Path(template['output_parent'])/run_id])
                 cfg={**template,'case_id':'T2-ASYNC','point_id':point,'run_id':run_id,
                     'parameters':target.to_dict(),'snapshot_file':str(snapshot_file),'expected_text_file':config['expected_text_file'],
                     'completed_stages':{'T1-NATIVE':{'state':'COMPLETE','proof_file':str(proof_file),'proof_sha256':config['native_proof_sha256']}}}
+                if template.get('matrix_file'):
+                    from maas_bench.matrix import validate_execution
+                    validate_execution(cfg,proof['input_sha256'])
+                snapshot=controller.change(target);save_private(snapshot_file,snapshot)
                 save_private(output/(point+'-config-private.json'),cfg)
                 measured=execute(cfg)
                 if measured['state']!='COMPLETE':raise RuntimeError('T2 invalid point: '+measured['state'])

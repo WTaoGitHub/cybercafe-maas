@@ -20,6 +20,8 @@ from maas_platform.cluster_maintenance import model_hash
 from replica_capacity_matrix import change_model
 from executor_pool import LIVE,LOCK,cli,inventory
 from benchmark_executors import atomic,percentile
+from maas_bench.experiment import stamp,check_proof,check_runtime,fresh_namespace
+
 
 
 def text_fingerprint(lines):
@@ -40,6 +42,7 @@ def verify_prerequisite(config):
     proof=json.loads(raw)
     if proof.get('case_id')!='T0-BASELINE' or proof.get('state')!='COMPLETE' or proof.get('profile_id')!=config['profile_id']:
         raise ValueError('Completed matching T0 baseline required')
+    check_proof(proof,config)
     quality=read_private(config['expected_text_file'])
     if quality['input_sha256']!=proof['input_sha256'] or quality['profile_id']!=proof['profile_id']:
         raise ValueError('Different input/quality profile')
@@ -56,7 +59,7 @@ def execute(config):
     if os.getuid()!=0:raise RuntimeError('Controller root required')
     root=Path(config['output_directory']);root.mkdir(mode=0o700,exist_ok=False)
     state={'case_id':'T1-NATIVE','profile_id':proof['profile_id'],'input_sha256':proof['input_sha256'],
-        'state':'PREPARED','points':[],'events':[],'source_baseline_sha256':config['baseline_proof_sha256']}
+        'state':'PREPARED',**stamp(config),'points':[],'events':[],'source_baseline_sha256':config['baseline_proof_sha256']}
     journal_lock=threading.RLock();abort=threading.Event();sampler_stop=threading.Event();sample_context={'phase':'PREPARED'}
     sample_errors=[]
     def checkpoint():
@@ -67,7 +70,7 @@ def execute(config):
     if model['replicas']!=proof['parameters']['replicas'] or model['env']['GPUSTACK_MODEL_VRAM_CLAIM']!=str(proof['parameters']['vram_claim_bytes']):
         raise RuntimeError('Runtime baseline differs from proof')
     probe=ControllerProbe(Path(__file__).resolve().parents[3],config['model_id'],config['profile_id'],proof['input_sha256'])
-    baseline=probe.capture();save_private(root/'original-model-private.json',original);save_private(root/'runtime-private.json',baseline)
+    baseline=probe.capture();check_runtime(config,baseline);save_private(root/'original-model-private.json',original);save_private(root/'runtime-private.json',baseline)
     RuntimeFence(read_private(config['baseline_runtime_snapshot_file'])).check(baseline)
     if not read_private(config['mac_backup_receipt_file']).get('mac_private_backup_complete'):raise RuntimeError('Verified Mac backup required')
     workers={w['id']:w for w in baseline['workers']};assert len(workers)==2

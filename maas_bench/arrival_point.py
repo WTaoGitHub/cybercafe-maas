@@ -30,6 +30,8 @@ def execute_arrivals(config):
     if mode=='bounded_burst' and not 1<=policy['count']<=200:raise ValueError('Bounded live burst required')
     folder=Path(config['output_parent'])/config['run_id'];folder.mkdir(mode=0o700,exist_ok=False)
     probe=ControllerProbe(config['source_root'],config['model_id'],config['profile_id'],digest(manifest));fence.check(probe.capture())
+    from .experiment import check_runtime,stamp
+    check_runtime(config,original)
     observer=DatabaseObserver(read_secret(config['database_dsn_file']),config['project'],config['logical_model'],config['revision'],'e3-'+config['run_id']+':')
     log=os.fdopen(os.open(folder/'events.jsonl',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'w');lock=threading.Lock()
     stop=threading.Event();halt=threading.Event();errors=[];samples=[]
@@ -103,6 +105,7 @@ def execute_arrivals(config):
                     'p95':quantile([r['seconds'] for r in http if r['http_status']==code],.95),
                     'p99':quantile([r['seconds'] for r in http if r['http_status']==code],.99)} for code in (202,429)},
                 natural_empty_queue_allowed=True,maximum_sustained_capacity_claim=False)
+            summary.update(**stamp(config));check_runtime(config,probe.capture())
             save_private(folder/'summary.json',summary);return summary
     except BaseException as exc:
         stop.set();save_private(folder/'interrupted.json',{'state':'INTERRUPTED_REQUIRES_INSPECTION','error_class':type(exc).__name__});raise

@@ -41,6 +41,8 @@ def execute(config):
         raise ValueError('Record private Mac backup receipt before live execution')
     probe=ControllerProbe(config['source_root'],config['model_id'],config['profile_id'],digest(fixture_data))
     current=probe.capture();fence.check(current)
+    from .experiment import check_runtime,stamp
+    check_runtime(config,current)
     folder=Path(config['output_parent'])/run_id;folder.mkdir(mode=0o700,parents=False,exist_ok=False)
     save_private(folder/'before.json',current)
     fd=os.open(folder/'events.jsonl',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
@@ -89,6 +91,7 @@ def execute(config):
             if watcher.is_alive():raise RuntimeError('Runtime guard did not stop')
             if runner.failure and summary['state']=='COMPLETE':raise runner.failure
             after=probe.capture();save_private(folder/'after.json',after);fence.check(after)
+            summary.update(**stamp(config));check_runtime(config,after)
             summary.update(profile_id=config['profile_id'],input_sha256=digest(fixture_data),
                 case_id=config['case_id'],point_id=config['point_id'],generator=generator,configuration_changed_by_harness=False,restore_required=False,**workload)
             save_private(folder/'summary.json',summary)

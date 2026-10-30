@@ -1,0 +1,549 @@
+{
+  "schema_version": 2,
+  "status": "NEW_PROFILE_TOOLING_ONLY_NO_LIVE_EXECUTION",
+  "tooling_status": {
+    "case_id": "T0-TOOLS",
+    "state": "COMPLETE",
+    "evidence": "../../results/maas-e3-t0-tools-20261029/tool-validation.json",
+    "supported_live_driver": "guarded_per_stage_drivers_with_hashed_dependencies_and_stop_on_first_unmet_gate",
+    "adaptive_stage_orchestration_implemented": true,
+    "live_capacity_results_produced": true
+  },
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "profile_scope": {
+    "logical_model": "ocr.default",
+    "revision": "ocr-registry-r1",
+    "recognition_model": "PP-OCRv4",
+    "rapidocr_version": "1.4.4",
+    "onnxruntime_gpu_version": "1.20.2",
+    "gpu_count": 2,
+    "gpu_class": "RTX 4080 SUPER 16GiB",
+    "direction_policy": "guarded",
+    "capture_before_execution": [
+      "image_digest",
+      "weight_hashes",
+      "driver",
+      "worker_identity",
+      "cpu_ram",
+      "model_snapshot",
+      "app_env_snapshot",
+      "input_manifest_hashes"
+    ],
+    "parameter_results_transferable_to_other_models": false
+  },
+  "baseline": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "fixed_inputs": {
+    "media_types": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "max_bytes": 10485760,
+    "max_pixels": 20000000,
+    "task_deadline_seconds": 120,
+    "task_max_attempts": 1
+  },
+  "tool_guardrails": {
+    "initial_explicit_max_clients_executors_limits": 16,
+    "initial_model_replicas": [
+      4,
+      6,
+      8
+    ],
+    "conditional_model_replicas": [
+      10,
+      12
+    ],
+    "conditional_executors_limits": [
+      12
+    ]
+  },
+  "sampling_contract": {
+    "measure_min_seconds": 60,
+    "measure_min_successes": 200,
+    "measure_max_seconds": 300,
+    "finalist_repeats": 3,
+    "finalist_min_seconds_per_repeat": 300,
+    "tie_max_repeats": 5,
+    "final_soak_seconds": 7200
+  },
+  "saturation_contract": {
+    "definition": "continuously_ready_backlog_during_formal_saturated_async_measurement",
+    "effective_async_slots": "min(executors,global_limit,project_limit)",
+    "ready_queue": {
+      "scope": [
+        "test_project",
+        "target_model",
+        "target_revision"
+      ],
+      "states": [
+        "QUEUED",
+        "RETRY_WAIT"
+      ],
+      "next_run_due_required": true,
+      "deadline_live_required": true,
+      "valid_input_required": true,
+      "running_and_unconfirmed_submissions_excluded": true
+    },
+    "refill": {
+      "initial_low_watermark_slots_multiplier": 2,
+      "initial_high_watermark_slots_multiplier": 4,
+      "strictly_below_effective_queue_limit": true,
+      "reserve_for_unconfirmed_submissions": true,
+      "bound_by_waiting_deadline_budget": true,
+      "independent_of_result_download_and_reconciliation": true,
+      "prefill_before_measurement": true
+    },
+    "observation": {
+      "planned_queue_sample_interval_ms_max": 100,
+      "record_actual_interval_and_max_gap": true,
+      "record_empty_events_and_generator_idle": true,
+      "sampling_alone_is_not_continuous_proof": true
+    },
+    "invalid_on_observed_ready_queue_zero": true,
+    "invalid_status": "INVALID_UNDERSUPPLIED",
+    "unverifiable_status": "INCONCLUSIVE_SUPPLY_EVIDENCE",
+    "no_cherry_picked_busy_windows": true,
+    "no_automatic_restart_or_replay": true,
+    "native_and_sync_supply_rule": "continuously_prepared_requests_for_target_clients_not_maas_async_queue",
+    "exempt_modes": [
+      "fixed_arrival_latency",
+      "queue_limit_rejection",
+      "intentional_drain",
+      "business_arrival_subsegment"
+    ],
+    "mixed_rule": "record_offered_accepted_completed_mix_and_sync_starvation_without_emptying_async_backlog"
+  },
+  "http_ingress_contract": {
+    "status": "DRIVER_VALIDATED_LIVE_NOT_STARTED",
+    "specification": "E3-HTTP-INGRESS-PLAN.md",
+    "scope": "POST /maas/v1/tasks; preuploaded artifacts; keep real admission and authentication",
+    "http_concurrency_definition": "sent_http_requests_awaiting_final_response_not_connections_tasks_or_execution_slots",
+    "initial_http_concurrency": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "conditional_http_concurrency": [
+      32,
+      64
+    ],
+    "conditional_expansion_requires": "healthy_previous_tier_and_separate_bounded_http_driver_extension_and_regression",
+    "existing_parallelism_limit_unchanged": 16,
+    "no_automatic_change_to_model_executor_execution_or_queue_limits": true,
+    "environments": [
+      "isolated_real_api_with_controlled_mock_consumer",
+      "bounded_real_ocr_confirmation"
+    ],
+    "stub_authentication_results_require_separate_profile": true,
+    "stable_202_requires_queue_below_cap_without_sustained_growth": true,
+    "short_burst_queue_budget_required": true,
+    "unprepared_queue_budget_status": "SKIPPED_QUEUE_BUDGET",
+    "generator_insufficient_status": "INCONCLUSIVE_GENERATOR",
+    "expected_rejection": {
+      "http_status": 429,
+      "code": "QUEUE_FULL",
+      "zero_new_tasks_and_success_events_for_rejected_unique_keys": true
+    },
+    "acceptance_window": {
+      "minimum_seconds": 60,
+      "minimum_responses": 200,
+      "maximum_seconds": 180,
+      "maximum_requests": 100000
+    },
+    "rejection_window": {
+      "maximum_seconds": 30,
+      "maximum_requests": 10000
+    },
+    "provisional_not_sla": {
+      "accept_and_reject_each_p95_seconds": 0.5,
+      "accept_and_reject_each_p99_seconds": 1.5,
+      "unexpected_5xx_or_timeouts": 0,
+      "finalist_repeats": 3,
+      "recovery_drain_hard_max_seconds": 180,
+      "probe_window_after_drain_seconds": 30
+    },
+    "classify_202_429_other_errors_and_unconfirmed_separately": true,
+    "no_automatic_retries_or_replay": true,
+    "production_vm_worker_or_docker_restarts_forbidden": true,
+    "additional_execution_budget_hours": [
+      1,
+      2
+    ]
+  },
+  "stages": [
+    {
+      "case_id": "T0-TOOLS",
+      "module": "tooling",
+      "labels": [
+        "local",
+        "safety",
+        "prerequisite"
+      ],
+      "depends_on": [],
+      "kind": "implementation_and_independent_db_validation"
+    },
+    {
+      "case_id": "T0-BASELINE",
+      "module": "baseline",
+      "labels": [
+        "live",
+        "baseline"
+      ],
+      "depends_on": [
+        "T0-TOOLS"
+      ],
+      "kind": "baseline",
+      "repeats": 3
+    },
+    {
+      "case_id": "T1-NATIVE",
+      "module": "native-capacity",
+      "labels": [
+        "live",
+        "gpu",
+        "changes-model",
+        "screen"
+      ],
+      "depends_on": [
+        "T0-BASELINE"
+      ],
+      "kind": "cartesian",
+      "dimensions": {
+        "replicas": [
+          4,
+          6,
+          8
+        ],
+        "native_clients": [
+          4,
+          6,
+          8,
+          12
+        ]
+      },
+      "vram_claim_bytes": 2147483648,
+      "maas_paused": true
+    },
+    {
+      "case_id": "T2-ASYNC",
+      "module": "async-capacity",
+      "labels": [
+        "live",
+        "gpu",
+        "changes-pool",
+        "changes-model",
+        "screen"
+      ],
+      "depends_on": [
+        "T1-NATIVE"
+      ],
+      "kind": "cartesian",
+      "dimensions": {
+        "replicas": [
+          4,
+          6,
+          8
+        ],
+        "executors": [
+          4,
+          6,
+          8
+        ]
+      },
+      "global_limit": 8,
+      "project_limit": 8,
+      "effective_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    {
+      "case_id": "T3-LIMITS",
+      "module": "admission",
+      "labels": [
+        "live",
+        "changes-limits",
+        "mixed",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T2-ASYNC"
+      ],
+      "kind": "top_two_profiles",
+      "global_project_limits": [
+        4,
+        6,
+        8
+      ],
+      "sync_async_percentages": [
+        [
+          0,
+          100
+        ],
+        [
+          100,
+          0
+        ],
+        [
+          20,
+          80
+        ],
+        [
+          50,
+          50
+        ]
+      ],
+      "project_control_policies": [
+        "equal_global",
+        "ceil_half_global",
+        "two"
+      ]
+    },
+    {
+      "case_id": "T3-EXTEND",
+      "module": "admission",
+      "labels": [
+        "live",
+        "conditional",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T3-LIMITS"
+      ],
+      "kind": "conditional",
+      "trigger": "repeatable_gain_at_eight_at_least_five_percent_and_resource_headroom_without_plateau",
+      "executors": 12,
+      "global_limit": 12,
+      "project_limit": 12,
+      "replicas_from_runtime_evidence": [
+        8,
+        10,
+        12
+      ]
+    },
+    {
+      "case_id": "T4-QUEUE",
+      "module": "queue",
+      "labels": [
+        "live",
+        "changes-queue",
+        "arrival-rate",
+        "burst",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T3-LIMITS",
+        "T3-EXTEND"
+      ],
+      "conditional_dependency_resolved_by": "execution_or_SKIPPED_CONDITION_NOT_MET",
+      "kind": "finalist_queue_sweep",
+      "effective_queue_limits": [
+        10,
+        25,
+        50,
+        100,
+        200
+      ],
+      "arrival_rate_multipliers": [
+        0.5,
+        0.8,
+        1.0,
+        1.2
+      ],
+      "burst_rate_multiplier": 2,
+      "burst_seconds": 10,
+      "burst_task_counts": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "waiting_budgets_seconds": [
+        5,
+        15,
+        30
+      ],
+      "normal_min_seconds": 180,
+      "overload_max_seconds": 300,
+      "expected_rejections": [
+        "SYNC_CAPACITY",
+        "QUEUE_FULL"
+      ]
+    },
+    {
+      "case_id": "T4-HTTP-ACCEPT",
+      "module": "http-ingress",
+      "labels": [
+        "live",
+        "http",
+        "ingress-capacity",
+        "acceptance",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T4-QUEUE"
+      ],
+      "kind": "ingress_capacity_experiment",
+      "mode": "stable_202_and_bounded_real_burst",
+      "arrival_rate_multipliers": [
+        0.5,
+        0.8,
+        1.0,
+        1.2
+      ],
+      "rate_reference": "measured_202_admission_rps_not_ocr_completion_rate",
+      "driver_implemented": true
+    },
+    {
+      "case_id": "T4-HTTP-REJECT",
+      "module": "http-ingress",
+      "labels": [
+        "live",
+        "http",
+        "ingress-capacity",
+        "overload",
+        "queue-full",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T4-HTTP-ACCEPT"
+      ],
+      "kind": "ingress_capacity_experiment",
+      "mode": "full_queue_rejection",
+      "expected_rejection": {
+        "http_status": 429,
+        "code": "QUEUE_FULL"
+      },
+      "driver_implemented": true
+    },
+    {
+      "case_id": "T4-HTTP-RECOVER",
+      "module": "http-ingress",
+      "labels": [
+        "live",
+        "http",
+        "ingress-capacity",
+        "recovery",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T4-HTTP-REJECT"
+      ],
+      "kind": "ingress_capacity_experiment",
+      "mode": "drain_then_new_admission_query_and_result_probe",
+      "task_deadlines_unchanged": true,
+      "no_cancellation_deletion_or_service_restart_to_pass": true,
+      "driver_implemented": true
+    },
+    {
+      "case_id": "T5-CLAIM",
+      "module": "vram-budget",
+      "labels": [
+        "live",
+        "changes-model",
+        "peak-measurement",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T4-QUEUE",
+        "T4-HTTP-RECOVER"
+      ],
+      "kind": "measurement_gated",
+      "baseline_bytes": 2147483648,
+      "unapproved_example_candidates_bytes": [
+        2013265920,
+        1879048192
+      ],
+      "minimum_card_headroom_bytes": 1073741824,
+      "minimum_card_headroom_fraction": 0.1,
+      "skip_lower_claim_when_peak_evidence_insufficient": true
+    },
+    {
+      "case_id": "T6-CONFIRM",
+      "module": "confirmation",
+      "labels": [
+        "live",
+        "repeatability",
+        "adaptive"
+      ],
+      "depends_on": [
+        "T5-CLAIM"
+      ],
+      "kind": "top_two_final_tuples",
+      "near_best_band_fraction": 0.05
+    },
+    {
+      "case_id": "T6-SOAK",
+      "module": "soak",
+      "labels": [
+        "live",
+        "long-running",
+        "mixed",
+        "final"
+      ],
+      "depends_on": [
+        "T6-CONFIRM"
+      ],
+      "kind": "selected_tuple_soak",
+      "seconds": 7200,
+      "automatic_production_promotion": false
+    }
+  ],
+  "provisional_experimental_thresholds_not_sla": {
+    "normal_no_backlog_p95_seconds": 1.5,
+    "normal_no_backlog_p99_seconds": 3,
+    "sustained_cpu_high_fraction": 0.8,
+    "minimum_available_ram_bytes": 2147483648,
+    "minimum_available_ram_fraction": 0.1
+  },
+  "stop_conditions": [
+    "unexpected_5xx_or_503",
+    "unknown",
+    "oom",
+    "instance_error",
+    "connection_failure",
+    "required_sampling_failure",
+    "external_generation_or_model_drift",
+    "quota_violation",
+    "metering_mismatch"
+  ],
+  "operational_constraints": {
+    "vm_reboot_forbidden": true,
+    "docker_daemon_restart_forbidden": true,
+    "gpustack_worker_restart_forbidden": true,
+    "restore_custom_collector_forbidden": true,
+    "automatic_replay_unknown_forbidden": true,
+    "normal_finish_restore_runtime_snapshot": true,
+    "backup_to_private_mac_directory_first": true
+  },
+  "result_tuple_fields": [
+    "profile_id",
+    "replicas",
+    "executors",
+    "global_limit",
+    "project_limit",
+    "global_queue",
+    "project_queue",
+    "vram_claim_bytes",
+    "validated_input_envelope",
+    "sustained_arrival_envelope",
+    "supply_mode_and_validity",
+    "ready_queue_min_and_empty_events",
+    "actual_sampling_gaps",
+    "latency",
+    "resource_headroom",
+    "evidence"
+  ],
+  "runtime_binding": {
+    "application_image_id": "sha256:cefb4c38d2f5ca2b355b24985ce81cf879ae11f0c6c649b532b9b4632f779bd7",
+    "application_source_commit": "0e945d0"
+  }
+}

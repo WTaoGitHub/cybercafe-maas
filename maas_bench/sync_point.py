@@ -14,6 +14,7 @@ from .runtime import ControllerProbe
 from .saturation import SupplyMonitor
 from .snapshot import read_private,read_secret,save_private,digest,RuntimeFence
 from .sync_load import SyncTraffic
+from .experiment import stamp,check_runtime
 
 
 def execute_sync(config):
@@ -22,6 +23,7 @@ def execute_sync(config):
     p=Parameters(**config['parameters']);snapshot=read_private(config['snapshot_file']);fence=RuntimeFence(snapshot)
     if snapshot['parameters']!=p.to_dict():raise ValueError('Unapplied synchronous parameters')
     probe=ControllerProbe(config['source_root'],config['model_id'],config['profile_id'],digest(manifest));fence.check(probe.capture())
+    check_runtime(config,snapshot)
     folder=Path(config['output_parent'])/config['run_id'];folder.mkdir(mode=0o700,exist_ok=False)
     observer=DatabaseObserver(read_secret(config['database_dsn_file']),config['project'],config['logical_model'],config['revision'],'e3-'+config['run_id']+':')
     abort=threading.Event();halt=threading.Event();errors=[];lock=threading.Lock()
@@ -66,6 +68,7 @@ def execute_sync(config):
         for thread in threads:thread.join(timeout=30)
         if errors or result['state']!='COMPLETE':raise RuntimeError('Synchronous point incomplete')
         fence.check(probe.capture())
+        check_runtime(config,probe.capture());result.update(**stamp(config))
         result.update(case_id=config['case_id'],point_id=config['point_id'],parameters=p.to_dict(),usage=usage)
         save_private(folder/'summary.json',result)
         return result

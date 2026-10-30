@@ -13,6 +13,11 @@ from .snapshot import RuntimeFence,digest,save_private,replace_private
 from maas_platform.cluster_maintenance import model_hash
 
 
+def inspect_image_ids(ids):
+    rows=json.loads(subprocess.check_output(['docker','inspect',*ids],text=True,stderr=subprocess.PIPE,timeout=15))
+    return sorted({(r['Config']['Labels']['com.docker.compose.service'],r['Image']) for r in rows})
+
+
 def fixed_profile(snapshot):
     return {'profile_id':snapshot['profile_id'],'input_sha256':snapshot['input_sha256'],
         'model_hash_without_replicas':model_hash(snapshot['model']),
@@ -22,18 +27,21 @@ def fixed_profile(snapshot):
 
 
 class PilotController:
-    def __init__(self,probe,observer,output):
+    def __init__(self,probe,observer,output,experiment=None):
+        self.experiment=experiment
         self.probe=probe;self.observer=observer;self.pool=probe.pool;self.api=probe.api
         self.output=Path(output);self.output.mkdir(mode=0o700,exist_ok=False)
         self.original=probe.capture();self.expected=copy.deepcopy(self.original)
         self.fixed=fixed_profile(self.original);self.quiet()
         ids=[r['id'] for r in self.original['app_containers']]
         self.images=self.image_ids(ids)
+        if experiment:
+            from .experiment import check_images
+            check_images(experiment,self.images)
         save_private(self.output/'original-private.json',self.original)
 
     def image_ids(self,ids):
-        rows=json.loads(subprocess.check_output(['docker','inspect',*ids],text=True,stderr=subprocess.PIPE,timeout=15))
-        return sorted({(r['Config']['Labels']['com.docker.compose.service'],r['Image']) for r in rows})
+        return inspect_image_ids(ids)
 
     def quiet(self):
         row=self.observer.snapshot()
@@ -44,6 +52,9 @@ class PilotController:
         if digest(fixed_profile(snapshot))!=digest(self.fixed):raise RuntimeError('Fixed model/profile changed')
         if self.image_ids([r['id'] for r in snapshot['app_containers']])!=self.images:
             raise RuntimeError('Application image digest changed')
+        if getattr(self,'experiment',None):
+            from .experiment import check_images
+            check_images(self.experiment,self.images)
 
     def change(self,parameters):
         if not isinstance(parameters,Parameters):raise TypeError('Validated bounded parameters required')

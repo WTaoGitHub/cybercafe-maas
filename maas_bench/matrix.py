@@ -61,8 +61,9 @@ def load(path=DEFAULT_MATRIX):return json.loads(Path(path).read_text())
 def validate_execution(config,manifest_sha256):
     """Only completed, hashed prerequisite artifacts unlock an async point."""
     import hashlib
-    m=load();stage_id=config['case_id']
-    adaptive={'T3-LIMITS','T3-EXTEND','T4-QUEUE','T4-HTTP-ACCEPT','T4-HTTP-REJECT','T4-HTTP-RECOVER','T6-CONFIRM','T6-SOAK'}
+    from .experiment import matrix_for,check_proof
+    m=matrix_for(config);stage_id=config['case_id']
+    adaptive={'T3-LIMITS','T3-EXTEND','T3-MU','T4-QUEUE','T4-HTTP-ACCEPT','T4-HTTP-REJECT','T4-HTTP-RECOVER','T6-CONFIRM','T6-SOAK'}
     if stage_id not in {'T0-BASELINE','T2-ASYNC'}|adaptive:raise ValueError('Unsupported live stage')
     if config['profile_id']!=m['profile_id']:raise ValueError('Unexpected experiment profile')
     ledger=config.get('completed_stages',{})
@@ -75,6 +76,7 @@ def validate_execution(config,manifest_sha256):
         if hashlib.sha256(proof_raw).hexdigest()!=entry['proof_sha256']:raise ValueError('Prerequisite evidence changed')
         proof=json.loads(proof_raw)
         if proof.get('case_id')!=dependency or proof.get('state')!=entry['state']:raise ValueError('Wrong prerequisite evidence')
+        if dependency!='T0-TOOLS':check_proof(proof,config)
         if dependency!='T0-TOOLS' and (proof.get('profile_id')!=config['profile_id'] or proof.get('input_sha256')!=manifest_sha256):
             raise ValueError('Prerequisite belongs to another model/input profile')
     if stage_id in adaptive:
@@ -83,6 +85,7 @@ def validate_execution(config,manifest_sha256):
         selection=json.loads(raw)
         if selection.get('case_id')!=stage_id or selection.get('profile_id')!=config['profile_id'] or selection.get('input_sha256')!=manifest_sha256:
             raise ValueError('Adaptive selection belongs to another stage/profile')
+        check_proof(selection,config)
         if stage_id=='T3-EXTEND' and not selection.get('condition',{}).get('trigger_met'):raise ValueError('Conditional expansion not justified')
         points=selection['points']
     else:points=plan(m,case_ids=[stage_id],ledger=ledger)['stages'][0]['points']
