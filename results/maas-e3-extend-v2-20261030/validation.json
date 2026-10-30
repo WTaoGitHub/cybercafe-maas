@@ -1,0 +1,258 @@
+{
+  "state": "COMPLETE",
+  "gate": {
+    "case_id": "T3-LIMITS",
+    "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+    "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+    "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+    "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+    "state": "COMPLETE",
+    "points": [
+      {
+        "point_id": "T3-GATE-r1-E6",
+        "parameters": {
+          "replicas": 8,
+          "executors": 6,
+          "global_limit": 6,
+          "project_limit": 6,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "repeat": 1,
+        "throughput_per_second": 12.827325000011816,
+        "state": "COMPLETE"
+      },
+      {
+        "point_id": "T3-GATE-r1-E8",
+        "parameters": {
+          "replicas": 8,
+          "executors": 8,
+          "global_limit": 8,
+          "project_limit": 8,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "repeat": 1,
+        "throughput_per_second": 16.118131803555574,
+        "state": "COMPLETE"
+      },
+      {
+        "point_id": "T3-GATE-r2-E8",
+        "parameters": {
+          "replicas": 8,
+          "executors": 8,
+          "global_limit": 8,
+          "project_limit": 8,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "repeat": 2,
+        "throughput_per_second": 15.442642387916264,
+        "state": "COMPLETE"
+      },
+      {
+        "point_id": "T3-GATE-r2-E6",
+        "parameters": {
+          "replicas": 8,
+          "executors": 6,
+          "global_limit": 6,
+          "project_limit": 6,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "repeat": 2,
+        "throughput_per_second": 13.441734018200815,
+        "state": "COMPLETE"
+      }
+    ],
+    "condition": {
+      "trigger_met": true,
+      "paired_gains_fraction": [
+        0.25654661463249173,
+        0.14885790531237353
+      ],
+      "resource_guards_passed": true,
+      "comparison": "same R; E/G/P=8 vs 6, two interleaved independent windows"
+    },
+    "restored_parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "restored_generation": 256
+  },
+  "extension": {
+    "case_id": "T3-EXTEND",
+    "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+    "input_sha256": "613d6eaa131e58ab946f504ae5d22d4d86877da1cb73f29d22214da38c92b214",
+    "matrix_sha256": "e31c31ac2f882015928a6facd5ba8606d3986ebb8572b981c6f4ccea3cf1238d",
+    "runtime_binding_sha256": "5a197f821f2fdf2d95c01f707ba5d8e43e5d88c8ee0a763188d67a9c963d6c18",
+    "state": "COMPLETE",
+    "points": [
+      {
+        "point_id": "T3-E12-R8",
+        "parameters": {
+          "replicas": 8,
+          "executors": 12,
+          "global_limit": 12,
+          "project_limit": 12,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "throughput_per_second": 19.261375912541826,
+        "state": "COMPLETE",
+        "supply": {
+          "sample_count": 880,
+          "ready_queue_min": 21,
+          "empty_events": [],
+          "max_observed_sample_gap_seconds": 0.09309310605749488,
+          "continuous_occupancy_proven": false,
+          "evidence_kind": "committed_database_samples"
+        },
+        "measurement_seconds": 60.016480922698975
+      },
+      {
+        "point_id": "T3-E12-R10",
+        "parameters": {
+          "replicas": 10,
+          "executors": 12,
+          "global_limit": 12,
+          "project_limit": 12,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "throughput_per_second": 20.360997489714208,
+        "state": "COMPLETE",
+        "supply": {
+          "sample_count": 880,
+          "ready_queue_min": 20,
+          "empty_events": [],
+          "max_observed_sample_gap_seconds": 0.09437868907116354,
+          "continuous_occupancy_proven": false,
+          "evidence_kind": "committed_database_samples"
+        },
+        "measurement_seconds": 60.01670598983765
+      },
+      {
+        "point_id": "T3-E12-R12",
+        "parameters": {
+          "replicas": 12,
+          "executors": 12,
+          "global_limit": 12,
+          "project_limit": 12,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "throughput_per_second": 21.309698754584325,
+        "state": "COMPLETE",
+        "supply": {
+          "sample_count": 868,
+          "ready_queue_min": 21,
+          "empty_events": [],
+          "max_observed_sample_gap_seconds": 0.09567656205035746,
+          "continuous_occupancy_proven": false,
+          "evidence_kind": "committed_database_samples"
+        },
+        "measurement_seconds": 60.01961898803711
+      }
+    ],
+    "condition": {
+      "trigger_met": true,
+      "paired_gains_fraction": [
+        0.25654661463249173,
+        0.14885790531237353
+      ],
+      "resource_guards_passed": true,
+      "comparison": "same R; E/G/P=8 vs 6, two interleaved independent windows"
+    },
+    "restored_parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "restored_generation": 268,
+    "screened_candidates": [
+      {
+        "parameters": {
+          "replicas": 10,
+          "executors": 12,
+          "global_limit": 12,
+          "project_limit": 12,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "screening_throughput": 20.360997489714208
+      },
+      {
+        "parameters": {
+          "replicas": 12,
+          "executors": 12,
+          "global_limit": 12,
+          "project_limit": 12,
+          "global_queue": 1000,
+          "project_queue": 100,
+          "vram_claim_bytes": 2147483648
+        },
+        "screening_throughput": 21.309698754584325
+      }
+    ]
+  },
+  "verification": {
+    "state": "COMPLETE",
+    "gate_points": 4,
+    "extension_points": 3,
+    "original_parameters_restored": true,
+    "parameters": {
+      "replicas": 4,
+      "executors": 4,
+      "global_limit": 4,
+      "project_limit": 4,
+      "global_queue": 1000,
+      "project_queue": 100,
+      "vram_claim_bytes": 2147483648
+    },
+    "generation_before": 244,
+    "generation_after": 268,
+    "idle": true,
+    "unknown": 0,
+    "paused": false,
+    "monitor_ok": true,
+    "alerts": [],
+    "runtime_image_binding_verified": true,
+    "source_files_verified": 256,
+    "application_image_changed": false,
+    "vm_worker_engine_restart": false,
+    "next_stages_started": false
+  },
+  "accepted_tasks": 7393,
+  "all_accepted_succeeded_attempt_and_metering_one": true,
+  "all_results_downloaded_text_verified": true,
+  "sampled_ready_queue_min": 9,
+  "max_observed_sample_gap_seconds": 0.10649221995845437,
+  "source_fix_commit": "1c2239c",
+  "private_mac_evidence_backup": {
+    "verified": true,
+    "bytes": 1945601,
+    "sha256": "1447e1a76fd07477d43bdef89f1e1db524a7a653296559c00b544c25a647acfb",
+    "private_mac_copy": true
+  },
+  "mu_reference_calibrated": false,
+  "queue_v2_tested": false,
+  "final_production_recommendation": false
+}
