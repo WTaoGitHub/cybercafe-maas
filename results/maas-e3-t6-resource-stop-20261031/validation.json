@@ -1,0 +1,109 @@
+{
+  "state": "RESTORED_AFTER_GPU_HEADROOM_STOP",
+  "accepted": 1379,
+  "succeeded": 1379,
+  "maaS_attempts_and_usage_per_task": 1,
+  "downloaded_and_text_verified": 1379,
+  "unknown": 0,
+  "unconfirmed_intents": 0,
+  "requests_replayed": 0,
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 408,
+  "project_quota_bytes": 4294967296,
+  "global_quota_bytes": 10737418240,
+  "formal_two_hour_started": false,
+  "vm_worker_docker_daemon_restarts": 0,
+  "safety_threshold_relaxed": false,
+  "candidate_promoted": false,
+  "overall_T6_complete": false,
+  "two_hour_gate_passed": false,
+  "failure": "GPU_HEADROOM",
+  "scope": "mixed_20_percent_boundary_qualification",
+  "qualification_state": "INTERRUPTED_REQUIRES_INSPECTION",
+  "qualification_error_class": "ResourcePressure",
+  "supply": {
+    "sample_count": 1183,
+    "ready_queue_min": 19,
+    "empty_events": [],
+    "max_observed_sample_gap_seconds": 0.10423484281636775,
+    "continuous_occupancy_proven": false,
+    "evidence_kind": "committed_database_samples"
+  },
+  "resource_diagnosis": {
+    "diagnostic": "resource trend and post-stop reconciliation",
+    "reason": "GPU_HEADROOM",
+    "sampled_memory": [
+      {
+        "gpu": 1,
+        "first_used_gib": 4.169921875,
+        "max_logged_used_gib": 13.7421875,
+        "total_gib": 15.9921875,
+        "peak_logged_offset_seconds": 79.51728510903195,
+        "last_logged_used_gib": 13.7421875,
+        "current_used_gib": 13.7421875,
+        "current_free_gib": 2.25,
+        "required_free_gib": 1.5992187500000001
+      },
+      {
+        "gpu": 2,
+        "first_used_gib": 3.9296875,
+        "max_logged_used_gib": 13.740234375,
+        "total_gib": 15.9921875,
+        "peak_logged_offset_seconds": 55.89342113700695,
+        "last_logged_used_gib": 13.740234375,
+        "current_used_gib": 14.740234375,
+        "current_free_gib": 1.251953125,
+        "required_free_gib": 1.5992187500000001
+      }
+    ],
+    "intents": 1379,
+    "accepted": 1379,
+    "states": {
+      "SUCCEEDED": 1379
+    },
+    "attempt_event_mismatches": 0,
+    "activity": {
+      "global_queued": 0,
+      "running": 0,
+      "sync_running": 0,
+      "unknown": 0,
+      "sync_unknown": 0,
+      "paused": false
+    },
+    "resource_scope": "native card gauges; no per-process peak proof, failing reading not logged by watcher",
+    "formal_two_hour_started": false
+  },
+  "post_restore_card_memory": [
+    {
+      "gpu": 1,
+      "used_gib": 1.59375,
+      "free_gib": 14.3984375
+    },
+    {
+      "gpu": 2,
+      "used_gib": 1.591796875,
+      "free_gib": 14.400390625
+    }
+  ],
+  "source_files_verified": 261,
+  "capabilities_http_status": 200,
+  "monitor_ok": true,
+  "monitor_alerts": [],
+  "confirmation_accepted_verified": 54998,
+  "same_run_preparation_probe_accepted_verified": 50,
+  "qualification_accepted_verified": 1379,
+  "all_current_run_accepted_verified": 56427,
+  "bounded_diagnostics": 2,
+  "raw_failed_state_changed": false,
+  "checked_at_utc": "2026-10-31T01:40:30.221659+00:00",
+  "power_or_per_process_peak_proven": false,
+  "scope_limit": "Native aggregate GPU gauges; failing reading not recorded by watcher, post-stop reading is independent. Does not identify a leaking process or prove OOM."
+}
