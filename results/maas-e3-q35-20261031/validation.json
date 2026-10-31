@@ -1,0 +1,507 @@
+{
+  "state": "NEW_CLAIM_RESOURCE_AND_TWO_WORKLOAD_MU_COMPLETE",
+  "source_commit": "6909729",
+  "source_files_verified": 273,
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "parameters": {
+    "replicas": 8,
+    "executors": 8,
+    "global_limit": 8,
+    "project_limit": 8,
+    "global_queue": 25,
+    "project_queue": 25,
+    "vram_claim_bytes": 3758096384
+  },
+  "points": [
+    {
+      "point_id": "resource-qualification",
+      "workload": "mixed",
+      "phase": "resource",
+      "measurement_seconds": 300.03910207748413,
+      "measured_successes": 3628,
+      "throughput_per_second": 12.091757290565017,
+      "accepted": 3651,
+      "downloaded_and_text_verified": 3651,
+      "supply": {
+        "sample_count": 3645,
+        "ready_queue_min": 9,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.1266503049992025,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "idle_seconds": 60,
+      "card_memory": [
+        {
+          "gpu": 1,
+          "maximum_sampled_used_gib": 11.8759765625,
+          "minimum_sampled_free_gib": 4.1162109375,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        },
+        {
+          "gpu": 2,
+          "maximum_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        }
+      ]
+    },
+    {
+      "point_id": "ordinary-mu-1",
+      "workload": "ordinary",
+      "phase": "mu",
+      "measurement_seconds": 60.02733111381531,
+      "measured_successes": 941,
+      "throughput_per_second": 15.676192536626512,
+      "accepted": 969,
+      "downloaded_and_text_verified": 969,
+      "supply": {
+        "sample_count": 753,
+        "ready_queue_min": 13,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.11646957183256745,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "idle_seconds": 0,
+      "card_memory": [
+        {
+          "gpu": 1,
+          "maximum_sampled_used_gib": 11.8759765625,
+          "minimum_sampled_free_gib": 4.1162109375,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        },
+        {
+          "gpu": 2,
+          "maximum_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        }
+      ]
+    },
+    {
+      "point_id": "ordinary-mu-2",
+      "workload": "ordinary",
+      "phase": "mu",
+      "measurement_seconds": 60.0306339263916,
+      "measured_successes": 933,
+      "throughput_per_second": 15.542064758870055,
+      "accepted": 959,
+      "downloaded_and_text_verified": 959,
+      "supply": {
+        "sample_count": 750,
+        "ready_queue_min": 13,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.11390301189385355,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "idle_seconds": 0,
+      "card_memory": [
+        {
+          "gpu": 1,
+          "maximum_sampled_used_gib": 11.8759765625,
+          "minimum_sampled_free_gib": 4.1162109375,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        },
+        {
+          "gpu": 2,
+          "maximum_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        }
+      ]
+    },
+    {
+      "point_id": "ordinary-mu-3",
+      "workload": "ordinary",
+      "phase": "mu",
+      "measurement_seconds": 60.05020594596863,
+      "measured_successes": 937,
+      "throughput_per_second": 15.60361009990681,
+      "accepted": 964,
+      "downloaded_and_text_verified": 964,
+      "supply": {
+        "sample_count": 754,
+        "ready_queue_min": 13,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.11264548008330166,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "idle_seconds": 0,
+      "card_memory": [
+        {
+          "gpu": 1,
+          "maximum_sampled_used_gib": 11.8759765625,
+          "minimum_sampled_free_gib": 4.1162109375,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        },
+        {
+          "gpu": 2,
+          "maximum_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        }
+      ]
+    },
+    {
+      "point_id": "mixed-mu-1",
+      "workload": "mixed",
+      "phase": "mu",
+      "measurement_seconds": 60.034655809402466,
+      "measured_successes": 752,
+      "throughput_per_second": 12.526098298746701,
+      "accepted": 779,
+      "downloaded_and_text_verified": 779,
+      "supply": {
+        "sample_count": 753,
+        "ready_queue_min": 13,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.12481731898151338,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "idle_seconds": 0,
+      "card_memory": [
+        {
+          "gpu": 1,
+          "maximum_sampled_used_gib": 11.8759765625,
+          "minimum_sampled_free_gib": 4.1162109375,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        },
+        {
+          "gpu": 2,
+          "maximum_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        }
+      ]
+    },
+    {
+      "point_id": "mixed-mu-2",
+      "workload": "mixed",
+      "phase": "mu",
+      "measurement_seconds": 60.025903940200806,
+      "measured_successes": 739,
+      "throughput_per_second": 12.311351458133956,
+      "accepted": 769,
+      "downloaded_and_text_verified": 769,
+      "supply": {
+        "sample_count": 753,
+        "ready_queue_min": 12,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.10946173407137394,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "idle_seconds": 0,
+      "card_memory": [
+        {
+          "gpu": 1,
+          "maximum_sampled_used_gib": 11.8759765625,
+          "minimum_sampled_free_gib": 4.1162109375,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        },
+        {
+          "gpu": 2,
+          "maximum_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        }
+      ]
+    },
+    {
+      "point_id": "mixed-mu-3",
+      "workload": "mixed",
+      "phase": "mu",
+      "measurement_seconds": 60.028903007507324,
+      "measured_successes": 754,
+      "throughput_per_second": 12.560616007020874,
+      "accepted": 778,
+      "downloaded_and_text_verified": 778,
+      "supply": {
+        "sample_count": 752,
+        "ready_queue_min": 13,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.113169931108132,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "idle_seconds": 0,
+      "card_memory": [
+        {
+          "gpu": 1,
+          "maximum_sampled_used_gib": 11.8759765625,
+          "minimum_sampled_free_gib": 4.1162109375,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        },
+        {
+          "gpu": 2,
+          "maximum_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "last_minute_growth_mib": 0.0,
+          "required_free_gib": 1.5992187500000001
+        }
+      ]
+    }
+  ],
+  "reference_mu": {
+    "ordinary": 15.542064758870055,
+    "mixed": 12.311351458133956
+  },
+  "rate_rule": "minimum of three independent successful windows, separately per workload",
+  "total_accepted_verified": 8869,
+  "maaS_attempts_and_successful_usage_events_per_task": 1,
+  "input_counts": {
+    "ordinary": 40,
+    "mixed": 50
+  },
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 452,
+  "post_restore_card_memory": [
+    {
+      "gpu": 1,
+      "used_gib": 1.591796875,
+      "free_gib": 14.400390625
+    },
+    {
+      "gpu": 2,
+      "used_gib": 1.58984375,
+      "free_gib": 14.40234375
+    }
+  ],
+  "unknown": 0,
+  "monitor_ok": true,
+  "monitor_alerts": [],
+  "capabilities_http_status": 200,
+  "project_quota_bytes": 4294967296,
+  "global_quota_bytes": 10737418240,
+  "project_live_bytes": 1593302120,
+  "input_and_result_ttl_seconds": 86400,
+  "queue_qualified": false,
+  "formal_T6_proof": false,
+  "two_hour_gate_passed": false,
+  "production_promoted": false,
+  "absolute_peak_proven": false,
+  "power_proven": false,
+  "requests_replayed": 0,
+  "vm_worker_docker_daemon_restarts": 0,
+  "first_180s_attempt": {
+    "state": "LAST_MINUTE_PLATEAU_NOT_PASSED",
+    "accepted_verified": 2243,
+    "last_minute_growth_mib": [
+      0.0,
+      1024.0
+    ],
+    "restored_generation": 444,
+    "raw_failed_state_changed": false
+  },
+  "checked_at_utc": "2026-10-31T05:33:55.900446+00:00",
+  "instance_sampling": {
+    "full_lifecycle_passed": true,
+    "all_8_target_instances_covered": true,
+    "sample_interval_seconds": 1,
+    "steady_window_edge_exclusion_seconds": 5,
+    "coverage": [
+      {
+        "gpu": 1,
+        "point_id": "resource-qualification",
+        "valid_samples": 290,
+        "max_gap_seconds": 1.014592170715332
+      },
+      {
+        "gpu": 1,
+        "point_id": "ordinary-mu-1",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0125133991241455
+      },
+      {
+        "gpu": 1,
+        "point_id": "ordinary-mu-2",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0182223320007324
+      },
+      {
+        "gpu": 1,
+        "point_id": "ordinary-mu-3",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0132231712341309
+      },
+      {
+        "gpu": 1,
+        "point_id": "mixed-mu-1",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0146591663360596
+      },
+      {
+        "gpu": 1,
+        "point_id": "mixed-mu-2",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0180613994598389
+      },
+      {
+        "gpu": 1,
+        "point_id": "mixed-mu-3",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.017951488494873
+      },
+      {
+        "gpu": 2,
+        "point_id": "resource-qualification",
+        "valid_samples": 290,
+        "max_gap_seconds": 1.017991542816162
+      },
+      {
+        "gpu": 2,
+        "point_id": "ordinary-mu-1",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0160789489746094
+      },
+      {
+        "gpu": 2,
+        "point_id": "ordinary-mu-2",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0144078731536865
+      },
+      {
+        "gpu": 2,
+        "point_id": "ordinary-mu-3",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0123238563537598
+      },
+      {
+        "gpu": 2,
+        "point_id": "mixed-mu-1",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0204217433929443
+      },
+      {
+        "gpu": 2,
+        "point_id": "mixed-mu-2",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0107438564300537
+      },
+      {
+        "gpu": 2,
+        "point_id": "mixed-mu-3",
+        "valid_samples": 50,
+        "max_gap_seconds": 1.0153896808624268
+      }
+    ],
+    "workers": [
+      {
+        "gpu": 1,
+        "samples": 1002,
+        "exit_race_samples": 1,
+        "stderr_empty": true,
+        "post_restore_gpu_processes": 2,
+        "sample_sha256": "987b8443b955f43dd7763929598b723aa1b28905ab90053899164f1725b25a10"
+      },
+      {
+        "gpu": 2,
+        "samples": 1003,
+        "exit_race_samples": 1,
+        "stderr_empty": true,
+        "post_restore_gpu_processes": 2,
+        "sample_sha256": "87791ae58447d7060d2ec7ba3f56db65351005bd1616474f642788f491be5f0d"
+      }
+    ],
+    "instances": [
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2152415232,
+        "instance_alias": "instance-1"
+      },
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2279170048,
+        "instance_alias": "instance-2"
+      },
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2456014848,
+        "instance_alias": "instance-3"
+      },
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2533814272,
+        "instance_alias": "instance-4"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2390462464,
+        "instance_alias": "instance-5"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2448764928,
+        "instance_alias": "instance-6"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2471546880,
+        "instance_alias": "instance-7"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3070230528,
+        "max_sampled_rss_bytes": 2286751744,
+        "instance_alias": "instance-8"
+      }
+    ],
+    "sampled_high_water_within_claim": true,
+    "absolute_peak_proven": false,
+    "temporary_background_service_installed": false
+  },
+  "rate_statistics": {
+    "ordinary": {
+      "rounds": [
+        15.676192536626512,
+        15.542064758870055,
+        15.60361009990681
+      ],
+      "mean": 15.607289131801126,
+      "sample_stddev": 0.06713953118864459,
+      "conservative_mu": 15.542064758870055
+    },
+    "mixed": {
+      "rounds": [
+        12.526098298746701,
+        12.311351458133956,
+        12.560616007020874
+      ],
+      "mean": 12.466021921300511,
+      "sample_stddev": 0.13505584836741658,
+      "conservative_mu": 12.311351458133956
+    }
+  }
+}
