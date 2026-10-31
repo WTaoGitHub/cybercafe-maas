@@ -38,7 +38,7 @@ def test_existing_namespace_is_rejected_by_readonly_preflight(env,tmp_path):
     finally:observer.close()
 
 
-@pytest.mark.parametrize('new_candidate',[False,True])
+@pytest.mark.parametrize('new_candidate',[False,True,'t6'])
 def test_v2_arrival_measurement_with_real_api_db_and_mock_runtime(env,tmp_path,monkeypatch,new_candidate):
     import copy,json,threading,httpx
     from types import SimpleNamespace
@@ -58,7 +58,10 @@ def test_v2_arrival_measurement_with_real_api_db_and_mock_runtime(env,tmp_path,m
         arrival_policy={'count':25,'clients':16},parameters=params,fixture_file=str(manifest),snapshot_file=str(before),output_parent=str(output),
         run_id='v2-full-mock-arrival123',source_root=str(tmp_path),model_id=18,logical_model='mock.echo',revision='1',project='a',
         database_dsn_file=str(dsn),customer_key_file=str(settings.bindings_file.parent/'key-a'),base_url='http://test')
-    if new_candidate:
+    if new_candidate=='t6':
+        config.update(case_id='T6-C35',candidate_t6_protocol='C35-T6-V1',selection_file_sha256='1'*64,queue_proof_file_sha256='2'*64)
+        monkeypatch.setattr('maas_bench.candidate_t6.validate_execution',lambda *_:policy)
+    elif new_candidate:
         config.update(case_id='C35-Q25-CONFIRM',candidate_queue_protocol='C35-Q25-CONFIRM-V1',candidate_mu_sha256='1'*64,selection_sha256='2'*64)
         monkeypatch.setattr('maas_bench.candidate_queue.validate_execution',lambda *_:policy)
     class Probe:
@@ -90,7 +93,8 @@ def test_v2_arrival_measurement_with_real_api_db_and_mock_runtime(env,tmp_path,m
         assert result['state']=='COMPLETE' and result['accepted']==25 and not errors
         assert result['correctness_verified'] and result['observed_completion_p95']>=result['total_p95']
         assert result['wait_max']>=result['wait_p95'] and assess(result,policy)['passed']
-        if new_candidate:assert result['query_probe_count']>0 and result['candidate_queue_protocol']=='C35-Q25-CONFIRM-V1'
+        if new_candidate=='t6':assert result['query_probe_count']>0 and result['candidate_t6_protocol']=='C35-T6-V1'
+        elif new_candidate:assert result['query_probe_count']>0 and result['candidate_queue_protocol']=='C35-Q25-CONFIRM-V1'
         assert result['submission_span_seconds']>=0 and result['total_clock_kind']=='DB_UPDATED_AT_NOT_DURABLE_E2E'
     finally:
         stop.set()

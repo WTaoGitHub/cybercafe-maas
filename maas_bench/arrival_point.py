@@ -22,7 +22,10 @@ def quantile(values,q):
 
 def execute_arrivals(config):
     manifest=read_private(config['fixture_file']);candidate_policy=None
-    if config.get('candidate_queue_protocol'):
+    if config.get('candidate_t6_protocol'):
+        from .candidate_t6 import validate_execution
+        candidate_policy=validate_execution(config,manifest)
+    elif config.get('candidate_queue_protocol'):
         from .candidate_queue import validate_execution
         candidate_policy=validate_execution(config,manifest)
     else:matrix.validate_execution(config,digest(manifest))
@@ -140,7 +143,9 @@ def execute_arrivals(config):
                     total_clock_kind='DB_UPDATED_AT_NOT_DURABLE_E2E',
                     completion_clock_kind='FIRST_COMMITTED_SUCCESS_OBSERVATION_UPPER_BOUND_NOT_CLIENT_LATENCY')
             if candidate_policy:
-                summary.update(candidate_queue_protocol=config['candidate_queue_protocol'],candidate_mu_sha256=config['candidate_mu_sha256'],candidate_selection_sha256=config['selection_sha256'],query_probe_count=len(query_probes),query_probe_p95=quantile(query_probes,.95),query_probe_max=max(query_probes,default=None))
+                summary.update(query_probe_count=len(query_probes),query_probe_p95=quantile(query_probes,.95),query_probe_max=max(query_probes,default=None))
+                if config.get('candidate_t6_protocol'):summary.update(candidate_t6_protocol=config['candidate_t6_protocol'],selection_sha256=config['selection_file_sha256'],queue_proof_sha256=config['queue_proof_file_sha256'])
+                else:summary.update(candidate_queue_protocol=config['candidate_queue_protocol'],candidate_mu_sha256=config['candidate_mu_sha256'],candidate_selection_sha256=config['selection_sha256'])
             summary.update(**stamp(config));check_runtime(config,probe.capture())
             save_private(folder/'summary.json',summary);return summary
     except BaseException as exc:

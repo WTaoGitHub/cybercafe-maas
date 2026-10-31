@@ -34,7 +34,11 @@ def execute(config):
     if policy.max_seconds>300:raise ValueError('Use an explicitly designed soak driver for longer windows')
     if config.get('load_mode','async_saturation') not in ('async_saturation','mixed_20','mixed_50'):
         raise ValueError('This driver only supports asynchronous or mixed saturation')
-    matrix.validate_execution(config,digest(fixture_data))
+    new_t6=bool(config.get('candidate_t6_protocol'))
+    if new_t6:
+        from .candidate_t6 import validate_execution
+        validate_execution(config,fixture_data)
+    else:matrix.validate_execution(config,digest(fixture_data))
     # The operator keeps original full model/app.env/maintenance bindings on the
     # Mac first. This receipt is an explicit precondition, not automatic proof.
     if not re.fullmatch(r'[a-f0-9]{64}',config.get('private_mac_backup_receipt_sha256','')):
@@ -51,7 +55,7 @@ def execute(config):
         with loglock:
             log.write(json.dumps(row)+'\n');log.flush()
             if row['kind']!='sample':os.fsync(log.fileno())
-    observer=None;watcher=None;traffic=None;halt=threading.Event()
+    observer=None;watcher=None;traffic=None;witness=None;halt=threading.Event()
     try:
         observer=DatabaseObserver(read_secret(config['database_dsn_file']),config['project'],config['logical_model'],config['revision'],'e3-'+run_id+':')
         initial=observer.snapshot()
@@ -65,6 +69,9 @@ def execute(config):
             mixed=config.get('load_mode','async_saturation').startswith('mixed_')
             backend=TaskBackend(client,observer,fixtures,allow_sync=mixed);backend.prepare()
             runner=SaturationRunner(backend,parameters,policy,initial['generation'],emit)
+            if new_t6:
+                from .completion_witness import CompletionWitness
+                witness=CompletionWitness(observer,emit,runner._fail);witness.start()
             if mixed:
                 from .sync_load import SyncTraffic
                 traffic=SyncTraffic(config,observer,runner._fail,emit)
@@ -83,6 +90,8 @@ def execute(config):
             watcher=threading.Thread(target=watch,name='bench-native-guard');watcher.start()
             cpu_before=time.process_time();run_started=time.monotonic()
             summary=runner.run()
+            if witness and summary['state']=='COMPLETE':
+                summary['completion_witness']=witness.verify(summary['accepted_task_ids'])
             generator={'cpu_seconds':time.process_time()-cpu_before,'elapsed_seconds':time.monotonic()-run_started,
                 'process_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*(1 if sys.platform=='darwin' else 1024)}
             halt.set();watcher.join(timeout=30)
@@ -92,6 +101,7 @@ def execute(config):
             summary.update(**stamp(config));check_runtime(config,after)
             summary.update(profile_id=config['profile_id'],input_sha256=digest(fixture_data),
                 case_id=config['case_id'],point_id=config['point_id'],generator=generator,configuration_changed_by_harness=False,restore_required=False,**workload)
+            if new_t6:summary.update(candidate_t6_protocol=config['candidate_t6_protocol'],selection_sha256=config['selection_file_sha256'],queue_proof_sha256=config['queue_proof_file_sha256'])
             save_private(folder/'summary.json',summary)
             return {'run_id':run_id,'state':summary['state'],'measured_successes':summary.get('measured_successes'),
                 'throughput_per_second':summary.get('throughput_per_second'),'private_evidence_directory':str(folder)}
@@ -105,6 +115,7 @@ def execute(config):
             traffic.halt.set()
             if traffic.thread.ident is not None:traffic.thread.join(timeout=40)
         if watcher:watcher.join(timeout=30)
+        if witness:witness.stop()
         if observer:observer.close()
         log.close()
 
