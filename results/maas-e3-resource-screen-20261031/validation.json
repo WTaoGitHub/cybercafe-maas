@@ -1,0 +1,214 @@
+{
+  "state": "BOUNDED_RESOURCE_SCREEN_COMPLETE_BASELINE_RESTORED",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "source_commit": "8378006",
+  "source_files_verified": 263,
+  "tiers": [
+    {
+      "replicas": 4,
+      "parameters": {
+        "replicas": 4,
+        "executors": 4,
+        "global_limit": 4,
+        "project_limit": 4,
+        "global_queue": 25,
+        "project_queue": 25,
+        "vram_claim_bytes": 2147483648
+      },
+      "accepted": 1307,
+      "succeeded": 1307,
+      "measured_successes": 1292,
+      "measurement_seconds": 180.04343819618225,
+      "throughput_per_second": 7.176046030581726,
+      "maaS_attempts_and_usage_per_task": 1,
+      "downloaded_and_text_verified": 1307,
+      "supply": {
+        "sample_count": 2260,
+        "ready_queue_min": 5,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.12109735398553312,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "card_memory": [
+        {
+          "gpu": 1,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 6.154296875,
+          "minimum_sampled_free_gib": 9.837890625,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 6.154296875
+        },
+        {
+          "gpu": 2,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 6.15234375,
+          "minimum_sampled_free_gib": 9.83984375,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 6.15234375
+        }
+      ],
+      "idle_seconds": 60,
+      "guard_failures": 0,
+      "quality_verified": true,
+      "per_process_peak_proven": false
+    },
+    {
+      "replicas": 6,
+      "parameters": {
+        "replicas": 6,
+        "executors": 6,
+        "global_limit": 6,
+        "project_limit": 6,
+        "global_queue": 25,
+        "project_queue": 25,
+        "vram_claim_bytes": 2147483648
+      },
+      "accepted": 1818,
+      "succeeded": 1818,
+      "measured_successes": 1795,
+      "measurement_seconds": 180.0286350250244,
+      "throughput_per_second": 9.97063605881637,
+      "maaS_attempts_and_usage_per_task": 1,
+      "downloaded_and_text_verified": 1818,
+      "supply": {
+        "sample_count": 2249,
+        "ready_queue_min": 7,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.11427690298296511,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "card_memory": [
+        {
+          "gpu": 1,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 9.017578125,
+          "minimum_sampled_free_gib": 6.974609375,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 9.017578125
+        },
+        {
+          "gpu": 2,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 9.015625,
+          "minimum_sampled_free_gib": 6.9765625,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 9.015625
+        }
+      ],
+      "idle_seconds": 60,
+      "guard_failures": 0,
+      "quality_verified": true,
+      "per_process_peak_proven": false
+    },
+    {
+      "replicas": 8,
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 25,
+        "project_queue": 25,
+        "vram_claim_bytes": 2147483648
+      },
+      "accepted": 2236,
+      "succeeded": 2236,
+      "measured_successes": 2205,
+      "measurement_seconds": 180.02761697769165,
+      "throughput_per_second": 12.248120799561743,
+      "maaS_attempts_and_usage_per_task": 1,
+      "downloaded_and_text_verified": 2236,
+      "supply": {
+        "sample_count": 2227,
+        "ready_queue_min": 13,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.1269745898898691,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "card_memory": [
+        {
+          "gpu": 1,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 11.8818359375,
+          "minimum_sampled_free_gib": 4.1103515625,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 11.8818359375
+        },
+        {
+          "gpu": 2,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 11.8779296875
+        }
+      ],
+      "idle_seconds": 60,
+      "guard_failures": 0,
+      "quality_verified": true,
+      "per_process_peak_proven": false
+    }
+  ],
+  "total_accepted_verified": 5361,
+  "input_count": 50,
+  "ordinary_input_count": 40,
+  "ordinary_boundary_mix": "80/20",
+  "project_quota_bytes": 4294967296,
+  "global_quota_bytes": 10737418240,
+  "project_live_bytes": 1520175178,
+  "input_and_result_ttl_seconds": 86400,
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 426,
+  "post_restore_card_memory": [
+    {
+      "gpu": 1,
+      "used_gib": 1.03125,
+      "free_gib": 14.9609375
+    },
+    {
+      "gpu": 2,
+      "used_gib": 2.150390625,
+      "free_gib": 13.841796875
+    }
+  ],
+  "unknown": 0,
+  "monitor_ok": true,
+  "monitor_alerts": [],
+  "capabilities_http_status": 200,
+  "immutable_source_verified": true,
+  "fresh_input_content_and_order_verified": true,
+  "safety_threshold_relaxed": false,
+  "candidate_promoted": false,
+  "per_process_peak_proven": false,
+  "power_proven": false,
+  "formal_two_hour_started": false,
+  "overall_T6_complete": false,
+  "two_hour_gate_passed": false,
+  "vm_worker_docker_daemon_restarts": 0,
+  "requests_replayed": 0,
+  "tool_first_attempt_zero_submission_failure_preserved": true,
+  "checked_at_utc": "2026-10-31T02:16:02.418776+00:00"
+}
