@@ -10,7 +10,7 @@ from . import matrix
 from .arrivals import AdmissionBackend,drive
 from .backend import DatabaseObserver,TaskBackend
 from .contracts import Parameters
-from .resources import ResourceGuard
+from .resources import ResourceGuard,observe_resources
 from .runtime import ControllerProbe
 from .saturation import SupplyMonitor
 from .snapshot import RuntimeFence,digest,read_private,read_secret,save_private
@@ -21,15 +21,22 @@ def quantile(values,q):
 
 
 def execute_arrivals(config):
-    manifest=read_private(config['fixture_file']);matrix.validate_execution(config,digest(manifest))
+    manifest=read_private(config['fixture_file']);candidate_policy=None
+    if config.get('candidate_queue_protocol'):
+        from .candidate_queue import validate_execution
+        candidate_policy=validate_execution(config,manifest)
+    else:matrix.validate_execution(config,digest(manifest))
     mode=config['load_mode'];policy=config['arrival_policy']
     if mode not in ('independent_arrivals','bounded_burst'):raise ValueError('Arrival mode required')
     p=Parameters(**config['parameters']);original=read_private(config['snapshot_file']);fence=RuntimeFence(original)
     if original['parameters']!=p.to_dict():raise ValueError('Parameters not applied')
     if mode=='independent_arrivals' and not 10<=policy['seconds']<=300:raise ValueError('Bounded live arrival window required')
     if mode=='bounded_burst' and not 1<=policy['count']<=200:raise ValueError('Bounded live burst required')
-    qos=None
-    if config.get('qos_policy_file') and config['case_id']=='T4-QUEUE':
+    qos=candidate_policy
+    if qos:
+        from .queue_policy import CompletionClock
+        clock=CompletionClock()
+    elif config.get('qos_policy_file') and config['case_id']=='T4-QUEUE':
         from .queue_policy import load_policy,CompletionClock
         qos=load_policy(config);clock=CompletionClock()
     folder=Path(config['output_parent'])/config['run_id'];folder.mkdir(mode=0o700,exist_ok=False)
@@ -38,7 +45,7 @@ def execute_arrivals(config):
     check_runtime(config,original)
     observer=DatabaseObserver(read_secret(config['database_dsn_file']),config['project'],config['logical_model'],config['revision'],'e3-'+config['run_id']+':')
     log=os.fdopen(os.open(folder/'events.jsonl',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'w');lock=threading.Lock()
-    stop=threading.Event();halt=threading.Event();errors=[];samples=[]
+    stop=threading.Event();halt=threading.Event();errors=[];samples=[];query_probes=[]
     def emit(row):
         with lock:
             log.write(json.dumps(row)+'\n');log.flush()
@@ -69,10 +76,19 @@ def execute_arrivals(config):
             def watch():
                 try:
                     while not halt.is_set():
-                        fence.check(probe.capture());rows=probe.resources(original);host=resources.controller();resources.check(rows,host,time.monotonic())
-                        emit({'kind':'resources','workers':rows,'controller':host});halt.wait(.5)
+                        fence.check(probe.capture());observe_resources(resources,probe,original,emit);halt.wait(.5)
                 except Exception as exc:fail(exc)
-            threads=[threading.Thread(target=f) for f in (sample,watch)]
+            def query():
+                try:
+                    while not halt.is_set():
+                        with admission.lock:ident=admission.accepted[-1] if admission.accepted else None
+                        if ident:
+                            began=time.monotonic();response=client.get('/maas/v1/tasks/'+ident)
+                            if response.status_code!=200:raise RuntimeError('Task query unavailable during candidate pressure')
+                            query_probes.append(time.monotonic()-began);emit({'kind':'http_query_probe','status':200,'seconds':query_probes[-1]})
+                        halt.wait(1 if ident else .05)
+                except Exception as exc:fail(exc)
+            threads=[threading.Thread(target=f) for f in ((sample,watch,query) if candidate_policy else (sample,watch))]
             for t in threads:t.start()
             result=drive(admission.submit,clients=policy.get('clients',16),stop=stop,
                 **({'count':policy['count']} if mode=='bounded_burst' else {'seconds':policy['seconds'],'rate':policy['rate']}))
@@ -123,6 +139,8 @@ def execute_arrivals(config):
                     submission_span_seconds=max(spans)-min(spans) if spans else 0,
                     total_clock_kind='DB_UPDATED_AT_NOT_DURABLE_E2E',
                     completion_clock_kind='FIRST_COMMITTED_SUCCESS_OBSERVATION_UPPER_BOUND_NOT_CLIENT_LATENCY')
+            if candidate_policy:
+                summary.update(candidate_queue_protocol=config['candidate_queue_protocol'],candidate_mu_sha256=config['candidate_mu_sha256'],candidate_selection_sha256=config['selection_sha256'],query_probe_count=len(query_probes),query_probe_p95=quantile(query_probes,.95),query_probe_max=max(query_probes,default=None))
             summary.update(**stamp(config));check_runtime(config,probe.capture())
             save_private(folder/'summary.json',summary);return summary
     except BaseException as exc:
