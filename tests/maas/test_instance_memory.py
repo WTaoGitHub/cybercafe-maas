@@ -30,3 +30,12 @@ def test_single_tier_reuses_identical_bounded_policy_without_enabling_higher_tie
     assert points([8])==[points()[2]]
     for tiers in ([],[10],[8,4],[4,4],[True],(8,)):
         with pytest.raises(ValueError):points(tiers)
+
+
+def test_zombie_rss_disappearance_is_a_recorded_exit_race_only():
+    from maas_bench.instance_memory import process_memory
+    assert process_memory({'State':'Z (zombie)'}) is None
+    assert process_memory({'State':'X (dead)'}) is None
+    assert process_memory({'State':'S (sleeping)','VmRSS':'123 kB','VmHWM':'456 kB'})=={'rss_bytes':123*1024,'lifetime_peak_rss_bytes':456*1024}
+    for status in ({'State':'R (running)'},{'State':'S','VmRSS':'N/A','VmHWM':'456 kB'}):
+        with pytest.raises(ValueError,match='unavailable RSS'):process_memory(status)

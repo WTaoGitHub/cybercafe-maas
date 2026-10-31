@@ -46,3 +46,17 @@ def candidate_claim(sampled_max_bytes):
     wanted=max(math.ceil(sampled_max_bytes*1.2),sampled_max_bytes+512*MIB)
     quantum=256*MIB
     return ((wanted+quantum-1)//quantum)*quantum
+
+
+def process_memory(status):
+    """Exiting tasks can remain in NVML after Linux removes RSS fields."""
+    state=status.get('State','').split()
+    if state and state[0] in ('Z','X','x'):
+        return None
+    result={}
+    for source,target in (('VmRSS','rss_bytes'),('VmHWM','lifetime_peak_rss_bytes')):
+        parts=status.get(source,'').split()
+        if len(parts)!=2 or not parts[0].isdigit() or parts[1]!='kB':
+            raise ValueError('Live GPU process has unavailable RSS evidence')
+        result[target]=int(parts[0])*1024
+    return result

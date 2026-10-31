@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 sys.path.insert(0,str(Path(__file__).resolve().parents[3]))
-from maas_bench.instance_memory import compute_apps,container_id
+from maas_bench.instance_memory import compute_apps,container_id,process_memory
 
 
 def command(args):
@@ -29,10 +29,11 @@ def sample(expected_uuid,cache):
                 if '-run-' not in name:raise ValueError('Unmapped or foreign GPU workload')
                 cache[cid]=name
             status={x.split(':',1)[0]:x.split(':',1)[1].strip() for x in (proc/'status').read_text().splitlines() if ':' in x}
+            memory=process_memory(status)
+            if memory is None:races+=1;continue
             stat=(proc/'stat').read_text().rsplit(')',1)[1].split()
             processes.append({**row,'container_id':cid,'container_name':cache[cid],
-                'rss_bytes':int(status['VmRSS'].split()[0])*1024,
-                'lifetime_peak_rss_bytes':int(status['VmHWM'].split()[0])*1024,
+                **memory,
                 'process_start_ticks':int(stat[19]),'cpu_ticks':int(stat[11])+int(stat[12])})
         except FileNotFoundError:races+=1
     return {'kind':'instance_memory','at_epoch':time.time(),'at_monotonic':time.monotonic(),
