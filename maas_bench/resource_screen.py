@@ -26,3 +26,12 @@ def memory_plateau(records,workers,window_end):
             'high_water_growth_bytes':growth,'plateau_observed':growth<=256*1024**2,
             'total_bytes':total,'minimum_logged_free_bytes':total-max(v for _,v in rows)})
     return result
+
+
+def configured_runner(backend,parameters,snapshot,emit):
+    """Bind runtime generation and event sink explicitly before any submit."""
+    from .saturation import SaturationRunner,RunPolicy
+    if snapshot['parameters']!=parameters:
+        raise ValueError('Resource screen parameters must be applied first')
+    return SaturationRunner(backend,Parameters(**parameters),
+        RunPolicy(seconds=180,min_successes=200,max_seconds=180),snapshot['generation'],emit)

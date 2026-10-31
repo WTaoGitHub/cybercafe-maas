@@ -92,6 +92,7 @@ class SaturationRunner:
     downloads/reconciliation happen after new submissions have stopped.
     """
     def __init__(self,backend,parameters,policy,generation,emit=lambda _:None,low=None,high=None):
+        if type(generation) is not int or generation<0:raise ValueError('Explicit integer runtime generation required')
         self.backend=backend;self.parameters=parameters;self.policy=policy
         self.low,self.high=watermarks(parameters,low,high)
         self.monitor=SupplyMonitor(parameters,generation,policy.max_sample_gap)

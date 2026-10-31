@@ -49,3 +49,15 @@ def test_explicit_diagnostic_scope_rejects_accidental_formal_execution():
         m.run({'diagnostic_kind':'T6-SOAK'})
     with pytest.raises(ValueError,match='backup receipt'):
         m.run({'diagnostic_kind':'CONCURRENT_RESOURCE_SCREEN_NOT_T6_PROOF'})
+
+
+def test_screen_runner_binds_numeric_generation_and_log_callback_before_submit():
+    from maas_bench.resource_screen import configured_runner
+    p=points()[0];events=[];emit=events.append
+    runner=configured_runner(object(),p,{'parameters':p,'generation':17},emit)
+    assert runner.monitor.generation==17 and runner.emit is emit
+    assert runner.policy.seconds==180 and runner.policy.max_seconds==180
+    with pytest.raises(ValueError,match='generation'):
+        configured_runner(object(),p,{'parameters':p,'generation':emit},emit)
+    with pytest.raises(ValueError,match='applied'):
+        configured_runner(object(),p,{'parameters':{},'generation':17},emit)

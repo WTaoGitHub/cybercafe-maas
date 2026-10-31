@@ -16,13 +16,12 @@ from maas_bench.controller import PilotController
 from maas_bench.backend import DatabaseObserver,TaskBackend
 from maas_bench.fixtures import prepared_fixtures
 from maas_bench.resources import ResourceGuard,observe_resources
-from maas_bench.saturation import SaturationRunner,RunPolicy
 from maas_bench.contracts import Parameters
 from maas_bench.phase import proof_entry
 from maas_bench.experiment import fresh_namespace,check_runtime
 from maas_bench.t6_preparation import (load_refresh,workload_extra,require_inputs,
     live_storage,require_budget,install_stop_handlers)
-from maas_bench.resource_screen import points,memory_plateau
+from maas_bench.resource_screen import points,memory_plateau,configured_runner
 
 
 def run(config):
@@ -67,7 +66,7 @@ def run(config):
                 with httpx.Client(base_url=c['base_url'],headers={'Authorization':'Bearer '+read_secret(c['customer_key_file'])},timeout=15,
                     trust_env=False,follow_redirects=False,transport=httpx.HTTPTransport(retries=0,verify=c['ca_file'])) as client:
                     fixtures,_=prepared_fixtures(cfg,read_private(c['fixture_file']));backend=TaskBackend(client,observer,fixtures);backend.prepare()
-                    runner=SaturationRunner(backend,Parameters(**params),RunPolicy(seconds=180,min_successes=200,max_seconds=180),emit)
+                    runner=configured_runner(backend,params,applied,emit)
                     def watch():
                         try:
                             while not halt.is_set():
