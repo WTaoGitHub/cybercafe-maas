@@ -1,0 +1,212 @@
+{
+  "state": "INSTANCE_PROFILE_AND_NATIVE_CLAIM_FIT_COMPLETE_BASELINE_RESTORED",
+  "profile_id": "ppocrv4-ortgpu-2x4080s-gc-r1",
+  "source_commit": "942d4ca",
+  "source_files_verified": 267,
+  "tiers": [
+    {
+      "replicas": 8,
+      "parameters": {
+        "replicas": 8,
+        "executors": 8,
+        "global_limit": 8,
+        "project_limit": 8,
+        "global_queue": 25,
+        "project_queue": 25,
+        "vram_claim_bytes": 2147483648
+      },
+      "accepted": 2233,
+      "succeeded": 2233,
+      "measured_successes": 2207,
+      "measurement_seconds": 180.0278639793396,
+      "throughput_per_second": 12.259213386286026,
+      "maaS_attempts_and_usage_per_task": 1,
+      "downloaded_and_text_verified": 2233,
+      "supply": {
+        "sample_count": 2220,
+        "ready_queue_min": 11,
+        "empty_events": [],
+        "max_observed_sample_gap_seconds": 0.1275668169837445,
+        "continuous_occupancy_proven": false,
+        "evidence_kind": "committed_database_samples"
+      },
+      "card_memory": [
+        {
+          "gpu": 1,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 11.8779296875
+        },
+        {
+          "gpu": 2,
+          "total_gib": 15.9921875,
+          "max_sampled_used_gib": 11.8779296875,
+          "minimum_sampled_free_gib": 4.1142578125,
+          "required_free_gib": 1.5992187500000001,
+          "last_60s_high_water_growth_mib": 0.0,
+          "last_60s_plateau_observed": true,
+          "after_idle_used_gib": 11.8779296875
+        }
+      ],
+      "idle_seconds": 60,
+      "guard_failures": 0,
+      "quality_verified": true,
+      "per_process_peak_proven": false
+    }
+  ],
+  "total_accepted_verified": 2233,
+  "input_count": 50,
+  "ordinary_input_count": 40,
+  "ordinary_boundary_mix": "80/20",
+  "project_quota_bytes": 4294967296,
+  "global_quota_bytes": 10737418240,
+  "project_live_bytes": 1491829903,
+  "input_and_result_ttl_seconds": 86400,
+  "restored_parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "restored_generation": 436,
+  "post_restore_card_memory": [
+    {
+      "gpu": 1,
+      "used_gib": 1.59375,
+      "free_gib": 14.3984375
+    },
+    {
+      "gpu": 2,
+      "used_gib": 1.029296875,
+      "free_gib": 14.962890625
+    }
+  ],
+  "unknown": 0,
+  "monitor_ok": true,
+  "monitor_alerts": [],
+  "capabilities_http_status": 200,
+  "immutable_source_verified": true,
+  "fresh_input_content_and_order_verified": true,
+  "safety_threshold_relaxed": false,
+  "candidate_promoted": false,
+  "per_process_peak_proven": false,
+  "power_proven": false,
+  "formal_two_hour_started": false,
+  "overall_T6_complete": false,
+  "two_hour_gate_passed": false,
+  "vm_worker_docker_daemon_restarts": 0,
+  "requests_replayed": 0,
+  "checked_at_utc": "2026-10-31T04:04:19.028518+00:00",
+  "instance_profile": {
+    "covered_instances": 8,
+    "sampled_high_water_verified": true,
+    "absolute_peak_proven": false,
+    "candidate_claim_bytes": 3758096384,
+    "max_sampled_container_bytes": 3070230528,
+    "rule": "max(sampled*1.2,sampled+512MiB), round up 256MiB",
+    "valid_window_edge_exclusion_seconds": 5,
+    "worker_coverage": [
+      {
+        "gpu": 1,
+        "valid_samples": 170,
+        "coverage_seconds": 169.02059960365295,
+        "max_gap_seconds": 1.0224428176879883,
+        "last_sample_seconds_after_formal_end": 111.38274717330933
+      },
+      {
+        "gpu": 2,
+        "valid_samples": 170,
+        "coverage_seconds": 169.01668071746826,
+        "max_gap_seconds": 1.0215606689453125,
+        "last_sample_seconds_after_formal_end": 109.07737398147583
+      }
+    ],
+    "instances": [
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 1837551616,
+        "samples": 170,
+        "instance_alias": "instance-1"
+      },
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2151665664,
+        "samples": 170,
+        "instance_alias": "instance-2"
+      },
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 1883602944,
+        "samples": 170,
+        "instance_alias": "instance-3"
+      },
+      {
+        "gpu": 1,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2358427648,
+        "samples": 170,
+        "instance_alias": "instance-4"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 1972170752,
+        "samples": 170,
+        "instance_alias": "instance-5"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2124378112,
+        "samples": 170,
+        "instance_alias": "instance-6"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3068133376,
+        "max_sampled_rss_bytes": 2098917376,
+        "samples": 170,
+        "instance_alias": "instance-7"
+      },
+      {
+        "gpu": 2,
+        "max_sampled_gpu_bytes": 3070230528,
+        "max_sampled_rss_bytes": 2213593088,
+        "samples": 170,
+        "instance_alias": "instance-8"
+      }
+    ],
+    "clock_checks_passed": true,
+    "full_sampler_lifecycle_passed": false,
+    "sampler_teardown_issue": "KeyError VmRSS after formal end +109 seconds; original FAILED retained",
+    "teardown_fix_local_tests_passed": 72,
+    "teardown_fix_live_lifecycle_retest_passed": false
+  },
+  "native_claim_fit": {
+    "state": "COMPLETE",
+    "candidate_claim_bytes": 3758096384,
+    "native_ready_instances": 8,
+    "placement": [
+      4,
+      4
+    ],
+    "all_computed_native_claims_verified": true,
+    "native_worker_vram_reservation_bytes": [
+      0,
+      0
+    ],
+    "restored_generation": 436,
+    "formal_performance_requalified": false
+  },
+  "scope_limit": "Finite 170s steady subwindow per worker; teardown sampler FAILED preserved, GPU process absolute peak and full T6 not proven; placement-only claim trial restored."
+}
