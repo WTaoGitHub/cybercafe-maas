@@ -2,8 +2,11 @@
 from .contracts import Parameters
 
 
-def points():
-    return [Parameters(n,n,n,n,25,25,2147483648).to_dict() for n in (4,6,8)]
+def points(tiers=None):
+    tiers=[4,6,8] if tiers is None else tiers
+    if not isinstance(tiers,list) or not tiers or any(type(n) is not int or n not in (4,6,8) for n in tiers) or tiers!=sorted(set(tiers)):
+        raise ValueError('Ordered unique diagnostic tiers 4/6/8 required')
+    return [Parameters(n,n,n,n,25,25,2147483648).to_dict() for n in tiers]
 
 
 def memory_plateau(records,workers,window_end):

@@ -27,6 +27,7 @@ from maas_bench.resource_screen import points,memory_plateau,configured_runner
 def run(config):
     if config['diagnostic_kind']!='CONCURRENT_RESOURCE_SCREEN_NOT_T6_PROOF':raise ValueError('Explicit diagnostic scope required')
     if not re.fullmatch(r'[a-f0-9]{64}',config.get('private_mac_backup_receipt_sha256','')):raise ValueError('Private Mac backup receipt required')
+    selected=points(config.get('screen_tiers'))
     c=read_private(config['template_file']);claim,_=proof_entry(config['claim_proof_file'],'T5-CLAIM',c)
     extra=workload_extra(config,c,claim,'mixed');_,manifests=load_refresh(config,c,claim)
     root=Path(config['output_directory']);root.mkdir(mode=0o700,exist_ok=False)
@@ -36,7 +37,7 @@ def run(config):
     save_private(root/'before-private.json',current)
     controller=PilotController(probe,control,root/'operations',experiment=c)
     status={'state':'PREPARING','scope':config['diagnostic_kind'],'points':[],
-        'planned_parameters':points(),'formal_T6_proof':False,'production_promoted':False,
+        'planned_parameters':selected,'formal_T6_proof':False,'production_promoted':False,
         'fixture_refresh_sha256':config['fixture_refresh_sha256'],'input_sha256':claim['input_sha256']}
     journal=root/'status-private.json';save_private(journal,status);finish_by=time.time()+7200
     try:
@@ -46,7 +47,7 @@ def run(config):
         for now,quota in ((storage['current_bytes'],storage['quota_bytes']),
                           (storage['global_current_bytes'],storage['global_quota_bytes'])):
             require_budget(now,reserve,quota,storage['disk_free_bytes'],storage['min_free_bytes'])
-        for index,params in enumerate(points()):
+        for index,params in enumerate(selected):
             if time.time()+600>finish_by:raise RuntimeError('Resource screening reservation expired')
             tag=config['run_tag'];run_id='screen-20261031-'+str(index)+'-'+tag
             folder=root/('point-'+str(index));fresh_namespace(c,control,run_id,[folder]);require_inputs(control,manifests,finish_by)
