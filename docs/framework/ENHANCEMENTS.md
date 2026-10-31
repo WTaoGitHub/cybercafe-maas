@@ -1,5 +1,8 @@
 # 后续增强计划
 
+> **2026-10-31 用户授权的项目配额4GiB已应用**：配置已备份Mac，仅调整项目文件配额；受控排空、应用容器重建、恢复探针和客户能力接口200通过。业务镜像/模型/worker/原4/4/4/4与Q1000:100保持，generation350、监控正常、UNKNOWN=0，无VM/worker/Docker引擎重启。全局10GiB与24小时TTL不变，不自动降回2GiB。旧BLOCKED_STORAGE保留，下一步新目录重新预检并完整执行T6。详[配置变更记录](../../results/maas-e3-storage4g-20261031/REPORT.md)。
+
+
 > **2026-10-31 T6补强工具真实准备完成，空间门槛未通过**：145工具回归通过/13条件跳过；50张新上传及50真实任务全部唯一执行/计量、下载和文字核对通过，输入剩余约24小时。保守全周期新增预测1.93GiB＋现有0.94GiB，项目2GiB不足；流水线BLOCKED_STORAGE，正式T6未开始。原参数/generation348保持、监控正常、UNKNOWN=0。已请求确认项目配额改4GiB，尚未实施；无自动扩容、清理或TTL修改。详[报告](../../results/maas-e3-t6-preparation-20261031/REPORT.md) · [HTML](../../results/maas-e3-t6-preparation-20261031/REPORT.html)。
 
 

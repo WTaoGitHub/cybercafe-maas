@@ -1,0 +1,29 @@
+{
+  "state": "COMPLETE",
+  "user_authorized": true,
+  "only_setting_changed": "MAAS_MAX_PROJECT_STORAGE_BYTES",
+  "project_quota_before_bytes": 2147483648,
+  "project_quota_after_bytes": 4294967296,
+  "global_quota_bytes": 10737418240,
+  "input_and_result_ttl_seconds": 86400,
+  "business_image_unchanged": true,
+  "model_worker_and_parameters_unchanged": true,
+  "parameters": {
+    "replicas": 4,
+    "executors": 4,
+    "global_limit": 4,
+    "project_limit": 4,
+    "global_queue": 1000,
+    "project_queue": 100,
+    "vram_claim_bytes": 2147483648
+  },
+  "generation": 350,
+  "resume_probe_passed": true,
+  "capabilities_http_status": 200,
+  "monitor_ok": true,
+  "unknown": 0,
+  "configuration_backup_on_local_mac": true,
+  "vm_worker_docker_daemon_restarts": 0,
+  "formal_T6_started": false,
+  "automatic_quota_reduction": false
+}
