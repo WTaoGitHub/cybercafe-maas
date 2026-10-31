@@ -34,3 +34,12 @@ class ResourceGuard:
         mem={line.split(':')[0]:int(line.split()[1])*1024 for line in Path('/proc/meminfo').read_text().splitlines()}
         return {'cpu_percent':percent,'available_ram_bytes':mem['MemAvailable'],'total_ram_bytes':mem['MemTotal'],
             'process_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*(1 if sys.platform=='darwin' else 1024)}
+
+
+def observe_resources(guard,probe,snapshot,emit):
+    """Persist the reading BEFORE enforcing it, including a failing sample."""
+    rows=probe.resources(snapshot);controller=guard.controller();at=time.monotonic()
+    record={'kind':'resources','at_monotonic':at,'workers':rows,'controller':controller}
+    emit(record)
+    guard.check(rows,controller,at)
+    return record

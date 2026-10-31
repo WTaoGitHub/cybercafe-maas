@@ -20,7 +20,7 @@ def execute(config):
     from .backend import DatabaseObserver,TaskBackend
     from .runtime import ControllerProbe
     from .saturation import RunPolicy,SaturationRunner
-    from .resources import ResourceGuard
+    from .resources import ResourceGuard,observe_resources
     run_id=config['run_id']
     if not re.fullmatch(r'[a-z0-9-]{8,64}',run_id):raise ValueError('Fresh bounded run ID required')
     original=read_private(config['snapshot_file']);fence=RuntimeFence(original)
@@ -75,9 +75,7 @@ def execute(config):
                 try:
                     while not halt.is_set():
                         fence.check(probe.capture())
-                        rows=probe.resources(current);controller=resources.controller();now=time.monotonic()
-                        resources.check(rows,controller,now)
-                        emit({'kind':'resources','at_monotonic':now,'workers':rows,'controller':controller})
+                        observe_resources(resources,probe,current,emit)
                         halt.wait(.5)
                 except Exception as exc:
                     emit({'kind':'guard_failed','error_class':type(exc).__name__,'private_message':str(exc)})
