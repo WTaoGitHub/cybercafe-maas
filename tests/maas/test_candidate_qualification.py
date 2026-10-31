@@ -6,7 +6,7 @@ from maas_bench.contracts import Parameters
 
 def test_frozen_new_tuple_plan_requires_resource_gate_then_two_workload_references():
     rows=planned();assert len(rows)==7
-    assert rows[0]=={'point_id':'resource-qualification','workload':'mixed','seconds':180,'phase':'resource','idle_seconds':60}
+    assert rows[0]=={'point_id':'resource-qualification','workload':'mixed','seconds':300,'phase':'resource','idle_seconds':60}
     assert [(r['workload'],r['seconds']) for r in rows[1:]]==[('ordinary',60)]*3+[('mixed',60)]*3
 
 

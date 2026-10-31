@@ -3,7 +3,7 @@ from .queue_policy import conservative_mu
 
 
 def planned():
-    return [{'point_id':'resource-qualification','workload':'mixed','seconds':180,'phase':'resource','idle_seconds':60}]+[
+    return [{'point_id':'resource-qualification','workload':'mixed','seconds':300,'phase':'resource','idle_seconds':60}]+[
         {'point_id':kind+'-mu-'+str(n),'workload':kind,'seconds':60,'phase':'mu','idle_seconds':0}
         for kind in ('ordinary','mixed') for n in (1,2,3)]
 
