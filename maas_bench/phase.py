@@ -32,7 +32,7 @@ class Phase:
             _,entry=proof_entry(path,dependency,self.template,states);self.prerequisites[dependency]=entry
         selection={'case_id':case_id,'profile_id':self.template['profile_id'],'input_sha256':self.input_sha,'points':points,**self.context}
         if selection_metadata:
-            if set(selection_metadata)-{'qos_policy_id','qos_policy_sha256','reference_mu_sha256'}:raise ValueError('Unsupported selection metadata')
+            if set(selection_metadata)-{'qos_policy_id','qos_policy_sha256','reference_mu_sha256','fixture_refresh_sha256','preparation_sha256'}:raise ValueError('Unsupported selection metadata')
             selection.update(selection_metadata)
         if condition:selection['condition']=condition
         self.selection_file=self.output/'selection-private.json';save_private(self.selection_file,selection)
@@ -42,6 +42,7 @@ class Phase:
         self.controller=PilotController(self.probe,self.observer,self.output/'operations',experiment=self.template)
         self.status={'case_id':case_id,'profile_id':self.template['profile_id'],'input_sha256':self.input_sha,
             'state':'RUNNING','planned_points':len(points),'points':[],**self.context}
+        if selection_metadata:self.status.update(selection_metadata)
         if condition:self.status['condition']=condition
         self.record()
 
@@ -58,6 +59,15 @@ class Phase:
             count=self.observer.connection.execute('SELECT count(*)::int n FROM tasks WHERE project=%s AND starts_with(idempotency_key,%s)',
                 (self.template['project'],'e3-'+run_id+':')).fetchone()['n']
         if count:raise ValueError('Point task namespace already exists; no parameter change or replay')
+        if self.config.get('fixture_refresh_file'):
+            from .t6_preparation import load_refresh,require_inputs,file_sha
+            import time
+            claim=read_private(self.config['claim_proof_file'])
+            _,manifests=load_refresh(self.config,self.template,claim)
+            if file_sha(self.config['preparation_file'])!=self.config['preparation_sha256']:raise ValueError('Preparation changed')
+            reservation=read_private(self.config['preparation_file'])
+            if reservation['state']!='READY' or time.time()+600>reservation['finish_by_epoch']:raise RuntimeError('T6 reservation expired')
+            require_inputs(self.observer,manifests,reservation['finish_by_epoch'])
         target=Parameters(**point['parameters'])
         cfg={**self.template,'case_id':self.case_id,'point_id':point['point_id'],'run_id':run_id,
             'parameters':target.to_dict(),'snapshot_file':str(snap),'selection_file':str(self.selection_file),

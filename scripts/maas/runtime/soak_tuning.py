@@ -13,6 +13,7 @@ from maas_bench.snapshot import read_private
 from maas_bench.contracts import Parameters
 from maas_bench.__main__ import execute
 from maas_bench.arrival_point import execute_arrivals
+from maas_bench.t6_preparation import workload_extra,validate_reservation,install_stop_handlers
 
 
 def planned(params,workload_sha,mu):
@@ -50,15 +51,17 @@ def storage_budget(phase,qualify_config,mu):
 def run(config):
     template=read_private(config['template_file']);confirmed,_=proof_entry(config['confirmation_proof_file'],'T6-CONFIRM',template)
     claim,_=proof_entry(config['claim_proof_file'],'T5-CLAIM',template)
-    params=confirmed['selected_candidate']['parameters'];workload_sha=claim['mixed_workload_sha256']
+    params=confirmed['selected_candidate']['parameters']
+    extra=workload_extra(config,template,claim,'mixed');workload_sha=extra['workload_sha256']
+    binding={k:config[k] for k in ('fixture_refresh_sha256','preparation_sha256')}
+    if any(confirmed.get(k)!=v for k,v in binding.items()):raise ValueError('Confirmation and soak preparation differ')
     # A separate qualifying point determines the mixed completion rate. It is
     # not spliced into the following two-hour observation.
     qualify=[{'point_id':'T6-SOAK-qualify','parameters':params,'workload_sha256':workload_sha,'mode':'async_saturation'}]
     prerequisite=[('T6-CONFIRM',config['confirmation_proof_file'],('COMPLETE',))]
-    extra={'workload_fixture_file':claim['mixed_workload_fixture_file'],'workload_sha256':workload_sha,
-        'expected_text_file':claim['mixed_quality_file'],'raw_manifest_file':claim['mixed_raw_file']}
-    qphase=Phase({**config,'output_directory':config['output_directory']+'-qualification'},'T6-SOAK',qualify,prerequisite)
+    qphase=Phase({**config,'output_directory':config['output_directory']+'-qualification'},'T6-SOAK',qualify,prerequisite,selection_metadata=binding)
     try:
+        validate_reservation(config,template,claim,qphase.observer,'soak')
         cfg=qphase.point_config(qualify[0],'t6-mixed-qualify-20261029',policy={'seconds':120,'min_successes':200,'max_seconds':300},**extra)
         value=execute(cfg)
         if value['state']!='COMPLETE':raise RuntimeError('Mixed-workload qualification invalid')
@@ -68,7 +71,7 @@ def run(config):
     except BaseException as exc:qphase.interrupted(exc);raise
     finally:qphase.close()
     points=planned(params,workload_sha,mu)[1:]
-    phase=Phase(config,'T6-SOAK',points,prerequisite);started=time.monotonic();formal_seconds=0;maintenance=[]
+    phase=Phase(config,'T6-SOAK',points,prerequisite,selection_metadata=binding);started=time.monotonic();formal_seconds=0;maintenance=[]
     try:
         for number,p in enumerate(points):
             if p.get('segment')==12:
@@ -104,5 +107,6 @@ def run(config):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',required=True);p.add_argument('--execute',action='store_true');a=p.parse_args()
-    if a.execute:run(read_private(a.config))
+    if a.execute:
+        install_stop_handlers();run(read_private(a.config))
     else:print(json.dumps({'state':'DRY_RUN','execution':False}))

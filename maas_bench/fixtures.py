@@ -7,6 +7,12 @@ def prepared_fixtures(config,ordinary):
     if config.get('workload_fixture_file'):
         workload=read_private(config['workload_fixture_file'])
         if digest(workload)!=config.get('workload_sha256'):raise ValueError('Selected workload changed')
+    if config.get('fixture_refresh_file'):
+        from .t6_preparation import load_refresh
+        receipt,manifests=load_refresh(config,read_private(config['refresh_template_file']),read_private(config['claim_proof_file']))
+        choices=[k for k,v in manifests.items() if digest(v)==digest(workload)]
+        if len(choices)!=1 or config['expected_text_file']!=receipt[choices[0]]['quality_file']:
+            raise ValueError('Actual workload is outside content-preserving refresh receipt')
     fixtures=workload['fixtures']
     if config.get('expected_text_file'):
         quality=read_private(config['expected_text_file'])
