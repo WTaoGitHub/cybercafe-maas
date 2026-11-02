@@ -1035,3 +1035,12 @@ capabilities绑定具体服务revision，该revision在内部关联权重、引�
 资料入口：[Qwen3-Embedding-0.6B](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B)、[Qwen3-Reranker-0.6B](https://huggingface.co/Qwen/Qwen3-Reranker-0.6B)、[faster-whisper](https://github.com/SYSTRAN/faster-whisper)、[Qwen3-4B-Instruct-2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)。候选并非“当前市场最优”结论，正式讨论/测试时重新核对版本与资料。
 
 本轮交付仅为问题、建议与待讨论清单，不下载权重、安装模型、运行压测、修改部署或创建自动化。继续遵守001/002禁止VM重启及等效操作的约束；独立feature验证后提交并立即push，遵守最新AGENTS.md。
+
+## E16：下游计费用量交付与可核对账本
+
+状态：2026-11-02用户授权登记并着手首阶段当前OCR，优先级高，作为当前对外接口完善的工作项；不建设下游价格、套餐、余额或商业收费。两种候选收费口径为成功图片张数与识别输入/输出tokens。[首版设计及边界](OCR-METERING.md)。
+
+- 首阶段提供稳定计量ID、model/revision、成功图片数量、来源及独立查询；成功结果、既有成功用量事件和新增账本原子提交。同步响应头及异步结果可关联，计量不依赖会过期的artifact文件。
+- token仅接受实际上游usage报告，不用字符/像素/base64长度推算；缺失/非法明确不可用。当前PP-OCRv4没有原生token报告，实际token收费需后续模型/服务具备可靠计量依据，不冒称已可按token结算。
+- 覆盖幂等去重、失败/取消/UNKNOWN、探针排除、跨项目及旧任务无新账本边界；同步请求仍无E4持久去重，重复推理可能重复计量。
+- 新记录按图片和token同时披露事实，实际采用哪种价格或是否组合由下游决定，不将quantity=0或null解释为免费。后续多图/PDF/音视频复用E14/E10/E15能力，保持E13文件生命周期职责独立。
