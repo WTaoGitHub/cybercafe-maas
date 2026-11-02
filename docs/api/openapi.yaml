@@ -78,8 +78,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '415':
+          description: 不支持的媒体类型。
           content:
             application/json:
               schema:
@@ -89,8 +89,19 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '415':
-          description: 不支持的媒体类型。
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '408':
+          description: 图片下载/准备超时（若适用）。
           content:
             application/json:
               schema:
@@ -115,8 +126,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '502':
-          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+        '401':
+          description: 缺少或未登记的Bearer凭据。
           content:
             application/json:
               schema:
@@ -126,8 +137,19 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '401':
-          description: 缺少或未登记的Bearer凭据。
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
           content:
             application/json:
               schema:
@@ -148,30 +170,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '408':
-          description: 图片下载/准备超时（若适用）。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '429':
-          description: 队列、存储配额或同步并发容量已满。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -233,8 +233,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '415':
+          description: 不支持的媒体类型。
           content:
             application/json:
               schema:
@@ -244,8 +244,19 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '415':
-          description: 不支持的媒体类型。
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '408':
+          description: 图片下载/准备超时（若适用）。
           content:
             application/json:
               schema:
@@ -270,8 +281,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '502':
-          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+        '401':
+          description: 缺少或未登记的Bearer凭据。
           content:
             application/json:
               schema:
@@ -281,8 +292,19 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '401':
-          description: 缺少或未登记的Bearer凭据。
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
           content:
             application/json:
               schema:
@@ -303,30 +325,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '408':
-          description: 图片下载/准备超时（若适用）。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '429':
-          description: 队列、存储配额或同步并发容量已满。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -388,8 +388,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -414,17 +414,6 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '502':
-          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -436,8 +425,19 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '400':
-          description: 请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
           content:
             application/json:
               schema:
@@ -458,8 +458,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
+        '400':
+          description: 请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。
           content:
             application/json:
               schema:
@@ -469,8 +469,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '429':
-          description: 队列、存储配额或同步并发容量已满。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -532,17 +532,6 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '415':
           description: 不支持的媒体类型。
           content:
@@ -580,6 +569,17 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '422':
           description: 请求schema、图片、模型参数或上游校验不通过。
           content:
@@ -591,8 +591,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '429':
-          description: 队列、存储配额或同步并发容量已满。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -703,8 +703,19 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '410':
+          description: 文件已过期或被清理（RESULT_EXPIRED）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -751,19 +762,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '410':
-          description: 文件已过期或被清理（RESULT_EXPIRED）。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -846,8 +846,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -883,39 +883,6 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '400':
-          description: 请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '422':
-          description: 请求schema、图片、模型参数或上游校验不通过。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '409':
           description: 幂等键已被不同请求内容使用。
           content:
@@ -938,12 +905,68 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '400':
+          description: 请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskCreate'
+            examples:
+              artifactReference:
+                summary: 方式一：引用已上传图片
+                description: 先上传图片，将artifact_id替换为返回的真实ID。
+                value:
+                  model: ocr.default
+                  input:
+                    image:
+                      artifact_id: art_example
+                  parameters: {}
+                  timeout_seconds: 120
+                  max_attempts: 1
+              inlineDataUrl:
+                summary: 方式二：data_url内嵌PNG（新代码，待部署）
+                description: 有效4×3白色PNG示例，识别结果可能为空；实际OCR请替换为自己的PNG/JPEG完整base64 data URL。须设置Authorization和Idempotency-Key，与artifact_id互斥。现网尚未发布此能力。
+                value:
+                  model: ocr.default
+                  input:
+                    image:
+                      data_url: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==
+                  parameters: {}
+                  timeout_seconds: 120
+                  max_attempts: 1
   /maas/v1/tasks/{ident}:
     get:
       operationId: getTask
@@ -996,8 +1019,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -1044,8 +1067,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -1107,8 +1130,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -1155,8 +1178,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -1219,8 +1242,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -1267,8 +1290,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -1331,7 +1354,9 @@ components:
       - model: ocr.default
         input:
           image:
-            data_url: data:image/png;base64,...
+            data_url: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==
+        parameters: {}
+        timeout_seconds: 120
         max_attempts: 1
     TaskView:
       properties:
