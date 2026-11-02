@@ -982,6 +982,15 @@ paths:
           \  --data '{\n    \"model\": \"ocr.default\",\n    \"input\": {\n      \"image\": {\n        \"artifact_id\"\
           : \"art_REPLACE_WITH_UPLOADED_ID\"\n      }\n    },\n    \"parameters\": {},\n    \"timeout_seconds\"\
           : 120,\n    \"max_attempts\": 1\n  }'\n"
+      - lang: Shell
+        label: curl：data_url内嵌图片（待部署）
+        source: "# 新代码待部署：现网尚不能使用本示例。\n# 此处PNG为有效4×3白色图片；真实识别请替换为自己的完整PNG/JPEG data URL。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\n\
+          IDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url\
+          \ \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header\
+          \ 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key:\
+          \ $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n\
+          \      \"data_url\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==\"\
+          \n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
   /maas/v1/tasks/{ident}:
     get:
       operationId: getTask
