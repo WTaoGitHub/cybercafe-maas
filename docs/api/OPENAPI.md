@@ -28,3 +28,5 @@ capabilities当前实际返回`execution_modes: ["async"]`，独立同步接口�
 Idempotency-Key已提供非空演示值：每个新操作应替换为新UUID，同次重试保持原值及原请求。artifactReference中的art_REPLACE_WITH_UPLOADED_ID须替换为真实上传ID；inlineDataUrl为另一可选示例，尚待部署。Server的localhost不是跨容器地址，请配置实际可达host。
 
 Bearer认证在Authorize或插件的认证配置中填写，生成后检查Authorization头；OpenAPI不会保存真实key，也不能保证所有插件自动附带认证。Accept含text/html源于入口错误媒体类型，不代表业务成功响应是HTML；保留该事实而非删除错误定义来美化curl。支持x-codeSamples的工具另可展示手写curl示例，部分VSCode插件可能忽略该扩展。
+
+手写任务curl示例直接使用`--data`内嵌JSON，不依赖task.json等额外文件。仍须设置Base URL及凭据、替换真实artifact ID，并在同次重试时保持幂等键及JSON不变。

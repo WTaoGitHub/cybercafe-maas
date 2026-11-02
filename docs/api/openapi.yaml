@@ -975,11 +975,13 @@ paths:
       x-codeSamples:
       - lang: Shell
         label: curl：已上传图片引用
-        source: "# 设置MAAS_BASE_URL、MAAS_API_KEY；task.json中使用真实artifact ID。\n# 新操作仅生成一次并保存；重试沿用原键和原task.json。\nIDEMPOTENCY_KEY=\"\
+        source: "# 设置MAAS_BASE_URL、MAAS_API_KEY，并替换下面的真实artifact ID。\n# 新操作仅生成一次并保存；同次重试沿用原键和原JSON。\nIDEMPOTENCY_KEY=\"\
           $(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\"\
           \ \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n\
           \  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n\
-          \  --data-binary @task.json\n"
+          \  --data '{\n    \"model\": \"ocr.default\",\n    \"input\": {\n      \"image\": {\n        \"artifact_id\"\
+          : \"art_REPLACE_WITH_UPLOADED_ID\"\n      }\n    },\n    \"parameters\": {},\n    \"timeout_seconds\"\
+          : 120,\n    \"max_attempts\": 1\n  }'\n"
   /maas/v1/tasks/{ident}:
     get:
       operationId: getTask
