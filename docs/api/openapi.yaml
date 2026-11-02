@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Cybercafe MaaS 对外OCR API
   version: '2026-11-02'
-  description: 现网契约：2026-11-02内嵌任务图片已部署，与artifact引用方式均可使用。其余为既有客户接口。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。URL不支持query参数。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain
+  description: 2026-11-02代码契约：新增异步URL输入已实现待部署；现网可用artifact引用及data_url内嵌两种方式。其余为既有客户接口。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。URL不支持query参数。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain
     text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger
     UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。
 servers:
@@ -777,7 +777,7 @@ paths:
     post:
       operationId: createTask
       summary: 提交异步OCR任务
-      description: '已有artifact引用方式保持；新增image.data_url（严格PNG/JPEG base64 data URL）与artifact_id二选一。2026-11-02已部署并通过真实OCR验收。引用请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。
+      description: '已有artifact引用方式保持；新增image.data_url（严格PNG/JPEG base64 data URL）与artifact_id二选一。2026-11-02已部署并通过真实OCR验收。另增input.image.url为远程PNG/JPEG输入（新代码待部署），三个来源互斥。URL下载在202前完成，整体10秒，沿用公网限制，失败不创建任务；下载无持久任务ID。已受理同键不重下载，同键正在下载返回409/IDEMPOTENCY_IN_PROGRESS；下载容量全局4、每project2，满额429/IMAGE_FETCH_CAPACITY。无全局锁网络等待；同URL新key可获取不同内容。引用及URL请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。
 
 
         生成curl前：选择正确Server，配置HTTP Bearer认证并检查Authorization头，填写新的Idempotency-Key；选择artifactReference时替换真实文件ID，inlineDataUrl可直接提交单张图片。Accept包含text/html仅表示可能遇到入口HTML错误；客户端须先检查HTTP状态和Content-Type。'
@@ -869,8 +869,19 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '408':
+          description: 图片下载/准备超时（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '409':
-          description: 幂等键已被不同请求内容使用。
+          description: IDEMPOTENCY_CONFLICT：同键不同内容；或IDEMPOTENCY_IN_PROGRESS：同键正在下载准备，稍后用原键及原body重试。
           content:
             application/json:
               schema:
@@ -890,6 +901,17 @@ paths:
               schema:
                 type: string
               example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '415':
+          description: 不支持的媒体类型。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -972,6 +994,17 @@ paths:
                   parameters: {}
                   timeout_seconds: 120
                   max_attempts: 1
+              remoteImageUrl:
+                summary: 方式三：公网图片URL（待部署）
+                description: 替换为MaaS服务器可访问的公开PNG/JPEG地址；示例域名仅占位。无登录/重定向/私网，MaaS下载后才返回202，不是传给worker临时读取。
+                value:
+                  model: ocr.default
+                  input:
+                    image:
+                      url: https://example.org/replace-with-public-image.png
+                  parameters: {}
+                  timeout_seconds: 120
+                  max_attempts: 1
       x-codeSamples:
       - lang: Shell
         label: curl：已上传图片引用
@@ -991,6 +1024,15 @@ paths:
           \ $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n\
           \      \"data_url\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==\"\
           \n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
+      - lang: Shell
+        label: curl：远程图片URL（待部署）
+        source: "# 异步URL输入新代码待部署，不可在当前现网使用。\n# 替换为服务器可下载的公开PNG/JPEG地址。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\n\
+          IDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url\
+          \ \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header\
+          \ 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key:\
+          \ $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n\
+          \      \"url\": \"https://example.org/replace-with-public-image.png\"\n    }\n  },\n  \"parameters\":\
+          \ {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
   /maas/v1/tasks/{ident}:
     get:
       operationId: getTask
@@ -1383,6 +1425,13 @@ components:
         parameters: {}
         timeout_seconds: 120
         max_attempts: 1
+      - model: ocr.default
+        input:
+          image:
+            url: https://example.org/replace-with-public-image.png
+        parameters: {}
+        timeout_seconds: 120
+        max_attempts: 1
     TaskView:
       properties:
         id:
@@ -1594,6 +1643,20 @@ components:
       title: InlineImage
       type: object
       description: InlineImage（与当前实现一致）
+    URLImage:
+      additionalProperties: false
+      properties:
+        url:
+          description: 公开HTTP(S) PNG/JPEG地址，最长4096字符；202前安全下载并保存，URL支持尚未部署。
+          maxLength: 4096
+          minLength: 1
+          title: Url
+          type: string
+      required:
+      - url
+      title: URLImage
+      type: object
+      description: URLImage（与当前实现一致）
     OCRInput:
       additionalProperties: false
       properties:
@@ -1601,8 +1664,9 @@ components:
           anyOf:
           - $ref: '#/components/schemas/ImageReference'
           - $ref: '#/components/schemas/InlineImage'
+          - $ref: '#/components/schemas/URLImage'
           title: Image
-          description: 单张图片：已有artifact_id引用，或PNG/JPEG base64 data_url；两个来源互斥。
+          description: 单张图片：已有artifact_id引用、PNG/JPEG base64 data_url或公开url（三选一，url待部署）。
       required:
       - image
       title: OCRInput

@@ -11,7 +11,7 @@ def data_url(color='white'):
     return 'data:image/png;base64,'+base64.b64encode(out.getvalue()).decode()
 
 
-@pytest.mark.parametrize('image',[{}, {'data_url':'x','artifact_id':'a'}, {'data_url':'x','extra':1}, {'artifact_id':'a','extra':1}, {'url':'https://example.org/a'}])
+@pytest.mark.parametrize('image',[{}, {'data_url':'x','artifact_id':'a'}, {'data_url':'x','extra':1}, {'artifact_id':'a','extra':1}, {'url':'https://example.org/a','artifact_id':'a'}])
 def test_source_exclusive(image):
     with pytest.raises(ValidationError):OCRAdapter().validate({'image':image},{})
 

@@ -30,3 +30,5 @@ Idempotency-Key已提供非空演示值：每个新操作应替换为新UUID，�
 Bearer认证在Authorize或插件的认证配置中填写，生成后检查Authorization头；OpenAPI不会保存真实key，也不能保证所有插件自动附带认证。Accept含text/html源于入口错误媒体类型，不代表业务成功响应是HTML；保留该事实而非删除错误定义来美化curl。支持x-codeSamples的工具另可展示手写curl示例，部分VSCode插件可能忽略该扩展。
 
 手写任务curl示例直接使用`--data`内嵌JSON，不依赖task.json等额外文件。仍须设置Base URL及凭据、替换真实artifact ID，并在同次重试时保持幂等键及JSON不变。
+
+异步远程URL输入为新代码待部署，remoteImageUrl及对应curl是候选示例。409可能表示IDEMPOTENCY_IN_PROGRESS（稍后同键同body再提交）或IDEMPOTENCY_CONFLICT（请求不一致）；下载在202前完成且有独立容量限制。现网仍仅支持artifact_id/data_url。

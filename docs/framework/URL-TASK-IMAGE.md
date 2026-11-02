@@ -1,5 +1,8 @@
 # 异步远程图片URL输入
 
+> **2026-11-02异步远程URL代码完成，待部署**：input.image.url与已上线artifact_id/data_url三选一，下载并保存后才202；同键不重下载、跨进程下载槽位全局4/项目2、整体10秒，复用公网安全限制。75本地、103隔离通过（1旧条件跳过），未变更现网。[验收](../../results/maas-url-task-20261102/REPORT.md)。
+
+
 2026-11-02，用户授权实现，E14图片OCR首阶段增量。先完成本地/隔离测试，不自动部署。
 
 新增input.image.url，与artifact_id/data_url三选一，仅gpustack.ocr使用。接受公开HTTP(S) PNG/JPEG，复用同步下载器：限制端口80/443，检查所有DNS地址并固定已校验IP连接、保留原TLS主机名验证，不跟随重定向、不转发凭据/Cookie、不使用环境代理，不接受HTTP压缩；默认10MiB/20MP。下载整体上限10秒，超过返回408/IMAGE_FETCH_TIMEOUT，失败不创建任务。

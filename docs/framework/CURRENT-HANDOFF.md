@@ -1,5 +1,8 @@
 # 当前状态与接力入口
 
+> **2026-11-02异步远程URL代码完成，待部署**：input.image.url与已上线artifact_id/data_url三选一，下载并保存后才202；同键不重下载、跨进程下载槽位全局4/项目2、整体10秒，复用公网安全限制。75本地、103隔离通过（1旧条件跳过），未变更现网。[验收](../../results/maas-url-task-20261102/REPORT.md)。
+
+
 > **2026-11-02内嵌图片异步提交已部署**：应用inline-task-r1上线，generation486，接单恢复。data_url四并发同键只1任务，旧artifact方式兼容，两任务唯一尝试/成功计量和46行下载通过；同步OCR、能力schema、监控及UNKNOWN=0正常。8副本/8执行器/并发8/8、Q25/25和3.5GiB保持，无VM/worker/Docker引擎重启。下方待部署描述为历史。[发布报告](../../results/maas-inline-deployment-20261102/REPORT.md)。
 
 

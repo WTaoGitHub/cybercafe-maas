@@ -1,5 +1,7 @@
 # MaaS 对外 API 文档（当前版本）
 
+> **远程URL异步输入（新代码，待部署）**：`input.image.url`与已部署的artifact_id/data_url三选一，下载并保存完成后返回202；详情见[设计](../framework/URL-TASK-IMAGE.md)。OpenAPI含候选schema/示例并标明部署差异，当前服务器尚不能使用url。
+
 > **内嵌图片提交（2026-11-02，已部署）**：`POST /maas/v1/tasks`新增`input.image.data_url`，与`artifact_id`二选一。只接受PNG/JPEG严格base64 data URL，默认解码10MiB/20MP、内嵌请求体20MiB；原artifact引用请求仍64KiB。幂等键必需，响应/查询/取消/下载不变。两种输入方式均已通过真实OCR验收。[设计与测试](../framework/INLINE-TASK-IMAGE.md)。OpenAPI已同步当前能力。
 
 > **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的9个客户操作，包含单张图片内嵌建任务；不包含尚未开放的`/v1/models`。

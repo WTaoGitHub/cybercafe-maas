@@ -19,9 +19,14 @@ class InlineImage(BaseModel):
     data_url: str = Field(min_length=1, description='Strict PNG/JPEG base64 data URL; exclusive with artifact_id')
 
 
+class URLImage(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    url: str = Field(min_length=1,max_length=4096,description='Public HTTP(S) PNG/JPEG; downloaded before task acceptance')
+
+
 class OCRInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    image: ImageReference | InlineImage
+    image: ImageReference | InlineImage | URLImage
 
 
 class OCRParameters(BaseModel):
