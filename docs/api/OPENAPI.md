@@ -1,0 +1,24 @@
+# OpenAPI / Swagger接口文档
+
+2026-11-02。机器可读文档：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json)，OpenAPI **3.1.0**，可导入支持3.1的Swagger Editor或Swagger UI。JSON本身就是合法OpenAPI格式，并不要求YAML后缀。
+
+覆盖当前9个客户操作：`POST /ocr`、`POST /v1/ocr`、`POST /v1/chat/completions`、上传/下载artifact、创建/查询/取消任务、模型capabilities。每个操作有说明、成功/错误响应、请求头/路径参数、请求体和响应schema。共用Bearer鉴权，项目身份由管理员绑定决定。
+
+## 阅读与使用
+
+1. 导入openapi.json；选择HTTP或HTTPS服务器，替换host/port为运维提供的可达入口。
+2. 在Authorize中输入已登记推理key，不能使用管理key代替。不把真实key保存进文档。
+3. 同步推荐`/ocr`；异步仍为上传原始图片字节→保存artifact ID→带Idempotency-Key提交任务→查询→下载结果。
+4. “Try it out”需要浏览器能访问目标地址、证书受信且跨域策略允许。当前入口未配置通用CORS，浏览器调用失败不等于curl不可用；本次不改变CORS、监听或服务器路由。实际调用可按[API手册](README.md)使用curl/Python。
+
+当前未暴露Swagger UI、`/openapi.json`、`/healthz`或`/v1/models`客户路径；不能把文档文件路径当成服务器API。内部FastAPI自动schema未补全所有动态返回，不作为此客户文档替代。尚未实现的“一步上传并建任务”、多模型/批次接口不包含在内。
+
+capabilities当前实际返回`execution_modes: ["async"]`，独立同步接口另有提供；此差异如实记录。能力查询不是真实GPU健康检查。错误可能来自代理并返回HTML，调用方需检查HTTP状态和Content-Type；模型输出及运行预算的可配置值以实际环境为准。
+
+## 生成和校验
+
+- 使用项目Python：`.venv-maas/bin/python scripts/api/export_openapi.py`，从当前Pydantic模型导出并补充客户接口语义；不连接数据库或服务器，不改变部署。
+- `scripts/api/validate_openapi.py`需要`openapi-spec-validator`和`pyyaml`，用于OpenAPI标准校验并核对当前API路由、入口白名单及操作描述。可在独立工具环境安装，避免改变业务依赖。
+- 运行校验器时添加`--write-yaml`可从JSON刷新等价YAML；默认校验两种格式内容一致。
+
+本次为源码核对后的文档交付，不是新一轮在线验收或接口发布。[当前接力状态](../framework/CURRENT-HANDOFF.md)。

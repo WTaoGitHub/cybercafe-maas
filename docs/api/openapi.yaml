@@ -1,0 +1,1801 @@
+openapi: 3.1.0
+info:
+  title: Cybercafe MaaS 对外OCR API
+  version: '2026-11-02'
+  description: 当前已实现客户接口快照，非新增接口设计。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。URL不支持query参数。当前入口≤20MiB、同步JSON默认≤20MiB、异步JSON≤64KiB、原图≤10MiB；入口错误可能返回HTML/plain
+    text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger
+    UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。没有将上传/建任务合并，本任务不改变服务。
+servers:
+- url: http://{host}:{port}
+  description: 受控可达HTTP入口；host需由运维提供，容器回环地址不代表宿主机。
+  variables:
+    host:
+      default: localhost
+    port:
+      default: '18831'
+- url: https://{host}:{port}
+  description: 私有TLS入口，需信任运维提供的证书。
+  variables:
+    host:
+      default: localhost
+    port:
+      default: '18832'
+security:
+- BearerAuth: []
+tags:
+- name: 同步OCR
+  description: 同步完成并返回识别结果。
+- name: 文件
+  description: 上传和下载project隔离的输入/结果。
+- name: 异步任务
+  description: 受理、查询和取消持久任务。
+- name: 模型能力
+  description: 查询已登记及获授权能力，不代表实时GPU健康。
+paths:
+  /ocr:
+    post:
+      operationId: ocr
+      summary: 同步OCR（消费者兼容）
+      description: 单张PNG/JPEG，decoded大小默认≤10MiB，像素≤20000000。URL和base64恰好一个；无持久同步幂等，request_id仅关联。返回顶层lines，不保存可查询任务。
+      tags:
+      - 同步OCR
+      parameters: []
+      responses:
+        '200':
+          description: 识别成功；空lines为无文字。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumerResult'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '415':
+          description: 不支持的媒体类型。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '408':
+          description: 图片下载/准备超时（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumerOCRRequest'
+  /v1/ocr:
+    post:
+      operationId: ocrV1
+      summary: 同步OCR（消费者兼容）
+      description: 单张PNG/JPEG，decoded大小默认≤10MiB，像素≤20000000。URL和base64恰好一个；无持久同步幂等，request_id仅关联。返回顶层lines，不保存可查询任务。
+      tags:
+      - 同步OCR
+      parameters: []
+      responses:
+        '200':
+          description: 识别成功；空lines为无文字。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumerResult'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '415':
+          description: 不支持的媒体类型。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '408':
+          description: 图片下载/准备超时（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumerOCRRequest'
+  /v1/chat/completions:
+    post:
+      operationId: chatOCR
+      summary: 同步OCR（Chat格式）
+      description: 返回上游Chat JSON；choices[0].message.content为OCRResult的JSON字符串。仅stream=false，不支持SSE；不提供持久去重。传输完成状态不明时不可自动重发。
+      tags:
+      - 同步OCR
+      parameters: []
+      responses:
+        '200':
+          description: 非流式Chat响应。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '400':
+          description: 请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+  /maas/v1/artifacts:
+    post:
+      operationId: uploadArtifact
+      summary: 上传输入文件
+      description: 保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。
+      tags:
+      - 文件
+      parameters: []
+      responses:
+        '201':
+          description: 文件已保存。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtifactCreated'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '415':
+          description: 不支持的媒体类型。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+      requestBody:
+        required: true
+        description: 原始非空字节，不是JSON对象、base64或multipart。默认≤10485760字节。允许的非图片类型不代表OCR可处理。
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+          text/plain:
+            schema:
+              type: string
+              format: binary
+          application/json:
+            schema:
+              type: string
+              format: binary
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+  /maas/v1/artifacts/{ident}:
+    get:
+      operationId: downloadArtifact
+      summary: 下载输入或结果文件
+      description: 需同project且文件可用。成功任务仍需另行下载；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。
+      tags:
+      - 文件
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        description: 同project任务或文件ID，依路径类型确定。
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 返回原始输入字节或结果JSON。
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/TaskResult'
+                - {}
+                description: 结果为TaskResult；上传的application/json输入按原始内容返回，不限于该schema。
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            text/plain:
+              schema:
+                type: string
+                format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                const: no-store
+            Content-Disposition:
+              schema:
+                const: attachment
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '410':
+          description: 文件已过期或被清理（RESULT_EXPIRED）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+  /maas/v1/tasks:
+    post:
+      operationId: createTask
+      summary: 提交异步OCR任务
+      description: 先上传输入artifact，再引用其ID；当前不支持单请求内嵌图片。总JSON请求体≤65536字节。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。
+      tags:
+      - 异步任务
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: project范围持久幂等键。同键且同请求返回当前原任务；不同内容409。新artifact ID视为不同内容。不得换键重做完成不明推理。
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '202':
+          description: 新任务已受理。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskView'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            Location:
+              description: 任务查询相对路径。
+              schema:
+                type: string
+        '200':
+          description: 返回已有幂等任务的当前状态。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskView'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            Location:
+              description: 任务查询相对路径。
+              schema:
+                type: string
+        '400':
+          description: 请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '409':
+          description: 幂等键已被不同请求内容使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+  /maas/v1/tasks/{ident}:
+    get:
+      operationId: getTask
+      summary: 查询任务
+      description: 返回任务状态和结果文件ID，不内嵌结果。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。
+      tags:
+      - 异步任务
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        description: 同project任务或文件ID，依路径类型确定。
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 当前任务状态，需检查state。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskView'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+  /maas/v1/tasks/{ident}/cancel:
+    post:
+      operationId: cancelTask
+      summary: 取消或请求取消任务
+      description: 无需请求体。QUEUED/RETRY_WAIT→CANCELLED，RUNNING→CANCEL_REQUESTED，终态保持；重复调用不创建任务。不保证立即终止GPU活动。
+      tags:
+      - 异步任务
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        description: 同project任务或文件ID，依路径类型确定。
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 更新后或已有终态任务。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskView'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+  /maas/v1/models/{name}/capabilities:
+    get:
+      operationId: modelCapabilities
+      summary: 查询已授权模型能力
+      description: 不是实时推理健康检查。当前execution_modes实际只列async，同步入口仍可独立使用；未知模型404、无权限403。没有公开模型列表接口。
+      tags:
+      - 模型能力
+      parameters:
+      - name: name
+        in: path
+        required: true
+        description: 已登记逻辑模型名，当前ocr.default；不是GPUStack内部部署名。
+        schema:
+          type: string
+          example: ocr.default
+      responses:
+        '200':
+          description: 当前登记的模型版本、预算及输入/参数schema。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capabilities'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: 管理员登记于MaaS且GPUStack有效、有模型权限的推理key；不是任意GPUStack key或管理key。
+  schemas:
+    TaskCreate:
+      additionalProperties: false
+      properties:
+        model:
+          maxLength: 128
+          minLength: 1
+          title: Model
+          type: string
+          description: 已授权逻辑模型名，当前ocr.default。
+        input:
+          $ref: '#/components/schemas/OCRInput'
+        parameters:
+          $ref: '#/components/schemas/OCRParameters'
+          default: {}
+          description: 当前OCR仅允许空对象。
+        timeout_seconds:
+          default: 120
+          maximum: 3600
+          minimum: 1
+          title: Timeout Seconds
+          type: integer
+          description: 自受理开始的任务总期限，含排队；区别于模型单次运行预算。
+        max_attempts:
+          default: 3
+          maximum: 3
+          minimum: 1
+          title: Max Attempts
+          type: integer
+          description: 最多领取/尝试次数。默认3；OCR不可安全重放，设置3不意味着对未知远端活动自动重试。
+      required:
+      - model
+      - input
+      title: TaskCreate
+      type: object
+      description: TaskCreate（与当前实现一致）
+      examples:
+      - model: ocr.default
+        input:
+          image:
+            artifact_id: art_example
+        parameters: {}
+        timeout_seconds: 120
+        max_attempts: 1
+    TaskView:
+      properties:
+        id:
+          title: Id
+          type: string
+          description: 任务ID。
+        model:
+          title: Model
+          type: string
+          description: 逻辑模型名。
+        revision:
+          title: Revision
+          type: string
+          description: 提交时绑定的模型版本。
+        state:
+          enum:
+          - QUEUED
+          - RUNNING
+          - RETRY_WAIT
+          - CANCEL_REQUESTED
+          - CANCELLED
+          - SUCCEEDED
+          - FAILED
+          title: State
+          type: string
+          description: 任务状态；HTTP200不代表任务成功。UNKNOWN是内部活动状态，不是任务state。
+        attempts:
+          minimum: 0
+          title: Attempts
+          type: integer
+          description: 领取次数，不一定等于真实GPU执行次数。
+        result_artifact_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Result Artifact Id
+          description: 成功结果文件ID，否则为null；需单独下载。
+        error_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Code
+          description: 失败原因代码，否则可为null。
+        deadline:
+          format: date-time
+          title: Deadline
+          type: string
+          description: 任务总期限。
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+          description: 创建时间。
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+          description: 最近更新时间。
+      required:
+      - id
+      - model
+      - revision
+      - state
+      - attempts
+      - result_artifact_id
+      - error_code
+      - deadline
+      - created_at
+      - updated_at
+      title: TaskView
+      type: object
+      description: TaskView（与当前实现一致）
+    ApiErrorDetail:
+      properties:
+        code:
+          title: Code
+          type: string
+          description: 机器可读错误码。
+        message:
+          title: Message
+          type: string
+          description: 错误说明，不作为程序分支依据。
+        retryable:
+          title: Retryable
+          type: boolean
+          description: 错误的可重试提示，不授权重放完成状态未知的推理。
+        request_id:
+          title: Request Id
+          type: string
+          description: 服务器生成的关联ID。
+      required:
+      - code
+      - message
+      - retryable
+      - request_id
+      title: ApiErrorDetail
+      type: object
+      description: ApiErrorDetail（与当前实现一致）
+    ApiError:
+      properties:
+        error:
+          $ref: '#/components/schemas/ApiErrorDetail'
+          description: 结构化错误。
+      required:
+      - error
+      title: ApiError
+      type: object
+      description: ApiError（与当前实现一致）
+    ConsumerOCRRequest:
+      additionalProperties: false
+      properties:
+        model:
+          maxLength: 128
+          minLength: 1
+          title: Model
+          type: string
+          description: 已授权逻辑模型名。
+        image_url:
+          anyOf:
+          - maxLength: 4096
+            minLength: 1
+            type: string
+          - type: 'null'
+          default: null
+          title: Image Url
+          description: 公开HTTP(S) PNG/JPEG地址，与image_base64恰好一个；不支持私网、鉴权下载及重定向。
+        image_base64:
+          anyOf:
+          - minLength: 1
+            type: string
+          - type: 'null'
+          default: null
+          title: Image Base64
+          description: 严格标准裸base64或PNG/JPEG data URL；与image_url恰好一个。
+        language:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Language
+          description: 仅null/auto/zh/en，提示语义，不强制过滤输出或切换模型。
+          enum:
+          - null
+          - auto
+          - zh
+          - en
+        return_boxes:
+          default: true
+          title: Return Boxes
+          type: boolean
+          description: 严格布尔值；false时省略polygon。
+        request_id:
+          anyOf:
+          - maxLength: 200
+            minLength: 1
+            type: string
+          - type: 'null'
+          default: null
+          title: Request Id
+          description: 业务关联ID，禁止控制字符；不是幂等键，不保证去重。
+      required:
+      - model
+      title: ConsumerOCRRequest
+      type: object
+      description: ConsumerOCRRequest（与当前实现一致）
+      oneOf:
+      - required:
+        - image_url
+        properties:
+          image_url:
+            type: string
+          image_base64:
+            type: 'null'
+      - required:
+        - image_base64
+        properties:
+          image_base64:
+            type: string
+          image_url:
+            type: 'null'
+      examples:
+      - model: ocr.default
+        image_base64: <PNG/JPEG base64>
+        return_boxes: true
+    ImageReference:
+      additionalProperties: false
+      properties:
+        artifact_id:
+          maxLength: 80
+          minLength: 1
+          title: Artifact Id
+          type: string
+          description: 预先上传的同project且未过期输入artifact ID。
+      required:
+      - artifact_id
+      title: ImageReference
+      type: object
+      description: ImageReference（与当前实现一致）
+    OCRInput:
+      additionalProperties: false
+      properties:
+        image:
+          $ref: '#/components/schemas/ImageReference'
+          description: 单张已上传图片引用。
+      required:
+      - image
+      title: OCRInput
+      type: object
+      description: OCRInput（与当前实现一致）
+    OCRParameters:
+      additionalProperties: false
+      properties: {}
+      title: OCRParameters
+      type: object
+      description: OCRParameters（与当前实现一致）
+    OCRLine:
+      properties:
+        box:
+          items:
+            items:
+              type: number
+            type: array
+          title: Box
+          type: array
+          description: 原图像素坐标点数组。
+        text:
+          title: Text
+          type: string
+          description: 识别文字。
+        score:
+          maximum: 1
+          minimum: 0
+          title: Score
+          type: number
+          description: 0至1置信度。
+      required:
+      - box
+      - text
+      - score
+      title: OCRLine
+      type: object
+      description: OCRLine（与当前实现一致）
+    OCRResult:
+      properties:
+        text:
+          title: Text
+          type: string
+          description: 完整识别文字。
+        lines:
+          items:
+            $ref: '#/components/schemas/OCRLine'
+          title: Lines
+          type: array
+          description: 逐行文字、置信度及原图像素坐标。
+        elapsed_ms:
+          minimum: 0
+          title: Elapsed Ms
+          type: number
+          description: 模型报告处理耗时，毫秒，不等于端到端时长。
+        node:
+          title: Node
+          type: string
+          description: 上游报告的处理节点标识，客户端不应依赖其格式。
+      required:
+      - text
+      - lines
+      - elapsed_ms
+      - node
+      title: OCRResult
+      type: object
+      description: OCRResult（与当前实现一致）
+    ArtifactCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 生成的artifact ID。
+          example: art_example
+        size:
+          type: integer
+          minimum: 1
+          description: 文件字节数。
+        sha256:
+          type: string
+          description: 原始文件SHA256。
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - id
+      - size
+      - sha256
+    ConsumerLine:
+      type: object
+      properties:
+        text:
+          type: string
+          description: 识别文字。
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: 可选置信度，上游未提供时省略。
+        polygon:
+          type: array
+          minItems: 4
+          maxItems: 4
+          description: 可选四边形，原图像素坐标；return_boxes=false时省略。
+          items:
+            type: array
+            minItems: 2
+            maxItems: 2
+            items:
+              type: number
+      required:
+      - text
+    ConsumerResult:
+      type: object
+      properties:
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsumerLine'
+          description: 无文字时为空数组，仍为成功。
+      required:
+      - lines
+      examples:
+      - lines:
+        - text: 中文 English
+          confidence: 0.99
+          polygon:
+          - - 0
+            - 0
+          - - 100
+            - 0
+          - - 100
+            - 20
+          - - 0
+            - 20
+    TaskResult:
+      type: object
+      properties:
+        outputs:
+          $ref: '#/components/schemas/OCRResult'
+        model_revision:
+          type: string
+          description: 执行版本。
+        attempt:
+          type: integer
+          minimum: 1
+          description: 产出结果的尝试编号。
+        usage:
+          type: object
+          properties:
+            unit:
+              const: task
+              description: 计量单位。
+            quantity:
+              const: 1
+              description: 成功任务数量。
+          required:
+          - unit
+          - quantity
+      required:
+      - outputs
+      - model_revision
+      - attempt
+      - usage
+    Capabilities:
+      type: object
+      properties:
+        model:
+          type: string
+          description: 逻辑模型名。
+        revision:
+          type: string
+          description: 当前登记版本。
+        execution_modes:
+          type: array
+          items:
+            const: async
+          description: 当前实际返回仅async；不表示系统没有独立同步接口。
+        max_runtime_s:
+          type: integer
+          description: 模型目录单次执行预算，当前OCR25秒，以运行配置为准。
+        input_schema:
+          type: object
+          additionalProperties: true
+          description: 当前模型输入JSON Schema。
+        parameters_schema:
+          type: object
+          additionalProperties: true
+          description: 模型参数JSON Schema，当前OCR为空对象。
+      required:
+      - model
+      - revision
+      - execution_modes
+      - max_runtime_s
+      - input_schema
+      - parameters_schema
+    ChatRequest:
+      type: object
+      properties:
+        model:
+          type: string
+          description: 逻辑模型名。
+          example: ocr.default
+        stream:
+          type: boolean
+          const: false
+          default: false
+          description: 仅非流式。
+        messages:
+          type: array
+          description: 当前受支持形式：user消息包含单张PNG/JPEG base64 data URL；其余结构由上游校验。
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                description: 消息角色。
+                example: user
+              content:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      const: image_url
+                    image_url:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          description: PNG/JPEG base64 data URL。
+                          example: data:image/png;base64,...
+                      required:
+                      - url
+                  required:
+                  - type
+                  - image_url
+            required:
+            - role
+            - content
+      required:
+      - model
+      - messages
+      additionalProperties: true
+    ChatResponse:
+      type: object
+      properties:
+        choices:
+          type: array
+          description: 上游Chat响应；通常读取首个choice。
+          items:
+            type: object
+            properties:
+              message:
+                type: object
+                properties:
+                  content:
+                    type: string
+                    description: JSON编码的OCRResult字符串；需要第二次JSON解析。
+                  role:
+                    type: string
+                    description: 通常assistant。
+                required:
+                - content
+            required:
+            - message
+      required:
+      - choices
+      additionalProperties: true

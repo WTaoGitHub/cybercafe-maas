@@ -1,5 +1,7 @@
 # MaaS 对外 API 文档（当前版本）
 
+> **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的9个客户操作，不包含尚未开放的`/v1/models`或一步上传建任务。
+
 > 当前基线：API consumer-ocr-r1、执行器/Observer e3-r1、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。
 
 文档更新：2026-10-29；当日只读核对001的应用版本、四执行器及运行额度，接口/监听沿用此前消费者兼容发布。本次未部署或新增接口。消费者兼容契约见[OCR对接](CONSUMER-OCR.md)，容量验证见[E3试点报告](../../results/maas-e3-completion-20261029/REPORT.md)。
