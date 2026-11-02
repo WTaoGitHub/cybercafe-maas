@@ -36,3 +36,17 @@ Bearer认证在Authorize或插件的认证配置中填写，生成后检查Autho
 异步远程URL输入及remoteImageUrl对应curl已部署。409可能表示IDEMPOTENCY_IN_PROGRESS（稍后同键同body再提交）或IDEMPOTENCY_CONFLICT（请求不一致）；下载在202前完成且有独立容量限制。现网支持artifact_id/image_base64/image_url，兼容旧别名。
 
 Responses真实示例数据取自[本轮验收](examples/real-responses-20261102.json)，生成器会将其内嵌到YAML/JSON，无外部$ref依赖；节点已脱敏，不包含APIKey或连接地址。默认请求白图与真实响应的自建文字测试图不同。
+
+## OpenAPI Preview空白问题修复（2026-11-02）
+
+本机OpenAPI Preview 2.3.2使用json-schema-ref-parser的bundle处理文档。capabilities的真实响应示例含独立JSON Schema的`$defs`及`#/$defs/...`；插件把实例数据中的引用也按OpenAPI根解析，报`MissingPointerError: Token "$defs" does not exist`，未把spec发送到渲染面板。此前标准OpenAPI校验通过，并不能排除此预览兼容性问题。
+
+现在仅对OpenAPI中的capabilities显示示例，把嵌入schema的局部引用等价内联，保留约束；服务器实际响应及examples/real-responses-20261102.json原始脱敏集合不变。其他OpenAPI组件引用保持规范格式。不改服务、不降级OpenAPI版本、不需要更换插件。
+
+生成后除标准校验外，可用插件自带解析器复验：
+
+```bash
+node scripts/api/check_preview_bundle.cjs /absolute/path/to/plugin/node_modules/@apidevtools/json-schema-ref-parser
+```
+
+检查YAML/JSON均能bundle及JSON序列化，对应插件发送给界面的流程。本次已使用本机插件依赖实际通过；不将该检查混称为VSCode界面截图验收。修改文件后请关闭旧预览，重新打开openapi.yaml并执行OpenAPI Preview。

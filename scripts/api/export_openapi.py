@@ -1,5 +1,6 @@
 """Export the existing customer contract; does not change API/server routes."""
 import copy,json,sys
+from schema_examples import inline_local_schema_refs
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
 from maas_platform.schemas import TaskCreate,TaskView,ApiError
@@ -102,7 +103,12 @@ if real_file.exists():
  def actual(path,method,status,key,label,description):
   op=P[path][method];target=op['responses'][str(status)]
   media=target['content']['application/json'];media.pop('example',None)
-  media.setdefault('examples',{})[label]={'summary':description,'description':'2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。','value':real[key]['body']}
+  body=copy.deepcopy(real[key]['body'])
+  detail='2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。'
+  if key=='capabilities':
+   for field in ('input_schema','parameters_schema'):body[field]=inline_local_schema_refs(body[field])
+   detail+=' 为兼容预览器，仅此示例将嵌入JSON Schema的局部引用等价内联；真实HTTP响应与原始响应集合仍保留$defs/$ref。'
+  media.setdefault('examples',{})[label]={'summary':description,'description':detail,'value':body}
   for name,header in target.get('headers',{}).items():
    if name.lower() in real[key]['headers']:header['example']=real[key]['headers'][name.lower()]
  for path,method,status,key,label,description in [

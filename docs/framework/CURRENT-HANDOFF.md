@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-02 OpenAPI预览兼容修复**：已用OpenAPI Preview 2.3.2自带解析器复现并修复示例内嵌JSON Schema引用导致的MissingPointerError；仅将capabilities显示示例的局部引用等价内联，服务器及原始响应集合不变。YAML/JSON插件bundle通过，5项回归通过。[说明](../api/OPENAPI.md#openapi-preview空白问题修复2026-11-02)。
+
 > **多图任务判定已确定（2026-11-02）**：未来单task多图必须全部成功才SUCCEEDED，部分成功也FAILED；沿用失败task不产成功收据，不新增部分成功计量/状态。逻辑失败不证明GPU已停止，当前单图部署不变。[记录](OCR-METERING.md)。
 
 > **2026-11-02计量范围补充**：多图成功数与PDF页数分开（successful_images / 未来successful_pages），内部重试/缩放/切图不叠加；部分成功业务定义、汇总和收费由下游处理，本系统不新增部分成功状态/收费。本次仅计划更新，当前单图计数1不变。[说明](OCR-METERING.md)。

@@ -1603,7 +1603,7 @@ paths:
               examples:
                 realCapabilities:
                   summary: 真实模型能力及输入schema
-                  description: 2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。
+                  description: 2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。 为兼容预览器，仅此示例将嵌入JSON Schema的局部引用等价内联；真实HTTP响应与原始响应集合仍保留$defs/$ref。
                   value:
                     model: ocr.default
                     revision: ocr-registry-r1
@@ -1611,53 +1611,46 @@ paths:
                     - async
                     max_runtime_s: 25
                     input_schema:
-                      $defs:
-                        ImageReference:
-                          additionalProperties: false
-                          properties:
-                            artifact_id:
-                              maxLength: 80
-                              minLength: 1
-                              title: Artifact Id
-                              type: string
-                          required:
-                          - artifact_id
-                          title: ImageReference
-                          type: object
-                        InlineImage:
-                          additionalProperties: false
-                          properties:
-                            image_base64:
-                              description: PNG/JPEG strict raw base64 or data URL; exclusive with artifact_id/image_url.
-                                Legacy data_url is deprecated.
-                              minLength: 1
-                              title: Image Base64
-                              type: string
-                          required:
-                          - image_base64
-                          title: InlineImage
-                          type: object
-                        URLImage:
-                          additionalProperties: false
-                          properties:
-                            image_url:
-                              description: Public HTTP(S) PNG/JPEG; downloaded before task acceptance. Legacy url
-                                is deprecated.
-                              maxLength: 4096
-                              minLength: 1
-                              title: Image Url
-                              type: string
-                          required:
-                          - image_url
-                          title: URLImage
-                          type: object
                       additionalProperties: false
                       properties:
                         image:
                           anyOf:
-                          - $ref: '#/$defs/ImageReference'
-                          - $ref: '#/$defs/InlineImage'
-                          - $ref: '#/$defs/URLImage'
+                          - additionalProperties: false
+                            properties:
+                              artifact_id:
+                                maxLength: 80
+                                minLength: 1
+                                title: Artifact Id
+                                type: string
+                            required:
+                            - artifact_id
+                            title: ImageReference
+                            type: object
+                          - additionalProperties: false
+                            properties:
+                              image_base64:
+                                description: PNG/JPEG strict raw base64 or data URL; exclusive with artifact_id/image_url.
+                                  Legacy data_url is deprecated.
+                                minLength: 1
+                                title: Image Base64
+                                type: string
+                            required:
+                            - image_base64
+                            title: InlineImage
+                            type: object
+                          - additionalProperties: false
+                            properties:
+                              image_url:
+                                description: Public HTTP(S) PNG/JPEG; downloaded before task acceptance. Legacy
+                                  url is deprecated.
+                                maxLength: 4096
+                                minLength: 1
+                                title: Image Url
+                                type: string
+                            required:
+                            - image_url
+                            title: URLImage
+                            type: object
                           title: Image
                       required:
                       - image
