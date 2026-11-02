@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-02计量范围补充**：多图成功数与PDF页数分开（successful_images / 未来successful_pages），内部重试/缩放/切图不叠加；部分成功业务定义、汇总和收费由下游处理，本系统不新增部分成功状态/收费。本次仅计划更新，当前单图计数1不变。[说明](OCR-METERING.md)。
+
 > **2026-11-02当前已发布ocr-metering-r2**：规范字段image_base64/image_url、旧别名兼容、异步远程URL及E16两个计量查询均已完成真实验收。4异步+3同步成功，7条唯一收据；当前tokens实际null/unavailable，不能按tokens实际收费。generation488、监控健康、UNKNOWN=0，8副本profile保持，无VM/worker/Docker引擎重启。OpenAPI已内嵌真实脱敏响应；以下待部署状态为历史。[发布报告](../../results/maas-ocr-release-20261102/REPORT.md)。
 
 
