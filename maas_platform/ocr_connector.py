@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import json
 import time
 import httpx
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, AliasChoices
 from .errors import ServiceError
 
 
@@ -16,12 +16,12 @@ class ImageReference(BaseModel):
 
 class InlineImage(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    data_url: str = Field(min_length=1, description='Strict PNG/JPEG base64 data URL; exclusive with artifact_id')
+    image_base64: str = Field(min_length=1, validation_alias=AliasChoices('image_base64','data_url'), description='PNG/JPEG strict raw base64 or data URL; exclusive with artifact_id/image_url. Legacy data_url is deprecated.')
 
 
 class URLImage(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    url: str = Field(min_length=1,max_length=4096,description='Public HTTP(S) PNG/JPEG; downloaded before task acceptance')
+    image_url: str = Field(min_length=1,max_length=4096,validation_alias=AliasChoices('image_url','url'),description='Public HTTP(S) PNG/JPEG; downloaded before task acceptance. Legacy url is deprecated.')
 
 
 class OCRInput(BaseModel):

@@ -11,7 +11,7 @@ from test_consumer_ocr import png
 
 URL='https://example.org/photo.png?signature=test-placeholder'
 def post(client,idem='url-one',url=URL,**change):
-    body={'model':'ocr.default','input':{'image':{'url':url}},'max_attempts':1};body.update(change)
+    body={'model':'ocr.default','input':{'image':{'image_url':url}},'max_attempts':1};body.update(change)
     return client.post('/maas/v1/tasks',headers=headers(idem=idem),json=body)
 
 
@@ -53,7 +53,7 @@ def test_rejection_before_or_after_fetch_no_files(env,monkeypatch,kind,status):
     if kind=='private':url='http://127.0.0.1/image'
     if kind=='queue':settings.max_queued=0
     if kind=='forbidden':
-        r=client.post('/maas/v1/tasks',headers=headers('b','url-forbidden'),json={'model':'ocr.default','input':{'image':{'url':URL}}})
+        r=client.post('/maas/v1/tasks',headers=headers('b','url-forbidden'),json={'model':'ocr.default','input':{'image':{'image_url':URL}}})
     else:r=post(client,url=url)
     assert r.status_code==status and counts(s)==[0,0] and not list(s.store.root.glob('art_*'))
     if kind in ('private','queue','forbidden'):assert not calls

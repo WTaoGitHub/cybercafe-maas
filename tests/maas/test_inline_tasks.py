@@ -11,23 +11,23 @@ def data_url(color='white'):
     return 'data:image/png;base64,'+base64.b64encode(out.getvalue()).decode()
 
 
-@pytest.mark.parametrize('image',[{}, {'data_url':'x','artifact_id':'a'}, {'data_url':'x','extra':1}, {'artifact_id':'a','extra':1}, {'url':'https://example.org/a','artifact_id':'a'}])
+@pytest.mark.parametrize('image',[{}, {'image_base64':'x','artifact_id':'a'}, {'image_base64':'x','extra':1}, {'artifact_id':'a','extra':1}, {'image_url':'https://example.org/a','artifact_id':'a'}])
 def test_source_exclusive(image):
     with pytest.raises(ValidationError):OCRAdapter().validate({'image':image},{})
 
 
 def test_existing_and_inline_schema():
     assert OCRAdapter().validate({'image':{'artifact_id':'art_x'}},{})[2]=='art_x'
-    assert OCRAdapter().validate({'image':{'data_url':data_url()}},{})[2] is None
-    with pytest.raises(ValidationError):OCRAdapter().validate({'image':{'data_url':data_url()}},{'threshold':.5})
+    assert OCRAdapter().validate({'image':{'image_base64':data_url()}},{})[2] is None
+    with pytest.raises(ValidationError):OCRAdapter().validate({'image':{'image_base64':data_url()}},{'threshold':.5})
 
 
 @pytest.mark.parametrize('path,payload,expected',[
- ('/maas/v1/tasks',{'input':{'image':{'data_url':'x'*100}}},200),
+ ('/maas/v1/tasks',{'input':{'image':{'image_base64':'x'*100}}},200),
  ('/maas/v1/tasks',{'input':{'image':{'artifact_id':'x'*100}}},413),
- ('/maas/v1/tasks',{'input':{'image':{'data_url':'x'*500}}},413),
+ ('/maas/v1/tasks',{'input':{'image':{'image_base64':'x'*500}}},413),
  ('/maas/v1/tasks',{'input':{'image':None},'padding':'x'*100},413),
- ('/other',{'input':{'image':{'data_url':'x'*100}}},413),
+ ('/other',{'input':{'image':{'image_base64':'x'*100}}},413),
 ])
 def test_path_and_chunked_body_limits(path,payload,expected):
     async def run():
@@ -40,3 +40,19 @@ def test_path_and_chunked_body_limits(path,payload,expected):
         await JsonBodyLimit(app,limit=64,task_limit=300)({'type':'http','method':'POST','path':path},receive,send)
         return result[0]['status']
     assert asyncio.run(run())==expected
+
+
+def test_renamed_inputs_keep_exclusive_legacy_aliases():
+    adapter=OCRAdapter()
+    for name in ('image_base64','data_url'):
+        inp,_,_=adapter.validate({'image':{name:data_url()}},{})
+        assert set(inp['image'])=={'image_base64'}
+    for name in ('image_url','url'):
+        inp,_,_=adapter.validate({'image':{name:'https://example.org/image.png'}},{})
+        assert set(inp['image'])=={'image_url'}
+    for image in ({'image_base64':data_url(),'data_url':data_url()},
+                  {'image_url':'https://example.org/a','url':'https://example.org/a'}):
+        with pytest.raises(ValidationError):adapter.validate({'image':image},{})
+    schema=adapter.input_schema.model_json_schema()
+    assert set(schema['$defs']['InlineImage']['properties'])=={'image_base64'}
+    assert set(schema['$defs']['URLImage']['properties'])=={'image_url'}

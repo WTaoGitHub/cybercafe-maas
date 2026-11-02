@@ -18,7 +18,7 @@ def setup(env,monkeypatch):
 
 
 def post(client,idem='inline-one',**change):
-    body={'model':'ocr.default','input':{'image':{'data_url':data_url()}},'max_attempts':1};body.update(change)
+    body={'model':'ocr.default','input':{'image':{'image_base64':data_url()}},'max_attempts':1};body.update(change)
     return client.post('/maas/v1/tasks',headers=headers(idem=idem),json=body)
 
 
@@ -34,7 +34,7 @@ def test_inline_atomic_idempotency_execution_result_and_original_reference(env,m
     with s.db.transaction() as c:
         row=c.execute('SELECT input,input_artifact_id FROM tasks').fetchone();ident=row['input_artifact_id']
         assert row['input']=={'image':{'artifact_id':ident}}
-    assert post(client,input={'image':{'data_url':data_url('black')}}).status_code==409
+    assert post(client,input={'image':{'image_base64':data_url('black')}}).status_code==409
     assert Worker(s).run_once()
     task=client.get('/maas/v1/tasks/'+r[0].json()['id'],headers=headers()).json();assert task['state']=='SUCCEEDED'
     assert client.get('/maas/v1/artifacts/'+task['result_artifact_id'],headers=headers()).json()['outputs']['text']=='hello'
@@ -47,15 +47,15 @@ def test_inline_atomic_idempotency_execution_result_and_original_reference(env,m
 @pytest.mark.parametrize('kind,code',[('format',422),('media',415),('pixels',413),('size',413),('params',422),('quota',429),('queue',429),('forbidden',403)])
 def test_rejection_no_task_or_artifact(env,monkeypatch,kind,code):
     client,s,settings=setup(env,monkeypatch);body={}
-    if kind=='format':body['input']={'image':{'data_url':'not-data'}}
-    if kind=='media':body['input']={'image':{'data_url':data_url().replace('image/png','image/jpeg')}}
+    if kind=='format':body['input']={'image':{'image_base64':'not-data'}}
+    if kind=='media':body['input']={'image':{'image_base64':data_url().replace('image/png','image/jpeg')}}
     if kind=='pixels':monkeypatch.setattr('maas_platform.consumer_ocr.MAX_PIXELS',1)
     if kind=='size':settings.max_input_bytes=2
     if kind=='params':body['parameters']={'unknown':1}
     if kind=='quota':settings.max_project_storage_bytes=1
     if kind=='queue':settings.max_queued=0
     if kind=='forbidden':
-        response=client.post('/maas/v1/tasks',headers=headers('b','forbidden'),json={'model':'ocr.default','input':{'image':{'data_url':data_url()}}})
+        response=client.post('/maas/v1/tasks',headers=headers('b','forbidden'),json={'model':'ocr.default','input':{'image':{'image_base64':data_url()}}})
     else:response=post(client,**body)
     assert response.status_code==code and counts(s)==[0,0]
     assert not list(s.store.root.glob('art_*'))
@@ -80,7 +80,7 @@ def test_failure_orphan_gc_and_no_broken_reference(env,monkeypatch,kind):
 def test_large_inline_request_not_subject_to_old_64k_json_limit(env,monkeypatch):
     client,s,_=setup(env,monkeypatch)
     # A valid image followed by >64KiB whitespace in JSON still identifies the inline source.
-    value={'model':'ocr.default','input':{'image':{'data_url':data_url()}}}
+    value={'model':'ocr.default','input':{'image':{'image_base64':data_url()}}}
     response=client.post('/maas/v1/tasks',headers={**headers(idem='large-inline'),'Content-Type':'application/json'},content=json.dumps(value)+' '*70000)
     assert response.status_code==202
     value['input']={'image':{'artifact_id':'art_example'}}
@@ -109,11 +109,21 @@ def test_real_image_over_64k_capability_and_cancel(env,monkeypatch):
     client,s,_=setup(env,monkeypatch);out=io.BytesIO();Image.frombytes('RGB',(256,256),os.urandom(256*256*3)).save(out,format='PNG')
     raw=out.getvalue();assert len(raw)>65536
     source='data:image/png;base64,'+base64.b64encode(raw).decode()
-    response=post(client,input={'image':{'data_url':source}});assert response.status_code==202
+    response=post(client,input={'image':{'image_base64':source}});assert response.status_code==202
     who=s.auth.authenticate('gpustack_registered_a')
     with s.db.transaction() as c:ident=c.execute('SELECT input_artifact_id FROM tasks').fetchone()['input_artifact_id']
     assert s.artifact(who,ident)==(raw,'image/png')
     assert client.post('/maas/v1/tasks/'+response.json()['id']+'/cancel',headers=headers()).json()['state']=='CANCELLED'
-    assert post(client,input={'image':{'data_url':source}}).json()['state']=='CANCELLED'
+    assert post(client,input={'image':{'image_base64':source}}).json()['state']=='CANCELLED'
     schema=client.get('/maas/v1/models/ocr.default/capabilities',headers=headers()).json()['input_schema']
-    assert 'data_url' in schema['$defs']['InlineImage']['properties']
+    assert 'image_base64' in schema['$defs']['InlineImage']['properties']
+
+
+def test_bare_base64_and_deployed_legacy_key_remain_compatible(env,monkeypatch):
+    client,s,_=setup(env,monkeypatch)
+    for name in ('image_base64','data_url'):
+        body={'model':'ocr.default','input':{'image':{name:data_url().split(',',1)[1]}},'max_attempts':1}
+        r=client.post('/maas/v1/tasks',headers=headers(idem='rename-'+name),json=body)
+        assert r.status_code==202 and Worker(s).run_once()
+        assert client.post('/maas/v1/tasks',headers=headers(idem='rename-'+name),json=body).status_code==200
+    assert s.metrics()['successful_tasks']==2

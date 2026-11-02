@@ -43,7 +43,7 @@ async def fetch_image(url, limit):
 
 def submit_url(service, identity, body, idem, model, inp, params):
     from .service import fingerprint
-    url=inp['image']['url']; image_url(url)
+    url=inp['image']['image_url']; image_url(url)
     digest=fingerprint(body.model_dump())
     def preflight():
         with service.db.transaction() as conn:

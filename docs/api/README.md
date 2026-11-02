@@ -1,5 +1,7 @@
 # MaaS 对外 API 文档（当前版本）
 
+> **字段统一新版本（待部署）**：异步input.image规范字段为artifact_id/image_base64/image_url三选一。image_base64支持严格裸base64或PNG/JPEG data URL；旧data_url/url保留弃用别名。现网仍支持artifact_id/data_url，新名称及URL下载尚待部署。[迁移与幂等说明](../framework/TASK-IMAGE-FIELDS.md)。以下旧发布描述为现网历史；OpenAPI展示新版本契约并标注待发布。
+
 > **远程URL异步输入（新代码，待部署）**：`input.image.url`与已部署的artifact_id/data_url三选一，下载并保存完成后返回202；详情见[设计](../framework/URL-TASK-IMAGE.md)。OpenAPI含候选schema/示例并标明部署差异，当前服务器尚不能使用url。
 
 > **内嵌图片提交（2026-11-02，已部署）**：`POST /maas/v1/tasks`新增`input.image.data_url`，与`artifact_id`二选一。只接受PNG/JPEG严格base64 data URL，默认解码10MiB/20MP、内嵌请求体20MiB；原artifact引用请求仍64KiB。幂等键必需，响应/查询/取消/下载不变。两种输入方式均已通过真实OCR验收。[设计与测试](../framework/INLINE-TASK-IMAGE.md)。OpenAPI已同步当前能力。

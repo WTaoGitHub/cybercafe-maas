@@ -1,5 +1,8 @@
 # 实施计划 v0.2
 
+> **2026-11-02异步图片字段统一（待部署）**：新代码将data_url改为image_base64、url改为image_url，保持input.image层级；image_base64接受裸base64或PNG/JPEG data URL。旧字段保留弃用别名兼容，但同次重试不可换字段。76本地/105隔离通过（1旧条件跳过），现网不变。[说明](TASK-IMAGE-FIELDS.md)。
+
+
 > **2026-11-02异步远程URL代码完成，待部署**：input.image.url与已上线artifact_id/data_url三选一，下载并保存后才202；同键不重下载、跨进程下载槽位全局4/项目2、整体10秒，复用公网安全限制。75本地、103隔离通过（1旧条件跳过），未变更现网。[验收](../../results/maas-url-task-20261102/REPORT.md)。
 
 

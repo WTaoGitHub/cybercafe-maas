@@ -66,15 +66,13 @@ class TaskService:
             inp, params, art_id = adapter_for(model['driver']).validate(body.input, body.parameters)
         except ValidationError:
             raise ServiceError('INPUT_INVALID', 'Input or parameters do not match model schema', 422)
-        if model['driver'] == 'gpustack.ocr' and 'url' in inp['image']:
+        if model['driver'] == 'gpustack.ocr' and 'image_url' in inp['image']:
             from .task_image_url import submit_url
             return submit_url(self,identity,body,idem,model,inp,params)
         inline = None
-        if model['driver'] == 'gpustack.ocr' and 'data_url' in inp['image']:
+        if model['driver'] == 'gpustack.ocr' and 'image_base64' in inp['image']:
             from .consumer_ocr import decode_base64, validate_image
-            value = inp['image']['data_url']
-            if not value.startswith(('data:image/png;base64,','data:image/jpeg;base64,')):
-                raise ServiceError('IMAGE_BASE64', 'Use a PNG or JPEG base64 data URL', 422)
+            value = inp['image']['image_base64']
             raw, declared = decode_base64(value, self.settings.max_input_bytes)
             media = validate_image(raw, declared)
             inline = (raw, media)

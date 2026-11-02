@@ -1,5 +1,7 @@
 # OpenAPI / Swagger接口文档
 
+> **新字段待部署**：异步规范字段为image_base64、image_url（均位于input.image），示例选择器为inlineBase64/remoteImageUrl。保留旧data_url/url输入别名以兼容现有调用，不能同时提供。现网仍为artifact_id/data_url，旧请求重试不可改字段；本页较早发布说明以此为准。
+
 2026-11-02。机器可读文档：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json)，OpenAPI **3.1.0**，可导入支持3.1的Swagger Editor或Swagger UI。JSON本身就是合法OpenAPI格式，并不要求YAML后缀。
 
 覆盖当前9个客户操作：`POST /ocr`、`POST /v1/ocr`、`POST /v1/chat/completions`、上传/下载artifact、创建/查询/取消任务、模型capabilities。每个操作有说明、成功/错误响应、请求头/路径参数、请求体和响应schema。共用Bearer鉴权，项目身份由管理员绑定决定。

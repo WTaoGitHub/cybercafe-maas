@@ -28,7 +28,7 @@ class JsonBodyLimit:
             try:
                 value=json.loads(body)
                 image=value['input']['image']
-                inline=isinstance(image,dict) and isinstance(image.get('data_url'),str)
+                inline=isinstance(image,dict) and any(isinstance(image.get(k),str) for k in ('image_base64','data_url'))
             except (ValueError,KeyError,TypeError):inline=False
             if not inline:
                 await too_large();return

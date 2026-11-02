@@ -6,13 +6,13 @@ from maas_platform.errors import ServiceError
 from maas_platform.task_image_url import fetch_image,lock_key
 
 
-@pytest.mark.parametrize('image',[{'url':'https://example.org/a','data_url':'x'}, {'url':'https://example.org/a','artifact_id':'x'}, {'url':'x','extra':1}, {'url':''}, {'url':'x'*4097}])
+@pytest.mark.parametrize('image',[{'image_url':'https://example.org/a','image_base64':'x'}, {'image_url':'https://example.org/a','artifact_id':'x'}, {'image_url':'x','extra':1}, {'image_url':''}, {'image_url':'x'*4097}])
 def test_three_sources_mutually_exclusive(image):
     with pytest.raises(ValidationError):OCRAdapter().validate({'image':image},{})
 
 
 def test_url_schema_and_lock_key_namespace():
-    assert OCRAdapter().validate({'image':{'url':'https://example.org/a'}},{})[2] is None
+    assert OCRAdapter().validate({'image':{'image_url':'https://example.org/a'}},{})[2] is None
     assert lock_key('idem','ab','c')!=lock_key('idem','a','bc')
     assert lock_key('idem','a','b')!=lock_key('project','a','b')
     assert -(2**63)<=lock_key('global','0')<2**63
