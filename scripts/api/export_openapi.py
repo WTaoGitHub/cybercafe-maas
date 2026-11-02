@@ -41,7 +41,7 @@ P={}
 def add(path,method,operation,summary,description,tag,success,body=None,params=(),codes=()):
  op={'operationId':operation,'summary':summary,'description':description,'tags':[tag],'parameters':list(params),'responses':{}}
  for status,(desc,schema) in success.items():op['responses'][str(status)]=response(desc,schema)
- for code in sorted(set(['401','403','413','422','503','504',*codes])):op['responses'][code]=response(errors[code],ref('ApiError'))
+ for code in set(['401','403','413','422','503','504',*codes]):op['responses'][code]=response(errors[code],ref('ApiError'))
  for r in op['responses'].values():r['headers']=copy.deepcopy(headers)
  if body:op['requestBody']=body
  P.setdefault(path,{})[method]=op
@@ -52,46 +52,6 @@ add('/v1/chat/completions','post','chatOCR','同步OCR（Chat格式）','返回�
 upload={'required':True,'description':'原始非空字节，不是JSON对象、base64或multipart。默认≤10485760字节。允许的非图片类型不代表OCR可处理。','content':{m:{'schema':{'type':'string','format':'binary'}} for m in ['image/png','image/jpeg','text/plain','application/json','application/octet-stream']}}
 add('/maas/v1/artifacts','post','uploadArtifact','上传输入文件','保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。','文件',{201:('文件已保存。',ref('ArtifactCreated'))},upload,codes=['415','429'])
 add('/maas/v1/artifacts/{ident}','get','downloadArtifact','下载输入或结果文件','需同project且文件可用。成功任务仍需另行下载；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。','文件',{200:('返回原始输入字节或结果JSON。',ref('TaskResult'))},params=[ident],codes=['404','410'])
-op=P['/maas/v1/artifacts']['post']
-op['description']="""上传一个输入文件，保存到凭据关联的project；不会创建任务或自动执行OCR。
-
-### Headers
-| 名称 | 类型 | 必填 | 说明 |
-|---|---|---|---|
-| Authorization | string | 是 | Bearer <已登记推理key>，在Swagger中通过Authorize设置。 |
-| Content-Type | string | 否（OCR应显式指定） | image/png、image/jpeg、text/plain、application/json、application/octet-stream；缺省按application/octet-stream保存。Swagger通过Request body媒体类型选择器设置。 |
-
-### Request body / Body fields
-| Body项 | 类型 | 必填 | 说明 |
-|---|---|---|---|
-| 整个请求体 | string(binary) | 是 | 单个文件的原始字节，不包含JSON字段或表单字段；没有file/image字段，不是base64或multipart。 |
-
-### Body约束
-- 非空，默认最大10485760字节（10MiB，可配置），不是入口允许的20MiB。
-- OCR输入应选择image/png或image/jpeg并与实际内容匹配；其他允许类型仅代表可存储，不代表OCR能处理。
-- 上传阶段不完整验证图片是否能推理。
-
-### Response fields（HTTP 201，application/json）
-| 字段 | 类型 | 必返 | 说明 |
-|---|---|---|---|
-| id | string | 是 | 生成的artifact ID，提交任务时填入input.image.artifact_id。 |
-| size | integer | 是 | 上传文件字节数。 |
-| sha256 | string | 是 | 上传原始字节SHA256，64位十六进制字符串。 |
-
-响应通常包含X-Request-ID。没有公开URL、expires_at或任务ID。
-
-### 使用约定
-输入默认保留24小时，新任务引用时须同project且未过期；活动任务引用的输入受到清理保护。无上传幂等保证，Idempotency-Key不为此接口去重；重复上传产生不同ID，不可带新ID复用原任务幂等键。错误结构及状态见Responses。
-"""
-op['requestBody']['description']='必需：整个文件的原始二进制字节。单文件、非空、默认最大10MiB；OCR使用PNG/JPEG并选择对应Content-Type。无表单字段或JSON包装。'
-for media,entry in op['requestBody']['content'].items():
- entry['schema']['description']='原始'+media+'文件字节；使用curl --data-binary @文件路径，不是base64。'
-op['security']=[{'BearerAuth':[]}]
-op['responses']['201']['content']['application/json']['example']={'id':'art_0123456789abcdef0123456789abcdef','size':12345,'sha256':'a'*64}
-for code,err in [('401','UNAUTHENTICATED'),('413','INPUT_SIZE'),('415','MEDIA_TYPE'),('429','STORAGE_QUOTA')]:
- op['responses'][code]['content']['application/json']['example']={'error':{'code':err,'message':errors[code],'retryable':code=='429','request_id':'req_example'}}
-op['x-codeSamples']=[{'lang':'Shell','label':'curl 原始PNG上传','source':'curl -i -X POST "$MAAS_BASE_URL/maas/v1/artifacts" -H "Authorization: Bearer $MAAS_API_KEY" -H "Content-Type: image/png" --data-binary @/tmp/test.png'}]
-
 r=P['/maas/v1/artifacts/{ident}']['get']['responses']['200'];r['content'].update({m:{'schema':{'type':'string','format':'binary'}} for m in ['image/png','image/jpeg','text/plain','application/octet-stream']});r['content']['application/json']['schema']={'anyOf':[ref('TaskResult'),{}],'description':'结果为TaskResult；上传的application/json输入按原始内容返回，不限于该schema。'};r['headers'].update({'Cache-Control':{'schema':{'const':'no-store'}},'Content-Disposition':{'schema':{'const':'attachment'}}})
 idem={'name':'Idempotency-Key','in':'header','required':True,'description':'project范围持久幂等键。同键且同请求返回当前原任务；不同内容409。新artifact ID视为不同内容。不得换键重做完成不明推理。','schema':{'type':'string','minLength':1,'maxLength':128}}
 add('/maas/v1/tasks','post','createTask','提交异步OCR任务','先上传输入artifact，再引用其ID；当前不支持单请求内嵌图片。总JSON请求体≤65536字节。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回已有幂等任务的当前状态。',ref('TaskView'))},jsonbody('TaskCreate'),[idem],['400','404','409','429'])

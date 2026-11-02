@@ -52,8 +52,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '401':
-          description: 缺少或未登记的Bearer凭据。
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
           content:
             application/json:
               schema:
@@ -63,30 +63,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '403':
-          description: 凭据撤销、模型无权限或上游拒绝。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '408':
-          description: 图片下载/准备超时（若适用）。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -111,6 +89,21 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '415':
           description: 不支持的媒体类型。
           content:
@@ -122,8 +115,41 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '422':
-          description: 请求schema、图片、模型参数或上游校验不通过。
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '408':
+          description: 图片下载/准备超时（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -144,38 +170,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '502':
-          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -207,8 +207,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '401':
-          description: 缺少或未登记的Bearer凭据。
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
           content:
             application/json:
               schema:
@@ -218,30 +218,8 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '403':
-          description: 凭据撤销、模型无权限或上游拒绝。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '404':
-          description: 资源不存在/跨project不可见，或模型未登记。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '408':
-          description: 图片下载/准备超时（若适用）。
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
             application/json:
               schema:
@@ -266,6 +244,21 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '415':
           description: 不支持的媒体类型。
           content:
@@ -277,8 +270,41 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '422':
-          description: 请求schema、图片、模型参数或上游校验不通过。
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '408':
+          description: 图片下载/准备超时（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
           content:
             application/json:
               schema:
@@ -299,38 +325,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '502':
-          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -373,6 +373,58 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '502':
+          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -406,16 +458,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '413':
-          description: 请求体、文件或像素超限；代理层可能返回HTML。
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -432,23 +480,27 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '429':
-          description: 队列、存储配额或同步并发容量已满。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+  /maas/v1/artifacts:
+    post:
+      operationId: uploadArtifact
+      summary: 上传输入文件
+      description: 保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。
+      tags:
+      - 文件
+      parameters: []
+      responses:
+        '201':
+          description: 文件已保存。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '502':
-          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ArtifactCreated'
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -460,6 +512,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -480,84 +547,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChatRequest'
-  /maas/v1/artifacts:
-    post:
-      operationId: uploadArtifact
-      summary: 上传输入文件
-      description: '上传一个输入文件，保存到凭据关联的project；不会创建任务或自动执行OCR。
-
-
-        ### Headers
-
-        | 名称 | 类型 | 必填 | 说明 |
-
-        |---|---|---|---|
-
-        | Authorization | string | 是 | Bearer <已登记推理key>，在Swagger中通过Authorize设置。 |
-
-        | Content-Type | string | 否（OCR应显式指定） | image/png、image/jpeg、text/plain、application/json、application/octet-stream；缺省按application/octet-stream保存。Swagger通过Request
-        body媒体类型选择器设置。 |
-
-
-        ### Request body / Body fields
-
-        | Body项 | 类型 | 必填 | 说明 |
-
-        |---|---|---|---|
-
-        | 整个请求体 | string(binary) | 是 | 单个文件的原始字节，不包含JSON字段或表单字段；没有file/image字段，不是base64或multipart。 |
-
-
-        ### Body约束
-
-        - 非空，默认最大10485760字节（10MiB，可配置），不是入口允许的20MiB。
-
-        - OCR输入应选择image/png或image/jpeg并与实际内容匹配；其他允许类型仅代表可存储，不代表OCR能处理。
-
-        - 上传阶段不完整验证图片是否能推理。
-
-
-        ### Response fields（HTTP 201，application/json）
-
-        | 字段 | 类型 | 必返 | 说明 |
-
-        |---|---|---|---|
-
-        | id | string | 是 | 生成的artifact ID，提交任务时填入input.image.artifact_id。 |
-
-        | size | integer | 是 | 上传文件字节数。 |
-
-        | sha256 | string | 是 | 上传原始字节SHA256，64位十六进制字符串。 |
-
-
-        响应通常包含X-Request-ID。没有公开URL、expires_at或任务ID。
-
-
-        ### 使用约定
-
-        输入默认保留24小时，新任务引用时须同project且未过期；活动任务引用的输入受到清理保护。无上传幂等保证，Idempotency-Key不为此接口去重；重复上传产生不同ID，不可带新ID复用原任务幂等键。错误结构及状态见Responses。
-
-        '
-      tags:
-      - 文件
-      parameters: []
-      responses:
-        '201':
-          description: 文件已保存。
+        '415':
+          description: 不支持的媒体类型。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArtifactCreated'
-              example:
-                id: art_0123456789abcdef0123456789abcdef
-                size: 12345
-                sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                $ref: '#/components/schemas/ApiError'
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -569,12 +564,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-              example:
-                error:
-                  code: UNAUTHENTICATED
-                  message: 缺少或未登记的Bearer凭据。
-                  retryable: false
-                  request_id: req_example
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -591,39 +580,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '413':
-          description: 请求体、文件或像素超限；代理层可能返回HTML。
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-              example:
-                error:
-                  code: INPUT_SIZE
-                  message: 请求体、文件或像素超限；代理层可能返回HTML。
-                  retryable: false
-                  request_id: req_example
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '415':
-          description: 不支持的媒体类型。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-              example:
-                error:
-                  code: MEDIA_TYPE
-                  message: 不支持的媒体类型。
-                  retryable: false
-                  request_id: req_example
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -640,85 +602,30 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '429':
-          description: 队列、存储配额或同步并发容量已满。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-              example:
-                error:
-                  code: STORAGE_QUOTA
-                  message: 队列、存储配额或同步并发容量已满。
-                  retryable: true
-                  request_id: req_example
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
       requestBody:
         required: true
-        description: 必需：整个文件的原始二进制字节。单文件、非空、默认最大10MiB；OCR使用PNG/JPEG并选择对应Content-Type。无表单字段或JSON包装。
+        description: 原始非空字节，不是JSON对象、base64或multipart。默认≤10485760字节。允许的非图片类型不代表OCR可处理。
         content:
           image/png:
             schema:
               type: string
               format: binary
-              description: 原始image/png文件字节；使用curl --data-binary @文件路径，不是base64。
           image/jpeg:
             schema:
               type: string
               format: binary
-              description: 原始image/jpeg文件字节；使用curl --data-binary @文件路径，不是base64。
           text/plain:
             schema:
               type: string
               format: binary
-              description: 原始text/plain文件字节；使用curl --data-binary @文件路径，不是base64。
           application/json:
             schema:
               type: string
               format: binary
-              description: 原始application/json文件字节；使用curl --data-binary @文件路径，不是base64。
           application/octet-stream:
             schema:
               type: string
               format: binary
-              description: 原始application/octet-stream文件字节；使用curl --data-binary @文件路径，不是base64。
-      security:
-      - BearerAuth: []
-      x-codeSamples:
-      - lang: Shell
-        label: curl 原始PNG上传
-        source: 'curl -i -X POST "$MAAS_BASE_URL/maas/v1/artifacts" -H "Authorization: Bearer $MAAS_API_KEY" -H
-          "Content-Type: image/png" --data-binary @/tmp/test.png'
   /maas/v1/artifacts/{ident}:
     get:
       operationId: downloadArtifact
@@ -770,6 +677,47 @@ paths:
             Content-Disposition:
               schema:
                 const: attachment
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -814,53 +762,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '413':
-          description: 请求体、文件或像素超限；代理层可能返回HTML。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '422':
           description: 请求schema、图片、模型参数或上游校验不通过。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -924,6 +831,47 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -957,27 +905,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '409':
-          description: 幂等键已被不同请求内容使用。
+        '429':
+          description: 队列、存储配额或同步并发容量已满。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '413':
-          description: 请求体、文件或像素超限；代理层可能返回HTML。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -994,38 +927,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '429':
-          description: 队列、存储配额或同步并发容量已满。
+        '409':
+          description: 幂等键已被不同请求内容使用。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -1063,6 +970,47 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -1096,53 +1044,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '413':
-          description: 请求体、文件或像素超限；代理层可能返回HTML。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '422':
           description: 请求schema、图片、模型参数或上游校验不通过。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -1174,6 +1081,47 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -1207,53 +1155,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '413':
-          description: 请求体、文件或像素超限；代理层可能返回HTML。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '422':
           description: 请求schema、图片、模型参数或上游校验不通过。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -1286,6 +1193,47 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -1319,53 +1267,12 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '413':
-          description: 请求体、文件或像素超限；代理层可能返回HTML。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '422':
           description: 请求schema、图片、模型参数或上游校验不通过。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '503':
-          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
-        '504':
-          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-            text/html:
-              schema:
-                type: string
-              example: <html>Gateway error</html>
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
