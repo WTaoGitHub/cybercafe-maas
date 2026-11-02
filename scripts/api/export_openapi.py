@@ -53,48 +53,40 @@ upload={'required':True,'description':'原始非空字节，不是JSON对象、b
 add('/maas/v1/artifacts','post','uploadArtifact','上传输入文件','保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。','文件',{201:('文件已保存。',ref('ArtifactCreated'))},upload,codes=['415','429'])
 add('/maas/v1/artifacts/{ident}','get','downloadArtifact','下载输入或结果文件','需同project且文件可用。成功任务仍需另行下载；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。','文件',{200:('返回原始输入字节或结果JSON。',ref('TaskResult'))},params=[ident],codes=['404','410'])
 op=P['/maas/v1/artifacts']['post']
-op['description']="""## 用途与调用顺序
-上传一个输入文件，保存到Bearer凭据关联的project。成功仅表示文件已保存，不会自动创建任务或执行OCR。后续使用响应id作为POST /maas/v1/tasks的input.image.artifact_id。
+op['description']="""上传一个输入文件，保存到凭据关联的project；不会创建任务或自动执行OCR。
 
-## 请求头与请求体
-- Authorization: Bearer <已登记推理key>，必需；Swagger中通过Authorize填写。
-- Content-Type须与文件匹配：PNG为image/png，JPEG为image/jpeg。缺省时按application/octet-stream保存，但OCR要求image/png或image/jpeg，不能靠文件扩展名推断。
-- body是整个文件的原始字节；没有file/image等表单字段，没有JSON包装，不是base64或multipart。不要使用curl -F或-d '{...}'上传图片。
-- 单次一个文件；非空且默认不超过10485760字节（10MiB，运行配置可调整）。入口20MiB上限不意味着文件可上传20MiB。超过限制可能由应用返回JSON错误，也可能由入口返回HTML。
-- artifact层允许text/plain、application/json、application/octet-stream，但这不表示OCR能处理这些内容。上传阶段不完整解码图片，成功不保证后续推理有效。
+### Headers
+| 名称 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| Authorization | string | 是 | Bearer <已登记推理key>，在Swagger中通过Authorize设置。 |
+| Content-Type | string | 否（OCR应显式指定） | image/png、image/jpeg、text/plain、application/json、application/octet-stream；缺省按application/octet-stream保存。Swagger通过Request body媒体类型选择器设置。 |
 
-## curl示例
-先设置MAAS_BASE_URL为运维提供的可达入口，MAAS_API_KEY为已登记key；图片路径是执行curl的主机或容器内路径。
-```bash
-curl -i --connect-timeout 5 --max-time 60 \
-  -X POST "$MAAS_BASE_URL/maas/v1/artifacts" \
-  -H "Authorization: Bearer $MAAS_API_KEY" \
-  -H 'Content-Type: image/png' \
-  --data-binary '@/tmp/test.png'
-```
-JPEG文件将Content-Type改为image/jpeg并替换路径。60秒是客户端示例超时，不是服务SLA。
+### Request body / Body fields
+| Body项 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| 整个请求体 | string(binary) | 是 | 单个文件的原始字节，不包含JSON字段或表单字段；没有file/image字段，不是base64或multipart。 |
 
-## Swagger UI操作
-1. 配置Server地址，在Authorize中填写Bearer key。
-2. Try it out后选择image/png或image/jpeg媒体类型，在二进制请求体控件选择本地文件，再Execute。不要选择multipart/form-data。
-3. 不同Swagger UI版本的文件选择控件表现可能不同；application/json媒体类型在此接口仍是原始JSON文件字节。若UI不能提交二进制文件，使用上述curl。
-4. 浏览器须能访问服务，并满足证书及CORS要求；当前未开放通用CORS，UI请求失败不等于curl不可用。
+### Body约束
+- 非空，默认最大10485760字节（10MiB，可配置），不是入口允许的20MiB。
+- OCR输入应选择image/png或image/jpeg并与实际内容匹配；其他允许类型仅代表可存储，不代表OCR能处理。
+- 上传阶段不完整验证图片是否能推理。
 
-## 响应及后续处理
-HTTP201返回id、size（字节）、sha256（上传字节SHA256）；没有公开下载URL、expires_at或任务ID。通常有X-Request-ID关联头。
-输入默认保留24小时，实际由服务配置决定。新任务提交时须引用同project且未过期的输入；活动任务已引用的输入由系统保护，不能据此认为已过期文件仍可用于新任务。
-此接口没有上传幂等：重复上传可产生不同artifact ID，Idempotency-Key不为本接口去重。响应丢失后无法按上传幂等键找回；不要把任务提交的幂等能力误用于上传。不能在复用原任务幂等键时换成新artifact ID。
+### Response fields（HTTP 201，application/json）
+| 字段 | 类型 | 必返 | 说明 |
+|---|---|---|---|
+| id | string | 是 | 生成的artifact ID，提交任务时填入input.image.artifact_id。 |
+| size | integer | 是 | 上传文件字节数。 |
+| sha256 | string | 是 | 上传原始字节SHA256，64位十六进制字符串。 |
 
-## 常见拒绝
-- 401 UNAUTHENTICATED：未提供已登记key；403：凭据失效或权限拒绝。
-- 413 INPUT_SIZE：空文件或文件超限；入口也可能直接拒绝超大请求。
-- 415 MEDIA_TYPE：Content-Type不在允许列表。
-- 429 STORAGE_QUOTA：项目/全局文件配额不足。
-- 503：存储空间、数据库、鉴权等服务不可用，具体看error.code；传输异常不可视为已确认失败。
+响应通常包含X-Request-ID。没有公开URL、expires_at或任务ID。
+
+### 使用约定
+输入默认保留24小时，新任务引用时须同project且未过期；活动任务引用的输入受到清理保护。无上传幂等保证，Idempotency-Key不为此接口去重；重复上传产生不同ID，不可带新ID复用原任务幂等键。错误结构及状态见Responses。
 """
 op['requestBody']['description']='必需：整个文件的原始二进制字节。单文件、非空、默认最大10MiB；OCR使用PNG/JPEG并选择对应Content-Type。无表单字段或JSON包装。'
 for media,entry in op['requestBody']['content'].items():
  entry['schema']['description']='原始'+media+'文件字节；使用curl --data-binary @文件路径，不是base64。'
+op['security']=[{'BearerAuth':[]}]
 op['responses']['201']['content']['application/json']['example']={'id':'art_0123456789abcdef0123456789abcdef','size':12345,'sha256':'a'*64}
 for code,err in [('401','UNAUTHENTICATED'),('413','INPUT_SIZE'),('415','MEDIA_TYPE'),('429','STORAGE_QUOTA')]:
  op['responses'][code]['content']['application/json']['example']={'error':{'code':err,'message':errors[code],'retryable':code=='429','request_id':'req_example'}}
