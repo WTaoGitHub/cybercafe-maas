@@ -1,12 +1,10 @@
 # OpenAPI / Swagger接口文档
 
-> **E16待发布**：当前代码文档含11个操作，新增2个计量查询及同步X-Usage-ID/异步metering均为待部署。现网仍为9个操作；当前PP-OCRv4无法提供真实token数，不支持据此直接进行token结算。
-
-> **新字段待部署**：异步规范字段为image_base64、image_url（均位于input.image），示例选择器为inlineBase64/remoteImageUrl。保留旧data_url/url输入别名以兼容现有调用，不能同时提供。现网仍为artifact_id/data_url，旧请求重试不可改字段；本页较早发布说明以此为准。
+> **2026-11-02现网已发布**：11个操作均已部署，新图片字段与远程URL、E16计量查询已完成真实OCR验收。当前PP-OCRv4 tokens为null/unavailable；Responses中的真实示例已脱敏，历史ID不可复用。
 
 2026-11-02。机器可读文档：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json)，OpenAPI **3.1.0**，可导入支持3.1的Swagger Editor或Swagger UI。JSON本身就是合法OpenAPI格式，并不要求YAML后缀。
 
-覆盖当前9个客户操作：`POST /ocr`、`POST /v1/ocr`、`POST /v1/chat/completions`、上传/下载artifact、创建/查询/取消任务、模型capabilities。每个操作有说明、成功/错误响应、请求头/路径参数、请求体和响应schema。共用Bearer鉴权，项目身份由管理员绑定决定。
+覆盖当前11个客户操作：`POST /ocr`、`POST /v1/ocr`、`POST /v1/chat/completions`、上传/下载artifact、创建/查询/取消任务、模型capabilities和两个计量查询。每个操作有说明、成功/错误响应、请求头/路径参数、请求体和响应schema。共用Bearer鉴权，项目身份由管理员绑定决定。
 
 ## 阅读与使用
 
@@ -15,7 +13,7 @@
 3. 同步推荐`/ocr`；异步仍为上传原始图片字节→保存artifact ID→带Idempotency-Key提交任务→查询→下载结果。
 4. “Try it out”需要浏览器能访问目标地址、证书受信且跨域策略允许。当前入口未配置通用CORS，浏览器调用失败不等于curl不可用；本次不改变CORS、监听或服务器路由。实际调用可按[API手册](README.md)使用curl/Python。
 
-当前未暴露Swagger UI、`/openapi.json`、`/healthz`或`/v1/models`客户路径；不能把文档文件路径当成服务器API。内部FastAPI自动schema未补全所有动态返回，不作为此客户文档替代。内嵌图片建任务已于2026-11-02部署，artifactReference和inlineDataUrl两种输入均可使用；多模型/批次接口不包含在内。
+当前未暴露Swagger UI、`/openapi.json`、`/healthz`或`/v1/models`客户路径；不能把文档文件路径当成服务器API。内部FastAPI自动schema未补全所有动态返回，不作为此客户文档替代。三种图片输入及E16计量已于2026-11-02部署；多模型/批次接口不包含在内。
 
 capabilities当前实际返回`execution_modes: ["async"]`，独立同步接口另有提供；此差异如实记录。能力查询不是真实GPU健康检查。错误可能来自代理并返回HTML，调用方需检查HTTP状态和Content-Type；模型输出及运行预算的可配置值以实际环境为准。
 
@@ -29,10 +27,12 @@ capabilities当前实际返回`execution_modes: ["async"]`，独立同步接口�
 
 ## VSCode插件生成curl的注意事项（2026-11-02）
 
-Idempotency-Key已提供非空演示值：每个新操作应替换为新UUID，同次重试保持原值及原请求。artifactReference中的art_REPLACE_WITH_UPLOADED_ID须替换为真实上传ID；inlineDataUrl为另一可选示例，已部署。Server的localhost不是跨容器地址，请配置实际可达host。
+Idempotency-Key已提供非空演示值：每个新操作应替换为新UUID，同次重试保持原值及原请求。artifactReference中的art_REPLACE_WITH_UPLOADED_ID须替换为真实上传ID；inlineBase64为另一可选示例，已部署。Server的localhost不是跨容器地址，请配置实际可达host。
 
 Bearer认证在Authorize或插件的认证配置中填写，生成后检查Authorization头；OpenAPI不会保存真实key，也不能保证所有插件自动附带认证。Accept含text/html源于入口错误媒体类型，不代表业务成功响应是HTML；保留该事实而非删除错误定义来美化curl。支持x-codeSamples的工具另可展示手写curl示例，部分VSCode插件可能忽略该扩展。
 
 手写任务curl示例直接使用`--data`内嵌JSON，不依赖task.json等额外文件。仍须设置Base URL及凭据、替换真实artifact ID，并在同次重试时保持幂等键及JSON不变。
 
-异步远程URL输入为新代码待部署，remoteImageUrl及对应curl是候选示例。409可能表示IDEMPOTENCY_IN_PROGRESS（稍后同键同body再提交）或IDEMPOTENCY_CONFLICT（请求不一致）；下载在202前完成且有独立容量限制。现网仍仅支持artifact_id/data_url。
+异步远程URL输入及remoteImageUrl对应curl已部署。409可能表示IDEMPOTENCY_IN_PROGRESS（稍后同键同body再提交）或IDEMPOTENCY_CONFLICT（请求不一致）；下载在202前完成且有独立容量限制。现网支持artifact_id/image_base64/image_url，兼容旧别名。
+
+Responses真实示例数据取自[本轮验收](examples/real-responses-20261102.json)，生成器会将其内嵌到YAML/JSON，无外部$ref依赖；节点已脱敏，不包含APIKey或连接地址。默认请求白图与真实响应的自建文字测试图不同。

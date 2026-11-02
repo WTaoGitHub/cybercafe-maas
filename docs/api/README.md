@@ -1,18 +1,12 @@
 # MaaS 对外 API 文档（当前版本）
 
-> **E16 OCR计量（新代码待部署）**：新增GET /maas/v1/usage/{ident}与GET /maas/v1/tasks/{ident}/usage。异步结果新增metering，原usage保留；同步有效单图OCR响应新增X-Usage-ID，原body不变。成功图片数及真实上游tokens可查询；当前PP-OCRv4没有tokens报告，应显示null/unavailable，不能视作0或按tokens结算。[完整契约](../framework/OCR-METERING.md)。计量代码/迁移/入口白名单均未发布，现网仍为原9个操作。
+> **2026-11-02已部署并完成真实OCR验收**：异步input.image支持artifact_id、image_base64、image_url三选一，兼容旧data_url/url别名。成功图片计量、两个用量查询、同步X-Usage-ID及异步metering已上线；当前PP-OCRv4的tokens实际为null/unavailable，不可据此按token收费。[发布记录](../../results/maas-ocr-release-20261102/REPORT.md)。
 
-> **字段统一新版本（待部署）**：异步input.image规范字段为artifact_id/image_base64/image_url三选一。image_base64支持严格裸base64或PNG/JPEG data URL；旧data_url/url保留弃用别名。现网仍支持artifact_id/data_url，新名称及URL下载尚待部署。[迁移与幂等说明](../framework/TASK-IMAGE-FIELDS.md)。以下旧发布描述为现网历史；OpenAPI展示新版本契约并标注待发布。
+> **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的11个客户操作，包含单张图片内嵌建任务；不包含尚未开放的`/v1/models`。
 
-> **远程URL异步输入（新代码，待部署）**：`input.image.url`与已部署的artifact_id/data_url三选一，下载并保存完成后返回202；详情见[设计](../framework/URL-TASK-IMAGE.md)。OpenAPI含候选schema/示例并标明部署差异，当前服务器尚不能使用url。
+> 当前基线：API/执行器/Observer ocr-metering-r2、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。
 
-> **内嵌图片提交（2026-11-02，已部署）**：`POST /maas/v1/tasks`新增`input.image.data_url`，与`artifact_id`二选一。只接受PNG/JPEG严格base64 data URL，默认解码10MiB/20MP、内嵌请求体20MiB；原artifact引用请求仍64KiB。幂等键必需，响应/查询/取消/下载不变。两种输入方式均已通过真实OCR验收。[设计与测试](../framework/INLINE-TASK-IMAGE.md)。OpenAPI已同步当前能力。
-
-> **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的9个客户操作，包含单张图片内嵌建任务；不包含尚未开放的`/v1/models`。
-
-> 当前基线：API consumer-ocr-r1、执行器/Observer e3-r1、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。
-
-文档更新：2026-10-29；当日只读核对001的应用版本、四执行器及运行额度，接口/监听沿用此前消费者兼容发布。本次未部署或新增接口。消费者兼容契约见[OCR对接](CONSUMER-OCR.md)，容量验证见[E3试点报告](../../results/maas-e3-completion-20261029/REPORT.md)。
+文档更新：2026-11-02；已发布ocr-metering-r2，保留8执行器及8/8执行额度，新增计量查询路径，原监听/网络规则保持。消费者兼容契约见[OCR对接](CONSUMER-OCR.md)，容量验证见[E3试点报告](../../results/maas-e3-completion-20261029/REPORT.md)。
 
 **当前提供：消费者兼容同步OCR、原Chat同步OCR、异步OCR任务、输入/结果文件上传下载、任务查询/取消、模型能力查询。** 不包含E1候选接口；无文生图、音频、视频、批次或ZIP接口。
 
@@ -203,26 +197,26 @@ Idempotency-Key: client-business-request-001
 | 字段 | 必需 | 说明 |
 |---|---|---|
 | model | 是 | 非空逻辑模型名，最长128字符 |
-| input | 是 | image.artifact_id引用同project未过期输入，或image.data_url内嵌PNG/JPEG；二选一 |
+| input | 是 | image.artifact_id、image.image_base64、image.image_url三选一；引用同project未过期输入、直接内嵌图片或公开图片URL |
 | parameters | 否 | 默认{}；当前OCR只接受空对象 |
 | timeout_seconds | 否 | 默认120，范围1–3600秒；自接纳起的总截止，包含排队 |
 | max_attempts | 否 | 默认3，范围1–3；有限attempt预算，不允许重放不确定执行 |
 
-请求包络及OCR input/parameters禁止未定义字段。不支持远程图片URL或裸base64；允许image.data_url为严格PNG/JPEG base64 data URL。示例300秒是显式设置，单次模型执行仍受模型预算限制。
+请求包络及OCR input/parameters禁止未定义字段。不支持远程图片URL或裸base64；允许image.image_base64为严格PNG/JPEG裸base64或data URL，image.image_url为受限公开HTTP(S)图片地址。示例300秒是显式设置，单次模型执行仍受模型预算限制。
 
 内嵌图片示例（已部署，无须预先上传）：
 
 ```json
 {
   "model": "ocr.default",
-  "input": {"image": {"data_url": "data:image/png;base64,<完整图片base64>"}},
+  "input": {"image": {"image_base64": "data:image/png;base64,<完整图片base64>"}},
   "parameters": {},
   "timeout_seconds": 120,
   "max_attempts": 1
 }
 ```
 
-解码图片默认不超过10MiB及20MP；内部保存为artifact，任务仍只返回原TaskView。幂等指纹使用原请求，重复提交不重复存图；不要将同次重试的data_url换成artifact_id。
+解码图片默认不超过10MiB及20MP；内部保存为artifact，任务仍只返回原TaskView。幂等指纹使用原请求，重复提交不重复存图；不要将同次重试的输入来源或字段名换成其他形式。
 
 新任务返回202；同project同幂等键且请求语义一致返回原任务200，两者都设置 `Location: /maas/v1/tasks/{id}`。共同响应结构TaskView：
 
@@ -411,3 +405,15 @@ retryable表示错误类型的建议，不是无限重试许可。同步发送�
 ## 12. 可选择的端到端验收
 
 当前接口可使用[模块化E2E框架](../../e2e/README.md)回归，支持按case_id、模块、label筛选和全目录执行，输出JSON/JUnit/Markdown。真实推理和数据写入需显式启用；测试沿用当前鉴权，不自动修改授权、维护或部署。详见[65项用例目录](../../e2e/CATALOG.md)。
+
+## 计量查询（E16已上线）
+
+- 异步结果保留原usage，并增加metering收据。也可直接GET /maas/v1/tasks/{任务ID}/usage，无需下载结果文件。
+- 同步成功且符合单图OCR契约时响应头X-Usage-ID可用于GET /maas/v1/usage/{计量ID}；原OCR/Chat响应体不变。
+- successful_images为当前成功处理图片数1，tokens只反映真实上游报告。PP-OCRv4实际没有报告，因此input_tokens/output_tokens为null，status=unavailable，不代表0或免费。
+- 结果文件过期不清理收据；新表当前无自动TTL。历史旧任务不补账，没有最终收据时404/USAGE_NOT_AVAILABLE。跨project不可见。
+- 同步没有持久幂等；重复成功推理会有新收据。尚无计量列表/账单导出；调用方须保存ID，响应丢失后的完整对账仍待E16/E4完善。
+
+### 真实响应示例
+
+OpenAPI Responses已内嵌本轮真实成功及部分错误响应；源数据见[真实响应集合](examples/real-responses-20261102.json)。使用自建文字图片，不是默认白图请求的对应输出；节点标识脱敏。ID与时间是历史测试值，不能直接复用artifact ID或幂等键。发送下游时仅需分发openapi.yaml或JSON，示例已内嵌，不依赖额外文件。

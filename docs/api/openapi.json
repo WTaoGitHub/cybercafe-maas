@@ -3,7 +3,7 @@
   "info": {
     "title": "Cybercafe MaaS 对外OCR API",
     "version": "2026-11-02",
-    "description": "2026-11-02代码契约：新增异步URL输入已实现待部署；现网可用artifact引用及旧data_url内嵌；image_base64/image_url新名称均待部署。E16计量收据及两个查询路径为新增实现待部署，现网尚不提供。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS API路径不支持query参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。"
+    "description": "2026-11-02现网契约：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS API路径不支持query参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。 成功及部分错误响应示例取自2026-11-02真实验收，自建文字测试图与默认白图请求不同；节点已脱敏，历史测试ID不可复用，不包含凭据或真实连接地址。"
   },
   "servers": [
     {
@@ -75,6 +75,82 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConsumerResult"
+                },
+                "examples": {
+                  "realOCR": {
+                    "summary": "真实同步OCR成功",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "lines": [
+                        {
+                          "text": "MaaS OCR TEST",
+                          "confidence": 0.9463106989860535,
+                          "polygon": [
+                            [
+                              54.0,
+                              71.0
+                            ],
+                            [
+                              558.0,
+                              71.0
+                            ],
+                            [
+                              558.0,
+                              122.0
+                            ],
+                            [
+                              54.0,
+                              122.0
+                            ]
+                          ]
+                        },
+                        {
+                          "text": "Invoice number: TEST-20261102",
+                          "confidence": 0.9932732746518892,
+                          "polygon": [
+                            [
+                              54.0,
+                              212.0
+                            ],
+                            [
+                              997.0,
+                              211.0
+                            ],
+                            [
+                              997.0,
+                              261.0
+                            ],
+                            [
+                              54.0,
+                              263.0
+                            ]
+                          ]
+                        },
+                        {
+                          "text": "Amount: 123.45",
+                          "confidence": 0.973566757781165,
+                          "polygon": [
+                            [
+                              52.0,
+                              352.0
+                            ],
+                            [
+                              504.0,
+                              352.0
+                            ],
+                            [
+                              504.0,
+                              401.0
+                            ],
+                            [
+                              52.0,
+                              401.0
+                            ]
+                          ]
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             },
@@ -83,13 +159,15 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_e368d89e003a41a690211252fd6d992f"
               },
               "X-Usage-ID": {
-                "description": "E16待部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。",
+                "description": "E16已部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "usage_sync_ea6451d3051644eb866ed4b4a35a1865"
               }
             }
           },
@@ -332,6 +410,82 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConsumerResult"
+                },
+                "examples": {
+                  "realOCR": {
+                    "summary": "真实v1同步OCR成功",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "lines": [
+                        {
+                          "text": "MaaS OCR TEST",
+                          "confidence": 0.9463106989860535,
+                          "polygon": [
+                            [
+                              54.0,
+                              71.0
+                            ],
+                            [
+                              558.0,
+                              71.0
+                            ],
+                            [
+                              558.0,
+                              122.0
+                            ],
+                            [
+                              54.0,
+                              122.0
+                            ]
+                          ]
+                        },
+                        {
+                          "text": "Invoice number: TEST-20261102",
+                          "confidence": 0.9932732746518892,
+                          "polygon": [
+                            [
+                              54.0,
+                              212.0
+                            ],
+                            [
+                              997.0,
+                              211.0
+                            ],
+                            [
+                              997.0,
+                              261.0
+                            ],
+                            [
+                              54.0,
+                              263.0
+                            ]
+                          ]
+                        },
+                        {
+                          "text": "Amount: 123.45",
+                          "confidence": 0.973566757781165,
+                          "polygon": [
+                            [
+                              52.0,
+                              352.0
+                            ],
+                            [
+                              504.0,
+                              352.0
+                            ],
+                            [
+                              504.0,
+                              401.0
+                            ],
+                            [
+                              52.0,
+                              401.0
+                            ]
+                          ]
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             },
@@ -340,13 +494,15 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_68ac519ca38b4631bdee256d03ff85fd"
               },
               "X-Usage-ID": {
-                "description": "E16待部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。",
+                "description": "E16已部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "usage_sync_6434b87675724c1b84fd38a5c11039a3"
               }
             }
           },
@@ -589,6 +745,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChatResponse"
+                },
+                "examples": {
+                  "realChatOCR": {
+                    "summary": "真实Chat OCR成功，content仍是JSON字符串",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "ocr-984b4252d1c0404a9ddf06a0a140048b",
+                      "object": "chat.completion",
+                      "created": 1793613486,
+                      "model": "maas-ocr-registry-r1",
+                      "choices": [
+                        {
+                          "index": 0,
+                          "message": {
+                            "role": "assistant",
+                            "content": "{\"text\": \"MaaS OCR TEST\\nInvoice number: TEST-20261102\\nAmount: 123.45\", \"lines\": [{\"box\": [[54.0, 71.0], [558.0, 71.0], [558.0, 122.0], [54.0, 122.0]], \"text\": \"MaaS OCR TEST\", \"score\": 0.9463106989860535}, {\"box\": [[54.0, 212.0], [997.0, 211.0], [997.0, 261.0], [54.0, 263.0]], \"text\": \"Invoice number: TEST-20261102\", \"score\": 0.9932732746518892}, {\"box\": [[52.0, 352.0], [504.0, 352.0], [504.0, 401.0], [52.0, 401.0]], \"text\": \"Amount: 123.45\", \"score\": 0.973566757781165}], \"elapsed_ms\": 310.51, \"node\": \"worker-redacted\"}"
+                          },
+                          "finish_reason": "stop"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             },
@@ -597,13 +775,15 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_4b7a754f1c8848fa8b5de964143242bd"
               },
               "X-Usage-ID": {
-                "description": "E16待部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。",
+                "description": "E16已部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "usage_sync_4f9b0a30629e49549acb970a03373cd2"
               }
             }
           },
@@ -828,6 +1008,17 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ArtifactCreated"
+                },
+                "examples": {
+                  "realUpload": {
+                    "summary": "真实图片上传响应",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "art_c8ea4d4f99aa4df8ad5a9fcc666dba9d",
+                      "size": 32564,
+                      "sha256": "e73bb457cf33f1509983a39113af0bfd365a563de19b170e4dd9aaedd0e87311"
+                    }
+                  }
                 }
               }
             },
@@ -836,7 +1027,8 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_d4fee2f588d041ecbcf0e276a626d0ee"
               }
             }
           },
@@ -1067,6 +1259,110 @@
                     {}
                   ],
                   "description": "结果为TaskResult；上传的application/json输入按原始内容返回，不限于该schema。"
+                },
+                "examples": {
+                  "realOCRResult": {
+                    "summary": "真实OCR结果文件及计量",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "attempt": 1,
+                      "metering": {
+                        "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
+                        "model": "ocr.default",
+                        "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+                        "revision": "ocr-registry-r1",
+                        "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                        "source_type": "task",
+                        "status": "final",
+                        "successful_images": 1,
+                        "tokens": {
+                          "input_tokens": null,
+                          "output_tokens": null,
+                          "reason": "UPSTREAM_USAGE_ABSENT",
+                          "source": null,
+                          "status": "unavailable"
+                        }
+                      },
+                      "model_revision": "ocr-registry-r1",
+                      "outputs": {
+                        "elapsed_ms": 106.03,
+                        "lines": [
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                122.0
+                              ],
+                              [
+                                54.0,
+                                122.0
+                              ]
+                            ],
+                            "score": 0.9463106989860535,
+                            "text": "MaaS OCR TEST"
+                          },
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                212.0
+                              ],
+                              [
+                                997.0,
+                                211.0
+                              ],
+                              [
+                                997.0,
+                                261.0
+                              ],
+                              [
+                                54.0,
+                                263.0
+                              ]
+                            ],
+                            "score": 0.9932732746518892,
+                            "text": "Invoice number: TEST-20261102"
+                          },
+                          {
+                            "box": [
+                              [
+                                52.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                401.0
+                              ],
+                              [
+                                52.0,
+                                401.0
+                              ]
+                            ],
+                            "score": 0.973566757781165,
+                            "text": "Amount: 123.45"
+                          }
+                        ],
+                        "node": "worker-redacted",
+                        "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
+                      },
+                      "usage": {
+                        "quantity": 1,
+                        "unit": "task"
+                      }
+                    }
+                  }
                 }
               },
               "image/png": {
@@ -1099,12 +1395,14 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_c727483201094f3fa410748f04363443"
               },
               "Cache-Control": {
                 "schema": {
                   "const": "no-store"
-                }
+                },
+                "example": "no-store"
               },
               "Content-Disposition": {
                 "schema": {
@@ -1276,7 +1574,7 @@
       "post": {
         "operationId": "createTask",
         "summary": "提交异步OCR任务",
-        "description": "input.image支持artifact_id、image_base64或image_url三选一。新名称及URL能力待部署；现网已部署artifact_id及旧data_url内嵌方式。新版本保留data_url/url为弃用别名，新旧别名不可同时提供。image_base64接受严格PNG/JPEG裸base64或data URL。URL下载在202前完成，整体10秒，沿用公网限制，失败不创建任务；下载无持久任务ID。已受理同键不重下载，同键正在下载返回409/IDEMPOTENCY_IN_PROGRESS；下载容量全局4、每project2，满额429/IMAGE_FETCH_CAPACITY。无全局锁网络等待；同URL新key可获取不同内容。引用及URL请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。\n\n生成curl前：选择正确Server，配置HTTP Bearer认证并检查Authorization头，填写新的Idempotency-Key；选择artifactReference时替换真实文件ID，inlineBase64可直接提交单张图片。Accept包含text/html仅表示可能遇到入口HTML错误；客户端须先检查HTTP状态和Content-Type。",
+        "description": "input.image支持artifact_id、image_base64或image_url三选一。三种规范输入已部署，兼容旧data_url/url别名。新版本保留data_url/url为弃用别名，新旧别名不可同时提供。image_base64接受严格PNG/JPEG裸base64或data URL。URL下载在202前完成，整体10秒，沿用公网限制，失败不创建任务；下载无持久任务ID。已受理同键不重下载，同键正在下载返回409/IDEMPOTENCY_IN_PROGRESS；下载容量全局4、每project2，满额429/IMAGE_FETCH_CAPACITY。无全局锁网络等待；同URL新key可获取不同内容。引用及URL请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。\n\n生成curl前：选择正确Server，配置HTTP Bearer认证并检查Authorization头，填写新的Idempotency-Key；选择artifactReference时替换真实文件ID，inlineBase64可直接提交单张图片。Accept包含text/html仅表示可能遇到入口HTML错误；客户端须先检查HTTP状态和Content-Type。",
         "tags": [
           "异步任务"
         ],
@@ -1301,6 +1599,56 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TaskView"
+                },
+                "examples": {
+                  "realInlineAccepted": {
+                    "summary": "真实image_base64受理",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "state": "QUEUED",
+                      "attempts": 0,
+                      "result_artifact_id": null,
+                      "error_code": null,
+                      "deadline": "2026-11-02T10:00:03.592022+00:00",
+                      "created_at": "2026-11-02T09:58:03.592022+00:00",
+                      "updated_at": "2026-11-02T09:58:03.592022+00:00"
+                    }
+                  },
+                  "realURLAccepted": {
+                    "summary": "真实公网image_url下载后受理",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "task_de9e8286340548d0a6e24efb5b8b3fb5",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "state": "QUEUED",
+                      "attempts": 0,
+                      "result_artifact_id": null,
+                      "error_code": null,
+                      "deadline": "2026-11-02T10:00:04.553824+00:00",
+                      "created_at": "2026-11-02T09:58:04.553824+00:00",
+                      "updated_at": "2026-11-02T09:58:04.553824+00:00"
+                    }
+                  },
+                  "realReferenceAccepted": {
+                    "summary": "真实artifact_id受理",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "task_0a8dd6b4db8f40c3bf562a5f4b8880ce",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "state": "QUEUED",
+                      "attempts": 0,
+                      "result_artifact_id": null,
+                      "error_code": null,
+                      "deadline": "2026-11-02T10:00:03.701745+00:00",
+                      "created_at": "2026-11-02T09:58:03.701745+00:00",
+                      "updated_at": "2026-11-02T09:58:03.701745+00:00"
+                    }
+                  }
                 }
               }
             },
@@ -1309,13 +1657,15 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_6e45739d98184f199b0662a49e3a0431"
               },
               "Location": {
                 "description": "任务查询相对路径。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "/maas/v1/tasks/task_0a8dd6b4db8f40c3bf562a5f4b8880ce"
               }
             }
           },
@@ -1325,6 +1675,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TaskView"
+                },
+                "examples": {
+                  "realIdempotent": {
+                    "summary": "真实幂等复用已成功任务",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "state": "SUCCEEDED",
+                      "attempts": 1,
+                      "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+                      "error_code": null,
+                      "deadline": "2026-11-02T10:00:03.592022+00:00",
+                      "created_at": "2026-11-02T09:58:03.592022+00:00",
+                      "updated_at": "2026-11-02T09:58:06.049749+00:00"
+                    }
+                  }
                 }
               }
             },
@@ -1333,13 +1701,15 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_265a7e2a36244e508576d86fc0d34940"
               },
               "Location": {
                 "description": "任务查询相对路径。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "/maas/v1/tasks/task_6032a4ff0f57481da1b09d4fb9888e33"
               }
             }
           },
@@ -1439,6 +1809,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "realConflict": {
+                    "summary": "真实同键不同内容冲突",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "error": {
+                        "code": "IDEMPOTENCY_CONFLICT",
+                        "message": "Key already used for different content",
+                        "retryable": false,
+                        "request_id": "req_395691aa13c749d8a58448f84c85d2a5"
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -1447,7 +1831,8 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_395691aa13c749d8a58448f84c85d2a5"
               }
             }
           },
@@ -1499,6 +1884,32 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "realSourceConflict": {
+                    "summary": "真实图片来源互斥错误",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "error": {
+                        "code": "INPUT_INVALID",
+                        "message": "Input or parameters do not match model schema",
+                        "retryable": false,
+                        "request_id": "req_981579c5af314736998e0be4a259fc0d"
+                      }
+                    }
+                  },
+                  "realBlockedURL": {
+                    "summary": "真实私网图片URL拒绝",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "error": {
+                        "code": "IMAGE_URL_NOT_ALLOWED",
+                        "message": "Use a public HTTP(S) image URL on port 80 or 443 without credentials or fragments",
+                        "retryable": false,
+                        "request_id": "req_db7dcd36d1ad47e9b1ca2a04e1c39bc6"
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -1507,7 +1918,8 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_db7dcd36d1ad47e9b1ca2a04e1c39bc6"
               }
             }
           },
@@ -1596,8 +2008,8 @@
                   }
                 },
                 "inlineBase64": {
-                  "summary": "方式二：image_base64内嵌PNG（改名待部署）",
-                  "description": "有效4×3白色PNG示例，识别结果可能为空；实际OCR请替换为自己的PNG/JPEG完整base64 data URL。须设置Authorization和Idempotency-Key，与artifact_id互斥。内嵌机制已部署但本示例使用的新名称尚未发布，现网旧名称为data_url。",
+                  "summary": "方式二：image_base64内嵌PNG",
+                  "description": "有效4×3白色PNG示例，识别结果可能为空；实际OCR请替换为自己的PNG/JPEG完整base64 data URL。须设置Authorization和Idempotency-Key，与artifact_id互斥。本示例的新名称已发布；旧data_url仅保留兼容。",
                   "value": {
                     "model": "ocr.default",
                     "input": {
@@ -1611,7 +2023,7 @@
                   }
                 },
                 "remoteImageUrl": {
-                  "summary": "方式三：公网图片URL（待部署）",
+                  "summary": "方式三：公网图片URL",
                   "description": "替换为MaaS服务器可访问的公开PNG/JPEG地址；示例域名仅占位。无登录/重定向/私网，MaaS下载后才返回202，不是传给worker临时读取。",
                   "value": {
                     "model": "ocr.default",
@@ -1638,12 +2050,12 @@
           {
             "lang": "Shell",
             "label": "curl：image_base64内嵌图片",
-            "source": "# image_base64改名待部署；现网仍使用旧data_url字段。\n# 此处PNG为有效4×3白色图片；真实识别请替换为自己的完整PNG/JPEG data URL。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\nIDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n      \"image_base64\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==\"\n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
+            "source": "# image_base64规范字段已部署；兼容旧data_url。\n# 此处PNG为有效4×3白色图片；真实识别请替换为自己的完整PNG/JPEG data URL。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\nIDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n      \"image_base64\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==\"\n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
           },
           {
             "lang": "Shell",
-            "label": "curl：远程图片URL（待部署）",
-            "source": "# 异步URL输入新代码待部署，不可在当前现网使用。\n# 替换为服务器可下载的公开PNG/JPEG地址。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\nIDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n      \"image_url\": \"https://example.org/replace-with-public-image.png\"\n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
+            "label": "curl：远程图片URL",
+            "source": "# 异步image_url已部署；下载完成后才返回202。\n# 替换为服务器可下载的公开PNG/JPEG地址。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\nIDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n      \"image_url\": \"https://example.org/replace-with-public-image.png\"\n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
           }
         ]
       }
@@ -1674,6 +2086,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TaskView"
+                },
+                "examples": {
+                  "realSucceeded": {
+                    "summary": "真实任务完成状态",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "state": "SUCCEEDED",
+                      "attempts": 1,
+                      "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+                      "error_code": null,
+                      "deadline": "2026-11-02T10:00:03.592022Z",
+                      "created_at": "2026-11-02T09:58:03.592022Z",
+                      "updated_at": "2026-11-02T09:58:03.886218Z"
+                    }
+                  }
                 }
               }
             },
@@ -1682,7 +2112,8 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_cec6b3b9f2534132a0e80a39a6cdcc96"
               }
             }
           },
@@ -1853,6 +2284,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TaskView"
+                },
+                "examples": {
+                  "realAlreadySucceeded": {
+                    "summary": "真实取消已成功任务，终态保持SUCCEEDED",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "state": "SUCCEEDED",
+                      "attempts": 1,
+                      "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+                      "error_code": null,
+                      "deadline": "2026-11-02T10:00:03.592022Z",
+                      "created_at": "2026-11-02T09:58:03.592022Z",
+                      "updated_at": "2026-11-02T09:58:06.049749Z"
+                    }
+                  }
                 }
               }
             },
@@ -1861,7 +2310,8 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_a3fbcc04f20e46bda1f06c4feca7b0b5"
               }
             }
           },
@@ -2033,6 +2483,101 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Capabilities"
+                },
+                "examples": {
+                  "realCapabilities": {
+                    "summary": "真实模型能力及输入schema",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "execution_modes": [
+                        "async"
+                      ],
+                      "max_runtime_s": 25,
+                      "input_schema": {
+                        "$defs": {
+                          "ImageReference": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "artifact_id": {
+                                "maxLength": 80,
+                                "minLength": 1,
+                                "title": "Artifact Id",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "artifact_id"
+                            ],
+                            "title": "ImageReference",
+                            "type": "object"
+                          },
+                          "InlineImage": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "image_base64": {
+                                "description": "PNG/JPEG strict raw base64 or data URL; exclusive with artifact_id/image_url. Legacy data_url is deprecated.",
+                                "minLength": 1,
+                                "title": "Image Base64",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "image_base64"
+                            ],
+                            "title": "InlineImage",
+                            "type": "object"
+                          },
+                          "URLImage": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "image_url": {
+                                "description": "Public HTTP(S) PNG/JPEG; downloaded before task acceptance. Legacy url is deprecated.",
+                                "maxLength": 4096,
+                                "minLength": 1,
+                                "title": "Image Url",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "image_url"
+                            ],
+                            "title": "URLImage",
+                            "type": "object"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "properties": {
+                          "image": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/$defs/ImageReference"
+                              },
+                              {
+                                "$ref": "#/$defs/InlineImage"
+                              },
+                              {
+                                "$ref": "#/$defs/URLImage"
+                              }
+                            ],
+                            "title": "Image"
+                          }
+                        },
+                        "required": [
+                          "image"
+                        ],
+                        "title": "OCRInput",
+                        "type": "object"
+                      },
+                      "parameters_schema": {
+                        "additionalProperties": false,
+                        "properties": {},
+                        "title": "OCRParameters",
+                        "type": "object"
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -2041,7 +2586,8 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_62ea1637e5e847df8e61135dc234af7d"
               }
             }
           },
@@ -2189,8 +2735,8 @@
     "/maas/v1/usage/{ident}": {
       "get": {
         "operationId": "getOCRUsage",
-        "summary": "查询OCR最终用量收据（待部署）",
-        "description": "E16新代码未部署。使用同步响应X-Usage-ID或异步结果metering.id，按已知ID查询。仅同project；与artifact TTL独立保存，无自动清理/分页列表/价格。不可用404/USAGE_NOT_AVAILABLE；当前PP-OCRv4没有tokens报告，tokens为null及unavailable，不得按tokens结算。",
+        "summary": "查询OCR最终用量收据",
+        "description": "E16已部署并通过真实OCR验收。使用同步响应X-Usage-ID或异步结果metering.id，按已知ID查询。仅同project；与artifact TTL独立保存，无自动清理/分页列表/价格。不可用404/USAGE_NOT_AVAILABLE；当前PP-OCRv4没有tokens报告，tokens为null及unavailable，不得按tokens结算。",
         "tags": [
           "计量"
         ],
@@ -2212,6 +2758,50 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OCRUsage"
+                },
+                "examples": {
+                  "realAsyncUsage": {
+                    "summary": "真实异步用量，tokens不可用",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "status": "final",
+                      "tokens": {
+                        "reason": "UPSTREAM_USAGE_ABSENT",
+                        "source": null,
+                        "status": "unavailable",
+                        "input_tokens": null,
+                        "output_tokens": null
+                      },
+                      "revision": "ocr-registry-r1",
+                      "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+                      "source_type": "task",
+                      "successful_images": 1
+                    }
+                  },
+                  "realSyncUsage": {
+                    "summary": "真实同步用量，tokens不可用",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "usage_sync_ea6451d3051644eb866ed4b4a35a1865",
+                      "model": "ocr.default",
+                      "status": "final",
+                      "tokens": {
+                        "reason": "UPSTREAM_USAGE_ABSENT",
+                        "source": null,
+                        "status": "unavailable",
+                        "input_tokens": null,
+                        "output_tokens": null
+                      },
+                      "revision": "ocr-registry-r1",
+                      "source_id": "ea6451d3051644eb866ed4b4a35a1865",
+                      "recorded_at": "2026-11-02T09:58:06.318443+00:00",
+                      "source_type": "sync",
+                      "successful_images": 1
+                    }
+                  }
                 }
               }
             },
@@ -2220,13 +2810,15 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_4e0fb80931444c0b91131bcaf98845af"
               },
               "Cache-Control": {
                 "schema": {
                   "const": "no-store"
                 },
-                "description": "避免缓存客户用量数据。"
+                "description": "避免缓存客户用量数据。",
+                "example": "no-store"
               }
             }
           },
@@ -2374,8 +2966,8 @@
     "/maas/v1/tasks/{ident}/usage": {
       "get": {
         "operationId": "getTaskOCRUsage",
-        "summary": "按任务查询OCR最终用量（待部署）",
-        "description": "E16新代码未部署。无需先下载结果即可查询；待执行、失败、取消或旧任务无新账本时404/USAGE_NOT_AVAILABLE，不回填推算。跨project任务404，文件过期不删除已有收据。",
+        "summary": "按任务查询OCR最终用量",
+        "description": "E16已部署并通过真实OCR验收。无需先下载结果即可查询；待执行、失败、取消或旧任务无新账本时404/USAGE_NOT_AVAILABLE，不回填推算。跨project任务404，文件过期不删除已有收据。",
         "tags": [
           "计量"
         ],
@@ -2397,6 +2989,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OCRUsage"
+                },
+                "examples": {
+                  "realTaskUsage": {
+                    "summary": "真实按任务查询用量",
+                    "description": "2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。",
+                    "value": {
+                      "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "status": "final",
+                      "tokens": {
+                        "reason": "UPSTREAM_USAGE_ABSENT",
+                        "source": null,
+                        "status": "unavailable",
+                        "input_tokens": null,
+                        "output_tokens": null
+                      },
+                      "revision": "ocr-registry-r1",
+                      "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+                      "source_type": "task",
+                      "successful_images": 1
+                    }
+                  }
                 }
               }
             },
@@ -2405,13 +3020,15 @@
                 "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_b3318ff274e9476989abf31b6365a92d"
               },
               "Cache-Control": {
                 "schema": {
                   "const": "no-store"
                 },
-                "description": "避免缓存客户用量数据。"
+                "description": "避免缓存客户用量数据。",
+                "example": "no-store"
               }
             }
           },
@@ -2738,7 +3355,21 @@
         ],
         "title": "TaskView",
         "type": "object",
-        "description": "TaskView（与当前实现一致）"
+        "description": "TaskView（与当前实现一致）",
+        "examples": [
+          {
+            "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+            "model": "ocr.default",
+            "revision": "ocr-registry-r1",
+            "state": "SUCCEEDED",
+            "attempts": 1,
+            "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+            "error_code": null,
+            "deadline": "2026-11-02T10:00:03.592022Z",
+            "created_at": "2026-11-02T09:58:03.592022Z",
+            "updated_at": "2026-11-02T09:58:03.886218Z"
+          }
+        ]
       },
       "ApiErrorDetail": {
         "properties": {
@@ -2948,7 +3579,7 @@
         "additionalProperties": false,
         "properties": {
           "image_url": {
-            "description": "公开HTTP(S) PNG/JPEG地址，最长4096字符；202前安全下载并保存，image_url支持尚未部署。",
+            "description": "公开HTTP(S) PNG/JPEG地址，最长4096字符；202前安全下载并保存，image_url已部署。",
             "maxLength": 4096,
             "minLength": 1,
             "title": "Image Url",
@@ -2978,7 +3609,7 @@
               }
             ],
             "title": "Image",
-            "description": "单张图片：已有artifact_id引用、image_base64裸base64/data URL或公开image_url（三选一，image_url待部署）。"
+            "description": "单张图片：已有artifact_id引用、image_base64裸base64/data URL或公开image_url（三选一，image_url已部署）。"
           }
         },
         "required": [
@@ -3065,7 +3696,82 @@
         ],
         "title": "OCRResult",
         "type": "object",
-        "description": "OCRResult（与当前实现一致）"
+        "description": "OCRResult（与当前实现一致）",
+        "examples": [
+          {
+            "elapsed_ms": 106.03,
+            "lines": [
+              {
+                "box": [
+                  [
+                    54.0,
+                    71.0
+                  ],
+                  [
+                    558.0,
+                    71.0
+                  ],
+                  [
+                    558.0,
+                    122.0
+                  ],
+                  [
+                    54.0,
+                    122.0
+                  ]
+                ],
+                "score": 0.9463106989860535,
+                "text": "MaaS OCR TEST"
+              },
+              {
+                "box": [
+                  [
+                    54.0,
+                    212.0
+                  ],
+                  [
+                    997.0,
+                    211.0
+                  ],
+                  [
+                    997.0,
+                    261.0
+                  ],
+                  [
+                    54.0,
+                    263.0
+                  ]
+                ],
+                "score": 0.9932732746518892,
+                "text": "Invoice number: TEST-20261102"
+              },
+              {
+                "box": [
+                  [
+                    52.0,
+                    352.0
+                  ],
+                  [
+                    504.0,
+                    352.0
+                  ],
+                  [
+                    504.0,
+                    401.0
+                  ],
+                  [
+                    52.0,
+                    401.0
+                  ]
+                ],
+                "score": 0.973566757781165,
+                "text": "Amount: 123.45"
+              }
+            ],
+            "node": "worker-redacted",
+            "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
+          }
+        ]
       },
       "ArtifactCreated": {
         "type": "object",
@@ -3090,6 +3796,13 @@
           "id",
           "size",
           "sha256"
+        ],
+        "examples": [
+          {
+            "id": "art_c8ea4d4f99aa4df8ad5a9fcc666dba9d",
+            "size": 32564,
+            "sha256": "e73bb457cf33f1509983a39113af0bfd365a563de19b170e4dd9aaedd0e87311"
+          }
         ]
       },
       "ConsumerLine": {
@@ -3142,24 +3855,68 @@
           {
             "lines": [
               {
-                "text": "中文 English",
-                "confidence": 0.99,
+                "text": "MaaS OCR TEST",
+                "confidence": 0.9463106989860535,
                 "polygon": [
                   [
-                    0,
-                    0
+                    54.0,
+                    71.0
                   ],
                   [
-                    100,
-                    0
+                    558.0,
+                    71.0
                   ],
                   [
-                    100,
-                    20
+                    558.0,
+                    122.0
                   ],
                   [
-                    0,
-                    20
+                    54.0,
+                    122.0
+                  ]
+                ]
+              },
+              {
+                "text": "Invoice number: TEST-20261102",
+                "confidence": 0.9932732746518892,
+                "polygon": [
+                  [
+                    54.0,
+                    212.0
+                  ],
+                  [
+                    997.0,
+                    211.0
+                  ],
+                  [
+                    997.0,
+                    261.0
+                  ],
+                  [
+                    54.0,
+                    263.0
+                  ]
+                ]
+              },
+              {
+                "text": "Amount: 123.45",
+                "confidence": 0.973566757781165,
+                "polygon": [
+                  [
+                    52.0,
+                    352.0
+                  ],
+                  [
+                    504.0,
+                    352.0
+                  ],
+                  [
+                    504.0,
+                    401.0
+                  ],
+                  [
+                    52.0,
+                    401.0
                   ]
                 ]
               }
@@ -3201,7 +3958,7 @@
           },
           "metering": {
             "$ref": "#/components/schemas/OCRUsage",
-            "description": "E16新增OCR最终用量，待部署；历史结果或非OCR模型可没有此字段。原usage任务计量保持。"
+            "description": "E16已部署OCR最终用量；历史结果或非OCR模型可没有此字段。原usage任务计量保持。"
           }
         },
         "required": [
@@ -3209,6 +3966,106 @@
           "model_revision",
           "attempt",
           "usage"
+        ],
+        "examples": [
+          {
+            "attempt": 1,
+            "metering": {
+              "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
+              "model": "ocr.default",
+              "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+              "revision": "ocr-registry-r1",
+              "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+              "source_type": "task",
+              "status": "final",
+              "successful_images": 1,
+              "tokens": {
+                "input_tokens": null,
+                "output_tokens": null,
+                "reason": "UPSTREAM_USAGE_ABSENT",
+                "source": null,
+                "status": "unavailable"
+              }
+            },
+            "model_revision": "ocr-registry-r1",
+            "outputs": {
+              "elapsed_ms": 106.03,
+              "lines": [
+                {
+                  "box": [
+                    [
+                      54.0,
+                      71.0
+                    ],
+                    [
+                      558.0,
+                      71.0
+                    ],
+                    [
+                      558.0,
+                      122.0
+                    ],
+                    [
+                      54.0,
+                      122.0
+                    ]
+                  ],
+                  "score": 0.9463106989860535,
+                  "text": "MaaS OCR TEST"
+                },
+                {
+                  "box": [
+                    [
+                      54.0,
+                      212.0
+                    ],
+                    [
+                      997.0,
+                      211.0
+                    ],
+                    [
+                      997.0,
+                      261.0
+                    ],
+                    [
+                      54.0,
+                      263.0
+                    ]
+                  ],
+                  "score": 0.9932732746518892,
+                  "text": "Invoice number: TEST-20261102"
+                },
+                {
+                  "box": [
+                    [
+                      52.0,
+                      352.0
+                    ],
+                    [
+                      504.0,
+                      352.0
+                    ],
+                    [
+                      504.0,
+                      401.0
+                    ],
+                    [
+                      52.0,
+                      401.0
+                    ]
+                  ],
+                  "score": 0.973566757781165,
+                  "text": "Amount: 123.45"
+                }
+              ],
+              "node": "worker-redacted",
+              "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
+            },
+            "usage": {
+              "quantity": 1,
+              "unit": "task"
+            }
+          }
         ]
       },
       "Capabilities": {
@@ -3310,6 +4167,15 @@
           "output_tokens",
           "source",
           "reason"
+        ],
+        "examples": [
+          {
+            "reason": "UPSTREAM_USAGE_ABSENT",
+            "source": null,
+            "status": "unavailable",
+            "input_tokens": null,
+            "output_tokens": null
+          }
         ]
       },
       "OCRUsage": {
@@ -3370,21 +4236,38 @@
         ],
         "examples": [
           {
-            "id": "usage_task_task_example",
-            "status": "final",
-            "source_type": "task",
-            "source_id": "task_example",
+            "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
             "model": "ocr.default",
-            "revision": "example-r1",
-            "successful_images": 1,
+            "status": "final",
             "tokens": {
+              "reason": "UPSTREAM_USAGE_ABSENT",
+              "source": null,
               "status": "unavailable",
               "input_tokens": null,
-              "output_tokens": null,
-              "source": null,
-              "reason": "UPSTREAM_USAGE_ABSENT"
+              "output_tokens": null
             },
-            "recorded_at": "2026-11-02T00:00:00Z"
+            "revision": "ocr-registry-r1",
+            "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+            "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+            "source_type": "task",
+            "successful_images": 1
+          },
+          {
+            "id": "usage_sync_ea6451d3051644eb866ed4b4a35a1865",
+            "model": "ocr.default",
+            "status": "final",
+            "tokens": {
+              "reason": "UPSTREAM_USAGE_ABSENT",
+              "source": null,
+              "status": "unavailable",
+              "input_tokens": null,
+              "output_tokens": null
+            },
+            "revision": "ocr-registry-r1",
+            "source_id": "ea6451d3051644eb866ed4b4a35a1865",
+            "recorded_at": "2026-11-02T09:58:06.318443+00:00",
+            "source_type": "sync",
+            "successful_images": 1
           }
         ]
       },

@@ -1,5 +1,8 @@
 # 运维人员手册
 
+> **2026-11-02当前已发布ocr-metering-r2**：规范字段image_base64/image_url、旧别名兼容、异步远程URL及E16两个计量查询均已完成真实验收。4异步+3同步成功，7条唯一收据；当前tokens实际null/unavailable，不能按tokens实际收费。generation488、监控健康、UNKNOWN=0，8副本profile保持，无VM/worker/Docker引擎重启。OpenAPI已内嵌真实脱敏响应；以下待部署状态为历史。[发布报告](../../results/maas-ocr-release-20261102/REPORT.md)。
+
+
 > **2026-11-02内嵌图片异步提交已部署**：应用inline-task-r1上线，generation486，接单恢复。data_url四并发同键只1任务，旧artifact方式兼容，两任务唯一尝试/成功计量和46行下载通过；同步OCR、能力schema、监控及UNKNOWN=0正常。8副本/8执行器/并发8/8、Q25/25和3.5GiB保持，无VM/worker/Docker引擎重启。下方待部署描述为历史。[发布报告](../../results/maas-inline-deployment-20261102/REPORT.md)。
 
 

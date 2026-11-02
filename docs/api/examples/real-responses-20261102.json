@@ -1,0 +1,671 @@
+{
+  "_meta": {
+    "date": "2026-11-02",
+    "source": "Live private OCR acceptance",
+    "generation": 488,
+    "synthetic_input_text": [
+      "MaaS OCR TEST",
+      "Invoice number: TEST-20261102",
+      "Amount: 123.45"
+    ],
+    "redaction": "Only outputs.node is replaced with worker-redacted; task/artifact/usage IDs and timestamps are captured test values, not reusable request credentials. No API keys, private addresses or URLs included.",
+    "private_capture_sha256": "fd624e4543fdaf76540333b6f4c451d99e21201b31366f92afe38f8373fc43fa"
+  },
+  "responses": {
+    "syncOCRV1": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "x-usage-id": "usage_sync_6434b87675724c1b84fd38a5c11039a3",
+        "x-request-id": "req_68ac519ca38b4631bdee256d03ff85fd"
+      },
+      "body": {
+        "lines": [
+          {
+            "text": "MaaS OCR TEST",
+            "confidence": 0.9463106989860535,
+            "polygon": [
+              [
+                54.0,
+                71.0
+              ],
+              [
+                558.0,
+                71.0
+              ],
+              [
+                558.0,
+                122.0
+              ],
+              [
+                54.0,
+                122.0
+              ]
+            ]
+          },
+          {
+            "text": "Invoice number: TEST-20261102",
+            "confidence": 0.9932732746518892,
+            "polygon": [
+              [
+                54.0,
+                212.0
+              ],
+              [
+                997.0,
+                211.0
+              ],
+              [
+                997.0,
+                261.0
+              ],
+              [
+                54.0,
+                263.0
+              ]
+            ]
+          },
+          {
+            "text": "Amount: 123.45",
+            "confidence": 0.973566757781165,
+            "polygon": [
+              [
+                52.0,
+                352.0
+              ],
+              [
+                504.0,
+                352.0
+              ],
+              [
+                504.0,
+                401.0
+              ],
+              [
+                52.0,
+                401.0
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "getUsage": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "x-request-id": "req_49a46cd9cddf405189b9623a97f2379b"
+      },
+      "body": {
+        "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
+        "model": "ocr.default",
+        "status": "final",
+        "tokens": {
+          "reason": "UPSTREAM_USAGE_ABSENT",
+          "source": null,
+          "status": "unavailable",
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        "revision": "ocr-registry-r1",
+        "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+        "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+        "source_type": "task",
+        "successful_images": 1
+      }
+    },
+    "syncUsage": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "x-request-id": "req_4e0fb80931444c0b91131bcaf98845af"
+      },
+      "body": {
+        "id": "usage_sync_ea6451d3051644eb866ed4b4a35a1865",
+        "model": "ocr.default",
+        "status": "final",
+        "tokens": {
+          "reason": "UPSTREAM_USAGE_ABSENT",
+          "source": null,
+          "status": "unavailable",
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        "revision": "ocr-registry-r1",
+        "source_id": "ea6451d3051644eb866ed4b4a35a1865",
+        "recorded_at": "2026-11-02T09:58:06.318443+00:00",
+        "source_type": "sync",
+        "successful_images": 1
+      }
+    },
+    "privateURL": {
+      "status": 422,
+      "headers": {
+        "content-type": "application/json",
+        "x-request-id": "req_db7dcd36d1ad47e9b1ca2a04e1c39bc6"
+      },
+      "body": {
+        "error": {
+          "code": "IMAGE_URL_NOT_ALLOWED",
+          "message": "Use a public HTTP(S) image URL on port 80 or 443 without credentials or fragments",
+          "retryable": false,
+          "request_id": "req_db7dcd36d1ad47e9b1ca2a04e1c39bc6"
+        }
+      }
+    },
+    "getTask": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "x-request-id": "req_cec6b3b9f2534132a0e80a39a6cdcc96"
+      },
+      "body": {
+        "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "state": "SUCCEEDED",
+        "attempts": 1,
+        "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+        "error_code": null,
+        "deadline": "2026-11-02T10:00:03.592022Z",
+        "created_at": "2026-11-02T09:58:03.592022Z",
+        "updated_at": "2026-11-02T09:58:03.886218Z"
+      }
+    },
+    "syncOCR": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "x-usage-id": "usage_sync_ea6451d3051644eb866ed4b4a35a1865",
+        "x-request-id": "req_e368d89e003a41a690211252fd6d992f"
+      },
+      "body": {
+        "lines": [
+          {
+            "text": "MaaS OCR TEST",
+            "confidence": 0.9463106989860535,
+            "polygon": [
+              [
+                54.0,
+                71.0
+              ],
+              [
+                558.0,
+                71.0
+              ],
+              [
+                558.0,
+                122.0
+              ],
+              [
+                54.0,
+                122.0
+              ]
+            ]
+          },
+          {
+            "text": "Invoice number: TEST-20261102",
+            "confidence": 0.9932732746518892,
+            "polygon": [
+              [
+                54.0,
+                212.0
+              ],
+              [
+                997.0,
+                211.0
+              ],
+              [
+                997.0,
+                261.0
+              ],
+              [
+                54.0,
+                263.0
+              ]
+            ]
+          },
+          {
+            "text": "Amount: 123.45",
+            "confidence": 0.973566757781165,
+            "polygon": [
+              [
+                52.0,
+                352.0
+              ],
+              [
+                504.0,
+                352.0
+              ],
+              [
+                504.0,
+                401.0
+              ],
+              [
+                52.0,
+                401.0
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "sourceConflict": {
+      "status": 422,
+      "headers": {
+        "content-type": "application/json",
+        "x-request-id": "req_981579c5af314736998e0be4a259fc0d"
+      },
+      "body": {
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "Input or parameters do not match model schema",
+          "retryable": false,
+          "request_id": "req_981579c5af314736998e0be4a259fc0d"
+        }
+      }
+    },
+    "resultArtifact": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "x-request-id": "req_c727483201094f3fa410748f04363443"
+      },
+      "body": {
+        "attempt": 1,
+        "metering": {
+          "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
+          "model": "ocr.default",
+          "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+          "revision": "ocr-registry-r1",
+          "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+          "source_type": "task",
+          "status": "final",
+          "successful_images": 1,
+          "tokens": {
+            "input_tokens": null,
+            "output_tokens": null,
+            "reason": "UPSTREAM_USAGE_ABSENT",
+            "source": null,
+            "status": "unavailable"
+          }
+        },
+        "model_revision": "ocr-registry-r1",
+        "outputs": {
+          "elapsed_ms": 106.03,
+          "lines": [
+            {
+              "box": [
+                [
+                  54.0,
+                  71.0
+                ],
+                [
+                  558.0,
+                  71.0
+                ],
+                [
+                  558.0,
+                  122.0
+                ],
+                [
+                  54.0,
+                  122.0
+                ]
+              ],
+              "score": 0.9463106989860535,
+              "text": "MaaS OCR TEST"
+            },
+            {
+              "box": [
+                [
+                  54.0,
+                  212.0
+                ],
+                [
+                  997.0,
+                  211.0
+                ],
+                [
+                  997.0,
+                  261.0
+                ],
+                [
+                  54.0,
+                  263.0
+                ]
+              ],
+              "score": 0.9932732746518892,
+              "text": "Invoice number: TEST-20261102"
+            },
+            {
+              "box": [
+                [
+                  52.0,
+                  352.0
+                ],
+                [
+                  504.0,
+                  352.0
+                ],
+                [
+                  504.0,
+                  401.0
+                ],
+                [
+                  52.0,
+                  401.0
+                ]
+              ],
+              "score": 0.973566757781165,
+              "text": "Amount: 123.45"
+            }
+          ],
+          "node": "worker-redacted",
+          "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
+        },
+        "usage": {
+          "quantity": 1,
+          "unit": "task"
+        }
+      }
+    },
+    "chatOCR": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "x-usage-id": "usage_sync_4f9b0a30629e49549acb970a03373cd2",
+        "x-request-id": "req_4b7a754f1c8848fa8b5de964143242bd"
+      },
+      "body": {
+        "id": "ocr-984b4252d1c0404a9ddf06a0a140048b",
+        "object": "chat.completion",
+        "created": 1793613486,
+        "model": "maas-ocr-registry-r1",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"text\": \"MaaS OCR TEST\\nInvoice number: TEST-20261102\\nAmount: 123.45\", \"lines\": [{\"box\": [[54.0, 71.0], [558.0, 71.0], [558.0, 122.0], [54.0, 122.0]], \"text\": \"MaaS OCR TEST\", \"score\": 0.9463106989860535}, {\"box\": [[54.0, 212.0], [997.0, 211.0], [997.0, 261.0], [54.0, 263.0]], \"text\": \"Invoice number: TEST-20261102\", \"score\": 0.9932732746518892}, {\"box\": [[52.0, 352.0], [504.0, 352.0], [504.0, 401.0], [52.0, 401.0]], \"text\": \"Amount: 123.45\", \"score\": 0.973566757781165}], \"elapsed_ms\": 310.51, \"node\": \"worker-redacted\"}"
+            },
+            "finish_reason": "stop"
+          }
+        ]
+      }
+    },
+    "taskUsage": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "x-request-id": "req_b3318ff274e9476989abf31b6365a92d"
+      },
+      "body": {
+        "id": "usage_task_task_6032a4ff0f57481da1b09d4fb9888e33",
+        "model": "ocr.default",
+        "status": "final",
+        "tokens": {
+          "reason": "UPSTREAM_USAGE_ABSENT",
+          "source": null,
+          "status": "unavailable",
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        "revision": "ocr-registry-r1",
+        "source_id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+        "recorded_at": "2026-11-02T09:58:03.884305+00:00",
+        "source_type": "task",
+        "successful_images": 1
+      }
+    },
+    "cancelCompletedTask": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "x-request-id": "req_a3fbcc04f20e46bda1f06c4feca7b0b5"
+      },
+      "body": {
+        "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "state": "SUCCEEDED",
+        "attempts": 1,
+        "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+        "error_code": null,
+        "deadline": "2026-11-02T10:00:03.592022Z",
+        "created_at": "2026-11-02T09:58:03.592022Z",
+        "updated_at": "2026-11-02T09:58:06.049749Z"
+      }
+    },
+    "uploadArtifact": {
+      "status": 201,
+      "headers": {
+        "content-type": "application/json",
+        "x-request-id": "req_d4fee2f588d041ecbcf0e276a626d0ee"
+      },
+      "body": {
+        "id": "art_c8ea4d4f99aa4df8ad5a9fcc666dba9d",
+        "size": 32564,
+        "sha256": "e73bb457cf33f1509983a39113af0bfd365a563de19b170e4dd9aaedd0e87311"
+      }
+    },
+    "idempotencyConflict": {
+      "status": 409,
+      "headers": {
+        "content-type": "application/json",
+        "x-request-id": "req_395691aa13c749d8a58448f84c85d2a5"
+      },
+      "body": {
+        "error": {
+          "code": "IDEMPOTENCY_CONFLICT",
+          "message": "Key already used for different content",
+          "retryable": false,
+          "request_id": "req_395691aa13c749d8a58448f84c85d2a5"
+        }
+      }
+    },
+    "createTaskLegacy": {
+      "status": 202,
+      "headers": {
+        "content-type": "application/json",
+        "location": "/maas/v1/tasks/task_283b841538a14f649a9ed9cfddbba5cc",
+        "x-request-id": "req_87e10ac9363b4e379c4e34c2a3802ccf"
+      },
+      "body": {
+        "id": "task_283b841538a14f649a9ed9cfddbba5cc",
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "state": "QUEUED",
+        "attempts": 0,
+        "result_artifact_id": null,
+        "error_code": null,
+        "deadline": "2026-11-02T10:00:04.600154+00:00",
+        "created_at": "2026-11-02T09:58:04.600154+00:00",
+        "updated_at": "2026-11-02T09:58:04.600154+00:00"
+      }
+    },
+    "idempotentTask": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "location": "/maas/v1/tasks/task_6032a4ff0f57481da1b09d4fb9888e33",
+        "x-request-id": "req_265a7e2a36244e508576d86fc0d34940"
+      },
+      "body": {
+        "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "state": "SUCCEEDED",
+        "attempts": 1,
+        "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+        "error_code": null,
+        "deadline": "2026-11-02T10:00:03.592022+00:00",
+        "created_at": "2026-11-02T09:58:03.592022+00:00",
+        "updated_at": "2026-11-02T09:58:06.049749+00:00"
+      }
+    },
+    "createTaskRemote": {
+      "status": 202,
+      "headers": {
+        "content-type": "application/json",
+        "location": "/maas/v1/tasks/task_de9e8286340548d0a6e24efb5b8b3fb5",
+        "x-request-id": "req_c40a15f852ab436299aeffcbf8193ae7"
+      },
+      "body": {
+        "id": "task_de9e8286340548d0a6e24efb5b8b3fb5",
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "state": "QUEUED",
+        "attempts": 0,
+        "result_artifact_id": null,
+        "error_code": null,
+        "deadline": "2026-11-02T10:00:04.553824+00:00",
+        "created_at": "2026-11-02T09:58:04.553824+00:00",
+        "updated_at": "2026-11-02T09:58:04.553824+00:00"
+      }
+    },
+    "capabilities": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "x-request-id": "req_62ea1637e5e847df8e61135dc234af7d"
+      },
+      "body": {
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "execution_modes": [
+          "async"
+        ],
+        "max_runtime_s": 25,
+        "input_schema": {
+          "$defs": {
+            "ImageReference": {
+              "additionalProperties": false,
+              "properties": {
+                "artifact_id": {
+                  "maxLength": 80,
+                  "minLength": 1,
+                  "title": "Artifact Id",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "artifact_id"
+              ],
+              "title": "ImageReference",
+              "type": "object"
+            },
+            "InlineImage": {
+              "additionalProperties": false,
+              "properties": {
+                "image_base64": {
+                  "description": "PNG/JPEG strict raw base64 or data URL; exclusive with artifact_id/image_url. Legacy data_url is deprecated.",
+                  "minLength": 1,
+                  "title": "Image Base64",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "image_base64"
+              ],
+              "title": "InlineImage",
+              "type": "object"
+            },
+            "URLImage": {
+              "additionalProperties": false,
+              "properties": {
+                "image_url": {
+                  "description": "Public HTTP(S) PNG/JPEG; downloaded before task acceptance. Legacy url is deprecated.",
+                  "maxLength": 4096,
+                  "minLength": 1,
+                  "title": "Image Url",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "image_url"
+              ],
+              "title": "URLImage",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ImageReference"
+                },
+                {
+                  "$ref": "#/$defs/InlineImage"
+                },
+                {
+                  "$ref": "#/$defs/URLImage"
+                }
+              ],
+              "title": "Image"
+            }
+          },
+          "required": [
+            "image"
+          ],
+          "title": "OCRInput",
+          "type": "object"
+        },
+        "parameters_schema": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "OCRParameters",
+          "type": "object"
+        }
+      }
+    },
+    "createTaskReference": {
+      "status": 202,
+      "headers": {
+        "content-type": "application/json",
+        "location": "/maas/v1/tasks/task_0a8dd6b4db8f40c3bf562a5f4b8880ce",
+        "x-request-id": "req_6e45739d98184f199b0662a49e3a0431"
+      },
+      "body": {
+        "id": "task_0a8dd6b4db8f40c3bf562a5f4b8880ce",
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "state": "QUEUED",
+        "attempts": 0,
+        "result_artifact_id": null,
+        "error_code": null,
+        "deadline": "2026-11-02T10:00:03.701745+00:00",
+        "created_at": "2026-11-02T09:58:03.701745+00:00",
+        "updated_at": "2026-11-02T09:58:03.701745+00:00"
+      }
+    },
+    "createTaskInline": {
+      "status": 202,
+      "headers": {
+        "content-type": "application/json",
+        "location": "/maas/v1/tasks/task_6032a4ff0f57481da1b09d4fb9888e33",
+        "x-request-id": "req_0d61c1d62fe7425b81944ec98dabd77f"
+      },
+      "body": {
+        "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+        "model": "ocr.default",
+        "revision": "ocr-registry-r1",
+        "state": "QUEUED",
+        "attempts": 0,
+        "result_artifact_id": null,
+        "error_code": null,
+        "deadline": "2026-11-02T10:00:03.592022+00:00",
+        "created_at": "2026-11-02T09:58:03.592022+00:00",
+        "updated_at": "2026-11-02T09:58:03.592022+00:00"
+      }
+    }
+  }
+}

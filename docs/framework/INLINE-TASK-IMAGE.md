@@ -1,5 +1,8 @@
 # 单张图片内嵌异步任务
 
+> **2026-11-02当前已发布ocr-metering-r2**：规范字段image_base64/image_url、旧别名兼容、异步远程URL及E16两个计量查询均已完成真实验收。4异步+3同步成功，7条唯一收据；当前tokens实际null/unavailable，不能按tokens实际收费。generation488、监控健康、UNKNOWN=0，8副本profile保持，无VM/worker/Docker引擎重启。OpenAPI已内嵌真实脱敏响应；以下待部署状态为历史。[发布报告](../../results/maas-ocr-release-20261102/REPORT.md)。
+
+
 > **2026-11-02异步图片字段统一（待部署）**：新代码将data_url改为image_base64、url改为image_url，保持input.image层级；image_base64接受裸base64或PNG/JPEG data URL。旧字段保留弃用别名兼容，但同次重试不可换字段。76本地/105隔离通过（1旧条件跳过），现网不变。[说明](TASK-IMAGE-FIELDS.md)。
 
 

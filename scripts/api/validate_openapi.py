@@ -3,6 +3,7 @@ import ast,json,re,sys
 import yaml
 from pathlib import Path
 from openapi_spec_validator import validate_spec
+from jsonschema import Draft202012Validator, FormatChecker
 ROOT=Path(__file__).resolve().parents[2]
 doc=json.loads((ROOT/'docs/api/openapi.json').read_text());validate_spec(doc)
 if '--write-yaml' in sys.argv:
@@ -25,4 +26,18 @@ for path,method in actual:
  if method=='post' and not path.endswith('/cancel'):assert op['requestBody']['required']
  assert doc['security']==[{'BearerAuth':[]}]
 assert '/v1/models' not in doc['paths'] and '/healthz' not in doc['paths']
-print(f'OpenAPI 3.1 schema valid; all {len(actual)} customer operations match code and edge; descriptions, auth and request bodies checked.')
+count=0
+for path_item in doc['paths'].values():
+ for operation in path_item.values():
+  for response in operation['responses'].values():
+   media=response.get('content',{}).get('application/json')
+   if not media:continue
+   schema={'allOf':[media['schema']],'components':doc['components']}
+   values=[e['value'] for e in media.get('examples',{}).values()]
+   if 'example' in media:values.append(media['example'])
+   for value in values:
+    Draft202012Validator(schema,format_checker=FormatChecker()).validate(value);count+=1
+for name,schema in doc['components']['schemas'].items():
+ for value in schema.get('examples',[]):
+  Draft202012Validator({'$ref':'#/components/schemas/'+name,'components':doc['components']},format_checker=FormatChecker()).validate(value)
+print(f'OpenAPI 3.1 schema valid; all {len(actual)} customer operations match code and edge; descriptions, auth and request bodies and {count} response examples checked.')

@@ -1,0 +1,56 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>OCR输入与计量发布验收</title><style>body{max-width:1000px;margin:40px auto;font:16px/1.8 sans-serif;padding:0 24px}pre{white-space:pre-wrap}</style><pre># OCR图片输入及E16计量：发布与真实响应验收
+
+2026-11-02，用户授权发布并要求更新真实API示例。最终DEPLOYED_REAL_OCR_VERIFIED，generation486→488，接单恢复。应用统一镜像ocr-metering-r2，摘要见validation.json。
+
+## 已上线
+
+- POST /maas/v1/tasks支持artifact_id、image_base64、image_url三选一。image_base64接受严格PNG/JPEG裸base64或data URL；兼容旧data_url/url别名，但同次幂等重试不允许换表示。
+- 远程URL在返回202前安全下载并保存，整体10秒、全局4/项目2准备槽位，不持全局维护/文件锁等待网络。
+- E16成功图片收据：异步结果新增metering，保留原usage；同步原body不变，增加X-Usage-ID。两个用量查询接口已在三个既有入口放行。
+- 新006账本迁移已应用。当前PP-OCRv4没有tokens报告，真实结果为null/unavailable，不以字符、像素或0替代，不可据此实际按token收费。价格/余额/扣款归下游。
+
+## 受控部署及修正
+
+预检确认原8副本、8执行器、并发8/8、队列25/25、3.5GiB profile。原数据库custom dump约130.44MB及配置/源码/入口备份已优先复制Mac，SHA256核验通过，dump目录清单读取通过；这是数据库与配置备份，不宣称当前完整artifact一致快照或本轮独立恢复演练。
+
+暂停准入并排空，保留所有GPU模型/实例/worker及数据库容器，只更新API、执行器、observer。首个候选在READY_PAUSED阶段的显式迁移核对发现新表未创建：打包时目录继承700，运行用户10001无法列出SQL，旧glob却静默返回空列表。保留暂停、修正公开源码目录755/文件644，并增加迁移文件不可读/为空则拒绝启动的保护（52c838b，3项本地测试）。新r2镜像先以10001验证可读取6份SQL，再更新应用，006成功应用。未让缺表候选开放接单，没有修改原迁移内容或回填旧账。
+
+入口更新仅增加两个GET用量路径，监听、证书及防火墙不变；配置原文件inode保留。容器专用入口使用独立-c配置，首次用默认nginx配置做-t校验被只读PID目录拒绝，改为实际-c配置后校验/重载通过。所有修正仍处于同一次generation487维护暂停；真实恢复探针通过后generation488恢复接单。原探针不生成计费收据。
+
+首次公网下载预检脚本缺PYTHONPATH，未发网络请求；补正后候选镜像实际下载公网PNG并校验成功。第一次整体验收在所有业务成功后，以宿主机源访问容器专用入口得到403而停止；改在既有下游容器网络命名空间中只读验证得到200，没有放宽ACL，也没有重新运行业务POST。失败记录和所有私有证据保留。
+
+## 真实验收结果
+
+| 项目 | 结果 |
+|---|---|
+| image_base64同键4并发 | 1次202、3次200，只1任务 |
+| artifact引用、公网image_url、旧data_url | 各1任务成功，总4个异步任务 |
+| 异步结果/用量 | 每任务1次MaaS尝试、1次成功计量，4条收据与结果一致 |
+| 同步/ocr、/v1/ocr、Chat | 各1次真实识别成功，3条可查询收据 |
+| 图片识别 | 自建测试文字图识别出123.45；外部PNG另经真实下载/推理 |
+| Token | 7条收据均真实unavailable、input/output为null |
+| 错误与幂等 | 同键不同body409；多来源/私网URL422；复用已成功任务200 |
+| 取消接口 | 对已成功任务取消，实际保持SUCCEEDED，不宣称验证了在途取消 |
+| 用量查询入口 | 私有TLS、回环HTTP及允许的容器源HTTP均200；宿主机源桥入口403保持 |
+| 运行状态 | 8模型实例ID及配置不变，8执行器/8并发、Q25、3.5GiB保持，监控健康、UNKNOWN=0 |
+
+7条为本轮受控测试的成功图片收据，不代表全站商业账单。重复查询/下载不新增收据；有意同键并发属于幂等验证，未重放任何不确定或UNKNOWN请求。原生GPUStack可能内部重试，不宣称物理exactly-once。
+
+## 真实API文档示例
+
+采集19份实际响应，从中为全部11个操作提供18个标准Responses示例，含任务202/幂等200/409/422、任务查询、结果文件、能力、同步OCR与两类计量查询。节点字段已替换worker-redacted，Chat中嵌套JSON仍为字符串；其余JSON字段、类型、数值、测试ID和时间保持。
+
+使用自建图片文字“MaaS OCR TEST / Invoice number: TEST-20261102 / Amount: 123.45”，不是默认白图请求对应的输出。测试ID是历史值，不能复用作自己的artifact ID或幂等键。示例不含APIKey、私有地址或连接信息，已内嵌OpenAPI YAML/JSON，单文件分发不依赖外部文件。
+
+发布收尾82项本地测试通过。OpenAPI3.1、11路由/入口匹配、18响应示例及组件示例JSON Schema验证通过；同时核对YAML/JSON一致。原始响应及日志保留在Mac私有目录，公开的响应集合保留源SHA256便于核对脱敏来源。
+
+## 运行边界与回退
+
+无VM/worker/Docker引擎/原生推理容器重启。非应用容器StartedAt、VM boot及Docker主PID保持；Nginx仅校验并重载工作配置。配额项目4GiB/全局10GiB、TTL24小时不变。无新8小时或容量测试，本轮不能替代整个新入口链路的性能/SLA证据。
+
+旧应用镜像、源码、env、入口和DB dump保留，失败r1镜像不作为上线版本。需要回退时先核对维护所有权、排空并处理UNKNOWN，再恢复原应用/入口配置；保留新增账本表及已提交收据，不自动DROP或用旧dump覆盖新业务数据。新受理任务已规范化为artifact输入，仍应排空后回退，不自动重放。当前备份未做本轮完整恢复演练。
+
+计量账本无自动TTL，暂无列表/账单导出或同步响应丢失找回；真实token计费依据仍待解决。当前仅完成E16首阶段的图片事实及token通道，不代表所有增强或商业计费系统完成。
+
+[OpenAPI](../../docs/api/openapi.yaml) · [真实响应集合](../../docs/api/examples/real-responses-20261102.json) · [E16契约](../../docs/framework/OCR-METERING.md)
+</pre></html>
