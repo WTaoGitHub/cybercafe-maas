@@ -1,0 +1,35 @@
+{
+  "state": "PROMOTED_VERIFIED",
+  "parameters": {
+    "replicas": 8,
+    "executors": 8,
+    "global_limit": 8,
+    "project_limit": 8,
+    "global_queue": 25,
+    "project_queue": 25,
+    "vram_claim_bytes": 3758096384
+  },
+  "generation": 484,
+  "ready_instances": 8,
+  "placement": [
+    4,
+    4
+  ],
+  "sync_passed": 1,
+  "async_passed": 2,
+  "async_unique_attempt_and_usage": true,
+  "download_lines_each": 46,
+  "capabilities_http_status": 200,
+  "unknown": 0,
+  "monitor_ok": true,
+  "headroom_10pct_passed": true,
+  "vm_worker_daemon_restarts": 0,
+  "eight_hour_retest_performed": false,
+  "verified_at": 1793588754.2841341,
+  "evidence_sha256": {
+    "before-private.json": "ca873a7251dcf46a1f513c3b7b4736fe25bfb188ab4b2ce2338d048c30006970",
+    "after-private.json": "fe6e97113d39390386452b2d5bdb14e11ecf63f0f8aaa6e7fb62e2ecc83f5b65",
+    "final-private.json": "fe6e97113d39390386452b2d5bdb14e11ecf63f0f8aaa6e7fb62e2ecc83f5b65",
+    "verification-private.json": "4bb9b61da6088a0a03f476587ef4754090e817fc7aa44caaacbe45841c5a1899"
+  }
+}
