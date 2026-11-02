@@ -1,5 +1,8 @@
 # 实施计划 v0.2
 
+> **2026-11-02内嵌图片异步提交已部署**：应用inline-task-r1上线，generation486，接单恢复。data_url四并发同键只1任务，旧artifact方式兼容，两任务唯一尝试/成功计量和46行下载通过；同步OCR、能力schema、监控及UNKNOWN=0正常。8副本/8执行器/并发8/8、Q25/25和3.5GiB保持，无VM/worker/Docker引擎重启。下方待部署描述为历史。[发布报告](../../results/maas-inline-deployment-20261102/REPORT.md)。
+
+
 > **2026-11-02内嵌单图任务代码完成/待部署**：input.image.data_url与artifact_id互斥，复用原任务幂等及查询/取消/下载；本地68通过、独立库广泛回归78通过/1条件跳过、补充后内嵌专项14通过（重复不累加）。现网仍为原输入契约，8副本配置不变，下一步可准备受控发布及真实GPU回归，不能把本地schema当已上线。[报告](../../results/maas-inline-task-20261102/REPORT.md)。
 
 > **2026-11-02文件能力计划**：已记录“现有图片OCR完善→PDF OCR→多媒体上传下载”三阶段，按优先级择项实施。E14公共文件契约、E10图片/PDF适配、E15其他模型分工；保留artifact原路径，流式按大文件需求实施。本次仅文档，不改变服务或已有跨任务排期。[详细计划](ARTIFACT-EVOLUTION-PLAN.md)。

@@ -3,7 +3,7 @@
   "info": {
     "title": "Cybercafe MaaS 对外OCR API",
     "version": "2026-11-02",
-    "description": "代码契约：2026-11-02新增内嵌任务图片已实现/待部署；现网仍使用artifact引用，详见INLINE-TASK-IMAGE。其余为既有客户接口。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。URL不支持query参数。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB（新代码，待部署）、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交增量尚未发布；部署前不能在现网使用。"
+    "description": "现网契约：2026-11-02内嵌任务图片已部署，与artifact引用方式均可使用。其余为既有客户接口。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。URL不支持query参数。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。"
   },
   "servers": [
     {
@@ -1254,7 +1254,7 @@
       "post": {
         "operationId": "createTask",
         "summary": "提交异步OCR任务",
-        "description": "已有artifact引用方式保持；新增image.data_url（严格PNG/JPEG base64 data URL）与artifact_id二选一。本地新实现，现网尚未部署。引用请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。\n\n生成curl前：选择正确Server，配置HTTP Bearer认证并检查Authorization头，填写新的Idempotency-Key；选择artifactReference时替换真实文件ID，inlineDataUrl仅在部署新版本后使用。Accept包含text/html仅表示可能遇到入口HTML错误；客户端须先检查HTTP状态和Content-Type。",
+        "description": "已有artifact引用方式保持；新增image.data_url（严格PNG/JPEG base64 data URL）与artifact_id二选一。2026-11-02已部署并通过真实OCR验收。引用请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。\n\n生成curl前：选择正确Server，配置HTTP Bearer认证并检查Authorization头，填写新的Idempotency-Key；选择artifactReference时替换真实文件ID，inlineDataUrl可直接提交单张图片。Accept包含text/html仅表示可能遇到入口HTML错误；客户端须先检查HTTP状态和Content-Type。",
         "tags": [
           "异步任务"
         ],
@@ -1538,8 +1538,8 @@
                   }
                 },
                 "inlineDataUrl": {
-                  "summary": "方式二：data_url内嵌PNG（新代码，待部署）",
-                  "description": "有效4×3白色PNG示例，识别结果可能为空；实际OCR请替换为自己的PNG/JPEG完整base64 data URL。须设置Authorization和Idempotency-Key，与artifact_id互斥。现网尚未发布此能力。",
+                  "summary": "方式二：data_url内嵌PNG",
+                  "description": "有效4×3白色PNG示例，识别结果可能为空；实际OCR请替换为自己的PNG/JPEG完整base64 data URL。须设置Authorization和Idempotency-Key，与artifact_id互斥。该能力已部署，仍需正确配置Server和鉴权。",
                   "value": {
                     "model": "ocr.default",
                     "input": {
@@ -1564,8 +1564,8 @@
           },
           {
             "lang": "Shell",
-            "label": "curl：data_url内嵌图片（待部署）",
-            "source": "# 新代码待部署：现网尚不能使用本示例。\n# 此处PNG为有效4×3白色图片；真实识别请替换为自己的完整PNG/JPEG data URL。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\nIDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n      \"data_url\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==\"\n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
+            "label": "curl：data_url内嵌图片",
+            "source": "# 内嵌图片异步提交，已部署。\n# 此处PNG为有效4×3白色图片；真实识别请替换为自己的完整PNG/JPEG data URL。\n# 先设置MAAS_BASE_URL、MAAS_API_KEY；同次重试保持原幂等键和原JSON。\nIDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n  --data '{\n  \"model\": \"ocr.default\",\n  \"input\": {\n    \"image\": {\n      \"data_url\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==\"\n    }\n  },\n  \"parameters\": {},\n  \"timeout_seconds\": 120,\n  \"max_attempts\": 1\n}'\n"
           }
         ]
       }

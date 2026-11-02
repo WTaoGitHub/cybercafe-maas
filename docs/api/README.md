@@ -1,8 +1,8 @@
 # MaaS 对外 API 文档（当前版本）
 
-> **内嵌图片提交（2026-11-02，新代码待部署）**：`POST /maas/v1/tasks`新增`input.image.data_url`，与`artifact_id`二选一。只接受PNG/JPEG严格base64 data URL，默认解码10MiB/20MP、内嵌请求体20MiB；原artifact引用请求仍64KiB。幂等键必需，响应/查询/取消/下载不变。现网尚未发布，请继续使用原上传→引用流程。[设计与测试](../framework/INLINE-TASK-IMAGE.md)。OpenAPI已标明这项代码/部署差异。
+> **内嵌图片提交（2026-11-02，已部署）**：`POST /maas/v1/tasks`新增`input.image.data_url`，与`artifact_id`二选一。只接受PNG/JPEG严格base64 data URL，默认解码10MiB/20MP、内嵌请求体20MiB；原artifact引用请求仍64KiB。幂等键必需，响应/查询/取消/下载不变。两种输入方式均已通过真实OCR验收。[设计与测试](../framework/INLINE-TASK-IMAGE.md)。OpenAPI已同步当前能力。
 
-> **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的9个客户操作，不包含尚未开放的`/v1/models`或一步上传建任务。
+> **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的9个客户操作，包含单张图片内嵌建任务；不包含尚未开放的`/v1/models`。
 
 > 当前基线：API consumer-ocr-r1、执行器/Observer e3-r1、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。
 
@@ -197,12 +197,26 @@ Idempotency-Key: client-business-request-001
 | 字段 | 必需 | 说明 |
 |---|---|---|
 | model | 是 | 非空逻辑模型名，最长128字符 |
-| input | 是 | OCR要求image.artifact_id；引用同project已上传、未过期的input artifact |
+| input | 是 | image.artifact_id引用同project未过期输入，或image.data_url内嵌PNG/JPEG；二选一 |
 | parameters | 否 | 默认{}；当前OCR只接受空对象 |
 | timeout_seconds | 否 | 默认120，范围1–3600秒；自接纳起的总截止，包含排队 |
 | max_attempts | 否 | 默认3，范围1–3；有限attempt预算，不允许重放不确定执行 |
 
-请求包络及OCR input/parameters禁止未定义字段。不能在input放远程图片URL或直接base64。示例300秒是显式设置，单次模型执行仍受模型预算限制。
+请求包络及OCR input/parameters禁止未定义字段。不支持远程图片URL或裸base64；允许image.data_url为严格PNG/JPEG base64 data URL。示例300秒是显式设置，单次模型执行仍受模型预算限制。
+
+内嵌图片示例（已部署，无须预先上传）：
+
+```json
+{
+  "model": "ocr.default",
+  "input": {"image": {"data_url": "data:image/png;base64,<完整图片base64>"}},
+  "parameters": {},
+  "timeout_seconds": 120,
+  "max_attempts": 1
+}
+```
+
+解码图片默认不超过10MiB及20MP；内部保存为artifact，任务仍只返回原TaskView。幂等指纹使用原请求，重复提交不重复存图；不要将同次重试的data_url换成artifact_id。
 
 新任务返回202；同project同幂等键且请求语义一致返回原任务200，两者都设置 `Location: /maas/v1/tasks/{id}`。共同响应结构TaskView：
 
@@ -312,17 +326,17 @@ confidence/polygon是兼容同步门面的转换字段，不会改变原Chat及�
 
 ## 9. 限制、保留与失败语义
 
-下表限额已与2026-10-29的001 API/执行器/observer配置核对；单次模型预算取当前登记目录。部署配置可以调整，不构成吞吐/SLA承诺；模板和代码默认值可能与现部署不同。
+下表限额按2026-11-02部署更新；单次模型预算取当前登记目录。部署配置可以调整，不构成吞吐/SLA承诺；模板和代码默认值可能与现部署不同。
 
 | 项目 | 当前值/行为 |
 |---|---|
 | 上传输入 | 默认10MiB；OCR只支持PNG/JPEG，后端解码上限2000万像素 |
-| 同步JSON | /ocr、/v1/ocr和Chat默认20MiB（含base64开销）；其他非上传POST默认64KiB |
+| 同步JSON | /ocr、/v1/ocr和Chat默认20MiB（含base64开销）；内嵌任务JSON默认20MiB，artifact引用及其他非上传POST默认64KiB |
 | Nginx请求体 | 20MiB；各层更小的有效限制优先 |
 | 上游输出/保存结果 | 默认20MiB |
-| 并发 | 当前全局4、每project4，同步/异步共享；当前4个单任务执行器。代码默认仍为全局2/项目1，不随执行器数自动调整 |
-| 等待队列 | 当前全局1000、每project100；统计QUEUED/RETRY_WAIT，满额新任务429/QUEUE_FULL |
-| 存储 | 当前全局10GiB、每project2GiB未删除artifact元数据字节 |
+| 并发 | 当前全局8、每project8，同步/异步共享；当前8个单任务执行器。代码默认仍为全局2/项目1，不随执行器数自动调整 |
+| 等待队列 | 当前全局25、每project25；统计QUEUED/RETRY_WAIT，满额新任务429/QUEUE_FULL |
+| 存储 | 当前全局10GiB、每project4GiB未删除artifact元数据字节 |
 | 输入TTL | 默认上传起24小时；活动任务引用期间清理保护 |
 | 结果TTL | 默认结果创建起24小时，过期下载410 |
 

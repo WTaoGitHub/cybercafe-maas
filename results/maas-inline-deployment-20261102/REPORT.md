@@ -1,0 +1,38 @@
+# 内嵌图片异步提交：现网发布验收
+
+2026-11-02，用户授权发布。状态：DEPLOYED_VERIFIED，接单恢复，generation484→486。`POST /maas/v1/tasks`现在同时支持artifact_id引用及单张PNG/JPEG base64 data_url，两者互斥。
+
+## 版本与范围
+
+- 应用镜像cybercafe-maas-tasks:inline-task-r1，功能源码5974c64；API、8个执行器和observer使用同一不可变镜像ID，见validation.json。
+- 以现有应用镜像为基础，只替换maas_platform代码，不下载依赖。核验源差异仅api.py、limits.py、ocr_connector.py、service.py四文件，未变更依赖、数据库迁移、模型、权重或原生实例。
+- 8副本/8执行器、并发8/8、队列25/25、每副本3.5GiB保持；文件配额项目4GiB/全局10GiB、TTL24小时及原有入口保持。
+- 原app.env、catalog、维护记录、应用源码、Compose及镜像信息已私有备份，优先复制Mac并核验SHA256；全部原始日志和请求记录也已备份Mac，不入Git。
+
+## 发布过程
+
+先检查健康、空队列、无在途和UNKNOWN；构建候选镜像并备份；持维护锁暂停准入并排空，核验维护所有权，更新四份部署源码与应用镜像引用，只重建API/执行器/observer。原真实恢复探针成功后恢复接单，再验收新旧API。
+
+预检曾因控制端工具目录缺少benchmark模块、旧executor_pool没有队列字段而失败；切换到既有已验证冻结工具后预检通过，未改服务。首次应用在暂停后因上传的hashes.json权限不符合私有文件检查而停在PAUSED，未替换应用代码/容器；改为600并核对原generation后从该停点继续，不重新开始维护。首次验收在发布尚未完成时由capabilities断言拦截，未发任何业务POST；完成后另用新日志验收。原失败日志保留，不冒称全流程首次无误。
+
+## 真实OCR验收
+
+- 四个并发、相同Idempotency-Key和data_url：一次202、三次200，只形成1任务及1内部输入。
+- 旧artifact上传→引用建任务：一次202。两条任务均SUCCEEDED，每条1次MaaS尝试和1次成功计量，下载结果各46行。
+- 再以原key/body提交返回原成功任务200；修改内容409；两种来源同时提供422；无效base64为422，未生成额外任务。
+- 内嵌输入规范化为artifact引用，下载其字节与原图一致；同步/ocr回归46行，能力查询已返回联合输入schema。
+- 最终模型配置和8实例ID/放置不变；非应用容器启动时间不变，VM boot与Docker引擎PID不变；监控健康、UNKNOWN=0、无排队或在途残留。
+
+有意进行的同键并发/重发属于幂等验收，未对不确定或UNKNOWN业务请求进行自动重放。客户端无网络自动重试。服务端幂等不证明GPUStack内部绝无重试。
+
+## 使用与边界
+
+请求头仍需Authorization、非空Idempotency-Key及Content-Type: application/json；input.image选择artifact_id或data_url。内嵌方式接受严格PNG/JPEG data URL，默认解码10MiB/20MP，请求体20MiB；原引用请求64KiB，参数仍空对象。TaskView、查询、取消、下载格式保持不变。
+
+本次真实请求通过既有私有TLS入口；入口路由/监听/防火墙及证书未改，不声明新CORS、公网或跨网络连通能力。未重启VM、worker、Docker引擎或原生推理容器，没有新8小时或容量复测；之前固定模型的T6吞吐证据不等于新内嵌上传链路的容量证据。
+
+## 回退
+
+保留旧镜像、原env和四文件原源码。需回退时重新只读核对运行时及维护所有权，先暂停并排空所有已受理任务/UNKNOWN后，恢复捕获的原镜像引用及源码，只受控重建应用容器，再以真实探针恢复。已规范化的内嵌任务是原artifact输入格式；仍应排空后回退，不直接覆盖env或自动重放请求。保持8副本配置，不恢复旧4副本。此次未额外执行生产回退演练。
+
+[OpenAPI](../../docs/api/openapi.yaml) · [设计](../../docs/framework/INLINE-TASK-IMAGE.md) · [隔离测试](../maas-inline-task-20261102/REPORT.md)

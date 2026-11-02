@@ -11,7 +11,7 @@
 3. 同步推荐`/ocr`；异步仍为上传原始图片字节→保存artifact ID→带Idempotency-Key提交任务→查询→下载结果。
 4. “Try it out”需要浏览器能访问目标地址、证书受信且跨域策略允许。当前入口未配置通用CORS，浏览器调用失败不等于curl不可用；本次不改变CORS、监听或服务器路由。实际调用可按[API手册](README.md)使用curl/Python。
 
-当前未暴露Swagger UI、`/openapi.json`、`/healthz`或`/v1/models`客户路径；不能把文档文件路径当成服务器API。内部FastAPI自动schema未补全所有动态返回，不作为此客户文档替代。内嵌图片建任务已在本地代码实现，但尚未部署；OpenAPI已标明。现网调用仍使用artifact引用，不能将新schema当成已上线能力；多模型/批次接口不包含在内。
+当前未暴露Swagger UI、`/openapi.json`、`/healthz`或`/v1/models`客户路径；不能把文档文件路径当成服务器API。内部FastAPI自动schema未补全所有动态返回，不作为此客户文档替代。内嵌图片建任务已于2026-11-02部署，artifactReference和inlineDataUrl两种输入均可使用；多模型/批次接口不包含在内。
 
 capabilities当前实际返回`execution_modes: ["async"]`，独立同步接口另有提供；此差异如实记录。能力查询不是真实GPU健康检查。错误可能来自代理并返回HTML，调用方需检查HTTP状态和Content-Type；模型输出及运行预算的可配置值以实际环境为准。
 
@@ -25,7 +25,7 @@ capabilities当前实际返回`execution_modes: ["async"]`，独立同步接口�
 
 ## VSCode插件生成curl的注意事项（2026-11-02）
 
-Idempotency-Key已提供非空演示值：每个新操作应替换为新UUID，同次重试保持原值及原请求。artifactReference中的art_REPLACE_WITH_UPLOADED_ID须替换为真实上传ID；inlineDataUrl为另一可选示例，尚待部署。Server的localhost不是跨容器地址，请配置实际可达host。
+Idempotency-Key已提供非空演示值：每个新操作应替换为新UUID，同次重试保持原值及原请求。artifactReference中的art_REPLACE_WITH_UPLOADED_ID须替换为真实上传ID；inlineDataUrl为另一可选示例，已部署。Server的localhost不是跨容器地址，请配置实际可达host。
 
 Bearer认证在Authorize或插件的认证配置中填写，生成后检查Authorization头；OpenAPI不会保存真实key，也不能保证所有插件自动附带认证。Accept含text/html源于入口错误媒体类型，不代表业务成功响应是HTML；保留该事实而非删除错误定义来美化curl。支持x-codeSamples的工具另可展示手写curl示例，部分VSCode插件可能忽略该扩展。
 

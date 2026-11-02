@@ -1,0 +1,49 @@
+{
+  "state": "DEPLOYED_VERIFIED",
+  "parameters": {
+    "replicas": 8,
+    "executors": 8,
+    "global_limit": 8,
+    "project_limit": 8,
+    "global_queue": 25,
+    "project_queue": 25,
+    "vram_claim_bytes": 3758096384
+  },
+  "generation": 486,
+  "inline_concurrent_responses": [
+    200,
+    200,
+    200,
+    202
+  ],
+  "inline_tasks_created": 1,
+  "reference_tasks_created": 1,
+  "unique_attempt_and_usage_each": 1,
+  "result_lines_each": 46,
+  "input_bytes_match": true,
+  "sync_lines": 46,
+  "capabilities_union_schema": true,
+  "conflict_status": 409,
+  "mutually_exclusive_status": 422,
+  "malformed_status": 422,
+  "monitor_ok": true,
+  "unknown": 0,
+  "model_and_instances_unchanged": true,
+  "vm_worker_docker_daemon_restarts": 0,
+  "production_requests_replayed": 0,
+  "verified_at": 1793609376.3637974,
+  "image_tag": "cybercafe-maas-tasks:inline-task-r1",
+  "image_id": "sha256:d56ae484e0da4f52f31402775b474e397b873ce35479376756a9047b0e8a834d",
+  "source_feature_commit": "5974c64",
+  "backup_sha256": "f01839efe9760777cde108b85c9e99cc3ee138da3de4f1b366c1ffb10f265277",
+  "database_migration": false,
+  "listener_changes": false,
+  "eight_hour_test": false,
+  "private_evidence_sha256": {
+    "prepared-private.json": "2c85eeaddf310bf8567b4518f9fe641c3581a44e9ff2a7a85a8edb55894d4782",
+    "before-private.json": "5331eb25153ef799781bfbbeee4702f6a5ef10acc457ccfe168f665ec57ed79c",
+    "after-private.json": "47e88e3c627ffe8c433f02f8f2a6e7a9b91615b7eea9c9d9c62bd992c8bb234d",
+    "verification-private.json": "fa379cfdbe9cc17d37623ba063858ca50e790bc2769740df8c5cc1aceae936a6",
+    "rollout-private.json": "f20d8bfbc2a8117818fed3e5fe1e21f61efe92110f6658386b87aab5ba3249b5"
+  }
+}
