@@ -1,5 +1,7 @@
 # 单张图片内嵌异步任务
 
+> **实现完成，待部署**：本地68项、独立库/mock广泛回归78项（1条件跳过），补充后内嵌专项14项通过；无现网变更。[验收记录](../../results/maas-inline-task-20261102/REPORT.md)。
+
 2026-11-02。用户授权设计和实现；属图片OCR完善首阶段/E14输入契约，当前计划本地与隔离验证，未授权本次直接发布现网。
 
 新增POST /maas/v1/tasks输入形式：input.image.data_url，仅严格PNG/JPEG base64 data URL，与artifact_id二选一。保留既有artifact引用、TaskView、202新建/200幂等复用、查询/取消/下载与原指纹语义。仅gpustack.ocr支持，不开放公网图片URL或裸base64。参数仍为空。

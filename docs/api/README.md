@@ -1,5 +1,7 @@
 # MaaS 对外 API 文档（当前版本）
 
+> **内嵌图片提交（2026-11-02，新代码待部署）**：`POST /maas/v1/tasks`新增`input.image.data_url`，与`artifact_id`二选一。只接受PNG/JPEG严格base64 data URL，默认解码10MiB/20MP、内嵌请求体20MiB；原artifact引用请求仍64KiB。幂等键必需，响应/查询/取消/下载不变。现网尚未发布，请继续使用原上传→引用流程。[设计与测试](../framework/INLINE-TASK-IMAGE.md)。OpenAPI已标明这项代码/部署差异。
+
 > **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的9个客户操作，不包含尚未开放的`/v1/models`或一步上传建任务。
 
 > 当前基线：API consumer-ocr-r1、执行器/Observer e3-r1、GPUStack v2.2.3。自建collector和动态preflight门禁已退役；推理复用GPUStack的服务管理能力，保留鉴权、配额、维护、UNKNOWN及成功计量。

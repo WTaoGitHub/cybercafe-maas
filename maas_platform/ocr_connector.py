@@ -14,9 +14,14 @@ class ImageReference(BaseModel):
     artifact_id: str = Field(min_length=1, max_length=80)
 
 
+class InlineImage(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    data_url: str = Field(min_length=1, description='Strict PNG/JPEG base64 data URL; exclusive with artifact_id')
+
+
 class OCRInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    image: ImageReference
+    image: ImageReference | InlineImage
 
 
 class OCRParameters(BaseModel):
@@ -47,7 +52,7 @@ class OCRAdapter:
     def validate(self, payload, parameters):
         inp = OCRInput.model_validate(payload).model_dump()
         params = OCRParameters.model_validate(parameters).model_dump()
-        return inp, params, inp['image']['artifact_id']
+        return inp, params, inp['image'].get('artifact_id')
 
     def execute(self, ctx):
         model = ctx.model

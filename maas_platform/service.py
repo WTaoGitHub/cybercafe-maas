@@ -1,8 +1,9 @@
 import hashlib, json, uuid
+from contextlib import nullcontext
 from datetime import datetime, timezone
 from psycopg.types.json import Jsonb
 from pydantic import ValidationError
-from .artifacts import ArtifactStore, serialized_artifacts
+from .artifacts import ArtifactStore, serialized_artifacts, lifecycle_lock
 from .db import Database
 from .errors import ServiceError
 from .adapters import adapter_for
@@ -65,28 +66,47 @@ class TaskService:
             inp, params, art_id = adapter_for(model['driver']).validate(body.input, body.parameters)
         except ValidationError:
             raise ServiceError('INPUT_INVALID', 'Input or parameters do not match model schema', 422)
+        inline = None
+        if model['driver'] == 'gpustack.ocr' and 'data_url' in inp['image']:
+            from .consumer_ocr import decode_base64, validate_image
+            value = inp['image']['data_url']
+            if not value.startswith(('data:image/png;base64,','data:image/jpeg;base64,')):
+                raise ServiceError('IMAGE_BASE64', 'Use a PNG or JPEG base64 data URL', 422)
+            raw, declared = decode_base64(value, self.settings.max_input_bytes)
+            media = validate_image(raw, declared)
+            inline = (raw, media)
         request_hash = fingerprint(body.model_dump())
         self.store.ensure_space()
-        with self.db.transaction() as c:
-            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
-            old = c.execute('SELECT * FROM tasks WHERE project=%s AND idempotency_key=%s', (identity.project, idem)).fetchone()
-            if old:
-                if old['request_hash'] != request_hash:
-                    raise ServiceError('IDEMPOTENCY_CONFLICT', 'Key already used for different content', 409)
-                return self.public(old), False
-            total = c.execute("SELECT count(*) AS n FROM tasks WHERE state IN ('QUEUED','RETRY_WAIT')").fetchone()['n']
-            own = c.execute("SELECT count(*) AS n FROM tasks WHERE project=%s AND state IN ('QUEUED','RETRY_WAIT')", (identity.project,)).fetchone()['n']
-            if total >= self.settings.max_queued or own >= self.settings.max_project_queued:
-                raise ServiceError('QUEUE_FULL', 'Task queue capacity reached', 429, True)
-            if art_id:
-                row = c.execute('SELECT * FROM artifacts WHERE id=%s AND project=%s AND kind=\'input\' AND deleted_at IS NULL AND expires_at>now() FOR UPDATE', (art_id, identity.project)).fetchone()
-                if not row:
-                    raise ServiceError('INPUT_NOT_FOUND', 'Input artifact unavailable', 404)
-            ident = 'task_' + uuid.uuid4().hex
-            row = c.execute("""INSERT INTO tasks(id,project,credential_id,idempotency_key,request_hash,model,revision,model_fingerprint,input,parameters,input_artifact_id,state,max_attempts,deadline)
-                VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'QUEUED',%s,now()+%s*interval '1 second') RETURNING *""",
-                (ident, identity.project, identity.credential_id, idem, request_hash, body.model, model['revision'], fingerprint(model), Jsonb(inp), Jsonb(params), art_id, body.max_attempts, body.timeout_seconds)).fetchone()
-            return self.public(row), True
+        with lifecycle_lock(self.store) if inline is not None else nullcontext():
+            with self.db.transaction() as c:
+                c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+                old = c.execute('SELECT * FROM tasks WHERE project=%s AND idempotency_key=%s', (identity.project, idem)).fetchone()
+                if old:
+                    if old['request_hash'] != request_hash:
+                        raise ServiceError('IDEMPOTENCY_CONFLICT', 'Key already used for different content', 409)
+                    return self.public(old), False
+                total = c.execute("SELECT count(*) AS n FROM tasks WHERE state IN ('QUEUED','RETRY_WAIT')").fetchone()['n']
+                own = c.execute("SELECT count(*) AS n FROM tasks WHERE project=%s AND state IN ('QUEUED','RETRY_WAIT')", (identity.project,)).fetchone()['n']
+                if total >= self.settings.max_queued or own >= self.settings.max_project_queued:
+                    raise ServiceError('QUEUE_FULL', 'Task queue capacity reached', 429, True)
+                if inline is not None:
+                    raw, media = inline
+                    self.check_storage(c, identity.project, len(raw))
+                    record = self.store.put(raw)
+                    c.execute("INSERT INTO artifacts(id,project,kind,media_type,size,sha256,expires_at) VALUES(%s,%s,'input',%s,%s,%s,now()+%s*interval '1 second')",
+                              (record['id'], identity.project, media, record['size'], record['sha256'], self.settings.input_ttl_seconds))
+                    art_id = record['id']
+                    inp = {'image': {'artifact_id': art_id}}
+                    # Never delete on an ambiguous commit; orphan GC reconciles unreferenced files.
+                if art_id:
+                    row = c.execute('SELECT * FROM artifacts WHERE id=%s AND project=%s AND kind=\'input\' AND deleted_at IS NULL AND expires_at>now() FOR UPDATE', (art_id, identity.project)).fetchone()
+                    if not row:
+                        raise ServiceError('INPUT_NOT_FOUND', 'Input artifact unavailable', 404)
+                ident = 'task_' + uuid.uuid4().hex
+                row = c.execute("""INSERT INTO tasks(id,project,credential_id,idempotency_key,request_hash,model,revision,model_fingerprint,input,parameters,input_artifact_id,state,max_attempts,deadline)
+                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'QUEUED',%s,now()+%s*interval '1 second') RETURNING *""",
+                    (ident, identity.project, identity.credential_id, idem, request_hash, body.model, model['revision'], fingerprint(model), Jsonb(inp), Jsonb(params), art_id, body.max_attempts, body.timeout_seconds)).fetchone()
+                return self.public(row), True
 
     def get(self, identity, ident):
         with self.db.transaction() as c:

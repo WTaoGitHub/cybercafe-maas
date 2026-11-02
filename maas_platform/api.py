@@ -24,7 +24,7 @@ def create_app(settings=None, auth=None):
     app = FastAPI(title='MaaS persistent tasks', version='0.1.0', lifespan=lifespan)
     app.state.service = service
     app.state.sync_ingress=SyncIngress(service)
-    app.add_middleware(JsonBodyLimit,sync_limit=settings.max_input_bytes*2)
+    app.add_middleware(JsonBodyLimit,sync_limit=settings.max_input_bytes*2,task_limit=max(65536,settings.max_input_bytes*2))
 
     @app.middleware('http')
     async def request_id(request, call_next):
