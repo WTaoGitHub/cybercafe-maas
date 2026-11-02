@@ -49,7 +49,12 @@ class Worker:
             ctx.check()
             output = {'outputs': outputs, 'model_revision': task['revision'],
                       'attempt': task['attempts'], 'usage': {'unit':'task','quantity':1}}
-            committed = self.service.finish(task, output=output)
+            metering = None
+            if model['driver']=='gpustack.ocr':
+                from .metering import receipt
+                metering=receipt('task',task['id'],task['model'],task['revision'],getattr(ctx,'metering_tokens',None))
+                output['metering']=metering
+            committed = self.service.finish(task, output=output, metering=metering)
             log.info('task_finished executor=%s task=%s committed=%s outcome=success', self.executor_id, task['id'], bool(committed))
         except ServiceError as exc:
             if exc.code == 'MAINTENANCE_PAUSED':

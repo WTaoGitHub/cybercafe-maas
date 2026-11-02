@@ -1,0 +1,17 @@
+{
+  "state": "IMAGE_METERING_AND_REPORTED_TOKEN_CHANNEL_IMPLEMENTED_NOT_DEPLOYED",
+  "local_passed": 79,
+  "isolated_broad_passed": 129,
+  "isolated_condition_skipped": 1,
+  "final_metering_integration_passed": 15,
+  "current_model_native_token_usage_available": false,
+  "native_token_model_tested": false,
+  "production_changed": false,
+  "new_customer_operations": 2,
+  "code_customer_operations": 11,
+  "database_migration": "006_ocr_usage_records.sql",
+  "private_log_sha256": {
+    "test-private.log": "a3c0eeb82fe4c730ee13f7c6771bde984dea50fe398e39b58023ff0584898d54",
+    "test-final-private.log": "ce272d2f675470bad8c517a44c5fe7e92777bfa02ad03f1267f6e9728fde5f0c"
+  }
+}

@@ -93,6 +93,12 @@ def create_app(settings=None, auth=None):
     @app.post('/maas/v1/tasks/{ident}/cancel', response_model=TaskView)
     def cancel(ident:str,who=Depends(identity)): return service.cancel(who,ident)
 
+    @app.get('/maas/v1/usage/{ident}')
+    def usage(ident:str,who=Depends(identity)):return JSONResponse(service.usage(who,ident),headers={'Cache-Control':'no-store'})
+
+    @app.get('/maas/v1/tasks/{ident}/usage')
+    def task_usage(ident:str,who=Depends(identity)):return JSONResponse(service.usage(who,ident,task=True),headers={'Cache-Control':'no-store'})
+
     @app.get('/maas/v1/models/{name}/capabilities')
     def capability(name:str,who=Depends(identity)):
         model=service.model(name);service.auth.authorize(who,name,model)

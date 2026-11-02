@@ -1,5 +1,7 @@
 # MaaS 对外 API 文档（当前版本）
 
+> **E16 OCR计量（新代码待部署）**：新增GET /maas/v1/usage/{ident}与GET /maas/v1/tasks/{ident}/usage。异步结果新增metering，原usage保留；同步有效单图OCR响应新增X-Usage-ID，原body不变。成功图片数及真实上游tokens可查询；当前PP-OCRv4没有tokens报告，应显示null/unavailable，不能视作0或按tokens结算。[完整契约](../framework/OCR-METERING.md)。计量代码/迁移/入口白名单均未发布，现网仍为原9个操作。
+
 > **字段统一新版本（待部署）**：异步input.image规范字段为artifact_id/image_base64/image_url三选一。image_base64支持严格裸base64或PNG/JPEG data URL；旧data_url/url保留弃用别名。现网仍支持artifact_id/data_url，新名称及URL下载尚待部署。[迁移与幂等说明](../framework/TASK-IMAGE-FIELDS.md)。以下旧发布描述为现网历史；OpenAPI展示新版本契约并标注待发布。
 
 > **远程URL异步输入（新代码，待部署）**：`input.image.url`与已部署的artifact_id/data_url三选一，下载并保存完成后返回202；详情见[设计](../framework/URL-TASK-IMAGE.md)。OpenAPI含候选schema/示例并标明部署差异，当前服务器尚不能使用url。

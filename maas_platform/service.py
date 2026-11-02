@@ -112,6 +112,17 @@ class TaskService:
                     (ident, identity.project, identity.credential_id, idem, request_hash, body.model, model['revision'], fingerprint(model), Jsonb(inp), Jsonb(params), art_id, body.max_attempts, body.timeout_seconds)).fetchone()
                 return self.public(row), True
 
+    def usage(self, identity, ident, *, task=False):
+        with self.db.transaction() as c:
+            if task:
+                found=c.execute('SELECT id FROM tasks WHERE id=%s AND project=%s',(ident,identity.project)).fetchone()
+                if not found:raise ServiceError('NOT_FOUND','Task not found',404)
+                row=c.execute("SELECT receipt FROM ocr_usage_records WHERE source_type='task' AND source_id=%s AND project=%s",(ident,identity.project)).fetchone()
+            else:
+                row=c.execute('SELECT receipt FROM ocr_usage_records WHERE id=%s AND project=%s',(ident,identity.project)).fetchone()
+            if not row:raise ServiceError('USAGE_NOT_AVAILABLE','No final OCR usage record is available',404)
+            return row['receipt']
+
     def get(self, identity, ident):
         with self.db.transaction() as c:
             row = c.execute('SELECT * FROM tasks WHERE id=%s AND project=%s', (ident, identity.project)).fetchone()
@@ -228,7 +239,7 @@ class TaskService:
                     or row['deadline'] <= datetime.now(timezone.utc) or row['lease_until'] <= datetime.now(timezone.utc))
 
     @serialized_artifacts
-    def finish(self, task, output=None, error=None):
+    def finish(self, task, output=None, error=None, metering=None):
         result = None
         preserve_result_file = False
         try:
@@ -264,6 +275,11 @@ class TaskService:
                     c.execute('INSERT INTO task_usage_events(task_id,project,quantity) VALUES(%s,%s,1)', (row['id'], row['project']))
                 else: code = 'NO_RESULT'
                 c.execute("UPDATE tasks SET state=%s,error_code=%s,result_artifact_id=%s,lease_until=NULL,token=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state, code, result_id, min(2**row['attempts'],30), row['id']))
+                if state=='SUCCEEDED' and metering is not None:
+                    from .metering import persist
+                    if metering['source_type']!='task' or metering['source_id']!=row['id']:
+                        raise ValueError('Usage source mismatch')
+                    persist(c,row['project'],metering)
                 c.execute('UPDATE task_attempts SET state=%s,error_code=%s,ended_at=now() WHERE token=%s', (state, code, row['token']))
                 preserve_result_file = result_id is not None
             return True

@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Cybercafe MaaS 对外OCR API
   version: '2026-11-02'
-  description: 2026-11-02代码契约：新增异步URL输入已实现待部署；现网可用artifact引用及旧data_url内嵌；image_base64/image_url新名称均待部署。其余为既有客户接口。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS
+  description: 2026-11-02代码契约：新增异步URL输入已实现待部署；现网可用artifact引用及旧data_url内嵌；image_base64/image_url新名称均待部署。E16计量收据及两个查询路径为新增实现待部署，现网尚不提供。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS
     API路径不支持query参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain
     text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger
     UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。
@@ -32,6 +32,8 @@ tags:
   description: 受理、查询和取消持久任务。
 - name: 模型能力
   description: 查询已登记及获授权能力，不代表实时GPU健康。
+- name: 计量
+  description: 成功图片与真实上游token用量事实，价格及收费归下游。
 paths:
   /ocr:
     post:
@@ -51,6 +53,10 @@ paths:
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            X-Usage-ID:
+              description: E16待部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。
               schema:
                 type: string
         '401':
@@ -208,6 +214,10 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+            X-Usage-ID:
+              description: E16待部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -361,6 +371,10 @@ paths:
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            X-Usage-ID:
+              description: E16待部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。
               schema:
                 type: string
         '400':
@@ -1369,6 +1383,236 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+  /maas/v1/usage/{ident}:
+    get:
+      operationId: getOCRUsage
+      summary: 查询OCR最终用量收据（待部署）
+      description: E16新代码未部署。使用同步响应X-Usage-ID或异步结果metering.id，按已知ID查询。仅同project；与artifact TTL独立保存，无自动清理/分页列表/价格。不可用404/USAGE_NOT_AVAILABLE；当前PP-OCRv4没有tokens报告，tokens为null及unavailable，不得按tokens结算。
+      tags:
+      - 计量
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        description: usage_开头的计量ID，不是artifact ID。
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功OCR的最终用量事实。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OCRUsage'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                const: no-store
+              description: 避免缓存客户用量数据。
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+  /maas/v1/tasks/{ident}/usage:
+    get:
+      operationId: getTaskOCRUsage
+      summary: 按任务查询OCR最终用量（待部署）
+      description: E16新代码未部署。无需先下载结果即可查询；待执行、失败、取消或旧任务无新账本时404/USAGE_NOT_AVAILABLE，不回填推算。跨project任务404，文件过期不删除已有收据。
+      tags:
+      - 计量
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        description: 同project任务或文件ID，依路径类型确定。
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 此任务唯一的最终成功OCR用量。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OCRUsage'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                const: no-store
+              description: 避免缓存客户用量数据。
+        '401':
+          description: 缺少或未登记的Bearer凭据。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '403':
+          description: 凭据撤销、模型无权限或上游拒绝。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '404':
+          description: 资源不存在/跨project不可见，或模型未登记。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '413':
+          description: 请求体、文件或像素超限；代理层可能返回HTML。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '422':
+          description: 请求schema、图片、模型参数或上游校验不通过。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '503':
+          description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '504':
+          description: 入口等待上游超时，可能是非JSON响应；不可自动重放。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/html:
+              schema:
+                type: string
+              example: <html>Gateway error</html>
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
 components:
   securitySchemes:
     BearerAuth:
@@ -1826,6 +2070,9 @@ components:
           required:
           - unit
           - quantity
+        metering:
+          $ref: '#/components/schemas/OCRUsage'
+          description: E16新增OCR最终用量，待部署；历史结果或非OCR模型可没有此字段。原usage任务计量保持。
       required:
       - outputs
       - model_revision
@@ -1863,6 +2110,109 @@ components:
       - max_runtime_s
       - input_schema
       - parameters_schema
+    TokenUsage:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - available
+          - unavailable
+          description: 仅完整有效的上游token报告为available；不可用不能按0或免费处理。
+        input_tokens:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: 上游prompt_tokens，缺失/无效为null。
+        output_tokens:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: 上游completion_tokens，缺失/无效为null。
+        source:
+          type:
+          - string
+          - 'null'
+          enum:
+          - upstream_reported
+          - null
+          description: 仅上游真实报告，不估算字符/像素/base64。
+        reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - UPSTREAM_USAGE_ABSENT
+          - UPSTREAM_USAGE_INVALID
+          - null
+          description: 不可用原因，available时null。
+      required:
+      - status
+      - input_tokens
+      - output_tokens
+      - source
+      - reason
+    OCRUsage:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 稳定的计量ID，下游应按此去重。
+        status:
+          const: final
+          description: 最终成功用量事实，不是收费交易状态。
+        source_type:
+          type: string
+          enum:
+          - task
+          - sync
+          description: 异步任务或同步调用。
+        source_id:
+          type: string
+          description: task时为任务ID；sync时为本次同步调用的内部活动ID，不提供同步请求去重。
+        model:
+          type: string
+          description: 逻辑模型名。
+        revision:
+          type: string
+          description: 本次执行的服务版本。
+        successful_images:
+          type: integer
+          const: 1
+          description: 当前单图OCR成功处理1张，空文字结果仍可为成功。
+        tokens:
+          $ref: '#/components/schemas/TokenUsage'
+        recorded_at:
+          type: string
+          format: date-time
+          description: 收据构建时间，非GPU运行时间或数据库精确提交时刻。
+      required:
+      - id
+      - status
+      - source_type
+      - source_id
+      - model
+      - revision
+      - successful_images
+      - tokens
+      - recorded_at
+      examples:
+      - id: usage_task_task_example
+        status: final
+        source_type: task
+        source_id: task_example
+        model: ocr.default
+        revision: example-r1
+        successful_images: 1
+        tokens:
+          status: unavailable
+          input_tokens: null
+          output_tokens: null
+          source: null
+          reason: UPSTREAM_USAGE_ABSENT
+        recorded_at: '2026-11-02T00:00:00Z'
     ChatRequest:
       type: object
       properties:

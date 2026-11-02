@@ -25,4 +25,4 @@ for path,method in actual:
  if method=='post' and not path.endswith('/cancel'):assert op['requestBody']['required']
  assert doc['security']==[{'BearerAuth':[]}]
 assert '/v1/models' not in doc['paths'] and '/healthz' not in doc['paths']
-print('OpenAPI 3.1 schema valid; all 9 customer operations match code and edge; descriptions, auth and request bodies checked.')
+print(f'OpenAPI 3.1 schema valid; all {len(actual)} customer operations match code and edge; descriptions, auth and request bodies checked.')

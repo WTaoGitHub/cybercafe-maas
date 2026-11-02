@@ -1,5 +1,8 @@
 # 统一模型服务路线图 v0.2
 
+> **2026-11-02 E16计量首阶段代码完成/待部署**：新增成功图片收据、真实上游token通道及两个查询；79本地/129隔离通过（1旧条件跳过），补充后专项15通过。当前PP-OCRv4无真实token报告，返回null/unavailable，不能据此实际按token收费。迁移/入口/应用均未发布，现网仍9个操作。[报告](../../results/maas-ocr-metering-20261102/REPORT.md)。
+
+
 > **2026-11-02内嵌图片异步提交已部署**：应用inline-task-r1上线，generation486，接单恢复。data_url四并发同键只1任务，旧artifact方式兼容，两任务唯一尝试/成功计量和46行下载通过；同步OCR、能力schema、监控及UNKNOWN=0正常。8副本/8执行器/并发8/8、Q25/25和3.5GiB保持，无VM/worker/Docker引擎重启。下方待部署描述为历史。[发布报告](../../results/maas-inline-deployment-20261102/REPORT.md)。
 
 

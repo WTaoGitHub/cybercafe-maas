@@ -35,6 +35,7 @@ class ExecutionContext:
     deadline: float
     model: dict | None = None
     identity: object = None
+    metering_tokens: dict | None = None
 
     def check(self):
         if time.monotonic() >= self.deadline:

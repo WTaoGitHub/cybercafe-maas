@@ -112,13 +112,13 @@ def test_url_download_limits_no_redirect_no_credentials(kind):
 class FakeService:
     settings=SimpleNamespace(max_input_bytes=10000,max_output_bytes=10000,gpustack_url='http://gpustack.test')
     auth=SimpleNamespace(authorize=lambda *a:None,key_for=lambda *a:'backend-key')
-    def model(self,name):return {'driver':'gpustack.ocr','max_runtime_s':5,'upstream_model':'real-ocr'}
+    def model(self,name):return {'driver':'gpustack.ocr','max_runtime_s':5,'revision':'test-r1','upstream_model':'real-ocr'}
 
 class Ingress(SyncIngress):
     def __init__(self,handler):
         super().__init__(FakeService(),lambda **kw:httpx.AsyncClient(transport=httpx.MockTransport(handler),**kw));self.finishes=[]
     def begin(self,*a):return 'token'
-    def finish(self,*args):self.finishes.append(args)
+    def finish(self,*args,**kwargs):self.finishes.append(args)
 
 
 def test_mapping_precedes_success_accounting_and_preserves_chat_compatibility():

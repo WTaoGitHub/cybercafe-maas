@@ -81,7 +81,10 @@ class OCRAdapter:
         try:
             envelope = json.loads(raw)
             value = json.loads(envelope['choices'][0]['message']['content'])
-            return OCRResult.model_validate(value).model_dump()
+            output = OCRResult.model_validate(value).model_dump()
+            from .metering import tokens_from_response
+            ctx.metering_tokens = tokens_from_response(envelope)
+            return output
         except (ValueError, KeyError, IndexError, TypeError, ValidationError):
             raise ServiceError('OUTPUT_INVALID', 'OCR response does not match the approved schema') from None
 

@@ -30,11 +30,14 @@ class SyncIngress:
             c.execute("INSERT INTO sync_activity(token,project,model,state,deadline,is_probe) VALUES(%s,%s,%s,'DISPATCHING',now()+%s*interval '1 second',%s)",(token,who.project,name,runtime,probe))
             return token
 
-    def finish(self,token,confirmed,successful=False):
+    def finish(self,token,confirmed,successful=False,metering=None):
         with self.service.db.transaction() as c:
             row=c.execute("UPDATE sync_activity SET state=%s,outcome=%s,finished_at=now(),updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING *",('COMPLETED' if confirmed else 'UNKNOWN','SUCCEEDED' if confirmed and successful else ('REJECTED' if confirmed else 'UNKNOWN'),token)).fetchone()
             if row and confirmed and successful and not row['is_probe']:
                 c.execute('INSERT INTO sync_usage_events(token,project,model) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING',(token,row['project'],row['model']))
+                if metering is not None:
+                    from .metering import persist
+                    persist(c,row['project'],metering)
 
     async def infer(self,who,body,probe=False,prepare_input=None,map_output=None):
         if not isinstance(body,dict) or not isinstance(body.get('model'),str) or body.get('stream',False) is not False:
@@ -46,7 +49,7 @@ class SyncIngress:
         key=self.service.auth.key_for(who)
         runtime=min(model['max_runtime_s'],120)
         token=self.begin(who,name,runtime+(10 if prepare_input else 0),probe)
-        confirmed=True;successful=False
+        confirmed=True;successful=False;metering=None
         try:
             if prepare_input:
                 try:
@@ -75,11 +78,16 @@ class SyncIngress:
                         output=map_output(bytes(raw)) if map_output else bytes(raw)
                         if len(output)>self.service.settings.max_output_bytes:
                             raise ServiceError('OUTPUT_SIZE','Converted inference output exceeds limit',502)
+                        from .metering import receipt,tokens_from_response,single_image_ocr
+                        if not probe and single_image_ocr(body,json.loads(raw)):
+                            metering=receipt('sync',token,name,model['revision'],tokens_from_response(json.loads(raw)))
                         successful=True
-                        return Response(output,media_type='application/json',headers={'Cache-Control':'no-store'})
+                        response_headers={'Cache-Control':'no-store'}
+                        if metering:response_headers['X-Usage-ID']=metering['id']
+                        return Response(output,media_type='application/json',headers=response_headers)
         except (httpx.HTTPError,TimeoutError):
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY','Inference transport failed; admission quarantined',503) from None
         finally:
             # A crashed process may not reach this write. Its expired DISPATCHING
             # record becomes UNKNOWN on the next admission/status inspection.
-            self.finish(token,confirmed,successful)
+            self.finish(token,confirmed,successful,metering=metering)
