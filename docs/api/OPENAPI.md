@@ -22,3 +22,9 @@ capabilities当前实际返回`execution_modes: ["async"]`，独立同步接口�
 - 运行校验器时添加`--write-yaml`可从JSON刷新等价YAML；默认校验两种格式内容一致。
 
 本次为源码核对后的文档交付，不是新一轮在线验收或接口发布。[当前接力状态](../framework/CURRENT-HANDOFF.md)。
+
+## VSCode插件生成curl的注意事项（2026-11-02）
+
+Idempotency-Key已提供非空演示值：每个新操作应替换为新UUID，同次重试保持原值及原请求。artifactReference中的art_REPLACE_WITH_UPLOADED_ID须替换为真实上传ID；inlineDataUrl为另一可选示例，尚待部署。Server的localhost不是跨容器地址，请配置实际可达host。
+
+Bearer认证在Authorize或插件的认证配置中填写，生成后检查Authorization头；OpenAPI不会保存真实key，也不能保证所有插件自动附带认证。Accept含text/html源于入口错误媒体类型，不代表业务成功响应是HTML；保留该事实而非删除错误定义来美化curl。支持x-codeSamples的工具另可展示手写curl示例，部分VSCode插件可能忽略该扩展。

@@ -8,7 +8,7 @@
   "servers": [
     {
       "url": "http://{host}:{port}",
-      "description": "受控可达HTTP入口；host需由运维提供，容器回环地址不代表宿主机。",
+      "description": "HTTP：本机/授权SSH转发或受控容器入口。localhost仅指当前调用环境；跨容器须替换host为运维提供的宿主机地址。",
       "variables": {
         "host": {
           "default": "localhost"
@@ -20,7 +20,7 @@
     },
     {
       "url": "https://{host}:{port}",
-      "description": "私有TLS入口，需信任运维提供的证书。",
+      "description": "HTTPS：本机或授权SSH转发的私有TLS入口；须使用正确host并信任运维提供的证书，不默认绕过校验。",
       "variables": {
         "host": {
           "default": "localhost"
@@ -83,8 +83,62 @@
               }
             }
           },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "403": {
             "description": "凭据撤销、模型无权限或上游拒绝。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在/跨project不可见，或模型未登记。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "图片下载/准备超时（若适用）。",
             "content": {
               "application/json": {
                 "schema": {
@@ -143,68 +197,8 @@
               }
             }
           },
-          "404": {
-            "description": "资源不存在/跨project不可见，或模型未登记。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "408": {
-            "description": "图片下载/准备超时（若适用）。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
+          "422": {
+            "description": "请求schema、图片、模型参数或上游校验不通过。",
             "content": {
               "application/json": {
                 "schema": {
@@ -257,8 +251,8 @@
               }
             }
           },
-          "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
+          "503": {
+            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
             "content": {
               "application/json": {
                 "schema": {
@@ -275,13 +269,19 @@
               }
             }
           },
-          "503": {
-            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
+          "504": {
+            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<html>Gateway error</html>"
               }
             },
             "headers": {
@@ -334,50 +334,26 @@
               }
             }
           },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "403": {
             "description": "凭据撤销、模型无权限或上游拒绝。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "请求体、文件或像素超限；代理层可能返回HTML。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "不支持的媒体类型。",
             "content": {
               "application/json": {
                 "schema": {
@@ -430,8 +406,8 @@
               }
             }
           },
-          "504": {
-            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
+          "413": {
+            "description": "请求体、文件或像素超限；代理层可能返回HTML。",
             "content": {
               "application/json": {
                 "schema": {
@@ -454,8 +430,26 @@
               }
             }
           },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
+          "415": {
+            "description": "不支持的媒体类型。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "请求schema、图片、模型参数或上游校验不通过。",
             "content": {
               "application/json": {
                 "schema": {
@@ -508,8 +502,8 @@
               }
             }
           },
-          "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
+          "503": {
+            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
             "content": {
               "application/json": {
                 "schema": {
@@ -526,13 +520,19 @@
               }
             }
           },
-          "503": {
-            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
+          "504": {
+            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<html>Gateway error</html>"
               }
             },
             "headers": {
@@ -585,8 +585,62 @@
               }
             }
           },
+          "400": {
+            "description": "请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "403": {
             "description": "凭据撤销、模型无权限或上游拒绝。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在/跨project不可见，或模型未登记。",
             "content": {
               "application/json": {
                 "schema": {
@@ -627,50 +681,8 @@
               }
             }
           },
-          "404": {
-            "description": "资源不存在/跨project不可见，或模型未登记。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
+          "422": {
+            "description": "请求schema、图片、模型参数或上游校验不通过。",
             "content": {
               "application/json": {
                 "schema": {
@@ -723,42 +735,6 @@
               }
             }
           },
-          "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "503": {
             "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
             "content": {
@@ -766,6 +742,30 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<html>Gateway error</html>"
               }
             },
             "headers": {
@@ -806,6 +806,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ArtifactCreated"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             },
@@ -878,32 +896,8 @@
               }
             }
           },
-          "504": {
-            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
+          "422": {
+            "description": "请求schema、图片、模型参数或上游校验不通过。",
             "content": {
               "application/json": {
                 "schema": {
@@ -938,8 +932,8 @@
               }
             }
           },
-          "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
+          "503": {
+            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
             "content": {
               "application/json": {
                 "schema": {
@@ -956,13 +950,19 @@
               }
             }
           },
-          "503": {
-            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
+          "504": {
+            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<html>Gateway error</html>"
               }
             },
             "headers": {
@@ -1091,50 +1091,26 @@
               }
             }
           },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "403": {
             "description": "凭据撤销、模型无权限或上游拒绝。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "请求体、文件或像素超限；代理层可能返回HTML。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "文件已过期或被清理（RESULT_EXPIRED）。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1169,19 +1145,13 @@
               }
             }
           },
-          "504": {
-            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
+          "410": {
+            "description": "文件已过期或被清理（RESULT_EXPIRED）。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<html>Gateway error</html>"
               }
             },
             "headers": {
@@ -1193,13 +1163,19 @@
               }
             }
           },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
+          "413": {
+            "description": "请求体、文件或像素超限；代理层可能返回HTML。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<html>Gateway error</html>"
               }
             },
             "headers": {
@@ -1246,6 +1222,30 @@
                 }
               }
             }
+          },
+          "504": {
+            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<html>Gateway error</html>"
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1254,7 +1254,7 @@
       "post": {
         "operationId": "createTask",
         "summary": "提交异步OCR任务",
-        "description": "已有artifact引用方式保持；新增image.data_url（严格PNG/JPEG base64 data URL）与artifact_id二选一。本地新实现，现网尚未部署。引用请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。",
+        "description": "已有artifact引用方式保持；新增image.data_url（严格PNG/JPEG base64 data URL）与artifact_id二选一。本地新实现，现网尚未部署。引用请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。\n\n生成curl前：选择正确Server，配置HTTP Bearer认证并检查Authorization头，填写新的Idempotency-Key；选择artifactReference时替换真实文件ID，inlineDataUrl仅在部署新版本后使用。Accept包含text/html仅表示可能遇到入口HTML错误；客户端须先检查HTTP状态和Content-Type。",
         "tags": [
           "异步任务"
         ],
@@ -1263,12 +1263,13 @@
             "name": "Idempotency-Key",
             "in": "header",
             "required": true,
-            "description": "project范围持久幂等键。同键且同请求返回当前原任务；不同内容409。新artifact ID视为不同内容。不得换键重做完成不明推理。",
+            "description": "project范围持久幂等键。示例值仅演示：每次新业务操作生成新UUID并保存，重试同一操作沿用原值和原body，不能反复用示例值提交不同任务。同键且同请求返回当前原任务；不同内容409。新artifact ID视为不同内容。不得换键重做完成不明推理。",
             "schema": {
               "type": "string",
               "minLength": 1,
               "maxLength": 128
-            }
+            },
+            "example": "ocr-550e8400-e29b-41d4-a716-446655440000"
           }
         ],
         "responses": {
@@ -1320,8 +1321,80 @@
               }
             }
           },
+          "400": {
+            "description": "请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "403": {
             "description": "凭据撤销、模型无权限或上游拒绝。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在/跨project不可见，或模型未登记。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "幂等键已被不同请求内容使用。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1362,8 +1435,44 @@
               }
             }
           },
-          "404": {
-            "description": "资源不存在/跨project不可见，或模型未登记。",
+          "422": {
+            "description": "请求schema、图片、模型参数或上游校验不通过。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "队列、存储配额或同步并发容量已满。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1403,114 +1512,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "幂等键已被不同请求内容使用。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "队列、存储配额或同步并发容量已满。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
           }
         },
         "requestBody": {
@@ -1523,12 +1524,12 @@
               "examples": {
                 "artifactReference": {
                   "summary": "方式一：引用已上传图片",
-                  "description": "先上传图片，将artifact_id替换为返回的真实ID。",
+                  "description": "先POST /maas/v1/artifacts上传图片，将art_REPLACE_WITH_UPLOADED_ID替换为响应id；不能直接提交占位符。",
                   "value": {
                     "model": "ocr.default",
                     "input": {
                       "image": {
-                        "artifact_id": "art_example"
+                        "artifact_id": "art_REPLACE_WITH_UPLOADED_ID"
                       }
                     },
                     "parameters": {},
@@ -1554,7 +1555,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "curl：已上传图片引用",
+            "source": "# 设置MAAS_BASE_URL、MAAS_API_KEY；task.json中使用真实artifact ID。\n# 新操作仅生成一次并保存；重试沿用原键和原task.json。\nIDEMPOTENCY_KEY=\"$(python3 -c 'import uuid; print(uuid.uuid4())')\"\ncurl -i --request POST \\\n  --url \"$MAAS_BASE_URL/maas/v1/tasks\" \\\n  --header \"Authorization: Bearer $MAAS_API_KEY\" \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --header \"Idempotency-Key: $IDEMPOTENCY_KEY\" \\\n  --data-binary @task.json\n"
+          }
+        ]
       }
     },
     "/maas/v1/tasks/{ident}": {
@@ -1595,8 +1603,44 @@
               }
             }
           },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "403": {
             "description": "凭据撤销、模型无权限或上游拒绝。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在/跨project不可见，或模型未登记。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1637,8 +1681,26 @@
               }
             }
           },
-          "404": {
-            "description": "资源不存在/跨project不可见，或模型未登记。",
+          "422": {
+            "description": "请求schema、图片、模型参数或上游校验不通过。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1668,60 +1730,6 @@
                   "type": "string"
                 },
                 "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
               }
             },
             "headers": {
@@ -1774,8 +1782,44 @@
               }
             }
           },
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "403": {
             "description": "凭据撤销、模型无权限或上游拒绝。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在/跨project不可见，或模型未登记。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1816,8 +1860,26 @@
               }
             }
           },
-          "404": {
-            "description": "资源不存在/跨project不可见，或模型未登记。",
+          "422": {
+            "description": "请求schema、图片、模型参数或上游校验不通过。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1847,60 +1909,6 @@
                   "type": "string"
                 },
                 "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "服务/鉴权不可用、维护暂停或未知后台活动隔离。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
               }
             },
             "headers": {
@@ -1954,8 +1962,8 @@
               }
             }
           },
-          "403": {
-            "description": "凭据撤销、模型无权限或上游拒绝。",
+          "401": {
+            "description": "缺少或未登记的Bearer凭据。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1972,19 +1980,13 @@
               }
             }
           },
-          "413": {
-            "description": "请求体、文件或像素超限；代理层可能返回HTML。",
+          "403": {
+            "description": "凭据撤销、模型无权限或上游拒绝。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<html>Gateway error</html>"
               }
             },
             "headers": {
@@ -2014,8 +2016,8 @@
               }
             }
           },
-          "504": {
-            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
+          "413": {
+            "description": "请求体、文件或像素超限；代理层可能返回HTML。",
             "content": {
               "application/json": {
                 "schema": {
@@ -2027,24 +2029,6 @@
                   "type": "string"
                 },
                 "example": "<html>Gateway error</html>"
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "缺少或未登记的Bearer凭据。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
               }
             },
             "headers": {
@@ -2091,6 +2075,30 @@
                 }
               }
             }
+          },
+          "504": {
+            "description": "入口等待上游超时，可能是非JSON响应；不可自动重放。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<html>Gateway error</html>"
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2101,7 +2109,7 @@
       "BearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "管理员登记于MaaS且GPUStack有效、有模型权限的推理key；不是任意GPUStack key或管理key。"
+        "description": "在Swagger Authorize或VSCode插件的HTTP Bearer认证设置中填入管理员登记的推理key（通常只填key，工具添加Bearer前缀）。生成curl后检查是否包含Authorization: Bearer；缺失时手动添加。不要把真实key保存进OpenAPI或示例。该key须在GPUStack有效且有模型权限，不是管理key。"
       }
     },
     "schemas": {
@@ -2152,7 +2160,7 @@
             "model": "ocr.default",
             "input": {
               "image": {
-                "artifact_id": "art_example"
+                "artifact_id": "art_REPLACE_WITH_UPLOADED_ID"
               }
             },
             "parameters": {},
