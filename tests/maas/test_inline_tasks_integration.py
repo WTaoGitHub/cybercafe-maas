@@ -36,7 +36,7 @@ def test_inline_atomic_idempotency_execution_result_and_original_reference(env,m
         assert row['input']=={'image':{'artifact_id':ident}}
     assert post(client,input={'image':{'image_base64':data_url('black')}}).status_code==409
     assert Worker(s).run_once()
-    task=client.get('/maas/v1/tasks/'+r[0].json()['id'],headers=headers()).json();assert task['state']=='SUCCEEDED'
+    task=client.get('/maas/v1/tasks/'+r[0].json()['id'],headers=headers()).json();assert task['status']=='SUCCEEDED'
     assert client.get('/maas/v1/artifacts/'+task['result_artifact_id'],headers=headers()).json()['outputs']['text']=='hello'
     assert post(client).json()['state']=='SUCCEEDED' and counts(s)==[1,2]
     old=post(client,'reference',input={'image':{'artifact_id':ident}});assert old.status_code==202

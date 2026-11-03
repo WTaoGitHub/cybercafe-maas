@@ -34,7 +34,7 @@ def test_remote_input_persisted_idempotency_no_redownload_and_result(env,monkeyp
         row=c.execute('SELECT input,input_artifact_id FROM tasks').fetchone()
         assert row['input']=={'image':{'artifact_id':row['input_artifact_id']}} and 'signature' not in json.dumps(row)
     assert Worker(s).run_once()
-    task=client.get('/maas/v1/tasks/'+r.json()['id'],headers=headers()).json();assert task['state']=='SUCCEEDED'
+    task=client.get('/maas/v1/tasks/'+r.json()['id'],headers=headers()).json();assert task['status']=='SUCCEEDED'
     assert client.get('/maas/v1/artifacts/'+task['result_artifact_id'],headers=headers()).json()['outputs']['text']=='hello'
     assert s.metrics()['successful_tasks']==1 and post(client).json()['state']=='SUCCEEDED' and calls==[URL]
 

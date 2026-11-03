@@ -58,9 +58,9 @@ def test_end_to_end_artifact_and_restarted_api(env):
     task=submit(client,input={'text':'hello','artifact_id':upload.json()['id']});assert task.status_code==202
     ident=task.json()['id']
     with TestClient(create_app(settings,auth)) as restarted:
-        assert restarted.get('/maas/v1/tasks/'+ident,headers=headers()).json()['state']=='QUEUED'
+        assert restarted.get('/maas/v1/tasks/'+ident,headers=headers()).json()['status']=='QUEUED'
         assert Worker(restarted.app.state.service).run_once()
-        row=restarted.get('/maas/v1/tasks/'+ident,headers=headers()).json();assert row['state']=='SUCCEEDED'
+        row=restarted.get('/maas/v1/tasks/'+ident,headers=headers()).json();assert row['status']=='SUCCEEDED'
         result=restarted.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers())
         assert result.json()['outputs']['input_artifact']['bytes']==11
     assert s.metrics()['successful_tasks']==1
@@ -172,7 +172,7 @@ def test_active_input_pinned_after_expiry(env):
     with s.db.transaction() as c:c.execute("UPDATE artifacts SET expires_at=now()-interval '1 second' WHERE id=%s",(art,))
     assert s.cleanup()==0
     assert Worker(s).run_once()
-    assert client.get('/maas/v1/tasks/'+row['id'],headers=headers()).json()['state']=='SUCCEEDED'
+    assert client.get('/maas/v1/tasks/'+row['id'],headers=headers()).json()['status']=='SUCCEEDED'
 
 
 def test_chunked_json_limit_and_local_disable(env):
@@ -211,11 +211,11 @@ def test_running_cancellation_with_worker_heartbeat(env):
     thread=threading.Thread(target=Worker(s).run_once);thread.start()
     for _ in range(100):
         row=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()
-        if row['state']=='RUNNING':break
+        if row['status']=='RUNNING':break
         time.sleep(.01)
     client.post('/maas/v1/tasks/'+task['id']+'/cancel',headers=headers())
     thread.join(timeout=5);assert not thread.is_alive()
-    assert client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()['state']=='CANCELLED'
+    assert client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()['status']=='CANCELLED'
     assert s.metrics()['successful_tasks']==0
 
 
@@ -237,7 +237,7 @@ def test_second_adapter_has_independent_payload_and_capabilities(env):
     assert task.status_code==202
     assert Worker(s).run_once()
     row=client.get('/maas/v1/tasks/'+task.json()['id'],headers=headers()).json()
-    assert row['state']=='SUCCEEDED'
+    assert row['status']=='SUCCEEDED'
     result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).json()
     assert result['outputs']['sha256']==hashlib.sha256(b'digest me').hexdigest()
     assert result['model_revision']=='digest-1'
@@ -325,14 +325,14 @@ def test_real_postgres_interruption(env):
     with pytest.raises(Exception):s.heartbeat(old)
     marker.with_suffix('.observed').touch();wait('restarted')
     row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
-    assert row['state']=='RUNNING'
+    assert row['status']=='RUNNING'
     with s.db.transaction() as c:
         assert c.execute('SELECT count(*) n FROM tasks').fetchone()['n']==1
         c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE id=%s",(ident,))
     assert s.recover()==1
     assert Worker(s).run_once()
     row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
-    assert row['state']=='SUCCEEDED' and row['attempts']==2
+    assert row['status']=='SUCCEEDED' and row['attempts']==2
     assert not s.finish(old,output={'stale':True})
     with s.db.transaction() as c:
         assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==1
@@ -345,7 +345,7 @@ def test_remote_uncertainty_quarantines_dispatch_and_requires_evidence(env,cance
     if cancel:s.cancel(auth.authenticate('gpustack_registered_a'),task['id'])
     s.finish(attempt,error=ServiceError('TIMEOUT','Transport unavailable',503,True))
     row=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()
-    assert row['state']=='FAILED' and row['error_code']=='UNKNOWN_BACKEND_ACTIVITY'
+    assert row['status']=='FAILED' and row['error']['code']=='UNKNOWN_BACKEND_ACTIVITY'
     assert s.metrics()['unknown_backend_activity']==1
     assert submit(client,'waiting').status_code==202
     assert s.claim() is None
@@ -365,8 +365,8 @@ def test_expired_remote_attempt_is_never_automatically_replayed(env,completed):
         c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE id=%s",(ident,))
     assert s.recover()==1
     row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
-    assert row['state']=='FAILED' and row['attempts']==1
-    assert row['error_code']==('RESULT_NOT_COMMITTED' if completed else 'UNKNOWN_BACKEND_ACTIVITY')
+    assert row['status']=='FAILED' and row['attempts']==1
+    assert row['error']['code']==('RESULT_NOT_COMMITTED' if completed else 'UNKNOWN_BACKEND_ACTIVITY')
     assert s.metrics()['unknown_backend_activity']==(0 if completed else 1)
     assert not s.finish(attempt,output={'late':True})
     assert s.metrics()['successful_tasks']==0
@@ -391,7 +391,7 @@ def test_executor_process_exit_after_remote_dispatch_intent_preserves_quarantine
     assert s.metrics()['unknown_backend_activity']==1
     assert submit(client,'pending').status_code==202 and s.claim() is None
     row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
-    assert row['state']=='FAILED' and row['error_code']=='UNKNOWN_BACKEND_ACTIVITY'
+    assert row['status']=='FAILED' and row['error']['code']=='UNKNOWN_BACKEND_ACTIVITY'
 
 
 def test_quarantine_commit_serializes_with_other_remote_dispatch(env):
@@ -715,7 +715,7 @@ def test_async_ocr_without_collector_preserves_result_and_unique_metering(env,mo
     assert accepted.status_code==202
     assert Worker(s).run_once()
     row=client.get('/maas/v1/tasks/'+accepted.json()['id'],headers=headers()).json()
-    assert row['state']=='SUCCEEDED'
+    assert row['status']=='SUCCEEDED'
     result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers())
     assert result.json()['outputs']['text']=='hello'
     again=client.post('/maas/v1/tasks',headers=headers(idem='no-collector'),json=body)

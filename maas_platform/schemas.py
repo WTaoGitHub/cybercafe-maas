@@ -16,20 +16,34 @@ from datetime import datetime
 from typing import Literal
 
 
-class TaskView(BaseModel):
+TaskStatus = Literal['QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED','CANCELLED','SUCCEEDED','FAILED']
+
+
+class TaskFields(BaseModel):
     id: str
     model: str
     revision: str
-    state: Literal['QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED','CANCELLED','SUCCEEDED','FAILED']
     attempts: int = Field(ge=0)
     result_artifact_id: str | None
-    error_code: str | None
     deadline: datetime
     created_at: datetime
     updated_at: datetime
 
 
-class TaskDetail(TaskView):
+class TaskView(TaskFields):
+    state: TaskStatus
+    error_code: str | None
+
+
+class TaskError(BaseModel):
+    code: str
+    message: str
+
+
+class TaskDetail(TaskFields):
+    status: TaskStatus
+    error: TaskError | None
+    result: dict[str, Any] | None
     usage: dict[str, Any] | None
 
 

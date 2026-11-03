@@ -24,11 +24,13 @@ def ledger(s):
 @pytest.mark.parametrize('usage,available',[(None,False),({'prompt_tokens':11,'completion_tokens':22,'total_tokens':33},True),({'prompt_tokens':0,'completion_tokens':0},True),({'prompt_tokens':1,'completion_tokens':-1},False)])
 def test_async_images_tokens_and_queries_survive_file_expiry(env,monkeypatch,usage,available):
     client,s,_=configured(env,monkeypatch,usage);task=post(client).json();assert Worker(s).run_once()
-    row=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json();assert row['state']=='SUCCEEDED'
+    row=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json();assert row['status']=='SUCCEEDED'
     result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).json()
     assert result['usage']=={'unit':'task','quantity':1}
     meter=result['metering'];assert meter['successful_images']==1 and meter['tokens']['status']==('available' if available else 'unavailable')
     assert row['usage']==meter
+    assert row['result']==result['outputs'] and row['error'] is None
+    assert 'state' not in row and 'error_code' not in row
     assert meter['tokens']['input_tokens']==(usage['prompt_tokens'] if available else None)
     for path in ['/maas/v1/tasks/'+task['id']+'/usage','/maas/v1/usage/'+meter['id']]:
         reply=client.get(path,headers=headers());assert reply.json()==meter and reply.headers['cache-control']=='no-store'
@@ -36,7 +38,9 @@ def test_async_images_tokens_and_queries_survive_file_expiry(env,monkeypatch,usa
     assert post(client).status_code==200 and ledger(s)==1 and not Worker(s).run_once()
     with s.db.transaction() as c:c.execute("UPDATE artifacts SET expires_at=now()-interval '1 second'")
     s.cleanup()
-    assert client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()['usage']==meter
+    expired=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()
+    assert expired['usage']==meter and expired['status']=='SUCCEEDED'
+    assert expired['result'] is None and expired['error']['code']=='RESULT_EXPIRED'
     assert client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).status_code==410
     assert client.get('/maas/v1/usage/'+meter['id'],headers=headers()).json()==meter
 

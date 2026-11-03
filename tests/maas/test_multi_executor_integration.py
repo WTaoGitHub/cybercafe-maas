@@ -116,8 +116,8 @@ def test_sigterm_finishes_inflight_and_does_not_take_next_task(env):
         assert q.get(timeout=15)['executing']==first
         os.kill(procs[0].pid,signal.SIGTERM)
         assert q.get(timeout=15)['result']=='graceful'
-    assert client.get('/maas/v1/tasks/'+first,headers=headers()).json()['state']=='SUCCEEDED'
-    assert client.get('/maas/v1/tasks/'+second,headers=headers()).json()['state']=='QUEUED'
+    assert client.get('/maas/v1/tasks/'+first,headers=headers()).json()['status']=='SUCCEEDED'
+    assert client.get('/maas/v1/tasks/'+second,headers=headers()).json()['status']=='QUEUED'
 
 
 def test_crashed_dispatch_intent_is_quarantined_by_competing_recovery(env):
@@ -144,7 +144,7 @@ def test_shutdown_before_dispatch_does_not_spend_execution_budget(env):
     assert s.defer_dispatch(task,reason='EXECUTOR_DRAINING')
     with group(settings,['work']) as (_,q):assert q.get(timeout=15)['result']==1
     row=client.get('/maas/v1/tasks/'+ident,headers=headers()).json()
-    assert row['state']=='SUCCEEDED' and row['attempts']==2
+    assert row['status']=='SUCCEEDED' and row['attempts']==2
     with s.db.transaction() as c:
         assert c.execute("SELECT error_code FROM task_attempts WHERE state='DEFERRED'").fetchone()['error_code']=='EXECUTOR_DRAINING'
         assert c.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n']==1

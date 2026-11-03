@@ -57,7 +57,7 @@ ident={'name':'ident','in':'path','required':True,'description':'同project任�
 add('/v1/chat/completions','post','chatOCR','同步OCR（Chat格式）','返回上游Chat JSON；choices[0].message.content为OCRResult的JSON字符串。仅stream=false，不支持SSE；不提供持久去重。传输完成状态不明时不可自动重发。','同步OCR',{200:('非流式Chat响应。',ref('ChatResponse'))},jsonbody('ChatRequest'),codes=['400','404','429','502'])
 upload={'required':True,'description':'原始非空字节，不是JSON对象、base64或multipart。默认≤10485760字节。允许的非图片类型不代表OCR可处理。','content':{m:{'schema':{'type':'string','format':'binary'}} for m in ['image/png','image/jpeg','text/plain','application/json','application/octet-stream']}}
 add('/maas/v1/artifacts','post','uploadArtifact','上传输入文件','保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。','文件',{201:('文件已保存。',ref('ArtifactCreated'))},upload,codes=['415','429'])
-add('/maas/v1/artifacts/{ident}','get','downloadArtifact','下载输入或结果文件','需同project且文件可用。成功任务仍需另行下载；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。','文件',{200:('返回原始输入字节或结果JSON。',ref('TaskResult'))},params=[ident],codes=['404','410'])
+add('/maas/v1/artifacts/{ident}','get','downloadArtifact','下载输入或结果文件','需同project且文件可用。可下载原始结果文件；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。','文件',{200:('返回原始输入字节或结果JSON。',ref('TaskResult'))},params=[ident],codes=['404','410'])
 r=P['/maas/v1/artifacts/{ident}']['get']['responses']['200'];r['content'].update({m:{'schema':{'type':'string','format':'binary'}} for m in ['image/png','image/jpeg','text/plain','application/octet-stream']});r['content']['application/json']['schema']={'anyOf':[ref('TaskResult'),{}],'description':'结果为TaskResult；上传的application/json输入按原始内容返回，不限于该schema。'};r['headers'].update({'Cache-Control':{'schema':{'const':'no-store'}},'Content-Disposition':{'schema':{'const':'attachment'}}})
 idem={'name':'Idempotency-Key','in':'header','required':True,'description':'project范围持久幂等键。示例值仅演示：每次新业务操作生成新UUID并保存，重试同一操作沿用原值和原body，不能反复用示例值提交不同任务。同键且同请求返回当前原任务；不同内容409。新artifact ID视为不同内容。不得换键重做完成不明推理。','schema':{'type':'string','minLength':1,'maxLength':128},'example':'ocr-550e8400-e29b-41d4-a716-446655440000'}
 add('/maas/v1/tasks','post','createTask','提交异步OCR任务','input.image支持artifact_id、image_base64或image_url三选一。三种规范输入已部署，兼容旧data_url/url别名。新版本保留data_url/url为弃用别名，新旧别名不可同时提供。image_base64接受严格PNG/JPEG裸base64或data URL。URL下载在202前完成，整体10秒，沿用公网限制，失败不创建任务；下载无持久任务ID。已受理同键不重下载，同键正在下载返回409/IDEMPOTENCY_IN_PROGRESS；下载容量全局4、每project2，满额429/IMAGE_FETCH_CAPACITY。无全局锁网络等待；同URL新key可获取不同内容。引用及URL请求仍≤65536字节；内嵌请求默认≤20MiB，解码图片≤10MiB且≤20MP。内部原子登记输入及任务，幂等复用不重复保存输入。新任务202、幂等复用200；受理只表示入队。维护暂停时仍可能入队；等待队列满429不创建任务。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回已有幂等任务的当前状态。',ref('TaskView'))},jsonbody('TaskCreate'),[idem],['400','404','408','409','415','429'])
@@ -67,8 +67,17 @@ S['AsyncOCRRequest']['properties']['return_boxes']={'type':'boolean','default':T
 add('/v1/ocr','post','submitOcrTask','提交异步OCR任务（待部署）','将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。按Idempotency-Key、X-Request-ID、请求体request_id顺序取键，均缺失时生成新键。超过128字符的备用ID使用SHA-256映射。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示。通过Location查询任务，再下载结果。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回原任务。',ref('TaskView'))},jsonbody('AsyncOCRRequest'),[{**idem,'required':False,'description':'可选。优先于两个备用ID。'},{'name':'X-Request-ID','in':'header','required':False,'description':'省略Idempotency-Key时优先使用此ID。重试复用同一ID。','schema':{'type':'string'}}],['400','404','408','409','415','429'])
 for status in ('200','202'):
  P['/v1/ocr']['post']['responses'][status]['headers']['Location']=copy.deepcopy(P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location'])
-S['TaskDetail']={'allOf':[ref('TaskView'),obj({'usage':{'anyOf':[ref('OCRUsage'),{'type':'null'}]}},['usage'])]}
-add('/maas/v1/tasks/{ident}','get','getTask','查询任务','返回任务状态和结果文件ID，不内嵌结果。成功且有最终收据时返回 usage；其他状态或无收据时为 null。文件过期后收据仍可查询。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。','异步任务',{200:('当前任务状态，需检查state。',ref('TaskDetail'))},params=[ident],codes=['404'])
+S['TaskDetail']=copy.deepcopy(S['TaskView'])
+detail=S['TaskDetail']['properties']
+detail['status']=detail.pop('state')
+del detail['error_code']
+detail.update({
+ 'error':{'anyOf':[obj({'code':string('错误代码。'),'message':string('可读错误说明。')},['code','message']),{'type':'null'}]},
+ 'result':{'anyOf':[ref('OCRResult'),{'type':'null'}]},
+ 'usage':{'anyOf':[ref('OCRUsage'),{'type':'null'}]},
+})
+S['TaskDetail']['required']=[('status' if name=='state' else name) for name in S['TaskDetail']['required'] if name!='error_code']+['error','result','usage']
+add('/maas/v1/tasks/{ident}','get','getTask','查询任务','查询任务状态。status替代state，error替代error_code，包含code和message。成功OCR且结果文件可读时，result为结果文件中的outputs。文件过期或不可读时，result为null，error说明原因，status保留SUCCEEDED。usage在有最终收据时返回，文件过期后仍可查询。','异步任务',{200:('当前任务状态，需检查status。',ref('TaskDetail'))},params=[ident],codes=['404'])
 add('/maas/v1/tasks/{ident}/cancel','post','cancelTask','取消或请求取消任务','无需请求体。QUEUED/RETRY_WAIT→CANCELLED，RUNNING→CANCEL_REQUESTED，终态保持；重复调用不创建任务。不保证立即终止GPU活动。','异步任务',{200:('更新后或已有终态任务。',ref('TaskView'))},params=[ident],codes=['404'])
 add('/maas/v1/models/{name}/capabilities','get','modelCapabilities','查询已授权模型能力','不是实时推理健康检查。当前execution_modes实际只列async，同步入口仍可独立使用；未知模型404、无权限403。没有公开模型列表接口。','模型能力',{200:('当前登记的模型版本、预算及输入/参数schema。',ref('Capabilities'))},params=[{'name':'name','in':'path','required':True,'description':'已登记逻辑模型名，当前ocr.default；不是GPUStack内部部署名。','schema':{'type':'string','example':'ocr.default'}}],codes=['404'])
 add('/maas/v1/usage/{ident}','get','getOCRUsage','查询OCR最终用量收据','E16已部署并通过真实OCR验收。使用同步响应X-Usage-ID或异步结果metering.id，按已知ID查询。仅同project；与artifact TTL独立保存，无自动清理/分页列表/价格。不可用404/USAGE_NOT_AVAILABLE；当前PP-OCRv4没有tokens报告，tokens为null及unavailable，不得按tokens结算。','计量',{200:('成功OCR的最终用量事实。',ref('OCRUsage'))},params=[{'name':'ident','in':'path','required':True,'description':'usage_开头的计量ID，不是artifact ID。','schema':{'type':'string'}}],codes=['404'])
@@ -112,7 +121,10 @@ if real_file.exists():
   if key=='capabilities':
    for field in ('input_schema','parameters_schema'):body[field]=inline_local_schema_refs(body[field])
    detail+=' 为兼容预览器，仅此示例将嵌入JSON Schema的局部引用等价内联；真实HTTP响应与原始响应集合仍保留$defs/$ref。'
-  if path=='/maas/v1/tasks/{ident}' and method=='get':body={**body,'usage':real['getUsage']['body']}
+  if path=='/maas/v1/tasks/{ident}' and method=='get':
+   body={**body,'usage':real['getUsage']['body'],'result':real['resultArtifact']['body']['outputs'],'error':None}
+   body['status']=body.pop('state')
+   del body['error_code']
   media.setdefault('examples',{})[label]={'summary':description,'description':detail,'value':body}
   for name,header in target.get('headers',{}).items():
    if name.lower() in real[key]['headers']:header['example']=real[key]['headers'][name.lower()]

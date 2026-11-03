@@ -234,21 +234,21 @@ Idempotency-Key: client-business-request-001
 
 ### GET /maas/v1/tasks/{ident}
 
-200返回上述TaskView的当前值。没有内嵌result，SUCCEEDED时从result_artifact_id另行下载。建议约1–2秒轮询，客户端须设总等待边界；没有WebSocket、webhook或完成回调。
+新版查询响应使用必填 `status` 和可空的 `error`、`result`、`usage`。成功 OCR 的 `result` 是结果文件中的 `outputs`，完整文件仍可用 `result_artifact_id` 下载。文件过期或不可用时，`status` 保留 `SUCCEEDED`，`result` 为 null，`error` 提供原因。建议约1–2秒轮询，客户端须设总等待边界；没有WebSocket、webhook或完成回调。
 
-| state | 含义 | 客户端处理 |
+| status | 含义 | 客户端处理 |
 |---|---|---|
 | QUEUED | 等待派发 | 等待，注意总deadline |
 | RETRY_WAIT | 等待有限重试 | 等待，不另建重复任务 |
 | RUNNING | 执行器已领取 | 继续查询 |
 | CANCEL_REQUESTED | 已请求运行中取消 | 仍可能有后台GPU活动 |
-| SUCCEEDED | 结果/成功事件已提交 | 下载result_artifact_id |
-| FAILED | 失败终态 | 查看error_code；不能一律重做 |
+| SUCCEEDED | 结果/成功事件已提交 | 读取 result 或下载结果文件 |
+| FAILED | 失败终态 | 查看 error.code 和 error.message；不能一律重做 |
 | CANCELLED | 取消终态 | 不代表任意历史远端活动均已确认结束 |
 
-attempts为领取次数，不一定等于真实GPU执行次数；维护导致的未发送延后也可能影响观察值。普通HTTP GET成功200也可能表示所查任务已FAILED，应检查state。
+attempts为领取次数，不一定等于真实GPU执行次数；维护导致的未发送延后也可能影响观察值。普通HTTP GET成功200也可能表示所查任务已FAILED，应检查 status。
 
-UNKNOWN不是TaskView的state，而是内部远端活动状态；任务可能已FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY，系统仍阻止新的推理。任务终态不是GPU已空闲证明。
+UNKNOWN不是任务查询的 status，而是内部远端活动状态；任务可能已FAILED，error.code 为 UNKNOWN_BACKEND_ACTIVITY，系统仍阻止新的推理。任务终态不是GPU已空闲证明。
 
 ### POST /maas/v1/tasks/{ident}/cancel
 
@@ -368,7 +368,7 @@ confidence/polygon是兼容同步门面的转换字段，不会改变原Chat及�
 
 PREFLIGHT_STALE、PREFLIGHT_UNAVAILABLE属于已退役基线，当前正常推理路径不依赖这些门禁。
 
-此表为常见错误，不是穷举。同步UPSTREAM_REJECTED可能保留被认可的上游4xx；某些版本/网关校验还有专用代码。异步执行失败通常体现在查询所得TaskView.error_code，而不是查询HTTP直接返回上述错误状态。
+此表为常见错误，不是穷举。同步UPSTREAM_REJECTED可能保留被认可的上游4xx；某些版本/网关校验还有专用代码。异步执行失败通常体现在查询所得 error.code，而不是查询HTTP直接返回上述错误状态。
 
 retryable表示错误类型的建议，不是无限重试许可。同步发送结果不明请保留关联信息并联系运维；异步仅用原Idempotency-Key+原body确认接纳，已知任务优先GET。没有通用Retry-After承诺或自动跨渠道切换。
 

@@ -903,7 +903,7 @@
       "get": {
         "operationId": "downloadArtifact",
         "summary": "下载输入或结果文件",
-        "description": "需同project且文件可用。成功任务仍需另行下载；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。",
+        "description": "需同project且文件可用。可下载原始结果文件；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。",
         "tags": [
           "文件"
         ],
@@ -1736,7 +1736,7 @@
       "get": {
         "operationId": "getTask",
         "summary": "查询任务",
-        "description": "返回任务状态和结果文件ID，不内嵌结果。成功且有最终收据时返回 usage；其他状态或无收据时为 null。文件过期后收据仍可查询。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。",
+        "description": "查询任务状态。status替代state，error替代error_code，包含code和message。成功OCR且结果文件可读时，result为结果文件中的outputs。文件过期或不可读时，result为null，error说明原因，status保留SUCCEEDED。usage在有最终收据时返回，文件过期后仍可查询。",
         "tags": [
           "异步任务"
         ],
@@ -1753,7 +1753,7 @@
         ],
         "responses": {
           "200": {
-            "description": "当前任务状态，需检查state。",
+            "description": "当前任务状态，需检查status。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1767,10 +1767,8 @@
                       "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
                       "model": "ocr.default",
                       "revision": "ocr-registry-r1",
-                      "state": "SUCCEEDED",
                       "attempts": 1,
                       "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
-                      "error_code": null,
                       "deadline": "2026-11-02T10:00:03.592022Z",
                       "created_at": "2026-11-02T09:58:03.592022Z",
                       "updated_at": "2026-11-02T09:58:03.886218Z",
@@ -1790,6 +1788,81 @@
                         "recorded_at": "2026-11-02T09:58:03.884305+00:00",
                         "source_type": "task",
                         "successful_images": 1
+                      },
+                      "status": "SUCCEEDED",
+                      "error": null,
+                      "result": {
+                        "elapsed_ms": 106.03,
+                        "lines": [
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                122.0
+                              ],
+                              [
+                                54.0,
+                                122.0
+                              ]
+                            ],
+                            "score": 0.9463106989860535,
+                            "text": "MaaS OCR TEST"
+                          },
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                212.0
+                              ],
+                              [
+                                997.0,
+                                211.0
+                              ],
+                              [
+                                997.0,
+                                261.0
+                              ],
+                              [
+                                54.0,
+                                263.0
+                              ]
+                            ],
+                            "score": 0.9932732746518892,
+                            "text": "Invoice number: TEST-20261102"
+                          },
+                          {
+                            "box": [
+                              [
+                                52.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                401.0
+                              ],
+                              [
+                                52.0,
+                                401.0
+                              ]
+                            ],
+                            "score": 0.973566757781165,
+                            "text": "Amount: 123.45"
+                          }
+                        ],
+                        "node": "worker-redacted",
+                        "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
                       }
                     }
                   }
@@ -4055,29 +4128,134 @@
         ]
       },
       "TaskDetail": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/TaskView"
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "description": "任务ID。"
           },
-          {
-            "type": "object",
-            "properties": {
-              "usage": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/OCRUsage"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
+          "model": {
+            "title": "Model",
+            "type": "string",
+            "description": "逻辑模型名。"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "string",
+            "description": "提交时绑定的模型版本。"
+          },
+          "attempts": {
+            "minimum": 0,
+            "title": "Attempts",
+            "type": "integer",
+            "description": "领取次数，不一定等于真实GPU执行次数。"
+          },
+          "result_artifact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
               }
-            },
-            "required": [
-              "usage"
+            ],
+            "title": "Result Artifact Id",
+            "description": "成功结果文件ID，否则为null；需单独下载。"
+          },
+          "deadline": {
+            "format": "date-time",
+            "title": "Deadline",
+            "type": "string",
+            "description": "任务总期限。"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string",
+            "description": "创建时间。"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string",
+            "description": "最近更新时间。"
+          },
+          "status": {
+            "enum": [
+              "QUEUED",
+              "RUNNING",
+              "RETRY_WAIT",
+              "CANCEL_REQUESTED",
+              "CANCELLED",
+              "SUCCEEDED",
+              "FAILED"
+            ],
+            "title": "State",
+            "type": "string",
+            "description": "任务状态；HTTP200不代表任务成功。UNKNOWN是内部活动状态，不是任务state。"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "错误代码。"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "可读错误说明。"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OCRResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OCRUsage"
+              },
+              {
+                "type": "null"
+              }
             ]
           }
-        ]
+        },
+        "required": [
+          "id",
+          "model",
+          "revision",
+          "status",
+          "attempts",
+          "result_artifact_id",
+          "deadline",
+          "created_at",
+          "updated_at",
+          "error",
+          "result",
+          "usage"
+        ],
+        "title": "TaskView",
+        "type": "object",
+        "description": "TaskView（与当前实现一致）"
       }
     }
   }

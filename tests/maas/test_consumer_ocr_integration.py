@@ -54,7 +54,7 @@ def test_v1_ocr_return_boxes_applies_to_downloaded_result(env, monkeypatch, retu
     assert replay.status_code == 200
     assert Worker(service).run_once()
     task = client.get(created.headers['location'], headers=headers()).json()
-    assert task['state'] == 'SUCCEEDED'
+    assert task['status'] == 'SUCCEEDED'
     response = client.get('/maas/v1/artifacts/' + task['result_artifact_id'], headers=headers())
     assert response.status_code == 200
     line, = response.json()['outputs']['lines']

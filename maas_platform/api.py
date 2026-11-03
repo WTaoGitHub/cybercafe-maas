@@ -1,4 +1,4 @@
-import logging, uuid
+import json, logging, uuid
 from hashlib import sha256
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, Header, Request
@@ -101,7 +101,31 @@ def create_app(settings=None, auth=None):
         return submit_task(task, who, key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskDetail)
-    def get(ident:str,who=Depends(identity)): return service.get(who,ident)
+    def get(ident:str,who=Depends(identity)):
+        task = service.get(who, ident)
+        status = task.pop('state')
+        code = task.pop('error_code')
+        error = None
+        result = None
+        if code or status == 'FAILED':
+            code = code or 'TASK_FAILED'
+            message = {
+                'UNKNOWN_BACKEND_ACTIVITY': 'The outcome of the backend execution could not be confirmed.',
+                'DEADLINE_EXCEEDED': 'The task exceeded its deadline.',
+                'MODEL_REVISION_CHANGED': 'The registered model configuration changed before execution.',
+                'RESULT_NOT_COMMITTED': 'Execution completed but the result could not be committed.',
+                'STORAGE_QUOTA': 'The project or service file quota was exceeded.',
+            }.get(code, 'Task execution reported an error.')
+            error = {'code': code, 'message': message}
+        if status == 'SUCCEEDED' and task['result_artifact_id'] and task['model'].startswith('ocr.'):
+            try:
+                data, _ = service.artifact(who, task['result_artifact_id'])
+                result = json.loads(data)['outputs']
+            except ServiceError as exc:
+                error = {'code': exc.code, 'message': exc.message}
+            except (ValueError, KeyError, TypeError):
+                error = {'code': 'ARTIFACT_CORRUPT', 'message': 'The OCR result file is invalid.'}
+        return {**task, 'status': status, 'error': error, 'result': result}
 
     @app.post('/maas/v1/tasks/{ident}/cancel', response_model=TaskView)
     def cancel(ident:str,who=Depends(identity)): return service.cancel(who,ident)
