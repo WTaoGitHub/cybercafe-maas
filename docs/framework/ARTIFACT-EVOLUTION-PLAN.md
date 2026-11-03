@@ -59,3 +59,7 @@ E14承担公共机制，E15承担文生语音、文生图、文生视频、图�
 [增强清单](ENHANCEMENTS.md) · [API说明](../api/README.md) · [当前接力入口](CURRENT-HANDOFF.md)
 
 计量补充（2026-11-02）：图片使用successful_images，PDF另规划successful_pages；PDF内部渲染成图及重试/缩放/切图不重复计量。当前schema仍单图1，页数与多输入为待实现，详见[E16计量边界](OCR-METERING.md)。
+
+## 后续独立文件服务
+
+上传下载计划拆为独立服务并使用专用对外入口，保留 artifact 路径和任务引用语义。阶段顺序、隔离要求和验收见[后续增强计划 E14](ENHANCEMENTS.md#e14-后续增强独立文件服务与对外入口)。
