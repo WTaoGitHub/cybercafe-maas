@@ -58,7 +58,7 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 
 | 方法 | 路径 | 成功状态 | 用途 |
 |---|---|---:|---|
-| POST | `/ocr`、`/v1/ocr` | 200 | 消费者兼容同步OCR，顶层lines；详见[契约](CONSUMER-OCR.md) |
+| POST | `/v1/ocr` | 202/200 | 异步 OCR 任务提交；详见[契约](CONSUMER-OCR.md) |
 | POST | `/v1/chat/completions` | 200 | 原Chat同步OCR，stream=false |
 | POST | `/maas/v1/artifacts` | 201 | 上传输入文件 |
 | GET | `/maas/v1/artifacts/{ident}` | 200 | 下载同project的未过期输入或结果 |
@@ -71,26 +71,9 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 
 ## 3. 同步OCR
 
-### 3.1 新接入推荐：POST /ocr 或 /v1/ocr
+### 3.1 异步 OCR 快捷入口
 
-单张图片直接提交，HTTP200返回顶层 `lines`，不需要先上传artifact：
-
-```json
-{
-  "model": "ocr.default",
-  "image_base64": "<PNG或JPEG的裸base64>",
-  "return_boxes": true,
-  "request_id": "consumer-business-001"
-}
-```
-
-也可将image_base64替换为image_url（公开HTTP(S)图片地址）；两个来源恰好一个。返回示例：
-
-```json
-{"lines":[{"text":"中文 English","confidence":0.99,"polygon":[[12,12],[220,12],[220,44],[12,44]]}]}
-```
-
-无文字返回 `{"lines":[]}`，仍为成功。request_id仅关联日志，不去重；完整字段、图片下载限制、可运行示例见[消费者OCR契约](CONSUMER-OCR.md)。
+`POST /v1/ocr` 直接接收单张图片并返回任务。详见[消费者 OCR 契约](CONSUMER-OCR.md)。
 
 ### 3.2 原Chat入口：POST /v1/chat/completions
 

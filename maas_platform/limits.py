@@ -20,7 +20,7 @@ class JsonBodyLimit:
             event=await receive()
             if event['type']=='http.disconnect':return
             body.extend(event.get('body',b''))
-            limit=self.sync_limit if scope.get('path') in ('/v1/chat/completions','/ocr','/v1/ocr') else self.task_limit if scope.get('path')=='/maas/v1/tasks' else self.limit
+            limit=self.sync_limit if scope.get('path') in ('/v1/chat/completions','/v1/ocr') else self.task_limit if scope.get('path')=='/maas/v1/tasks' else self.limit
             if len(body)>limit:
                 await too_large();return
             if not event.get('more_body',False):break

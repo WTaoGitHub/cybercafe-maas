@@ -32,8 +32,6 @@ S['ConsumerOCRRequest']['oneOf']=[{'required':['image_url'],'properties':{'image
 S['ConsumerOCRRequest']['properties']['language']['enum']=[None,'auto','zh','en']
 S['TaskCreate']['properties']['input']=ref('OCRInput');S['TaskCreate']['properties']['parameters']={**ref('OCRParameters'),'default':{},'description':notes['TaskCreate']['parameters']}
 S['ArtifactCreated']=obj({'id':string('生成的artifact ID。',example='art_example'),'size':{'type':'integer','minimum':1,'description':'文件字节数。'},'sha256':string('原始文件SHA256。',pattern='^[a-f0-9]{64}$')},['id','size','sha256'])
-S['ConsumerLine']=obj({'text':string('识别文字。'),'confidence':{'type':'number','minimum':0,'maximum':1,'description':'可选置信度，上游未提供时省略。'},'polygon':{'type':'array','minItems':4,'maxItems':4,'description':'可选四边形，原图像素坐标；return_boxes=false时省略。','items':{'type':'array','minItems':2,'maxItems':2,'items':{'type':'number'}}}},['text'])
-S['ConsumerResult']=obj({'lines':{'type':'array','items':ref('ConsumerLine'),'description':'无文字时为空数组，仍为成功。'}},['lines'])
 S['OCRLine']['required'].remove('box')
 S['OCRLine']['properties']['box']['description']='文字坐标，return_boxes为false时省略。'
 S['TaskResult']=obj({'outputs':ref('OCRResult'),'model_revision':string('执行版本。'),'attempt':{'type':'integer','minimum':1,'description':'产出结果的尝试编号。'},'usage':obj({'unit':{'const':'task','description':'计量单位。'},'quantity':{'const':1,'description':'成功任务数量。'}},['unit','quantity'])},['outputs','model_revision','attempt','usage'])
@@ -56,7 +54,6 @@ def add(path,method,operation,summary,description,tag,success,body=None,params=(
  P.setdefault(path,{})[method]=op
 jsonbody=lambda n:{'required':True,'content':{'application/json':{'schema':ref(n)}}}
 ident={'name':'ident','in':'path','required':True,'description':'同project任务或文件ID，依路径类型确定。','schema':{'type':'string'}}
-for path,oid in [('/ocr','ocr')]:add(path,'post',oid,'同步OCR（消费者兼容）','单张PNG/JPEG，decoded大小默认≤10MiB，像素≤20000000。URL和base64恰好一个；无持久同步幂等，request_id仅关联。返回顶层lines，不保存可查询任务。', '同步OCR',{200:('识别成功；空lines为无文字。',ref('ConsumerResult'))},jsonbody('ConsumerOCRRequest'),codes=['404','408','415','429','502'])
 add('/v1/chat/completions','post','chatOCR','同步OCR（Chat格式）','返回上游Chat JSON；choices[0].message.content为OCRResult的JSON字符串。仅stream=false，不支持SSE；不提供持久去重。传输完成状态不明时不可自动重发。','同步OCR',{200:('非流式Chat响应。',ref('ChatResponse'))},jsonbody('ChatRequest'),codes=['400','404','429','502'])
 upload={'required':True,'description':'原始非空字节，不是JSON对象、base64或multipart。默认≤10485760字节。允许的非图片类型不代表OCR可处理。','content':{m:{'schema':{'type':'string','format':'binary'}} for m in ['image/png','image/jpeg','text/plain','application/json','application/octet-stream']}}
 add('/maas/v1/artifacts','post','uploadArtifact','上传输入文件','保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。','文件',{201:('文件已保存。',ref('ArtifactCreated'))},upload,codes=['415','429'])
@@ -77,7 +74,7 @@ add('/maas/v1/usage/{ident}','get','getOCRUsage','查询OCR最终用量收据','
 add('/maas/v1/tasks/{ident}/usage','get','getTaskOCRUsage','按任务查询OCR最终用量','E16已部署并通过真实OCR验收。无需先下载结果即可查询；待执行、失败、取消或旧任务无新账本时404/USAGE_NOT_AVAILABLE，不回填推算。跨project任务404，文件过期不删除已有收据。','计量',{200:('此任务唯一的最终成功OCR用量。',ref('OCRUsage'))},params=[ident],codes=['404'])
 for path in ('/maas/v1/usage/{ident}','/maas/v1/tasks/{ident}/usage'):
  P[path]['get']['responses']['200']['headers']['Cache-Control']={'schema':{'const':'no-store'},'description':'避免缓存客户用量数据。'}
-for path in ('/ocr','/v1/chat/completions'):
+for path in ('/v1/chat/completions',):
  P[path]['post']['responses']['200']['headers']['X-Usage-ID']={'description':'E16已部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。','schema':{'type':'string'}}
 doc={'openapi':'3.1.0','info':{'title':'Cybercafe MaaS 对外OCR API','version':'2026-11-02','description':'代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS API路径不支持query参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。'},'servers':[{'url':'http://{host}:{port}','description':'HTTP：本机/授权SSH转发或受控容器入口。localhost仅指当前调用环境；跨容器须替换host为运维提供的宿主机地址。','variables':{'host':{'default':'localhost'},'port':{'default':'18831'}}},{'url':'https://{host}:{port}','description':'HTTPS：本机或授权SSH转发的私有TLS入口；须使用正确host并信任运维提供的证书，不默认绕过校验。','variables':{'host':{'default':'localhost'},'port':{'default':'18832'}}}],'security':[{'BearerAuth':[]}],'tags':[{'name':n,'description':d} for n,d in [('同步OCR','同步完成并返回识别结果。'),('文件','上传和下载project隔离的输入/结果。'),('异步任务','受理、查询和取消持久任务。'),('模型能力','查询已登记及获授权能力，不代表实时GPU健康。'),('计量','成功图片与真实上游token用量事实，价格及收费归下游。')]],'paths':P,'components':{'securitySchemes':{'BearerAuth':{'type':'http','scheme':'bearer','description':'在Swagger Authorize或VSCode插件的HTTP Bearer认证设置中填入管理员登记的推理key（通常只填key，工具添加Bearer前缀）。生成curl后检查是否包含Authorization: Bearer；缺失时手动添加。不要把真实key保存进OpenAPI或示例。该key须在GPUStack有效且有模型权限，不是管理key。'}},'schemas':S}}
 S['TaskCreate']['examples']=[{'model':'ocr.default','input':{'image':{'artifact_id':'art_REPLACE_WITH_UPLOADED_ID'}},'parameters':{},'timeout_seconds':120,'max_attempts':1}]
@@ -98,7 +95,6 @@ url_curl=inline_curl[:inline_curl.index('  --data ')]+'  --data '+"'"+json.dumps
 url_curl=url_curl.replace('# image_base64规范字段已部署；兼容旧data_url。','# 异步image_url已部署；下载完成后才返回202。').replace('# 此处PNG为有效4×3白色图片；真实识别请替换为自己的完整PNG/JPEG data URL。','# 替换为服务器可下载的公开PNG/JPEG地址。')
 P['/maas/v1/tasks']['post']['x-codeSamples'].append({'lang':'Shell','label':'curl：远程图片URL','source':url_curl})
 S['ConsumerOCRRequest']['examples']=[{'model':'ocr.default','image_base64':'<PNG/JPEG base64>','return_boxes':True}]
-S['ConsumerResult']['examples']=[{'lines':[{'text':'中文 English','confidence':0.99,'polygon':[[0,0],[100,0],[100,20],[0,20]]}]}]
 for path_item in P.values():
  for op in path_item.values():
   for code in ('413','504'):
@@ -119,7 +115,6 @@ if real_file.exists():
   for name,header in target.get('headers',{}).items():
    if name.lower() in real[key]['headers']:header['example']=real[key]['headers'][name.lower()]
  for path,method,status,key,label,description in [
-  ('/ocr','post',200,'syncOCR','realOCR','真实同步OCR成功'),
   ('/v1/chat/completions','post',200,'chatOCR','realChatOCR','真实Chat OCR成功，content仍是JSON字符串'),
   ('/maas/v1/artifacts','post',201,'uploadArtifact','realUpload','真实图片上传响应'),
   ('/maas/v1/artifacts/{ident}','get',200,'resultArtifact','realOCRResult','真实OCR结果文件及计量'),
@@ -137,7 +132,6 @@ if real_file.exists():
   ('/maas/v1/usage/{ident}','get',200,'syncUsage','realSyncUsage','真实同步用量，tokens不可用'),
   ('/maas/v1/tasks/{ident}/usage','get',200,'taskUsage','realTaskUsage','真实按任务查询用量')]:actual(path,method,status,key,label,description)
  S['OCRUsage']['examples']=[real['getUsage']['body'],real['syncUsage']['body']]
- S['ConsumerResult']['examples']=[real['syncOCR']['body']]
  S['ArtifactCreated']['examples']=[real['uploadArtifact']['body']]
  S['TaskResult']['examples']=[real['resultArtifact']['body']]
  S['OCRResult']['examples']=[real['resultArtifact']['body']['outputs']]
@@ -151,6 +145,6 @@ P['/v1/ocr']['post']['requestBody']['content']['application/json']['examples']={
  'url':{'value':{'model':'ocr.default','image_url':url_example['input']['image']['image_url']}},
 }
 # Keep the existing document order for readers comparing API versions.
-doc['paths']={'/ocr':P['/ocr'],'/v1/ocr':P['/v1/ocr'],**{path:item for path,item in P.items() if path not in ('/ocr','/v1/ocr')}}
+doc['paths']={'/v1/ocr':P['/v1/ocr'],**{path:item for path,item in P.items() if path != '/v1/ocr'}}
 path=ROOT/'docs/api/openapi.json';path.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')
 print('Exported',len(P),'paths',sum(len(v) for v in P.values()),'operations')

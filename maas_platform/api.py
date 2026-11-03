@@ -13,7 +13,7 @@ from .errors import ServiceError
 from .schemas import TaskCreate, TaskView
 from .service import TaskService
 from .sync_ingress import SyncIngress
-from .consumer_ocr import ConsumerOCR,ConsumerOCRRequest
+from .consumer_ocr import ConsumerOCRRequest
 
 
 def create_app(settings=None, auth=None):
@@ -61,12 +61,6 @@ def create_app(settings=None, auth=None):
         try:body=await request.json()
         except ValueError:raise ServiceError('SYNC_INPUT','Request must be JSON',422) from None
         return await app.state.sync_ingress.infer(who,body)
-
-    @app.post('/ocr')
-    async def consumer_ocr(body:ConsumerOCRRequest,request:Request,who=Depends(identity)):
-        if body.request_id is not None:
-            logging.getLogger('uvicorn.error').info('ocr request=%s consumer_request=%r',request.state.request_id,body.request_id)
-        return await ConsumerOCR(app.state.sync_ingress).infer(who,body)
 
     @app.post('/maas/v1/artifacts', status_code=201)
     async def upload(request: Request, who=Depends(identity)):

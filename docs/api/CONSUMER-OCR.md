@@ -8,7 +8,7 @@
 
 新任务返回 HTTP 202，幂等复用返回 HTTP 200，两者都返回任务对象和指向 `GET /maas/v1/tasks/{ident}` 的 `Location`。任务成功后按 `result_artifact_id` 下载结果，或按任务 ID 查询用量。等价的标准任务请求与快捷入口共享项目内幂等空间。
 
-`language` 沿用提示语义，`request_id` 也用于日志关联，两者均不参与转换后任务的指纹。`return_boxes` 默认保留坐标。传 `false` 时映射为 `parameters.return_boxes: false`，下载结果中的 `outputs.lines` 省略 `box`。用同一幂等键更改该选项会返回 409。`POST /ocr` 提供原同步契约。现网 `/v1/ocr` 仍按下文的同步契约运行，切换后调用方需改为处理任务响应。
+`language` 沿用提示语义，`request_id` 也用于日志关联，两者均不参与转换后任务的指纹。`return_boxes` 默认保留坐标。传 `false` 时映射为 `parameters.return_boxes: false`，下载结果中的 `outputs.lines` 省略 `box`。用同一幂等键更改该选项会返回 409。新版移除 `POST /ocr`。现网 `/v1/ocr` 仍按下文的同步契约运行，切换后调用方需改为处理任务响应。
 
 ## 已部署的同步契约
 

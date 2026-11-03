@@ -39,7 +39,7 @@ def test_async_images_tokens_and_queries_survive_file_expiry(env,monkeypatch,usa
     assert client.get('/maas/v1/usage/'+meter['id'],headers=headers()).json()==meter
 
 
-@pytest.mark.parametrize('path',['/ocr','/v1/chat/completions'])
+@pytest.mark.parametrize('path',['/v1/chat/completions'])
 def test_sync_header_and_persistent_usage_with_body_compatibility(env,monkeypatch,path):
     client,s,_=configured(env,monkeypatch,{'prompt_tokens':3,'completion_tokens':4})
     image=base64.b64encode(png()).decode();body={'model':'ocr.default','image_base64':image}

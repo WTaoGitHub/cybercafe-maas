@@ -1,82 +1,14 @@
-import base64,json
-import httpx,pytest
+import base64
+import pytest
 from test_integration import env,headers,sync_setup
-from test_consumer_ocr import png,response
+from test_consumer_ocr import png
 
 
 def body(**kw):return {'model':'ocr.default','image_base64':base64.b64encode(png()).decode(),**kw}
 
-@pytest.mark.parametrize('path',['/ocr'])
-def test_consumer_paths_share_admission_and_map_before_single_success_event(env,monkeypatch,path):
-    calls=[];box=[[0,0],[2,0],[2,2],[0,2]]
-    def upstream(request):
-        calls.append(request);sent=json.loads(request.content)
-        assert sent['model']=='real-ocr' and 'request_id' not in sent and 'return_boxes' not in sent
-        return httpx.Response(200,content=response([{'text':'中文 English','score':.9,'box':box}]))
-    client,s,_=sync_setup(env,monkeypatch,upstream)
-    r=client.post(path,headers=headers(),json=body(language='zh',request_id='consumer-001'))
-    assert r.status_code==200 and r.json()=={'lines':[{'text':'中文 English','confidence':.9,'polygon':box}]}
-    assert r.headers['x-request-id'].startswith('req_') and 'language' not in r.json()
-    with s.db.transaction() as c:
-        assert c.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n']==1
-        assert c.execute('SELECT state,outcome FROM sync_activity').fetchone()=={'state':'COMPLETED','outcome':'SUCCEEDED'}
-    assert len(calls)==1
-
-@pytest.mark.parametrize('kind',['empty','no-box','invalid-output'])
-def test_empty_result_and_output_failure_metering(env,monkeypatch,kind):
-    lines=[] if kind=='empty' else [{'text':'x','score':.5,'box':[[0,0],[2,0],[2,2],[0,2]]}]
-    def upstream(request):return httpx.Response(200,content=b'{}' if kind=='invalid-output' else response(lines))
-    client,s,_=sync_setup(env,monkeypatch,upstream)
-    r=client.post('/ocr',headers=headers(),json=body(return_boxes=False))
-    assert r.status_code==(502 if kind=='invalid-output' else 200)
-    if kind!='invalid-output':assert all('polygon' not in line for line in r.json()['lines'])
-    with s.db.transaction() as c:
-        assert c.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n']==(0 if kind=='invalid-output' else 1)
-        assert c.execute('SELECT state FROM sync_activity').fetchone()['state']=='COMPLETED'
-
-@pytest.mark.parametrize('kind',['base64','private-url','schema'])
-def test_invalid_input_never_reaches_inference_or_success_metering(env,monkeypatch,kind):
-    calls=[]
-    def upstream(request):calls.append(request);return httpx.Response(200,content=response([]))
-    client,s,_=sync_setup(env,monkeypatch,upstream)
-    value=body(image_base64='bad!')
-    if kind=='private-url':value={'model':'ocr.default','image_url':'http://169.254.169.254/latest/meta-data/'}
-    if kind=='schema':value=body(language='unsupported')
-    r=client.post('/ocr',headers=headers(),json=value);assert r.status_code==422
-    assert not calls
-    with s.db.transaction() as c:
-        assert c.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n']==0
-        assert c.execute("SELECT count(*) n FROM sync_activity WHERE state='UNKNOWN'").fetchone()['n']==0
-
-
-def test_url_input_is_downloaded_only_after_authorization_maintenance_and_capacity(env,monkeypatch):
-    client,s,_=sync_setup(env,monkeypatch,lambda request:httpx.Response(200,content=response([])))
-    downloads=[]
-    async def fetch(self,url,limit):
-        with s.db.transaction() as c:assert c.execute("SELECT count(*) n FROM sync_activity WHERE state='DISPATCHING'").fetchone()['n']==1
-        downloads.append(url);return png()
-    monkeypatch.setattr('maas_platform.image_fetch.PublicImageFetcher.fetch',fetch)
-    value={'model':'ocr.default','image_url':'https://example.org/a.png'}
-    assert client.post('/ocr',headers=headers('b'),json=value).status_code==403
-    s.pause(True);assert client.post('/ocr',headers=headers(),json=value).status_code==503;s.pause(False)
-    ingress=client.app.state.sync_ingress;who=s.auth.authenticate('gpustack_registered_a');token=ingress.begin(who,'ocr.default',5)
-    assert client.post('/ocr',headers=headers(),json=value).status_code==429
-    ingress.finish(token,True)
-    assert not downloads
-    assert client.post('/ocr',headers=headers(),json=value).status_code==200
-    assert downloads==['https://example.org/a.png']
-
-
-def test_transport_unknown_blocks_following_requests_without_replay(env,monkeypatch):
-    calls=[]
-    def fail(request):calls.append(request);raise httpx.ReadError('unknown remote completion')
-    client,s,_=sync_setup(env,monkeypatch,fail)
-    assert client.post('/ocr',headers=headers(),json=body()).status_code==503
-    assert client.post('/ocr',headers=headers(),json=body()).status_code==503
-    assert len(calls)==1
-    with s.db.transaction() as c:
-        assert c.execute('SELECT state FROM sync_activity').fetchone()['state']=='UNKNOWN'
-        assert c.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n']==0
+def test_legacy_ocr_route_is_removed(env, monkeypatch):
+    client, _, _ = sync_setup(env, monkeypatch, lambda _: pytest.fail('Removed route must not run OCR'))
+    assert client.post('/ocr', headers=headers(), json=body()).status_code == 404
 
 
 @pytest.mark.parametrize('field,value', [
