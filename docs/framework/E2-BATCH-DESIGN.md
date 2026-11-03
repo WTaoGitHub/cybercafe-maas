@@ -10,6 +10,8 @@
 
 ## API 契约草案
 
+请求、响应和示例见 [OpenAPI YAML](../api/batch.openapi.yaml)。
+
 | 接口 | 行为 |
 | --- | --- |
 | `POST /maas/v1/artifacts` | 复用图片上传，并为批次清单增加 UTF-8 JSONL 媒体类型和独立大小限制 |
