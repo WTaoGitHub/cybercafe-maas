@@ -142,3 +142,18 @@ def test_v1_ocr_omitted_idempotency_key_creates_independent_tasks(env, monkeypat
         'input': {'image': {'image_base64': payload['image_base64']}},
     }
     assert client.post('/maas/v1/tasks', headers=headers(), json=standard).status_code == 400
+
+
+def test_v1_ocr_request_id_fallback_order(env, monkeypatch):
+    client, _, _ = sync_setup(env, monkeypatch, lambda _: pytest.fail('Submission must not run OCR'))
+    payload = body(request_id='body-id')
+    explicit = {**headers(idem='explicit-id'), 'X-Request-ID': 'header-id'}
+    fallback = {**headers(), 'X-Request-ID': 'header-id'}
+    for request_headers in (explicit, fallback, headers()):
+        created = client.post('/v1/ocr', headers=request_headers, json=payload)
+        assert created.status_code == 202
+        replay = client.post('/v1/ocr', headers=request_headers, json=payload)
+        assert replay.status_code == 200
+        assert replay.json()['id'] == created.json()['id']
+        conflict = client.post('/v1/ocr', headers=request_headers, json={**payload, 'return_boxes': False})
+        assert conflict.status_code == 409

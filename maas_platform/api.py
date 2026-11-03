@@ -1,4 +1,5 @@
 import logging, uuid
+from hashlib import sha256
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.responses import JSONResponse, Response
@@ -96,7 +97,13 @@ def create_app(settings=None, auth=None):
         image = {'image_url': body.image_url} if body.image_url is not None else {'image_base64': body.image_base64}
         parameters = {} if body.return_boxes else {'return_boxes': False}
         task = TaskCreate(model=body.model, input={'image': image}, parameters=parameters)
-        key = idempotency_key if idempotency_key is not None else 'ocr-' + uuid.uuid4().hex
+        key = idempotency_key
+        if key is None:
+            key = (request.headers.get('X-Request-ID') or '').strip() or body.request_id
+            if key is None:
+                key = 'ocr-' + uuid.uuid4().hex
+            elif len(key) > 128:
+                key = 'ocr-sha256-' + sha256(key.encode()).hexdigest()
         return submit_task(task, who, key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskView)

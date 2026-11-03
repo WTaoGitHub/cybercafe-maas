@@ -398,7 +398,7 @@
       "post": {
         "operationId": "submitOcrTask",
         "summary": "提交异步OCR任务（待部署）",
-        "description": "将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。Idempotency-Key可省略，省略时每次提交生成新键。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示，request_id只用于日志关联。通过Location查询任务，再下载结果。",
+        "description": "将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。按Idempotency-Key、X-Request-ID、请求体request_id顺序取键，均缺失时生成新键。超过128字符的备用ID使用SHA-256映射。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示。通过Location查询任务，再下载结果。",
         "tags": [
           "异步任务"
         ],
@@ -407,13 +407,22 @@
             "name": "Idempotency-Key",
             "in": "header",
             "required": false,
-            "description": "可选。省略时每次提交生成新键。提供时沿用项目内幂等规则。",
+            "description": "可选。优先于两个备用ID。",
             "schema": {
               "type": "string",
               "minLength": 1,
               "maxLength": 128
             },
             "example": "ocr-550e8400-e29b-41d4-a716-446655440000"
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "description": "省略Idempotency-Key时优先使用此ID。重试复用同一ID。",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
