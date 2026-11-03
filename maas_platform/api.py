@@ -10,7 +10,7 @@ from .adapters import adapter_for
 from .auth import AuthConnector
 from .config import Settings
 from .errors import ServiceError
-from .schemas import TaskCreate, TaskView
+from .schemas import TaskCreate, TaskDetail, TaskView
 from .service import TaskService
 from .sync_ingress import SyncIngress
 from .consumer_ocr import ConsumerOCRRequest
@@ -100,7 +100,7 @@ def create_app(settings=None, auth=None):
                 key = 'ocr-sha256-' + sha256(key.encode()).hexdigest()
         return submit_task(task, who, key)
 
-    @app.get('/maas/v1/tasks/{ident}', response_model=TaskView)
+    @app.get('/maas/v1/tasks/{ident}', response_model=TaskDetail)
     def get(ident:str,who=Depends(identity)): return service.get(who,ident)
 
     @app.post('/maas/v1/tasks/{ident}/cancel', response_model=TaskView)

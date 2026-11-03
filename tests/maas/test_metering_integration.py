@@ -28,6 +28,7 @@ def test_async_images_tokens_and_queries_survive_file_expiry(env,monkeypatch,usa
     result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).json()
     assert result['usage']=={'unit':'task','quantity':1}
     meter=result['metering'];assert meter['successful_images']==1 and meter['tokens']['status']==('available' if available else 'unavailable')
+    assert row['usage']==meter
     assert meter['tokens']['input_tokens']==(usage['prompt_tokens'] if available else None)
     for path in ['/maas/v1/tasks/'+task['id']+'/usage','/maas/v1/usage/'+meter['id']]:
         reply=client.get(path,headers=headers());assert reply.json()==meter and reply.headers['cache-control']=='no-store'
@@ -35,6 +36,7 @@ def test_async_images_tokens_and_queries_survive_file_expiry(env,monkeypatch,usa
     assert post(client).status_code==200 and ledger(s)==1 and not Worker(s).run_once()
     with s.db.transaction() as c:c.execute("UPDATE artifacts SET expires_at=now()-interval '1 second'")
     s.cleanup()
+    assert client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()['usage']==meter
     assert client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).status_code==410
     assert client.get('/maas/v1/usage/'+meter['id'],headers=headers()).json()==meter
 
@@ -61,6 +63,7 @@ def test_no_final_usage_for_ineligible_or_historical_task(env,monkeypatch,kind):
         assert Worker(s).run_once()
         if kind=='legacy':
             with s.db.transaction() as c:c.execute('DELETE FROM ocr_usage_records')
+    assert client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()['usage'] is None
     r=client.get('/maas/v1/tasks/'+task['id']+'/usage',headers=headers());assert r.status_code==404 and r.json()['error']['code']=='USAGE_NOT_AVAILABLE' and ledger(s)==0
 
 

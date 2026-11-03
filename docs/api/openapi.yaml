@@ -1142,7 +1142,7 @@ paths:
     get:
       operationId: getTask
       summary: 查询任务
-      description: 返回任务状态和结果文件ID，不内嵌结果。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。
+      description: 返回任务状态和结果文件ID，不内嵌结果。成功且有最终收据时返回 usage；其他状态或无收据时为 null。文件过期后收据仍可查询。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。
       tags:
       - 异步任务
       parameters:
@@ -1158,7 +1158,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskView'
+                $ref: '#/components/schemas/TaskDetail'
               examples:
                 realSucceeded:
                   summary: 真实任务完成状态
@@ -1174,6 +1174,21 @@ paths:
                     deadline: '2026-11-02T10:00:03.592022Z'
                     created_at: '2026-11-02T09:58:03.592022Z'
                     updated_at: '2026-11-02T09:58:03.886218Z'
+                    usage:
+                      id: usage_task_task_6032a4ff0f57481da1b09d4fb9888e33
+                      model: ocr.default
+                      status: final
+                      tokens:
+                        reason: UPSTREAM_USAGE_ABSENT
+                        source: null
+                        status: unavailable
+                        input_tokens: null
+                        output_tokens: null
+                      revision: ocr-registry-r1
+                      source_id: task_6032a4ff0f57481da1b09d4fb9888e33
+                      recorded_at: '2026-11-02T09:58:03.884305+00:00'
+                      source_type: task
+                      successful_images: 1
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -2697,3 +2712,14 @@ components:
             type: string
           image_url:
             type: 'null'
+    TaskDetail:
+      allOf:
+      - $ref: '#/components/schemas/TaskView'
+      - type: object
+        properties:
+          usage:
+            anyOf:
+            - $ref: '#/components/schemas/OCRUsage'
+            - type: 'null'
+        required:
+        - usage

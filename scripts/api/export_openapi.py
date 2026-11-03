@@ -67,7 +67,8 @@ S['AsyncOCRRequest']['properties']['return_boxes']={'type':'boolean','default':T
 add('/v1/ocr','post','submitOcrTask','提交异步OCR任务（待部署）','将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。按Idempotency-Key、X-Request-ID、请求体request_id顺序取键，均缺失时生成新键。超过128字符的备用ID使用SHA-256映射。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示。通过Location查询任务，再下载结果。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回原任务。',ref('TaskView'))},jsonbody('AsyncOCRRequest'),[{**idem,'required':False,'description':'可选。优先于两个备用ID。'},{'name':'X-Request-ID','in':'header','required':False,'description':'省略Idempotency-Key时优先使用此ID。重试复用同一ID。','schema':{'type':'string'}}],['400','404','408','409','415','429'])
 for status in ('200','202'):
  P['/v1/ocr']['post']['responses'][status]['headers']['Location']=copy.deepcopy(P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location'])
-add('/maas/v1/tasks/{ident}','get','getTask','查询任务','返回任务状态和结果文件ID，不内嵌结果。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。','异步任务',{200:('当前任务状态，需检查state。',ref('TaskView'))},params=[ident],codes=['404'])
+S['TaskDetail']={'allOf':[ref('TaskView'),obj({'usage':{'anyOf':[ref('OCRUsage'),{'type':'null'}]}},['usage'])]}
+add('/maas/v1/tasks/{ident}','get','getTask','查询任务','返回任务状态和结果文件ID，不内嵌结果。成功且有最终收据时返回 usage；其他状态或无收据时为 null。文件过期后收据仍可查询。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。','异步任务',{200:('当前任务状态，需检查state。',ref('TaskDetail'))},params=[ident],codes=['404'])
 add('/maas/v1/tasks/{ident}/cancel','post','cancelTask','取消或请求取消任务','无需请求体。QUEUED/RETRY_WAIT→CANCELLED，RUNNING→CANCEL_REQUESTED，终态保持；重复调用不创建任务。不保证立即终止GPU活动。','异步任务',{200:('更新后或已有终态任务。',ref('TaskView'))},params=[ident],codes=['404'])
 add('/maas/v1/models/{name}/capabilities','get','modelCapabilities','查询已授权模型能力','不是实时推理健康检查。当前execution_modes实际只列async，同步入口仍可独立使用；未知模型404、无权限403。没有公开模型列表接口。','模型能力',{200:('当前登记的模型版本、预算及输入/参数schema。',ref('Capabilities'))},params=[{'name':'name','in':'path','required':True,'description':'已登记逻辑模型名，当前ocr.default；不是GPUStack内部部署名。','schema':{'type':'string','example':'ocr.default'}}],codes=['404'])
 add('/maas/v1/usage/{ident}','get','getOCRUsage','查询OCR最终用量收据','E16已部署并通过真实OCR验收。使用同步响应X-Usage-ID或异步结果metering.id，按已知ID查询。仅同project；与artifact TTL独立保存，无自动清理/分页列表/价格。不可用404/USAGE_NOT_AVAILABLE；当前PP-OCRv4没有tokens报告，tokens为null及unavailable，不得按tokens结算。','计量',{200:('成功OCR的最终用量事实。',ref('OCRUsage'))},params=[{'name':'ident','in':'path','required':True,'description':'usage_开头的计量ID，不是artifact ID。','schema':{'type':'string'}}],codes=['404'])
@@ -111,6 +112,7 @@ if real_file.exists():
   if key=='capabilities':
    for field in ('input_schema','parameters_schema'):body[field]=inline_local_schema_refs(body[field])
    detail+=' 为兼容预览器，仅此示例将嵌入JSON Schema的局部引用等价内联；真实HTTP响应与原始响应集合仍保留$defs/$ref。'
+  if path=='/maas/v1/tasks/{ident}' and method=='get':body={**body,'usage':real['getUsage']['body']}
   media.setdefault('examples',{})[label]={'summary':description,'description':detail,'value':body}
   for name,header in target.get('headers',{}).items():
    if name.lower() in real[key]['headers']:header['example']=real[key]['headers'][name.lower()]

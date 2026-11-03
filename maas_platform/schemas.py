@@ -29,6 +29,10 @@ class TaskView(BaseModel):
     updated_at: datetime
 
 
+class TaskDetail(TaskView):
+    usage: dict[str, Any] | None
+
+
 class ApiErrorDetail(BaseModel):
     code: str
     message: str
