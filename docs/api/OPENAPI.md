@@ -1,6 +1,6 @@
 # OpenAPI / Swagger接口文档
 
-> **2026-11-03 代码契约待部署**。OpenAPI 中的 `POST /v1/ocr` 已改为异步提交，需要 `Idempotency-Key`，返回 202 或幂等复用 200。下文现网同步说明适用于切换前。详见[消费者接口](CONSUMER-OCR.md)。
+> **2026-11-03 代码契约待部署**。OpenAPI 中的 `POST /v1/ocr` 已改为异步提交，可选传入 `Idempotency-Key`，返回 202 或幂等复用 200。下文现网同步说明适用于切换前。详见[消费者接口](CONSUMER-OCR.md)。
 
 > **2026-11-02现网已发布**：11个操作均已部署，新图片字段与远程URL、E16计量查询已完成真实OCR验收。当前PP-OCRv4 tokens为null/unavailable；Responses中的真实示例已脱敏，历史ID不可复用。
 

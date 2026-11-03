@@ -239,15 +239,14 @@ paths:
     post:
       operationId: submitOcrTask
       summary: 提交异步OCR任务（待部署）
-      description: 将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。必填Idempotency-Key，与任务入口共享项目内幂等空间。language仍为提示，request_id只用于日志关联。通过Location查询任务，再下载结果。
+      description: 将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。Idempotency-Key可省略，省略时每次提交生成新键。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示，request_id只用于日志关联。通过Location查询任务，再下载结果。
       tags:
       - 异步任务
       parameters:
       - name: Idempotency-Key
         in: header
-        required: true
-        description: project范围持久幂等键。示例值仅演示：每次新业务操作生成新UUID并保存，重试同一操作沿用原值和原body，不能反复用示例值提交不同任务。同键且同请求返回当前原任务；不同内容409。新artifact
-          ID视为不同内容。不得换键重做完成不明推理。
+        required: false
+        description: 可选。省略时每次提交生成新键。提供时沿用项目内幂等规则。
         schema:
           type: string
           minLength: 1

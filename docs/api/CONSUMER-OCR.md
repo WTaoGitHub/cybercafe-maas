@@ -2,7 +2,9 @@
 
 ## 2026-11-03 的异步接口变更（待部署）
 
-新版 `POST /v1/ocr` 接受原顶层 `model`、`image_base64` 或 `image_url`，并要求 `Idempotency-Key` 请求头。服务把图片字段放入 `input.image`，调用 `POST /maas/v1/tasks` 使用的同一提交逻辑。任务采用默认超时 120 秒、默认最多 3 次尝试及映射后的 `parameters`。重试仍遵守现有任务执行规则。
+新版 `POST /v1/ocr` 接受原顶层 `model`、`image_base64` 或 `image_url`，并接受可选的 `Idempotency-Key` 请求头。服务把图片字段放入 `input.image`，调用 `POST /maas/v1/tasks` 使用的同一提交逻辑。任务采用默认超时 120 秒、默认最多 3 次尝试及映射后的 `parameters`。重试仍遵守现有任务执行规则。
+
+省略幂等键时，每次请求生成新键，重复提交会创建新任务。需要安全重试时，调用方应在首次提交前保存自己的键，并在重试时复用。标准任务入口仍要求此请求头。
 
 新任务返回 HTTP 202，幂等复用返回 HTTP 200，两者都返回任务对象和指向 `GET /maas/v1/tasks/{ident}` 的 `Location`。任务成功后按 `result_artifact_id` 下载结果，或按任务 ID 查询用量。等价的标准任务请求与快捷入口共享项目内幂等空间。
 

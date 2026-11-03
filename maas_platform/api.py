@@ -90,13 +90,14 @@ def create_app(settings=None, auth=None):
         return submit_task(body, who, idempotency_key)
 
     @app.post('/v1/ocr', status_code=202, response_model=TaskView)
-    def submit_ocr(body:ConsumerOCRRequest, request:Request, who=Depends(identity), idempotency_key:str=Header(default='')):
+    def submit_ocr(body:ConsumerOCRRequest, request:Request, who=Depends(identity), idempotency_key:str|None=Header(default=None)):
         if body.request_id is not None:
             logging.getLogger('uvicorn.error').info('ocr request=%s consumer_request=%r',request.state.request_id,body.request_id)
         image = {'image_url': body.image_url} if body.image_url is not None else {'image_base64': body.image_base64}
         parameters = {} if body.return_boxes else {'return_boxes': False}
         task = TaskCreate(model=body.model, input={'image': image}, parameters=parameters)
-        return submit_task(task, who, idempotency_key)
+        key = idempotency_key if idempotency_key is not None else 'ocr-' + uuid.uuid4().hex
+        return submit_task(task, who, key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskView)
     def get(ident:str,who=Depends(identity)): return service.get(who,ident)

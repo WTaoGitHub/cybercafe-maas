@@ -67,7 +67,7 @@ add('/maas/v1/tasks','post','createTask','提交异步OCR任务','input.image支
 for status in ['200','202']:P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location']={'description':'任务查询相对路径。','schema':{'type':'string'}}
 S['AsyncOCRRequest']=copy.deepcopy(S['ConsumerOCRRequest'])
 S['AsyncOCRRequest']['properties']['return_boxes']={'type':'boolean','default':True,'description':'传false时结果文件的outputs.lines省略box。'}
-add('/v1/ocr','post','submitOcrTask','提交异步OCR任务（待部署）','将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。必填Idempotency-Key，与任务入口共享项目内幂等空间。language仍为提示，request_id只用于日志关联。通过Location查询任务，再下载结果。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回原任务。',ref('TaskView'))},jsonbody('AsyncOCRRequest'),[idem],['400','404','408','409','415','429'])
+add('/v1/ocr','post','submitOcrTask','提交异步OCR任务（待部署）','将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。Idempotency-Key可省略，省略时每次提交生成新键。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示，request_id只用于日志关联。通过Location查询任务，再下载结果。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回原任务。',ref('TaskView'))},jsonbody('AsyncOCRRequest'),[{**idem,'required':False,'description':'可选。省略时每次提交生成新键。提供时沿用项目内幂等规则。'}],['400','404','408','409','415','429'])
 for status in ('200','202'):
  P['/v1/ocr']['post']['responses'][status]['headers']['Location']=copy.deepcopy(P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location'])
 add('/maas/v1/tasks/{ident}','get','getTask','查询任务','返回任务状态和结果文件ID，不内嵌结果。不提供列表、webhook或SSE。建议1–2秒有界轮询。任务终态不证明远端GPU活动已结束；UNKNOWN可能表现为FAILED/error_code=UNKNOWN_BACKEND_ACTIVITY。当前无输入/结果文件生命周期摘要。','异步任务',{200:('当前任务状态，需检查state。',ref('TaskView'))},params=[ident],codes=['404'])

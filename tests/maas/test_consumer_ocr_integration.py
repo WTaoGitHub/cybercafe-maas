@@ -90,7 +90,6 @@ def test_v1_ocr_shares_task_submission_and_idempotency(env, monkeypatch, field, 
     monkeypatch.setattr('maas_platform.task_image_url.fetch_image', fetch)
     payload = {'model': 'ocr.default', field: value}
     key = headers(idem='ocr-alias')
-    assert client.post('/v1/ocr', headers=headers(), json=payload).status_code == 400
     created = client.post('/v1/ocr', headers=key, json=payload)
     assert created.status_code == 202
     assert created.headers['location'] == '/maas/v1/tasks/' + created.json()['id']
@@ -130,3 +129,16 @@ def test_v1_ocr_return_boxes_applies_to_downloaded_result(env, monkeypatch, retu
     assert line['text'] == 'hello'
     assert line['score'] == 0.9
     assert ('box' in line) == return_boxes
+
+def test_v1_ocr_omitted_idempotency_key_creates_independent_tasks(env, monkeypatch):
+    client, _, _ = sync_setup(env, monkeypatch, lambda _: pytest.fail('Submission must not run OCR'))
+    payload = body()
+    first = client.post('/v1/ocr', headers=headers(), json=payload)
+    second = client.post('/v1/ocr', headers=headers(), json=payload)
+    assert first.status_code == second.status_code == 202
+    assert first.json()['id'] != second.json()['id']
+    standard = {
+        'model': payload['model'],
+        'input': {'image': {'image_base64': payload['image_base64']}},
+    }
+    assert client.post('/maas/v1/tasks', headers=headers(), json=standard).status_code == 400
