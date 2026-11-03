@@ -7,7 +7,7 @@
 
 ## 运维查询入口
 
-设置 `GPUSTACK_URL` 与授权读取 worker / model instance 的 `GPUSTACK_API_KEY`。将数据库放在仅运维可访问的目录。首次执行采样会创建数据库。
+设置 `GPUSTACK_URL` 与授权读取 worker / model instance 的 `GPUSTACK_API_KEY`。v2.2.3 的模型副本列表有组织所有者权限检查，请按目标组织配置运维凭据。将数据库放在仅运维可访问的目录。首次执行采样会创建数据库。
 
 ```bash
 python3 -m maas_platform.gpu_time --db /var/lib/maas-ops/gpu-time.sqlite sample
@@ -15,3 +15,7 @@ python3 -m maas_platform.gpu_time --db /var/lib/maas-ops/gpu-time.sqlite report 
 ```
 
 报告只列截至查询时曾观测到的 UUID，当天统计截至查询时间。最后一个样本之后等待下一次采样确认，在此期间计为未知。未能映射到 GPU 的副本绑定在采样摘要中计数；含未映射绑定的区间单列为模型统计未知。
+
+## 验证状态
+
+分页、跨日、失败间隔、UUID 冲突和重复副本去重的离线测试已通过。实机独立状态库试采使用现有推理凭据时收到 HTTP 错误。需使用具备目标组织列表权限的凭据完成实机验收，再配置定时采样。
