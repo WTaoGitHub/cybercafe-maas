@@ -5,6 +5,7 @@ info:
   description: 代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。用量查询支持usage_type参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain
     text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger
     UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。 成功及部分错误响应示例取自2026-11-02真实验收，自建文字测试图与默认白图请求不同；节点已脱敏，历史测试ID不可复用，不包含凭据或真实连接地址。
+    E2 批次接口及文件接口的 JSONL/ZIP 扩展为待实现草案。
 servers:
 - url: http://{host}:{port}
   description: HTTP：本机/授权SSH转发或受控容器入口。localhost仅指当前调用环境；跨容器须替换host为运维提供的宿主机地址。
@@ -422,7 +423,7 @@ paths:
     post:
       operationId: uploadArtifact
       summary: 上传输入文件
-      description: 保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。
+      description: 保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。 E2 批次媒体类型扩展待实现。
       tags:
       - 文件
       parameters: []
@@ -567,11 +568,24 @@ paths:
             schema:
               type: string
               format: binary
+          application/x-ndjson:
+            schema:
+              type: string
+              description: UTF-8 JSONL，每个非空行是独立 JSON 对象。
+            example: '{"custom_id": "page-001", "input": {"image": {"artifact_id": "art_page_001"}}, "parameters":
+              {"return_boxes": false}}
+
+              {"custom_id": "page-002", "input": {"image": {"artifact_id": "art_page_002"}}}
+
+              '
+            x-jsonl-line-schema:
+              $ref: '#/components/schemas/ManifestLine'
+            x-implementation-status: draft
   /maas/v1/artifacts/{ident}:
     get:
       operationId: downloadArtifact
       summary: 下载输入或结果文件
-      description: 需同project且文件可用。可下载原始结果文件；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。
+      description: 需同project且文件可用。可下载原始结果文件；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。 E2 批次媒体类型扩展待实现。
       tags:
       - 文件
       parameters:
@@ -674,6 +688,32 @@ paths:
               schema:
                 type: string
                 format: binary
+            application/x-ndjson:
+              schema:
+                type: string
+              x-jsonl-line-schemas:
+                success:
+                  $ref: '#/components/schemas/SuccessLine'
+                error:
+                  $ref: '#/components/schemas/FailureLine'
+              examples:
+                success:
+                  value: '{"custom_id": "page-001", "task_id": "task_example_a", "result_artifact_id": "art_result_a",
+                    "usage_id": "usage_task_task_example_a"}
+
+                    '
+                error:
+                  value: '{"custom_id": "page-002", "task_id": "task_example_b", "status": "FAILED", "error": {"code":
+                    "UNKNOWN_BACKEND_ACTIVITY", "message": "后端执行状态未确认。", "retryable": false}}
+
+                    '
+              x-implementation-status: draft
+            application/zip:
+              schema:
+                type: string
+                format: binary
+                description: 包含成功清单、失败清单及 OCR 结果 JSON。
+              x-implementation-status: draft
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
@@ -2114,6 +2154,349 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
+  /maas/v1/batches:
+    post:
+      operationId: createBatch
+      summary: 创建 OCR 批次
+      description: E2 草案，待实现。整批校验后才接纳。每个 custom_id 在清单中唯一。首版建议每批最多 100 项，实际以服务端配置为准。
+      responses:
+        '202':
+          description: 批次已接纳。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+              example:
+                id: batch_example
+                model: ocr.default
+                revision: r1
+                status: QUEUED
+                created_at: '2026-11-03T02:00:00Z'
+                updated_at: '2026-11-03T02:00:00Z'
+                deadline: '2026-11-03T03:00:00Z'
+                counts:
+                  total: 2
+                  pending: 2
+                  active: 0
+                  succeeded: 0
+                  failed: 0
+                  cancelled: 0
+                  expired: 0
+                error: null
+                outputs:
+                  success_file_id: null
+                  error_file_id: null
+                  zip_file_id: null
+                  zip_status: PENDING
+                  zip_error: null
+                  expires_at: null
+          headers:
+            Location:
+              schema:
+                type: string
+              example: /maas/v1/batches/batch_example
+        '200':
+          description: 同项目、同幂等键且请求内容相同，返回已有批次的当前状态。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+              example:
+                id: batch_example
+                model: ocr.default
+                revision: r1
+                status: COMPLETED
+                created_at: '2026-11-03T02:00:00Z'
+                updated_at: '2026-11-03T02:00:00Z'
+                deadline: '2026-11-03T03:00:00Z'
+                counts:
+                  total: 2
+                  pending: 0
+                  active: 0
+                  succeeded: 1
+                  failed: 1
+                  cancelled: 0
+                  expired: 0
+                error: null
+                outputs:
+                  success_file_id: art_success
+                  error_file_id: art_errors
+                  zip_file_id: art_zip
+                  zip_status: READY
+                  zip_error: null
+                  expires_at: '2026-11-04T02:00:00Z'
+        '401':
+          description: 缺少有效 Bearer Key。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '403':
+          description: 凭据没有所需模型权限。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '404':
+          description: 资源不可用、已过期或不属于当前项目。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '409':
+          description: 幂等键已绑定不同请求。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '413':
+          description: 文件或请求体超过字节限制。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '422':
+          description: 参数或清单无效。逐行校验失败时 error.line 为从 1 开始的行号。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '429':
+          description: 触及队列、批次或存储额度。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '503':
+          description: 服务暂时不可用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 项目内幂等键。
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchCreate'
+            example:
+              model: ocr.default
+              input_file_id: art_manifest
+              timeout_seconds: 3600
+      x-implementation-status: draft
+  /maas/v1/batches/{batch_id}:
+    parameters:
+    - name: batch_id
+      in: path
+      required: true
+      description: 批次 ID。
+      schema:
+        type: string
+        pattern: ^batch_[a-z0-9_]+$
+    get:
+      operationId: getBatch
+      summary: 查询批次状态及结果文件
+      description: E2 草案，待实现。COMPLETED 表示清单已发布，批内可有失败项。取消和到期后保留已完成结果。
+      responses:
+        '200':
+          description: 当前批次快照。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+              example:
+                id: batch_example
+                model: ocr.default
+                revision: r1
+                status: COMPLETED
+                created_at: '2026-11-03T02:00:00Z'
+                updated_at: '2026-11-03T02:00:00Z'
+                deadline: '2026-11-03T03:00:00Z'
+                counts:
+                  total: 2
+                  pending: 0
+                  active: 0
+                  succeeded: 1
+                  failed: 1
+                  cancelled: 0
+                  expired: 0
+                error: null
+                outputs:
+                  success_file_id: art_success
+                  error_file_id: art_errors
+                  zip_file_id: art_zip
+                  zip_status: READY
+                  zip_error: null
+                  expires_at: '2026-11-04T02:00:00Z'
+        '401':
+          description: 缺少有效 Bearer Key。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '404':
+          description: 资源不可用、已过期或不属于当前项目。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '503':
+          description: 服务暂时不可用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+      x-implementation-status: draft
+  /maas/v1/batches/{batch_id}/items:
+    parameters:
+    - name: batch_id
+      in: path
+      required: true
+      description: 批次 ID。
+      schema:
+        type: string
+        pattern: ^batch_[a-z0-9_]+$
+    get:
+      operationId: listBatchItems
+      summary: 分页查询批次条目
+      description: E2 草案，待实现。游标绑定批次，条目顺序固定，状态可随执行推进。
+      responses:
+        '200':
+          description: 按输入序号升序。next_cursor 为 null 时已到最后一页。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchItemsPage'
+              example:
+                items:
+                - sequence: 1
+                  custom_id: page-001
+                  task_id: task_example_a
+                  status: SUCCEEDED
+                  error: null
+                - sequence: 2
+                  custom_id: page-002
+                  task_id: task_example_b
+                  status: FAILED
+                  error:
+                    code: UNKNOWN_BACKEND_ACTIVITY
+                    message: 后端执行状态未确认。
+                    retryable: false
+                next_cursor: null
+        '401':
+          description: 缺少有效 Bearer Key。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '404':
+          description: 资源不可用、已过期或不属于当前项目。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '422':
+          description: 参数或清单无效。逐行校验失败时 error.line 为从 1 开始的行号。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '503':
+          description: 服务暂时不可用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        description: 上一页返回的不透明游标。
+        schema:
+          type: string
+          minLength: 1
+      - name: limit
+        in: query
+        required: false
+        description: 每页最多返回的条目数。
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+      x-implementation-status: draft
+  /maas/v1/batches/{batch_id}/cancel:
+    parameters:
+    - name: batch_id
+      in: path
+      required: true
+      description: 批次 ID。
+      schema:
+        type: string
+        pattern: ^batch_[a-z0-9_]+$
+    post:
+      operationId: cancelBatch
+      summary: 请求取消批次
+      description: E2 草案，待实现。停止新派发，收敛在途任务并保留部分结果。CANCEL_REQUESTED 表示请求已登记。
+      responses:
+        '200':
+          description: 返回当前批次快照。已终结的批次返回已有终态。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+              example:
+                id: batch_example
+                model: ocr.default
+                revision: r1
+                status: CANCEL_REQUESTED
+                created_at: '2026-11-03T02:00:00Z'
+                updated_at: '2026-11-03T02:00:00Z'
+                deadline: '2026-11-03T03:00:00Z'
+                counts:
+                  total: 2
+                  pending: 2
+                  active: 0
+                  succeeded: 0
+                  failed: 0
+                  cancelled: 0
+                  expired: 0
+                error: null
+                outputs:
+                  success_file_id: null
+                  error_file_id: null
+                  zip_file_id: null
+                  zip_status: PENDING
+                  zip_error: null
+                  expires_at: null
+        '401':
+          description: 缺少有效 Bearer Key。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '404':
+          description: 资源不可用、已过期或不属于当前项目。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+        '503':
+          description: 服务暂时不可用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchApiError'
+      x-implementation-status: draft
 components:
   securitySchemes:
     BearerAuth:
@@ -3065,3 +3448,322 @@ components:
       title: TaskView
       type: object
       description: TaskView（与当前实现一致）
+    BatchCreate:
+      type: object
+      additionalProperties: false
+      required:
+      - model
+      - input_file_id
+      properties:
+        model:
+          type: string
+          minLength: 1
+          maxLength: 128
+        input_file_id:
+          type: string
+          pattern: ^art_[a-z0-9_]+$
+        timeout_seconds:
+          type: integer
+          minimum: 1
+          description: 批次执行期限，省略时用服务端默认值。最大值由服务端配置，超限返回 422。
+    ManifestLine:
+      type: object
+      additionalProperties: false
+      required:
+      - custom_id
+      - input
+      properties:
+        custom_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        input:
+          type: object
+          additionalProperties: false
+          required:
+          - image
+          properties:
+            image:
+              type: object
+              additionalProperties: false
+              required:
+              - artifact_id
+              properties:
+                artifact_id:
+                  type: string
+                  pattern: ^art_[a-z0-9_]+$
+        parameters:
+          type: object
+          additionalProperties: false
+          properties:
+            return_boxes:
+              type: boolean
+              default: true
+    Batch:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - model
+      - revision
+      - status
+      - created_at
+      - updated_at
+      - deadline
+      - counts
+      - error
+      - outputs
+      properties:
+        id:
+          type: string
+          pattern: ^batch_[a-z0-9_]+$
+        model:
+          type: string
+        revision:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - RUNNING
+          - FINALIZING
+          - COMPLETED
+          - FAILED
+          - CANCEL_REQUESTED
+          - CANCELLED
+          - EXPIRED
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        deadline:
+          type: string
+          format: date-time
+        counts:
+          $ref: '#/components/schemas/BatchCounts'
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ItemError'
+          - type: 'null'
+        outputs:
+          $ref: '#/components/schemas/BatchOutputs'
+    BatchCounts:
+      type: object
+      additionalProperties: false
+      required:
+      - total
+      - pending
+      - active
+      - succeeded
+      - failed
+      - cancelled
+      - expired
+      properties:
+        total:
+          type: integer
+          minimum: 0
+        pending:
+          type: integer
+          minimum: 0
+        active:
+          type: integer
+          minimum: 0
+        succeeded:
+          type: integer
+          minimum: 0
+        failed:
+          type: integer
+          minimum: 0
+        cancelled:
+          type: integer
+          minimum: 0
+        expired:
+          type: integer
+          minimum: 0
+      description: 除 total 外各项互斥，其和等于 total。active 包含已派发且尚未终结的子任务。
+    BatchOutputs:
+      type: object
+      additionalProperties: false
+      required:
+      - success_file_id
+      - error_file_id
+      - zip_file_id
+      - zip_status
+      - zip_error
+      - expires_at
+      properties:
+        success_file_id:
+          anyOf:
+          - type: string
+            pattern: ^art_[a-z0-9_]+$
+          - type: 'null'
+        error_file_id:
+          anyOf:
+          - type: string
+            pattern: ^art_[a-z0-9_]+$
+          - type: 'null'
+        zip_file_id:
+          anyOf:
+          - type: string
+            pattern: ^art_[a-z0-9_]+$
+          - type: 'null'
+        zip_status:
+          type: string
+          enum:
+          - PENDING
+          - READY
+          - FAILED
+          - EXPIRED
+        zip_error:
+          anyOf:
+          - $ref: '#/components/schemas/ItemError'
+          - type: 'null'
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+      description: 清单发布前文件 ID 为 null。成功与失败清单一起发布，空清单为零字节。ZIP 单独生成，失败时清单仍可下载。过期后按文件接口语义返回 404。
+    ItemError:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - retryable
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        retryable:
+          type: boolean
+    BatchItem:
+      type: object
+      additionalProperties: false
+      required:
+      - sequence
+      - custom_id
+      - task_id
+      - status
+      - error
+      properties:
+        sequence:
+          type: integer
+          minimum: 1
+        custom_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        task_id:
+          anyOf:
+          - type: string
+            pattern: ^task_[a-z0-9_]+$
+          - type: 'null'
+        status:
+          type: string
+          enum:
+          - PENDING
+          - QUEUED
+          - RETRY_WAIT
+          - RUNNING
+          - CANCEL_REQUESTED
+          - SUCCEEDED
+          - FAILED
+          - CANCELLED
+          - EXPIRED
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ItemError'
+          - type: 'null'
+    BatchItemsPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchItem'
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+    SuccessLine:
+      type: object
+      additionalProperties: false
+      required:
+      - custom_id
+      - task_id
+      - result_artifact_id
+      - usage_id
+      properties:
+        custom_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        task_id:
+          type: string
+          pattern: ^task_[a-z0-9_]+$
+        result_artifact_id:
+          type: string
+          pattern: ^art_[a-z0-9_]+$
+        usage_id:
+          type: string
+          pattern: ^usage_[a-z0-9_]+$
+    FailureLine:
+      type: object
+      additionalProperties: false
+      required:
+      - custom_id
+      - task_id
+      - status
+      - error
+      properties:
+        custom_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        task_id:
+          anyOf:
+          - type: string
+            pattern: ^task_[a-z0-9_]+$
+          - type: 'null'
+        status:
+          type: string
+          enum:
+          - FAILED
+          - CANCELLED
+          - EXPIRED
+        error:
+          $ref: '#/components/schemas/ItemError'
+    BatchApiError:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+          - code
+          - message
+          - retryable
+          - request_id
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+            request_id:
+              type: string
+            line:
+              type: integer
+              minimum: 1

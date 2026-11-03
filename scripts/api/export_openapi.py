@@ -1,5 +1,6 @@
 """Export the existing customer contract; does not change API/server routes."""
 import copy,json,sys
+from merge_batch_openapi import merge_batch
 from schema_examples import inline_local_schema_refs
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
@@ -184,5 +185,6 @@ for path in usage_paths:
   media.setdefault('examples',{})[kind]={'summary':f'usage_type={kind}（示例）','value':value}
 # Keep the existing document order for readers comparing API versions.
 doc['paths']={'/maas/v1/ocr':P['/maas/v1/ocr'],**{path:item for path,item in P.items() if path != '/maas/v1/ocr'}}
+merge_batch(doc)
 path=ROOT/'docs/api/openapi.json';path.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')
 print('Exported',len(P),'paths',sum(len(v) for v in P.values()),'operations')

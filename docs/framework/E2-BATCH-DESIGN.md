@@ -10,7 +10,7 @@
 
 ## API 契约草案
 
-请求、响应和示例见 [OpenAPI YAML](../api/batch.openapi.yaml)。
+请求、响应和示例见 [主 OpenAPI YAML](../api/openapi.yaml)。
 
 | 接口 | 行为 |
 | --- | --- |
