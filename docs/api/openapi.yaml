@@ -35,7 +35,7 @@ tags:
 - name: 计量
   description: 成功图片与真实上游token用量事实，价格及收费归下游。
 paths:
-  /v1/ocr:
+  /maas/v1/ocr:
     post:
       operationId: submitOcrTask
       summary: 提交异步OCR任务（待部署）
@@ -249,7 +249,7 @@ paths:
                 value:
                   model: ocr.default
                   image_url: https://example.org/replace-with-public-image.png
-  /v1/chat/completions:
+  /gpustack/v1/chat/completions:
     post:
       operationId: chatOCR
       summary: 同步OCR（Chat格式）

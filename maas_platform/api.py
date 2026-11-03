@@ -56,7 +56,7 @@ def create_app(settings=None, auth=None):
         with service.db.transaction() as c: c.execute('SELECT 1')
         return {'ok':True,'version':'0.1.0','stage':'P3-controlled-ingress-pilot'}
 
-    @app.post('/v1/chat/completions')
+    @app.post('/gpustack/v1/chat/completions')
     async def synchronous(request:Request,who=Depends(identity)):
         try:body=await request.json()
         except ValueError:raise ServiceError('SYNC_INPUT','Request must be JSON',422) from None
@@ -84,7 +84,7 @@ def create_app(settings=None, auth=None):
     def submit(body:TaskCreate, who=Depends(identity), idempotency_key:str=Header(default='')):
         return submit_task(body, who, idempotency_key)
 
-    @app.post('/v1/ocr', status_code=202, response_model=TaskView)
+    @app.post('/maas/v1/ocr', status_code=202, response_model=TaskView)
     def submit_ocr(body:ConsumerOCRRequest, request:Request, who=Depends(identity), idempotency_key:str|None=Header(default=None)):
         if body.request_id is not None:
             logging.getLogger('uvicorn.error').info('ocr request=%s consumer_request=%r',request.state.request_id,body.request_id)

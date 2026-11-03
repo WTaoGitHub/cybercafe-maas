@@ -1,6 +1,6 @@
 # MaaS 对外 API 文档（当前版本）
 
-> **2026-11-03 代码契约待部署**。OpenAPI 中的 `POST /v1/ocr` 已改为异步提交，可选传入 `Idempotency-Key`，返回 202 或幂等复用 200。下文现网同步说明适用于切换前。详见[消费者接口](CONSUMER-OCR.md)。
+> **2026-11-03 代码契约待部署**。OpenAPI 中的 `POST /maas/v1/ocr` 已改为异步提交，可选传入 `Idempotency-Key`，返回 202 或幂等复用 200。下文现网同步说明适用于切换前。详见[消费者接口](CONSUMER-OCR.md)。
 
 > **2026-11-02已部署并完成真实OCR验收**：异步input.image支持artifact_id、image_base64、image_url三选一，兼容旧data_url/url别名。成功图片计量、两个用量查询、同步X-Usage-ID及异步metering已上线；当前PP-OCRv4的tokens实际为null/unavailable，不可据此按token收费。[发布记录](../../results/maas-ocr-release-20261102/REPORT.md)。
 
@@ -58,8 +58,8 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 
 | 方法 | 路径 | 成功状态 | 用途 |
 |---|---|---:|---|
-| POST | `/v1/ocr` | 202/200 | 异步 OCR 任务提交；详见[契约](CONSUMER-OCR.md) |
-| POST | `/v1/chat/completions` | 200 | 原Chat同步OCR，stream=false |
+| POST | `/maas/v1/ocr` | 202/200 | 异步 OCR 任务提交；详见[契约](CONSUMER-OCR.md) |
+| POST | `/gpustack/v1/chat/completions` | 200 | 原Chat同步OCR，stream=false |
 | POST | `/maas/v1/artifacts` | 201 | 上传输入文件 |
 | GET | `/maas/v1/artifacts/{ident}` | 200 | 下载同project的未过期输入或结果 |
 | POST | `/maas/v1/tasks` | 202 / 200 | 新建异步任务 / 幂等复用 |
@@ -73,9 +73,9 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 
 ### 3.1 异步 OCR 快捷入口
 
-`POST /v1/ocr` 直接接收单张图片并返回任务。详见[消费者 OCR 契约](CONSUMER-OCR.md)。
+`POST /maas/v1/ocr` 直接接收单张图片并返回任务。详见[消费者 OCR 契约](CONSUMER-OCR.md)。
 
-### 3.2 原Chat入口：POST /v1/chat/completions
+### 3.2 原Chat入口：POST /gpustack/v1/chat/completions
 
 请求体：
 
@@ -303,8 +303,8 @@ text为合并文字；lines为行级文本/框/置信度，空文字图可返回
 
 | 接口 | 解析方式 | 行字段 |
 |---|---|---|
-| /ocr、/v1/ocr | 直接读取响应JSON的lines | text、可选confidence/polygon |
-| /v1/chat/completions | 将choices[0].message.content再次JSON解析 | text、score、box |
+| /ocr、/maas/v1/ocr | 直接读取响应JSON的lines | text、可选confidence/polygon |
+| /gpustack/v1/chat/completions | 将choices[0].message.content再次JSON解析 | text、score、box |
 | 异步结果artifact | 下载JSON并读取outputs.lines | text、score、box |
 
 confidence/polygon是兼容同步门面的转换字段，不会改变原Chat及异步结果。当前没有文生图data数组或检测语言字段。
@@ -381,7 +381,7 @@ retryable表示错误类型的建议，不是无限重试许可。同步发送�
 - API私有18830的 `/healthz`、`/docs`、`/openapi.json`：Nginx业务入口未放行；health仅检查API/DB。
 - GPUStack原生 `/v1/models`、管理UI/Playground、worker `/ocr`与 `/health`：内部管理/诊断路径，不受本文客户契约保证。
 - 私有CLI、metrics/alerts文件、维护/备份工具：无客户HTTP路由。
-- `/images/generations`：尚未实现；`/ocr`与`/v1/ocr`已上线，协议边界见[消费者API分析](../framework/CONSUMER-API-GAP.md)。
+- `/images/generations`：尚未实现；`/ocr`与`/maas/v1/ocr`已上线，协议边界见[消费者API分析](../framework/CONSUMER-API-GAP.md)。
 
 更完整的可执行Python调用示例见 [普通用户手册](../handbooks/USER.md)；密钥开通见 [管理员手册](../handbooks/ADMIN.md)。
 

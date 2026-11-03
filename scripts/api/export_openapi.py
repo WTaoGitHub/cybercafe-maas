@@ -54,7 +54,7 @@ def add(path,method,operation,summary,description,tag,success,body=None,params=(
  P.setdefault(path,{})[method]=op
 jsonbody=lambda n:{'required':True,'content':{'application/json':{'schema':ref(n)}}}
 ident={'name':'ident','in':'path','required':True,'description':'同project任务或文件ID，依路径类型确定。','schema':{'type':'string'}}
-add('/v1/chat/completions','post','chatOCR','同步OCR（Chat格式）','返回上游Chat JSON；choices[0].message.content为OCRResult的JSON字符串。仅stream=false，不支持SSE；不提供持久去重。传输完成状态不明时不可自动重发。','同步OCR',{200:('非流式Chat响应。',ref('ChatResponse'))},jsonbody('ChatRequest'),codes=['400','404','429','502'])
+add('/gpustack/v1/chat/completions','post','chatOCR','同步OCR（Chat格式）','返回上游Chat JSON；choices[0].message.content为OCRResult的JSON字符串。仅stream=false，不支持SSE；不提供持久去重。传输完成状态不明时不可自动重发。','同步OCR',{200:('非流式Chat响应。',ref('ChatResponse'))},jsonbody('ChatRequest'),codes=['400','404','429','502'])
 upload={'required':True,'description':'原始非空字节，不是JSON对象、base64或multipart。默认≤10485760字节。允许的非图片类型不代表OCR可处理。','content':{m:{'schema':{'type':'string','format':'binary'}} for m in ['image/png','image/jpeg','text/plain','application/json','application/octet-stream']}}
 add('/maas/v1/artifacts','post','uploadArtifact','上传输入文件','保存到当前project，默认24小时保留。返回ID/字节数/哈希，无公开URL及expires_at；上传并不保证图片可推理，无上传幂等。','文件',{201:('文件已保存。',ref('ArtifactCreated'))},upload,codes=['415','429'])
 add('/maas/v1/artifacts/{ident}','get','downloadArtifact','下载输入或结果文件','需同project且文件可用。可下载原始结果文件；过期/清理可返回410，跨project或未知ID404。结果JSON包含outputs及版本、尝试、计量。','文件',{200:('返回原始输入字节或结果JSON。',ref('TaskResult'))},params=[ident],codes=['404','410'])
@@ -64,9 +64,9 @@ add('/maas/v1/tasks','post','createTask','提交异步OCR任务','input.image支
 for status in ['200','202']:P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location']={'description':'任务查询相对路径。','schema':{'type':'string'}}
 S['AsyncOCRRequest']=copy.deepcopy(S['ConsumerOCRRequest'])
 S['AsyncOCRRequest']['properties']['return_boxes']={'type':'boolean','default':True,'description':'传false时结果文件的outputs.lines省略box。'}
-add('/v1/ocr','post','submitOcrTask','提交异步OCR任务（待部署）','将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。按Idempotency-Key、X-Request-ID、请求体request_id顺序取键，均缺失时生成新键。超过128字符的备用ID使用SHA-256映射。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示。通过Location查询任务，再下载结果。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回原任务。',ref('TaskView'))},jsonbody('AsyncOCRRequest'),[{**idem,'required':False,'description':'可选。优先于两个备用ID。'},{'name':'X-Request-ID','in':'header','required':False,'description':'省略Idempotency-Key时优先使用此ID。重试复用同一ID。','schema':{'type':'string'}}],['400','404','408','409','415','429'])
+add('/maas/v1/ocr','post','submitOcrTask','提交异步OCR任务（待部署）','将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。按Idempotency-Key、X-Request-ID、请求体request_id顺序取键，均缺失时生成新键。超过128字符的备用ID使用SHA-256映射。若需安全重试，请由调用方提供稳定键，与任务入口共享项目内幂等空间。language仍为提示。通过Location查询任务，再下载结果。','异步任务',{202:('新任务已受理。',ref('TaskView')),200:('返回原任务。',ref('TaskView'))},jsonbody('AsyncOCRRequest'),[{**idem,'required':False,'description':'可选。优先于两个备用ID。'},{'name':'X-Request-ID','in':'header','required':False,'description':'省略Idempotency-Key时优先使用此ID。重试复用同一ID。','schema':{'type':'string'}}],['400','404','408','409','415','429'])
 for status in ('200','202'):
- P['/v1/ocr']['post']['responses'][status]['headers']['Location']=copy.deepcopy(P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location'])
+ P['/maas/v1/ocr']['post']['responses'][status]['headers']['Location']=copy.deepcopy(P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location'])
 S['TaskDetail']=copy.deepcopy(S['TaskView'])
 detail=S['TaskDetail']['properties']
 detail['status']=detail.pop('state')
@@ -84,7 +84,7 @@ add('/maas/v1/usage/{ident}','get','getOCRUsage','查询OCR最终用量收据','
 add('/maas/v1/tasks/{ident}/usage','get','getTaskOCRUsage','按任务查询OCR最终用量','E16已部署并通过真实OCR验收。无需先下载结果即可查询；待执行、失败、取消或旧任务无新账本时404/USAGE_NOT_AVAILABLE，不回填推算。跨project任务404，文件过期不删除已有收据。','计量',{200:('此任务唯一的最终成功OCR用量。',ref('OCRUsage'))},params=[ident],codes=['404'])
 for path in ('/maas/v1/usage/{ident}','/maas/v1/tasks/{ident}/usage'):
  P[path]['get']['responses']['200']['headers']['Cache-Control']={'schema':{'const':'no-store'},'description':'避免缓存客户用量数据。'}
-for path in ('/v1/chat/completions',):
+for path in ('/gpustack/v1/chat/completions',):
  P[path]['post']['responses']['200']['headers']['X-Usage-ID']={'description':'E16已部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。','schema':{'type':'string'}}
 doc={'openapi':'3.1.0','info':{'title':'Cybercafe MaaS 对外OCR API','version':'2026-11-02','description':'代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS API路径不支持query参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。'},'servers':[{'url':'http://{host}:{port}','description':'HTTP：本机/授权SSH转发或受控容器入口。localhost仅指当前调用环境；跨容器须替换host为运维提供的宿主机地址。','variables':{'host':{'default':'localhost'},'port':{'default':'18831'}}},{'url':'https://{host}:{port}','description':'HTTPS：本机或授权SSH转发的私有TLS入口；须使用正确host并信任运维提供的证书，不默认绕过校验。','variables':{'host':{'default':'localhost'},'port':{'default':'18832'}}}],'security':[{'BearerAuth':[]}],'tags':[{'name':n,'description':d} for n,d in [('同步OCR','同步完成并返回识别结果。'),('文件','上传和下载project隔离的输入/结果。'),('异步任务','受理、查询和取消持久任务。'),('模型能力','查询已登记及获授权能力，不代表实时GPU健康。'),('计量','成功图片与真实上游token用量事实，价格及收费归下游。')]],'paths':P,'components':{'securitySchemes':{'BearerAuth':{'type':'http','scheme':'bearer','description':'在Swagger Authorize或VSCode插件的HTTP Bearer认证设置中填入管理员登记的推理key（通常只填key，工具添加Bearer前缀）。生成curl后检查是否包含Authorization: Bearer；缺失时手动添加。不要把真实key保存进OpenAPI或示例。该key须在GPUStack有效且有模型权限，不是管理key。'}},'schemas':S}}
 S['TaskCreate']['examples']=[{'model':'ocr.default','input':{'image':{'artifact_id':'art_REPLACE_WITH_UPLOADED_ID'}},'parameters':{},'timeout_seconds':120,'max_attempts':1}]
@@ -129,7 +129,7 @@ if real_file.exists():
   for name,header in target.get('headers',{}).items():
    if name.lower() in real[key]['headers']:header['example']=real[key]['headers'][name.lower()]
  for path,method,status,key,label,description in [
-  ('/v1/chat/completions','post',200,'chatOCR','realChatOCR','真实Chat OCR成功，content仍是JSON字符串'),
+  ('/gpustack/v1/chat/completions','post',200,'chatOCR','realChatOCR','真实Chat OCR成功，content仍是JSON字符串'),
   ('/maas/v1/artifacts','post',201,'uploadArtifact','realUpload','真实图片上传响应'),
   ('/maas/v1/artifacts/{ident}','get',200,'resultArtifact','realOCRResult','真实OCR结果文件及计量'),
   ('/maas/v1/tasks','post',202,'createTaskInline','realInlineAccepted','真实image_base64受理'),
@@ -152,13 +152,13 @@ if real_file.exists():
  S['TaskView']['examples']=[real['getTask']['body']]
  S['TokenUsage']['examples']=[real['getUsage']['body']['tokens']]
  doc['info']['description']+=' 成功及部分错误响应示例取自2026-11-02真实验收，自建文字测试图与默认白图请求不同；节点已脱敏，历史测试ID不可复用，不包含凭据或真实连接地址。'
-P['/v1/ocr']['post']['responses']['409']['description']=P['/maas/v1/tasks']['post']['responses']['409']['description']
-P['/v1/ocr']['post']['requestBody']['content']['application/json']['examples']={
+P['/maas/v1/ocr']['post']['responses']['409']['description']=P['/maas/v1/tasks']['post']['responses']['409']['description']
+P['/maas/v1/ocr']['post']['requestBody']['content']['application/json']['examples']={
  'base64':{'value':{'model':'ocr.default','image_base64':inline_example['input']['image']['image_base64']}},
  'withoutBoxes':{'value':{'model':'ocr.default','image_base64':inline_example['input']['image']['image_base64'],'return_boxes':False}},
  'url':{'value':{'model':'ocr.default','image_url':url_example['input']['image']['image_url']}},
 }
 # Keep the existing document order for readers comparing API versions.
-doc['paths']={'/v1/ocr':P['/v1/ocr'],**{path:item for path,item in P.items() if path != '/v1/ocr'}}
+doc['paths']={'/maas/v1/ocr':P['/maas/v1/ocr'],**{path:item for path,item in P.items() if path != '/maas/v1/ocr'}}
 path=ROOT/'docs/api/openapi.json';path.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')
 print('Exported',len(P),'paths',sum(len(v) for v in P.values()),'operations')

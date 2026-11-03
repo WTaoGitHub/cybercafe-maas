@@ -73,7 +73,7 @@ def main():
             {'type':'image_url','image_url':{'url':'data:image/png;base64,'+base64.b64encode(raw).decode()}}]}]}
         seen=set();report['step']='bounded-distinct-gateway-probes'
         for n in range(14):
-            code,value=request('POST','/v1/chat/completions',body=body)
+            code,value=request('POST','/gpustack/v1/chat/completions',body=body)
             result=json.loads(value['choices'][0]['message']['content'])
             check(code==200 and len(result['lines'])==46,'Unexpected sync OCR output')
             node=result['node'];check(node in node_map,'Response came from unexpected GPU')

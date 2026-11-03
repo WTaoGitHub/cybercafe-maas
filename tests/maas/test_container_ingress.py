@@ -40,7 +40,7 @@ def test_new_process_only_binds_gateway_and_retains_business_contract():
     assert 'listen 172.18.0.1:18831;' in output
     assert 'listen 127.0.0.1' not in output and 'listen [::1]' not in output
     assert 'allow 172.18.0.0/16;\n        deny all;' in output
-    for retained in ('/ocr 1;', '/v1/ocr 1;', 'proxy_set_header Authorization $http_authorization;',
+    for retained in ('/ocr 1;', '/maas/v1/ocr 1;', 'proxy_set_header Authorization $http_authorization;',
                      'proxy_next_upstream off;', 'if ($maas_path = 0)', 'client_max_body_size 20m;',
                      'proxy_set_header X-Project "";', 'proxy_pass http://127.0.0.1:18830;'):
         assert retained in output

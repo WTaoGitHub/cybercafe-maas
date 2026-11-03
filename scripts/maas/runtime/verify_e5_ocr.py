@@ -29,7 +29,7 @@ def main(out=OUT,revision='ocr-e5-r1'):
         image=(LIVE/'probes/upright.png').read_bytes()
         body={'model':'ocr.default','stream':False,'messages':[{'role':'user','content':[
             {'type':'image_url','image_url':{'url':'data:image/png;base64,'+base64.b64encode(image).decode()}}]}]}
-        code,envelope=request('/v1/chat/completions',body)
+        code,envelope=request('/gpustack/v1/chat/completions',body)
         value=json.loads(envelope['choices'][0]['message']['content'])
         assert code==200 and len(value['lines'])==46
         report['sync']={'http':code,'lines':len(value['lines']),'node':value['node']};checkpoint()

@@ -51,7 +51,7 @@ def main():
     image=(LIVE/'probes/upright.png').read_bytes()
     body={'model':'ocr.default','stream':False,'messages':[{'role':'user','content':[{'type':'image_url','image_url':{'url':'data:image/png;base64,'+base64.b64encode(image).decode()}}]}]}
     try:
-        code,value=request('/v1/chat/completions',body);assert code==200 and len(json.loads(value['choices'][0]['message']['content'])['lines'])==46
+        code,value=request('/gpustack/v1/chat/completions',body);assert code==200 and len(json.loads(value['choices'][0]['message']['content'])['lines'])==46
         report['baseline_sync']={'status':code,'lines':46}
         code,art=request('/maas/v1/artifacts',image,'image/png');assert code==201
         taskbody={'model':'ocr.default','input':{'image':{'artifact_id':art['id']}},'timeout_seconds':600,'max_attempts':1}
@@ -71,7 +71,7 @@ def main():
             proof=json.loads(run(*bound['node_ssh'],'status'));assert proof['backend_stop_observed']
         report['held_stopped_5s']=True
         assert request('/healthz',direct=True)[0]==200
-        code,value=request('/v1/chat/completions',body);assert code==503
+        code,value=request('/gpustack/v1/chat/completions',body);assert code==503
         report['sync_during_stop']={'status':code,'code':value['error']['code']}
         code,row=request('/maas/v1/tasks/'+queued['id']);assert code==200 and row['state']=='QUEUED'
         code,value=request('/maas/v1/artifacts/'+first['result_artifact_id']);assert code==200 and len(value['outputs']['lines'])==46

@@ -22,7 +22,7 @@ def test_v1_ocr_shares_task_submission_and_idempotency(env, monkeypatch, field, 
     monkeypatch.setattr('maas_platform.task_image_url.fetch_image', fetch)
     payload = {'model': 'ocr.default', field: value}
     key = headers(idem='ocr-alias')
-    created = client.post('/v1/ocr', headers=key, json=payload)
+    created = client.post('/maas/v1/ocr', headers=key, json=payload)
     assert created.status_code == 202
     assert created.headers['location'] == '/maas/v1/tasks/' + created.json()['id']
     replay = client.post('/maas/v1/tasks', headers=key, json={
@@ -41,9 +41,9 @@ def test_v1_ocr_return_boxes_applies_to_downloaded_result(env, monkeypatch, retu
     client, service, _ = configured(env, monkeypatch)
     payload = body(return_boxes=return_boxes)
     key = headers(idem='ocr-result-shape')
-    created = client.post('/v1/ocr', headers=key, json=payload)
+    created = client.post('/maas/v1/ocr', headers=key, json=payload)
     assert created.status_code == 202
-    assert client.post('/v1/ocr', headers=key, json={
+    assert client.post('/maas/v1/ocr', headers=key, json={
         **payload, 'return_boxes': not return_boxes,
     }).status_code == 409
     replay = client.post('/maas/v1/tasks', headers=key, json={
@@ -65,8 +65,8 @@ def test_v1_ocr_return_boxes_applies_to_downloaded_result(env, monkeypatch, retu
 def test_v1_ocr_omitted_idempotency_key_creates_independent_tasks(env, monkeypatch):
     client, _, _ = sync_setup(env, monkeypatch, lambda _: pytest.fail('Submission must not run OCR'))
     payload = body()
-    first = client.post('/v1/ocr', headers=headers(), json=payload)
-    second = client.post('/v1/ocr', headers=headers(), json=payload)
+    first = client.post('/maas/v1/ocr', headers=headers(), json=payload)
+    second = client.post('/maas/v1/ocr', headers=headers(), json=payload)
     assert first.status_code == second.status_code == 202
     assert first.json()['id'] != second.json()['id']
     standard = {
@@ -82,10 +82,10 @@ def test_v1_ocr_request_id_fallback_order(env, monkeypatch):
     explicit = {**headers(idem='explicit-id'), 'X-Request-ID': 'header-id'}
     fallback = {**headers(), 'X-Request-ID': 'header-id'}
     for request_headers in (explicit, fallback, headers()):
-        created = client.post('/v1/ocr', headers=request_headers, json=payload)
+        created = client.post('/maas/v1/ocr', headers=request_headers, json=payload)
         assert created.status_code == 202
-        replay = client.post('/v1/ocr', headers=request_headers, json=payload)
+        replay = client.post('/maas/v1/ocr', headers=request_headers, json=payload)
         assert replay.status_code == 200
         assert replay.json()['id'] == created.json()['id']
-        conflict = client.post('/v1/ocr', headers=request_headers, json={**payload, 'return_boxes': False})
+        conflict = client.post('/maas/v1/ocr', headers=request_headers, json={**payload, 'return_boxes': False})
         assert conflict.status_code == 409

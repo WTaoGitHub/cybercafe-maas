@@ -21,7 +21,7 @@ def main():
     report['collector_disabled_and_assets_absent']=True
     image=(LIVE/'probes/upright.png').read_bytes()
     body={'model':'ocr.default','stream':False,'messages':[{'role':'user','content':[{'type':'image_url','image_url':{'url':'data:image/png;base64,'+base64.b64encode(image).decode()}}]}]}
-    code,value=request('/v1/chat/completions',body);assert code==200
+    code,value=request('/gpustack/v1/chat/completions',body);assert code==200
     assert len(json.loads(value['choices'][0]['message']['content'])['lines'])==46
     report['sync_lines']=46
     code,art=request('/maas/v1/artifacts',image,'image/png');assert code==201

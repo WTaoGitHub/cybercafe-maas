@@ -10,7 +10,7 @@ server {
         proxy_read_timeout 125s;
         proxy_set_header Authorization $http_authorization;
     }
-    location = /v1/chat/completions {
+    location = /gpustack/v1/chat/completions {
         proxy_pass http://127.0.0.1:18830;
         proxy_read_timeout 125s;
         proxy_next_upstream off;

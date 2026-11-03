@@ -474,13 +474,13 @@ def test_sync_admission_pause_unknown_and_manual_resolution(env,monkeypatch):
     def fail(request):raise httpx.ReadError('uncertain upstream')
     client,s,_=sync_setup(env,monkeypatch,fail)
     body={'model':'ocr.default','messages':[]}
-    s.pause(True,'before sync');assert client.post('/v1/chat/completions',headers=headers(),json=body).status_code==503
+    s.pause(True,'before sync');assert client.post('/gpustack/v1/chat/completions',headers=headers(),json=body).status_code==503
     with s.db.transaction() as c:assert c.execute('SELECT count(*) n FROM sync_activity').fetchone()['n']==0
     s.pause(False)
-    result=client.post('/v1/chat/completions',headers=headers(),json=body)
+    result=client.post('/gpustack/v1/chat/completions',headers=headers(),json=body)
     assert result.status_code==503 and result.json()['error']['code']=='UNKNOWN_BACKEND_ACTIVITY'
     submit(client);assert s.claim() is None
-    assert client.post('/v1/chat/completions',headers=headers(),json=body).json()['error']['code']=='BACKEND_QUARANTINED'
+    assert client.post('/gpustack/v1/chat/completions',headers=headers(),json=body).json()['error']['code']=='BACKEND_QUARANTINED'
     s.pause(True);m=Maintenance(s);status=m.status()
     assert not status['managed_requests_drained'] and not status['safe_to_poweroff']
     with pytest.raises(ServiceError):m.resume(lambda:None)
@@ -499,15 +499,15 @@ def test_sync_success_mapping_capacity_and_no_secret_forwarding(env,monkeypatch)
         assert request.headers.get('x-project') is None
         return httpx.Response(200,json={'choices':[]})
     client,s,_=sync_setup(env,monkeypatch,ok)
-    response=client.post('/v1/chat/completions',headers={**headers(),'X-Project':'evil'},json={'model':'ocr.default','messages':[]})
+    response=client.post('/gpustack/v1/chat/completions',headers={**headers(),'X-Project':'evil'},json={'model':'ocr.default','messages':[]})
     assert response.status_code==200 and len(calls)==1
     s.pause(True);status=Maintenance(s).status();assert status['managed_requests_drained'] and not status['safe_to_poweroff']
-    assert client.post('/v1/chat/completions',headers=headers(),json={'model':'ocr.default','stream':True}).status_code==422
-    assert client.post('/v1/chat/completions',headers=headers('b'),json={'model':'ocr.default'}).status_code==403
+    assert client.post('/gpustack/v1/chat/completions',headers=headers(),json={'model':'ocr.default','stream':True}).status_code==422
+    assert client.post('/gpustack/v1/chat/completions',headers=headers('b'),json={'model':'ocr.default'}).status_code==403
     s.pause(False)
     ingress=client.app.state.sync_ingress;who=s.auth.authenticate('gpustack_registered_a')
     token=ingress.begin(who,'ocr.default',5)
-    assert client.post('/v1/chat/completions',headers=headers(),json={'model':'ocr.default'}).status_code==429
+    assert client.post('/gpustack/v1/chat/completions',headers=headers(),json={'model':'ocr.default'}).status_code==429
     ingress.finish(token,True)
 
 
@@ -523,7 +523,7 @@ def test_sync_uncertain_work_prevents_drain(env,monkeypatch,kind):
     if kind=='crash':
         who=s.auth.authenticate('gpustack_registered_a');client.app.state.sync_ingress.begin(who,'ocr.default',5)
         with s.db.transaction() as c:c.execute("UPDATE sync_activity SET deadline=now()-interval '1 second'")
-    else:assert client.post('/v1/chat/completions',headers=headers(),json={'model':'ocr.default'}).status_code in (502,503)
+    else:assert client.post('/gpustack/v1/chat/completions',headers=headers(),json={'model':'ocr.default'}).status_code in (502,503)
     s.pause(True);status=Maintenance(s).status()
     assert status['sync_activity'][0]['state']=='UNKNOWN'
     assert not status['managed_requests_drained']
@@ -630,7 +630,7 @@ def test_orphan_gc_waits_for_upload_commit(env,monkeypatch):
 def test_sync_usage_exactly_once_probe_and_failure_exclusion(env,monkeypatch):
     def ok(request):return httpx.Response(200,json={'choices':[]})
     client,s,_=sync_setup(env,monkeypatch,ok)
-    assert client.post('/v1/chat/completions',headers=headers(),json={'model':'ocr.default'}).status_code==200
+    assert client.post('/gpustack/v1/chat/completions',headers=headers(),json={'model':'ocr.default'}).status_code==200
     ingress=client.app.state.sync_ingress;a=s.auth.authenticate('gpustack_registered_a')
     with s.db.transaction() as c:
         row=c.execute('SELECT * FROM sync_activity').fetchone()

@@ -38,8 +38,11 @@ def alias(c):
     media = 'image/jpeg' if raw.startswith(b'\xff\xd8') else 'image/png'
     body = {'model': c.model, 'image_base64': 'data:' + media + ';base64,' + base64.b64encode(raw).decode(),
             'return_boxes': False, 'language': 'auto'}
-    rows = lines(c.request('POST', '/v1/ocr', body=body, inference=True).expect(200).json())
-    check(all('polygon' not in row for row in rows), 'return_boxes=false was ignored')
+    task = c.request('POST', '/maas/v1/ocr', body=body, inference=True).expect(202).json()
+    c.pending_tasks.add(task['id'])
+    row = c.wait(task['id'])
+    check(row['status'] == 'SUCCEEDED', 'OCR task failed')
+    check(all('box' not in line for line in lines(row['result'])), 'return_boxes=false was ignored')
 
 
 @case('OCR-003', 'ocr', 'Blank PNG yields successful empty lines', ('positive', 'gpu', 'fixture'), ('inference',))
@@ -114,7 +117,7 @@ def chat(c):
     media = 'image/jpeg' if raw.startswith(b'\xff\xd8') else 'image/png'
     body = {'model': c.model, 'stream': False, 'messages': [{'role': 'user', 'content': [
         {'type': 'image_url', 'image_url': {'url': 'data:'+media+';base64,'+base64.b64encode(raw).decode()}}]}]}
-    value = c.request('POST', '/v1/chat/completions', body=body, inference=True).expect(200).json()
+    value = c.request('POST', '/gpustack/v1/chat/completions', body=body, inference=True).expect(200).json()
     check(value['object'] == 'chat.completion', 'Missing Chat completion envelope')
     output = json.loads(value['choices'][0]['message']['content'])
     check(isinstance(output['text'], str) and isinstance(output['lines'], list), 'Invalid legacy OCR output')
@@ -122,4 +125,4 @@ def chat(c):
 
 @case('CHAT-002', 'chat', 'Streaming not supported on MaaS Chat', ('negative', 'legacy'), ('write',))
 def stream(c):
-    c.request('POST', '/v1/chat/completions', body={'model': c.model, 'stream': True, 'messages': []}).expect(422, 'SYNC_INPUT')
+    c.request('POST', '/gpustack/v1/chat/completions', body={'model': c.model, 'stream': True, 'messages': []}).expect(422, 'SYNC_INPUT')

@@ -268,10 +268,10 @@ class Context:
         deadline = time.monotonic() + self.config.get('poll_timeout', 150)
         while True:
             row = self.request('GET', '/maas/v1/tasks/' + ident).expect(200).json()
-            if row.get('error_code') == 'UNKNOWN_BACKEND_ACTIVITY':
+            if ((row.get('error') or {}).get('code') or row.get('error_code')) == 'UNKNOWN_BACKEND_ACTIVITY':
                 self.blocked = True
                 self.save()
-            if row['state'] in ('SUCCEEDED', 'FAILED', 'CANCELLED'):
+            if row.get('status', row.get('state')) in ('SUCCEEDED', 'FAILED', 'CANCELLED'):
                 self.pending_tasks.discard(ident)
                 return row
             if time.monotonic() >= deadline:

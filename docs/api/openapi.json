@@ -59,7 +59,7 @@
     }
   ],
   "paths": {
-    "/v1/ocr": {
+    "/maas/v1/ocr": {
       "post": {
         "operationId": "submitOcrTask",
         "summary": "提交异步OCR任务（待部署）",
@@ -401,7 +401,7 @@
         }
       }
     },
-    "/v1/chat/completions": {
+    "/gpustack/v1/chat/completions": {
       "post": {
         "operationId": "chatOCR",
         "summary": "同步OCR（Chat格式）",

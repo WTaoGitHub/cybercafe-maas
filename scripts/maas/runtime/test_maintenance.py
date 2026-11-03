@@ -93,7 +93,7 @@ def main():
                 denied[label]=code;assert code==expected
         image=Path('/root/wtaobj/service-validation/fixtures/upright.png').read_bytes()
         body={'model':'ocr.default','stream':False,'messages':[{'role':'user','content':[{'type':'image_url','image_url':{'url':'data:image/png;base64,'+base64.b64encode(image).decode()}}]}]}
-        snapshot();code,value=request('/v1/chat/completions',body);assert code==200
+        snapshot();code,value=request('/gpustack/v1/chat/completions',body);assert code==200
         report['sync_baseline']={'status':code,'lines':len(json.loads(value['choices'][0]['message']['content'])['lines'])};assert report['sync_baseline']['lines']==46
         code,artifact=request('/maas/v1/artifacts',image,'image/png');assert code==201
         task_body={'model':'ocr.default','input':{'image':{'artifact_id':artifact['id']}},'timeout_seconds':600 if options.node_maintenance else 180}
@@ -101,7 +101,7 @@ def main():
         if options.operations:
             reserve="from maas_platform.config import Settings;from maas_platform.auth import AuthConnector;from maas_platform.service import TaskService;from maas_platform.sync_ingress import SyncIngress;s=Settings.from_env();v=TaskService(s,AuthConnector(s));print(SyncIngress(v).begin(v.auth.for_task('maintenance','maintenance'),'ocr.default',60))"
             token=run(*args(),'/work/.venv/bin/python','-c',reserve).strip()
-            code,value=request('/v1/chat/completions',body);assert code==429 and value['error']['code']=='SYNC_CAPACITY'
+            code,value=request('/gpustack/v1/chat/completions',body);assert code==429 and value['error']['code']=='SYNC_CAPACITY'
             assert not execute()
             release="from maas_platform.config import Settings;from maas_platform.auth import AuthConnector;from maas_platform.service import TaskService;from maas_platform.sync_ingress import SyncIngress;s=Settings.from_env();v=TaskService(s,AuthConnector(s));SyncIngress(v).finish("+repr(token)+",True)"
             run(*args(),'/work/.venv/bin/python','-c',release)
@@ -109,7 +109,7 @@ def main():
         snapshot();assert execute();_,done=request('/maas/v1/tasks/'+task['id']);assert done['state']=='SUCCEEDED'
         cli('pause','--reason','P3 controlled ingress acceptance')
         report['paused']=cli('drain-status');assert report['paused']['managed_requests_drained'] and not report['paused']['safe_to_poweroff']
-        code,value=request('/v1/chat/completions',body);report['sync_paused']={'status':code,'code':value['error']['code']};assert code==503
+        code,value=request('/gpustack/v1/chat/completions',body);report['sync_paused']={'status':code,'code':value['error']['code']};assert code==503
         code,queued=request('/maas/v1/tasks',task_body,idem='queued-during-pause');assert code==202 and not execute()
         _,row=request('/maas/v1/tasks/'+queued['id']);assert row['state']=='QUEUED'
         code,value=request('/maas/v1/artifacts/'+done['result_artifact_id']);assert code==200
@@ -134,7 +134,7 @@ def main():
             time.sleep(10)
             proof=json.loads(run(*node_ssh,'status'));assert proof['backend_stop_observed']
             report['node_stopped_hold_10s']=proof
-            code,value=request('/v1/chat/completions',body);assert code==503
+            code,value=request('/gpustack/v1/chat/completions',body);assert code==503
             report['node_stop_sync_rejected']={'status':code,'code':value['error']['code']}
             native={**body,'model':pin['route_name']}
             try:
