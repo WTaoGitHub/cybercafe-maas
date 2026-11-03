@@ -91,12 +91,11 @@ def create_app(settings=None, auth=None):
 
     @app.post('/v1/ocr', status_code=202, response_model=TaskView)
     def submit_ocr(body:ConsumerOCRRequest, request:Request, who=Depends(identity), idempotency_key:str=Header(default='')):
-        if not body.return_boxes:
-            raise ServiceError('INPUT_INVALID', 'Async OCR result includes boxes', 422)
         if body.request_id is not None:
             logging.getLogger('uvicorn.error').info('ocr request=%s consumer_request=%r',request.state.request_id,body.request_id)
         image = {'image_url': body.image_url} if body.image_url is not None else {'image_base64': body.image_base64}
-        task = TaskCreate(model=body.model, input={'image': image})
+        parameters = {} if body.return_boxes else {'return_boxes': False}
+        task = TaskCreate(model=body.model, input={'image': image}, parameters=parameters)
         return submit_task(task, who, idempotency_key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskView)

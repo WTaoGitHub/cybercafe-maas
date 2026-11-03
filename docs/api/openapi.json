@@ -708,6 +708,13 @@
                     "image_base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg=="
                   }
                 },
+                "withoutBoxes": {
+                  "value": {
+                    "model": "ocr.default",
+                    "image_base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==",
+                    "return_boxes": false
+                  }
+                },
                 "url": {
                   "value": {
                     "model": "ocr.default",
@@ -3179,7 +3186,7 @@
           "parameters": {
             "$ref": "#/components/schemas/OCRParameters",
             "default": {},
-            "description": "当前OCR仅允许空对象。"
+            "description": "OCR支持布尔型return_boxes，默认true。"
           },
           "timeout_seconds": {
             "default": 120,
@@ -3601,7 +3608,14 @@
       },
       "OCRParameters": {
         "additionalProperties": false,
-        "properties": {},
+        "properties": {
+          "return_boxes": {
+            "default": true,
+            "title": "Return Boxes",
+            "type": "boolean",
+            "description": "return_boxes字段，约束见schema。"
+          }
+        },
         "title": "OCRParameters",
         "type": "object",
         "description": "OCRParameters（与当前实现一致）"
@@ -3617,7 +3631,7 @@
             },
             "title": "Box",
             "type": "array",
-            "description": "原图像素坐标点数组。"
+            "description": "文字坐标，return_boxes为false时省略。"
           },
           "text": {
             "title": "Text",
@@ -3633,7 +3647,6 @@
           }
         },
         "required": [
-          "box",
           "text",
           "score"
         ],
@@ -4078,7 +4091,7 @@
           "parameters_schema": {
             "type": "object",
             "additionalProperties": true,
-            "description": "模型参数JSON Schema，当前OCR为空对象。"
+            "description": "模型参数JSON Schema，OCR支持return_boxes。"
           }
         },
         "required": [
@@ -4415,9 +4428,8 @@
           },
           "return_boxes": {
             "type": "boolean",
-            "const": true,
             "default": true,
-            "description": "异步结果包含坐标。传false返回422。"
+            "description": "传false时结果文件的outputs.lines省略box。"
           },
           "request_id": {
             "anyOf": [

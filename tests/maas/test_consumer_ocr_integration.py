@@ -91,7 +91,6 @@ def test_v1_ocr_shares_task_submission_and_idempotency(env, monkeypatch, field, 
     payload = {'model': 'ocr.default', field: value}
     key = headers(idem='ocr-alias')
     assert client.post('/v1/ocr', headers=headers(), json=payload).status_code == 400
-    assert client.post('/v1/ocr', headers=key, json={**payload, 'return_boxes': False}).status_code == 422
     created = client.post('/v1/ocr', headers=key, json=payload)
     assert created.status_code == 202
     assert created.headers['location'] == '/maas/v1/tasks/' + created.json()['id']
@@ -101,3 +100,33 @@ def test_v1_ocr_shares_task_submission_and_idempotency(env, monkeypatch, field, 
     assert replay.status_code == 200 and replay.json() == created.json()
     with service.db.transaction() as conn:
         assert conn.execute('SELECT count(*) n FROM tasks').fetchone()['n'] == 1
+
+
+@pytest.mark.parametrize('return_boxes', [False, True])
+def test_v1_ocr_return_boxes_applies_to_downloaded_result(env, monkeypatch, return_boxes):
+    from maas_platform.worker import Worker
+    from test_metering_integration import configured
+
+    client, service, _ = configured(env, monkeypatch)
+    payload = body(return_boxes=return_boxes)
+    key = headers(idem='ocr-result-shape')
+    created = client.post('/v1/ocr', headers=key, json=payload)
+    assert created.status_code == 202
+    assert client.post('/v1/ocr', headers=key, json={
+        **payload, 'return_boxes': not return_boxes,
+    }).status_code == 409
+    replay = client.post('/maas/v1/tasks', headers=key, json={
+        'model': payload['model'],
+        'input': {'image': {'image_base64': payload['image_base64']}},
+        'parameters': {} if return_boxes else {'return_boxes': False},
+    })
+    assert replay.status_code == 200
+    assert Worker(service).run_once()
+    task = client.get(created.headers['location'], headers=headers()).json()
+    assert task['state'] == 'SUCCEEDED'
+    response = client.get('/maas/v1/artifacts/' + task['result_artifact_id'], headers=headers())
+    assert response.status_code == 200
+    line, = response.json()['outputs']['lines']
+    assert line['text'] == 'hello'
+    assert line['score'] == 0.9
+    assert ('box' in line) == return_boxes

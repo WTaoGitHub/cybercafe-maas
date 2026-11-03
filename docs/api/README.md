@@ -200,7 +200,7 @@ Idempotency-Key: client-business-request-001
 |---|---|---|
 | model | 是 | 非空逻辑模型名，最长128字符 |
 | input | 是 | image.artifact_id、image.image_base64、image.image_url三选一；引用同project未过期输入、直接内嵌图片或公开图片URL |
-| parameters | 否 | 默认{}；当前OCR只接受空对象 |
+| parameters | 否 | 默认{}；新版 OCR 支持 `return_boxes`，默认 true |
 | timeout_seconds | 否 | 默认120，范围1–3600秒；自接纳起的总截止，包含排队 |
 | max_attempts | 否 | 默认3，范围1–3；有限attempt预算，不允许重放不确定执行 |
 
@@ -286,7 +286,7 @@ UNKNOWN不是TaskView的state，而是内部远端活动状态；任务可能已
 | execution_modes | 当前实现返回["async"] |
 | max_runtime_s | 目录中的单次运行预算，当前正式OCR为25秒 |
 | input_schema | JSON Schema，OCR为image.artifact_id引用结构 |
-| parameters_schema | JSON Schema，当前OCR空对象，additionalProperties=false |
+| parameters_schema | JSON Schema，新版 OCR 支持布尔型 return_boxes，additionalProperties=false |
 
 **兼容性说明：当前execution_modes只列async，但系统另有第3节同步入口。** 本文忠实记录这一实现差异，不擅自将字段改成sync/async。查询不是实时GPU健康探针，也不是全模型列表。未知模型404/MODEL_NOT_FOUND，无模型权限403。
 

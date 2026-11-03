@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import json
 import time
 import httpx
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, AliasChoices
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, AliasChoices, StrictBool
 from .errors import ServiceError
 
 
@@ -31,6 +31,7 @@ class OCRInput(BaseModel):
 
 class OCRParameters(BaseModel):
     model_config = ConfigDict(extra='forbid')
+    return_boxes: StrictBool = True
 
 
 class OCRLine(BaseModel):
@@ -56,7 +57,7 @@ class OCRAdapter:
 
     def validate(self, payload, parameters):
         inp = OCRInput.model_validate(payload).model_dump()
-        params = OCRParameters.model_validate(parameters).model_dump()
+        params = OCRParameters.model_validate(parameters).model_dump(exclude_defaults=True)
         return inp, params, inp['image'].get('artifact_id')
 
     def execute(self, ctx):
@@ -82,6 +83,9 @@ class OCRAdapter:
             envelope = json.loads(raw)
             value = json.loads(envelope['choices'][0]['message']['content'])
             output = OCRResult.model_validate(value).model_dump()
+            if not ctx.task.get('parameters', {}).get('return_boxes', True):
+                for line in output['lines']:
+                    del line['box']
             from .metering import tokens_from_response
             ctx.metering_tokens = tokens_from_response(envelope)
             return output
