@@ -47,7 +47,7 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 ### 1.3 通用约定
 
 - JSON请求使用 `Content-Type: application/json`；文件上传是原始字节而非JSON/multipart。
-- 当前私有Nginx只放行GET/POST及本文业务路径；仅两个用量查询端点支持 `usage_type` 查询参数。路径和模型名大小写须按示例。
+- 当前私有Nginx只放行GET/POST及本文业务路径；仅任务详情和两个用量查询端点支持 `usage_type` 查询参数。路径和模型名大小写须按示例。
 - 通常返回 `X-Request-ID: req_<随机值>`，由本系统生成；不会把客户端的同名头当作幂等键。请在支持请求中保留此ID。
 - 时间字段为ISO8601带时区字符串；示例时间、识别文字、revision、耗时与节点都是格式示意。
 - Nginx/TLS等入口错误可能不是本文JSON结构，客户端须先检查HTTP状态和Content-Type。
@@ -414,3 +414,13 @@ OpenAPI Responses已内嵌本轮真实成功及部分错误响应；源数据见
 | `usage_type=tokens` | `{"input_tokens":11,"output_tokens":22}` |
 
 省略参数时返回完整收据。模型或推理框架未报告有效 token 用量时，指定 `tokens` 返回 HTTP 422 和 `USAGE_TYPE_UNSUPPORTED`。当前 PP-OCRv4 属于这种情况。未知类型返回 HTTP 422 和 `INPUT_INVALID`。没有最终用量记录时仍返回 HTTP 404。
+
+
+任务详情 `GET /maas/v1/tasks/{ident}` 也接受同样的参数。它只筛选嵌套的 `usage` 字段，任务状态和识别结果仍随详情返回。任务没有最终收据时，详情中的 `usage` 为 `null`。
+
+```bash
+curl -H "Authorization: Bearer ${MAAS_API_KEY}" "${MAAS_BASE_URL}/maas/v1/tasks/task_example?usage_type=images"
+curl -H "Authorization: Bearer ${MAAS_API_KEY}" "${MAAS_BASE_URL}/maas/v1/tasks/task_example?usage_type=tokens"
+```
+
+第一条请求的 `usage` 示例为 `{"successful_images":1}`。第二条在上游提供有效 token 用量时，`usage` 示例为 `{"input_tokens":11,"output_tokens":22}`。请用实际任务 ID 替换 `task_example`。

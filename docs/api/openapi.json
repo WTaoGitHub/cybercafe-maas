@@ -1749,6 +1749,27 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "usage_type",
+            "in": "query",
+            "required": false,
+            "description": "仅筛选任务详情的usage字段；无最终收据时usage为null。images返回成功图片数，tokens返回输入和输出token数。省略时返回完整收据。",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "images",
+                "tokens"
+              ]
+            },
+            "examples": {
+              "images": {
+                "value": "images"
+              },
+              "tokens": {
+                "value": "tokens"
+              }
+            }
           }
         ],
         "responses": {
@@ -1865,6 +1886,189 @@
                         "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
                       }
                     }
+                  },
+                  "images": {
+                    "summary": "usage_type=images（示例）",
+                    "value": {
+                      "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "attempts": 1,
+                      "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+                      "deadline": "2026-11-02T10:00:03.592022Z",
+                      "created_at": "2026-11-02T09:58:03.592022Z",
+                      "updated_at": "2026-11-02T09:58:03.886218Z",
+                      "usage": {
+                        "successful_images": 1
+                      },
+                      "result": {
+                        "elapsed_ms": 106.03,
+                        "lines": [
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                122.0
+                              ],
+                              [
+                                54.0,
+                                122.0
+                              ]
+                            ],
+                            "score": 0.9463106989860535,
+                            "text": "MaaS OCR TEST"
+                          },
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                212.0
+                              ],
+                              [
+                                997.0,
+                                211.0
+                              ],
+                              [
+                                997.0,
+                                261.0
+                              ],
+                              [
+                                54.0,
+                                263.0
+                              ]
+                            ],
+                            "score": 0.9932732746518892,
+                            "text": "Invoice number: TEST-20261102"
+                          },
+                          {
+                            "box": [
+                              [
+                                52.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                401.0
+                              ],
+                              [
+                                52.0,
+                                401.0
+                              ]
+                            ],
+                            "score": 0.973566757781165,
+                            "text": "Amount: 123.45"
+                          }
+                        ],
+                        "node": "worker-redacted",
+                        "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
+                      },
+                      "error": null,
+                      "status": "SUCCEEDED"
+                    }
+                  },
+                  "tokens": {
+                    "summary": "usage_type=tokens（示例）",
+                    "value": {
+                      "id": "task_6032a4ff0f57481da1b09d4fb9888e33",
+                      "model": "ocr.default",
+                      "revision": "ocr-registry-r1",
+                      "attempts": 1,
+                      "result_artifact_id": "art_41ffe768bc514987b413bffe7df9aeaa",
+                      "deadline": "2026-11-02T10:00:03.592022Z",
+                      "created_at": "2026-11-02T09:58:03.592022Z",
+                      "updated_at": "2026-11-02T09:58:03.886218Z",
+                      "usage": {
+                        "input_tokens": 11,
+                        "output_tokens": 22
+                      },
+                      "result": {
+                        "elapsed_ms": 106.03,
+                        "lines": [
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                71.0
+                              ],
+                              [
+                                558.0,
+                                122.0
+                              ],
+                              [
+                                54.0,
+                                122.0
+                              ]
+                            ],
+                            "score": 0.9463106989860535,
+                            "text": "MaaS OCR TEST"
+                          },
+                          {
+                            "box": [
+                              [
+                                54.0,
+                                212.0
+                              ],
+                              [
+                                997.0,
+                                211.0
+                              ],
+                              [
+                                997.0,
+                                261.0
+                              ],
+                              [
+                                54.0,
+                                263.0
+                              ]
+                            ],
+                            "score": 0.9932732746518892,
+                            "text": "Invoice number: TEST-20261102"
+                          },
+                          {
+                            "box": [
+                              [
+                                52.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                352.0
+                              ],
+                              [
+                                504.0,
+                                401.0
+                              ],
+                              [
+                                52.0,
+                                401.0
+                              ]
+                            ],
+                            "score": 0.973566757781165,
+                            "text": "Amount: 123.45"
+                          }
+                        ],
+                        "node": "worker-redacted",
+                        "text": "MaaS OCR TEST\nInvoice number: TEST-20261102\nAmount: 123.45"
+                      },
+                      "error": null,
+                      "status": "SUCCEEDED"
+                    }
                   }
                 }
               }
@@ -1958,19 +2162,11 @@
             }
           },
           "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
+            "description": "未知usage_type返回INPUT_INVALID；最终收据无有效token用量时返回USAGE_TYPE_UNSUPPORTED。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -2505,13 +2701,21 @@
             "name": "usage_type",
             "in": "query",
             "required": false,
-            "description": "images仅返回成功图片数，tokens仅返回输入和输出token数。省略时返回完整收据。",
+            "description": "images返回成功图片数，tokens返回输入和输出token数。省略时返回完整收据。",
             "schema": {
               "type": "string",
               "enum": [
                 "images",
                 "tokens"
               ]
+            },
+            "examples": {
+              "images": {
+                "value": "images"
+              },
+              "tokens": {
+                "value": "tokens"
+              }
             }
           }
         ],
@@ -2599,6 +2803,19 @@
                       "recorded_at": "2026-11-02T09:58:06.318443+00:00",
                       "source_type": "sync",
                       "successful_images": 1
+                    }
+                  },
+                  "images": {
+                    "summary": "usage_type=images（示例）",
+                    "value": {
+                      "successful_images": 1
+                    }
+                  },
+                  "tokens": {
+                    "summary": "usage_type=tokens（示例）",
+                    "value": {
+                      "input_tokens": 11,
+                      "output_tokens": 22
                     }
                   }
                 }
@@ -2700,7 +2917,7 @@
             }
           },
           "422": {
-            "description": "未知usage_type返回INPUT_INVALID；模型或推理框架未报告有效token用量时返回USAGE_TYPE_UNSUPPORTED。",
+            "description": "未知usage_type返回INPUT_INVALID；最终收据无有效token用量时返回USAGE_TYPE_UNSUPPORTED。",
             "content": {
               "application/json": {
                 "schema": {
@@ -2776,13 +2993,21 @@
             "name": "usage_type",
             "in": "query",
             "required": false,
-            "description": "images仅返回成功图片数，tokens仅返回输入和输出token数。省略时返回完整收据。",
+            "description": "images返回成功图片数，tokens返回输入和输出token数。省略时返回完整收据。",
             "schema": {
               "type": "string",
               "enum": [
                 "images",
                 "tokens"
               ]
+            },
+            "examples": {
+              "images": {
+                "value": "images"
+              },
+              "tokens": {
+                "value": "tokens"
+              }
             }
           }
         ],
@@ -2849,6 +3074,19 @@
                       "recorded_at": "2026-11-02T09:58:03.884305+00:00",
                       "source_type": "task",
                       "successful_images": 1
+                    }
+                  },
+                  "images": {
+                    "summary": "usage_type=images（示例）",
+                    "value": {
+                      "successful_images": 1
+                    }
+                  },
+                  "tokens": {
+                    "summary": "usage_type=tokens（示例）",
+                    "value": {
+                      "input_tokens": 11,
+                      "output_tokens": 22
                     }
                   }
                 }
@@ -2950,7 +3188,7 @@
             }
           },
           "422": {
-            "description": "未知usage_type返回INPUT_INVALID；模型或推理框架未报告有效token用量时返回USAGE_TYPE_UNSUPPORTED。",
+            "description": "未知usage_type返回INPUT_INVALID；最终收据无有效token用量时返回USAGE_TYPE_UNSUPPORTED。",
             "content": {
               "application/json": {
                 "schema": {
@@ -4309,9 +4547,40 @@
             ]
           },
           "usage": {
-            "anyOf": [
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/OCRUsage"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "successful_images": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "successful_images"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "input_tokens": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "output_tokens": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "input_tokens",
+                  "output_tokens"
+                ],
+                "additionalProperties": false
               },
               {
                 "type": "null"

@@ -82,17 +82,24 @@ add('/maas/v1/tasks/{ident}/cancel','post','cancelTask','取消或请求取消�
 add('/maas/v1/models/{name}/capabilities','get','modelCapabilities','查询已授权模型能力','不是实时推理健康检查。当前execution_modes实际只列async，同步入口仍可独立使用；未知模型404、无权限403。没有公开模型列表接口。','模型能力',{200:('当前登记的模型版本、预算及输入/参数schema。',ref('Capabilities'))},params=[{'name':'name','in':'path','required':True,'description':'已登记逻辑模型名，当前ocr.default；不是GPUStack内部部署名。','schema':{'type':'string','example':'ocr.default'}}],codes=['404'])
 add('/maas/v1/usage/{ident}','get','getOCRUsage','查询OCR最终用量收据','E16已部署并通过真实OCR验收。使用同步响应X-Usage-ID或异步结果metering.id，按已知ID查询。仅同project；与artifact TTL独立保存，无自动清理/分页列表/价格。不可用404/USAGE_NOT_AVAILABLE；当前PP-OCRv4没有tokens报告，tokens为null及unavailable，不得按tokens结算。','计量',{200:('成功OCR的最终用量事实。',ref('OCRUsage'))},params=[{'name':'ident','in':'path','required':True,'description':'usage_开头的计量ID，不是artifact ID。','schema':{'type':'string'}}],codes=['404'])
 add('/maas/v1/tasks/{ident}/usage','get','getTaskOCRUsage','按任务查询OCR最终用量','E16已部署并通过真实OCR验收。无需先下载结果即可查询；待执行、失败、取消或旧任务无新账本时404/USAGE_NOT_AVAILABLE，不回填推算。跨project任务404，文件过期不删除已有收据。','计量',{200:('此任务唯一的最终成功OCR用量。',ref('OCRUsage'))},params=[ident],codes=['404'])
-for path in ('/maas/v1/usage/{ident}','/maas/v1/tasks/{ident}/usage'):
+count={'type':'integer','minimum':0}
+usage_examples={'images':{'successful_images':1},'tokens':{'input_tokens':11,'output_tokens':22}}
+usage_schemas=[ref('OCRUsage'),*[obj({key:count for key in example},example,additionalProperties=False)
+                              for example in usage_examples.values()]]
+S['TaskDetail']['properties']['usage']={'oneOf':[*usage_schemas,{'type':'null'}]}
+usage_paths=('/maas/v1/tasks/{ident}','/maas/v1/usage/{ident}','/maas/v1/tasks/{ident}/usage')
+for path in usage_paths:
  operation=P[path]['get']
+ detail=path==usage_paths[0]
  operation['parameters'].append({'name':'usage_type','in':'query','required':False,
-  'description':'images仅返回成功图片数，tokens仅返回输入和输出token数。省略时返回完整收据。',
-  'schema':{'type':'string','enum':['images','tokens']}})
- count={'type':'integer','minimum':0}
- operation['responses']['200']['content']['application/json']['schema']={'oneOf':[
-  ref('OCRUsage'),obj({'successful_images':count},['successful_images'],additionalProperties=False),
-  obj({'input_tokens':count,'output_tokens':count},['input_tokens','output_tokens'],additionalProperties=False)]}
- operation['responses']['422']=response('未知usage_type返回INPUT_INVALID；模型或推理框架未报告有效token用量时返回USAGE_TYPE_UNSUPPORTED。',ref('ApiError'))
- P[path]['get']['responses']['200']['headers']['Cache-Control']={'schema':{'const':'no-store'},'description':'避免缓存客户用量数据。'}
+  'description':('仅筛选任务详情的usage字段；无最终收据时usage为null。' if detail else '')+
+   'images返回成功图片数，tokens返回输入和输出token数。省略时返回完整收据。',
+  'schema':{'type':'string','enum':['images','tokens']},
+  'examples':{kind:{'value':kind} for kind in usage_examples}})
+ if not detail:
+  operation['responses']['200']['content']['application/json']['schema']={'oneOf':usage_schemas}
+  operation['responses']['200']['headers']['Cache-Control']={'schema':{'const':'no-store'},'description':'避免缓存客户用量数据。'}
+ operation['responses']['422']=response('未知usage_type返回INPUT_INVALID；最终收据无有效token用量时返回USAGE_TYPE_UNSUPPORTED。',ref('ApiError'))
 for path in ('/gpustack/v1/chat/completions',):
  P[path]['post']['responses']['200']['headers']['X-Usage-ID']={'description':'E16已部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。','schema':{'type':'string'}}
 doc={'openapi':'3.1.0','info':{'title':'Cybercafe MaaS 对外OCR API','version':'2026-11-02','description':'代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。用量查询支持usage_type参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。'},'servers':[{'url':'http://{host}:{port}','description':'HTTP：本机/授权SSH转发或受控容器入口。localhost仅指当前调用环境；跨容器须替换host为运维提供的宿主机地址。','variables':{'host':{'default':'localhost'},'port':{'default':'18831'}}},{'url':'https://{host}:{port}','description':'HTTPS：本机或授权SSH转发的私有TLS入口；须使用正确host并信任运维提供的证书，不默认绕过校验。','variables':{'host':{'default':'localhost'},'port':{'default':'18832'}}}],'security':[{'BearerAuth':[]}],'tags':[{'name':n,'description':d} for n,d in [('同步OCR','同步完成并返回识别结果。'),('文件','上传和下载project隔离的输入/结果。'),('异步任务','受理、查询和取消持久任务。'),('模型能力','查询已登记及获授权能力，不代表实时GPU健康。'),('计量','成功图片与真实上游token用量事实，价格及收费归下游。')]],'paths':P,'components':{'securitySchemes':{'BearerAuth':{'type':'http','scheme':'bearer','description':'在Swagger Authorize或VSCode插件的HTTP Bearer认证设置中填入管理员登记的推理key（通常只填key，工具添加Bearer前缀）。生成curl后检查是否包含Authorization: Bearer；缺失时手动添加。不要把真实key保存进OpenAPI或示例。该key须在GPUStack有效且有模型权限，不是管理key。'}},'schemas':S}}
@@ -167,6 +174,14 @@ P['/maas/v1/ocr']['post']['requestBody']['content']['application/json']['example
  'withoutBoxes':{'value':{'model':'ocr.default','image_base64':inline_example['input']['image']['image_base64'],'return_boxes':False}},
  'url':{'value':{'model':'ocr.default','image_url':url_example['input']['image']['image_url']}},
 }
+for path in usage_paths:
+ media=P[path]['get']['responses']['200']['content']['application/json']
+ for kind, example in usage_examples.items():
+  value=example
+  if path==usage_paths[0]:
+   if 'realSucceeded' not in media.get('examples',{}):continue
+   value={**media['examples']['realSucceeded']['value'],'usage':example}
+  media.setdefault('examples',{})[kind]={'summary':f'usage_type={kind}（示例）','value':value}
 # Keep the existing document order for readers comparing API versions.
 doc['paths']={'/maas/v1/ocr':P['/maas/v1/ocr'],**{path:item for path,item in P.items() if path != '/maas/v1/ocr'}}
 path=ROOT/'docs/api/openapi.json';path.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')

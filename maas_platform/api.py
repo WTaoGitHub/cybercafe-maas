@@ -14,7 +14,7 @@ from .schemas import TaskCreate, TaskDetail, TaskView
 from .service import TaskService
 from .sync_ingress import SyncIngress
 from .consumer_ocr import ConsumerOCRRequest
-from .metering import UsageType
+from .metering import UsageType, select_usage
 
 
 def create_app(settings=None, auth=None):
@@ -102,8 +102,10 @@ def create_app(settings=None, auth=None):
         return submit_task(task, who, key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskDetail)
-    def get(ident:str,who=Depends(identity)):
+    def get(ident: str, usage_type: UsageType | None = None, who=Depends(identity)):
         task = service.get(who, ident)
+        if usage_type is not None and task['usage'] is not None:
+            task['usage'] = select_usage(task['usage'], usage_type)
         status = task.pop('state')
         code = task.pop('error_code')
         error = None

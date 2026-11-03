@@ -22,7 +22,9 @@ def test_unverified_chat_is_not_a_successful_image():
 
 
 
-@pytest.mark.parametrize('path', ['/maas/v1/usage/usage_task_task_x', '/maas/v1/tasks/task_x/usage'])
+@pytest.mark.parametrize('path', [
+    '/maas/v1/usage/usage_task_task_x', '/maas/v1/tasks/task_x/usage', '/maas/v1/tasks/task_x',
+])
 @pytest.mark.parametrize('reported', [None, {'prompt_tokens': 0, 'completion_tokens': 22}])
 def test_usage_type_api(path, reported, monkeypatch, tmp_path):
     from contextlib import nullcontext
@@ -39,12 +41,29 @@ def test_usage_type_api(path, reported, monkeypatch, tmp_path):
     connection = Mock()
     connection.execute.return_value.fetchone.return_value = {'id': 'task_x', 'receipt': value}
     monkeypatch.setattr(app.state.service.db, 'transaction', lambda: nullcontext(connection))
+    detail = path == '/maas/v1/tasks/task_x'
+    task = {
+        'id': 'task_x', 'model': 'ocr.default', 'revision': 'r1', 'attempts': 1,
+        'state': 'SUCCEEDED', 'error_code': None, 'result_artifact_id': 'art_x',
+        **dict.fromkeys(('deadline', 'created_at', 'updated_at'), value['recorded_at']),
+        'usage': value,
+    }
+    connection.execute.return_value.fetchone.return_value.update(task)
+    monkeypatch.setattr(app.state.service, 'artifact', lambda *_: (b'{"outputs":{"text":"OCR"}}', None))
     client = TestClient(app)
+    original = client.get(path).json()
+    assert original == ({**original, 'usage': value} if detail else value)
 
-    assert client.get(path).json() == value
+    def expected(usage):
+        return {**original, 'usage': usage} if detail else usage
+
     images = client.get(path, params={'usage_type': 'images'})
-    assert images.status_code == 200 and images.json() == {'successful_images': 1}
-    assert images.headers['cache-control'] == 'no-store'
+    assert images.status_code == 200 and images.json() == expected({'successful_images': 1})
+    if detail:
+        assert images.json()['status'] == 'SUCCEEDED'
+        assert images.json()['result'] == {'text': 'OCR'}
+    else:
+        assert images.headers['cache-control'] == 'no-store'
 
     tokens = client.get(path, params={'usage_type': 'tokens'})
     if reported is None:
@@ -52,8 +71,14 @@ def test_usage_type_api(path, reported, monkeypatch, tmp_path):
         assert tokens.json()['error']['code'] == 'USAGE_TYPE_UNSUPPORTED'
     else:
         assert tokens.status_code == 200
-        assert tokens.json() == {'input_tokens': 0, 'output_tokens': 22}
+        assert tokens.json() == expected({'input_tokens': 0, 'output_tokens': 22})
 
     invalid = client.get(path, params={'usage_type': 'other'})
     assert invalid.status_code == 422
     assert invalid.json()['error']['code'] == 'INPUT_INVALID'
+
+    if detail:
+        connection.execute.return_value.fetchone.return_value.update(state='QUEUED', usage=None)
+        pending = client.get(path, params={'usage_type': 'tokens'})
+        assert pending.status_code == 200
+        assert pending.json()['status'] == 'QUEUED' and pending.json()['usage'] is None
