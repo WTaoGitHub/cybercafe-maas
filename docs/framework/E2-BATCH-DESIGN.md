@@ -15,6 +15,7 @@
 | 接口 | 行为 |
 | --- | --- |
 | `POST /maas/v1/artifacts` | 复用图片上传，并为批次清单增加 UTF-8 JSONL 媒体类型和独立大小限制 |
+| `POST /maas/v1/artifacts/batch` | 一次上传多张 PNG/JPEG，逐文件返回 `artifact_id` 或错误 |
 | `POST /maas/v1/batches` | Bearer 鉴权与 `Idempotency-Key`，请求指定 `model`、`input_file_id` 和可选 `timeout_seconds`，首次返回 202，重放返回已有批次 |
 | `GET /maas/v1/batches/{id}` | 返回状态、计数、deadline、批次错误及结果文件 ID |
 | `GET /maas/v1/batches/{id}/items` | 游标分页，按固定输入序号列出条目、`custom_id`、子任务 ID、状态和错误 |
@@ -31,6 +32,26 @@
 ```
 
 提交前整体校验 UTF-8、JSONL 结构、项数、单行字节数、图片引用、媒体类型、参数及模型授权。校验失败返回行号和错误码，整批不接纳。验收时覆盖跨项目、过期引用、重复 ID 和超限文件。清单先有界解析，再在接纳事务中复核引用和额度并建立文件保留关系。
+
+## 批量上传图片
+
+OpenAI Batch 通过 Files API 上传单份 JSONL，指南建议用远程图片 URL 控制清单体积。是否接受 Base64 Data URL 取决于目标端点。阿里云百炼也上传单份 JSONL，多模态清单中的媒体 URL 要求公网可访问。两份 Batch 指南均未列出一次上传多张原图的专用接口。MaaS 延续清单与图片分离的结构，用同项目私有 `artifact_id` 引用图片。 [OpenAI Batch](https://developers.openai.com/api/docs/guides/batch) · [OpenAI Files API](https://developers.openai.com/api/reference/resources/files/methods/create) · [阿里云百炼 Batch](https://www.alibabacloud.com/help/en/model-studio/batch-inference)
+
+`POST /maas/v1/artifacts/batch` 接收 `multipart/form-data`。首个部件是 JSON `metadata`，包含唯一的 `client_file_ids` 数组。后续同名 `files` 部件按顺序与 ID 一一对应。服务端在暂存时检查总字节和文件数，请求级校验通过后逐文件校验、写入并返回结果。单文件损坏、超限或存储配额不足可作为该项错误。成功项保留，客户端可以单独补传失败项。整批创建仍统一校验完整清单。
+
+```bash
+curl "${MAAS_BASE_URL}/maas/v1/artifacts/batch" \
+  -H "Authorization: Bearer ${MAAS_API_KEY}" \
+  -F 'metadata={"client_file_ids":["page-001","page-002"]};type=application/json' \
+  -F 'files=@page-001.png;type=image/png' \
+  -F 'files=@page-002.jpg;type=image/jpeg'
+```
+
+批量上传的单图字节数、请求总字节和文件数分别配置。客户端可分多次上传以组成一个 OCR 批次。每次上传独立创建文件，`client_file_id` 用于关联本次响应。
+
+### 待议：JSONL 内嵌图片
+
+记录候选字段 `input.image.image_base64`，与 `artifact_id` 二选一，可考虑沿用单任务接受裸 Base64 和 PNG/JPEG Data URL 的约定。内嵌可减少少量小图的提交步骤，但会增加清单体积并占用单行预算。后续需明确允许的编码、单行与整清单字节上限、解码后单图上限，以及校验和落盘时机。当前契约中的 JSONL 图片仍使用 `artifact_id`。
 
 ## 状态、调度与恢复
 

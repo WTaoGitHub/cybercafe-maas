@@ -3779,6 +3779,164 @@
         },
         "x-implementation-status": "draft"
       }
+    },
+    "/maas/v1/artifacts/batch": {
+      "post": {
+        "operationId": "uploadImagesBatch",
+        "summary": "批量上传 OCR 输入图片",
+        "description": "E2 草案，待实现。使用 multipart/form-data。metadata 必须是第一个部件，其后为同名 files 部件，按顺序映射到 client_file_ids。服务端分别限制文件数、请求总字节和单图字节。请求级校验失败时不发布任何文件；请求有效时逐文件处理，即使所有文件均失败也返回 200。成功文件归当前项目，可在 JSONL 中引用。每次调用独立创建文件，客户端按返回结果补传失败项。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "metadata",
+                  "files"
+                ],
+                "properties": {
+                  "metadata": {
+                    "$ref": "#/components/schemas/BatchUploadMetadata"
+                  },
+                  "files": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "metadata": {
+                  "contentType": "application/json"
+                },
+                "files": {
+                  "contentType": "image/png, image/jpeg",
+                  "style": "form",
+                  "explode": true
+                }
+              },
+              "example": {
+                "metadata": {
+                  "client_file_ids": [
+                    "page-001",
+                    "page-002"
+                  ]
+                },
+                "files": [
+                  "<page-001.png bytes>",
+                  "<page-002.jpg bytes>"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "逐文件处理结果，可部分成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchUploadResult"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "client_file_id": "page-001",
+                      "status": "UPLOADED",
+                      "artifact_id": "art_page_001"
+                    },
+                    {
+                      "client_file_id": "page-002",
+                      "status": "FAILED",
+                      "error": {
+                        "code": "INVALID_IMAGE",
+                        "message": "文件内容不是有效的 PNG 或 JPEG。",
+                        "retryable": false
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "multipart 格式错误。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "缺少有效 Bearer Key。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchApiError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "整请求或文件数量超过配置限制。单图超限在逐文件结果中报告。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchApiError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "请求不是 multipart/form-data。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "metadata 缺失、ID 重复、部件顺序错误或 ID 与文件数量不匹配。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求级限流。逐文件存储额度不足在逐文件结果中报告。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "服务无法开始处理请求。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchApiError"
+                }
+              }
+            }
+          }
+        },
+        "x-implementation-status": "draft"
+      }
     }
   },
   "components": {
@@ -5574,6 +5732,92 @@
           },
           "error": {
             "$ref": "#/components/schemas/ItemError"
+          }
+        }
+      },
+      "BatchUploadMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "client_file_ids"
+        ],
+        "properties": {
+          "client_file_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "description": "与 files 部件按出现顺序一一对应，数量须相同。"
+          }
+        }
+      },
+      "BatchUploadItem": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "client_file_id",
+              "status",
+              "artifact_id"
+            ],
+            "properties": {
+              "client_file_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "status": {
+                "const": "UPLOADED"
+              },
+              "artifact_id": {
+                "type": "string",
+                "pattern": "^art_[a-z0-9_]+$"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "client_file_id",
+              "status",
+              "error"
+            ],
+            "properties": {
+              "client_file_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "status": {
+                "const": "FAILED"
+              },
+              "error": {
+                "$ref": "#/components/schemas/ItemError"
+              }
+            }
+          }
+        ]
+      },
+      "BatchUploadResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/BatchUploadItem"
+            },
+            "description": "按文件部件顺序返回，每个文件恰好一项。"
           }
         }
       },
