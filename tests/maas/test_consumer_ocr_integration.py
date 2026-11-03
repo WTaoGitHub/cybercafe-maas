@@ -6,7 +6,7 @@ from test_consumer_ocr import png,response
 
 def body(**kw):return {'model':'ocr.default','image_base64':base64.b64encode(png()).decode(),**kw}
 
-@pytest.mark.parametrize('path',['/ocr','/v1/ocr'])
+@pytest.mark.parametrize('path',['/ocr'])
 def test_consumer_paths_share_admission_and_map_before_single_success_event(env,monkeypatch,path):
     calls=[];box=[[0,0],[2,0],[2,2],[0,2]]
     def upstream(request):
@@ -77,3 +77,27 @@ def test_transport_unknown_blocks_following_requests_without_replay(env,monkeypa
     with s.db.transaction() as c:
         assert c.execute('SELECT state FROM sync_activity').fetchone()['state']=='UNKNOWN'
         assert c.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n']==0
+
+
+@pytest.mark.parametrize('field,value', [
+    ('image_base64', base64.b64encode(png()).decode()),
+    ('image_url', 'https://example.org/image.png'),
+])
+def test_v1_ocr_shares_task_submission_and_idempotency(env, monkeypatch, field, value):
+    client, service, _ = sync_setup(env, monkeypatch, lambda _: pytest.fail('Submission must not run OCR'))
+    async def fetch(*args):
+        return png()
+    monkeypatch.setattr('maas_platform.task_image_url.fetch_image', fetch)
+    payload = {'model': 'ocr.default', field: value}
+    key = headers(idem='ocr-alias')
+    assert client.post('/v1/ocr', headers=headers(), json=payload).status_code == 400
+    assert client.post('/v1/ocr', headers=key, json={**payload, 'return_boxes': False}).status_code == 422
+    created = client.post('/v1/ocr', headers=key, json=payload)
+    assert created.status_code == 202
+    assert created.headers['location'] == '/maas/v1/tasks/' + created.json()['id']
+    replay = client.post('/maas/v1/tasks', headers=key, json={
+        'model': 'ocr.default', 'input': {'image': {field: value}},
+    })
+    assert replay.status_code == 200 and replay.json() == created.json()
+    with service.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) n FROM tasks').fetchone()['n'] == 1

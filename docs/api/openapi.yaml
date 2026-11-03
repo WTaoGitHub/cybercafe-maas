@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Cybercafe MaaS 对外OCR API
   version: '2026-11-02'
-  description: 2026-11-02现网契约：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS
+  description: 代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS
     API路径不支持query参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain
     text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger
     UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。 成功及部分错误响应示例取自2026-11-02真实验收，自建文字测试图与默认白图请求不同；节点已脱敏，历史测试ID不可复用，不包含凭据或真实连接地址。
@@ -237,69 +237,64 @@ paths:
               $ref: '#/components/schemas/ConsumerOCRRequest'
   /v1/ocr:
     post:
-      operationId: ocrV1
-      summary: 同步OCR（消费者兼容）
-      description: 单张PNG/JPEG，decoded大小默认≤10MiB，像素≤20000000。URL和base64恰好一个；无持久同步幂等，request_id仅关联。返回顶层lines，不保存可查询任务。
+      operationId: submitOcrTask
+      summary: 提交异步OCR任务（待部署）
+      description: 将顶层图片字段转换为任务input.image。新任务返回202，幂等复用返回200。必填Idempotency-Key，与任务入口共享项目内幂等空间。language仍为提示，request_id只用于日志关联。通过Location查询任务，再下载结果。
       tags:
-      - 同步OCR
-      parameters: []
+      - 异步任务
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: project范围持久幂等键。示例值仅演示：每次新业务操作生成新UUID并保存，重试同一操作沿用原值和原body，不能反复用示例值提交不同任务。同键且同请求返回当前原任务；不同内容409。新artifact
+          ID视为不同内容。不得换键重做完成不明推理。
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+        example: ocr-550e8400-e29b-41d4-a716-446655440000
       responses:
-        '200':
-          description: 识别成功；空lines为无文字。
+        '202':
+          description: 新任务已受理。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsumerResult'
-              examples:
-                realOCR:
-                  summary: 真实v1同步OCR成功
-                  description: 2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。
-                  value:
-                    lines:
-                    - text: MaaS OCR TEST
-                      confidence: 0.9463106989860535
-                      polygon:
-                      - - 54.0
-                        - 71.0
-                      - - 558.0
-                        - 71.0
-                      - - 558.0
-                        - 122.0
-                      - - 54.0
-                        - 122.0
-                    - text: 'Invoice number: TEST-20261102'
-                      confidence: 0.9932732746518892
-                      polygon:
-                      - - 54.0
-                        - 212.0
-                      - - 997.0
-                        - 211.0
-                      - - 997.0
-                        - 261.0
-                      - - 54.0
-                        - 263.0
-                    - text: 'Amount: 123.45'
-                      confidence: 0.973566757781165
-                      polygon:
-                      - - 52.0
-                        - 352.0
-                      - - 504.0
-                        - 352.0
-                      - - 504.0
-                        - 401.0
-                      - - 52.0
-                        - 401.0
+                $ref: '#/components/schemas/TaskView'
           headers:
             X-Request-ID:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-              example: req_68ac519ca38b4631bdee256d03ff85fd
-            X-Usage-ID:
-              description: E16已部署：已确认的单图OCR成功时提供，GET /maas/v1/usage/{ident}查询。内部探针、非单图/无法确认OCR输出的旧Chat透传没有该头；无同步持久去重，重复调用可能产生新用量。
+            Location:
+              description: 任务查询相对路径。
               schema:
                 type: string
-              example: usage_sync_6434b87675724c1b84fd38a5c11039a3
+        '200':
+          description: 返回原任务。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskView'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+            Location:
+              description: 任务查询相对路径。
+              schema:
+                type: string
+        '400':
+          description: 请求无效或缺少Idempotency-Key（IDEMPOTENCY_REQUIRED）；不保证所有400都使用相同码。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
         '401':
           description: 缺少或未登记的Bearer凭据。
           content:
@@ -335,6 +330,17 @@ paths:
                 type: string
         '408':
           description: 图片下载/准备超时（若适用）。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          headers:
+            X-Request-ID:
+              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
+              schema:
+                type: string
+        '409':
+          description: IDEMPOTENCY_CONFLICT：同键不同内容；或IDEMPOTENCY_IN_PROGRESS：同键正在下载准备，稍后用原键及原body重试。
           content:
             application/json:
               schema:
@@ -392,17 +398,6 @@ paths:
               description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
               schema:
                 type: string
-        '502':
-          description: 输出无效/超限、图片获取失败或上游异常（若适用）。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          headers:
-            X-Request-ID:
-              description: 服务器生成的请求关联ID；入口直接拒绝时可能没有。
-              schema:
-                type: string
         '503':
           description: 服务/鉴权不可用、维护暂停或未知后台活动隔离。
           content:
@@ -434,7 +429,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsumerOCRRequest'
+              $ref: '#/components/schemas/AsyncOCRRequest'
+            examples:
+              base64:
+                value:
+                  model: ocr.default
+                  image_base64: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAE0lEQVR4nGP8//8/AwwwwVnoHABvLQMDNeDq7AAAAABJRU5ErkJggg==
+              url:
+                value:
+                  model: ocr.default
+                  image_url: https://example.org/replace-with-public-image.png
   /v1/chat/completions:
     post:
       operationId: chatOCR
@@ -2877,3 +2881,75 @@ components:
       required:
       - choices
       additionalProperties: true
+    AsyncOCRRequest:
+      additionalProperties: false
+      properties:
+        model:
+          maxLength: 128
+          minLength: 1
+          title: Model
+          type: string
+          description: 已授权逻辑模型名。
+        image_url:
+          anyOf:
+          - maxLength: 4096
+            minLength: 1
+            type: string
+          - type: 'null'
+          default: null
+          title: Image Url
+          description: 公开HTTP(S) PNG/JPEG地址，与image_base64恰好一个；不支持私网、鉴权下载及重定向。
+        image_base64:
+          anyOf:
+          - minLength: 1
+            type: string
+          - type: 'null'
+          default: null
+          title: Image Base64
+          description: 严格标准裸base64或PNG/JPEG data URL；与image_url恰好一个。
+        language:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Language
+          description: 仅null/auto/zh/en，提示语义，不强制过滤输出或切换模型。
+          enum:
+          - null
+          - auto
+          - zh
+          - en
+        return_boxes:
+          type: boolean
+          const: true
+          default: true
+          description: 异步结果包含坐标。传false返回422。
+        request_id:
+          anyOf:
+          - maxLength: 200
+            minLength: 1
+            type: string
+          - type: 'null'
+          default: null
+          title: Request Id
+          description: 业务关联ID，禁止控制字符；不是幂等键，不保证去重。
+      required:
+      - model
+      title: ConsumerOCRRequest
+      type: object
+      description: ConsumerOCRRequest（与当前实现一致）
+      oneOf:
+      - required:
+        - image_url
+        properties:
+          image_url:
+            type: string
+          image_base64:
+            type: 'null'
+      - required:
+        - image_base64
+        properties:
+          image_base64:
+            type: string
+          image_url:
+            type: 'null'

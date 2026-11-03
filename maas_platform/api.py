@@ -62,7 +62,6 @@ def create_app(settings=None, auth=None):
         return await app.state.sync_ingress.infer(who,body)
 
     @app.post('/ocr')
-    @app.post('/v1/ocr')
     async def consumer_ocr(body:ConsumerOCRRequest,request:Request,who=Depends(identity)):
         if body.request_id is not None:
             logging.getLogger('uvicorn.error').info('ocr request=%s consumer_request=%r',request.state.request_id,body.request_id)
@@ -82,10 +81,23 @@ def create_app(settings=None, auth=None):
         data,media=service.artifact(who,ident)
         return Response(data,media_type=media,headers={'Cache-Control':'no-store','Content-Disposition':'attachment'})
 
-    @app.post('/maas/v1/tasks', status_code=202, response_model=TaskView)
-    def submit(body:TaskCreate, request:Request, who=Depends(identity), idempotency_key:str=Header(default='')):
+    def submit_task(body, who, idempotency_key):
         row,created=service.submit(who,body,idempotency_key)
         return JSONResponse(jsonable_encoder(row),status_code=202 if created else 200,headers={'Location':'/maas/v1/tasks/'+row['id']})
+
+    @app.post('/maas/v1/tasks', status_code=202, response_model=TaskView)
+    def submit(body:TaskCreate, who=Depends(identity), idempotency_key:str=Header(default='')):
+        return submit_task(body, who, idempotency_key)
+
+    @app.post('/v1/ocr', status_code=202, response_model=TaskView)
+    def submit_ocr(body:ConsumerOCRRequest, request:Request, who=Depends(identity), idempotency_key:str=Header(default='')):
+        if not body.return_boxes:
+            raise ServiceError('INPUT_INVALID', 'Async OCR result includes boxes', 422)
+        if body.request_id is not None:
+            logging.getLogger('uvicorn.error').info('ocr request=%s consumer_request=%r',request.state.request_id,body.request_id)
+        image = {'image_url': body.image_url} if body.image_url is not None else {'image_base64': body.image_base64}
+        task = TaskCreate(model=body.model, input={'image': image})
+        return submit_task(task, who, idempotency_key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskView)
     def get(ident:str,who=Depends(identity)): return service.get(who,ident)

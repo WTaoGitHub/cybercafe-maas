@@ -1,5 +1,7 @@
 # MaaS 对外 API 文档（当前版本）
 
+> **2026-11-03 代码契约待部署**。OpenAPI 中的 `POST /v1/ocr` 已改为异步提交，需要 `Idempotency-Key`，返回 202 或幂等复用 200。下文现网同步说明适用于切换前。详见[消费者接口](CONSUMER-OCR.md)。
+
 > **2026-11-02已部署并完成真实OCR验收**：异步input.image支持artifact_id、image_base64、image_url三选一，兼容旧data_url/url别名。成功图片计量、两个用量查询、同步X-Usage-ID及异步metering已上线；当前PP-OCRv4的tokens实际为null/unavailable，不可据此按token收费。[发布记录](../../results/maas-ocr-release-20261102/REPORT.md)。
 
 > **OpenAPI / Swagger文档（2026-11-02）**：[openapi.yaml](openapi.yaml) / [openapi.json](openapi.json) · [使用与校验说明](OPENAPI.md)。覆盖当前已实现的11个客户操作，包含单张图片内嵌建任务；不包含尚未开放的`/v1/models`。

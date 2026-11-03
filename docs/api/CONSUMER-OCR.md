@@ -1,5 +1,15 @@
 # 下游消费者兼容OCR接口
 
+## 2026-11-03 的异步接口变更（待部署）
+
+新版 `POST /v1/ocr` 接受原顶层 `model`、`image_base64` 或 `image_url`，并要求 `Idempotency-Key` 请求头。服务把图片字段放入 `input.image`，调用 `POST /maas/v1/tasks` 使用的同一提交逻辑。任务采用默认超时 120 秒、默认最多 3 次尝试及空 `parameters`。重试仍遵守现有任务执行规则。
+
+新任务返回 HTTP 202，幂等复用返回 HTTP 200，两者都返回任务对象和指向 `GET /maas/v1/tasks/{ident}` 的 `Location`。任务成功后按 `result_artifact_id` 下载结果，或按任务 ID 查询用量。等价的标准任务请求与快捷入口共享项目内幂等空间。
+
+`language` 沿用提示语义，`request_id` 用于日志关联，两者均不参与转换后任务的指纹。异步输出包含坐标，因此 `return_boxes: false` 返回 422。`POST /ocr` 提供原同步契约。现网 `/v1/ocr` 仍按下文的同步契约运行，切换后调用方需改为处理任务响应。
+
+## 已部署的同步契约
+
 2026-10-27。代码、独立测试库及001私有TLS实测均已通过，已发布consumer-ocr-r1；详见[验收报告](../../results/maas-consumer-ocr/REPORT.md)。针对upstream-generation-api-integration.md的同步OCR契约，保留原Chat及异步任务API。文生图/音频/视频不在本轮范围，E4持久同步幂等仍未实施。
 
 ## 渠道配置与请求
