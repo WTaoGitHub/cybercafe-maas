@@ -3,7 +3,7 @@
   "info": {
     "title": "Cybercafe MaaS 对外OCR API",
     "version": "2026-11-02",
-    "description": "代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。MaaS API路径不支持query参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。 成功及部分错误响应示例取自2026-11-02真实验收，自建文字测试图与默认白图请求不同；节点已脱敏，历史测试ID不可复用，不包含凭据或真实连接地址。"
+    "description": "代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。用量查询支持usage_type参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain text而非ApiError。当前运行配置8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。 成功及部分错误响应示例取自2026-11-02真实验收，自建文字测试图与默认白图请求不同；节点已脱敏，历史测试ID不可复用，不包含凭据或真实连接地址。"
   },
   "servers": [
     {
@@ -2500,6 +2500,19 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "usage_type",
+            "in": "query",
+            "required": false,
+            "description": "images仅返回成功图片数，tokens仅返回输入和输出token数。省略时返回完整收据。",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "images",
+                "tokens"
+              ]
+            }
           }
         ],
         "responses": {
@@ -2508,7 +2521,42 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OCRUsage"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/OCRUsage"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "successful_images": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "successful_images"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "input_tokens": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "output_tokens": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "input_tokens",
+                        "output_tokens"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
                 },
                 "examples": {
                   "realAsyncUsage": {
@@ -2652,19 +2700,11 @@
             }
           },
           "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
+            "description": "未知usage_type返回INPUT_INVALID；模型或推理框架未报告有效token用量时返回USAGE_TYPE_UNSUPPORTED。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -2731,6 +2771,19 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "usage_type",
+            "in": "query",
+            "required": false,
+            "description": "images仅返回成功图片数，tokens仅返回输入和输出token数。省略时返回完整收据。",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "images",
+                "tokens"
+              ]
+            }
           }
         ],
         "responses": {
@@ -2739,7 +2792,42 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OCRUsage"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/OCRUsage"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "successful_images": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "successful_images"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "input_tokens": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "output_tokens": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "input_tokens",
+                        "output_tokens"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
                 },
                 "examples": {
                   "realTaskUsage": {
@@ -2862,19 +2950,11 @@
             }
           },
           "422": {
-            "description": "请求schema、图片、模型参数或上游校验不通过。",
+            "description": "未知usage_type返回INPUT_INVALID；模型或推理框架未报告有效token用量时返回USAGE_TYPE_UNSUPPORTED。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-ID": {
-                "description": "服务器生成的请求关联ID；入口直接拒绝时可能没有。",
-                "schema": {
-                  "type": "string"
                 }
               }
             }

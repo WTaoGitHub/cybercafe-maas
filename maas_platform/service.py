@@ -8,6 +8,7 @@ from .db import Database
 from .errors import ServiceError
 from .adapters import adapter_for
 from .artifact_gc import ArtifactGC
+from .metering import UsageType, select_usage
 
 ACTIVE = ('QUEUED', 'RETRY_WAIT', 'RUNNING', 'CANCEL_REQUESTED')
 
@@ -112,7 +113,7 @@ class TaskService:
                     (ident, identity.project, identity.credential_id, idem, request_hash, body.model, model['revision'], fingerprint(model), Jsonb(inp), Jsonb(params), art_id, body.max_attempts, body.timeout_seconds)).fetchone()
                 return self.public(row), True
 
-    def usage(self, identity, ident, *, task=False):
+    def usage(self, identity, ident, *, task=False, usage_type: UsageType | None = None):
         with self.db.transaction() as c:
             if task:
                 found=c.execute('SELECT id FROM tasks WHERE id=%s AND project=%s',(ident,identity.project)).fetchone()
@@ -121,7 +122,7 @@ class TaskService:
             else:
                 row=c.execute('SELECT receipt FROM ocr_usage_records WHERE id=%s AND project=%s',(ident,identity.project)).fetchone()
             if not row:raise ServiceError('USAGE_NOT_AVAILABLE','No final OCR usage record is available',404)
-            return row['receipt']
+            return select_usage(row['receipt'], usage_type)
 
     def get(self, identity, ident):
         with self.db.transaction() as c:

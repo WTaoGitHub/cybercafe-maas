@@ -47,7 +47,7 @@ key须由管理员登记到MaaS credential/project/逻辑模型，并在GPUStack
 ### 1.3 通用约定
 
 - JSON请求使用 `Content-Type: application/json`；文件上传是原始字节而非JSON/multipart。
-- 当前私有Nginx只放行GET/POST及本文业务路径；不允许query参数。路径和模型名大小写须按示例。
+- 当前私有Nginx只放行GET/POST及本文业务路径；仅两个用量查询端点支持 `usage_type` 查询参数。路径和模型名大小写须按示例。
 - 通常返回 `X-Request-ID: req_<随机值>`，由本系统生成；不会把客户端的同名头当作幂等键。请在支持请求中保留此ID。
 - 时间字段为ISO8601带时区字符串；示例时间、识别文字、revision、耗时与节点都是格式示意。
 - Nginx/TLS等入口错误可能不是本文JSON结构，客户端须先检查HTTP状态和Content-Type。
@@ -402,3 +402,15 @@ retryable表示错误类型的建议，不是无限重试许可。同步发送�
 ### 真实响应示例
 
 OpenAPI Responses已内嵌本轮真实成功及部分错误响应；源数据见[真实响应集合](examples/real-responses-20261102.json)。使用自建文字图片，不是默认白图请求的对应输出；节点标识脱敏。ID与时间是历史测试值，不能直接复用artifact ID或幂等键。发送下游时仅需分发openapi.yaml或JSON，示例已内嵌，不依赖额外文件。
+
+
+### 按计量类型查询
+
+`GET /maas/v1/usage/{ident}` 和 `GET /maas/v1/tasks/{ident}/usage` 均支持以下可选参数。
+
+| 查询参数 | HTTP 200 响应示例 |
+| --- | --- |
+| `usage_type=images` | `{"successful_images":1}` |
+| `usage_type=tokens` | `{"input_tokens":11,"output_tokens":22}` |
+
+省略参数时返回完整收据。模型或推理框架未报告有效 token 用量时，指定 `tokens` 返回 HTTP 422 和 `USAGE_TYPE_UNSUPPORTED`。当前 PP-OCRv4 属于这种情况。未知类型返回 HTTP 422 和 `INPUT_INVALID`。没有最终用量记录时仍返回 HTTP 404。

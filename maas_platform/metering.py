@@ -1,6 +1,26 @@
 """Final successful OCR facts; pricing and token estimation are out of scope."""
 from datetime import datetime, timezone
+from typing import Literal
+from .errors import ServiceError
 from psycopg.types.json import Jsonb
+
+
+UsageType = Literal['images', 'tokens']
+
+
+def select_usage(value, usage_type: UsageType | None):
+    if usage_type is None:
+        return value
+    if usage_type == 'images':
+        return {'successful_images': value['successful_images']}
+    tokens = value['tokens']
+    if tokens['status'] != 'available':
+        raise ServiceError(
+            'USAGE_TYPE_UNSUPPORTED',
+            f"Token usage is unavailable for {value['model']} ({tokens['reason']})",
+            422,
+        )
+    return {key: tokens[key] for key in ('input_tokens', 'output_tokens')}
 
 
 def tokens_from_response(envelope):

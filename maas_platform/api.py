@@ -14,6 +14,7 @@ from .schemas import TaskCreate, TaskDetail, TaskView
 from .service import TaskService
 from .sync_ingress import SyncIngress
 from .consumer_ocr import ConsumerOCRRequest
+from .metering import UsageType
 
 
 def create_app(settings=None, auth=None):
@@ -131,10 +132,12 @@ def create_app(settings=None, auth=None):
     def cancel(ident:str,who=Depends(identity)): return service.cancel(who,ident)
 
     @app.get('/maas/v1/usage/{ident}')
-    def usage(ident:str,who=Depends(identity)):return JSONResponse(service.usage(who,ident),headers={'Cache-Control':'no-store'})
+    def usage(ident: str, usage_type: UsageType | None = None, who=Depends(identity)):
+        return JSONResponse(service.usage(who, ident, usage_type=usage_type), headers={'Cache-Control': 'no-store'})
 
     @app.get('/maas/v1/tasks/{ident}/usage')
-    def task_usage(ident:str,who=Depends(identity)):return JSONResponse(service.usage(who,ident,task=True),headers={'Cache-Control':'no-store'})
+    def task_usage(ident: str, usage_type: UsageType | None = None, who=Depends(identity)):
+        return JSONResponse(service.usage(who, ident, task=True, usage_type=usage_type), headers={'Cache-Control': 'no-store'})
 
     @app.get('/maas/v1/models/{name}/capabilities')
     def capability(name:str,who=Depends(identity)):
