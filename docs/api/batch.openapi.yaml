@@ -116,7 +116,7 @@ paths:
                 type: string
               example: /maas/v1/batches/batch_example
         '200':
-          description: 同项目、同幂等键且请求内容相同，返回已有批次的当前状态。
+          description: 同项目、同幂等键且请求内容相同，返回已有批次的当前状态。 幂等记录有效时，即使原清单或图片已过期也返回已有批次。
           content:
             application/json:
               schema:
@@ -224,7 +224,7 @@ paths:
     get:
       operationId: getBatch
       summary: 查询批次状态及结果文件
-      description: COMPLETED 表示清单已发布，批内可有失败项。取消和到期后保留已完成结果。
+      description: COMPLETED 表示清单已发布，批内可有失败项。取消和到期后保留已完成结果。 FINALIZING 表示所有条目已终结，执行结局已锁定，清单正在发布。
       responses:
         '200':
           description: 当前批次快照。
@@ -363,7 +363,7 @@ paths:
     post:
       operationId: cancelBatch
       summary: 请求取消批次
-      description: 停止新派发，收敛在途任务并保留部分结果。CANCEL_REQUESTED 表示请求已登记。
+      description: 停止新派发，收敛在途任务并保留部分结果。CANCEL_REQUESTED 表示请求已登记。 批次已进入 FINALIZING 时返回当前快照，保留已锁定的执行结局。
       responses:
         '200':
           description: 返回当前批次快照。已终结的批次返回已有终态。
@@ -475,8 +475,8 @@ paths:
     post:
       operationId: uploadImagesBatch
       summary: 批量上传 OCR 输入图片
-      description: 使用 multipart/form-data。metadata 必须是第一个部件，其后为同名 files 部件，按顺序映射到 client_file_ids。服务端分别限制文件数、请求总字节和单图字节。请求级校验失败时不发布任何文件；请求有效时逐文件处理，即使所有文件均失败也返回
-        200。成功文件归当前项目，可在 JSONL 中引用。每次调用独立创建文件，客户端按返回结果补传失败项。
+      description: 使用 multipart/form-data。metadata 可出现在任意位置，恰好一个。按同名 files 部件的相对顺序映射到 client_file_ids。服务端分别限制文件数、请求总字节和单图字节。请求级校验失败时不发布任何文件；请求有效时逐文件处理，即使所有文件均失败也返回
+        200。成功文件归当前项目，可在 JSONL 中引用。每次调用独立创建文件，客户端按返回结果补传失败项。若整次响应丢失，重传可能创建新的 artifact_id。
       requestBody:
         required: true
         content:
@@ -554,7 +554,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
         '422':
-          description: metadata 缺失、ID 重复、部件顺序错误或 ID 与文件数量不匹配。
+          description: metadata 缺失或重复、ID 重复，或 ID 与文件数量不匹配。
           content:
             application/json:
               schema:
@@ -745,6 +745,7 @@ components:
           - READY
           - FAILED
           - EXPIRED
+          - DISABLED
         zip_error:
           anyOf:
           - $ref: '#/components/schemas/ItemError'
@@ -754,7 +755,8 @@ components:
           - type: string
             format: date-time
           - type: 'null'
-      description: 清单发布前文件 ID 为 null。成功与失败清单一起发布，空清单为零字节。ZIP 单独生成，失败时清单仍可下载。过期后按文件接口语义返回 404。
+      description: 清单发布前文件 ID 为 null。成功与失败清单一起发布，空清单为零字节。ZIP 单独生成，失败时清单仍可下载。过期后按文件接口语义返回 404。 输出保留期从两份清单成功发布时开始。ZIP
+        中的结果路径为 results/{result_artifact_id}.json。
     ItemError:
       type: object
       additionalProperties: false
