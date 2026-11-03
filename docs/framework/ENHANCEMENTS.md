@@ -1080,3 +1080,7 @@ capabilities绑定具体服务revision，该revision在内部关联权重、引�
 - token仅接受实际上游usage报告，不用字符/像素/base64长度推算；缺失/非法明确不可用。当前PP-OCRv4没有原生token报告，实际token收费需后续模型/服务具备可靠计量依据，不冒称已可按token结算。
 - 覆盖幂等去重、失败/取消/UNKNOWN、探针排除、跨项目及旧任务无新账本边界；同步请求仍无E4持久去重，重复推理可能重复计量。
 - 新记录按图片和token同时披露事实，实际采用哪种价格或是否组合由下游决定，不将quantity=0或null解释为免费。后续多图/PDF/音视频复用E14/E10/E15能力，保持E13文件生命周期职责独立。
+
+## E17：GPU 每日在线与模型部署时长
+
+通过 GPUStack 控制面按 GPU UUID 采样，提供北京时间自然日报查询。首期统计在线与运行中模型副本的部署时长，单列未知区间。实际推理时长另行评估。详见[实施计划与查询命令](E17-GPU-TIME.md)及 [Issue #28](https://github.com/WTaoGitHub/cybercafe-maas/issues/28)。
