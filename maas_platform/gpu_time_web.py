@@ -83,11 +83,17 @@ def router(db):
 
     @routes.get('', dependencies=[Depends(operator)], response_class=HTMLResponse)
     def page(data=Depends(query), gpu_uuid: str = ''):
+        duration = data['period_seconds']
+
+        def online_share(seconds):
+            return f'{seconds / duration:.2%}' if duration else '—'
+
         rows = ''.join(
             f'<tr><th scope="row">{escape(uuid)}</th><td>{row["online_seconds"]}</td>'
-            f'<td>{row["not_ready_seconds"]}</td><td>{row["unknown_seconds"]}</td></tr>'
+            f'<td>{row["not_ready_seconds"]}</td><td>{row["unknown_seconds"]}</td>'
+            f'<td>{online_share(row["online_seconds"])}</td></tr>'
             for uuid, row in data['gpus'].items()
-        ) or '<tr><td colspan="4">没有匹配的 GPU 数据</td></tr>'
+        ) or '<tr><td colspan="5">没有匹配的 GPU 数据</td></tr>'
         last = data['last_success_at']
         freshness = '暂无成功采样' if last is None else datetime.fromtimestamp(last, BEIJING).isoformat()
         if data['sampling_stale'] and last is not None:
@@ -122,11 +128,16 @@ def router(db):
             '<thead><tr><th>开始</th><th>结束</th><th>有效秒数</th></tr></thead>'
             f'<tbody>{segments}</tbody></table></div></details></section>'
             '<section><h2>逐卡时长</h2><div class="table"><table><thead><tr>'
-            '<th>GPU UUID</th><th>在线</th><th>非 ready</th><th>未知</th></tr></thead>'
+            '<th>GPU UUID</th><th>在线</th><th>非 ready</th><th>未知</th><th>GPU 在线占比</th></tr></thead>'
             f'<tbody>{rows}</tbody></table></div>'
-            '<p>在线和非 ready 来自可明确归属的 worker 状态。'
-            '未知包括未覆盖时段，以及采样成功但该卡未上报或记录冲突的时段。'
-            '因此单卡覆盖率可以低于总体覆盖率。</p></section></main></html>',
+            '<dl><dt><strong>GPU UUID</strong></dt><dd>GPUStack 上报的显卡标识。'
+            '同一 UUID 换绑到新实例后继续归到同一张卡。</dd>'
+            '<dt><strong>在线</strong></dt><dd>有效采样中，该卡有唯一的 ready 记录所对应的秒数。</dd>'
+            '<dt><strong>非 ready</strong></dt><dd>有效采样中，该卡只有一条记录且该记录未就绪所对应的秒数。</dd>'
+            '<dt><strong>未知</strong></dt><dd>查询窗口扣除在线及非 ready 后的秒数，'
+            '包括采样未覆盖、该卡未上报和记录冲突。</dd>'
+            '<dt><strong>GPU 在线占比</strong></dt><dd>在线秒数 ÷ 查询窗口秒数。'
+            '分母包含未知时间。查询窗口为零时显示破折号。</dd></dl></section></main></html>',
             headers=headers,
         )
 

@@ -50,6 +50,7 @@ def test_operator_web_and_json_use_same_report(env, monkeypatch, tmp_path):
         default = client.get(path + '/report', auth=operator).json()
         assert default['period_seconds'] == 86400
         assert 'type="datetime-local"' in page.text
+        assert "GPU 在线占比" in page.text and "分母包含未知时间" in page.text
         window = {'start': '2026-11-04T00:00', 'end': '2026-11-05T00:00'}
         reply = client.get(path + '/report', auth=operator, params={**window, 'gpu_uuid': 'PU-TE'})
         assert reply.status_code == 200 and reply.json()['start'] == window['start']
