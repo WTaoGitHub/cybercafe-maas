@@ -1,6 +1,5 @@
 """Read-only GPUStack sampling and operator daily and monthly reports."""
 import argparse
-from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 import json
 import os
@@ -47,18 +46,12 @@ def pages(base_url, token):
 
 
 def snapshot(workers):
-    states = defaultdict(list)
+    cards = {}
     for worker in workers:
         for gpu in (worker.get('status') or {}).get('gpu_devices') or []:
             uuid = gpu.get('uuid')
             if uuid:
-                states[uuid].append(worker['state'] == 'ready')
-    cards = {}
-    for uuid, values in states.items():
-        if len(values) == 1:
-            cards[uuid] = values[0]
-        else:
-            cards[uuid] = True if values.count(True) == 1 else None
+                cards[uuid] = cards.get(uuid, False) or worker['state'] == 'ready'
     return cards
 
 
@@ -75,10 +68,12 @@ def save(db, at, session_id, cards):
                 )
 
 
-def summarize(uuids, samples, start, end, intervals=None):
-    duration = max(0, end - start)
-    cards = {uuid: {'online_seconds': 0, 'not_ready_seconds': 0, 'unknown_seconds': duration}
-             for uuid in uuids}
+def summarize(first_seen, samples, start, end, intervals=None):
+    cards = {
+        uuid: {'online_seconds': 0, 'offline_seconds': 0,
+               'uncovered_seconds': max(0, end - max(start, seen))}
+        for uuid, seen in first_seen.items()
+    }
     previous = None
     for at, session_id, observed in samples:
         if previous is not None and observed is not None:
@@ -91,13 +86,15 @@ def summarize(uuids, samples, start, end, intervals=None):
                         intervals[-1]['end_at'] = right
                     else:
                         intervals.append({'start_at': left, 'end_at': right})
-                for uuid, online in prior_cards.items():
-                    if uuid not in cards or online is None:
+                for uuid, totals in cards.items():
+                    card_seconds = min(at, end) - max(before, start, first_seen[uuid])
+                    online = prior_cards.get(uuid, False)
+                    # Legacy snapshots collapsed both kinds of duplicate records into null.
+                    if card_seconds <= 0 or online is None:
                         continue
-                    totals = cards[uuid]
-                    key = 'online_seconds' if online else 'not_ready_seconds'
-                    totals[key] += seconds
-                    totals['unknown_seconds'] -= seconds
+                    key = 'online_seconds' if online else 'offline_seconds'
+                    totals[key] += card_seconds
+                    totals['uncovered_seconds'] -= card_seconds
         previous = at, session_id, observed
     return cards
 
@@ -124,12 +121,12 @@ def report_range(db, start, end, now, period=None):
         last = conn.execute('SELECT at FROM e17.samples WHERE cards IS NOT NULL AND at <= %s ORDER BY at DESC LIMIT 1',
                             (now,)).fetchone()
         if end > start:
-            uuids = [row['uuid'] for row in conn.execute(
-                'SELECT uuid FROM e17.cards WHERE first_seen < %s ORDER BY uuid', (end,))]
+            first_seen = {row['uuid']: row['first_seen'] for row in conn.execute(
+                'SELECT uuid, first_seen FROM e17.cards WHERE first_seen < %s ORDER BY uuid', (end,))}
             with conn.cursor(name='e17_report') as cursor:
                 cursor.execute('SELECT at,session_id,cards FROM e17.samples WHERE at BETWEEN %s AND %s ORDER BY at',
                                (start - MAX_GAP_SECONDS, min(now, end + MAX_GAP_SECONDS)))
-                cards = summarize(uuids, ((r['at'], r['session_id'], r['cards']) for r in cursor), start, end, intervals)
+                cards = summarize(first_seen, ((r['at'], r['session_id'], r['cards']) for r in cursor), start, end, intervals)
     last_at = last['at'] if last else None
     for interval in intervals:
         interval['seconds'] = interval['end_at'] - interval['start_at']
