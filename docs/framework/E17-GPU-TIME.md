@@ -113,3 +113,5 @@ GPUStack v2.2.3 的 worker 删除事件会批量删除匹配的模型实例。�
 ### GPU 三态计时
 
 每个 UUID 从首次发现开始计时。有效区间内有至少一条 ready 记录为在线，没有 ready 记录为不在线，包括本轮未上报。断档为采样未覆盖。旧版把多条 ready 与多条非 ready 都存成 null，无法还原的历史片段计为该卡采样未覆盖。总体覆盖率仍反映采集链路。逐卡 JSON 使用 online_seconds、offline_seconds、uncovered_seconds，在线占比仍以完整查询窗口为分母。
+
+2026-11-04 已在 001 部署三态计时，API 与 E17 采集均运行 `e17-states-032bcc2`。HTTP 网关验证页面与 JSON 字段，新版采集成功写入样本。
