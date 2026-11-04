@@ -1083,4 +1083,4 @@ capabilities绑定具体服务revision，该revision在内部关联权重、引�
 
 ## E17：GPU 每日与每月在线时长
 
-按 GPU UUID 汇总北京时间自然日、自然月的在线时长，区分非 ready 和未知区间。下一版采样只读 GPUStack worker 列表，模型部署时长已移出范围。详见[实施计划与当前状态](E17-GPU-TIME.md)及 [Issue #28](https://github.com/WTaoGitHub/cybercafe-maas/issues/28)。
+按 GPU UUID 汇总北京时间自然日、自然月的在线时长，区分非 ready 和未知区间。E17 作为 MaaS 内置运维模块，复用现有入口、鉴权与 PostgreSQL。下一版采样只读 GPUStack worker 列表，模型部署时长已移出范围。详见[实施计划与当前状态](E17-GPU-TIME.md)及 [Issue #28](https://github.com/WTaoGitHub/cybercafe-maas/issues/28)。
