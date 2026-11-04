@@ -90,10 +90,10 @@ def router(db):
 
         rows = ''.join(
             f'<tr><th scope="row">{escape(uuid)}</th><td>{row["online_seconds"]}</td>'
-            f'<td>{row["offline_seconds"]}</td><td>{row["uncovered_seconds"]}</td>'
+            f'<td>{row["offline_seconds"] + row["uncovered_seconds"]}</td>'
             f'<td>{online_share(row["online_seconds"])}</td></tr>'
             for uuid, row in data['gpus'].items()
-        ) or '<tr><td colspan="5">没有匹配的 GPU 数据</td></tr>'
+        ) or '<tr><td colspan="4">没有匹配的 GPU 数据</td></tr>'
         last = data['last_success_at']
         freshness = '暂无成功采样' if last is None else datetime.fromtimestamp(last, BEIJING).isoformat()
         if data['sampling_stale'] and last is not None:
@@ -128,14 +128,14 @@ def router(db):
             '<thead><tr><th>开始</th><th>结束</th><th>有效秒数</th></tr></thead>'
             f'<tbody>{segments}</tbody></table></div></details></section>'
             '<section><h2>逐卡时长</h2><div class="table"><table><thead><tr>'
-            '<th>GPU UUID</th><th>GPU 在线</th><th>GPU 不在线</th><th>采样未覆盖</th><th>GPU 在线占比</th></tr></thead>'
+            '<th>GPU UUID</th><th>GPU 在线</th><th>GPU 不在线（含未覆盖）</th><th>GPU 在线占比</th></tr></thead>'
             f'<tbody>{rows}</tbody></table></div>'
             '<dl><dt><strong>GPU UUID</strong></dt><dd>GPUStack 上报的显卡标识。'
             '同一 UUID 换绑到新实例后继续归到同一张卡。</dd>'
             '<dt><strong>GPU 在线</strong></dt><dd>有效采样中，至少有一条该 UUID 的 ready 记录，同卡只计一次。</dd>'
-            '<dt><strong>GPU 不在线</strong></dt><dd>有效采样中，已知 GPU 无 ready 记录，包含本轮未上报。</dd>'
-            '<dt><strong>采样未覆盖</strong></dt><dd>从该卡首次被发现起，缺少有效状态证据的时长。'
-            '包含采集断档，以及旧版无法区分是否 ready 的重复记录。首次发现前不计入三态。</dd>'
+            '<dt><strong>GPU 不在线（含未覆盖）</strong></dt><dd>从首次发现该卡起，'
+            '将有效采样中没有 ready 记录的时间，与缺少有效采样或状态证据的时间相加。'
+            '首次发现前的时间不计入此列。</dd>'
             '<dt><strong>GPU 在线占比</strong></dt><dd>在线秒数 ÷ 完整查询窗口秒数。'
             '分母包含采样未覆盖和首次发现前的时间。查询窗口为零时显示破折号。</dd></dl></section></main></html>',
             headers=headers,
