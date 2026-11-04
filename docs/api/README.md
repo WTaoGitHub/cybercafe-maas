@@ -416,7 +416,7 @@ OpenAPI Responses已内嵌本轮真实成功及部分错误响应；源数据见
 省略参数时返回完整收据。模型或推理框架未报告有效 token 用量时，指定 `tokens` 返回 HTTP 422 和 `USAGE_TYPE_UNSUPPORTED`。当前 PP-OCRv4 属于这种情况。未知类型返回 HTTP 422 和 `INPUT_INVALID`。没有最终用量记录时仍返回 HTTP 404。
 
 
-任务详情 `GET /maas/v1/tasks/{ident}` 也接受同样的参数。它只筛选嵌套的 `usage` 字段，任务状态和识别结果仍随详情返回。任务没有最终收据时，详情中的 `usage` 为 `null`。
+任务详情 `GET /maas/v1/tasks/{ident}` 的 `usage_type` 默认是 `images`。省略参数时，有最终收据的任务返回 `"usage":{"successful_images":1}`。它只筛选嵌套的 `usage` 字段，任务状态和识别结果仍随详情返回。任务没有最终收据时，详情中的 `usage` 为 `null`。
 
 ```bash
 curl -H "Authorization: Bearer ${MAAS_API_KEY}" "${MAAS_BASE_URL}/maas/v1/tasks/task_example?usage_type=images"

@@ -1194,12 +1194,13 @@ paths:
       - name: usage_type
         in: query
         required: false
-        description: 仅筛选任务详情的usage字段；无最终收据时usage为null。images返回成功图片数，tokens返回输入和输出token数。省略时返回完整收据。
+        description: 仅筛选任务详情的usage字段；无最终收据时usage为null。images返回成功图片数，tokens返回输入和输出token数。省略时默认使用images。
         schema:
           type: string
           enum:
           - images
           - tokens
+          default: images
         examples:
           images:
             value: images
@@ -1213,77 +1214,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/TaskDetail'
               examples:
-                realSucceeded:
-                  summary: 真实任务完成状态
-                  description: 2026-11-02真实验收响应；自建文字图片，节点标识已脱敏。ID和时间为历史测试值，不可当成可复用输入。
-                  value:
-                    id: task_6032a4ff0f57481da1b09d4fb9888e33
-                    model: ocr.default
-                    revision: ocr-registry-r1
-                    attempts: 1
-                    result_artifact_id: art_41ffe768bc514987b413bffe7df9aeaa
-                    deadline: '2026-11-02T10:00:03.592022Z'
-                    created_at: '2026-11-02T09:58:03.592022Z'
-                    updated_at: '2026-11-02T09:58:03.886218Z'
-                    usage:
-                      id: usage_task_task_6032a4ff0f57481da1b09d4fb9888e33
-                      model: ocr.default
-                      status: final
-                      tokens:
-                        reason: UPSTREAM_USAGE_ABSENT
-                        source: null
-                        status: unavailable
-                        input_tokens: null
-                        output_tokens: null
-                      revision: ocr-registry-r1
-                      source_id: task_6032a4ff0f57481da1b09d4fb9888e33
-                      recorded_at: '2026-11-02T09:58:03.884305+00:00'
-                      source_type: task
-                      successful_images: 1
-                    status: SUCCEEDED
-                    error: null
-                    result:
-                      elapsed_ms: 106.03
-                      lines:
-                      - box:
-                        - - 54.0
-                          - 71.0
-                        - - 558.0
-                          - 71.0
-                        - - 558.0
-                          - 122.0
-                        - - 54.0
-                          - 122.0
-                        score: 0.9463106989860535
-                        text: MaaS OCR TEST
-                      - box:
-                        - - 54.0
-                          - 212.0
-                        - - 997.0
-                          - 211.0
-                        - - 997.0
-                          - 261.0
-                        - - 54.0
-                          - 263.0
-                        score: 0.9932732746518892
-                        text: 'Invoice number: TEST-20261102'
-                      - box:
-                        - - 52.0
-                          - 352.0
-                        - - 504.0
-                          - 352.0
-                        - - 504.0
-                          - 401.0
-                        - - 52.0
-                          - 401.0
-                        score: 0.973566757781165
-                        text: 'Amount: 123.45'
-                      node: worker-redacted
-                      text: 'MaaS OCR TEST
-
-                        Invoice number: TEST-20261102
-
-                        Amount: 123.45'
                 images:
                   summary: usage_type=images（示例）
                   value:
@@ -3511,7 +3441,6 @@ components:
           - type: 'null'
         usage:
           oneOf:
-          - $ref: '#/components/schemas/OCRUsage'
           - type: object
             properties:
               successful_images:

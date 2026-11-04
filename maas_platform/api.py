@@ -102,9 +102,9 @@ def create_app(settings=None, auth=None):
         return submit_task(task, who, key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskDetail)
-    def get(ident: str, usage_type: UsageType | None = None, who=Depends(identity)):
+    def get(ident: str, usage_type: UsageType = 'images', who=Depends(identity)):
         task = service.get(who, ident)
-        if usage_type is not None and task['usage'] is not None:
+        if task['usage'] is not None:
             task['usage'] = select_usage(task['usage'], usage_type)
         status = task.pop('state')
         code = task.pop('error_code')

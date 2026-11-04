@@ -28,7 +28,7 @@ def test_async_images_tokens_and_queries_survive_file_expiry(env,monkeypatch,usa
     result=client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).json()
     assert result['usage']=={'unit':'task','quantity':1}
     meter=result['metering'];assert meter['successful_images']==1 and meter['tokens']['status']==('available' if available else 'unavailable')
-    assert row['usage']==meter
+    assert row['usage']=={'successful_images':1}
     assert row['result']==result['outputs'] and row['error'] is None
     assert 'state' not in row and 'error_code' not in row
     assert meter['tokens']['input_tokens']==(usage['prompt_tokens'] if available else None)
@@ -39,7 +39,7 @@ def test_async_images_tokens_and_queries_survive_file_expiry(env,monkeypatch,usa
     with s.db.transaction() as c:c.execute("UPDATE artifacts SET expires_at=now()-interval '1 second'")
     s.cleanup()
     expired=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()
-    assert expired['usage']==meter and expired['status']=='SUCCEEDED'
+    assert expired['usage']=={'successful_images':1} and expired['status']=='SUCCEEDED'
     assert expired['result'] is None and expired['error']['code']=='RESULT_EXPIRED'
     assert client.get('/maas/v1/artifacts/'+row['result_artifact_id'],headers=headers()).status_code==410
     assert client.get('/maas/v1/usage/'+meter['id'],headers=headers()).json()==meter

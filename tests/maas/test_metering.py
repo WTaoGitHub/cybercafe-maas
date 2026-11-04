@@ -52,7 +52,7 @@ def test_usage_type_api(path, reported, monkeypatch, tmp_path):
     monkeypatch.setattr(app.state.service, 'artifact', lambda *_: (b'{"outputs":{"text":"OCR"}}', None))
     client = TestClient(app)
     original = client.get(path).json()
-    assert original == ({**original, 'usage': value} if detail else value)
+    assert original == ({**original, 'usage': {'successful_images': 1}} if detail else value)
 
     def expected(usage):
         return {**original, 'usage': usage} if detail else usage

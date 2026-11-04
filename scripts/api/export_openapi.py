@@ -85,8 +85,8 @@ add('/maas/v1/usage/{ident}','get','getOCRUsage','查询OCR最终用量收据','
 add('/maas/v1/tasks/{ident}/usage','get','getTaskOCRUsage','按任务查询OCR最终用量','E16已部署并通过真实OCR验收。无需先下载结果即可查询；待执行、失败、取消或旧任务无新账本时404/USAGE_NOT_AVAILABLE，不回填推算。跨project任务404，文件过期不删除已有收据。','计量',{200:('此任务唯一的最终成功OCR用量。',ref('OCRUsage'))},params=[ident],codes=['404'])
 count={'type':'integer','minimum':0}
 usage_examples={'images':{'successful_images':1},'tokens':{'input_tokens':11,'output_tokens':22}}
-usage_schemas=[ref('OCRUsage'),*[obj({key:count for key in example},example,additionalProperties=False)
-                              for example in usage_examples.values()]]
+usage_schemas=[obj({key:count for key in example},example,additionalProperties=False)
+               for example in usage_examples.values()]
 S['TaskDetail']['properties']['usage']={'oneOf':[*usage_schemas,{'type':'null'}]}
 usage_paths=('/maas/v1/tasks/{ident}','/maas/v1/usage/{ident}','/maas/v1/tasks/{ident}/usage')
 for path in usage_paths:
@@ -94,11 +94,12 @@ for path in usage_paths:
  detail=path==usage_paths[0]
  operation['parameters'].append({'name':'usage_type','in':'query','required':False,
   'description':('仅筛选任务详情的usage字段；无最终收据时usage为null。' if detail else '')+
-   'images返回成功图片数，tokens返回输入和输出token数。省略时返回完整收据。',
-  'schema':{'type':'string','enum':['images','tokens']},
+   'images返回成功图片数，tokens返回输入和输出token数。'+
+   ('省略时默认使用images。' if detail else '省略时返回完整收据。'),
+  'schema':{'type':'string','enum':['images','tokens'],**({'default':'images'} if detail else {})},
   'examples':{kind:{'value':kind} for kind in usage_examples}})
  if not detail:
-  operation['responses']['200']['content']['application/json']['schema']={'oneOf':usage_schemas}
+  operation['responses']['200']['content']['application/json']['schema']={'oneOf':[ref('OCRUsage'),*usage_schemas]}
   operation['responses']['200']['headers']['Cache-Control']={'schema':{'const':'no-store'},'description':'避免缓存客户用量数据。'}
  operation['responses']['422']=response('未知usage_type返回INPUT_INVALID；最终收据无有效token用量时返回USAGE_TYPE_UNSUPPORTED。',ref('ApiError'))
 for path in ('/gpustack/v1/chat/completions',):
@@ -177,11 +178,12 @@ P['/maas/v1/ocr']['post']['requestBody']['content']['application/json']['example
 }
 for path in usage_paths:
  media=P[path]['get']['responses']['200']['content']['application/json']
+ task_example=media.get('examples',{}).pop('realSucceeded',None) if path==usage_paths[0] else None
  for kind, example in usage_examples.items():
   value=example
   if path==usage_paths[0]:
-   if 'realSucceeded' not in media.get('examples',{}):continue
-   value={**media['examples']['realSucceeded']['value'],'usage':example}
+   if task_example is None:continue
+   value={**task_example['value'],'usage':example}
   media.setdefault('examples',{})[kind]={'summary':f'usage_type={kind}（示例）','value':value}
 # Keep the existing document order for readers comparing API versions.
 doc['paths']={'/maas/v1/ocr':P['/maas/v1/ocr'],**{path:item for path,item in P.items() if path != '/maas/v1/ocr'}}
