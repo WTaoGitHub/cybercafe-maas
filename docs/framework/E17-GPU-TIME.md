@@ -73,3 +73,7 @@ ssh -N -F .maas/ssh/config -L 18832:127.0.0.1:18832 maas-controller
 ```
 
 浏览器打开 `https://127.0.0.1:18832/maas/ops/gpu-time`。历史从本次正式采样开始。受控同卡跨克隆换绑和线上停采恢复演练仍待验证。
+
+### HTTP 与 HTTPS 查询入口
+
+E17 网页和 JSON 查询同时经现有 HTTP 18831 和私有 HTTPS 18832 提供。下游容器可通过已放行的 MaaS 容器网络访问 HTTP 入口，沿用专用 Basic 运维凭据。Mac 可经 SSH 将本机回环 18831 转发到 001 的回环 18831 后访问页面。已验证 Mac HTTP 隧道和下游容器网络的网页及月报 JSON 均返回 200，下游匿名请求返回 401。HTTP Basic 凭据在 HTTP 链路上不加密，HTTP 仅用于受控网络或 SSH 隧道。
