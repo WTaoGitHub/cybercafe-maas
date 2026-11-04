@@ -115,3 +115,5 @@ GPUStack v2.2.3 的 worker 删除事件会批量删除匹配的模型实例。�
 每个 UUID 从首次发现开始计时。有效区间内有至少一条 ready 记录为在线，没有 ready 记录为不在线，包括本轮未上报。断档为采样未覆盖。旧版把多条 ready 与多条非 ready 都存成 null，无法还原的历史片段计为该卡采样未覆盖。总体覆盖率仍反映采集链路。逐卡 JSON 使用 online_seconds、offline_seconds、uncovered_seconds，在线占比仍以完整查询窗口为分母。
 
 2026-11-04 已在 001 部署三态计时，API 与 E17 采集均运行 `e17-states-032bcc2`。HTTP 网关验证页面与 JSON 字段，新版采集成功写入样本。
+
+2026-11-04 在 001 部署逐卡表合并列，API 镜像为 `e17-merged-0f9a21e`。通过 HTTP 网关核对页面合计与 JSON 两项之和，采集持续运行。
