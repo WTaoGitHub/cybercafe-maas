@@ -71,3 +71,27 @@ def plan(services, current, free):
                 yield target
 
     return max(candidates(), key=rank)
+
+
+def floor_recovery_advice(services, running, free):
+    """Suggest the smallest same-GPU release to restore one missing service."""
+    totals = tuple(sum(counts[i] for counts in running.values()) for i in range(3))
+    missing = sorted((i for i, count in enumerate(totals) if count == 0),
+                     key=lambda i: services[i].priority)
+    for target in missing:
+        claim = services[target].claim
+        if any(budget >= claim for budget in free.values()):
+            # Native reconciliation or additive placement can recover this floor.
+            return None
+        options = []
+        for worker_id, budget in free.items():
+            maxima = (min(count, max(0, total - 1))
+                      for count, total in zip(running[worker_id], totals))
+            for remove in product(*(range(n + 1) for n in maxima)):
+                released = sum(n * s.claim for n, s in zip(remove, services))
+                if budget + released >= claim:
+                    options.append((sum(remove), released, worker_id, remove))
+        if options:
+            _, _, worker_id, remove = min(options)
+            return target, worker_id, remove
+    return None

@@ -134,3 +134,28 @@ def test_watch_triggers_reconciliation_and_bounds_reconnect(monkeypatch):
     assert [entry['phase'] for entry in events] == [
         'worker_event', 'watch_interrupted', 'watch_interrupted', 'watch_stopped',
     ]
+
+
+def test_manual_floor_recovery_does_not_mutate_deployments(trial):
+    controller, workers, models, instances, events, writes = trial
+    workers[0] = worker(7, 1)
+    models[1]['replicas'] = 1
+    models[2]['replicas'] = 1
+    models[3]['replicas'] = 3
+    instances[1] = [{'state': 'running', 'worker_id': 7}]
+    instances[2] = [{'state': 'pending', 'worker_id': None}]
+    instances[3] = [{'state': 'running', 'worker_id': 7}] * 3
+    controller.reconcile(apply=True)
+    assert not writes
+    assert events[-1]['manual_floor_recovery'] == {
+        'model_id': 2, 'release_on_worker_id': 7, 'remove_running': {3: 1},
+    }
+
+
+def test_floor_recovery_keeps_last_instance_and_checks_same_card():
+    from maas_platform.replica_policy import floor_recovery_advice
+
+    assert floor_recovery_advice(SERVICES, {7: (1, 0, 1)}, {7: GIB}) is None
+    assert floor_recovery_advice(SERVICES, {7: (2, 0, 0), 8: (0, 0, 2)},
+                                 {7: GIB // 2, 8: 0}) == (1, 8, (0, 0, 1))
+    assert floor_recovery_advice(SERVICES, {7: (1, 0, 3)}, {7: 3 * GIB}) is None

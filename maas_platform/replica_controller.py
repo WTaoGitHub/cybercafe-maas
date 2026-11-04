@@ -14,7 +14,7 @@ from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_ope
 
 from .cluster_maintenance import model_hash
 from .operator_config import private_json
-from .replica_policy import Service, plan
+from .replica_policy import Service, floor_recovery_advice, plan
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -157,12 +157,25 @@ class Controller:
         workers = pages(self.api, f'/v2/workers?cluster_id={self.cluster}')
         free, conflict = device_budgets(workers, selector)
         instances = [pages(self.api, f'/v2/models/{i}/instances') for i in self.ids]
-        available = tuple(sum(row['state'] == 'running' and row['worker_id'] in free for row in rows)
-                          for rows in instances)
+        running = {worker_id: tuple(sum(row['state'] == 'running' and row['worker_id'] == worker_id
+                                        for row in rows) for rows in instances)
+                   for worker_id in free}
+        available = tuple(sum(counts[i] for counts in running.values()) for i in range(3))
         unsettled = any(len(rows) != n or ready != n for rows, n, ready
                         in zip(instances, current, available))
         event = {'phase': 'plan', 'configured': current, 'available': available,
                  'target': current, 'free_bytes_by_worker': free, 'duplicate_gpu': conflict}
+        if not conflict and len(free) <= 2 and all(n <= s.limit for n, s in zip(current, self.services)):
+            advice = floor_recovery_advice(self.services, running, free)
+            if advice:
+                index, worker_id, remove = advice
+                starting = any(row['worker_id'] in free and row['state'] not in ('error', 'running')
+                               for row in instances[index])
+                if not starting:
+                    event['manual_floor_recovery'] = {
+                        'model_id': self.ids[index], 'release_on_worker_id': worker_id,
+                        'remove_running': {ident: n for ident, n in zip(self.ids, remove) if n},
+                    }
         if unsettled or conflict:
             event['reason'] = 'duplicate_gpu' if conflict else 'waiting_for_native_convergence'
             self.log(event)
