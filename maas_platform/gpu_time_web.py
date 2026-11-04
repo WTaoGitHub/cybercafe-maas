@@ -92,6 +92,7 @@ def router(db):
         freshness = '暂无成功采样' if last is None else datetime.fromtimestamp(last, BEIJING).isoformat()
         if data['sampling_stale'] and last is not None:
             freshness += '（采样已过期）'
+        total = data['total_online_gpu_seconds']
         coverage = data['coverage']
         percent = '—' if coverage['percent'] is None else f"{coverage['percent']:.2f}%"
         segments = ''.join(
@@ -108,6 +109,9 @@ def router(db):
             f'<label>结束时间 <input type="datetime-local" name="end" value="{escape(data["end"])}" required></label> '
             f'<label>GPU UUID <input name="gpu_uuid" placeholder="输入 UUID 片段" value="{escape(gpu_uuid)}"></label>'
             '<button>查询</button></form>'
+            '<section><h2>全部 GPU 在线时长</h2>'
+            f'<strong class="number">{total / 3600:,.2f} 卡小时</strong>'
+            f'<p>{total:,} 卡秒 · 按查询时段汇总全部 GPU，独立于 UUID 筛选。</p></section>'
             '<section><h2>总体采样覆盖率</h2>'
             f'<strong class="number">{percent}</strong>'
             f'<p>有效 {coverage["effective_seconds"]:,} 秒 / 查询窗口 {data["period_seconds"]:,} 秒'

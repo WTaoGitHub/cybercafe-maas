@@ -136,6 +136,7 @@ def report_range(db, start, end, now, period=None):
     covered = sum(interval['seconds'] for interval in intervals)
     duration = max(0, end - start)
     return {'period': period, 'timezone': str(BEIJING), 'period_seconds': max(0, end - start), 'gpus': cards,
+            'total_online_gpu_seconds': sum(card['online_seconds'] for card in cards.values()),
             'coverage': {'effective_seconds': covered, 'unknown_seconds': duration - covered,
                          'percent': round(100 * covered / duration, 2) if duration else None,
                          'intervals': intervals},

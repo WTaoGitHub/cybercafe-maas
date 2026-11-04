@@ -12,6 +12,7 @@ def test_postgres_daily_and_monthly_reports(env):
         save(service.db, start + offset, session, cards)
     daily = report(service.db, '2026-11-01', start + 120)
     monthly = report(service.db, '2026-11', start + 120)
+    assert daily['total_online_gpu_seconds'] == monthly['total_online_gpu_seconds'] == 30
     assert daily['gpus'] == monthly['gpus'] == {
         'gpu-a': {'online_seconds': 30, 'not_ready_seconds': 0, 'unknown_seconds': 90},
     }
