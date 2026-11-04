@@ -30,3 +30,12 @@ python3 -m maas_platform.gpu_time --db /var/lib/maas-ops/gpu-time.sqlite report 
 - **交付顺序**。收敛 worker 采样并补齐月报，完成隔离测试库实机试采，再交付只读网页与 JSON 查询，最后在 001 启用定时采样。网页可先用测试库开发验证。本决议记录后续实施范围，线上历史从正式采样开始积累。
 
 本次调整为设计决议。现有 SQLite CLI 属于首版原型，待迁移至 PostgreSQL 后与网页、JSON 查询共用统计逻辑。实机验收需经现有 MaaS 入口核对页面、JSON、运维鉴权和采样断档。
+
+## 2026-11-04 采集容器决议
+
+查询网页和 JSON 接口由现有 MaaS API 容器提供。采集使用同一 MaaS 镜像，以独立命令启动 Compose 服务 `e17-sampler`，复用现有 PostgreSQL 的 `e17` schema。采集容器仅发起出站请求，GPUStack 列表凭据只注入该容器。独立启停、日志及资源限制由 Compose 管理，历史报表在停采期间仍可查询。
+
+- 通过 Compose profile 默认关闭采集。数据库迁移和试采通过后，执行 `docker compose --profile e17 up -d e17-sampler`。启动立即采样，周期默认 60 秒，单轮超时 30 秒，同进程内采样串行。
+- 使用 `docker compose stop e17-sampler` 停采。收到停止信号后停止调度下一轮，给当前轮次留出有限收尾时间。恢复时执行同一启动命令。
+- 首版部署单实例，使用 PostgreSQL 锁防止重复启动造成并行采样。每次启动创建新采样会话，跨会话间隔计为未知；同会话最大有效间隔仍为 120 秒。
+- 验收覆盖重复实例、停止和恢复、短停采间隔、采集失败，以及停采期间网页和 JSON 历史查询。
