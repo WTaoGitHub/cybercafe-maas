@@ -14,6 +14,23 @@
 
 基线：2026-10-21当前P0–P4私有试点，不含E1。文档命令供授权运维按窗口执行，本次编写未在服务器运行它们。默认不在耐久测试期间重启、发布、维护或更改配额；确需变更时先停止负载并重新安排完整验收。
 
+## 0. 空环境安装与初始化
+
+适用于新环境从空数据库和空数据卷部署。沿用现有环境时走发布或恢复流程。先确定控制端和 GPU worker 的地址、资源、访问边界及发布版本。现有试点的 GPUStack 基线为 v2.2.3；MAAS 使用与目标发布对应的源码提交、Compose 和镜像摘要。以下步骤尚待在独立空环境完成端到端演练。
+
+1. **准备宿主机与发布资产。** 检查 Docker Engine、Compose v2、时间同步、GPU 驱动及容器 GPU 访问。确认控制端和 worker 均能访问所需 Registry，校验发布镜像摘要和模型 revision。若自建镜像尚未发布到可达 Registry，先用对应提交构建并发布。使用独立测试地址、卷和凭据开展演练。
+2. **启动 GPUStack Server。** 使用固定版本镜像和独立持久卷挂载 `/var/lib/gpustack`，按该版本部署参数启动。确认管理入口和内置数据库就绪，完成管理员首次登录，生成本环境的 worker 注册凭据及供 MAAS 推理用的非管理员凭据。将管理入口限制在管理网络。
+3. **注册 worker 并准备模型。** 按本环境地址、CA 和凭据配置 worker。使用 Bootstrap 的环境先部署配置服务，再注册 worker。确认 GPU 可见、worker 在线，配置可达的模型镜像与模型来源。先部署一个 OCR 副本并通过 GPUStack 原生推理，再按目标配置扩容。参见 [Bootstrap 部署](../../deploy/bootstrap/README.md)、[Registry 部署](../../deploy/maas/REGISTRY-SERVICE.md)和 [OCR 部署](../../deploy/maas/E5-OCR-PILOT.md)。
+4. **初始化 MAAS 配置。** 以 [环境变量模板](../../deploy/maas/.env.example)、[OCR 目录模板](../../deploy/maas/catalog.ocr.example.json)和[凭据绑定模板](../../deploy/maas/bindings.example.json)为起点，设置固定发布镜像、GPUStack 内部地址、OCR 逻辑模型、revision、路由、项目和配额。为新环境生成数据库密码、pepper 和客户凭据，并配置 secret 与探针目录。凭据绑定的模型应与目录一致。应用 secret 目录和文件分别使用 700 和 600 权限，并确保容器 UID 10001 可读。E6 及后续版本按静态模型目录配置，历史 P4 collector 步骤仅适用于对应旧版本。
+5. **启动 MAAS 并初始化数据库。** 在目标发布源码根目录执行下列命令，将 `MAAS_ENV_FILE` 设为已准备好的私有环境文件绝对路径。Compose 首次启动创建 PostgreSQL 和 artifact 命名卷，应用启动时运行数据库迁移。检查迁移日志及 API、执行器、observer 状态。
+
+   ```sh
+   docker compose --env-file "${MAAS_ENV_FILE:?set private env path}" -f deploy/maas/compose.yaml config --quiet
+   docker compose --env-file "${MAAS_ENV_FILE:?set private env path}" -f deploy/maas/compose.yaml up -d --wait
+   ```
+
+6. **启用入口并验收。** 按目标网络配置 NGINX、证书及访问规则，保持应用和任务数据库的内部监听边界。通过客户入口验证授权和未授权访问、同步 OCR、异步任务提交到终态及结果下载。扩容后核对模型副本和执行器数量、GPU 放置及并发请求。记录发布提交、镜像摘要、模型 revision 和验收结果。
+
 ## 1. 拓扑、路径与操作权限
 
 | 项目 | 当前值 |
