@@ -30,7 +30,9 @@ class GPUTimeTest(unittest.TestCase):
         samples = [(-30, 1, online), (30, 1, not_ready), (60, 1, not_ready),
                    (90, 1, None), (120, 1, online), (300, 1, online),
                    (320, 2, online), (380, 2, online)]
-        day = summarize(['gpu-a'], samples, 0, 350)['gpu-a']
+        intervals = []
+        day = summarize(['gpu-a'], samples, 0, 350, intervals)['gpu-a']
+        self.assertEqual(intervals, [{'start_at': 0, 'end_at': 60}, {'start_at': 320, 'end_at': 350}])
         following = summarize(['gpu-a'], samples, 350, 400)['gpu-a']
         total = summarize(['gpu-a'], samples, 0, 400)['gpu-a']
         self.assertEqual(day, {'online_seconds': 60, 'not_ready_seconds': 30, 'unknown_seconds': 260})

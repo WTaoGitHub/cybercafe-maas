@@ -75,7 +75,7 @@ def save(db, at, session_id, cards):
                 )
 
 
-def summarize(uuids, samples, start, end):
+def summarize(uuids, samples, start, end, intervals=None):
     duration = max(0, end - start)
     cards = {uuid: {'online_seconds': 0, 'not_ready_seconds': 0, 'unknown_seconds': duration}
              for uuid in uuids}
@@ -85,6 +85,12 @@ def summarize(uuids, samples, start, end):
             before, prior_session, prior_cards = previous
             seconds = min(at, end) - max(before, start)
             if prior_cards is not None and session_id == prior_session and 0 < seconds and at - before <= MAX_GAP_SECONDS:
+                if intervals is not None:
+                    left, right = max(before, start), min(at, end)
+                    if intervals and intervals[-1]['end_at'] == left:
+                        intervals[-1]['end_at'] = right
+                    else:
+                        intervals.append({'start_at': left, 'end_at': right})
                 for uuid, online in prior_cards.items():
                     if uuid not in cards or online is None:
                         continue
@@ -107,6 +113,7 @@ def report(db, period, now):
     start = int(datetime.combine(day, time.min, BEIJING).timestamp())
     end = min(now, int(datetime.combine(stop, time.min, BEIJING).timestamp()))
     cards = {}
+    intervals = []
     with db.transaction() as conn:
         conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
         last = conn.execute('SELECT at FROM e17.samples WHERE cards IS NOT NULL AND at <= %s ORDER BY at DESC LIMIT 1',
@@ -117,9 +124,16 @@ def report(db, period, now):
             with conn.cursor(name='e17_report') as cursor:
                 cursor.execute('SELECT at,session_id,cards FROM e17.samples WHERE at BETWEEN %s AND %s ORDER BY at',
                                (start - MAX_GAP_SECONDS, min(now, end + MAX_GAP_SECONDS)))
-                cards = summarize(uuids, ((r['at'], r['session_id'], r['cards']) for r in cursor), start, end)
+                cards = summarize(uuids, ((r['at'], r['session_id'], r['cards']) for r in cursor), start, end, intervals)
     last_at = last['at'] if last else None
+    for interval in intervals:
+        interval['seconds'] = interval['end_at'] - interval['start_at']
+    covered = sum(interval['seconds'] for interval in intervals)
+    duration = max(0, end - start)
     return {'period': period, 'timezone': str(BEIJING), 'period_seconds': max(0, end - start), 'gpus': cards,
+            'coverage': {'effective_seconds': covered, 'unknown_seconds': duration - covered,
+                         'percent': round(100 * covered / duration, 2) if duration else None,
+                         'intervals': intervals},
             'last_success_at': last_at, 'sampling_stale': last_at is None or now - last_at > MAX_GAP_SECONDS}
 
 
