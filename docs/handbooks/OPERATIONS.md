@@ -183,31 +183,19 @@ python3 scripts/maas/runtime/maintenance_control.py --config "$MAAS_MAINT_CONFIG
 
 ## 8. 备份、异机保管与恢复
 
-备份仅覆盖正式任务DB、artifact及应用/维护配置，**不覆盖整机、GPUStack平台和模型完整灾备**。选择空闲、无UNKNOWN、无其他发布/维护/耐久负载窗口。在001执行：
+001 根分区实测已用约 113 GB（2026-11-04），已超过管理员提示的 100 GB 运行阈值。Docker 和应用目录共用该分区。001 的备份采用**直接流式传到异机**，压缩、加密、临时文件和最终归档都由接收端负责。现有 `backup_live.py create` 会在 001 写入多份归档，暂停用于该节点。旧的 `backup_transfer.py restore-copy` 也不得将归档传回 001 做演练。
 
-```sh
-python3 /root/wtaobj/maas-framework/scripts/maas/runtime/backup_live.py create
-```
+| 备份组 | 一致性要求 |
+| --- | --- |
+| MAAS 业务 | 选择无 UNKNOWN、无发布或维护的窗口。暂停接单、排空任务和后端活动，停止 API、执行器及 observer 写入，保持 PostgreSQL 运行。将 `pg_dump -Fc`、artifact 文件流和配套应用配置写入同一个异机快照。 |
+| GPUStack Server | 保留镜像摘要、启动配置与数据挂载。逻辑备份使用对应版本的数据库客户端；完整目录归档在 Server 容器正常停止后流式读取，保留文件 UID/GID 和权限。迁移最终备份需与 MAAS 的停写窗口协调。 |
+| Registry 与部署资产 | 暂停 Registry 推送和垃圾回收后传输数据。单独加密保存 Compose、入口、Bootstrap、网络规则及凭据，记录镜像 digest 和模型 revision。可重新取得的镜像和模型按清单恢复，独有资产异机保存。 |
 
-脚本暂停/排空，停止API/执行器/observer写入，保留DB，再做配套快照，启动应用并探针恢复。不是在线不停机备份。记录输出的snapshot-ID。失败先检查状态；保护只启动应用，不自动开放准入。
+接收端先检查容量、可写性和加密配置，再进入停写窗口。源端使用顺序、限速读取，逐项检查发送端、传输和接收端退出状态。接收端校验大小、SHA-256 和归档可读性后才发布备份清单。断线或校验失败的副本标记为失败，仅在接收端处理临时文件。无论备份是否成功，都应检查服务状态并走探针验收后恢复接单。
 
-随后在本机仓库根目录执行：
+解密密钥单独保管。恢复演练在独立环境进行，先按原版本恢复，再检查 GPUStack 登录及模型、Registry 镜像拉取、MAAS 历史任务和 artifact 下载，以及同步和异步推理。迁移切换前保留源端数据，目标验收后再切换入口。切换后若目标已接收新写入，回退前先处理这部分数据。
 
-```sh
-.venv-maas/bin/python scripts/maas/backup_transfer.py fetch snapshot-<ID>
-```
-
-密文保存在本机 `.maas/backups/`，恢复密钥 `.maas/backup.key`；密钥不传001、不提交Git，应另行安全保管，丢失密钥无法恢复。归档含敏感配置。AES256-CBC/PBKDF2配合独立HMAC，先认证后恢复，不能自行改成未认证解密流程。
-
-独立恢复演练：本机执行 `backup_transfer.py restore-copy snapshot-<ID>`，确认001已准备带批准标签的可销毁测试PostgreSQL，再在001执行：
-
-```sh
-python3 /root/wtaobj/maas-framework/scripts/maas/runtime/restore_backup_test.py snapshot-<ID>
-```
-
-演练只恢复独立 `_test`库及私有目录，核对文件哈希、任务/成功事件、凭据读取权限，完成后删除临时副本。正式库不覆盖。明文staging在认证下载验证后清除、保留审计；按既有备份工具及 [P4发布手册](../framework/P4-RELEASE.md)核对，不手工批量删除备份根目录。
-
-**生产原位恢复没有一键工具。** 数据丢失时先隔离写入、保留故障卷和journal、验证密文及独立恢复结果，再制定经审核的原位恢复窗口；同时恢复匹配DB与artifact，不只恢复一个。当前手动快照，无承诺生产备份周期/RPO/整机RTO。
+当前为运维策略，流式备份和失败恢复流程须先在隔离环境演练，生产备份周期、RPO 和 RTO 以演练结果为准。实施跟踪见 [Issue #30](https://github.com/WTaoGitHub/cybercafe-maas/issues/30)。
 
 ## 9. 发布与回退
 
