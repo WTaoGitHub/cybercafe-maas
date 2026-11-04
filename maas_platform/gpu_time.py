@@ -1,27 +1,39 @@
-"""Read-only GPUStack sampling and operator daily reports."""
+"""Read-only GPUStack sampling and operator daily and monthly reports."""
 import argparse
 from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 import json
 import os
-import sqlite3
+from uuid import uuid4
 import sys
+import signal
+from threading import Event
+from time import monotonic
+
+import psycopg
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
+
+from psycopg.types.json import Jsonb
+from .db import Database
 
 
 BEIJING = ZoneInfo('Asia/Shanghai')
 MAX_GAP_SECONDS = 120
 
 
-def pages(base_url, token, resource):
+def pages(base_url, token):
+    deadline = monotonic() + 30
     items = []
     for page in range(1, 1001):
         query = urlencode({'page': page, 'perPage': 100})
-        request = Request(f'{base_url.rstrip("/")}/v2/{resource}?{query}',
+        request = Request(f'{base_url.rstrip("/")}/v2/workers?{query}',
                           headers={'Authorization': f'Bearer {token}'})
-        with urlopen(request, timeout=10) as response:
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            raise TimeoutError('Worker pagination timed out')
+        with urlopen(request, timeout=min(10, remaining)) as response:
             payload = json.load(response)
         pagination = payload['pagination']
         if pagination['page'] != page or not isinstance(payload['items'], list):
@@ -34,116 +46,120 @@ def pages(base_url, token, resource):
     raise ValueError('GPUStack page limit exceeded')
 
 
-def snapshot(workers, instances):
-    devices = {}
+def snapshot(workers):
     states = defaultdict(list)
     for worker in workers:
         for gpu in (worker.get('status') or {}).get('gpu_devices') or []:
             uuid = gpu.get('uuid')
             if uuid:
                 states[uuid].append(worker['state'] == 'ready')
-                devices[(worker['id'], gpu.get('type'), gpu['index'])] = uuid
-    cards = {uuid: {'online': values[0] if len(values) == 1 else None, 'models': {}}
-             for uuid, values in states.items()}
-    unresolved = 0
-    for instance in instances:
-        if instance['state'] != 'running':
-            continue
-        distributed = instance.get('distributed_servers') or {}
-        for binding in [instance, *(distributed.get('subordinate_workers') or [])]:
-            if binding is not instance and binding['state'] != 'running':
-                continue
-            for index in binding.get('gpu_indexes') or []:
-                uuid = devices.get((binding.get('worker_id'), binding.get('gpu_type'), index))
-                if uuid is None and not binding.get('gpu_type'):
-                    matches = {value for (worker_id, _, gpu_index), value in devices.items()
-                               if worker_id == binding.get('worker_id') and gpu_index == index}
-                    if len(matches) == 1:
-                        uuid = matches.pop()
-                if uuid is None or cards[uuid]['online'] is None:
-                    unresolved += 1
-                elif cards[uuid]['online']:
-                    cards[uuid]['models'][str(instance['model_id'])] = instance['model_name']
-    return {'cards': cards, 'unresolved_bindings': unresolved}
+    return {uuid: values[0] if len(values) == 1 else None for uuid, values in states.items()}
 
 
-def open_db(path):
-    db = sqlite3.connect(path)
-    db.execute('CREATE TABLE IF NOT EXISTS samples (at INTEGER PRIMARY KEY, payload TEXT)')
-    db.execute('CREATE TABLE IF NOT EXISTS cards (uuid TEXT PRIMARY KEY, first_seen INTEGER NOT NULL)')
-    return db
+def save(db, at, session_id, cards):
+    with db.transaction() as conn:
+        conn.execute('INSERT INTO e17.samples VALUES (%s, %s, %s)',
+                     (at, session_id, Jsonb(cards) if cards is not None else None))
+        if cards:
+            with conn.cursor() as cursor:
+                cursor.executemany(
+                    'INSERT INTO e17.cards VALUES (%s, %s) ON CONFLICT (uuid) DO UPDATE SET '
+                    'first_seen=least(e17.cards.first_seen, excluded.first_seen)',
+                    [(uuid, at) for uuid in cards],
+                )
 
 
-def save(db, at, payload):
-    with db:
-        db.execute('INSERT INTO samples VALUES (?, ?)', (at, json.dumps(payload) if payload is not None else None))
-        if payload is not None:
-            db.executemany('INSERT INTO cards VALUES (?, ?) ON CONFLICT(uuid) DO UPDATE SET '
-                           'first_seen=min(first_seen, excluded.first_seen)',
-                           [(uuid, at) for uuid in payload['cards']])
-
-
-def daily_report(db, day, now):
-    start = int(datetime.combine(day, time.min, BEIJING).timestamp())
-    midnight = int(datetime.combine(day + timedelta(days=1), time.min, BEIJING).timestamp())
-    end = min(now, midnight)
+def summarize(uuids, samples, start, end):
     duration = max(0, end - start)
-    cards = {
-        uuid: {'online_seconds': 0, 'not_ready_seconds': 0, 'unknown_seconds': duration,
-               'model_unknown_seconds': duration, 'models': {}}
-        for (uuid,) in db.execute('SELECT uuid FROM cards WHERE first_seen<=? ORDER BY uuid', (end,))
-    } if duration else {}
+    cards = {uuid: {'online_seconds': 0, 'not_ready_seconds': 0, 'unknown_seconds': duration}
+             for uuid in uuids}
     previous = None
-    samples = db.execute('SELECT at,payload FROM samples WHERE at BETWEEN ? AND ? ORDER BY at',
-                         (start - MAX_GAP_SECONDS, min(now, end + MAX_GAP_SECONDS)))
-    for at, raw in samples:
-        if previous is not None and raw is not None:
-            before, payload = previous
+    for at, session_id, observed in samples:
+        if previous is not None and observed is not None:
+            before, prior_session, prior_cards = previous
             seconds = min(at, end) - max(before, start)
-            if payload is not None and 0 < seconds and at - before <= MAX_GAP_SECONDS:
-                for uuid, observed in payload['cards'].items():
-                    if uuid not in cards or observed['online'] is None:
+            if prior_cards is not None and session_id == prior_session and 0 < seconds and at - before <= MAX_GAP_SECONDS:
+                for uuid, online in prior_cards.items():
+                    if uuid not in cards or online is None:
                         continue
                     totals = cards[uuid]
-                    key = 'online_seconds' if observed['online'] else 'not_ready_seconds'
+                    key = 'online_seconds' if online else 'not_ready_seconds'
                     totals[key] += seconds
                     totals['unknown_seconds'] -= seconds
-                    if not payload['unresolved_bindings']:
-                        totals['model_unknown_seconds'] -= seconds
-                        for model_id, name in observed['models'].items():
-                            model = totals['models'].setdefault(model_id, {'name': name, 'seconds': 0})
-                            model.update(name=name, seconds=model['seconds'] + seconds)
-        previous = at, json.loads(raw) if raw is not None else None
-    return {'date': day.isoformat(), 'timezone': str(BEIJING), 'period_seconds': duration, 'gpus': cards}
+        previous = at, session_id, observed
+    return cards
+
+
+def report(db, period, now):
+    day = date.fromisoformat(period + '-01' if len(period) == 7 else period)
+    if period == day.isoformat():
+        stop = day + timedelta(days=1)
+    elif period == day.isoformat()[:7]:
+        stop = (day.replace(day=28) + timedelta(days=4)).replace(day=1)
+    else:
+        raise ValueError('Use YYYY-MM-DD or YYYY-MM')
+    start = int(datetime.combine(day, time.min, BEIJING).timestamp())
+    end = min(now, int(datetime.combine(stop, time.min, BEIJING).timestamp()))
+    cards = {}
+    if end > start:
+        with db.transaction() as conn:
+            conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
+            uuids = [row['uuid'] for row in conn.execute(
+                'SELECT uuid FROM e17.cards WHERE first_seen < %s ORDER BY uuid', (end,))]
+            with conn.cursor(name='e17_report') as cursor:
+                cursor.execute('SELECT at,session_id,cards FROM e17.samples WHERE at BETWEEN %s AND %s ORDER BY at',
+                               (start - MAX_GAP_SECONDS, min(now, end + MAX_GAP_SECONDS)))
+                cards = summarize(uuids, ((r['at'], r['session_id'], r['cards']) for r in cursor), start, end)
+    return {'period': period, 'timezone': str(BEIJING), 'period_seconds': max(0, end - start), 'gpus': cards}
+
+
+def sample(db, base_url, token, session_id):
+    at = int(datetime.now().timestamp())
+    try:
+        cards = snapshot(pages(base_url, token))
+        if int(datetime.now().timestamp()) - at >= MAX_GAP_SECONDS:
+            raise ValueError('Sample exceeded the maximum observation window')
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        save(db, at, session_id, None)
+        print(f'GPUStack sample unavailable ({type(exc).__name__})', file=sys.stderr)
+        return 1
+    save(db, at, session_id, cards)
+    print(json.dumps({'observed_gpus': len(cards)}))
+    return 0
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--db', required=True)
     commands = parser.add_subparsers(dest='command', required=True)
-    commands.add_parser('sample')
-    commands.add_parser('report').add_argument('day', type=date.fromisoformat)
+    sampling = commands.add_parser('sample')
+    sampling.add_argument('--loop', action='store_true')
+    commands.add_parser('report').add_argument('period')
     args = parser.parse_args()
-    os.umask(0o077)
-    with open_db(args.db) as db:
-        if args.command == 'report':
-            print(json.dumps(daily_report(db, args.day, int(datetime.now().timestamp())), ensure_ascii=False))
-            return 0
-        base_url = os.environ['GPUSTACK_URL']
-        token = os.environ['GPUSTACK_API_KEY']
-        at = int(datetime.now().timestamp())
-        try:
-            payload = snapshot(pages(base_url, token, 'workers'), pages(base_url, token, 'model-instances'))
-            if int(datetime.now().timestamp()) - at >= MAX_GAP_SECONDS:
-                raise ValueError('Sample exceeded the maximum observation window')
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            save(db, at, None)
-            print(f'GPUStack sample unavailable ({type(exc).__name__})', file=sys.stderr)
-            return 1
-        save(db, at, payload)
-        print(json.dumps({'observed_gpus': len(payload['cards']),
-                          'unresolved_bindings': payload['unresolved_bindings']}))
+    db = Database(os.environ['MAAS_DATABASE_URL'])
+    if args.command == 'report':
+        print(json.dumps(report(db, args.period, int(datetime.now().timestamp())), ensure_ascii=False))
         return 0
+    base_url = os.environ['MAAS_GPUSTACK_URL']
+    with open(os.environ['E17_GPUSTACK_KEY_FILE'], encoding='utf-8') as key_file:
+        token = key_file.read().strip()
+    if not token:
+        parser.error('GPUStack key file is empty')
+    session_id = uuid4()
+    stopped = Event()
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        signal.signal(sig, lambda *_: stopped.set())
+    with psycopg.connect(db.url, autocommit=True, connect_timeout=5) as lock:
+        if not lock.execute('SELECT pg_try_advisory_lock(842125217)').fetchone()[0]:
+            print('An E17 sampler is already running', file=sys.stderr)
+            return 1
+        while not stopped.is_set():
+            started = monotonic()
+            lock.execute('SELECT 1')
+            status = sample(db, base_url, token, session_id)
+            if not args.loop:
+                return status
+            stopped.wait(max(0, 60 - (monotonic() - started)))
+    return 0
 
 
 if __name__ == '__main__':

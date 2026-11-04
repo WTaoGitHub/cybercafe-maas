@@ -12,10 +12,13 @@
 
 ## 当前实现与验证状态
 
-首版运维 CLI 已实现日报，仍使用 SQLite、读取模型副本列表并输出模型相关统计。采集与查询的收敛、月报和定时部署待完成。此前使用现有推理凭据试采收到 HTTP 错误，下一次实机验收需验证 worker 列表权限。
+第一阶段已实现 PostgreSQL `e17` schema、worker 列表采样、日报和月报 CLI，以及默认关闭的 Compose 采集服务。隔离 PostgreSQL 回归通过。001 只读探测使用现有推理凭据返回 HTTP 403，实机试采需具备 worker 列表权限的运维凭据。网页、JSON 查询和正式启用待后续阶段。
+
+CLI 读取 `MAAS_DATABASE_URL`。采样另需 `MAAS_GPUSTACK_URL` 和 `E17_GPUSTACK_KEY_FILE`。数据库须先应用 MaaS 迁移。
 
 ```bash
-python3 -m maas_platform.gpu_time --db /var/lib/maas-ops/gpu-time.sqlite report 2026-11-04
+python3 -m maas_platform.gpu_time report 2026-11-04
+python3 -m maas_platform.gpu_time report 2026-11
 ```
 
 报告列出截至统计期末已观测到的 UUID，当天统计截至查询时间。最后一个样本之后的区间在下一次有效采样前计为未知。
@@ -29,7 +32,7 @@ python3 -m maas_platform.gpu_time --db /var/lib/maas-ops/gpu-time.sqlite report 
 - **前置条件与验收**。先用运维凭据在隔离测试库确认 worker 列表权限，连续试采并对照 GPUStack 页面。用独立克隆验证同卡跨克隆 UUID 稳定性及旧记录残留。用固定时间戳覆盖跨日、跨月、采集断档和冲突，核对三类时长之和、月报与逐日汇总。用同一测试库对比 CLI、JSON 和网页，检查筛选、空数据和采集异常提示。
 - **交付顺序**。收敛 worker 采样并补齐月报，完成隔离测试库实机试采，再交付只读网页与 JSON 查询，最后在 001 启用定时采样。网页可先用测试库开发验证。本决议记录后续实施范围，线上历史从正式采样开始积累。
 
-本次调整为设计决议。现有 SQLite CLI 属于首版原型，待迁移至 PostgreSQL 后与网页、JSON 查询共用统计逻辑。实机验收需经现有 MaaS 入口核对页面、JSON、运维鉴权和采样断档。
+SQLite 首版已由 PostgreSQL CLI 接替，网页和 JSON 查询将复用其统计逻辑。实机验收需经现有 MaaS 入口核对页面、JSON、运维鉴权和采样断档。
 
 ## 2026-11-04 采集容器决议
 
@@ -39,3 +42,5 @@ python3 -m maas_platform.gpu_time --db /var/lib/maas-ops/gpu-time.sqlite report 
 - 使用 `docker compose stop e17-sampler` 停采。收到停止信号后停止调度下一轮，给当前轮次留出有限收尾时间。恢复时执行同一启动命令。
 - 首版部署单实例，使用 PostgreSQL 锁防止重复启动造成并行采样。每次启动创建新采样会话，跨会话间隔计为未知；同会话最大有效间隔仍为 120 秒。
 - 验收覆盖重复实例、停止和恢复、短停采间隔、采集失败，以及停采期间网页和 JSON 历史查询。
+
+首次实机试采使用隔离数据库。正式部署时，在 Compose 私有环境中配置 `E17_GPUSTACK_KEY_PATH` 为仅运维及容器 UID 10001 可读的凭据文件绝对路径，并确保所选 MaaS 镜像包含迁移 007 和采样命令。当前对重复 UUID 统一按未知处理，待验证旧 worker 残留后再调整。

@@ -75,6 +75,21 @@ services:
   observer:
     <<: *app
     command: [python, -m, maas_platform.observe, --loop, --output, /var/lib/maas/artifacts/.observability]
+  e17-sampler:
+    <<: *app
+    profiles: [e17]
+    command: [python, -u, -m, maas_platform.gpu_time, sample, --loop]
+    stop_grace_period: 60s
+    environment:
+      MAAS_DATABASE_URL: postgresql://maas:${MAAS_DB_PASSWORD:?set private environment}@127.0.0.1:18835/maas
+      MAAS_GPUSTACK_URL: ${MAAS_GPUSTACK_URL:?set reachable internal GPUStack URL}
+      E17_GPUSTACK_KEY_FILE: /run/e17/gpustack-key
+    volumes:
+      - ${E17_GPUSTACK_KEY_PATH:-/dev/null}:/run/e17/gpustack-key:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   postgres:
   artifacts:

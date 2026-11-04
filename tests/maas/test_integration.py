@@ -20,6 +20,7 @@ def env(tmp_path):
     # Database name must explicitly mark this as a test DB.
     assert psycopg.conninfo.conninfo_to_dict(url)['dbname'].endswith('_test')
     with psycopg.connect(url) as c:
+        c.execute('DROP SCHEMA IF EXISTS e17 CASCADE')
         c.execute('DROP SCHEMA public CASCADE');c.execute('CREATE SCHEMA public')
     def secret(name,value):
         p=tmp_path/name;p.write_text(value);p.chmod(0o600);return p

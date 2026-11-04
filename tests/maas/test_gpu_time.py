@@ -1,40 +1,34 @@
 import io
 import json
 import unittest
-from datetime import date, datetime
 from unittest.mock import patch
 
-from maas_platform.gpu_time import BEIJING, daily_report, open_db, pages, save, snapshot
+from maas_platform.gpu_time import pages, snapshot, summarize
 
 
 class GPUTimeTest(unittest.TestCase):
-    def test_paginated_snapshot(self):
+    def test_paginated_workers(self):
         replies = [
             io.StringIO(json.dumps({'items': [{'id': i}],
                                      'pagination': {'page': i, 'totalPage': 2, 'total': 2}}))
             for i in (1, 2)
         ]
-        with patch('maas_platform.gpu_time.urlopen', side_effect=replies):
-            self.assertEqual(pages('http://localhost', 'test', 'workers'), [{'id': 1}, {'id': 2}])
+        with patch('maas_platform.gpu_time.urlopen', side_effect=replies) as fetch:
+            self.assertEqual(pages('http://localhost', 'test'), [{'id': 1}, {'id': 2}])
+            self.assertTrue(all('/v2/workers?' in call.args[0].full_url for call in fetch.call_args_list))
 
-    def test_midnight_failures_and_model_deduplication(self):
-        day = date(2026, 11, 3)
-        start = int(datetime(2026, 11, 3, tzinfo=BEIJING).timestamp())
-        worker = {'id': 1, 'state': 'ready',
-                  'status': {'gpu_devices': [{'uuid': 'gpu-a', 'index': 0, 'type': 'cuda'}]}}
-        replica = {'state': 'running', 'worker_id': 1, 'gpu_indexes': [0], 'gpu_type': 'cuda',
-                   'model_id': 5, 'model_name': 'OCR'}
-        ready = snapshot([worker], [replica, replica])
-        conflict = snapshot([worker, {**worker, 'id': 2}], [])
-        self.assertIsNone(conflict['cards']['gpu-a']['online'])
-        offline = snapshot([{**worker, 'state': 'unreachable'}], [])
-        db = open_db(':memory:')
-        self.addCleanup(db.close)
-        for offset, payload in [(-30, ready), (30, offline), (60, offline), (90, None),
-                                (120, ready), (300, ready), (86380, ready), (86440, ready)]:
-            save(db, start + offset, payload)
-        row = daily_report(db, day, start + 86440)['gpus']['gpu-a']
-        self.assertEqual(row['online_seconds'], 50)
-        self.assertEqual(row['not_ready_seconds'], 30)
-        self.assertEqual(row['unknown_seconds'], 86400 - 80)
-        self.assertEqual(row['models'], {'5': {'name': 'OCR', 'seconds': 50}})
+    def test_duplicate_uuid_is_unknown(self):
+        worker = {'id': 1, 'state': 'ready', 'status': {'gpu_devices': [{'uuid': 'gpu-a'}]}}
+        self.assertEqual(snapshot([worker]), {'gpu-a': True})
+        self.assertEqual(snapshot([worker, {**worker, 'id': 2}]), {'gpu-a': None})
+
+    def test_clipping_failures_and_session_gaps(self):
+        online, not_ready = {'gpu-a': True}, {'gpu-a': False}
+        samples = [(-30, 1, online), (30, 1, not_ready), (60, 1, not_ready),
+                   (90, 1, None), (120, 1, online), (300, 1, online),
+                   (320, 2, online), (380, 2, online)]
+        day = summarize(['gpu-a'], samples, 0, 350)['gpu-a']
+        following = summarize(['gpu-a'], samples, 350, 400)['gpu-a']
+        total = summarize(['gpu-a'], samples, 0, 400)['gpu-a']
+        self.assertEqual(day, {'online_seconds': 60, 'not_ready_seconds': 30, 'unknown_seconds': 260})
+        self.assertEqual(total, {key: day[key] + following[key] for key in day})
