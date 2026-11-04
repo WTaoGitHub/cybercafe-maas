@@ -12,7 +12,7 @@
 
 ## 当前实现与验证状态
 
-第一阶段已实现 PostgreSQL `e17` schema、worker 列表采样、日报和月报 CLI，以及默认关闭的 Compose 采集服务。隔离 PostgreSQL 回归通过。001 只读探测使用现有推理凭据返回 HTTP 403，实机试采需具备 worker 列表权限的运维凭据。网页、JSON 查询和正式启用待后续阶段。
+第一阶段已实现 PostgreSQL `e17` schema、worker 列表采样、日报和月报 CLI，以及默认关闭的 Compose 采集服务。隔离 PostgreSQL 回归通过。001 只读探测使用现有推理凭据返回 HTTP 403，第二阶段改用有列表权限的运维凭据完成实机试采。网页、JSON 查询和正式启用待后续阶段。
 
 CLI 读取 `MAAS_DATABASE_URL`。采样另需 `MAAS_GPUSTACK_URL` 和 `E17_GPUSTACK_KEY_FILE`。数据库须先应用 MaaS 迁移。
 
@@ -43,4 +43,11 @@ SQLite 首版已由 PostgreSQL CLI 接替，网页和 JSON 查询将复用其统
 - 首版部署单实例，使用 PostgreSQL 锁防止重复启动造成并行采样。每次启动创建新采样会话，跨会话间隔计为未知；同会话最大有效间隔仍为 120 秒。
 - 验收覆盖重复实例、停止和恢复、短停采间隔、采集失败，以及停采期间网页和 JSON 历史查询。
 
-首次实机试采使用隔离数据库。正式部署时，在 Compose 私有环境中配置 `E17_GPUSTACK_KEY_PATH` 为仅运维及容器 UID 10001 可读的凭据文件绝对路径，并确保所选 MaaS 镜像包含迁移 007 和采样命令。当前对重复 UUID 统一按未知处理，待验证旧 worker 残留后再调整。
+首次实机试采使用隔离数据库。正式部署时，在 Compose 私有环境中配置 `E17_GPUSTACK_KEY_PATH` 为仅运维及容器 UID 10001 可读的凭据文件绝对路径，并确保所选 MaaS 镜像包含迁移 007 和采样命令。同 UUID 出现唯一 ready 记录时计为在线，多条同时 ready 或多条均非 ready 时计为未知。
+
+
+## 第二阶段实机试采
+
+在 001 使用授权运维凭据读取 GPUStack worker 列表，并写入隔离 PostgreSQL。读取到 6 条 worker 记录、4 个 GPU UUID。匿名状态组合为两张单记录卡（ready、not_ready 各一张）、一张 ready 与 not_ready 并存、一张有两条 not_ready。修正后连续三轮试采覆盖 10 秒，两张卡在线、一张非 ready、一张未知，日报累计在线 20 卡秒，与样本对照一致，月报返回相同的 GPU 集合。隔离回归 135 通过、1 跳过。
+
+实机样本验证了残留记录并存的处理。受控同卡跨克隆换绑、正式 Compose 启停和长期采样仍待验证。下一阶段交付现有 MaaS 入口下的只读网页与 JSON 查询。

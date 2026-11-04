@@ -21,6 +21,9 @@ class GPUTimeTest(unittest.TestCase):
         worker = {'id': 1, 'state': 'ready', 'status': {'gpu_devices': [{'uuid': 'gpu-a'}]}}
         self.assertEqual(snapshot([worker]), {'gpu-a': True})
         self.assertEqual(snapshot([worker, {**worker, 'id': 2}]), {'gpu-a': None})
+        old_worker = {**worker, 'id': 2, 'state': 'not_ready'}
+        self.assertEqual(snapshot([worker, old_worker]), {'gpu-a': True})
+        self.assertEqual(snapshot([old_worker, {**old_worker, 'id': 3}]), {'gpu-a': None})
 
     def test_clipping_failures_and_session_gaps(self):
         online, not_ready = {'gpu-a': True}, {'gpu-a': False}

@@ -53,7 +53,13 @@ def snapshot(workers):
             uuid = gpu.get('uuid')
             if uuid:
                 states[uuid].append(worker['state'] == 'ready')
-    return {uuid: values[0] if len(values) == 1 else None for uuid, values in states.items()}
+    cards = {}
+    for uuid, values in states.items():
+        if len(values) == 1:
+            cards[uuid] = values[0]
+        else:
+            cards[uuid] = True if values.count(True) == 1 else None
+    return cards
 
 
 def save(db, at, session_id, cards):
