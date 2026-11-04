@@ -1,6 +1,6 @@
 """Operator-only GPU uptime reports served by the MaaS API."""
 from base64 import b64encode
-from datetime import datetime
+from datetime import datetime, timedelta
 from hashlib import sha256
 from hmac import compare_digest
 from html import escape
@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from .gpu_time import BEIJING, MAX_GAP_SECONDS, report
+from .gpu_time import BEIJING, report, report_range
 
 
 STYLE = """
@@ -49,15 +49,33 @@ def router(db):
             raise HTTPException(401, headers={'WWW-Authenticate': 'Basic realm="MaaS E17"'})
 
     def query(period: str | None = Query(None, max_length=10),
+              start: str | None = Query(None, max_length=16),
+              end: str | None = Query(None, max_length=16),
               gpu_uuid: str | None = Query(None, max_length=128)):
         now = datetime.now(BEIJING)
+        fmt = '%Y-%m-%dT%H:%M'
         try:
-            data = report(db, period if period is not None else now.date().isoformat(), int(now.timestamp()))
+            if period is not None:
+                if start is not None or end is not None:
+                    raise ValueError
+                data = report(db, period, int(now.timestamp()))
+                first = datetime.fromisoformat(period + '-01' if len(period) == 7 else period).replace(tzinfo=BEIJING)
+                last = first + timedelta(days=1) if len(period) == 10 else (first.replace(day=28) + timedelta(days=4)).replace(day=1)
+            else:
+                if start is None and end is None:
+                    first, last = now - timedelta(days=1), now
+                else:
+                    first = datetime.strptime(start or '', fmt).replace(tzinfo=BEIJING)
+                    last = datetime.strptime(end or '', fmt).replace(tzinfo=BEIJING)
+                    if first.strftime(fmt) != start or last.strftime(fmt) != end or first >= last:
+                        raise ValueError
+                data = report_range(db, int(first.timestamp()), int(last.timestamp()), int(now.timestamp()))
         except (ValueError, OverflowError):
-            raise HTTPException(422, 'Use YYYY-MM-DD or YYYY-MM') from None
+            raise HTTPException(422, 'Provide a valid Beijing time range with start before end') from None
         if gpu_uuid:
-            data['gpus'] = {uuid: row for uuid, row in data['gpus'].items() if uuid == gpu_uuid}
-        return data
+            needle = gpu_uuid.strip().casefold()
+            data['gpus'] = {uuid: row for uuid, row in data['gpus'].items() if needle in uuid.casefold()}
+        return {**data, 'start': first.strftime(fmt), 'end': last.strftime(fmt)}
 
     @routes.get('/report', dependencies=[Depends(operator)])
     def report_json(data=Depends(query)):
@@ -86,9 +104,9 @@ def router(db):
             f'<title>GPU 在线时长</title><style>{STYLE}</style>'
             '<main><h1>GPU 在线时长</h1><p>北京时间 · 时长单位为秒</p>'
             f'<p>最近成功采样 {freshness}</p><form method="get">'
-            f'<label>日期或月份 <input name="period" value="{escape(data["period"])}" '
-            'placeholder="YYYY-MM-DD 或 YYYY-MM" required></label>'
-            f'<label>GPU UUID <input name="gpu_uuid" value="{escape(gpu_uuid)}"></label>'
+            f'<label>开始时间 <input type="datetime-local" name="start" value="{escape(data["start"])}" required></label> '
+            f'<label>结束时间 <input type="datetime-local" name="end" value="{escape(data["end"])}" required></label> '
+            f'<label>GPU UUID <input name="gpu_uuid" placeholder="输入 UUID 片段" value="{escape(gpu_uuid)}"></label>'
             '<button>查询</button></form>'
             '<section><h2>总体采样覆盖率</h2>'
             f'<strong class="number">{percent}</strong>'

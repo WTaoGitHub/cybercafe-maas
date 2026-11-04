@@ -46,3 +46,12 @@ def test_operator_web_and_json_use_same_report(env, monkeypatch, tmp_path):
         assert page.status_code == 200 and '&lt;gpu-other&gt;' in page.text
         assert 'gpu-test' in page.text
         assert client.get(path, auth=operator, params={'period': 'invalid'}).status_code == 422
+        default = client.get(path + '/report', auth=operator).json()
+        assert default['period_seconds'] == 86400
+        assert 'type="datetime-local"' in page.text
+        window = {'start': '2026-11-04T00:00', 'end': '2026-11-05T00:00'}
+        reply = client.get(path + '/report', auth=operator, params={**window, 'gpu_uuid': 'PU-TE'})
+        assert reply.status_code == 200 and reply.json()['start'] == window['start']
+        fuzzy = client.get(path + '/report', auth=operator, params={'gpu_uuid': 'PU-TE'})
+        assert list(fuzzy.json()['gpus']) == ['gpu-test']
+        assert client.get(path, auth=operator, params={**window, 'end': window['start']}).status_code == 422

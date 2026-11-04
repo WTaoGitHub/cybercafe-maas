@@ -111,7 +111,12 @@ def report(db, period, now):
     else:
         raise ValueError('Use YYYY-MM-DD or YYYY-MM')
     start = int(datetime.combine(day, time.min, BEIJING).timestamp())
-    end = min(now, int(datetime.combine(stop, time.min, BEIJING).timestamp()))
+    end = int(datetime.combine(stop, time.min, BEIJING).timestamp())
+    return report_range(db, start, end, now, period)
+
+
+def report_range(db, start, end, now, period=None):
+    end = min(now, end)
     cards = {}
     intervals = []
     with db.transaction() as conn:
