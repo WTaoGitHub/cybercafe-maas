@@ -51,3 +51,11 @@ SQLite 首版已由 PostgreSQL CLI 接替，网页和 JSON 查询将复用其统
 在 001 使用授权运维凭据读取 GPUStack worker 列表，并写入隔离 PostgreSQL。读取到 6 条 worker 记录、4 个 GPU UUID。匿名状态组合为两张单记录卡（ready、not_ready 各一张）、一张 ready 与 not_ready 并存、一张有两条 not_ready。修正后连续三轮试采覆盖 10 秒，两张卡在线、一张非 ready、一张未知，日报累计在线 20 卡秒，与样本对照一致，月报返回相同的 GPU 集合。隔离回归 135 通过、1 跳过。
 
 实机样本验证了残留记录并存的处理。受控同卡跨克隆换绑、正式 Compose 启停和长期采样仍待验证。下一阶段交付现有 MaaS 入口下的只读网页与 JSON 查询。
+
+## 第三阶段运维查询
+
+网页为 `GET /maas/ops/gpu-time`，JSON 为 `GET /maas/ops/gpu-time/report`。两个入口复用 MaaS API 和网关，可选 `period=YYYY-MM-DD` 或 `period=YYYY-MM`，默认北京时间当天。可用 `gpu_uuid` 精确筛选。页面和 JSON 共用 CLI 的 PostgreSQL 只读查询，显示最近成功采样和数据过期状态。
+
+现有 MaaS Bearer 绑定用于模型调用。E17 使用专用 HTTP Basic 运维凭据，用户名为 `e17`，密码从 `E17_QUERY_KEY_FILE` 读取。默认未配置时查询关闭。部署时在现有私有 secrets 目录放置容器 UID 10001 可读的查询密钥，将该环境变量设置为容器内文件路径，例如 `/run/secrets/e17-query-key`，并应用新版 API 和网关配置。浏览器通过私有 TLS 或受控 SSH 转发访问。GPUStack 列表凭据仍由采样容器持有。
+
+查询阶段交付代码和隔离测试。正式环境网关验收与启动采样安排在部署阶段。

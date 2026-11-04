@@ -107,16 +107,20 @@ def report(db, period, now):
     start = int(datetime.combine(day, time.min, BEIJING).timestamp())
     end = min(now, int(datetime.combine(stop, time.min, BEIJING).timestamp()))
     cards = {}
-    if end > start:
-        with db.transaction() as conn:
-            conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
+    with db.transaction() as conn:
+        conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
+        last = conn.execute('SELECT at FROM e17.samples WHERE cards IS NOT NULL AND at <= %s ORDER BY at DESC LIMIT 1',
+                            (now,)).fetchone()
+        if end > start:
             uuids = [row['uuid'] for row in conn.execute(
                 'SELECT uuid FROM e17.cards WHERE first_seen < %s ORDER BY uuid', (end,))]
             with conn.cursor(name='e17_report') as cursor:
                 cursor.execute('SELECT at,session_id,cards FROM e17.samples WHERE at BETWEEN %s AND %s ORDER BY at',
                                (start - MAX_GAP_SECONDS, min(now, end + MAX_GAP_SECONDS)))
                 cards = summarize(uuids, ((r['at'], r['session_id'], r['cards']) for r in cursor), start, end)
-    return {'period': period, 'timezone': str(BEIJING), 'period_seconds': max(0, end - start), 'gpus': cards}
+    last_at = last['at'] if last else None
+    return {'period': period, 'timezone': str(BEIJING), 'period_seconds': max(0, end - start), 'gpus': cards,
+            'last_success_at': last_at, 'sampling_stale': last_at is None or now - last_at > MAX_GAP_SECONDS}
 
 
 def sample(db, base_url, token, session_id):
