@@ -1,5 +1,7 @@
 # GPUStack 上线驱动的模型副本试点
 
+本文保留独立进程试点的配置与验收证据。后续第一阶段采用 [GPUStack Server 内副本策略插件设计](REPLICA-POLICY-PLUGIN.md)。
+
 对应 [GitHub Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。控制器运行在 GPUStack Server 所在主机，当前绑定 GPUStack v2.2.3、一个隔离的调度范围、最多两个单 GPU worker 和三个明确绑定的测试部署。
 
 ## 决策规则

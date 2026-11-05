@@ -5,12 +5,20 @@
 *{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#17263b;font:16px/1.75 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:32px 20px}header,section{background:white;border-radius:14px;padding:24px 30px;margin-bottom:16px}header{background:#132d4b;color:white}h1{font-size:clamp(25px,4vw,40px);line-height:1.25;margin:.3em 0}h2{font-size:22px;margin:0 0 12px}p{margin:.5em 0}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px;border-bottom:1px solid #dbe3eb;vertical-align:top}th{background:#edf3fa}code{overflow-wrap:anywhere}a{color:#145697}.flow{background:#e9f3f9;padding:13px;border-radius:8px}.scroll{overflow-x:auto}footer{padding:0 15px}@media print{body{background:white}main{padding:0}header{color:#17263b;background:white}tr{break-inside:avoid}}
 </style>
 <main>
-<header><p>技术汇报 · 2026 年 11 月 5 日</p><h1>GPU 上线驱动的模型部署</h1><p>两台真实 worker 已验证自动扩容，三个独立测试路由已通过真实 OCR 请求。旧宿主回收、新克隆接替是下一项现场验收。</p></header>
+<header><p>技术汇报 · 2026 年 11 月 5 日</p><h1>GPU 上线驱动的模型部署</h1><p>第一阶段采用 GPUStack Server 内插件。现有独立进程试点已验证真实 worker 恢复触发扩容，以及三个测试路由的真实 OCR。</p></header>
 <section><h2>01　业务目标与决策规则</h2>
 <p>系统监听资源相关事件，结合<strong>触发事件与可配置的策略</strong>决定如何调整模型服务规模，并执行决策。第一阶段处理 GPU 上线和下线，执行动作包括扩大和缩小副本数，目标副本数可以降到 0。</p>
 <p>策略面向多个模型。各模型的目标比例权重和优先级均支持预设及运行期间修改。资源允许时先保障各模型至少一个可用实例，再按配置权重分配额外容量。资源不足以同时保底时，按优先级决定先保障哪些服务。</p>
-<p>A、B、C 以及 2:3:5 是试点示例。资源减少时，当前试点只输出缩容建议，由人工确认。自动执行缩容、降至零及运行中更新策略属于阶段目标，尚待实现和验收。</p></section>
-<section><h2>02　当前试点如何工作</h2>
+<p>A、B、C 以及 2:3:5 是试点示例。资源减少时，当前试点只输出缩容建议，由人工确认。插件阶段支持人工确认后执行缩容，目标可降至零并保留部署。该执行链路与运行中更新策略尚待实现和验收。</p></section>
+<section><h2>02　第一阶段方案 · GPUStack Server 内插件</h2>
+<p class="flow">GPUStack 内部事件 → 全量对账 → 按策略计算多模型目标 → 扩容或提交待确认的缩容计划 → GPUStack 执行 → 验证实际副本</p>
+<ol>
+<li><strong>装载与故障隔离。</strong> 将插件 wheel 安装进 Server 镜像，以 <code>gpustack.plugins</code> 注册。后台任务直接订阅内部 worker 事件，通过限时对账和退避处理故障。首版只允许单 Server、单写者执行。</li>
+<li><strong>事件与策略。</strong> 比较完整快照中的可调度 GPU 集合，以设备变化触发计算。断线或清单不完整时暂停写入。模型清单、权重和优先级采用版本化配置，校验后在运行中生效。配置换版或容量变化时重新计算，撤销过期计划。</li>
+<li><strong>规划和执行。</strong> 以逐卡预算、模型适配条件和副本上限做有界整数规划。先保底，再逼近配置比例。扩容可自动下发。缩容及归零由人工确认后下发，等待 GPUStack 实际移除实例并核对逐卡显存后再补位。GPUStack 保留实例落点和缩容对象的最终选择权。</li>
+</ol>
+<p><a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/master/docs/framework/REPLICA-POLICY-PLUGIN.md">插件详细设计、策略配置及验收矩阵</a> · <a href="https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/extension.py#L57-L125">GPUStack 插件接口</a></p></section>
+<section><h2>03　已验证的独立进程试点</h2>
 <p class="flow">worker 上报 → GPUStack Server 推送状态 → 控制器重新读取集群 → 计算副本目标 → GPUStack 放置与启动 → 核对运行状态</p>
 <ol>
 <li><strong>监听与对账。</strong> 控制器订阅 Server 的 <code>GET /v2/workers?cluster_id=…&amp;watch=true</code>。事件唤醒全量对账，同时约每 10 秒主动对账。事件只触发重算，重复事件不会直接累加副本。</li>
@@ -19,13 +27,13 @@
 <li><strong>有界写入。</strong> 默认只读。显式启用写入时，复核绑定及目标模型配置，一次只给一个部署增加一个副本。已配置实例未全部在合格节点进入 running 时等待收敛。GPUStack 决定实际落点，下一轮读取结果再规划。试点限定三个部署、最多两台单 GPU worker。</li>
 </ol>
 <p><a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/3515522/maas_platform/replica_controller.py">控制器</a> · <a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/3515522/maas_platform/replica_policy.py">逐卡规划与缩容建议</a> · <a href="https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/routes/workers.py#L205-L245">GPUStack v2.2.3 Watch</a></p></section>
-<section><h2>03　验证结果</h2><div class="scroll"><table>
+<section><h2>04　验证结果</h2><div class="scroll"><table>
 <thead><tr><th>项目</th><th>结果与证据边界</th></tr></thead>
 <tbody><tr><td>真实上线与扩容</td><td>SSH 停启一台现有 worker 容器。单卡 A/B/C 为 1:1:2；另一台恢复 ready 后约 1.1 秒算出 2:2:4。八副本全部 running，两卡各四个。全程 VM 保持运行。</td></tr>
 <tr><td>真实业务</td><td>独立补验中 A/B/C 各运行一个 PP-OCRv4 副本，三个私有路由各返回 46 行。用路由授权及仅允许三个测试路由的短期推理凭据通过验收。测试对象与凭据已清理，常驻 OCR 恢复 8/8 并通过探针。</td></tr>
 <tr><td>完整比例与资源下降</td><td>控制器相关 16 项测试通过。2/3/3.5 GiB 的异构声明及完整 2:3:5 通过本地验证，十副本共需 30.5 GiB 且受逐卡放置约束。实机统一采用经过验证的 3.5 GiB 声明，每卡最多四个。缩容建议通过离线验证。</td></tr>
-<tr><td>交付状态</td><td>代码和实测记录已推送，控制器未设为常驻。现有权重和优先级从启动配置读取。通用多模型、运行中更新策略、自动缩容至零和新克隆接替仍待实现或验收。</td></tr></tbody></table></div></section>
-<section><h2>04　旧宿主回收与新克隆接替</h2>
+<tr><td>交付状态</td><td>代码和实测记录已推送，控制器未设为常驻。现有权重和优先级从启动配置读取。插件装载、通用多模型、运行中更新策略及确认后缩容至零待实现与验收。新克隆接替待现场验证。</td></tr></tbody></table></div></section>
+<section><h2>05　旧宿主回收与新克隆接替</h2>
 <p>新克隆从干净母版首次注册，获得新的 worker ID。GPU UUID 只用于设备关联和去重。新卡可以有不同 UUID，接替容量取决于显存额度、选择器和后端兼容性。</p>
 <p>验收顺序为记录旧节点与实例基线、排空受影响流量、观察旧节点退出容量池、确认新 ID 进入 ready、核对新卡上的实际实例落点并发起真实 OCR。前后容量相同时，目标副本数可以保持不变。过渡期若只有一张 16 GiB 卡，按已验证的声明预算按四副本规划。保留旧记录以观察交接，并遵守两台受保护 VM 的操作约束。</p></section>
 <footer><a href="https://github.com/WTaoGitHub/cybercafe-maas/issues/39">试点 Issue #39</a> · <a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/3515522/docs/framework/REPLICA-POLICY-PILOT.md">设计、配置与验收时间线</a></footer>
