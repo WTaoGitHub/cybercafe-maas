@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from maas_replica_policy import Policy, PolicyFile, classify, solve, summarize
+from maas_replica_policy import Policy, PolicyFile, arrival_context, classify, solve, summarize
 
 
 def policy_config(revision=1):
@@ -86,3 +86,24 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(plan["up_preview_limit"], 0)
         plan = summarize(rules, execution, dict.fromkeys(rules, 3), current, 2, 0)
         self.assertEqual(plan["up_preview_limit"], 1)
+
+    def test_phase_one_only_opens_for_loss_free_gpu_arrivals(self):
+        policy = Policy(policy_config())
+        self.assertIsNone(arrival_context(None, {"a"}, policy))
+        self.assertEqual(arrival_context(set(), {"a"}, policy), "capacity_restored")
+        self.assertEqual(arrival_context({"a"}, {"a", "b"}, policy), "gpu_added")
+        self.assertEqual(arrival_context({"a"}, {"a", "b", "c", "d"}, policy), "gpu_added_burst")
+        self.assertEqual(arrival_context({"a"}, {"a"}, policy, "gpu_added"), "gpu_added")
+        self.assertIsNone(arrival_context({"a", "b"}, {"a"}, policy, "gpu_added"))
+        self.assertIsNone(arrival_context({"a"}, {"b"}, policy, "gpu_added"))
+        self.assertIsNone(arrival_context({"a"}, set(), policy, "gpu_added"))
+        self.assertIsNone(arrival_context({"b"}, {"b"}, policy))
+
+    def test_additive_planner_preserves_existing_replicas_even_above_new_cap(self):
+        rules, execution = Policy(policy_config()).effective(None)
+        current = {1: 4, 2: 1, 3: 0, 4: 0}
+        eligible = {1: [0, 1], 2: [0, 1], 3: [0], 4: [1]}
+        target = solve(rules, [3, 4], eligible, current, additive=True)
+        self.assertEqual(target, {1: 4, 2: 1, 3: 1, 4: 1})
+        self.assertEqual(summarize(rules, execution, target, current, 0, 0)["down_preview_limit"], 0)
+        self.assertEqual(solve(rules, [0, 0], eligible, current, additive=True), current)

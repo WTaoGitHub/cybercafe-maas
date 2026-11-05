@@ -13,7 +13,7 @@ from gpustack.schemas.workers import Worker
 from gpustack.server.db import async_session
 from gpustack.server.worker_allocated_cache import get_worker_allocated
 
-from maas_replica_policy import PolicyFile, classify, solve, summarize
+from maas_replica_policy import ARRIVAL_EVENTS, PolicyFile, arrival_context, solve, summarize
 
 log = logging.getLogger(__name__)
 
@@ -84,6 +84,8 @@ async def read_deployments():
 
 
 def plan_snapshot(policy, event, devices, model_rows, instance_rows):
+    if event not in ARRIVAL_EVENTS:
+        raise ValueError("Phase one requires a confirmed GPU arrival")
     rules, execution = policy.effective(event)
     models = {model.id: model for model in model_rows if model.id in rules}
     if models.keys() != rules.keys():
@@ -93,7 +95,6 @@ def plan_snapshot(policy, event, devices, model_rows, instance_rows):
         raise ValueError("Managed deployment scope mismatch")
     cards = sorted(devices.values(), key=lambda card: (card.worker_id, card.index))
     indexes = {(card.worker_id, card.index): i for i, card in enumerate(cards)}
-    credits = [0] * len(cards)
     eligible = {}
     for key, model in models.items():
         if (model.cpu_offloading or model.distributed_inference_across_workers
@@ -111,31 +112,23 @@ def plan_snapshot(policy, event, devices, model_rows, instance_rows):
             (instance.worker_id, index) in indexes for index in instance.gpu_indexes
         ):
             running[instance.model_id] = running.get(instance.model_id, 0) + 1
-        if instance.model_id not in rules or not instance.computed_resource_claim:
-            continue
-        claim = instance.computed_resource_claim.vram or {}
-        if len(claim) > 1 or getattr(instance.distributed_servers, "subordinate_workers", None):
-            raise ValueError("Managed instance uses unsupported distributed placement")
-        for index, amount in claim.items():
-            card_index = indexes.get((instance.worker_id, int(index)))
-            if card_index is not None:
-                if amount != rules[instance.model_id].vram_claim_bytes:
-                    raise ValueError("Managed instance claim differs from configured policy")
-                credits[card_index] += amount
-
-    budgets = []
-    for card, credit in zip(cards, credits):
-        if credit > card.allocated_vram:
-            raise ValueError("Inconsistent GPU allocation snapshot")
-        budgets.append(max(0, card.total_vram - card.reserved_vram - card.allocated_vram + credit))
     current = {key: model.replicas for key, model in models.items()}
-    target = solve(rules, budgets, eligible, current, execution.get("solve_timeout_s", 1))
+    # Keep all current allocations in place. Native pending replicas have
+    # first use of the new capacity before we request any additional slots.
+    if any(running.get(key, 0) < count for key, count in current.items()):
+        target = current.copy()
+        waiting = True
+    else:
+        target = solve(rules, [card.free_vram for card in cards], eligible, current,
+                       execution.get("solve_timeout_s", 1), additive=True)
+        waiting = False
     global_inflight = sum(max(0, model.replicas - model.ready_replicas) for model in model_rows)
     cluster_inflight = sum(max(0, model.replicas - running.get(model.id, 0))
                            for model in model_rows if model.cluster_id == policy.cluster)
     preview = summarize(rules, execution, target, current, global_inflight, cluster_inflight)
     return {"revision": policy.revision, "event": event, "cluster": policy.cluster,
-            "global_inflight": global_inflight, "cluster_inflight": cluster_inflight, **preview}
+            "global_inflight": global_inflight, "cluster_inflight": cluster_inflight,
+            "waiting_for_managed_instances": waiting, **preview}
 
 
 async def observe_workers(changed):
@@ -203,7 +196,7 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10, 
                     before = ({(key, d.worker_id, d.index) for key, d in old.items()}
                               if cluster in trusted else None)
                     after = {(key, d.worker_id, d.index) for key, d in devices.items()}
-                    event = classify(before, after, policy) or event
+                    event = arrival_context(before, after, policy, event)
                 added = len(devices.keys() - old.keys())
                 removed = len(old.keys() - devices.keys())
                 moved = sum((devices[key].worker_id, devices[key].index)
@@ -223,10 +216,14 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10, 
         if policy is not None:
             state, devices = current.get(policy.cluster, ("unknown", None))
             if state == "zero_pending" or devices is None:
+                event = None
                 plan = {"revision": policy.revision, "cluster": policy.cluster, "state": state}
-            elif not devices and event != "capacity_zero":
+            elif not devices:
                 plan = {"revision": policy.revision, "cluster": policy.cluster,
                         "state": "waiting_for_capacity"}
+            elif event not in ARRIVAL_EVENTS:
+                plan = {"revision": policy.revision, "cluster": policy.cluster,
+                        "state": "waiting_for_gpu_arrival"}
             else:
                 try:
                     rows = await asyncio.wait_for(read_deployments(), timeout=5)

@@ -135,7 +135,17 @@ def classify(before, after, policy):
     return None
 
 
-def solve(models, budgets, eligible, current, timeout=1):
+ARRIVAL_EVENTS = frozenset({"gpu_added", "gpu_added_burst", "capacity_restored"})
+
+
+def arrival_context(before, after, policy, active=None):
+    """Only a confirmed, loss-free device addition opens the phase-one gate."""
+    if before is None or not after or before - after:
+        return None
+    return classify(before, after, policy) or active
+
+
+def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
     """Plan final per-model counts. Placement is a feasibility proof, not a binding."""
     ids = sorted(models, key=lambda key: (models[key].priority, key))
     tiers = sorted({m.priority for m in models.values()})
@@ -145,7 +155,7 @@ def solve(models, budgets, eligible, current, timeout=1):
         raise ValueError("GPU count exceeds observe-mode solver limit")
     deadline = time.monotonic() + timeout
     weights = sum(m.weight for m in models.values() if m.max_replicas)
-    counts = dict.fromkeys(ids, 0)
+    counts = {key: current[key] if additive else 0 for key in ids}
     best_score = None
     best = None
 
@@ -183,7 +193,8 @@ def solve(models, budgets, eligible, current, timeout=1):
         search(i + 1)
 
     # Bound recursion even with large budgets and intentionally generous limits.
-    if sum(m.max_replicas for m in models.values()) > 96:
+    if sum(max(0, m.max_replicas - (current[key] if additive else 0))
+           for key, m in models.items()) > 96:
         raise ValueError("Total replica limit exceeds observe-mode solver bound")
     search(0)
     return best
