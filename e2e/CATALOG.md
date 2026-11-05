@@ -1,6 +1,6 @@
 # E2E用例目录
 
-65项；由e2e/cases的元数据生成。完整筛选和运行方式见[手册](README.md)。
+68项；由e2e/cases的元数据生成。完整筛选和运行方式见[手册](README.md)。
 
 | case_id | module | labels | effects | requires | 检查内容 |
 |---|---|---|---|---|---|
@@ -69,3 +69,6 @@
 | METER-001 | metering | metering, gpu, async, optional | write, inference | operator | One successful async task creates exactly one task event |
 | METER-002 | metering | metering, gpu, exclusive, optional | inference | operator, project, exclusive_project | Successful sync increments exclusive project event count once |
 | METER-003 | metering | metering, negative, exclusive, optional | write | operator, project, exclusive_project | Invalid image creates no successful sync event |
+| COLD-001 | cold_start | negative, window, optional | inference | expect_cold_gateway_503 | Sync upstream 503 quarantines inference on a cold deployment |
+| COLD-002 | cold_start | negative, window, optional | write, inference | expect_cold_gateway_503 | Async task is accepted but fails when a running executor receives upstream 503 |
+| COLD-003 | cold_start | negative, window, optional | write, inference | expect_no_executors | Async task stays queued and cancellable with no executor |

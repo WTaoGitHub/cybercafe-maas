@@ -166,3 +166,13 @@ E5-001仅证明配置/仓库服务进程在运行，不证明克隆首启、驱�
 ```
 
 本次真实验收结果见[端到端报告](../results/maas-e2e/REPORT.md)。
+
+### 零 Worker 冷启动
+
+只在独立可销毁环境中逐个选择 `COLD-001`、`COLD-002` 或 `COLD-003`。
+三项均要求 MaaS API、数据库、认证与模型配置可用，维护未暂停且初始没有 UNKNOWN。
+
+- `COLD-001` 和 `COLD-002` 使用 `expect_cold_gateway_503=true`。GPUStack 控制面在线、没有 GPU Worker 和可用副本，指定模型的上游推理响应为 503。异步用例另需 MaaS 执行器在线。两项各用一套干净环境，预期产生 UNKNOWN 隔离。
+- `COLD-003` 使用 `expect_no_executors=true`。测试期间没有 MaaS 异步执行器，验证任务排队、尝试次数为零及可取消。GPU Worker 和 MaaS 执行器是两个独立条件。
+
+环境由测试外部准备。用例通过客户 API 观察响应。

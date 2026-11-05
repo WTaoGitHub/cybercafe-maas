@@ -22,6 +22,8 @@
   "expired_artifact_id": null,
   "exclusive_project": false,
   "expect_maintenance": false,
+  "expect_cold_gateway_503": false,
+  "expect_no_executors": false,
   "expect_capacity_full": false,
   "expect_queue_full": false,
   "operator": null,
