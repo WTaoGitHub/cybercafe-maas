@@ -7,9 +7,10 @@ import stat
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
-from maas_replica_execution import Action, Executor, PendingWrite
+from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent
 from maas_replica_native import NativeAdapter
 from maas_replica_policy import ARRIVAL_EVENTS
+from maas_replica_pressure import PressureGate
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -50,11 +51,12 @@ class LocalManagement:
 
 
 class ScaleUp:
-    def __init__(self, cluster, journal, request):
+    def __init__(self, cluster, journal, request, *, pressure=None):
         self.cluster = cluster
         self.journal = journal
         self.request = request
         self.version_checked = False
+        self.pressure = pressure if pressure is not None else PressureGate(None)
 
     @classmethod
     def from_environment(cls):
@@ -71,15 +73,18 @@ class ScaleUp:
         journal.read()
         request = LocalManagement(os.environ["MAAS_REPLICA_MANAGEMENT_URL"],
                                   os.environ["MAAS_REPLICA_MANAGEMENT_KEY_FILE"])
-        return cls(ident, journal, request)
+        sample = os.environ.get("MAAS_REPLICA_PRESSURE_FILE")
+        if sample and not Path(sample).is_absolute():
+            raise ValueError("Pressure feed must have an absolute path")
+        return cls(ident, journal, request, pressure=PressureGate(sample))
 
-    async def _adapter(self, policy):
+    async def _adapter(self, policy, request):
         if not self.version_checked:
             version = await self.request("GET", "/version")
             if version.get("version") != "v2.2.3":
                 raise ValueError("Unapproved GPUStack version")
             self.version_checked = True
-        return NativeAdapter(self.request, revision=policy.revision, cluster_id=self.cluster,
+        return NativeAdapter(request, revision=policy.revision, cluster_id=self.cluster,
                              owner_id=policy.owner, model_ids=policy.models, grow_only=True)
 
     async def advance(self, policy, event, devices, plan, *, refresh, bindings):
@@ -90,7 +95,25 @@ class ScaleUp:
                                 or event not in ARRIVAL_EVENTS
                                 or not plan.get("up_preview_limit")):
             return "idle"
-        api = await self._adapter(policy)
+        if pending is None:
+            pressure = self.pressure.evaluate(policy.pressure)
+            if pressure != "open":
+                return pressure
+
+        async def checked_request(method, path, body=None):
+            if method == "PUT":
+                try:
+                    unchanged = refresh() is policy
+                except (OSError, ValueError, TypeError, KeyError, AttributeError):
+                    unchanged = False
+                if not unchanged:
+                    raise WriteNotSent("policy_changed")
+                pressure = self.pressure.evaluate(policy.pressure)
+                if pressure != "open":
+                    raise WriteNotSent(pressure)
+            return await self.request(method, path, body)
+
+        api = await self._adapter(policy, checked_request)
         executor = Executor(self.journal, api.read, api.write, write_timeout=12, read_timeout=12)
         if pending is not None:
             return await executor.recover()

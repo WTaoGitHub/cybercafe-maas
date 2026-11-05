@@ -5,6 +5,8 @@ import os
 import stat
 import time
 
+from maas_replica_pressure import PressureRules
+
 
 def integer(value, minimum=0):
     if type(value) is not int or value < minimum:
@@ -71,6 +73,7 @@ class Policy:
             raise ValueError("Unsupported event field in this release")
         self.burst_add = integer(self.events.get("burst_add_count", 3), 2)
         self.burst_remove = integer(self.events.get("burst_remove_count", 3), 2)
+        self.pressure = PressureRules.parse(raw["pressure"]) if "pressure" in raw else None
         self.overrides = raw.get("event_overrides", {})
         if set(self.overrides) - EVENTS:
             raise ValueError("Unknown event type")

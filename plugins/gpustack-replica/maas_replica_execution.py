@@ -138,6 +138,10 @@ class PendingWrite:
         self._sync_parent()
 
 
+class WriteNotSent(Exception):
+    """The final local gate rejected the request before transport dispatch."""
+
+
 class Executor:
     """Run a bounded write through an injected adapter and confirm by readback."""
 
@@ -184,6 +188,9 @@ class Executor:
             self.journal.reserve(action)
             try:
                 await asyncio.wait_for(self.write(action), timeout=self.write_timeout)
+            except WriteNotSent as error:
+                self.journal.clear()
+                return str(error)
             except (OSError, TimeoutError):
                 return "unresolved"
             return await self._recover()
