@@ -35,6 +35,7 @@
 <tr><td>完整比例与资源下降</td><td>控制器相关 16 项测试通过。2/3/3.5 GiB 的异构声明及完整 2:3:5 通过本地验证，十副本共需 30.5 GiB 且受逐卡放置约束。实机统一采用经过验证的 3.5 GiB 声明，每卡最多四个。缩容建议通过离线验证。</td></tr>
 <tr><td>交付状态</td><td>代码和实测记录已推送，控制器未设为常驻。现有权重和优先级从启动配置读取。插件装载、通用多模型、运行中更新策略及确认后缩容至零待实现与验收。新克隆接替待现场验证。</td></tr></tbody></table></div></section>
 <section><h2>05　旧宿主回收与新克隆接替</h2>
+<p><strong>项目术语。</strong> VPC、VM、宿主机、克隆机均指由网吧管理员管理、从特定镜像版本克隆创建的虚拟计算机。GPUStack worker 运行在该虚拟计算机上。</p>
 <p>新克隆从干净母版首次注册，获得新的 worker ID。GPU UUID 只用于设备关联和去重。新卡可以有不同 UUID，接替容量取决于显存额度、选择器和后端兼容性。</p>
 <p>验收顺序为记录旧节点与实例基线、排空受影响流量、观察旧节点退出容量池、确认新 ID 进入 ready、核对新卡上的实际实例落点并发起真实 OCR。前后容量相同时，目标副本数可以保持不变。过渡期若只有一张 16 GiB 卡，按已验证的声明预算按四副本规划。保留旧记录以观察交接，并遵守两台受保护 VM 的操作约束。</p></section>
 <footer><a href="https://github.com/WTaoGitHub/cybercafe-maas/issues/39">试点 Issue #39</a> · <a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/3515522/docs/framework/REPLICA-POLICY-PILOT.md">设计、配置与验收时间线</a></footer>
