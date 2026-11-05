@@ -1,4 +1,4 @@
-"""GPUStack v2.2.3 management adapter for the isolated execution trial."""
+"""Bounded GPUStack v2.2.3 management adapter."""
 from collections import defaultdict
 import hashlib
 import json
@@ -25,12 +25,13 @@ def binding(row):
 
 
 class NativeAdapter:
-    def __init__(self, request, *, revision, cluster_id, owner_id, model_ids):
+    def __init__(self, request, *, revision, cluster_id, owner_id, model_ids, grow_only=False):
         self.request = request
         self.revision = revision
         self.cluster_id = cluster_id
         self.owner_id = owner_id
         self.model_ids = frozenset(model_ids)
+        self.grow_only = grow_only
 
     async def _pages(self, path):
         items = []
@@ -52,6 +53,7 @@ class NativeAdapter:
         models = await self._pages("/v2/models")
         instances = await self._pages("/v2/model-instances")
         cards = {}
+        gpu_inventory = defaultdict(dict)
         for worker in workers:
             if (worker["state"] != "ready" or worker.get("unreachable")
                     or (worker.get("maintenance") or {}).get("enabled")):
@@ -69,6 +71,9 @@ class NativeAdapter:
                 if any(type(value) is not int or value < 0 for value in capacity):
                     raise ValueError("Incomplete GPU allocation")
                 cards[key] = (gpu["uuid"], *capacity)
+                gpu_inventory[worker["cluster_id"]][key] = (
+                    gpu["uuid"], *capacity, tuple(sorted((worker.get("labels") or {}).items())),
+                    gpu.get("type"))
         if len({card[0] for card in cards.values()}) != len(cards):
             raise ValueError("Duplicate eligible GPU identity")
         model_ids = {model["id"] for model in models}
@@ -90,10 +95,13 @@ class NativeAdapter:
                     for i, m in sorted(deployments.items())]
         placement = sorted((row["id"], row["model_id"], row["state"], row["worker_id"],
                             row.get("gpu_indexes")) for row in instances)
-        fingerprint = digest([sorted(cards.items()), identity, placement])
-        return Snapshot(self.revision, fingerprint, deployments)
+        inventory = [(key, sorted(value.items())) for key, value in gpu_inventory.items()]
+        fingerprint = digest([sorted(inventory), identity, placement])
+        return Snapshot(self.revision, fingerprint, deployments, gpu_inventory=dict(gpu_inventory))
 
     async def write(self, action):
+        if self.grow_only and action.after != action.before + 1:
+            raise ValueError("Phase one may only add one replica per write")
         if (action.model_id not in self.model_ids or action.cluster_id != self.cluster_id
                 or action.owner_id != self.owner_id or action.revision != self.revision):
             raise ValueError("Replica write outside the isolated deployment binding")

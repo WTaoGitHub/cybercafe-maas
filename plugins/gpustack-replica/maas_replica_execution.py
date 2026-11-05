@@ -3,7 +3,7 @@
 The observe-mode Server plugin does not import or activate this module.
 """
 import asyncio
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 import json
 import os
 from pathlib import Path
@@ -32,6 +32,7 @@ class Snapshot:
     fingerprint: str  # Capacity and state relevant to the planned action.
     deployments: dict[int, Deployment]
     complete: bool = True
+    gpu_inventory: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

@@ -13,6 +13,8 @@ from gpustack.schemas.workers import Worker
 from gpustack.server.db import async_session
 from gpustack.server.worker_allocated_cache import get_worker_allocated
 
+from maas_replica_apply import ScaleUp
+from maas_replica_native import binding
 from maas_replica_policy import ARRIVAL_EVENTS, PolicyFile, arrival_context, solve, summarize
 
 log = logging.getLogger(__name__)
@@ -144,7 +146,8 @@ async def observe_workers(changed):
             await asyncio.sleep(2)
 
 
-async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10, policy_file=None):
+async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
+                    policy_file=None, scale_up=None):
     zero_since = {}
     previous = {}
     trusted = {}
@@ -152,6 +155,7 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10, 
     last_plan = None
     scope = None
     rejected = None
+    last_execution = None
     while True:
         changed.clear()
         try:
@@ -214,6 +218,7 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10, 
             log.info("Replica capacity has no clusters")
         previous = current
         if policy is not None:
+            bindings = {}
             state, devices = current.get(policy.cluster, ("unknown", None))
             if state == "zero_pending" or devices is None:
                 event = None
@@ -228,6 +233,9 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10, 
                 try:
                     rows = await asyncio.wait_for(read_deployments(), timeout=5)
                     plan = await asyncio.to_thread(plan_snapshot, policy, event, devices, *rows)
+                    if scale_up is not None and plan["up_preview_limit"]:
+                        bindings = {m.id: binding(m.model_dump(mode="json")) for m in rows[0]
+                                    if m.id in policy.models}
                 except Exception as error:
                     plan = {"revision": policy.revision, "cluster": policy.cluster,
                             "event": event, "blocked": str(error) if type(error) is ValueError
@@ -235,6 +243,15 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10, 
             if plan != last_plan:
                 log.info("Replica observe plan %s", plan)
                 last_plan = plan
+            if scale_up is not None and rejected is None:
+                try:
+                    execution = await scale_up.advance(policy, event, devices, plan,
+                                                       refresh=policy_file.refresh, bindings=bindings)
+                except Exception as error:
+                    execution = type(error).__name__
+                if execution != last_execution:
+                    log.info("Replica scale-up execution state=%s", execution)
+                    last_execution = execution
         try:
             await asyncio.wait_for(changed.wait(), timeout=interval)
         except TimeoutError:
@@ -246,5 +263,10 @@ class ReplicaPlugin(Plugin):
     def async_tasks(self):
         changed = asyncio.Event()
         path = os.environ.get("MAAS_REPLICA_POLICY_PATH")
-        policy_file = PolicyFile(Path(path)) if path else None
-        return [observe_workers(changed), reconcile(changed, policy_file=policy_file)]
+        try:
+            scale_up = ScaleUp.from_environment() if path else None
+        except (OSError, ValueError, KeyError) as error:
+            log.warning("Replica apply configuration rejected: %s", type(error).__name__)
+            scale_up = None
+        policy_file = PolicyFile(Path(path), allow_apply=scale_up is not None) if path else None
+        return [observe_workers(changed), reconcile(changed, policy_file=policy_file, scale_up=scale_up)]

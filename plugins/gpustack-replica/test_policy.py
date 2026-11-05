@@ -107,3 +107,16 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(target, {1: 4, 2: 1, 3: 1, 4: 1})
         self.assertEqual(summarize(rules, execution, target, current, 0, 0)["down_preview_limit"], 0)
         self.assertEqual(solve(rules, [0, 0], eligible, current, additive=True), current)
+
+    def test_apply_requires_explicit_authorization_and_both_limits(self):
+        config = policy_config()
+        config["execution"]["mode"] = "apply"
+        with self.assertRaises(ValueError):
+            Policy(config)
+        with self.assertRaises(ValueError):
+            Policy(config, allow_apply=True)
+        config["execution"]["max_inflight_per_cluster"] = 1
+        self.assertEqual(Policy(config, allow_apply=True).execution["mode"], "apply")
+        config["event_overrides"]["gpu_added_burst"]["execution"]["mode"] = "observe"
+        with self.assertRaises(ValueError):
+            Policy(config, allow_apply=True)

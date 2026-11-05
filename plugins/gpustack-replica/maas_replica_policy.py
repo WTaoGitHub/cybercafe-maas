@@ -40,7 +40,7 @@ BATCH_FIELDS = {"scale_up_batch_max", "scale_down_batch_max"}
 
 
 class Policy:
-    def __init__(self, raw):
+    def __init__(self, raw, *, allow_apply=False):
         if integer(raw["schema_version"], 1) != 1:
             raise ValueError("Unsupported policy schema")
         self.revision = integer(raw["revision"], 1)
@@ -52,8 +52,11 @@ class Policy:
         for key in self.models:
             integer(key, 1)
         self.execution = raw.get("execution", {})
-        if self.execution.get("mode", "observe") != "observe":
-            raise ValueError("This release supports observe mode only")
+        mode = self.execution.get("mode", "observe")
+        if mode not in ("observe", "apply") or (mode == "apply" and not allow_apply):
+            raise ValueError("Apply mode requires explicit runtime authorization")
+        if mode == "apply" and not {"max_inflight_global", "max_inflight_per_cluster"} <= self.execution.keys():
+            raise ValueError("Apply mode requires both in-flight limits")
         supported = BATCH_FIELDS | {"mode", "max_inflight_global", "max_inflight_per_cluster",
                                     "solve_timeout_s"}
         if set(self.execution) - supported:
@@ -96,8 +99,9 @@ class Policy:
 
 
 class PolicyFile:
-    def __init__(self, path):
+    def __init__(self, path, *, allow_apply=False):
         self.path = path
+        self.allow_apply = allow_apply
         self.active = None
         self.content = None
 
@@ -112,7 +116,7 @@ class PolicyFile:
             raise ValueError("Policy file is too large")
         if data == self.content:
             return self.active
-        new = Policy(json.loads(data))
+        new = Policy(json.loads(data), allow_apply=self.allow_apply)
         if self.active and new.revision <= self.active.revision:
             raise ValueError("Policy revision must increase")
         self.active, self.content = new, data
