@@ -3,6 +3,25 @@
 <title>GPU 上线驱动的模型部署 | 技术汇报</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#17263b;font:16px/1.75 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:32px 20px}header,section{background:white;border-radius:14px;padding:24px 30px;margin-bottom:16px}header{background:#132d4b;color:white}h1{font-size:clamp(25px,4vw,40px);line-height:1.25;margin:.3em 0}h2{font-size:22px;margin:0 0 12px}p{margin:.5em 0}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px;border-bottom:1px solid #dbe3eb;vertical-align:top}th{background:#edf3fa}code{overflow-wrap:anywhere}a{color:#145697}.flow{background:#e9f3f9;padding:13px;border-radius:8px}.scroll{overflow-x:auto}footer{padding:0 15px}@media print{body{background:white}main{padding:0}header{color:#17263b;background:white}tr{break-inside:avoid}}
+
+.diagram{margin:20px 0;border:1px solid #dbe3eb;border-radius:12px;padding:16px;background:#f9fbfd}
+.diagram figcaption{font-weight:750;margin-bottom:12px;color:#183854}
+.diagram h3{font-size:15px;margin:0 0 8px}.diagram p{margin:6px 0}
+.arch{display:grid;grid-template-columns:1fr auto 2.45fr auto 1fr;gap:9px;align-items:center}
+.server{border:2px solid #8ca9c3;background:#fff;border-radius:10px;padding:12px}
+.node{border:1px solid #cbd8e4;border-radius:8px;padding:9px 12px;background:#fff;font-size:14px;line-height:1.5}
+.node strong{display:block;margin-bottom:3px}.native{background:#edf3fa;border-color:#a7bed5}.plugin{background:#e7f5ef;border-color:#82b9a3}.gate{background:#fff4da;border-color:#d6b371}
+.arrow{color:#426280;font-size:20px;font-weight:700;text-align:center}.arrow small{display:block;font-size:11px;font-weight:600}
+.inside{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:7px}.inside .arrow{align-self:center}
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.legend span{border-width:1px;border-style:solid;border-radius:6px;padding:2px 8px;font-size:13px}
+.timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;list-style:none;margin:0;padding:0}
+.timeline li{position:relative}.timeline li:not(:last-child)::after{content:"→";position:absolute;right:-15px;top:50%;transform:translateY(-50%);color:#426280;font-weight:700}
+.number{display:inline-grid;place-items:center;margin-right:5px;border-radius:50%;width:20px;height:20px;color:white;background:#315773;font-size:12px}
+.branch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.loop{border-left:3px solid #82b9a3;padding:0 8px;margin-top:10px!important;font-size:14px}
+@media(max-width:680px){.arch,.timeline,.inside,.branch{grid-template-columns:1fr}.arch>.arrow,.inside>.arrow{line-height:1.2}.arrow .horizontal{display:none}.arrow .vertical{display:inline}.timeline li:not(:last-child)::after{content:"↓";top:auto;bottom:-18px;right:50%;transform:translateX(50%)}main{padding:18px 10px}header,section{padding:18px}}
+@media(min-width:681px){.arrow .vertical{display:none}}
+@media print{.diagram{break-inside:avoid}.node,.legend span{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 <main>
 <header><p>技术汇报 · 2026 年 11 月 5 日</p><h1>GPU 上线驱动的模型部署</h1><p>第一阶段采用 GPUStack Server 内插件。现有独立进程试点已验证真实 worker 恢复触发扩容，以及三个测试路由的真实 OCR。</p></header>
@@ -11,7 +30,57 @@
 <p>策略面向多个模型。各模型的目标比例权重和优先级均支持预设及运行期间修改。资源允许时先保障各模型至少一个可用实例，再按配置权重分配额外容量。资源不足以同时保底时，按优先级决定先保障哪些服务。</p>
 <p>A、B、C 以及 2:3:5 是试点示例。资源减少时，当前试点只输出缩容建议，由人工确认。插件阶段支持人工确认后执行缩容，目标可降至零并保留部署。该执行链路与运行中更新策略尚待实现和验收。</p></section>
 <section><h2>02　第一阶段方案 · GPUStack Server 内插件</h2>
-<p class="flow">GPUStack 内部事件 → 全量对账 → 按策略计算多模型目标 → 扩容或提交待确认的缩容计划 → GPUStack 执行 → 验证实际副本</p>
+<figure class="diagram">
+<figcaption>图 1　总体架构 · Server 内插件设计</figcaption>
+<div class="arch">
+  <div class="node"><strong>网吧管理员管理的 VM</strong>各 VM 运行 GPUStack worker，上报设备与运行状态，承载推理实例。</div>
+  <div class="arrow"><span class="horizontal" aria-hidden="true">⇄</span><span class="vertical" aria-hidden="true">↕</span><small>状态上报<br>实例调度</small></div>
+  <div class="server">
+    <h3>GPUStack Server</h3>
+    <div class="inside">
+      <div class="node native"><strong>原生控制面</strong>worker 与设备状态、模型目标副本、调度和实例生命周期。</div>
+      <div class="arrow"><span class="horizontal" aria-hidden="true">⇄</span><span class="vertical" aria-hidden="true">↕</span><small>事件与<br>管理 API</small></div>
+      <div class="node plugin"><strong>副本策略插件</strong>全量对账、多模型规划、启动预算和写入审计。</div>
+    </div>
+    <p class="node gate"><strong>运维输入</strong>版本化模型策略与资源预算。缩容计划需要人工确认。</p>
+  </div>
+  <div class="arrow"><span class="horizontal" aria-hidden="true">⇄</span><span class="vertical" aria-hidden="true">↕</span><small>推理路由<br>业务响应</small></div>
+  <div class="node"><strong>MaaS 服务</strong>通过 GPUStack 路由请求推理。延迟与错误率供插件调速参考。</div>
+</div>
+<div class="legend" aria-label="图例"><span class="native">GPUStack 原生能力</span><span class="plugin">拟实现插件逻辑</span><span class="gate">运维配置或执行门槛</span></div>
+</figure>
+<figure class="diagram">
+<figcaption>图 2　从事件到目标副本</figcaption>
+<ol class="timeline">
+  <li class="node native"><strong><span class="number">1</span>接收信号</strong>内部 worker 事件、定期对账、策略更新。</li>
+  <li class="node plugin"><strong><span class="number">2</span>合并并读取</strong>按集群合并，最长等待到期也读一次全量快照。</li>
+  <li class="node plugin"><strong><span class="number">3</span>核对可用 GPU</strong>检查就绪、可达、维护和 UUID 去重。用分配与预留计算逐卡显存。</li>
+  <li class="node plugin"><strong><span class="number">4</span>计算多个目标</strong>按优先级保障首个实例，再用可放置资源逼近配置权重。</li>
+</ol>
+<div class="branch">
+  <div class="node gate"><strong>状态可信</strong>生成带策略版本和资源指纹的计划。</div>
+  <div class="node gate"><strong>快照不完整或设备身份冲突</strong>暂停受影响范围的写入。完整的零容量快照才可提出归零计划。</div>
+</div>
+</figure>
+<figure class="diagram">
+<figcaption>图 3　批量上线时如何控制启动压力</figcaption>
+<ol class="timeline">
+  <li class="node plugin"><strong><span class="number">1</span>目标与预算分开</strong>计算最终目标，再按全局与集群上限核对本轮能放行多少。</li>
+  <li class="node gate"><strong><span class="number">2</span>扣除在途</strong>已提交未出现的副本、待启动实例和可观测的原生重调度都占名额。</li>
+  <li class="node native"><strong><span class="number">3</span>按批提交</strong>优先补保底，GPUStack 负责选择落点、拉取和启动实例。</li>
+  <li class="node plugin"><strong><span class="number">4</span>回读结果</strong>确认实例可用或明确失败退出，再释放名额。写入结果未知时先对账。</li>
+</ol>
+<p class="loop"><strong>反馈回路</strong>　仓库、网络、磁盘或在线推理承压 → 减速或暂停新增 → 低水位稳定后逐步恢复。实际拉取硬上限由容器运行时或分发侧配合。</p>
+</figure>
+<figure class="diagram">
+<figcaption>图 4　GPU 下线后的人工确认与缩容</figcaption>
+<ol class="timeline">
+  <li class="node native"><strong><span class="number">1</span>确认容量下降</strong>区分明确退场、短暂失联和观测失败，先观察原生重调度。</li>
+  <li class="node gate"><strong><span class="number">2</span>确认计划</strong>若仍需缩容，操作员审核受影响模型和目标副本数，目标可为 0。</li>
+  <li class="node native"><strong><span class="number">3</span>逐项写入</strong>复核审批仍有效，GPUStack 按新目标选择实际移除的实例。</li>
+  <li class="node plugin"><strong><span class="number">4</span>验证释放</strong>核对目标卡的显存后再补位。释放在其他卡时停止原计划的后续动作。</li>
+</ol>
+</figure>
 <ol>
 <li><strong>装载与故障隔离。</strong> 将插件 wheel 安装进 Server 镜像，以 <code>gpustack.plugins</code> 注册。后台任务直接订阅内部 worker 事件，通过限时对账和退避处理故障。首版只允许单 Server、单写者执行。</li>
 <li><strong>事件与策略。</strong> 比较完整快照中的可调度 GPU 集合，以设备变化触发计算。断线或清单不完整时暂停写入。模型清单、权重和优先级采用版本化配置，校验后在运行中生效。配置换版或容量变化时重新计算，撤销过期计划。</li>
