@@ -17,6 +17,7 @@
 <li><strong>事件与策略。</strong> 比较完整快照中的可调度 GPU 集合，以设备变化触发计算。断线或清单不完整时暂停写入。模型清单、权重和优先级采用版本化配置，校验后在运行中生效。配置换版或容量变化时重新计算，撤销过期计划。</li>
 <li><strong>规划和执行。</strong> 以逐卡预算、模型适配条件和副本上限做有界整数规划。先保底，再逼近配置比例。扩容可自动下发。缩容及归零由人工确认后下发，等待 GPUStack 实际移除实例并核对逐卡显存后再补位。GPUStack 保留实例落点和缩容对象的最终选择权。</li>
 </ol>
+<p><strong>批量上线的压力控制。</strong> 插件将目标规模和启动节奏分开。按全局及集群预算分批启动，优先恢复各服务保底，并把 GPUStack 已有待启动实例计入压力。镜像仓库、网络、磁盘或在线推理承压时降低新增速度，恢复稳定后再放行。实际拉取的硬上限由分发链路配合实施。此能力待实现和压测。</p>
 <p><a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/master/docs/framework/REPLICA-POLICY-PLUGIN.md">插件详细设计、策略配置及验收矩阵</a> · <a href="https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/extension.py#L57-L125">GPUStack 插件接口</a></p></section>
 <section><h2>03　已验证的独立进程试点</h2>
 <p class="flow">worker 上报 → GPUStack Server 推送状态 → 控制器重新读取集群 → 计算副本目标 → GPUStack 放置与启动 → 核对运行状态</p>
