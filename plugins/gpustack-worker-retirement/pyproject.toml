@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maas-gpustack-worker-retirement"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[project.entry-points."gpustack.plugins"]
+maas_worker_retirement = "maas_worker_retirement:WorkerRetirementPlugin"
+
+[tool.setuptools]
+py-modules = ["maas_worker_retirement", "maas_retirement_policy"]
