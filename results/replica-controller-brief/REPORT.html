@@ -28,7 +28,7 @@
 <section><h2>01　业务目标与决策规则</h2>
 <p>系统监听资源相关事件，结合<strong>触发事件与可配置的策略</strong>决定如何调整模型服务规模，并执行决策。第一阶段处理 GPU 上线和下线，执行动作包括扩大和缩小副本数，目标副本数可以降到 0。</p>
 <p>策略面向多个模型。各模型的目标比例权重和优先级均支持预设及运行期间修改。资源允许时先保障各模型至少一个可用实例，再按配置权重分配额外容量。资源不足以同时保底时，按优先级决定先保障哪些服务。</p>
-<p>A、B、C 以及 2:3:5 是试点示例。资源减少时，当前试点只输出缩容建议，由人工确认。插件阶段支持人工确认后执行缩容，目标可降至零并保留部署。该执行链路与运行中更新策略尚待实现和验收。</p></section>
+<p>A、B、C 以及 2:3:5 是试点示例。资源减少时，当前试点只输出缩容建议，由人工确认。插件阶段按预设策略自动缩容。默认只缩额外副本，显式授权后才可自动归零，归零保留部署与路由。该执行链路与运行中更新策略尚待实现和验收。</p></section>
 <section><h2>02　第一阶段方案 · GPUStack Server 内插件</h2>
 <figure class="diagram">
 <figcaption>图 1　总体架构 · Server 内插件设计</figcaption>
@@ -42,7 +42,7 @@
       <div class="arrow"><span class="horizontal" aria-hidden="true">⇄</span><span class="vertical" aria-hidden="true">↕</span><small>事件与<br>管理 API</small></div>
       <div class="node plugin"><strong>副本策略插件</strong>全量对账、多模型规划、启动预算和写入审计。</div>
     </div>
-    <p class="node gate"><strong>运维输入</strong>版本化模型策略与资源预算。缩容计划需要人工确认。</p>
+    <p class="node gate"><strong>运维输入</strong>版本化模型策略与资源预算。按模型预设自动缩容下限。</p>
   </div>
   <div class="arrow"><span class="horizontal" aria-hidden="true">⇄</span><span class="vertical" aria-hidden="true">↕</span><small>推理路由<br>业务响应</small></div>
   <div class="node"><strong>MaaS 服务</strong>通过 GPUStack 路由请求推理。延迟与错误率供插件调速参考。</div>
@@ -59,7 +59,7 @@
 </ol>
 <div class="branch">
   <div class="node gate"><strong>状态可信</strong>生成带策略版本和资源指纹的计划。</div>
-  <div class="node gate"><strong>快照不完整或设备身份冲突</strong>暂停受影响范围的写入。完整的零容量快照才可提出归零计划。</div>
+  <div class="node gate"><strong>快照不完整或设备身份冲突</strong>暂停受影响范围的写入。零容量事件必须由完整快照确认。</div>
 </div>
 </figure>
 <figure class="diagram">
@@ -73,33 +73,33 @@
 <p class="loop"><strong>反馈回路</strong>　仓库、网络、磁盘或在线推理承压 → 减速或暂停新增 → 低水位稳定后逐步恢复。实际拉取硬上限由容器运行时或分发侧配合。</p>
 </figure>
 <figure class="diagram">
-<figcaption>图 4　GPU 下线后的人工确认与缩容</figcaption>
+<figcaption>图 4　GPU 下线后的自动缩容</figcaption>
 <ol class="timeline">
   <li class="node native"><strong><span class="number">1</span>确认容量下降</strong>区分明确退场、短暂失联和观测失败，先观察原生重调度。</li>
-  <li class="node gate"><strong><span class="number">2</span>确认计划</strong>若仍需缩容，操作员审核受影响模型和目标副本数，目标可为 0。</li>
-  <li class="node native"><strong><span class="number">3</span>逐项写入</strong>复核审批仍有效，GPUStack 按新目标选择实际移除的实例。</li>
+  <li class="node gate"><strong><span class="number">2</span>核对缩容下限</strong>按预设策略保护最后一个健康实例。显式授权的模型可自动归零。</li>
+  <li class="node native"><strong><span class="number">3</span>逐项写入</strong>复核容量、策略版本和批次上限，GPUStack 按新目标选择实际移除的实例。</li>
   <li class="node plugin"><strong><span class="number">4</span>验证释放</strong>核对目标卡的显存后再补位。释放在其他卡时停止原计划的后续动作。</li>
 </ol>
 </figure>
 <ol>
 <li><strong>装载与故障隔离。</strong> 将插件 wheel 安装进 Server 镜像，以 <code>gpustack.plugins</code> 注册。后台任务直接订阅内部 worker 事件，通过限时对账和退避处理故障。首版只允许单 Server、单写者执行。</li>
 <li><strong>事件与策略。</strong> 比较完整快照中的可调度 GPU 集合，以设备变化触发计算。断线或清单不完整时暂停写入。模型清单、权重和优先级采用版本化配置，校验后在运行中生效。配置换版或容量变化时重新计算，撤销过期计划。</li>
-<li><strong>规划和执行。</strong> 以逐卡预算、模型适配条件和副本上限做有界整数规划。先保底，再逼近配置比例。扩容可自动下发。缩容及归零由人工确认后下发，等待 GPUStack 实际移除实例并核对逐卡显存后再补位。GPUStack 保留实例落点和缩容对象的最终选择权。</li>
+<li><strong>规划和执行。</strong> 以逐卡预算、模型适配条件和副本上限做有界整数规划。先保底，再逼近配置比例。扩容可自动下发。缩容按预设规则自动下发。GPUStack 实际移除实例后，核对逐卡显存再补位。GPUStack 保留实例落点和缩容对象的最终选择权。</li>
 </ol>
 <p><strong>批量上线的压力控制。</strong> 插件将目标规模和启动节奏分开。按全局及集群预算分批启动，优先恢复各服务保底，并把 GPUStack 已有待启动实例计入压力。镜像仓库、网络、磁盘或在线推理承压时降低新增速度，恢复稳定后再放行。实际拉取的硬上限由分发链路配合实施。实施顺序为只读插件、通用策略、启动预算、隔离实写、压力反馈和接替验收。上线阈值以冷缓存和热缓存压测确定。</p>
 <p><a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/master/docs/framework/REPLICA-POLICY-PLUGIN.md">插件详细设计、实施计划及八类事件验收</a> · <a href="https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/extension.py#L57-L125">GPUStack 插件接口</a></p></section>
 <section><h2>03　如何预设和维护策略</h2>
-<p><strong>先设置基础策略。</strong> 按 GPUStack 部署 ID 列出受管模型，为每个部署填写副本权重、保底优先级、副本上下限和已验证的单副本显存。权重 <code>2、3、5</code> 表示目标总副本比例 <code>2:3:5</code>。优先级数值越小，资源不足时越优先保留或恢复首个可用实例。</p>
+<p><strong>先设置基础策略。</strong> 按 GPUStack 部署 ID 列出受管模型，为每个部署填写副本权重、保底优先级、副本上下限和已验证的单副本显存。权重 <code>2、3、5</code> 表示目标总副本比例 <code>2:3:5</code>。优先级数值越小，资源不足时越优先保留或恢复首个可用实例。另设 <code>auto_scale_down_min_replicas</code>，默认 <code>1</code>，显式设为 <code>0</code> 才允许自动归零。</p>
 <div class="scroll"><table>
 <thead><tr><th>触发事件</th><th>示例配置</th><th>执行效果</th></tr></thead>
 <tbody>
 <tr><td>普通上线</td><td>沿用基础策略</td><td>先补保底，再按权重分配余量。</td></tr>
 <tr><td>批量上线</td><td>每批最多新增 1 个副本</td><td>维持目标比例，分批释放启动压力。</td></tr>
-<tr><td>批量下线</td><td>将关键模型的保底优先级设为 1，其他模型设为 2</td><td>卡不足时优先保住关键服务。缩容仍须人工确认。</td></tr>
+<tr><td>批量下线</td><td>将关键模型的保底优先级设为 1，其他模型设为 2</td><td>卡不足时优先保住关键服务。缩容按各模型预设下限执行。</td></tr>
 </tbody></table></div>
 <p>事件策略只覆盖明示的字段。每次切换事件类型都重新从基础策略计算，未设置覆盖的字段继承基础值。</p>
-<p><strong>运行中维护。</strong> 运维以更高版本号发布策略配置。插件校验通过后热更新并重新对账，旧版本尚未提交的计划和审批失效。校验失败时保留当前版本。回退时用新版本号发布旧配置内容。移出受管清单只解除插件管理；若要停止服务，显式将上下限设为 0 并确认缩容。</p>
-<p>以上为插件配置设计。<a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/4230e77/docs/framework/REPLICA-POLICY-PLUGIN.md#策略参数与维护">查看完整参数表和 JSON 示例</a></p></section>
+<p><strong>运行中维护。</strong> 运维以更高版本号发布策略配置。插件校验通过后热更新并重新对账，旧版本尚未提交的计划失效。校验失败时保留当前版本。回退时用新版本号发布旧配置内容。移出受管清单只解除插件管理；若要停止服务，显式将副本上下限和自动缩容下限均设为 0。</p>
+<p>以上为插件配置设计。<a href="https://github.com/WTaoGitHub/cybercafe-maas/blob/master/docs/framework/REPLICA-POLICY-PLUGIN.md#策略参数与维护">查看完整参数表和 JSON 示例</a></p></section>
 <section><h2>04　已验证的独立进程试点</h2>
 <p class="flow">worker 上报 → GPUStack Server 推送状态 → 控制器重新读取集群 → 计算副本目标 → GPUStack 放置与启动 → 核对运行状态</p>
 <ol>
@@ -114,7 +114,7 @@
 <tbody><tr><td>真实上线与扩容</td><td>SSH 停启一台现有 worker 容器。单卡 A/B/C 为 1:1:2；另一台恢复 ready 后约 1.1 秒算出 2:2:4。八副本全部 running，两卡各四个。全程 VM 保持运行。</td></tr>
 <tr><td>真实业务</td><td>独立补验中 A/B/C 各运行一个 PP-OCRv4 副本，三个私有路由各返回 46 行。用路由授权及仅允许三个测试路由的短期推理凭据通过验收。测试对象与凭据已清理，常驻 OCR 恢复 8/8 并通过探针。</td></tr>
 <tr><td>完整比例与资源下降</td><td>控制器相关 16 项测试通过。2/3/3.5 GiB 的异构声明及完整 2:3:5 通过本地验证，十副本共需 30.5 GiB 且受逐卡放置约束。实机统一采用经过验证的 3.5 GiB 声明，每卡最多四个。缩容建议通过离线验证。</td></tr>
-<tr><td>交付状态</td><td>代码和实测记录已推送，控制器未设为常驻。现有权重和优先级从启动配置读取。插件装载、通用多模型、运行中更新策略及确认后缩容至零待实现与验收。新克隆接替待现场验证。</td></tr></tbody></table></div></section>
+<tr><td>交付状态</td><td>代码和实测记录已推送，控制器未设为常驻。现有权重和优先级从启动配置读取。插件装载、通用多模型、运行中更新策略及按策略自动缩容及归零待实现与验收。新克隆接替待现场验证。</td></tr></tbody></table></div></section>
 <section><h2>06　旧宿主回收与新克隆接替</h2>
 <p><strong>项目术语。</strong> VPC、VM、宿主机、克隆机均指由网吧管理员管理、从特定镜像版本克隆创建的虚拟计算机。GPUStack worker 运行在该虚拟计算机上。</p>
 <p>新克隆从干净母版首次注册，获得新的 worker ID。GPU UUID 只用于设备关联和去重。新卡可以有不同 UUID，接替容量取决于显存额度、选择器和后端兼容性。</p>
