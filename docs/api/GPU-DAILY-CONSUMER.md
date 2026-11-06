@@ -23,7 +23,7 @@ curl --fail-with-body --show-error \
 
 ## 2. 日报格式
 
-以下为示例。同一 GPU 当天可以有多个在线区间，每段模型清单独立。时间使用带 `+08:00` 偏移的 ISO 8601 字符串。
+示例包含两张 GPU。第一张全天在线，第二张分两段在线。模型清单按区间独立记录，同一区间可包含多个部署。`image.default` 和部署 ID `42` 为示例数据。时间使用带 `+08:00` 偏移的 ISO 8601 字符串。
 
 ```json
 {
@@ -34,12 +34,46 @@ curl --fail-with-body --show-error \
     {
       "gpu_uuid": "GPU-47acf347-08f2-15cf-d2f0-8b58e7a79f33",
       "online_from": "2026-11-05T00:00:00+08:00",
-      "online_until": "2026-11-05T08:00:00+08:00",
+      "online_until": "2026-11-06T00:00:00+08:00",
       "models": [
         {
           "logical_model_name": "ocr.default",
           "gpustack_deployment_id": "18",
           "gpustack_deployment_name": "maas-ocr-registry-r1"
+        },
+        {
+          "logical_model_name": "image.default",
+          "gpustack_deployment_id": "42",
+          "gpustack_deployment_name": "example-image-r1"
+        }
+      ]
+    },
+    {
+      "gpu_uuid": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a",
+      "online_from": "2026-11-05T00:00:00+08:00",
+      "online_until": "2026-11-05T09:18:00+08:00",
+      "models": [
+        {
+          "logical_model_name": "ocr.default",
+          "gpustack_deployment_id": "18",
+          "gpustack_deployment_name": "maas-ocr-registry-r1"
+        }
+      ]
+    },
+    {
+      "gpu_uuid": "GPU-50b437cb-59db-64a9-05a9-ca0cdb8b356a",
+      "online_from": "2026-11-05T14:32:00+08:00",
+      "online_until": "2026-11-06T00:00:00+08:00",
+      "models": [
+        {
+          "logical_model_name": "ocr.default",
+          "gpustack_deployment_id": "18",
+          "gpustack_deployment_name": "maas-ocr-registry-r1"
+        },
+        {
+          "logical_model_name": "image.default",
+          "gpustack_deployment_id": "42",
+          "gpustack_deployment_name": "example-image-r1"
         }
       ]
     }
