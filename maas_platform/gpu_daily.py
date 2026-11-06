@@ -23,12 +23,14 @@ def bounds(day):
 def build(day, observations):
     start, end = bounds(day)
     intervals = {}
+    covered = 0
     previous = None
     for at, session, cards in observations:
         if previous is not None:
             before, prior_session, prior_cards = previous
             left, right = max(start, before), min(end, at)
             if session == prior_session and 0 < at - before <= MAX_GAP and left < right:
+                covered += right - left
                 for uuid, models in prior_cards.items():
                     segments = intervals.setdefault(uuid, [])
                     if not segments or segments[-1][1] != left:
@@ -44,6 +46,8 @@ def build(day, observations):
         return datetime.fromtimestamp(seconds, BEIJING).isoformat()
 
     return {'report_id': f'gpu-daily-{day}', 'date': str(day), 'timezone': str(BEIJING),
+            'coverage': {'covered_seconds': covered, 'total_seconds': end - start,
+                         'percent': round(100 * covered / (end - start), 2)},
             'records': [
                 {'gpu_uuid': uuid, 'online_from': stamp(left), 'online_until': stamp(right),
                  'models': [models[key] for key in sorted(models)]}
@@ -58,13 +62,11 @@ def seal(db, day):
             'SELECT at,session_id,cards FROM e17.daily_observations WHERE at BETWEEN %s AND %s ORDER BY at',
             (start - MAX_GAP, end + MAX_GAP),
         )
-        observations = [(r['at'], r['session_id'], r['cards']) for r in rows]
-        # A day with no confirmed observation interval is unavailable, rather than empty.
-        if not any(a[1] == b[1] and 0 < b[0] - a[0] <= MAX_GAP and
-                   max(start, a[0]) < min(end, b[0]) for a, b in zip(observations, observations[1:])):
-            return
-        conn.execute('INSERT INTO e17.daily_reports(day,payload) VALUES (%s,%s) ON CONFLICT (day) DO NOTHING',
-                     (day, Jsonb(build(day, observations))))
+        payload = build(day, ((r['at'], r['session_id'], r['cards']) for r in rows))
+        # No confirmed interval means the report is unavailable.
+        if payload['coverage']['covered_seconds']:
+            conn.execute('INSERT INTO e17.daily_reports(day,payload) VALUES (%s,%s) ON CONFLICT (day) DO NOTHING',
+                         (day, Jsonb(payload)))
 
 
 def deliver(db, url, token):

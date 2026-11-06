@@ -34,6 +34,7 @@ def test_daily_report_is_shared_by_pull_and_retry(env, monkeypatch, tmp_path):
         response = client.get(path, headers={'Authorization': 'Bearer daily-test-key'})
         assert response.status_code == 200
         payload = response.json()
+    assert payload['coverage'] == {'covered_seconds': 45, 'total_seconds': 86400, 'percent': 0.05}
     assert payload['records'] == [{
         'gpu_uuid': 'GPU-a', 'online_from': '2026-11-05T00:00:00+08:00',
         'online_until': '2026-11-05T00:00:15+08:00', 'models': [model],
@@ -58,3 +59,14 @@ def test_daily_report_is_shared_by_pull_and_retry(env, monkeypatch, tmp_path):
     assert attempts[0]['headers']['Idempotency-Key'] == payload['report_id']
     with service.db.transaction() as conn:
         assert conn.execute('SELECT delivered_at FROM e17.daily_reports WHERE day=%s', (day,)).fetchone()['delivered_at']
+
+def test_coverage_includes_offline_observation_and_excludes_session_gap():
+    day = date(2026, 11, 5)
+    start, end = gpu_daily.bounds(day)
+    payload = gpu_daily.build(day, [
+        (start - 30, 'first', {}), (start + 30, 'first', {}),
+        (start + 60, 'second', {}), (start + 90, 'second', {}),
+        (end - 30, 'second', {}), (end + 30, 'second', {}),
+    ])
+    assert payload['records'] == []
+    assert payload['coverage'] == {'covered_seconds': 90, 'total_seconds': 86400, 'percent': 0.1}
