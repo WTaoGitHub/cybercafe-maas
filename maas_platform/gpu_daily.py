@@ -1,10 +1,7 @@
 """Build and deliver immutable E17 daily reports."""
 from datetime import date, datetime, time, timedelta
-from hmac import compare_digest
-import os
-from pathlib import Path
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 import httpx
 from psycopg.types.json import Jsonb
@@ -97,15 +94,9 @@ def deliver(db, url, token):
 
 def router(db):
     routes = APIRouter(prefix='/maas/v1/gpu-daily-reports', include_in_schema=False)
-    path = os.environ.get('E17_DAILY_QUERY_KEY_FILE')
-    token = Path(path).read_bytes().strip() if path else b''
 
     @routes.get('/{day}')
-    def get(day: date, authorization: str = Header(default='')):
-        if not token:
-            raise HTTPException(404)
-        if not compare_digest(authorization.encode(), b'Bearer ' + token):
-            raise HTTPException(401, headers={'WWW-Authenticate': 'Bearer'})
+    def get(day: date):
         with db.transaction() as conn:
             row = conn.execute('SELECT payload FROM e17.daily_reports WHERE day=%s', (day,)).fetchone()
         if not row:

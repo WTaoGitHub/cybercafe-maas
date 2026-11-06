@@ -6,14 +6,11 @@ from maas_platform import gpu_daily
 from maas_platform.gpu_daily_watch import cards_for, persist, seal_pending
 
 
-def test_daily_report_is_shared_by_pull_and_retry(env, monkeypatch, tmp_path):
+def test_daily_report_is_shared_by_pull_and_retry(env, monkeypatch):
     from fastapi.testclient import TestClient
     from maas_platform.api import create_app
 
     _, service, settings, auth, _ = env
-    key = tmp_path / 'daily-key'
-    key.write_text('daily-test-key')
-    monkeypatch.setenv('E17_DAILY_QUERY_KEY_FILE', str(key))
     day = date(2026, 11, 5)
     start, _ = gpu_daily.bounds(day)
     model = {'logical_model_name': 'ocr.default', 'gpustack_deployment_id': '18',
@@ -30,8 +27,10 @@ def test_daily_report_is_shared_by_pull_and_retry(env, monkeypatch, tmp_path):
     seal_pending(service.db, day)
     path = '/maas/v1/gpu-daily-reports/2026-11-05'
     with TestClient(create_app(settings, auth)) as client:
-        assert client.get(path).status_code == 401
-        response = client.get(path, headers={'Authorization': 'Bearer daily-test-key'})
+        response = client.get(path)
+        missing = client.get('/maas/v1/gpu-daily-reports/2026-11-06')
+        assert missing.status_code == 404
+        assert missing.json()['detail']['code'] == 'GPU_DAILY_REPORT_UNAVAILABLE'
         assert response.status_code == 200
         payload = response.json()
     assert payload['coverage'] == {'covered_seconds': 45, 'total_seconds': 86400, 'percent': 0.05}
