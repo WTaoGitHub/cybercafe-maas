@@ -15,6 +15,7 @@ x-app: &app
     MAAS_BINDINGS_FILE: /run/secrets/bindings.json
     MAAS_CATALOG_FILE: /app/catalog.json
     E17_QUERY_KEY_FILE: ${E17_QUERY_KEY_FILE:-}
+    E17_DAILY_QUERY_KEY_FILE: ${E17_DAILY_QUERY_KEY_FILE:-}
     MAAS_PEPPER_FILE: /run/secrets/pepper
     MAAS_MAX_INPUT_BYTES: ${MAAS_MAX_INPUT_BYTES:-10485760}
     MAAS_MAX_OUTPUT_BYTES: ${MAAS_MAX_OUTPUT_BYTES:-20971520}
@@ -87,6 +88,25 @@ services:
       E17_GPUSTACK_KEY_FILE: /run/e17/gpustack-key
     volumes:
       - ${E17_GPUSTACK_KEY_PATH:-/dev/null}:/run/e17/gpustack-key:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+  e17-daily:
+    <<: *app
+    profiles: [e17-daily]
+    command: [python, -u, -m, maas_platform.gpu_daily_watch]
+    environment:
+      MAAS_DATABASE_URL: postgresql://maas:${MAAS_DB_PASSWORD:?set private environment}@127.0.0.1:18835/maas
+      MAAS_GPUSTACK_URL: ${MAAS_GPUSTACK_URL:?set reachable internal GPUStack URL}
+      MAAS_CATALOG_FILE: /app/catalog.json
+      E17_GPUSTACK_KEY_FILE: /run/e17/gpustack-key
+      E17_DAILY_PUSH_URL: ${E17_DAILY_PUSH_URL:-}
+      E17_DAILY_PUSH_KEY_FILE: /run/e17/push-key
+    volumes:
+      - ${MAAS_CATALOG_PATH:?set absolute registered OCR catalog path}:/app/catalog.json:ro
+      - ${E17_GPUSTACK_KEY_PATH:-/dev/null}:/run/e17/gpustack-key:ro
+      - ${E17_DAILY_PUSH_KEY_PATH:-/dev/null}:/run/e17/push-key:ro
     depends_on:
       api:
         condition: service_healthy
