@@ -480,3 +480,13 @@ GPUStack worker 日志确认从仓库拉取了目标摘要，测试后 Docker �
 正式 Apply 容器必须以 `MAAS_REPLICA_APPLY_MODEL_CAPS` 配置独立的部署 ID 到副本上限映射，并提供压力文件。例 `{"123":9}` 仅授权部署 123，事件覆盖和策略热更新都受该上限约束。没有压力规则或没有启动授权时停止新增。GPUStack v2.2.3 容器通过 23 项回归，包含未授权部署、上限越权和过期事件最终发写检查。
 
 0.14.0 发布带 `worker_ids` 的压力快照。采集器通过重复的 `--source WORKER_ID=SSH_HOST` 绑定 GPUStack worker ID 和已核验的 SSH 主机身份。任何来源缺失时维持旧时间戳，交由门槛按时效关闭。正式 Apply 要求样本覆盖当前可调度 GPU 的全部 worker。Observe 也可设 `pressure.require_worker_coverage=true` 对齐同一预览。新克隆就绪但未纳入采集时暂停新增，运维核对新 ID 和主机公钥后更新采集来源。现网采集器已发布三台真实 worker 的覆盖信息，v2.2.3 容器回归 24 项通过。
+
+### 2026-11-06 第一阶段正式首发
+
+现网 GPUStack v2.2.3 已加载 0.14.0 并运行正式 Apply。首批纳管 `ocr.default`，初始目标 8，启动授权和策略上限均为 9，全局与集群在途上限各为 1。使用三台已登记 worker 的网络和磁盘快照，保持 20 秒样本有效期、10 秒低压观察期及 600 秒上线事件有效期。仓库拒绝和 OCR 延迟未作为常驻放行信号。
+
+候选容器先以 Observe 启动并验证采样和恢复接单，再热加载 Apply。通过受控停启空闲 worker 9 容器触发一次新 GPU 上线。插件完成一次 `8 → 9` 写入。在新实例尚未就绪时，全局和集群在途计数均为 1，新增预览为 0。新实例在 worker 9 的 GPU 完成 46 行 OCR，常驻 MaaS 应用入口返回 HTTP 200 和预期内容，九个实例分布于 worker 7、10、9，数量分别为 4、4、1。
+
+热更新切回 Observe 并重新进入 Apply，均核对到等待新上线，未沿用旧事件。发布后为 Apply revision 4，写入日志为空。原 Observe 容器保留作为容器级回滚锚点。采样服务和每分钟状态检查已启用，现场检查无告警。30 天管理凭据通过状态检查提前 7 天提示轮换。新克隆仍需维护采集清单和 SSH 主机公钥。新增正式模型及提高上限需扩大启动授权后再验收。无 VM 重启。
+
+[发布与处置手册](../../deploy/maas/REPLICA-REGULATOR.md) · [项目跟踪 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
