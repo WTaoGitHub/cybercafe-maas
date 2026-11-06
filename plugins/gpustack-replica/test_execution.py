@@ -94,6 +94,17 @@ class ExecutionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.executor().recover(), "conflict")
         self.assertEqual(self.journal.read(), action)
 
+    async def test_recovery_accepts_only_matching_recovery_binding(self):
+        action = replace(self.action(3), recovery_binding="stable")
+        self.journal.reserve(action)
+        self.set_model(replicas=3, binding="scheduler-change", recovery_binding="other")
+        self.assertEqual(await self.executor().recover(), "conflict")
+        self.assertEqual(self.journal.read(), action)
+        self.set_model(recovery_binding="stable")
+        self.assertEqual(await self.executor().recover(), "confirmed")
+        self.assertIsNone(self.journal.read())
+        self.assertEqual(self.writes, [])
+
     async def test_native_pending_cannot_be_assumed_first_to_shrink(self):
         self.set_model(replicas=3, healthy=(True, False, False))
         with self.assertRaisesRegex(ValueError, "protected healthy instance"):

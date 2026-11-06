@@ -17,10 +17,14 @@ def model_settings(row):
     return ModelUpdate.model_validate(row).model_dump(mode="json")
 
 
-def binding(row):
+def binding(row, *, recovery=False):
     settings = model_settings(row)
     settings.pop("replicas")
     settings.pop("ready_replicas")
+    if recovery:
+        # The scheduler may fill these during the first allocation.
+        settings.pop("categories")
+        settings.pop("distributable")
     return digest(settings)
 
 
@@ -90,7 +94,8 @@ class NativeAdapter:
                 for row in sorted(rows[model["id"]], key=lambda row: row["id"])
             )
             deployments[model["id"]] = Deployment(model["cluster_id"], model["owner_principal_id"],
-                                                   binding(model), model["replicas"], healthy)
+                                                   binding(model), model["replicas"], healthy,
+                                                   recovery_binding=binding(model, recovery=True))
         identity = [(i, m.cluster_id, m.owner_id, m.binding, m.replicas, m.healthy)
                     for i, m in sorted(deployments.items())]
         placement = sorted((row["id"], row["model_id"], row["state"], row["worker_id"],

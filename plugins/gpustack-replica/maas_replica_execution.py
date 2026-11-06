@@ -18,6 +18,7 @@ class Deployment:
     binding: str  # Fingerprint of native model settings excluding replica counts.
     replicas: int
     healthy: tuple[bool, ...]  # One entry per observed, non-deleted instance.
+    recovery_binding: str | None = None
 
     def __post_init__(self):
         if type(self.replicas) is not int or self.replicas < 0:
@@ -45,6 +46,7 @@ class Action:
     binding: str
     before: int
     after: int
+    recovery_binding: str | None = None
 
 
 def inflight(deployments, cluster_id, pending=None):
@@ -162,8 +164,10 @@ class Executor:
         if not snapshot.complete:
             return "unresolved"
         model = snapshot.deployments.get(pending.model_id)
-        if model is None or (model.cluster_id, model.owner_id, model.binding) != (
-            pending.cluster_id, pending.owner_id, pending.binding
+        if model is None or (model.cluster_id, model.owner_id) != (pending.cluster_id, pending.owner_id):
+            return "conflict"
+        if model.binding != pending.binding and (
+            pending.recovery_binding is None or model.recovery_binding != pending.recovery_binding
         ):
             return "conflict"
         if model.replicas == pending.after:

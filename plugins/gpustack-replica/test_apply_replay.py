@@ -78,6 +78,14 @@ class Replay(unittest.IsolatedAsyncioTestCase):
                                     gpu["memory"]["total"], gpu["memory"]["allocated"], 0, (), "cuda")
                 for w in self.workers for gpu in w["status"]["gpu_devices"]}
 
+    def test_native_recovery_binding_ignores_only_scheduler_metadata(self):
+        before = deployment(1, 1, 0, 0)
+        after = {**before, "replicas": 1, "categories": ["llm"], "distributable": True}
+        self.assertNotEqual(binding(before), binding(after))
+        self.assertEqual(binding(before, recovery=True), binding(after, recovery=True))
+        after["worker_selector"] = {"worker-name": "different"}
+        self.assertNotEqual(binding(before, recovery=True), binding(after, recovery=True))
+
     async def request(self, method, path, body=None):
         path = path.split("?")[0]
         if path == "/version":

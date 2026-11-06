@@ -160,7 +160,8 @@ class ScaleUp:
             return "policy_changed"
         model = snapshot.deployments[ident]
         action = Action(snapshot.revision, snapshot.fingerprint, ident, model.cluster_id,
-                        model.owner_id, model.binding, model.replicas, model.replicas + 1)
+                        model.owner_id, model.binding, model.replicas, model.replicas + 1,
+                        recovery_binding=model.recovery_binding)
         return await executor.submit(action, floor=0, batch_max=1,
                                      global_max=execution["max_inflight_global"],
                                      cluster_max=execution["max_inflight_per_cluster"])
