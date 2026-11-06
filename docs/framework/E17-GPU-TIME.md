@@ -138,3 +138,5 @@ GPUStack v2.2.3 的 worker 删除事件会批量删除匹配的模型实例。�
 - 配置 `E17_DAILY_PUSH_URL` 和 `E17_DAILY_PUSH_KEY_PATH` 后启用 HTTPS 推送。接收方持久化后返回 200 或 204，并按 `report_id` 去重。失败按退避重试，复用相同批次及 Idempotency-Key。未配置推送时，日报仍可生成并主动查询。
 - 模型清单包含逻辑名、部署 ID 和部署名。首版按 MaaS 目录 upstream_model 与部署名匹配，未映射时逻辑名为 null。当前 OCR 映射已核对，多目标路由需后续验证。
 - 使用 `docker compose --profile e17-daily up -d e17-daily` 启用，镜像须包含本次代码及迁移。原有采样和报表可并行运行。上线前仍需下游提供接收地址与双方服务凭据，并实测断线对账及接收方持久化和去重。
+
+下游接入见[GPU 日报使用手册](../api/GPU-DAILY-CONSUMER.md)。
