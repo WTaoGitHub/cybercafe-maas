@@ -73,6 +73,33 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(solve(rules, [1], {1: [0], 2: [0]}, {1: 0, 2: 0}), {1: 1, 2: 0})
         self.assertEqual(solve(rules, [3], {1: [0], 2: [0]}, {1: 0, 2: 0}), {1: 1, 2: 2})
 
+    def test_mixed_vram_arrivals_follow_integer_weight_quotas(self):
+        gib = 2**30
+        config = policy_config()
+        config["models"] = {
+            str(key): {"vram_claim_bytes": int(claim * gib), "max_replicas": 10,
+                       "weight": weight, "priority": priority}
+            for key, claim, weight, priority in ((1, 2, 2, 1), (2, 3, 3, 1), (3, 3.5, 5, 2))
+        }
+        config.pop("event_overrides")
+        rules, _ = Policy(config).effective("gpu_added")
+
+        def plan(free_gib, current):
+            eligible = {key: range(len(free_gib)) for key in rules}
+            return solve(rules, [int(free * gib) for free in free_gib], eligible, current,
+                         additive=True)
+
+        empty = dict.fromkeys(rules, 0)
+        self.assertEqual(plan([5], empty), {1: 1, 2: 1, 3: 0})
+        self.assertEqual(plan([8.5], empty), dict.fromkeys(rules, 1))
+        first = plan([16], empty)
+        self.assertEqual(first, {1: 1, 2: 2, 3: 2})
+        self.assertEqual(plan([1, 16], first), {1: 2, 2: 3, 3: 5})
+        self.assertEqual(plan([16], dict.fromkeys(rules, 1)), {1: 2, 2: 2, 3: 4})
+        skewed = {1: 4, 2: 1, 3: 1}
+        self.assertEqual(plan([2], skewed), skewed)
+        self.assertEqual(plan([3.5], skewed), {1: 4, 2: 2, 3: 1})
+
     def test_zero_permission_and_batch_budget(self):
         policy = Policy(policy_config())
         rules, execution = policy.effective("capacity_zero")

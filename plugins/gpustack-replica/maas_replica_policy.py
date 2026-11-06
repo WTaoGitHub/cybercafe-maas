@@ -161,7 +161,8 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
     if len(budgets) > 64:
         raise ValueError("GPU count exceeds observe-mode solver limit")
     deadline = time.monotonic() + timeout
-    weights = sum(m.weight for m in models.values() if m.max_replicas)
+    weighted = [key for key in ids if models[key].max_replicas]
+    weights = sum(models[key].weight for key in weighted)
     counts = {key: current[key] if additive else 0 for key in ids}
     best_score = None
     best = None
@@ -175,10 +176,18 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
                                  for k in ids if models[k].priority == tier)
                              for tier in tiers)
             total = sum(counts.values())
-            deviation = sum(abs(counts[k] * weights - total * models[k].weight)
-                            for k in ids if models[k].max_replicas)
+            weighted_total = sum(counts[key] for key in weighted)
+            quota_violations = deviation = 0
+            for key in weighted:
+                ideal = weighted_total * models[key].weight
+                lower, remainder = divmod(ideal, weights)
+                upper = lower + bool(remainder)
+                quota_violations += max(0, lower - counts[key], counts[key] - upper)
+                deviation += abs(counts[key] * weights - ideal)
             delta = sum(abs(counts[k] - current[k]) for k in ids)
-            score = coverage, total, -deviation, -delta
+            # Allow integer rounding, but do not trade quota compliance for
+            # extra replicas of a model that happens to use less VRAM.
+            score = coverage, -quota_violations, total, -deviation, -delta
             if best_score is None or score > best_score:
                 best_score, best = score, counts.copy()
             return
