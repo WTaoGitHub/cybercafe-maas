@@ -24,20 +24,37 @@ def collect(host, key, known_hosts):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--host", action="append", required=True)
+    sources = parser.add_mutually_exclusive_group(required=True)
+    sources.add_argument("--host", action="append")
+    sources.add_argument("--source", action="append", metavar="WORKER_ID=SSH_HOST")
     parser.add_argument("--key", type=Path, required=True)
     parser.add_argument("--known-hosts", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
+    worker_ids = []
+    hosts = args.host
+    if args.source:
+        hosts = []
+        for source in args.source:
+            ident, _, host = source.partition("=")
+            if not ident.isascii() or not ident.isdecimal() or int(ident) < 1 or not host:
+                parser.error("Expected a positive worker ID and SSH host")
+            worker_ids.append(int(ident))
+            hosts.append(host)
+        if len(set(worker_ids)) != len(worker_ids) or len(set(hosts)) != len(hosts):
+            parser.error("Worker IDs and SSH hosts must be unique")
     last_error = None
-    with ThreadPoolExecutor(max_workers=len(args.host)) as executor:
+    with ThreadPoolExecutor(max_workers=len(hosts)) as executor:
         while True:
             start = time.monotonic()
             futures = [executor.submit(collect, host, args.key, args.known_hosts)
-                       for host in args.host]
+                       for host in hosts]
             try:
                 samples = [f.result() for f in futures]
-                publish(args.out, combine(samples, now=time.time(), max_age=6))
+                combined = combine(samples, now=time.time(), max_age=6)
+                if worker_ids:
+                    combined["worker_ids"] = worker_ids
+                publish(args.out, combined)
                 if last_error:
                     print("Pressure sources recovered", flush=True)
                 last_error = None

@@ -253,7 +253,10 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
                             "event": event, "blocked": str(error) if type(error) is ValueError
                             else type(error).__name__}
             if policy.execution.get("mode", "observe") == "observe":
-                pressure_state = observe_pressure.evaluate(policy.pressure)
+                worker_ids = ({d.worker_id for d in devices.values()}
+                              if devices is not None and policy.pressure is not None
+                              and policy.pressure.require_worker_coverage else None)
+                pressure_state = observe_pressure.evaluate(policy.pressure, worker_ids=worker_ids)
                 plan["pressure_state"] = pressure_state
                 plan["pressure_up_preview_limit"] = (
                     plan.get("up_preview_limit", 0) if pressure_state == "open" else 0

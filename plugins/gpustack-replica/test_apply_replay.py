@@ -68,6 +68,7 @@ class Replay(unittest.IsolatedAsyncioTestCase):
     def sample(self, rejected):
         path = self.root / "pressure.json"
         path.write_text(json.dumps({"observed_at": self.now,
+                                    "worker_ids": [1, 2, 3, 4],
                                     "signals": {"registry_rejected": rejected}}))
         path.chmod(0o600)
 

@@ -102,6 +102,7 @@ class ScaleUp:
                                 or event not in ARRIVAL_EVENTS
                                 or not plan.get("up_preview_limit")):
             return "idle"
+        worker_ids = None
         if pending is None:
             rules, execution = policy.effective(event)
             if self.model_caps is not None and any(
@@ -111,7 +112,9 @@ class ScaleUp:
                 return "deployment_scope_not_authorized"
             if self.model_caps is not None and policy.pressure is None:
                 return "pressure_policy_required"
-            pressure = self.pressure.evaluate(policy.pressure)
+            if self.model_caps is not None or (policy.pressure and policy.pressure.require_worker_coverage):
+                worker_ids = {card.worker_id for card in devices.values()}
+            pressure = self.pressure.evaluate(policy.pressure, worker_ids=worker_ids)
             if pressure != "open":
                 return pressure
 
@@ -125,7 +128,7 @@ class ScaleUp:
                     raise WriteNotSent("policy_changed")
                 if arrival_valid is not None and not arrival_valid():
                     raise WriteNotSent("arrival_expired")
-                pressure = self.pressure.evaluate(policy.pressure)
+                pressure = self.pressure.evaluate(policy.pressure, worker_ids=worker_ids)
                 if pressure != "open":
                     raise WriteNotSent(pressure)
             return await self.request(method, path, body)

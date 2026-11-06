@@ -19,11 +19,12 @@ class PressureTests(unittest.TestCase):
         })
         self.gate = PressureGate(self.path, clock=lambda: self.now)
 
-    def sample(self, rejected, disk, at=None):
+    def sample(self, rejected, disk, at=None, worker_ids=None):
         staged = self.path.with_suffix(".new")
         staged.write_text(json.dumps({
             "observed_at": self.now if at is None else at,
             "signals": {"registry_rejected": rejected, "disk_latency_ms": disk},
+            **({"worker_ids": worker_ids} if worker_ids is not None else {}),
         }))
         staged.chmod(0o600)
         staged.replace(self.path)
@@ -64,3 +65,17 @@ class PressureTests(unittest.TestCase):
         self.now = 119
         self.sample(0, 8)
         self.assertEqual(self.gate.evaluate(self.rules), "open")
+
+    def test_uncovered_ready_worker_closes_gate_until_fresh_full_coverage(self):
+        self.sample(0, 8, worker_ids=[7])
+        self.assertEqual(self.gate.evaluate(self.rules, worker_ids={7}), "pressure_recovering")
+        self.now = 104
+        self.sample(0, 8, worker_ids=[7])
+        self.assertEqual(self.gate.evaluate(self.rules, worker_ids={7}), "open")
+        self.assertEqual(self.gate.evaluate(self.rules, worker_ids={7, 9}), "pressure_unavailable")
+        self.now = 105
+        self.sample(0, 8, worker_ids=[7, 9])
+        self.assertEqual(self.gate.evaluate(self.rules, worker_ids={7, 9}), "pressure_recovering")
+        self.now = 109
+        self.sample(0, 8, worker_ids=[7, 9])
+        self.assertEqual(self.gate.evaluate(self.rules, worker_ids={7, 9}), "open")

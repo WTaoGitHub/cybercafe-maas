@@ -478,3 +478,5 @@ GPUStack worker 日志确认从仓库拉取了目标摘要，测试后 Docker �
 0.13.0 为上线事件设定有效期，`events.arrival_window_s` 默认 600 秒。切换执行模式会结束旧事件上下文。到期后不再启动新写入，已发出但尚未确认的请求仍走持久日志对账。发送 PUT 前再次检查事件时效和策略版本。
 
 正式 Apply 容器必须以 `MAAS_REPLICA_APPLY_MODEL_CAPS` 配置独立的部署 ID 到副本上限映射，并提供压力文件。例 `{"123":9}` 仅授权部署 123，事件覆盖和策略热更新都受该上限约束。没有压力规则或没有启动授权时停止新增。GPUStack v2.2.3 容器通过 23 项回归，包含未授权部署、上限越权和过期事件最终发写检查。
+
+0.14.0 发布带 `worker_ids` 的压力快照。采集器通过重复的 `--source WORKER_ID=SSH_HOST` 绑定 GPUStack worker ID 和已核验的 SSH 主机身份。任何来源缺失时维持旧时间戳，交由门槛按时效关闭。正式 Apply 要求样本覆盖当前可调度 GPU 的全部 worker。Observe 也可设 `pressure.require_worker_coverage=true` 对齐同一预览。新克隆就绪但未纳入采集时暂停新增，运维核对新 ID 和主机公钥后更新采集来源。现网采集器已发布三台真实 worker 的覆盖信息，v2.2.3 容器回归 24 项通过。

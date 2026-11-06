@@ -20,10 +20,12 @@ class PressureRules:
     max_sample_age_s: float
     recovery_hold_s: float
     signals: tuple
+    require_worker_coverage: bool = False
 
     @classmethod
     def parse(cls, raw):
-        if set(raw) != {"max_sample_age_s", "recovery_hold_s", "signals"}:
+        required = {"max_sample_age_s", "recovery_hold_s", "signals"}
+        if not required <= raw.keys() or set(raw) - required - {"require_worker_coverage"}:
             raise ValueError("Invalid pressure policy fields")
         age = number(raw["max_sample_age_s"])
         hold = number(raw["recovery_hold_s"])
@@ -37,7 +39,10 @@ class PressureRules:
             if low >= high:
                 raise ValueError("Pressure low watermark must be below high")
             signals.append((name, low, high))
-        return cls(age, hold, tuple(signals))
+        coverage = raw.get("require_worker_coverage", False)
+        if type(coverage) is not bool:
+            raise ValueError("Invalid pressure coverage requirement")
+        return cls(age, hold, tuple(signals), coverage)
 
 
 class PressureGate:
@@ -69,7 +74,7 @@ class PressureGate:
             raise ValueError("Pressure sample too large")
         return json.loads(data)
 
-    def evaluate(self, rules):
+    def evaluate(self, rules, *, worker_ids=None):
         if rules != self.rules:
             self.rules = rules
             self.blocked, self.low_since, self.last_sample = True, None, None
@@ -83,6 +88,12 @@ class PressureGate:
                 self.last_sample is not None and observed < self.last_sample
             ):
                 raise ValueError("Pressure sample is stale or out of order")
+            if rules.require_worker_coverage or worker_ids is not None:
+                covered = sample["worker_ids"]
+                if (worker_ids is None or not isinstance(covered, list)
+                        or any(type(ident) is not int or ident < 1 for ident in covered)
+                        or not worker_ids <= set(covered)):
+                    raise ValueError("Pressure feed does not cover eligible workers")
             values = [(number(sample["signals"][name]), low, high)
                       for name, low, high in rules.signals]
         except (OSError, ValueError, TypeError, KeyError, OverflowError):
