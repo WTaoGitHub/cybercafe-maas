@@ -119,3 +119,13 @@ GPUStack v2.2.3 的 worker 删除事件会批量删除匹配的模型实例。�
 2026-11-04 在 001 部署逐卡表合并列，API 镜像为 `e17-merged-0f9a21e`。通过 HTTP 网关核对页面合计与 JSON 两项之和，采集持续运行。
 
 2026-11-04 已在 001 部署表格单位与 GPU 在线判定说明，API 镜像为 `e17-units-c040113`。经 HTTP 网关核对表头单位、计时示例和逐卡合并值，采集持续运行。
+
+## 日报事件采集验证
+
+下游按北京时间自然日接收日报，每个 GPU UUID 可有多个在线区间。上线以 GPUStack ready 为准，跨日持续在线的区间在午夜切分。沿用 report_id、date、timezone 和 records 格式，区间使用 online_from、online_until 和 models。模型项交付逻辑模型名、GPUStack 部署 ID 和部署名，按部署去重。页面展示由下游负责。
+
+001 只读验证了 GPUStack v2.2.3 的 /v2/workers?watch=true 和 /v2/model-instances?watch=true。两轮连接均返回初始对象，ID 集合与分页列表一致。worker 流收到自然更新，模型流收到空行心跳。模型流在此次观测期间未出现副本状态变化。响应声明 text/event-stream，实际传输为 JSON 行与空行分隔，需按该格式解析。
+
+当次列表为 7 条 worker 记录、3 条 ready 记录及 8 个 running 副本。8 个 GPU 绑定均可按 worker ID 和 GPU index 关联到 UUID。实测部署 ID 18，部署名 maas-ocr-registry-r1，现有 MaaS 目录映射逻辑模型 ocr.default。其他部署应验证路由到目标部署的关联，避免仅依靠同名推断。
+
+继续由独立 E17 容器采集，启动、重连和低频全量核对用来对齐当前状态。重连快照不能还原断线期间的变化。后续在隔离环境验证 ready 和模型状态迁移、断线时发生变化、跨午夜、模型清单完整性和日报幂等推送。现有周期采样继续运行。本轮仅验证接口和关联，未发布订阅采集器。
