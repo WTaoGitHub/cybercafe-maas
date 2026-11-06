@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import json
 import math
 import os
+from pathlib import Path
 import stat
 import time
 
@@ -40,6 +41,13 @@ class PressureRules:
 
 
 class PressureGate:
+    @classmethod
+    def from_environment(cls):
+        sample = os.environ.get("MAAS_REPLICA_PRESSURE_FILE")
+        if sample and not Path(sample).is_absolute():
+            raise ValueError("Pressure feed must have an absolute path")
+        return cls(sample)
+
     def __init__(self, path, *, clock=time.time):
         self.path = path
         self.clock = clock

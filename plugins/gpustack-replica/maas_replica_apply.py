@@ -73,10 +73,7 @@ class ScaleUp:
         journal.read()
         request = LocalManagement(os.environ["MAAS_REPLICA_MANAGEMENT_URL"],
                                   os.environ["MAAS_REPLICA_MANAGEMENT_KEY_FILE"])
-        sample = os.environ.get("MAAS_REPLICA_PRESSURE_FILE")
-        if sample and not Path(sample).is_absolute():
-            raise ValueError("Pressure feed must have an absolute path")
-        return cls(ident, journal, request, pressure=PressureGate(sample))
+        return cls(ident, journal, request, pressure=PressureGate.from_environment())
 
     async def _adapter(self, policy, request):
         if not self.version_checked:

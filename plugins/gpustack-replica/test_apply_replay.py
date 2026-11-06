@@ -144,25 +144,37 @@ class Replay(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.advance(), "confirmed")
         self.assertEqual(len(self.writes), 2)
 
-    async def test_reconcile_merges_three_join_notifications_into_one_burst(self):
+    async def test_observe_burst_reports_pressure_and_inflight_without_writes(self):
         cards = self.cards()
         visible = {"gpu-1": cards["gpu-1"]}
         changed, baseline, planned = asyncio.Event(), asyncio.Event(), asyncio.Event()
         records = []
+        policy = Policy({
+            "schema_version": 1, "revision": 1,
+            "scope": {"cluster_id": 1, "owner_principal_id": 1},
+            "models": {"1": {"vram_claim_bytes": 3, "max_replicas": 3}},
+            "execution": {"mode": "observe", "max_inflight_global": 1,
+                          "max_inflight_per_cluster": 1},
+            "pressure": {"max_sample_age_s": 10, "recovery_hold_s": 0,
+                         "signals": {"registry_rejected": {"low": 0, "high": 1}}},
+        })
+        pending = deployment(3, 1, 1, 0)
+        pending["ready_replicas"] = 0
+        self.sample(1)
 
         async def read():
             baseline.set()
             return {1: visible.copy()}
 
         async def read_deployments():
-            return [SimpleNamespace(**m) for m in self.models.values()], []
+            return [SimpleNamespace(**m) for m in (self.models[1], pending)], [SimpleNamespace(**self.instances[0])]
 
         class Capture(logging.Handler):
             def emit(self, record):
                 if record.msg.startswith("Replica observe plan"):
                     plan = record.args if isinstance(record.args, dict) else record.args[0]
                     if plan.get("event"):
-                        records.append(plan["event"])
+                        records.append(plan)
                         planned.set()
 
         logger = logging.getLogger("maas_replica")
@@ -171,7 +183,7 @@ class Replay(unittest.IsolatedAsyncioTestCase):
         logger.setLevel(logging.INFO)
         with patch("maas_replica.read_deployments", read_deployments):
             task = asyncio.create_task(reconcile(changed, read, policy_file=SimpleNamespace(
-                refresh=lambda: self.policy)))
+                refresh=lambda: policy), observe_pressure=self.gate))
             try:
                 await asyncio.wait_for(baseline.wait(), 2)
                 await asyncio.sleep(.05)
@@ -180,7 +192,26 @@ class Replay(unittest.IsolatedAsyncioTestCase):
                     changed.set()
                     await asyncio.sleep(.04)
                 await asyncio.wait_for(planned.wait(), 3)
-                self.assertEqual(records, ["gpu_added_burst"])
+                self.assertEqual(len(records), 1)
+                self.assertEqual(records[0]["event"], "gpu_added_burst")
+                self.assertEqual(records[0]["global_inflight"], 1)
+                self.assertEqual(records[0]["cluster_inflight"], 1)
+                self.assertEqual(records[0]["up_preview_limit"], 0)
+                self.assertEqual(records[0]["pressure_state"], "pressure_high")
+                self.assertEqual(records[0]["pressure_up_preview_limit"], 0)
+                planned.clear()
+                pending["replicas"] = 0
+                changed.set()
+                await asyncio.wait_for(planned.wait(), 3)
+                self.assertEqual(records[-1]["up_preview_limit"], 1)
+                self.assertEqual(records[-1]["pressure_up_preview_limit"], 0)
+                planned.clear()
+                self.sample(0)
+                changed.set()
+                await asyncio.wait_for(planned.wait(), 3)
+                self.assertEqual(records[-1]["pressure_state"], "open")
+                self.assertEqual(records[-1]["pressure_up_preview_limit"], 1)
+                self.assertEqual(self.writes, [])
             finally:
                 task.cancel()
                 await asyncio.gather(task, return_exceptions=True)

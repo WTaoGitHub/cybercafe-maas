@@ -16,6 +16,7 @@ from gpustack.server.worker_allocated_cache import get_worker_allocated
 from maas_replica_apply import ScaleUp
 from maas_replica_native import binding
 from maas_replica_policy import ARRIVAL_EVENTS, PolicyFile, arrival_context, solve, summarize
+from maas_replica_pressure import PressureGate
 
 log = logging.getLogger(__name__)
 
@@ -147,7 +148,9 @@ async def observe_workers(changed):
 
 
 async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
-                    policy_file=None, scale_up=None):
+                    policy_file=None, scale_up=None, observe_pressure=None):
+    if observe_pressure is None:
+        observe_pressure = PressureGate(None)
     zero_since = {}
     previous = {}
     trusted = {}
@@ -240,6 +243,14 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
                     plan = {"revision": policy.revision, "cluster": policy.cluster,
                             "event": event, "blocked": str(error) if type(error) is ValueError
                             else type(error).__name__}
+            if policy.execution.get("mode", "observe") == "observe":
+                pressure_state = observe_pressure.evaluate(policy.pressure)
+                plan["pressure_state"] = pressure_state
+                plan["pressure_up_preview_limit"] = (
+                    plan.get("up_preview_limit", 0) if pressure_state == "open" else 0
+                )
+            else:
+                observe_pressure.evaluate(None)
             if plan != last_plan:
                 log.info("Replica observe plan %s", plan)
                 last_plan = plan
@@ -269,4 +280,10 @@ class ReplicaPlugin(Plugin):
             log.warning("Replica apply configuration rejected: %s", type(error).__name__)
             scale_up = None
         policy_file = PolicyFile(Path(path), allow_apply=scale_up is not None) if path else None
-        return [observe_workers(changed), reconcile(changed, policy_file=policy_file, scale_up=scale_up)]
+        try:
+            observe_pressure = PressureGate.from_environment()
+        except ValueError:
+            log.warning("Replica observe pressure path rejected")
+            observe_pressure = PressureGate(None)
+        return [observe_workers(changed), reconcile(changed, policy_file=policy_file,
+                                                  scale_up=scale_up, observe_pressure=observe_pressure)]
