@@ -3,6 +3,22 @@ import ipaddress
 import re
 
 
+WORKER_WATCH_LOCATION = """        location = /v2/workers {
+            if ($request_method != GET) { return 405; }
+            if ($args != "watch=true") { return 404; }
+            proxy_pass http://127.0.0.1:18080/v2/workers?watch=true;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header Authorization $http_authorization;
+            proxy_set_header Cookie "";
+            proxy_buffering off;
+            proxy_read_timeout 60s;
+            proxy_connect_timeout 3s;
+            proxy_next_upstream off;
+        }
+"""
+
+
 def container_http_clients(config):
     rows = config.get('container_http_clients', [])
     if not isinstance(rows, list):
@@ -43,10 +59,12 @@ def render_nginx(base, config):
     server = base[start:end]
     if 'listen 127.0.0.1:18831;' not in server or 'listen [::1]:18831;' not in server:
         raise ValueError('Expected loopback HTTP template')
+    if server.count('        location / {') != 1:
+        raise ValueError('Expected canonical catch-all location')
     servers = []
     for row in rows:
         value = server.replace('listen 127.0.0.1:18831;', 'listen '+row['listen_address']+':18831;')
         value = value.replace('        listen [::1]:18831;\n', '')
         value = value.replace('server_name _;', 'server_name _;\n        allow '+row['source_cidr']+';\n        deny all;')
-        servers.append(value)
+        servers.append(value.replace("        location / {", WORKER_WATCH_LOCATION + "        location / {", 1))
     return base[:start] + '\n'.join(servers) + '\n}\n'
