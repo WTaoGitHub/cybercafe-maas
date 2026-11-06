@@ -1,4 +1,4 @@
-"""Collect worker and instance observations for E17 daily delivery."""
+"""Collect worker and instance observations for E17 daily reports."""
 import asyncio
 from datetime import datetime, timedelta
 import json
@@ -13,7 +13,7 @@ import psycopg
 from psycopg.types.json import Jsonb
 
 from .db import Database
-from .gpu_daily import MAX_GAP, deliver, seal
+from .gpu_daily import MAX_GAP, seal
 from .gpu_time import BEIJING, snapshot
 
 
@@ -156,10 +156,6 @@ def seal_pending(db, cutoff):
 async def run():
     db = Database(os.environ['MAAS_DATABASE_URL'])
     key = Path(os.environ['E17_GPUSTACK_KEY_FILE']).read_text().strip()
-    url = os.getenv('E17_DAILY_PUSH_URL')
-    token = Path(os.environ['E17_DAILY_PUSH_KEY_FILE']).read_text().strip() if url else ''
-    if url and (not url.startswith('https://') or not token):
-        raise ValueError('E17 push requires an HTTPS URL and a nonempty key')
     catalog = Path(os.environ['MAAS_CATALOG_FILE'])
     # The session lock prevents multiple instances from interleaving observations.
     with psycopg.connect(db.url, autocommit=True, connect_timeout=5) as lock:
@@ -179,8 +175,6 @@ async def run():
                         if cutoff != sealed_through:
                             await asyncio.to_thread(seal_pending, db, cutoff)
                             sealed_through = cutoff
-                        if url:
-                            await asyncio.to_thread(deliver, db, url, token)
                     except psycopg.Error:
                         LOG.warning('E17 daily publication database unavailable')
                     await asyncio.wait({task}, timeout=15)

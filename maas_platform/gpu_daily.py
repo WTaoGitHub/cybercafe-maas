@@ -1,9 +1,8 @@
-"""Build and deliver immutable E17 daily reports."""
+"""Build and serve immutable E17 daily reports."""
 from datetime import date, datetime, time, timedelta
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-import httpx
 from psycopg.types.json import Jsonb
 
 from .gpu_time import BEIJING
@@ -64,32 +63,6 @@ def seal(db, day):
         if payload['coverage']['covered_seconds']:
             conn.execute('INSERT INTO e17.daily_reports(day,payload) VALUES (%s,%s) ON CONFLICT (day) DO NOTHING',
                          (day, Jsonb(payload)))
-
-
-def deliver(db, url, token):
-    if not url.startswith('https://'):
-        raise ValueError('E17 push URL must use HTTPS')
-    with db.transaction() as conn:
-        row = conn.execute('''
-            SELECT day,payload,attempts FROM e17.daily_reports
-            WHERE delivered_at IS NULL AND next_attempt <= now()
-            ORDER BY next_attempt,day LIMIT 1 FOR UPDATE SKIP LOCKED
-        ''').fetchone()
-        if row is None:
-            return
-        try:
-            response = httpx.post(url, json=row['payload'], timeout=10,
-                                  headers={'Authorization': 'Bearer ' + token,
-                                           'Idempotency-Key': row['payload']['report_id']})
-            sent = response.status_code in (200, 204)
-        except httpx.RequestError:
-            sent = False
-        delay = min(3600, 30 * 2 ** min(row['attempts'], 7))
-        conn.execute('''
-            UPDATE e17.daily_reports SET attempts=attempts+1,
-                delivered_at=CASE WHEN %s THEN clock_timestamp() ELSE NULL END,
-                next_attempt=clock_timestamp()+%s*interval '1 second' WHERE day=%s
-        ''', (sent, delay, row['day']))
 
 
 def router(db):

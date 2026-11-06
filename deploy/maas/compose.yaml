@@ -100,12 +100,9 @@ services:
       MAAS_GPUSTACK_URL: ${MAAS_GPUSTACK_URL:?set reachable internal GPUStack URL}
       MAAS_CATALOG_FILE: /app/catalog.json
       E17_GPUSTACK_KEY_FILE: /run/e17/gpustack-key
-      E17_DAILY_PUSH_URL: ${E17_DAILY_PUSH_URL:-}
-      E17_DAILY_PUSH_KEY_FILE: /run/e17/push-key
     volumes:
       - ${MAAS_CATALOG_PATH:?set absolute registered OCR catalog path}:/app/catalog.json:ro
       - ${E17_GPUSTACK_KEY_PATH:-/dev/null}:/run/e17/gpustack-key:ro
-      - ${E17_DAILY_PUSH_KEY_PATH:-/dev/null}:/run/e17/push-key:ro
     depends_on:
       api:
         condition: service_healthy

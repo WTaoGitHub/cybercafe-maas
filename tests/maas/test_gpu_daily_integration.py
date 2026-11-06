@@ -6,7 +6,7 @@ from maas_platform import gpu_daily
 from maas_platform.gpu_daily_watch import cards_for, persist, seal_pending
 
 
-def test_daily_report_is_shared_by_pull_and_retry(env, monkeypatch):
+def test_sealed_daily_report_is_queryable_without_credentials(env):
     from fastapi.testclient import TestClient
     from maas_platform.api import create_app
 
@@ -41,23 +41,10 @@ def test_daily_report_is_shared_by_pull_and_retry(env, monkeypatch):
     with service.db.transaction() as conn:
         previous = conn.execute('SELECT payload FROM e17.daily_reports WHERE day < %s', (day,)).fetchone()
         assert previous['payload']['records'][0]['online_until'] == payload['records'][0]['online_from']
-        conn.execute('UPDATE e17.daily_reports SET delivered_at=now() WHERE day < %s', (day,))
-    attempts = []
-
-    def post(url, **kwargs):
-        attempts.append(kwargs)
-        return gpu_daily.httpx.Response(503 if len(attempts) == 1 else 204)
-
-    monkeypatch.setattr(gpu_daily.httpx, 'post', post)
-    for _ in range(2):
-        gpu_daily.deliver(service.db, 'https://consumer.example/reports', 'push-key')
-        with service.db.transaction() as conn:
-            conn.execute('UPDATE e17.daily_reports SET next_attempt=now()')
-    assert attempts[0] == attempts[1]
-    assert attempts[0]['json'] == payload
-    assert attempts[0]['headers']['Idempotency-Key'] == payload['report_id']
+    seal_pending(service.db, day)
     with service.db.transaction() as conn:
-        assert conn.execute('SELECT delivered_at FROM e17.daily_reports WHERE day=%s', (day,)).fetchone()['delivered_at']
+        assert conn.execute('SELECT payload FROM e17.daily_reports WHERE day=%s', (day,)).fetchone()['payload'] == payload
+
 
 def test_coverage_includes_offline_observation_and_excludes_session_gap():
     day = date(2026, 11, 5)
