@@ -9,7 +9,7 @@ from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_ope
 
 from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent
 from maas_replica_native import NativeAdapter
-from maas_replica_policy import ARRIVAL_EVENTS
+from maas_replica_policy import ARRIVAL_EVENTS, integer
 from maas_replica_pressure import PressureGate
 
 
@@ -51,12 +51,13 @@ class LocalManagement:
 
 
 class ScaleUp:
-    def __init__(self, cluster, journal, request, *, pressure=None):
+    def __init__(self, cluster, journal, request, *, pressure=None, model_caps=None):
         self.cluster = cluster
         self.journal = journal
         self.request = request
         self.version_checked = False
         self.pressure = pressure if pressure is not None else PressureGate(None)
+        self.model_caps = model_caps
 
     @classmethod
     def from_environment(cls):
@@ -66,6 +67,12 @@ class ScaleUp:
         ident = int(cluster)
         if ident < 1:
             raise ValueError("Invalid approved cluster")
+        raw_caps = json.loads(os.environ["MAAS_REPLICA_APPLY_MODEL_CAPS"])
+        if not isinstance(raw_caps, dict) or not 1 <= len(raw_caps) <= 16:
+            raise ValueError("Invalid approved model caps")
+        caps = {integer(int(key), 1): integer(cap, 1) for key, cap in raw_caps.items()}
+        if len(caps) != len(raw_caps) or any(cap > 32 for cap in caps.values()):
+            raise ValueError("Invalid approved model caps")
         path = Path(os.environ["MAAS_REPLICA_WRITE_JOURNAL"])
         if not path.is_absolute():
             raise ValueError("Write journal must have an absolute path")
@@ -73,7 +80,10 @@ class ScaleUp:
         journal.read()
         request = LocalManagement(os.environ["MAAS_REPLICA_MANAGEMENT_URL"],
                                   os.environ["MAAS_REPLICA_MANAGEMENT_KEY_FILE"])
-        return cls(ident, journal, request, pressure=PressureGate.from_environment())
+        pressure = PressureGate.from_environment()
+        if pressure.path is None:
+            raise ValueError("Apply requires a pressure feed")
+        return cls(ident, journal, request, pressure=pressure, model_caps=caps)
 
     async def _adapter(self, policy, request):
         if not self.version_checked:
@@ -84,7 +94,7 @@ class ScaleUp:
         return NativeAdapter(request, revision=policy.revision, cluster_id=self.cluster,
                              owner_id=policy.owner, model_ids=policy.models, grow_only=True)
 
-    async def advance(self, policy, event, devices, plan, *, refresh, bindings):
+    async def advance(self, policy, event, devices, plan, *, refresh, bindings, arrival_valid=None):
         if policy.cluster != self.cluster:
             return "cluster_not_authorized"
         pending = self.journal.read()
@@ -93,6 +103,14 @@ class ScaleUp:
                                 or not plan.get("up_preview_limit")):
             return "idle"
         if pending is None:
+            rules, execution = policy.effective(event)
+            if self.model_caps is not None and any(
+                ident not in self.model_caps or rule.max_replicas > self.model_caps[ident]
+                for ident, rule in rules.items()
+            ):
+                return "deployment_scope_not_authorized"
+            if self.model_caps is not None and policy.pressure is None:
+                return "pressure_policy_required"
             pressure = self.pressure.evaluate(policy.pressure)
             if pressure != "open":
                 return pressure
@@ -105,6 +123,8 @@ class ScaleUp:
                     unchanged = False
                 if not unchanged:
                     raise WriteNotSent("policy_changed")
+                if arrival_valid is not None and not arrival_valid():
+                    raise WriteNotSent("arrival_expired")
                 pressure = self.pressure.evaluate(policy.pressure)
                 if pressure != "open":
                     raise WriteNotSent(pressure)
@@ -119,7 +139,6 @@ class ScaleUp:
                     card.reserved_vram, card.labels, card.kind) for uuid, card in devices.items()}
         if snapshot.gpu_inventory.get(self.cluster) != expected:
             return "capacity_changed"
-        rules, execution = policy.effective(event)
         current = plan["current"]
         for ident, count in current.items():
             model = snapshot.deployments.get(ident)

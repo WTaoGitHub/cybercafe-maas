@@ -69,10 +69,13 @@ class Policy:
         if self.execution.get("solve_timeout_s", 1) > 2:
             raise ValueError("Planning deadline must be at most two seconds")
         self.events = raw.get("events", {})
-        if set(self.events) - {"burst_add_count", "burst_remove_count"}:
+        if set(self.events) - {"burst_add_count", "burst_remove_count", "arrival_window_s"}:
             raise ValueError("Unsupported event field in this release")
         self.burst_add = integer(self.events.get("burst_add_count", 3), 2)
         self.burst_remove = integer(self.events.get("burst_remove_count", 3), 2)
+        self.arrival_window_s = integer(self.events.get("arrival_window_s", 600), 1)
+        if self.arrival_window_s > 3600:
+            raise ValueError("Arrival window must not exceed one hour")
         self.pressure = PressureRules.parse(raw["pressure"]) if "pressure" in raw else None
         self.overrides = raw.get("event_overrides", {})
         if set(self.overrides) - EVENTS:

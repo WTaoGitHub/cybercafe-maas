@@ -95,7 +95,7 @@ class Replay(unittest.IsolatedAsyncioTestCase):
         self.instances.append(dict(id=100+len(self.writes), model_id=ident, worker_id=None,
                                    gpu_indexes=None, state="pending"))
 
-    async def advance(self):
+    async def advance(self, **kwargs):
         cards = self.cards()
         event = arrival_context({"gpu-1"}, set(cards), self.policy)
         self.assertEqual(event, "gpu_added_burst")
@@ -104,7 +104,24 @@ class Replay(unittest.IsolatedAsyncioTestCase):
                              [SimpleNamespace(**i) for i in self.instances])
         return await self.executor.advance(self.policy, event, cards, plan,
                                            refresh=lambda: self.policy,
-                                           bindings={i: binding(m) for i, m in self.models.items()})
+                                           bindings={i: binding(m) for i, m in self.models.items()},
+                                           **kwargs)
+
+    async def test_runtime_caps_and_expired_arrival_cannot_write(self):
+        self.models[99]["replicas"] = 0
+        self.instances.pop()
+        self.executor.model_caps = {1: 3}
+        self.assertEqual(await self.advance(), "deployment_scope_not_authorized")
+        self.executor.model_caps = {1: 3, 2: 2}
+        self.assertEqual(await self.advance(), "deployment_scope_not_authorized")
+        self.executor.model_caps = {1: 3, 2: 3}
+        self.sample(0)
+        self.assertEqual(await self.advance(), "pressure_recovering")
+        self.now += 5
+        self.sample(0)
+        self.assertEqual(await self.advance(arrival_valid=lambda: False), "arrival_expired")
+        self.assertIsNone(self.journal.read())
+        self.assertEqual(self.writes, [])
 
     async def test_burst_waits_for_pending_and_pressure_then_admits_one_floor(self):
         self.sample(0)
@@ -149,12 +166,14 @@ class Replay(unittest.IsolatedAsyncioTestCase):
         visible = {"gpu-1": cards["gpu-1"]}
         changed, baseline, planned = asyncio.Event(), asyncio.Event(), asyncio.Event()
         records = []
+        clock = [0]
         policy = Policy({
             "schema_version": 1, "revision": 1,
             "scope": {"cluster_id": 1, "owner_principal_id": 1},
             "models": {"1": {"vram_claim_bytes": 3, "max_replicas": 3}},
             "execution": {"mode": "observe", "max_inflight_global": 1,
                           "max_inflight_per_cluster": 1},
+            "events": {"arrival_window_s": 10},
             "pressure": {"max_sample_age_s": 10, "recovery_hold_s": 0,
                          "signals": {"registry_rejected": {"low": 0, "high": 1}}},
         })
@@ -173,9 +192,8 @@ class Replay(unittest.IsolatedAsyncioTestCase):
             def emit(self, record):
                 if record.msg.startswith("Replica observe plan"):
                     plan = record.args if isinstance(record.args, dict) else record.args[0]
-                    if plan.get("event"):
-                        records.append(plan)
-                        planned.set()
+                    records.append(plan)
+                    planned.set()
 
         logger = logging.getLogger("maas_replica")
         capture, old_level = Capture(), logger.level
@@ -183,10 +201,12 @@ class Replay(unittest.IsolatedAsyncioTestCase):
         logger.setLevel(logging.INFO)
         with patch("maas_replica.read_deployments", read_deployments):
             task = asyncio.create_task(reconcile(changed, read, policy_file=SimpleNamespace(
-                refresh=lambda: policy), observe_pressure=self.gate))
+                refresh=lambda: policy), observe_pressure=self.gate, clock=lambda: clock[0]))
             try:
                 await asyncio.wait_for(baseline.wait(), 2)
                 await asyncio.sleep(.05)
+                self.assertEqual(records.pop()["state"], "waiting_for_gpu_arrival")
+                planned.clear()
                 for ident in (2, 3, 4):
                     visible[f"gpu-{ident}"] = cards[f"gpu-{ident}"]
                     changed.set()
@@ -211,6 +231,11 @@ class Replay(unittest.IsolatedAsyncioTestCase):
                 await asyncio.wait_for(planned.wait(), 3)
                 self.assertEqual(records[-1]["pressure_state"], "open")
                 self.assertEqual(records[-1]["pressure_up_preview_limit"], 1)
+                planned.clear()
+                clock[0] = 10
+                changed.set()
+                await asyncio.wait_for(planned.wait(), 3)
+                self.assertEqual(records[-1]["state"], "waiting_for_gpu_arrival")
                 self.assertEqual(self.writes, [])
             finally:
                 task.cancel()

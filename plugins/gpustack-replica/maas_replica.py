@@ -148,13 +148,14 @@ async def observe_workers(changed):
 
 
 async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
-                    policy_file=None, scale_up=None, observe_pressure=None):
+                    policy_file=None, scale_up=None, observe_pressure=None, clock=time.monotonic):
     if observe_pressure is None:
         observe_pressure = PressureGate(None)
     zero_since = {}
     previous = {}
     trusted = {}
     event = None
+    event_started = None
     last_plan = None
     scope = None
     rejected = None
@@ -166,7 +167,7 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
         except Exception as error:
             snapshot = dict.fromkeys(previous)
             log.warning("Replica capacity snapshot unavailable: %s", type(error).__name__)
-        now = time.monotonic()
+        now = clock()
         for cluster in previous.keys() - snapshot.keys():
             zero_since.pop(cluster, None)
             trusted.pop(cluster, None)
@@ -182,9 +183,11 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
                     log.warning("Replica policy rejected: %s", failure)
                     rejected = failure
                 policy = policy_file.active
-        if policy is not None and scope != (policy.cluster, policy.owner):
-            scope = policy.cluster, policy.owner
-            event = None
+        if policy is not None:
+            active_scope = policy.cluster, policy.owner, policy.execution.get("mode", "observe")
+            if scope != active_scope:
+                scope = active_scope
+                event = event_started = None
         for cluster, devices in snapshot.items():
             if devices is None:
                 state = "unknown"
@@ -204,6 +207,12 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
                               if cluster in trusted else None)
                     after = {(key, d.worker_id, d.index) for key, d in devices.items()}
                     event = arrival_context(before, after, policy, event)
+                    if event is None:
+                        event_started = None
+                    elif before != after:
+                        event_started = now
+                    if event_started is not None and now - event_started >= policy.arrival_window_s:
+                        event = event_started = None
                 added = len(devices.keys() - old.keys())
                 removed = len(old.keys() - devices.keys())
                 moved = sum((devices[key].worker_id, devices[key].index)
@@ -256,8 +265,13 @@ async def reconcile(changed, read=read_capacity, *, interval=10, zero_grace=10,
                 last_plan = plan
             if scale_up is not None and rejected is None:
                 try:
+                    def arrival_valid():
+                        return (event_started is not None
+                                and clock() - event_started < policy.arrival_window_s)
+
                     execution = await scale_up.advance(policy, event, devices, plan,
-                                                       refresh=policy_file.refresh, bindings=bindings)
+                                                       refresh=policy_file.refresh, bindings=bindings,
+                                                       arrival_valid=arrival_valid)
                 except Exception as error:
                     execution = type(error).__name__
                 if execution != last_execution:
