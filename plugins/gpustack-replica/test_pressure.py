@@ -79,3 +79,19 @@ class PressureTests(unittest.TestCase):
         self.now = 109
         self.sample(0, 8, worker_ids=[7, 9])
         self.assertEqual(self.gate.evaluate(self.rules, worker_ids={7, 9}), "open")
+
+    def test_fresh_out_of_order_sample_restarts_recovery(self):
+        self.sample(0, 8)
+        self.assertEqual(self.gate.evaluate(self.rules), "pressure_recovering")
+        self.now = 104
+        self.sample(0, 8)
+        self.assertEqual(self.gate.evaluate(self.rules), "open")
+        self.now = 105
+        self.sample(0, 8, at=103)
+        self.assertEqual(self.gate.evaluate(self.rules), "pressure_unavailable")
+        self.now = 106
+        self.sample(0, 8)
+        self.assertEqual(self.gate.evaluate(self.rules), "pressure_recovering")
+        self.now = 110
+        self.sample(0, 8)
+        self.assertEqual(self.gate.evaluate(self.rules), "open")
