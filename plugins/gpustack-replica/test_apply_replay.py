@@ -243,3 +243,35 @@ class Replay(unittest.IsolatedAsyncioTestCase):
                 await asyncio.gather(task, return_exceptions=True)
                 logger.removeHandler(capture)
                 logger.setLevel(old_level)
+
+    def test_ten_and_hundred_worker_bursts_plan_under_bounds(self):
+        gib = 2**30
+        policy = Policy({
+            "schema_version": 1, "revision": 1,
+            "scope": {"cluster_id": 1, "owner_principal_id": 1},
+            "models": {
+                str(key): {"vram_claim_bytes": int(claim * gib), "max_replicas": 10,
+                           "weight": weight, "priority": priority}
+                for key, claim, weight, priority in ((1, 2, 2, 1), (2, 3, 3, 1), (3, 3.5, 5, 2))
+            },
+            "execution": {"max_inflight_global": 1, "max_inflight_per_cluster": 1},
+        })
+        managed = [SimpleNamespace(**deployment(key, 1, 1, 1)) for key in policy.models]
+        for model in managed:
+            model.env = {"GPUSTACK_MODEL_VRAM_CLAIM": str(policy.models[model.id]["vram_claim_bytes"])}
+        running = [SimpleNamespace(model_id=key, state="running", worker_id=1, gpu_indexes=[0])
+                   for key in policy.models]
+        for count in (10, 100):
+            with self.subTest(count=count):
+                baseline = {"baseline": Device(1, 0, gib, 16 * gib, 15 * gib, 0, (), "cuda")}
+                arrivals = {f"gpu-{worker_id}": Device(worker_id, 0, 16 * gib, 16 * gib, 0, 0, (), "cuda")
+                            for worker_id in range(2, count + 2)}
+                devices = baseline | arrivals
+                event = arrival_context(set(baseline), set(devices), policy)
+                self.assertEqual(event, "gpu_added_burst")
+                plan = plan_snapshot(policy, event, devices, managed, running)
+                self.assertEqual(plan["policy_target"], {1: 4, 2: 7, 3: 10})
+                self.assertEqual(plan["up_preview_limit"], 1)
+                pending = SimpleNamespace(**deployment(4, 1, 1, 0))
+                plan = plan_snapshot(policy, event, devices, [*managed, pending], running)
+                self.assertEqual(plan["up_preview_limit"], 0)

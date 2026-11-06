@@ -161,8 +161,8 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
     tiers = sorted({m.priority for m in models.values()})
     remaining = list(budgets)
     placement = {key: tuple(sorted(eligible[key])) for key in ids}
-    if len(budgets) > 64:
-        raise ValueError("GPU count exceeds observe-mode solver limit")
+    if len(budgets) > 256:
+        raise ValueError("GPU count exceeds solver inventory limit")
     deadline = time.monotonic() + timeout
     weighted = [key for key in ids if models[key].max_replicas]
     weights = sum(models[key].weight for key in weighted)
@@ -170,29 +170,30 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
     best_score = None
     best = None
 
-    def search(i, start=0):
+    def rank():
         nonlocal best, best_score
+        coverage = tuple(sum(counts[k] >= models[k].min_replicas > 0
+                             for k in ids if models[k].priority == tier)
+                         for tier in tiers)
+        total = sum(counts.values())
+        weighted_total = sum(counts[key] for key in weighted)
+        quota_violations = deviation = 0
+        for key in weighted:
+            ideal = weighted_total * models[key].weight
+            lower, remainder = divmod(ideal, weights)
+            upper = lower + bool(remainder)
+            quota_violations += max(0, lower - counts[key], counts[key] - upper)
+            deviation += abs(counts[key] * weights - ideal)
+        delta = sum(abs(counts[k] - current[k]) for k in ids)
+        score = coverage, -quota_violations, total, -deviation, -delta
+        if best_score is None or score > best_score:
+            best_score, best = score, counts.copy()
+
+    def search(i, start=0):
         if time.monotonic() >= deadline:
             raise TimeoutError("Placement search deadline")
         if i == len(ids):
-            coverage = tuple(sum(counts[k] >= models[k].min_replicas > 0
-                                 for k in ids if models[k].priority == tier)
-                             for tier in tiers)
-            total = sum(counts.values())
-            weighted_total = sum(counts[key] for key in weighted)
-            quota_violations = deviation = 0
-            for key in weighted:
-                ideal = weighted_total * models[key].weight
-                lower, remainder = divmod(ideal, weights)
-                upper = lower + bool(remainder)
-                quota_violations += max(0, lower - counts[key], counts[key] - upper)
-                deviation += abs(counts[key] * weights - ideal)
-            delta = sum(abs(counts[k] - current[k]) for k in ids)
-            # Allow integer rounding, but do not trade quota compliance for
-            # extra replicas of a model that happens to use less VRAM.
-            score = coverage, -quota_violations, total, -deviation, -delta
-            if best_score is None or score > best_score:
-                best_score, best = score, counts.copy()
+            rank()
             return
         key = ids[i]
         model = models[key]
@@ -211,11 +212,44 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
                 remaining[card] += model.vram_claim_bytes
         search(i + 1)
 
-    # Bound recursion even with large budgets and intentionally generous limits.
-    if sum(max(0, m.max_replicas - (current[key] if additive else 0))
-           for key, m in models.items()) > 96:
+    additions = {key: max(0, models[key].max_replicas - counts[key]) for key in ids}
+    if sum(additions.values()) > 96:
         raise ValueError("Total replica limit exceeds observe-mode solver bound")
-    search(0)
+
+    # A placement of all replica caps proves feasibility of every subset.
+    # In that case rank counts once without enumerating equivalent placements.
+    proof_budget = remaining.copy()
+    proof_order = sorted(ids, key=lambda key: (len(placement[key]), -models[key].vram_claim_bytes))
+
+    def caps_fit():
+        for key in proof_order:
+            claim = models[key].vram_claim_bytes
+            for _ in range(additions[key]):
+                card = next((card for card in placement[key] if proof_budget[card] >= claim), None)
+                if card is None:
+                    return False
+                proof_budget[card] -= claim
+        return True
+
+    def search_counts(i):
+        if time.monotonic() >= deadline:
+            raise TimeoutError("Placement search deadline")
+        if i == len(ids):
+            rank()
+            return
+        key = ids[i]
+        initial = counts[key]
+        for count in range(initial + additions[key], initial - 1, -1):
+            counts[key] = count
+            search_counts(i + 1)
+        counts[key] = initial
+
+    if caps_fit():
+        search_counts(0)
+    else:
+        if len(budgets) > 64:
+            raise ValueError("Constrained placement exceeds 64 GPU limit")
+        search(0)
     return best
 
 
