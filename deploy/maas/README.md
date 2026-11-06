@@ -1,5 +1,7 @@
 # MaaS 受控 OCR 部署
 
+新实体机从空卷安装请使用[实体机全新部署与验收手册](BARE-METAL.md)。本页保留原试点与 P0–P4 部署记录。
+
 > **2026-10-29服务接入约定**：当前按单业务下游使用，最终用户/用户Key/用户限流和收费由下游负责；MaaS保留服务凭据映射、项目隔离和全局/项目容量保护。现有代码已支持，本次只完善文档，未修改容器、凭据或额度。当前4执行器及并发4/4，队列1000/100；模板默认值不等同实际部署。[接入策略](../../docs/framework/SERVICE-ACCESS-POLICY.md) · [当前API](../../docs/api/README.md)。
 
 > E6迁移说明（2026-10-22）：正式版本e6-r1已上线，已移除同步/异步推理的动态preflight门禁，改为静态模型/revision登记并复用GPUStack服务状态。下文collector、30秒证明与MAAS_TRUSTED_DIR相关说明属于旧P2–P4基线；新部署不安装collector、不挂载consumer导出，维护/备份恢复使用真实业务探针。当前正式发布状态及操作以 [E6执行记录](../../docs/framework/E6-RETIREMENT.md) 为准。鉴权、配额、UNKNOWN和成功计量规则保留。
