@@ -6,7 +6,7 @@ import re
 WORKER_WATCH_LOCATION = """        location = /v2/workers {
             if ($request_method != GET) { return 405; }
             if ($args != "watch=true") { return 404; }
-            proxy_pass http://127.0.0.1:18080/v2/workers?watch=true;
+            proxy_pass http://127.0.0.1:18080;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             proxy_set_header Authorization $http_authorization;
