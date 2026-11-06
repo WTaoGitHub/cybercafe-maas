@@ -8,9 +8,9 @@ from urllib.request import Request, urlopen
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--base-url', default='http://172.18.0.1:18831')
-    parser.add_argument('--name', help='Exact worker name filter (direct GPUStack only)')
-    parser.add_argument('--cluster-id', type=int, help='Cluster filter (direct GPUStack only)')
+    parser.add_argument('--base-url', default='http://127.0.0.1:18080')
+    parser.add_argument('--name', help='Exact worker name filter on the server')
+    parser.add_argument('--cluster-id', type=int)
     parser.add_argument('--limit', type=int, default=4, help='Stop after this many matching events')
     parser.add_argument('--state-changes-only', action='store_true',
                         help='Print only UPDATED events whose changed_fields includes state')
