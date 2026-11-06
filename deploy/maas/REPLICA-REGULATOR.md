@@ -21,7 +21,7 @@
 ## 监控和恢复
 
 - 压力采样用 `--source WORKER_ID=SSH_HOST` 指定来源。添加或替换克隆时，从管理 API 重新核对 worker ID，再通过受信通道更新 SSH 主机公钥、限权采样公钥和采集服务。可调度 worker 未覆盖时停写。维护采集清单时核对 Worker 的 ID、地址和主机公钥，避免沿用旧身份。
-- 状态检查运行 `python maas_replica_status.py --policy … --pressure … --journal … --credential-expiry … --worker-id …`，每个采集节点传入一个 `--worker-id`。凭据到期文件存 Unix 秒，权限 0600。非零退出及 `alerts` 数组可供 systemd 和运维监控读取。该检查验证输入和旧日志，插件日志反映实际门槛恢复和在途状态。
+- 状态检查运行 `python maas_replica_status.py --policy … --pressure … --journal … --credential-expiry … --management-key … --worker-id …`，每个采集节点传入一个 `--worker-id`。管理凭据仅用于读取回环 API，检查实际 Ready GPU 覆盖和部署实例是否长期未就绪。凭据到期文件存 Unix 秒，权限 0600。正式环境的 `maas-replica-status.timer` 每分钟运行，非零退出及 `alerts` 数组写入 systemd 日志。插件日志反映实际门槛恢复和在途状态。
 - 需要停写时先热更新 `observe` 并核对生效修订。此操作保留已经发出的请求及其对账。持续不可用、请求结果未知、实例长时间未就绪时核对原生部署、实例和 worker 状态。保留写入日志，核清原生副本目标及请求状态后再决定处置。
 - 容器级回滚沿用原有暂停、排空和恢复探针。若持久化日志仍有未确认请求，先处理对账。切回原 Observe 镜像后核对旧容器身份、策略、常驻副本和 OCR，再撤销新凭据。
 - 删除测试部署后先等待并核对 GPUStack 路由、实例及目标 worker 的容器。路由不存在即完成该项，仍存在才显式删除。若有残留容器，核对唯一试点名称和实例归属后仅清理相应容器。
