@@ -7,7 +7,7 @@
 | 原因 | 条件 |
 | --- | --- |
 | `same_gpu_successor` | 旧单卡 worker 的最后心跳至少 30 分钟前。同集群唯一上报同一完整 NVIDIA GPU UUID 的 ready worker 每分钟采样，至少持续 15 分钟，且最新心跳不超过 2 分钟。 |
-| `long_offline` | 最后心跳至少 7 天前，即使 GPU 未再次出现。 |
+| `long_offline` | 最后心跳至少 1 小时前，即使 GPU 未再次出现。 |
 
 两条规则均要求旧记录为 `not_ready` 且有有效心跳。跳过受保护 ID、维护中的
 worker、供应商托管记录和有多个 ready GPU 所有者的情况。采样断档超过两分钟或

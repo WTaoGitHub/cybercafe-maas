@@ -6,7 +6,7 @@ INTERVAL = 60
 SUCCESSOR_STABLE = 15 * INTERVAL
 SUCCESSOR_FRESH = timedelta(minutes=2)
 REPLACED_OFFLINE = timedelta(minutes=30)
-LONG_OFFLINE = timedelta(days=7)
+LONG_OFFLINE = timedelta(hours=1)
 E5_NAME = re.compile(r"e5-[0-9a-f]{24}")
 
 
