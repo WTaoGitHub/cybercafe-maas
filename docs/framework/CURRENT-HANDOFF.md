@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-08 实体机上线接力**。新 PC 将并行搭建全新的控制端，验收新 GPU worker 后再切换下游。准备阶段从[上线计划与执行台账](../../deploy/maas/NEW-PC-ROLLOUT.md)的 P1 开始。切流及旧环境退役各有独立门槛。
+
 > **2026-11-03 待部署变更**。新版 `POST /v1/ocr` 将顶层图片字段转换为 `POST /maas/v1/tasks` 的任务输入，共享幂等键空间和任务响应。消费者切换时需轮询结果。需要安全重试时应主动传入幂等键。详见[消费者接口](../api/CONSUMER-OCR.md)。
 
 > **2026-11-02 OpenAPI预览兼容修复**：已用OpenAPI Preview 2.3.2自带解析器复现并修复示例内嵌JSON Schema引用导致的MissingPointerError；仅将capabilities显示示例的局部引用等价内联，服务器及原始响应集合不变。YAML/JSON插件bundle通过，5项回归通过。[说明](../api/OPENAPI.md#openapi-preview空白问题修复2026-11-02)。
