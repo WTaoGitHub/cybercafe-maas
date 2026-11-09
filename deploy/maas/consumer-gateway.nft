@@ -1,5 +1,0 @@
-add table inet maas_consumer_gateway
-flush table inet maas_consumer_gateway
-add chain inet maas_consumer_gateway input { type filter hook input priority -10; policy accept; }
-add rule inet maas_consumer_gateway input ip daddr 172.17.0.1 tcp dport 18831 iifname != "docker0" counter drop
-add rule inet maas_consumer_gateway input ip daddr 172.17.0.1 tcp dport 18831 ip saddr != 172.17.0.0/16 counter drop

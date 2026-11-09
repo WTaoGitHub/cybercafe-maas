@@ -1,11 +1,11 @@
 [Unit]
-Description=MaaS consumer HTTP on the fixed private endpoint
+Description=MaaS consumer HTTP on the fixed private endpoint (Plan C)
 Requires=docker.service maas-consumer-private-policy.service
 After=docker.service maas-consumer-private-policy.service
 PartOf=docker.service
 
 [Service]
-EnvironmentFile=/srv/cybercafe-maas/control/consumer-edge/image.env
+EnvironmentFile=/srv/cybercafe-maas/control/consumer-private/image.env
 ExecStart=/usr/bin/docker run --rm --pull=never --name maas-consumer-private \
     --network host --user 101:101 --read-only --cap-drop ALL --security-opt no-new-privileges \
     --tmpfs /tmp:rw,nosuid,nodev,size=32m \

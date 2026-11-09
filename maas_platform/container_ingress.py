@@ -36,12 +36,6 @@ def render_nginx(base, config):
     return _render_bridge_listeners(base, container_http_clients(config))
 
 
-def render_default_bridge_nginx(base):
-    return _render_bridge_listeners(base, [
-        {'listen_address': '172.17.0.1', 'source_cidr': '172.17.0.0/16'},
-    ])
-
-
 def render_private_consumer_nginx(base, address):
     address = ipaddress.IPv4Address(address)
     if not any(address in ipaddress.IPv4Network(cidr) for cidr in
