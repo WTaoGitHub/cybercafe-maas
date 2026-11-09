@@ -2,6 +2,8 @@
 
 2026-11-05 · 第一阶段设计 · [GitHub Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
+目标架构及后续阶段见 [MaaS 副本调节器迁移计划](MAAS-REPLICA-REGULATOR-PLAN.md)。本页记录现有 GPUStack 插件实现和验收证据，供迁移对照。
+
 ## 目标与范围
 
 **项目术语。** 在本项目范围内，VPC、VM、宿主机、克隆机均指由网吧管理员管理、从特定镜像版本克隆创建的虚拟计算机。下文的 worker 指运行在该虚拟计算机上的 GPUStack worker。
