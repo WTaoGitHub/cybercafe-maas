@@ -36,6 +36,12 @@ systemd 管理 `maas-consumer-edge.service`。Nginx 容器使用宿主机网络�
 
 方案 B 的专用网络、socket 转发及对应单元已撤下，旧部署配置已在新 PC 上备份。其临时网络预验结果保留在下方台账。
 
+### GPUStack 和仓库后端网络
+
+新 PC 上的 GPUStack Server 和镜像仓库后端只接入专用 Docker bridge `maas-backend`，继续分别发布到宿主机回环 `127.0.0.1:18080` 和 `127.0.0.1:18500`。MaaS 和 Worker 私网代理继续通过原回环地址访问。该后端网络保留出站路由，以支持 GPUStack 回连 Worker。下游容器留在 Docker 默认 `bridge`，通过 `172.17.0.1:18831` 调用 MaaS。
+
+重建后端容器时显式指定 `--network maas-backend` 并保留各自的回环端口映射。若启用历史 GPUStack 回退容器，也要在接流量前核对其网络归属。验收应从默认 `bridge` 确认 MaaS 入口和鉴权正常，并确认 GPUStack、仓库后端及宿主机内部端口无法直连。首台 Worker 加入后再验收注册、镜像拉取、私网回连和真实 OCR。参见 [隔离问题 #53](https://github.com/WTaoGitHub/cybercafe-maas/issues/53)。
+
 ## 切流回退
 
 旧入口先拦截新提交和同步推理，让已入队任务继续派发直到排空。MaaS 的 `pause` 会停止派发，不能单独用它拦截异步提交或排空等待队列。
@@ -74,3 +80,4 @@ systemd 管理 `maas-consumer-edge.service`。Nginx 容器使用宿主机网络�
 | 2026-11-09 | 方案 B 预验 | 新 PC 临时专用 bridge、服务名、Unix socket 转发及网络重建验证通过。 | 未切流。实际下游应用和真实 OCR 待验。 |
 | 2026-11-09 | 方案 B 部署 | 新 PC 专用网络、代理及 socket 已启用。实际 MaaS 鉴权和 OCR 输入校验通过，其他 Docker 网络无法解析或连接，宿主机无 18831 监听。 | 下游尚在旧机。待迁移、Worker 就绪和实际业务 OCR 验收。 |
 | 2026-11-09 | 切换到方案 A | 备份后撤下方案 B，在默认 bridge 网关部署代理。默认 bridge 实测匿名 `401`、授权能力查询 `200`、无效图片 `422`、内部健康路径 `404`。其他 Docker 网络的连接被 nftables 拦截。 | 下游仍在旧机。实际业务 OCR 待下游迁移及 Worker 就绪后验收。 |
+| 2026-11-09 | 后端网络隔离 | 在线将 GPUStack 和仓库后端迁入 `maas-backend`，核对容器身份、启动时间、端口映射和挂载。默认 bridge 的 MaaS 鉴权和 OCR 输入校验通过，后端直连及内部端口均不可达。 | 无宿主机、Docker 或容器重启。实际 Worker 注册、拉镜像和推理待验。 |
