@@ -1,0 +1,371 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" type="device" compressed="false">
+  <diagram id="maas-system" name="01 系统总览">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1720" pageHeight="1020" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="eyebrow" value="01  /  CYBERCAFE MAAS  ·  目标设计  ·  2026-11-09" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=14;fontColor=#245B9D;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="25" width="1200" height="23" />
+        </mxCell>
+        <mxCell id="title" value="MaaS 系统架构" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=34;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="57" width="1600" height="45" />
+        </mxCell>
+        <mxCell id="subtitle" value="GPU 日报与模型副本调节接入后的目标形态 · GPUStack v2.2.3" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#41576F;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="108" width="1600" height="26" />
+        </mxCell>
+        <mxCell id="clients" value="" style="rounded=1;arcSize=7;fillColor=#F5F8FC;strokeColor=#D4DEE9;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="158" width="224" height="700" />
+        </mxCell>
+        <mxCell id="clients-title" value="访问方" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="66" y="168" width="180" height="30" />
+        </mxCell>
+        <mxCell id="maas" value="" style="rounded=1;arcSize=7;fillColor=#FAFCFF;strokeColor=#C1D2E7;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="290" y="158" width="990" height="700" />
+        </mxCell>
+        <mxCell id="maas-title" value="MaaS 控制端" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="312" y="168" width="946" height="30" />
+        </mxCell>
+        <mxCell id="gpu" value="" style="rounded=1;arcSize=7;fillColor=#F6F8FB;strokeColor=#D4DEE9;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1308" y="158" width="368" height="315" />
+        </mxCell>
+        <mxCell id="gpu-title" value="GPUStack 控制面" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1330" y="168" width="324" height="30" />
+        </mxCell>
+        <mxCell id="clones" value="" style="rounded=1;arcSize=7;fillColor=#F2F9F7;strokeColor=#B8D7D2;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1308" y="530" width="368" height="328" />
+        </mxCell>
+        <mxCell id="clones-title" value="GPU Worker 集群 · 网吧克隆机" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1330" y="540" width="324" height="30" />
+        </mxCell>
+        <mxCell id="downstream" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#245B9D&quot;&gt;&lt;b&gt;下游业务服务&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;提交推理、查询结果&lt;br/&gt;按北京时间日期查询日报&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#EEF5FF;strokeColor=#92B2D8;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="64" y="231" width="184" height="92" />
+        </mxCell>
+        <mxCell id="ops" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#647891&quot;&gt;&lt;b&gt;运维客户端&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;受控访问、维护与检查&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#AABBCD;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="64" y="395" width="184" height="80" />
+        </mxCell>
+        <mxCell id="ingress" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#245B9D&quot;&gt;&lt;b&gt;Nginx 私有入口&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;受控 HTTP / HTTPS&lt;br/&gt;同机下游走容器专用网络&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#EEF5FF;strokeColor=#92B2D8;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="314" y="226" width="234" height="100" />
+        </mxCell>
+        <mxCell id="api" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#245B9D&quot;&gt;&lt;b&gt;MaaS API&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;鉴权、准入、模型目录&lt;br/&gt;任务、文件、用量与日报查询&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#EEF5FF;strokeColor=#92B2D8;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="610" y="226" width="270" height="100" />
+        </mxCell>
+        <mxCell id="executor" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#245B9D&quot;&gt;&lt;b&gt;异步执行器&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;领取任务、调用模型&lt;br/&gt;保存结果与用量&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#EEF5FF;strokeColor=#92B2D8;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="968" y="226" width="282" height="100" />
+        </mxCell>
+        <mxCell id="observer" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#647891&quot;&gt;&lt;b&gt;Observer / 运维监控&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;任务、队列和异常状态&lt;br/&gt;采集新鲜度与副本调节状态&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#AABBCD;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="314" y="393" width="234" height="88" />
+        </mxCell>
+        <mxCell id="postgres" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#647891&quot;&gt;&lt;b&gt;MaaS PostgreSQL&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;任务、租约、配额与用量&lt;br/&gt;E17 观测和封存日报&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#AABBCD;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="610" y="393" width="270" height="88" />
+        </mxCell>
+        <mxCell id="artifact" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#647891&quot;&gt;&lt;b&gt;Artifact 文件存储&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;输入文件、结果文件与 TTL&lt;br/&gt;由 API 和执行器读写&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#AABBCD;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="968" y="393" width="282" height="88" />
+        </mxCell>
+        <mxCell id="shared-title" value="目标模块  /  共享状态输入，分别执行" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=15;fontColor=#6944A7;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="453" y="525" width="610" height="25" />
+        </mxCell>
+        <mxCell id="capture" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#6944A7&quot;&gt;&lt;b&gt;GPUStack 状态采集&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;Worker / ModelInstance 事件&lt;br/&gt;全量对账、状态新鲜度&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F5F0FC;strokeColor=#AF9ACE;strokeWidth=2;dashed=1;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="314" y="566" width="234" height="100" />
+        </mxCell>
+        <mxCell id="daily" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#6944A7&quot;&gt;&lt;b&gt;E17 GPU 日报&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;GPU UUID 在线区间、模型清单&lt;br/&gt;北京时间切日及采集覆盖率&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F5F0FC;strokeColor=#AF9ACE;strokeWidth=2;dashed=1;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="610" y="566" width="270" height="100" />
+        </mxCell>
+        <mxCell id="replica" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#A14E12&quot;&gt;&lt;b&gt;模型副本调节器&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;模型权重、容量与扩容门槛&lt;br/&gt;按部署单写者提交副本目标&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFF3E7;strokeColor=#D6A479;strokeWidth=2;dashed=1;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="968" y="566" width="282" height="100" />
+        </mxCell>
+        <mxCell id="bootstrap" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#18716A&quot;&gt;&lt;b&gt;E5 配置服务&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;向克隆发放签名启动配置&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ECF7F4;strokeColor=#88BFB6;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="314" y="750" width="234" height="76" />
+        </mxCell>
+        <mxCell id="registry" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#18716A&quot;&gt;&lt;b&gt;私有镜像仓库&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;引擎与模型镜像按摘要拉取&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ECF7F4;strokeColor=#88BFB6;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="610" y="750" width="270" height="76" />
+        </mxCell>
+        <mxCell id="pressure" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#A14E12&quot;&gt;&lt;b&gt;启动压力与运维策略&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;网络、磁盘、在途预算&lt;br/&gt;模型优先级及副本上下限&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFF3E7;strokeColor=#D6A479;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="968" y="750" width="282" height="76" />
+        </mxCell>
+        <mxCell id="gs" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#245B9D&quot;&gt;&lt;b&gt;GPUStack Server&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;原生管理 API 与事件流&lt;br/&gt;选卡、实例生命周期、推理路由&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#EEF5FF;strokeColor=#92B2D8;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1334" y="226" width="316" height="114" />
+        </mxCell>
+        <mxCell id="gsdb" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#647891&quot;&gt;&lt;b&gt;GPUStack 数据库&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;Worker、部署、实例与路由&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#AABBCD;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1334" y="389" width="230" height="65" />
+        </mxCell>
+        <mxCell id="worker" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#18716A&quot;&gt;&lt;b&gt;GPUStack Worker / Docker&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;克隆引导、原生注册与状态上报&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ECF7F4;strokeColor=#88BFB6;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1334" y="586" width="316" height="86" />
+        </mxCell>
+        <mxCell id="runtime" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#18716A&quot;&gt;&lt;b&gt;模型推理副本&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;OCR 等模型运行时 · NVIDIA GPU&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ECF7F4;strokeColor=#88BFB6;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1334" y="740" width="316" height="82" />
+        </mxCell>
+        <mxCell id="client-ingress" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="downstream" target="ingress">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="ops-ingress" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#647891;strokeWidth=2;endArrow=block;endFill=1;dashed=1;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.84;entryDx=0;entryDy=0;" edge="1" parent="1" source="ops" target="ingress">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="280" y="435" />
+              <mxPoint x="280" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ingress-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ingress" target="api">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="api-pg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.45;exitY=1;exitDx=0;exitDy=0;entryX=0.45;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api" target="postgres">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="exec-pg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.08;exitY=1;exitDx=0;exitDy=0;entryX=0.89;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="executor" target="postgres">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="990" y="360" />
+              <mxPoint x="850" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exec-art" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.52;exitY=1;exitDx=0;exitDy=0;entryX=0.52;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="executor" target="artifact">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="obs-pg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#647891;strokeWidth=2;endArrow=block;endFill=1;dashed=1;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="observer" target="postgres">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="api-sync" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.43;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api" target="gs">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="915" y="276" />
+              <mxPoint x="915" y="207" />
+              <mxPoint x="1470" y="207" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exec-infer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.22;entryDx=0;entryDy=0;" edge="1" parent="1" source="executor" target="gs">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="gs-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#647891;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.36;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="gs" target="gsdb">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="gs-worker" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#18716A;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.88;exitY=1;exitDx=0;exitDy=0;entryX=0.88;entryY=0;entryDx=0;entryDy=0;startArrow=block;startFill=1;" edge="1" parent="1" source="gs" target="worker">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="worker-runtime" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#18716A;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.52;exitY=1;exitDx=0;exitDy=0;entryX=0.52;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="worker" target="runtime">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="watch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0;exitY=0.83;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="gs" target="capture">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1317" y="321" />
+              <mxPoint x="1317" y="504" />
+              <mxPoint x="431" y="504" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="capture-e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="capture" target="daily">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="daily-pg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.36;exitY=0;exitDx=0;exitDy=0;entryX=0.36;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="daily" target="postgres">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="capture-regulator" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.18;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="capture" target="replica">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="490" y="703" />
+              <mxPoint x="1018" y="703" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pressure-regulator" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#A14E12;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.66;exitY=0;exitDx=0;exitDy=0;entryX=0.66;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="pressure" target="replica">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="regulator-gs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#A14E12;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.51;exitDx=0;exitDy=0;entryX=0;entryY=0.55;entryDx=0;entryDy=0;" edge="1" parent="1" source="replica" target="gs">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1293" y="617" />
+              <mxPoint x="1293" y="289" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="config-worker" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#18716A;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.29;exitDx=0;exitDy=0;entryX=0.41;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="worker" target="bootstrap">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1666" y="611" />
+              <mxPoint x="1666" y="899" />
+              <mxPoint x="411" y="899" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="registry-worker" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#18716A;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.56;exitDx=0;exitDy=0;entryX=0.51;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="worker" target="registry">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1688" y="634" />
+              <mxPoint x="1688" y="933" />
+              <mxPoint x="747" y="933" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sync-l" value="同步推理" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#245B9D;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1060" y="195" width="105" height="23" />
+        </mxCell>
+        <mxCell id="tasks-l" value="领取任务 / 更新状态" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#245B9D;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="885" y="347" width="122" height="23" />
+        </mxCell>
+        <mxCell id="watch-l" value="订阅事件 / 周期读取全量状态" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#6944A7;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="492" width="222" height="23" />
+        </mxCell>
+        <mxCell id="events-l" value="最新对账快照" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#6944A7;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="678" y="692" width="120" height="23" />
+        </mxCell>
+        <mxCell id="native-l" value="副本目标" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#A14E12;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1257" y="550" width="75" height="23" />
+        </mxCell>
+        <mxCell id="ready-l" value="注册 / 心跳 / 原生调度与推理" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#18716A;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1413" y="490" width="206" height="23" />
+        </mxCell>
+        <mxCell id="config-l" value="克隆引导时读取签名配置" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#18716A;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="705" y="887" width="196" height="23" />
+        </mxCell>
+        <mxCell id="registry-l" value="镜像和模型冷拉取" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#18716A;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1080" y="921" width="160" height="23" />
+        </mxCell>
+        <mxCell id="legend" value="蓝色  业务调用     紫色  状态与日报     橙色  副本控制     绿色  Worker 链路     虚线框  本次目标接入或迁移" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=14;fontColor=#41576F;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="967" width="1630" height="28" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="maas-control" name="02 共享采集与切换">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1720" pageHeight="960" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="eyebrow" value="02  /  CYBERCAFE MAAS  ·  目标设计  ·  2026-11-09" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=14;fontColor=#245B9D;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="25" width="1200" height="23" />
+        </mxCell>
+        <mxCell id="title" value="共享状态如何驱动两条链路" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=34;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="57" width="1600" height="45" />
+        </mxCell>
+        <mxCell id="subtitle" value="同一批 GPUStack 观测分别服务实时扩容与日级统计" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#41576F;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="108" width="1600" height="26" />
+        </mxCell>
+        <mxCell id="input" value="" style="rounded=1;arcSize=7;fillColor=#F5F8FC;strokeColor=#D4DEE9;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="162" width="305" height="562" />
+        </mxCell>
+        <mxCell id="input-title" value="上游来源" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="66" y="172" width="261" height="30" />
+        </mxCell>
+        <mxCell id="processing" value="" style="rounded=1;arcSize=7;fillColor=#FAFCFF;strokeColor=#C1D2E7;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="373" y="162" width="898" height="562" />
+        </mxCell>
+        <mxCell id="processing-title" value="MaaS  /  状态采集与处理" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="395" y="172" width="854" height="30" />
+        </mxCell>
+        <mxCell id="output" value="" style="rounded=1;arcSize=7;fillColor=#F5F8FC;strokeColor=#D4DEE9;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1295" y="162" width="381" height="562" />
+        </mxCell>
+        <mxCell id="output-title" value="结果与执行边界" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1317" y="172" width="337" height="30" />
+        </mxCell>
+        <mxCell id="streams" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#6944A7&quot;&gt;&lt;b&gt;GPUStack 状态接口&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;Worker 与模型实例 watch=true&lt;br/&gt;分页列表用于全量对账&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F5F0FC;strokeColor=#AF9ACE;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="67" y="236" width="260" height="112" />
+        </mxCell>
+        <mxCell id="limits" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#A14E12&quot;&gt;&lt;b&gt;放置条件与启动压力&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;部署策略、容量和显存声明&lt;br/&gt;网络 / 磁盘 / 在途预算&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFF3E7;strokeColor=#D6A479;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="67" y="421" width="260" height="112" />
+        </mxCell>
+        <mxCell id="mapping" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#647891&quot;&gt;&lt;b&gt;MaaS 逻辑模型目录&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;逻辑名 ↔ GPUStack 部署&lt;br/&gt;按观测时点记录映射&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#AABBCD;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="67" y="579" width="260" height="103" />
+        </mxCell>
+        <mxCell id="ingest" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#6944A7&quot;&gt;&lt;b&gt;共享状态采集&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;初连、重连与周期全量对账&lt;br/&gt;带时间戳的快照和采集会话&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F5F0FC;strokeColor=#AF9ACE;strokeWidth=2;dashed=1;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="411" y="236" width="318" height="112" />
+        </mxCell>
+        <mxCell id="reg" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#A14E12&quot;&gt;&lt;b&gt;副本调节器&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;校验新鲜度与可放置性，再规划副本数&lt;br/&gt;压力异常或对账未完成时暂停扩容&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFF3E7;strokeColor=#D6A479;strokeWidth=2;dashed=1;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="863" y="371" width="370" height="112" />
+        </mxCell>
+        <mxCell id="daily2" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#6944A7&quot;&gt;&lt;b&gt;E17 日报任务&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;按 GPU UUID 汇总 ready 区间与 running 模型&lt;br/&gt;按北京时间切日，记录采集覆盖率&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F5F0FC;strokeColor=#AF9ACE;strokeWidth=2;dashed=1;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="863" y="564" width="370" height="112" />
+        </mxCell>
+        <mxCell id="gpumgmt" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#A14E12&quot;&gt;&lt;b&gt;GPUStack 原生管理 API&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;PUT /v2/models/{id}&lt;br/&gt;更新 replicas 后核对原生状态&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFF3E7;strokeColor=#D6A479;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1318" y="371" width="334" height="112" />
+        </mxCell>
+        <mxCell id="sealed" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#647891&quot;&gt;&lt;b&gt;PostgreSQL  /  e17&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;封存日报 · 同一日期内容稳定&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#AABBCD;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1318" y="511" width="334" height="80" />
+        </mxCell>
+        <mxCell id="pull" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#245B9D&quot;&gt;&lt;b&gt;下游按日期查询&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;经 MaaS API 和私有网关&lt;br/&gt;GET /maas/v1/gpu-daily-reports/{day}&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#EEF5FF;strokeColor=#92B2D8;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1318" y="616" width="334" height="81" />
+        </mxCell>
+        <mxCell id="watch-connect" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="streams" target="ingest">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="live-status" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.27;entryDx=0;entryDy=0;" edge="1" parent="1" source="ingest" target="reg">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="791" y="269" />
+              <mxPoint x="791" y="401" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="history" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.71;exitDx=0;exitDy=0;entryX=0;entryY=0.2;entryDx=0;entryDy=0;" edge="1" parent="1" source="ingest" target="daily2">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="805" y="315" />
+              <mxPoint x="805" y="587" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pressure-input" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#A14E12;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.72;entryDx=0;entryDy=0;" edge="1" parent="1" source="limits" target="reg">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="775" y="477" />
+              <mxPoint x="775" y="452" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="catalog-input" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#647891;strokeWidth=2;endArrow=block;endFill=1;dashed=1;dashPattern=5 3;exitX=1;exitY=0.51;exitDx=0;exitDy=0;entryX=0;entryY=0.6;entryDx=0;entryDy=0;" edge="1" parent="1" source="mapping" target="daily2">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="only-writer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#A14E12;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="reg" target="gpumgmt">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="write-daily" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#6944A7;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.26;exitDx=0;exitDy=0;entryX=0;entryY=0.46;entryDx=0;entryDy=0;" edge="1" parent="1" source="daily2" target="sealed">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1260" y="593" />
+              <mxPoint x="1260" y="548" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="read-daily" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#245B9D;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="pull" target="sealed">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="live-l" value="最新快照" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#6944A7;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="353" width="96" height="23" />
+        </mxCell>
+        <mxCell id="history-l" value="观测区间" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#6944A7;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="750" y="540" width="96" height="23" />
+        </mxCell>
+        <mxCell id="store-l" value="封存" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=none;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=13;fontColor=#6944A7;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="525" width="49" height="23" />
+        </mxCell>
+        <mxCell id="cutover" value="" style="rounded=1;arcSize=7;fillColor=#FBFCFE;strokeColor=#D4DEE9;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="753" width="1632" height="157" />
+        </mxCell>
+        <mxCell id="cutover-title" value="副本调节迁移顺序" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=17;fontColor=#142B43;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="66" y="763" width="1588" height="30" />
+        </mxCell>
+        <mxCell id="observe" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#245B9D&quot;&gt;&lt;b&gt;1  MaaS 只读对照&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;与现有插件核对目标、门槛和异常恢复&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#EEF5FF;strokeColor=#92B2D8;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="67" y="805" width="471" height="79" />
+        </mxCell>
+        <mxCell id="drain" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#A14E12&quot;&gt;&lt;b&gt;2  停止插件写入&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;对账已提交和结果未确认的操作&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFF3E7;strokeColor=#D6A479;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="625" y="805" width="471" height="79" />
+        </mxCell>
+        <mxCell id="enable" value="&lt;div style=&quot;line-height:1.5&quot;&gt;&lt;span style=&quot;font-size:19px;color:#18716A&quot;&gt;&lt;b&gt;3  启用 MaaS 写入&lt;/b&gt;&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-size:14px;color:#41576F;line-height:1.5&quot;&gt;同一部署始终只有一个副本目标写入方&lt;/span&gt;&lt;/div&gt;" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ECF7F4;strokeColor=#88BFB6;strokeWidth=1;dashed=0;dashPattern=5 3;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1183" y="805" width="469" height="79" />
+        </mxCell>
+        <mxCell id="check-stop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#647891;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="observe" target="drain">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="stop-enable" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;strokeColor=#647891;strokeWidth=2;endArrow=block;endFill=1;dashed=0;dashPattern=5 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="drain" target="enable">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="boundary" value="断线时暂停扩容并重新对账，日报将空档计为未覆盖。日报经现有 MaaS 入口主动查询。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;rounded=0;spacing=0;fontSize=14;fontColor=#41576F;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="44" y="921" width="1632" height="24" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
