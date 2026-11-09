@@ -36,6 +36,14 @@ systemd 管理 `maas-consumer-edge.service`。Nginx 容器使用宿主机网络�
 
 方案 B 的专用网络、socket 转发及对应单元已撤下，旧部署配置已在新 PC 上备份。其临时网络预验结果保留在下方台账。
 
+### 固定 HTTP 消费者入口
+
+保留默认 bridge 的网关入口，同时在新 PC 的固定私网地址上并行部署 `http://maas-service:18831`。固定入口由 `maas-consumer-private.service` 管理，复用 MaaS 的消费者路径和鉴权，转发到回环 API。地址、生成的 Nginx 配置和刷新脚本安装在 `/srv/cybercafe-maas/control/consumer-private/`，宿主机的 `/etc/hosts` 提供名称。
+
+`maas-consumer-private-policy.timer` 每约 5 秒发现当前本机非 internal Docker bridge，将接口规则原子更新到独立 nftables 表。策略允许这类本机桥接容器访问固定 HTTP 入口，排除 `maas-backend`、内部网络和物理接口。Docker 网络重建后等一次成功刷新即可恢复。容器仍须提供有效的服务凭据。HTTP 仅用于这条同机链路。
+
+新 PC 上两张自建 bridge 均能通过 Docker 内置 DNS 解析 `maas-service`，其中一张重建后复验通过。Docker 自带默认 `bridge` 的测试容器未继承该名称，继续使用 `http://172.17.0.1:18831`。从旧控制端走物理网络访问固定入口被拦截。停用时先禁用并停止私网代理和策略定时器，停止可能在执行的策略单元，然后移除私网入口专属 nftables 表和 hosts 条目。
+
 ### GPUStack 和仓库后端网络
 
 新 PC 上的 GPUStack Server 和镜像仓库后端只接入专用 Docker bridge `maas-backend`，继续分别发布到宿主机回环 `127.0.0.1:18080` 和 `127.0.0.1:18500`。MaaS 和 Worker 私网代理继续通过原回环地址访问。该后端网络保留出站路由，以支持 GPUStack 回连 Worker。下游容器留在 Docker 默认 `bridge`，通过 `172.17.0.1:18831` 调用 MaaS。
@@ -81,3 +89,4 @@ systemd 管理 `maas-consumer-edge.service`。Nginx 容器使用宿主机网络�
 | 2026-11-09 | 方案 B 部署 | 新 PC 专用网络、代理及 socket 已启用。实际 MaaS 鉴权和 OCR 输入校验通过，其他 Docker 网络无法解析或连接，宿主机无 18831 监听。 | 下游尚在旧机。待迁移、Worker 就绪和实际业务 OCR 验收。 |
 | 2026-11-09 | 切换到方案 A | 备份后撤下方案 B，在默认 bridge 网关部署代理。默认 bridge 实测匿名 `401`、授权能力查询 `200`、无效图片 `422`、内部健康路径 `404`。其他 Docker 网络的连接被 nftables 拦截。 | 下游仍在旧机。实际业务 OCR 待下游迁移及 Worker 就绪后验收。 |
 | 2026-11-09 | 后端网络隔离 | 在线将 GPUStack 和仓库后端迁入 `maas-backend`，核对容器身份、启动时间、端口映射和挂载。默认 bridge 的 MaaS 鉴权和 OCR 输入校验通过，后端直连及内部端口均不可达。 | 无宿主机、Docker 或容器重启。实际 Worker 注册、拉镜像和推理待验。 |
+| 2026-11-09 | 固定 HTTP 入口 | 并行部署 `maas-service:18831`，两个自建 bridge 的 DNS、鉴权及 OCR 输入校验通过，重建其中一张网络后复验通过，物理网卡来源被拦截。 | 默认 bridge 仍使用原网关 IP。实际下游迁移和真实 OCR 待验。 |

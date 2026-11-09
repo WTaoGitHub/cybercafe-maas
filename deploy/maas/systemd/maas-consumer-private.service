@@ -1,0 +1,20 @@
+[Unit]
+Description=MaaS consumer HTTP on the fixed private endpoint
+Requires=docker.service maas-consumer-private-policy.service
+After=docker.service maas-consumer-private-policy.service
+PartOf=docker.service
+
+[Service]
+EnvironmentFile=/srv/cybercafe-maas/control/consumer-edge/image.env
+ExecStart=/usr/bin/docker run --rm --pull=never --name maas-consumer-private \
+    --network host --user 101:101 --read-only --cap-drop ALL --security-opt no-new-privileges \
+    --tmpfs /tmp:rw,nosuid,nodev,size=32m \
+    --mount type=bind,src=/srv/cybercafe-maas/control/consumer-private/nginx.conf,dst=/etc/nginx/maas.conf,readonly \
+    --entrypoint nginx ${MAAS_CONSUMER_EDGE_IMAGE} -c /etc/nginx/maas.conf -g "daemon off;"
+ExecStop=-/usr/bin/docker stop --time 10 maas-consumer-private
+Restart=always
+RestartSec=3s
+TimeoutStopSec=20s
+
+[Install]
+WantedBy=multi-user.target

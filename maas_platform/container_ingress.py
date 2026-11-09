@@ -42,6 +42,14 @@ def render_default_bridge_nginx(base):
     ])
 
 
+def render_private_consumer_nginx(base, address):
+    address = ipaddress.IPv4Address(address)
+    if not any(address in ipaddress.IPv4Network(cidr) for cidr in
+               ('10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16')):
+        raise ValueError('Consumer service requires a private IPv4 address')
+    return _render_bridge_listeners(base, [{'listen_address': str(address)}])
+
+
 def _render_bridge_listeners(base, rows):
     if not rows:
         raise ValueError('At least one explicit Docker network is required')
@@ -56,6 +64,7 @@ def _render_bridge_listeners(base, rows):
     for row in rows:
         value = server.replace('listen 127.0.0.1:18831;', 'listen '+row['listen_address']+':18831;')
         value = value.replace('        listen [::1]:18831;\n', '')
-        value = value.replace('server_name _;', 'server_name _;\n        allow '+row['source_cidr']+';\n        deny all;')
+        if 'source_cidr' in row:
+            value = value.replace('server_name _;', 'server_name _;\n        allow '+row['source_cidr']+';\n        deny all;')
         servers.append(value)
     return base[:start] + '\n'.join(servers) + '\n}\n'

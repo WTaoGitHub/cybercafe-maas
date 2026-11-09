@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh the MaaS private ingress after Docker network changes
+
+[Timer]
+OnBootSec=5s
+OnUnitActiveSec=5s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

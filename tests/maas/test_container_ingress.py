@@ -1,6 +1,8 @@
 from pathlib import Path
 import pytest
-from maas_platform.container_ingress import container_http_clients, render_default_bridge_nginx, render_nginx
+from maas_platform.container_ingress import (
+    container_http_clients, render_default_bridge_nginx, render_nginx, render_private_consumer_nginx,
+)
 from maas_platform.boundary_policy import rules
 
 BASE = {'node':'XZ-31-001','interface':'enp3s0','bridge_subnets':['172.17.0.0/16']}
@@ -58,3 +60,15 @@ def test_default_bridge_edge_binds_only_gateway_and_preserves_api_contract():
                      'proxy_set_header Authorization $http_authorization;',
                      'if ($maas_path = 0)', 'proxy_next_upstream off;'):
         assert retained in output
+
+
+def test_private_consumer_edge_binds_only_configured_private_address():
+    template = (Path(__file__).resolve().parents[2] / 'deploy/maas/edge.nginx.conf').read_text()
+    output = render_private_consumer_nginx(template, '10.20.30.40')
+    assert [line.strip() for line in output.splitlines() if line.strip().startswith('listen ')] == [
+        'listen 10.20.30.40:18831;'
+    ]
+    assert 'proxy_pass http://127.0.0.1:18830;' in output
+    for address in ('0.0.0.0', '127.0.0.1', '192.0.2.10'):
+        with pytest.raises(ValueError):
+            render_private_consumer_nginx(template, address)

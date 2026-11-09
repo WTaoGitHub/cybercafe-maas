@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh MaaS private consumer ingress bridge rules
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/srv/cybercafe-maas/control/consumer-private/endpoint.env
+ExecStart=/usr/bin/python3 /srv/cybercafe-maas/control/consumer-private/sync_consumer_private.py ${MAAS_CONSUMER_ADDRESS}
