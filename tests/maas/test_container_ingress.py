@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from maas_platform.container_ingress import container_http_clients, render_consumer_bridge_nginx, render_nginx
+from maas_platform.container_ingress import container_http_clients, render_default_bridge_nginx, render_nginx
 from maas_platform.boundary_policy import rules
 
 BASE = {'node':'XZ-31-001','interface':'enp3s0','bridge_subnets':['172.17.0.0/16']}
@@ -47,13 +47,14 @@ def test_new_process_only_binds_gateway_and_retains_business_contract():
     assert 'listen 127.0.0.1:18831;' in template
 
 
-def test_consumer_bridge_edge_reuses_routes_and_uses_local_socket():
+def test_default_bridge_edge_binds_only_gateway_and_preserves_api_contract():
     template = (Path(__file__).resolve().parents[2] / 'deploy/maas/edge.nginx.conf').read_text()
-    output = render_consumer_bridge_nginx(template)
-    assert 'listen 18831;' in output
-    assert 'listen 127.0.0.1' not in output and 'listen [::1]' not in output
-    assert 'proxy_pass http://unix:/run/maas-consumer/api.sock:;' in output
-    assert '127.0.0.1:18830' not in output
-    for retained in ('/maas/v1/ocr 1;', 'proxy_set_header Authorization $http_authorization;',
+    output = render_default_bridge_nginx(template)
+    assert [line.strip() for line in output.splitlines() if line.strip().startswith('listen ')] == [
+        'listen 172.17.0.1:18831;'
+    ]
+    assert 'allow 172.17.0.0/16;\n        deny all;' in output
+    for retained in ('/maas/v1/ocr 1;', 'proxy_pass http://127.0.0.1:18830;',
+                     'proxy_set_header Authorization $http_authorization;',
                      'if ($maas_path = 0)', 'proxy_next_upstream off;'):
         assert retained in output

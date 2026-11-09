@@ -24,19 +24,17 @@
 
 ## 下游同机接入验收
 
-按新 PC 实际部署的容器网络设计消费者入口。若选用 Docker 网关入口，按已批准的网络名称解析实际网桥，核对子网和网关，限制放行到消费者端口并保留 MaaS 鉴权。新 PC 需单独配置和验收这一行为。旧机的防火墙脚本和规则绑定其宿主机环境。
+新 PC 使用方案 A。下游后端通过 Docker 自带的默认 `bridge` 访问 `http://172.17.0.1:18831`。宿主机网桥是 `docker0`，子网为 `172.17.0.0/16`。下游若由 Compose 管理，使用 `network_mode: bridge` 明确加入 Docker 自带网络，并核对它到自身依赖服务的连通性。MaaS 凭据使用新控制端登记的服务凭据。
 
-在独立环境重建同名、同子网和同网关的下游网络，确认网桥名变化后入口可恢复。验收时从实际下游业务容器提交 `POST /maas/v1/ocr`，验证鉴权、`202` 受理、任务成功、识别结果和用量。确认未授权来源及内部端口仍受限。参考[旧机网桥故障与修复 #51](https://github.com/WTaoGitHub/cybercafe-maas/issues/51)。
+验收时从实际下游业务容器提交 `POST /maas/v1/ocr`，验证鉴权、`202` 受理、任务成功、识别结果和用量。确认其他 Docker 网络无法连到消费者入口，内部端口仍受限。
 
-方案 B 在新 PC 的临时网络上通过连通性验证。测试下游通过 Docker DNS 访问 `http://maas-edge:18831`。代理容器不发布宿主机端口，通过仅挂载给代理的 Unix socket 转发到现有回环 API。匿名能力查询返回 `401`，带测试凭据返回 `200`，无效图片提交返回 `422 IMAGE_BASE64`。重建代理和网桥后重复通过，其他 Docker 网络无法通过名称或代理 IP 连入。双网卡测试容器保留原业务默认路由，代理换 IP 后重新发起请求仍能用原名称连接。临时资源已清理，现有控制面未重启。正式接入仍需部署 socket 转发服务，核对下游地址可配置及其客户端重连行为，并在 Worker 就绪后用实际下游应用验收 OCR。
+### 方案 A 正式入口
 
-### 方案 B 正式入口
+systemd 管理 `maas-consumer-edge.service`。Nginx 容器使用宿主机网络，仅监听 `172.17.0.1:18831`，转发到回环 MaaS API `127.0.0.1:18830`。独立 nftables 规则仅允许来自 `docker0` 且源地址在默认网段内的流量访问这个地址和端口。默认 bridge 上的其他容器也能到达入口，应用层继续要求 Bearer 鉴权。宿主机程序使用原有回环 HTTPS `127.0.0.1:18832`。
 
-新 PC 已创建独立的内部 Docker 网络 `maas-consumer`。由 MaaS 的 systemd 服务管理代理容器，并在该网络上登记别名 `maas-edge`。代理通过 `maas-consumer-api.socket` 转到本机回环 MaaS API。消费者端口无宿主机映射。现有运维入口和 Worker 私网入口继续独立运行。
+部署配置在新 PC 的 `/srv/cybercafe-maas/control/consumer-edge/`。`nginx.conf` 由 `render_default_bridge_nginx` 从通用入口模板生成，`gateway.nft` 来自仓库的 `consumer-gateway.nft`。检查 `docker network inspect bridge`、`systemctl status maas-consumer-edge.service` 和 `nft list table inet maas_consumer_gateway`。若 Docker 默认网段或网关计划变更，先同步审核 Nginx 和 nftables 配置。停用入口时禁用该 systemd 服务。
 
-迁移下游时，在其 Compose 中把 `maas-consumer` 声明为 `external: true`，只给调用 OCR 的后端服务追加该网络，同时保留其原业务网络。MaaS 地址配置为 `http://maas-edge:18831`，凭据使用新控制端登记的服务凭据。两套部署各自管理容器，专用网络由宿主机管理。
-
-部署配置保存在新 PC 的 `/srv/cybercafe-maas/control/consumer-edge/`。Nginx 配置由 `render_consumer_bridge_nginx` 从仓库的消费者入口模板生成，镜像使用已核验的本地 Nginx 镜像 ID。检查 `maas-consumer-edge.service`、`maas-consumer-api.socket`、`docker network inspect maas-consumer` 和代理的端口映射。从网络内运行能力查询和 OCR 探针。停用时先把下游切回已验收入口，再禁用代理并停止 socket 和转发服务。网络无成员后才可移除。
+方案 B 的专用网络、socket 转发及对应单元已撤下，旧部署配置已在新 PC 上备份。其临时网络预验结果保留在下方台账。
 
 ## 切流回退
 
@@ -75,3 +73,4 @@
 | 2026-11-09 | 计划更新 | 确认下游容器也将迁到新 PC，新增同机接入与网桥重建验收。 | 下游仍在 XZ-31-001。新 PC 下游迁移及同机 OCR 验收待执行。 |
 | 2026-11-09 | 方案 B 预验 | 新 PC 临时专用 bridge、服务名、Unix socket 转发及网络重建验证通过。 | 未切流。实际下游应用和真实 OCR 待验。 |
 | 2026-11-09 | 方案 B 部署 | 新 PC 专用网络、代理及 socket 已启用。实际 MaaS 鉴权和 OCR 输入校验通过，其他 Docker 网络无法解析或连接，宿主机无 18831 监听。 | 下游尚在旧机。待迁移、Worker 就绪和实际业务 OCR 验收。 |
+| 2026-11-09 | 切换到方案 A | 备份后撤下方案 B，在默认 bridge 网关部署代理。默认 bridge 实测匿名 `401`、授权能力查询 `200`、无效图片 `422`、内部健康路径 `404`。其他 Docker 网络的连接被 nftables 拦截。 | 下游仍在旧机。实际业务 OCR 待下游迁移及 Worker 就绪后验收。 |

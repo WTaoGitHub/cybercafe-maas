@@ -33,7 +33,16 @@ def container_http_clients(config):
 
 def render_nginx(base, config):
     """Reuse the approved loopback edge's routes/limits; separate bridge-only process."""
-    rows = container_http_clients(config)
+    return _render_bridge_listeners(base, container_http_clients(config))
+
+
+def render_default_bridge_nginx(base):
+    return _render_bridge_listeners(base, [
+        {'listen_address': '172.17.0.1', 'source_cidr': '172.17.0.0/16'},
+    ])
+
+
+def _render_bridge_listeners(base, rows):
     if not rows:
         raise ValueError('At least one explicit Docker network is required')
     if base.count('    server {') != 1:
@@ -50,17 +59,3 @@ def render_nginx(base, config):
         value = value.replace('server_name _;', 'server_name _;\n        allow '+row['source_cidr']+';\n        deny all;')
         servers.append(value)
     return base[:start] + '\n'.join(servers) + '\n}\n'
-
-
-def render_consumer_bridge_nginx(base):
-    """Keep the business contract on an unpublished Docker bridge listener."""
-    replacements = {
-        'listen 127.0.0.1:18831;': 'listen 18831;',
-        '        listen [::1]:18831;\n': '',
-        'proxy_pass http://127.0.0.1:18830;': 'proxy_pass http://unix:/run/maas-consumer/api.sock:;',
-    }
-    for old, new in replacements.items():
-        if base.count(old) != 1:
-            raise ValueError('Expected canonical consumer HTTP template')
-        base = base.replace(old, new)
-    return base
