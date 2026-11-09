@@ -1,13 +1,52 @@
 """Own post-conntrack/pre-DNAT chain protects startup and outbound reply traffic."""
-import argparse,fcntl,ipaddress,json,os,socket,subprocess,sys
+import argparse,fcntl,ipaddress,json,os,re,socket,subprocess,sys
 from pathlib import Path
 ROOT=Path('/root/wtaobj/maas-framework');sys.path.insert(0,str(ROOT))
 from maas_platform.boundary_policy import CHAIN,TABLE,rules
+from maas_platform.container_ingress import container_http_clients
 import boundary
 CFG=Path('/root/wtaobj/maas-boundary/persistent.json')
 
 
-def run(*args,check=True,input=None):return subprocess.run(args,input=input,text=True,capture_output=True,check=check,timeout=25)
+def run(*args,check=True,input=None,timeout=25):return subprocess.run(args,input=input,text=True,capture_output=True,check=check,timeout=timeout)
+
+
+def resolve_container_clients(cfg, docker_ready):
+    """Resolve only the interface of explicitly approved network names."""
+    container_http_clients(cfg)
+    clients, unavailable = [], []
+    for row in cfg.get('container_http_clients', []):
+        if 'network_name' not in row:
+            clients.append(row)
+            continue
+        if not docker_ready:
+            continue
+        name = row['network_name']
+        if not isinstance(name, str) or not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_.-]*', name):
+            raise ValueError('Invalid container HTTP network name')
+        try:
+            network, = json.loads(run('docker', 'network', 'inspect', name, timeout=2).stdout)
+            if network['Name'] != name or network['Driver'] != 'bridge' or network['Scope'] != 'local':
+                raise ValueError('Expected approved local Docker bridge')
+            ipv4, = (entry for entry in network['IPAM']['Config'] if ':' not in entry['Subnet'])
+            if (ipv4['Subnet'], ipv4['Gateway']) != (row['source_cidr'], row['listen_address']):
+                raise ValueError('Docker subnet or gateway changed')
+            interface = network['Options'].get('com.docker.network.bridge.name', 'br-' + network['Id'][:12])
+            resolved = {**row, 'interface': interface}
+            container_http_clients({**cfg, 'container_http_clients': [resolved]})
+            link, = json.loads(run('ip', '-j', '-d', 'address', 'show', 'dev', interface, timeout=2).stdout)
+            prefix = ipaddress.IPv4Network(row['source_cidr']).prefixlen
+            if link['ifname'] != interface or link['linkinfo']['info_kind'] != 'bridge' or not any(
+                addr['family'] == 'inet' and addr['local'] == row['listen_address']
+                and addr['prefixlen'] == prefix
+                for addr in link['addr_info']
+            ):
+                raise ValueError('Approved gateway is not installed on the Docker bridge')
+        except (subprocess.SubprocessError, OSError, ValueError, KeyError, TypeError):
+            unavailable.append(name)
+            continue
+        clients.append(resolved)
+    return {**cfg, 'container_http_clients': clients}, unavailable
 def apply_raw(cfg,trust):
     # Keep the callable name for existing ingress tools. Conntrack is unavailable
     # at the raw hook; mangle PREROUTING runs after it and before destination NAT.
@@ -51,6 +90,7 @@ def main():
                 legacy=run(binary,'-t','raw','-C','PREROUTING','-j',CHAIN,check=False).returncode==0
                 verdict[binary]=bool(entries and entries[0]=='-A PREROUTING -j '+CHAIN and not legacy)
             print(json.dumps({'early_table':TABLE,'early_hooks_first':verdict,'ok':all(verdict.values())}));return
+        cfg, unavailable_clients = resolve_container_clients(cfg, a.action in ('refresh','install'))
         trust=[]
         if a.action in ('refresh','install'):
             inv=boundary.inventory()
@@ -69,7 +109,8 @@ def main():
                 if not status['rules_ok'] or not status['inventory_matches']:raise RuntimeError('Runtime policy not verified')
                 state=json.loads(boundary.STATE.read_text());boundary.run(['systemctl','stop',state['timer']+'.timer'],False);state['confirmed']=True;boundary.write(state)
         apply_raw(cfg,trust)
-        print(json.dumps({'action':a.action,'node':cfg['node'],'pre_dnat_fence':True,'early_table':TABLE,'trusted_bridge_count':len(trust)}))
+        print(json.dumps({'action':a.action,'node':cfg['node'],'pre_dnat_fence':True,'early_table':TABLE,
+                          'trusted_bridge_count':len(trust),'unavailable_container_http_networks':unavailable_clients}))
 
 
 if __name__=='__main__':main()
