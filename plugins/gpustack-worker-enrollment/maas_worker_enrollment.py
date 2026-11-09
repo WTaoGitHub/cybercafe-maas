@@ -19,6 +19,8 @@ from sqlalchemy import and_, func, or_, text
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
+from maas_worker_handoff import WorkerHandoff
+
 
 log = logging.getLogger(__name__)
 GPU_UUID = re.compile(r"GPU-[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", re.IGNORECASE)
@@ -105,9 +107,13 @@ async def enroll(request: EnrollmentRequest) -> Enrollment:
 
 class WorkerEnrollmentPlugin(Plugin):
     def __init__(self, app, cfg):
+        self.handoff = None
         cluster_scope = os.getenv("MAAS_WORKER_ENROLLMENT_CLUSTER_ID")
         key_file = os.getenv("MAAS_WORKER_ENROLLMENT_KEY_FILE")
-        if cluster_scope is None and key_file is None:
+        handoff_mode = os.getenv("MAAS_WORKER_HANDOFF_MODE", "off")
+        if handoff_mode not in {"off", "required"}:
+            raise ValueError("Invalid MAAS_WORKER_HANDOFF_MODE")
+        if cluster_scope is None and key_file is None and handoff_mode == "off":
             return
         try:
             if cluster_scope is None or key_file is None or __version__.removeprefix("v") != "2.2.3":
@@ -117,17 +123,26 @@ class WorkerEnrollmentPlugin(Plugin):
             if cluster_id <= 0 or len(key) < 32 or not re.fullmatch(rb"[!-~]+", key):
                 raise ValueError("Invalid enrollment configuration")
         except (OSError, ValueError):
+            if handoff_mode == "required":
+                raise ValueError("Worker handoff requires valid enrollment configuration") from None
             log.error("Worker enrollment disabled due to invalid configuration")
             return
 
         bearer = HTTPBearer(auto_error=False)
 
-        @app.post("/internal/maas/worker-enrollment", include_in_schema=False)
-        async def pre_enroll(request: EnrollmentRequest,
-                             credentials: HTTPAuthorizationCredentials | None = Depends(bearer)) -> Enrollment:
+        async def require_maas(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)):
             if credentials is None or not compare_digest(credentials.credentials.encode(), key):
                 raise HTTPException(401, "MaaS enrollment credential required",
                                     headers={"WWW-Authenticate": "Bearer"})
+
+        @app.post("/internal/maas/worker-enrollment", dependencies=[Depends(require_maas)], include_in_schema=False)
+        async def pre_enroll(request: EnrollmentRequest) -> Enrollment:
             if request.cluster_id != cluster_id:
                 raise HTTPException(403, "Cluster is outside the enrollment scope")
             return await enroll(request)
+
+        if handoff_mode == "required":
+            self.handoff = WorkerHandoff(app, cluster_id, require_maas)
+
+    def async_tasks(self):
+        return [self.handoff.initialize()] if self.handoff else []
