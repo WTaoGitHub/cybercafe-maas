@@ -32,3 +32,9 @@ MaaS 调节器默认 Observe。读状态与写部署分别使用专用权限。A
 回退时先停 MaaS 写入，保留日志并核清在途请求及 GPUStack 实际副本目标，再恢复旧插件的观察与授权写入。回退沿用当前已确认的副本目标，回退期间继续通过业务探针验证服务。优先在独立测试环境完成验证，生产切换操作限于项目进程、容器与配置，并遵守既有 VM 约束。
 
 相关资料：[目标架构图](MAAS-E17-REPLICA-ARCHITECTURE.drawio) · [现有插件设计](REPLICA-POLICY-PLUGIN.md) · [E17 实施记录](E17-GPU-TIME.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39) · [Issue #45](https://github.com/WTaoGitHub/cybercafe-maas/issues/45)
+
+## 阶段 1 基线
+
+2026-11-09 固定仓库基线 `e8c5b25`，插件源码版本 0.16.0。现网 001 的 Server 镜像标记为 0.14.0。用该镜像内的 GPUStack v2.2.3 运行固定源码的 28 项插件回归，全部通过。现网管理接口只读核对到 4 条 worker 记录、3 张就绪卡、1 个部署和 9 个实例。3 张卡的总显存和已分配显存均为整数，worker 保留显存字段齐全。已验证的是当前可见范围，目标环境仍须单独核对。
+
+迁移应复用策略求解、压力门槛、原生读取和写入日志对账。原插件的事件来源、进程生命周期和 ORM 读取属于适配层。对照验收分别保留固定源码和现网版本标记。
