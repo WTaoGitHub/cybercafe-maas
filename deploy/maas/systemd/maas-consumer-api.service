@@ -1,0 +1,9 @@
+[Unit]
+Description=Forward MaaS consumer socket to the loopback API
+Requires=maas-consumer-api.socket
+After=maas-consumer-api.socket
+
+[Service]
+ExecStart=/usr/lib/systemd/systemd-socket-proxyd 127.0.0.1:18830
+DynamicUser=yes
+NoNewPrivileges=yes

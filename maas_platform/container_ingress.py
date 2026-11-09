@@ -50,3 +50,17 @@ def render_nginx(base, config):
         value = value.replace('server_name _;', 'server_name _;\n        allow '+row['source_cidr']+';\n        deny all;')
         servers.append(value)
     return base[:start] + '\n'.join(servers) + '\n}\n'
+
+
+def render_consumer_bridge_nginx(base):
+    """Keep the business contract on an unpublished Docker bridge listener."""
+    replacements = {
+        'listen 127.0.0.1:18831;': 'listen 18831;',
+        '        listen [::1]:18831;\n': '',
+        'proxy_pass http://127.0.0.1:18830;': 'proxy_pass http://unix:/run/maas-consumer/api.sock:;',
+    }
+    for old, new in replacements.items():
+        if base.count(old) != 1:
+            raise ValueError('Expected canonical consumer HTTP template')
+        base = base.replace(old, new)
+    return base

@@ -30,6 +30,14 @@
 
 方案 B 在新 PC 的临时网络上通过连通性验证。测试下游通过 Docker DNS 访问 `http://maas-edge:18831`。代理容器不发布宿主机端口，通过仅挂载给代理的 Unix socket 转发到现有回环 API。匿名能力查询返回 `401`，带测试凭据返回 `200`，无效图片提交返回 `422 IMAGE_BASE64`。重建代理和网桥后重复通过，其他 Docker 网络无法通过名称或代理 IP 连入。双网卡测试容器保留原业务默认路由，代理换 IP 后重新发起请求仍能用原名称连接。临时资源已清理，现有控制面未重启。正式接入仍需部署 socket 转发服务，核对下游地址可配置及其客户端重连行为，并在 Worker 就绪后用实际下游应用验收 OCR。
 
+### 方案 B 正式入口
+
+新 PC 已创建独立的内部 Docker 网络 `maas-consumer`。由 MaaS 的 systemd 服务管理代理容器，并在该网络上登记别名 `maas-edge`。代理通过 `maas-consumer-api.socket` 转到本机回环 MaaS API。消费者端口无宿主机映射。现有运维入口和 Worker 私网入口继续独立运行。
+
+迁移下游时，在其 Compose 中把 `maas-consumer` 声明为 `external: true`，只给调用 OCR 的后端服务追加该网络，同时保留其原业务网络。MaaS 地址配置为 `http://maas-edge:18831`，凭据使用新控制端登记的服务凭据。两套部署各自管理容器，专用网络由宿主机管理。
+
+部署配置保存在新 PC 的 `/srv/cybercafe-maas/control/consumer-edge/`。Nginx 配置由 `render_consumer_bridge_nginx` 从仓库的消费者入口模板生成，镜像使用已核验的本地 Nginx 镜像 ID。检查 `maas-consumer-edge.service`、`maas-consumer-api.socket`、`docker network inspect maas-consumer` 和代理的端口映射。从网络内运行能力查询和 OCR 探针。停用时先把下游切回已验收入口，再禁用代理并停止 socket 和转发服务。网络无成员后才可移除。
+
 ## 切流回退
 
 旧入口先拦截新提交和同步推理，让已入队任务继续派发直到排空。MaaS 的 `pause` 会停止派发，不能单独用它拦截异步提交或排空等待队列。
@@ -66,3 +74,4 @@
 | 2026-11-08 | P1 | 完成受限私网入口、OCR 镜像复制、新集群零副本配置、签名发布及 Observe 验证。准备母版交付包，复查旧端健康。 | P1 通过。P2 从母版交付包复核、管理员封版及首台克隆来源准入继续。尚无新 GPU worker 或真实 OCR 证据。 |
 | 2026-11-09 | 计划更新 | 确认下游容器也将迁到新 PC，新增同机接入与网桥重建验收。 | 下游仍在 XZ-31-001。新 PC 下游迁移及同机 OCR 验收待执行。 |
 | 2026-11-09 | 方案 B 预验 | 新 PC 临时专用 bridge、服务名、Unix socket 转发及网络重建验证通过。 | 未切流。实际下游应用和真实 OCR 待验。 |
+| 2026-11-09 | 方案 B 部署 | 新 PC 专用网络、代理及 socket 已启用。实际 MaaS 鉴权和 OCR 输入校验通过，其他 Docker 网络无法解析或连接，宿主机无 18831 监听。 | 下游尚在旧机。待迁移、Worker 就绪和实际业务 OCR 验收。 |
