@@ -1,0 +1,8 @@
+# Optional override for the MaaS e17-daily service.
+services:
+  e17-daily:
+    environment:
+      MAAS_REPLICA_OBSERVE_POLICY_PATH: /run/maas-replica/policy.json
+      MAAS_REPLICA_PRESSURE_FILE: /run/maas-replica/pressure.json
+    volumes:
+      - ${MAAS_REPLICA_OBSERVE_DIR:?set private Observe input directory}:/run/maas-replica:ro

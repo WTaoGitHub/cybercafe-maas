@@ -11,4 +11,4 @@ requires-python = ">=3.11"
 maas_replica = "maas_replica:ReplicaPlugin"
 
 [tool.setuptools]
-py-modules = ["maas_replica", "maas_replica_policy", "maas_replica_execution", "maas_replica_native", "maas_replica_apply", "maas_replica_pressure", "maas_replica_metrics"]
+py-modules = ["maas_replica", "maas_replica_policy", "maas_replica_planner", "maas_replica_execution", "maas_replica_native", "maas_replica_apply", "maas_replica_pressure", "maas_replica_metrics"]

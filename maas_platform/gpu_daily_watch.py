@@ -6,6 +6,7 @@ import logging
 import os
 from pathlib import Path
 import time
+from types import SimpleNamespace
 from uuid import uuid4
 
 import httpx
@@ -66,15 +67,21 @@ async def listing(client, kind):
     raise ValueError('GPUStack page limit exceeded')
 
 
-async def watch(client, kind, queue):
-    async with client.stream('GET', kind, params={'watch': 'true'}) as response:
-        response.raise_for_status()
-        await queue.put((kind, None))
-        async for line in response.aiter_lines():
-            if line.strip():
-                await queue.put((kind, json.loads(line)))
-    raise ConnectionError('GPUStack watch ended')
-
+async def watch(client, kind, queue, signals=None):
+    try:
+        async with client.stream('GET', kind, params={'watch': 'true'}) as response:
+            response.raise_for_status()
+            queue.put_nowait((kind, None))
+            async for line in response.aiter_lines():
+                if line.strip():
+                    queue.put_nowait((kind, json.loads(line)))
+                    if signals is not None:
+                        signals.changed.set()
+        raise ConnectionError('GPUStack watch ended')
+    finally:
+        if signals is not None:
+            signals.session = None
+            signals.changed.set()
 
 def persist(db, at, session, cards):
     with db.transaction() as conn:
@@ -82,10 +89,10 @@ def persist(db, at, session, cards):
                      (at, session, Jsonb(cards)))
 
 
-async def observe(db, client, catalog):
+async def observe(db, client, catalog, signals=None):
     while True:
         queue = asyncio.Queue(maxsize=4096)
-        streams = [asyncio.create_task(watch(client, kind, queue)) for kind in KINDS]
+        streams = [asyncio.create_task(watch(client, kind, queue, signals)) for kind in KINDS]
         try:
             connected = set()
             async with asyncio.timeout(35):
@@ -96,6 +103,11 @@ async def observe(db, client, catalog):
                 workers, instances = await asyncio.gather(*(listing(client, kind) for kind in KINDS))
             rows = dict(zip(KINDS, (workers, instances)))
             session = uuid4()
+            if any(task.done() for task in streams):
+                raise ConnectionError('GPUStack watch disconnected during initial listing')
+            if signals is not None:
+                signals.session = session
+                signals.changed.set()
             last_at, last_cards = 0, None
             reconcile_at = time.monotonic() + 300
             names = {}
@@ -129,6 +141,9 @@ async def observe(db, client, catalog):
         except (httpx.HTTPError, TimeoutError, ConnectionError, ValueError, KeyError, TypeError):
             LOG.warning('E17 watch unavailable; reconnecting')
         finally:
+            if signals is not None:
+                signals.session = None
+                signals.changed.set()
             for task in streams:
                 task.cancel()
             await asyncio.gather(*streams, return_exceptions=True)
@@ -164,7 +179,19 @@ async def run():
         async with httpx.AsyncClient(base_url=os.environ['MAAS_GPUSTACK_URL'].rstrip('/') + '/v2/',
                                      headers={'Authorization': 'Bearer ' + key},
                                      timeout=httpx.Timeout(30, connect=5)) as client:
-            task = asyncio.create_task(observe(db, client, catalog))
+            signals = preview = None
+            policy_path = os.getenv('MAAS_REPLICA_OBSERVE_POLICY_PATH')
+            if policy_path:
+                from maas_replica_policy import PolicyFile
+                from .replica_observe import run as preview_replicas
+
+                logging.basicConfig(level=logging.WARNING)
+                logging.getLogger(preview_replicas.__module__).setLevel(logging.INFO)
+                signals = SimpleNamespace(session=None, changed=asyncio.Event())
+                preview = asyncio.create_task(preview_replicas(
+                    client, listing, signals, PolicyFile(Path(policy_path), allow_apply=False)
+                ))
+            task = asyncio.create_task(observe(db, client, catalog, signals))
             sealed_through = None
             try:
                 while not task.done():
@@ -181,6 +208,9 @@ async def run():
                 await task
             finally:
                 task.cancel()
+                if preview is not None:
+                    preview.cancel()
+                    await asyncio.gather(preview, return_exceptions=True)
                 await asyncio.gather(task, return_exceptions=True)
 
 
