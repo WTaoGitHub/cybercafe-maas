@@ -47,6 +47,14 @@ envsubst '$P4_NATIVE_LISTEN $P4_NATIVE_UPSTREAM_PORT' \
 
 操作方补充确认，005 启动前后对应两个不同的 VPC 实例，来宾主机名沿用 005。管理员说明平台会分配原 GPU，两次主机实测的完整 GPU UUID 一致。结合上述 worker、凭据和 OCR 结果，P4 的 A→B 跨实例接续功能验收通过。本次使用人工下发 E5 引导配置和接续许可。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
 
+### 2026-11-10 P5 启动许可自动触发
+
+管理员再次启动 005 后，核对 `boot_id` 已变化、GPU UUID 一致且原生身份目录为空。在现有克隆镜像启动后手动安装 `d09d274` 版 E5，启用 `maas-worker-bootstrap.path`。许可交付前，路径监视处于活动状态，引导服务和 worker 均未启动。
+
+交付工具用错误的 `boot_id` 验证时返回 `DELIVERY_TARGET_CHANGED`，未签发许可。用核对过的启动 ID 交付许可后，systemd 路径单元自动触发引导服务，记录 `trigger=boot`，原 `worker_id=11` 恢复 `Ready`。新凭据查询返回 HTTP 200，旧凭据从 HTTP 200 变为 HTTP 401。重复交付复用同一份许可和同一会话。
+
+试点模型 44 恢复 1/1，实例落在 worker 11，真实 CUDA OCR 返回 HTTP 200 和 46 行。正式 OCR 保持 4/4，真实请求返回 HTTP 200 和 46 行。试点压力采样已恢复，调节器修订 5 的状态检查通过。本次范围为安装 E5 后的许可交付与自动引导，镜像预置 E5 的开机流程待单独验证。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+
 ## 退役与回退
 
 1. 停止发放试点授权。排空专用测试模型并将副本降为零，删除专用模型，复核原生实例、显式绑定、路由和旧 VPC 隧道已清理。
