@@ -1,6 +1,6 @@
 # 新 PC 控制端上线计划与执行台账
 
-更新日期 2026-11-10（北京时间）。**P2 的无盘启动服务已在新 PC 的 `maas-baremetal-workers`（集群 ID `1`）启用。下一步准备试点克隆系统镜像，再由管理员封版并启动首台新 VPC。**
+更新日期 2026-11-10（北京时间）。**P2 的无盘启动服务已在新 PC 的 `maas-baremetal-workers`（集群 ID `1`）启用。试点母版已安装新版 E5 并通过封版前检查，下一步由管理员保存独立试点快照并启动首台新 VPC。**
 
 ## 目标和约束
 
@@ -15,7 +15,7 @@
 | --- | --- | --- |
 | P0 预检 | 已通过现控制端跳转，以公钥登录新 PC。新 PC 为 Ubuntu 24.04.3 LTS / x86_64，8 逻辑 CPU、约 15 GiB RAM、约 433 GiB 可用空间。只看到 Intel 核显，预检时未装 Docker。三台旧 GPU worker 都能访问新 PC 的临时 HTTP 测试端口，回程到 `XZ-31-002` 受其控制端白名单限制。 | 只读预检完成 |
 | P1 新控制端 | 重新核对目标身份、私网地址稳定性、资源及现有端口。安装 Docker/Compose，锁定源码提交和镜像版本，以 GPUStack v2.2.3 为兼容基线。创建独立状态和私有访问边界，建立新 registry、bootstrap、MaaS 数据库、artifact 卷和执行器。启动采样、日报、监控与备份。核对数据库迁移、应用健康、registry TLS、bootstrap 签名及拒绝未授权访问。副本调节器先用 Observe，退役自动化先关闭。 | 完成，空集群及母版私网访问已验 |
-| P2 母版与首台新 worker | 使用预装新版 E5 的试点克隆系统镜像和新 PC 的 `maas-baremetal-workers`（ID `1`）。核对 bootstrap、HTTPS 原生入口、registry、证书信任及双向连通。首台 VPC 启动后，确认 E5 等待许可，再批准该 GPU 的启动。核对 `name` 和 `external_id` 与实测 GPU UUID 一致，worker 进入 `Ready`，完成冷拉取和真实 CUDA OCR。随后在同一卡上启动替代 VPC，验证原 `worker_id` 恢复及旧凭据失效。 | 控制端已启用，待准备镜像和首启 |
+| P2 母版与首台新 worker | 使用预装新版 E5 的试点克隆系统镜像和新 PC 的 `maas-baremetal-workers`（ID `1`）。核对 bootstrap、HTTPS 原生入口、registry、证书信任及双向连通。首台 VPC 启动后，确认 E5 等待许可，再批准该 GPU 的启动。核对 `name` 和 `external_id` 与实测 GPU UUID 一致，worker 进入 `Ready`，完成冷拉取和真实 CUDA OCR。随后在同一卡上启动替代 VPC，验证原 `worker_id` 恢复及旧凭据失效。 | 母版已准备，待保存试点快照和首启 |
 | P3 扩至目标容量 | 按计划启用新 GPU worker，逐台验收独立身份、Ready、镜像 digest、单节点 OCR 和监控覆盖。按现网基线核对副本与并发，记录吞吐、延迟、失败率和 `UNKNOWN`。从下游实际运行容器验证新私有入口、TLS、鉴权、幂等提交、状态轮询、结果下载和用量。先完成备份恢复演练并确认旧历史处理方式。 | 待 P2 |
 | P4 下游迁移和切流 | 确认窗口和回退负责人。准备新 PC 上的下游容器和同机入口，通过下方验收后切换业务。停止旧入口接受新业务请求，核对队列、运行中任务、同步请求及 `UNKNOWN`，保留状态查询与结果下载直至旧任务按约定处理完毕。观察达到约定门槛后停止旧项目服务。保留旧卷、配置和入口恢复步骤。 | 待 P3 和切流窗口 |
 | P5 旧环境退役 | 记录稳定观察结果、备份去向和剩余历史访问方式。旧 worker VPC 的不可逆处置由管理员另行安排，并遵守上面的 VPC 约束。 | 待 P4 和单独处置决定 |
@@ -87,10 +87,11 @@
 | 2026-11-10 | Worker 入口准入 | 将 Nginx 的三个 worker 入口放行范围调整为 `10.11.0.0/16`。`nginx -t` 通过并重载原容器。由网段内来源实测 GPUStack `/version` 和 Bootstrap `/healthz` 均返回 `200`，registry 匿名 `/v2/` 返回 `401`。 | 从网段外的本机源地址访问三个 worker 入口均被断开。原配置已备份，首台新克隆连通性待首启核对。 [迁移跟踪 #14](https://github.com/WTaoGitHub/cybercafe-maas/issues/14) |
 | 2026-11-10 | P2 无盘启动授权 | GPUStack v2.2.3 加装 enrollment 0.3.0，`required` 绑定 `maas-baremetal-workers`（ID `1`）。独立 Bootstrap `18841`、HTTPS 注册 `18444` 以及 `baremetal-diskless-r1` 发布已启用。保留普通发布 `baremetal-pilot-r1`，两份发布均通过 HTTPS 取回和验签。 | 合成占位验证预登记、授权签发和重复请求。错集群授权和普通集群 token 尝试注册受管 worker 均返回 `403`，无许可返回 `401`。占位记录已退役，试点副本为 0。真实首启和接续待验。 [无盘身份跟踪 #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16) |
 | 2026-11-10 | P2 默认集群 | 新 PC 的无盘 Bootstrap 部署 `dd9b041`。省略集群 ID 的镜像设置、授权项与发布输入重建出了原 `baremetal-diskless-r1` 签名发布，`cluster_id=1`。 | HTTPS 取配置并验签成功，无启动许可返回 `401`。容器内复核缺省授权项匹配集群 `1`，错误集群触发 `403`。原 Bootstrap 容器保留作回退，真实 VPC 首启待验。 |
+| 2026-11-10 | P2 试点母版准备 | 在母版安装 `dd9b041` 版 E5 和指向新 PC 的试点配置，启用等待启动许可的 `.path`。母版实测签名发布、HTTPS 原生 `/version` 和仓库鉴权通过，固定摘要的 worker 镜像已缓存。 | systemd 校验通过，母版无容器、原生身份或启动许可。旧配置与两份旧引导状态文件已异机备份。待管理员保存独立试点快照并交付首台克隆的实例 ID 和 SSH 入口。 [快照与首启跟踪 #20](https://github.com/WTaoGitHub/cybercafe-maas/issues/20) |
 
 ### 无盘启动试点接力
 
-- 在新 PC 的受控操作目录使用 `baremetal-diskless` 下的 `operator/image-settings.json` 准备系统镜像。发布使用 `gpu-external-id`，原生身份和启动许可分别位于 `/run/maas-bootstrap` 与 `/run/maas-start/boot-grant`。管理员封版后，首台克隆按实测 GPU UUID 核对并批准启动。接续试验保留该 GPU 的 worker 记录，核对旧实例退出后再发接续许可。
+- 母版已使用新 PC `baremetal-diskless` 下的 `operator/image-settings.json` 安装 E5。私有操作目录保留安装清单和母版回退包。发布使用 `gpu-external-id`，原生身份和启动许可分别位于 `/run/maas-bootstrap` 与 `/run/maas-start/boot-grant`。管理员封版后，首台克隆按实测 GPU UUID 核对并批准启动。接续试验保留该 GPU 的 worker 记录，核对旧实例退出后再发接续许可。
 - 两个试点入口允许 `10.11.0.0/16`。从网段内复核健康检查，网段外探测被拒绝。普通入口 `18080` 改为 HTTP 代理以拦截 `/internal/`，普通入口和试点 HTTPS 入口均拒绝内部登记、接续和退役路径。Bootstrap 经本机回环调用这些接口。
 - 切换前备份了 GPUStack PostgreSQL 并核对归档清单，保留停止的原 GPUStack 容器、Nginx 原配置与部署记录。回退前先停止试点授权，核对受管记录与会话状态，再按恢复点处理。
 
