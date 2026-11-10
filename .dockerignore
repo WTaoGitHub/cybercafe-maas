@@ -4,5 +4,11 @@
 !requirements-maas-tested-lock.txt
 !maas_platform/
 !maas_platform/**
+!plugins/gpustack-replica/maas_replica_policy.py
+!plugins/gpustack-replica/maas_replica_planner.py
+!plugins/gpustack-replica/maas_replica_pressure.py
+!plugins/gpustack-replica/maas_replica_apply.py
+!plugins/gpustack-replica/maas_replica_execution.py
+!plugins/gpustack-replica/maas_replica_native.py
 maas_platform/**/__pycache__/
 maas_platform/**/*.pyc
