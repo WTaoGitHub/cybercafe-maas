@@ -83,3 +83,10 @@
 | 2026-11-09 | 方案 C 独立运行 | 移除方案 A 的网关监听、服务和防火墙表。方案 C 单独管理镜像配置，来自自建 bridge 的名称接入及默认 bridge 的固定 IP 接入复验通过。 | 实际下游迁移和真实 OCR 待验。 |
 | 2026-11-09 | 方案 C 下游网络验证 | 从新 PC 上实际运行的下游后端网络命名空间探测，`maas-service` 解析成功，根路径 `404`，能力查询匿名 `401`、授权 `200`，无效 OCR 输入 `422 IMAGE_BASE64`。 | 此次探针覆盖实际下游网络及 API 校验。下游应用的真实 OCR 流程未在该次探测中执行。 |
 | 2026-11-10 | 控制端版本更新 | 部署 `bdd5f52` 到 MaaS API、执行器、观察器、E17 采样与日报及 Bootstrap，并升级 GPUStack 副本调节插件到 0.16.0，沿用 Observe 模式。MaaS、Bootstrap、GPUStack 健康接口均返回 `200`。实际下游容器的匿名能力查询返回 `401`，内部健康路径返回 `404`。 | 旧镜像、应用环境文件备份和手动管理的旧容器保留作回退。部署未启用 MaaS Apply 或新的无盘启动授权，真实 OCR 不在本次验证范围。参见 [构建修复 #56](https://github.com/WTaoGitHub/cybercafe-maas/issues/56)。 |
+| 2026-11-10 | 副本调节器空集群试点 | 只重建 E17 日报容器并叠加 MaaS Observe 与 Apply Compose 配置。只授权新集群的 `maas-ocr`，上限为 1，全局与集群在途预算各为 1。MaaS 日志进入等待 GPU，期望和就绪均为 0，worker 与实例均为 0，待确认日志为空。GPUStack 内旧插件保持 Observe，MaaS 与 GPUStack 健康检查均为 `200`。 | 压力采集已安装并启用，空来源时按条件保持待机，MaaS 压力门槛关闭。待首台克隆注册并核验身份后接入真实样本，再验证目标 `0 → 1`、实例就绪与 OCR。 [试点追踪 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39) |
+
+### 副本调节试点接力
+
+- 新 PC 的试点使用控制目录下独立的 `replica-maas-pilot` 目录，保留 `replica.env`、策略输入和持久日志。E17 日报后续重建须继续使用 `compose.yaml`、`compose.replica-observe.yaml`、`compose.replica-apply.yaml` 和该私有环境覆盖。专用管理凭据为 30 天有效期。写入日志为空表示当前没有待对账操作。
+- 首台试点克隆启动后，先核对实际来源准入、GPUStack worker ID 和主机公钥。配置压力采样专用公钥的受限采样命令、固定主机公钥及 `WORKER_ID=USER@HOST` 来源，启动 `maas-replica-pressure.service`。核对样本确实来自该 worker、覆盖其 ID 并持续刷新。当前试点每约 3 秒采样，最大样本年龄 20 秒，恢复观察期 10 秒。
+- 准备好首台克隆接入与压力采样的操作窗口。默认上线事件有效期为 600 秒。若真实样本在窗口内未就绪，保持停写，待条件满足后安排新的试点上线事件。记录一次原生目标更新、实例就绪与真实 OCR 后再考虑提高副本上限。
