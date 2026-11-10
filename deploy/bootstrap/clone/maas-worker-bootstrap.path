@@ -1,0 +1,9 @@
+[Unit]
+Description=Start the diskless E5 worker when a boot grant arrives
+
+[Path]
+PathExists=/run/maas-start/boot-grant
+Unit=maas-worker-bootstrap.service
+
+[Install]
+WantedBy=multi-user.target

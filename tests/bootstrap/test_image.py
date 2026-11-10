@@ -71,5 +71,11 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     image.build(root,cfg)
     assert not grant.exists() and not (root/'run/maas-bootstrap').exists()
     assert (root/'opt/maas/lib/maas_bootstrap/handoff.py').is_file()
+    assert (root/'opt/maas/lib/maas_bootstrap/delivery.py').is_file()
+    units=root/'etc/systemd/system'
+    assert not (units/'multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
+    assert (units/'multi-user.target.wants/maas-worker-bootstrap.path').readlink() == Path(
+        '/etc/systemd/system/maas-worker-bootstrap.path')
+    assert 'PathExists=/run/maas-start/boot-grant\n' in (units/'maas-worker-bootstrap.path').read_text()
     installed=json.loads((root/'etc/maas/bootstrap.json').read_text())
     assert installed['worker_start_grant_file']==data['worker_start_grant_file']

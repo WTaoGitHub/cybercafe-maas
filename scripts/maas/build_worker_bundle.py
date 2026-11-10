@@ -5,9 +5,11 @@ from pathlib import Path
 REPO=Path(__file__).resolve().parents[2]
 SOURCES=[
  'maas_bootstrap/__init__.py','maas_bootstrap/client.py','maas_bootstrap/storage.py','maas_bootstrap/registry.py','maas_bootstrap/handoff.py','maas_bootstrap/worker.py','maas_bootstrap/cli.py',
+ 'maas_bootstrap/delivery.py','maas_bootstrap/enrollment.py',
  'scripts/maas/prepare_worker_image.py','scripts/maas/inspect_worker_template.py',
  'scripts/maas/verify_worker_bundle.py','requirements-bootstrap-client.txt',
  'deploy/bootstrap/clone/maas-worker-bootstrap','deploy/bootstrap/clone/maas-worker-bootstrap.service',
+ 'deploy/bootstrap/clone/maas-worker-bootstrap.path',
  'deploy/bootstrap/clone/image-settings.example.json','deploy/bootstrap/clone/README.md',
  'deploy/bootstrap/clone/HANDOFF.md',
  'results/maas-e5-preparation/bootstrap-server.crt','results/maas-e5-preparation/bootstrap-release-signing.pub']

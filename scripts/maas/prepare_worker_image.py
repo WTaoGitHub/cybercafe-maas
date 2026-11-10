@@ -92,10 +92,16 @@ def build(root,settings_path):
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),
         ('maas-worker-bootstrap.service','etc/systemd/system/maas-worker-bootstrap.service',0o644)):
         files[dest]=((REPO/'deploy/bootstrap/clone'/name).read_bytes(),mode)
-    link='etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service'
+    boot_unit='maas-worker-bootstrap.service'
+    if diskless:
+        boot_unit='maas-worker-bootstrap.path'
+        files['etc/systemd/system/'+boot_unit]=((REPO/'deploy/bootstrap/clone'/boot_unit).read_bytes(),0o644)
+        files['opt/maas/lib/maas_bootstrap/delivery.py']=((REPO/'maas_bootstrap/delivery.py').read_bytes(),0o644)
+    link='etc/systemd/system/multi-user.target.wants/'+boot_unit
     manifest='opt/maas/image-manifest.json'
     # Full preflight before writing; never overwrite existing image files or links.
-    for name in [*files,link,manifest]:
+    enable_dir='etc/systemd/system/multi-user.target.wants/'
+    for name in [*files,enable_dir+'maas-worker-bootstrap.service',enable_dir+'maas-worker-bootstrap.path',manifest]:
         p=safe_target(root,name)
         if p.exists() or p.is_symlink():raise BootstrapError('IMAGE_DESTINATION_EXISTS')
     for name,(contents,mode) in files.items():
@@ -104,7 +110,7 @@ def build(root,settings_path):
         p.chmod(mode)
     safe_target(root,'etc/maas').chmod(0o700)
     p=safe_target(root,link);p.parent.mkdir(parents=True,exist_ok=True)
-    p.symlink_to('/etc/systemd/system/maas-worker-bootstrap.service')
+    p.symlink_to('/etc/systemd/system/'+boot_unit)
     result={'schema_version':1,'image_id':cfg['image_id'],'cluster_id':cfg['cluster_id'],
             'architecture':cfg['architecture'],'state_included':False,'worker_started':False,
             'hashes':{n:hashlib.sha256(b).hexdigest() for n,(b,m) in files.items() if n!='etc/maas/shared-code'},

@@ -131,4 +131,23 @@ python3 -m maas_bootstrap.enrollment \
 
 通过受控渠道把 0600 的授权文件交给目标 VPC，放到 `/run/maas-start/boot-grant`，再运行 `apply`。共享配置码只用于读取签名发布。MaaS 绑定授权到发布版本、集群和 GPU，E5 启动前核对绑定，原生注册后再核对 `me=true`、worker ID、设备和 `ready`。重复调用可取回同一份有效许可。Docker 已创建、尚未执行的容器可重试启动。已退出的容器需要新的受控启动会话。
 
+## 无盘克隆的开机交付
+
+使用本版离线安装工具准备无盘克隆。镜像会启用 `maas-worker-bootstrap.path`，监视 `/run/maas-start/boot-grant`。许可到达后，systemd 启动现有的 `maas-worker-bootstrap.service`。目标克隆通过已配置的 HTTPS 信任材料拉取并核验签名发布。
+
+运维先确认旧实例退出或隔离及同卡分配，记录退出凭证，并从已核验的目标 SSH 会话读取 `/proc/sys/kernel/random/boot_id` 和完整 GPU UUID。用能访问授权目录的服务账号运行下面的命令。该账号的 SSH 配置须为目标别名指定已核验的主机密钥和能运行 E5 的 root 登录。每次交接使用独立的私有操作目录。
+
+```sh
+python3 -m maas_bootstrap.delivery \
+  --root "$APPROVAL_STATE" --operation-dir "$PRIVATE_HANDOFF_DIR" \
+  --ssh-host "$TARGET_ALIAS" --boot-id "$TARGET_BOOT_ID" --gpu "$GPU_UUID" \
+  --cluster-id "$CLUSTER_ID" --config-revision "$CONFIG_REVISION" \
+  --worker-id "$WORKER_ID" --previous-session-id "$PREVIOUS_SESSION_ID" \
+  --fence-receipt "$VERIFIED_EXIT_RECEIPT"
+```
+
+命令在同一条 SSH 连接上校验目标的启动 ID、GPU、集群和签名发布，再原子交付许可。SSH 中断后用同一操作目录和原参数重试，复用已有授权。若出现 `DELIVERY_NEEDS_RECONCILIATION`，先核对本地许可文件和服务端会话记录。许可逾期或新一轮开机时，按新的退出证据准备下一次交接。保留运行时许可文件供同一轮交接重试，文件随 tmpfs 清空。
+
+`GRANT_DELIVERED` 表示许可已交付。用 `systemctl status maas-worker-bootstrap.service` 和 GPUStack 核对原 worker ID 恢复 `Ready`，再测试旧凭据和试点 OCR。开机时缺少许可的克隆应停在等待状态。
+
 `WORKER_START_NEEDS_RECONCILIATION` 表示 MaaS 发出原生许可请求后缺少确定结果。运维通过授权目录中的 `issue.json` 核对 worker ID，并查询 GPUStack 侧该 worker 的接续记录。若原生许可已发出，后续按已存在的会话处理。只有确认原请求未发出许可时，才可重新授权。真实退出和存量隧道、模型恢复属于 P4 现场验收。 [Issue #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
