@@ -45,7 +45,7 @@ envsubst '$P4_NATIVE_LISTEN $P4_NATIVE_UPSTREAM_PORT' \
 
 模型 44 恢复 1 个副本，新实例落在 worker 11，真实 CUDA OCR 返回 HTTP 200 和 46 行。正式 OCR 复核为 4/4，正式请求也返回 HTTP 200 和 46 行。试点压力采样已恢复，调节器修订 5 状态检查通过。
 
-本轮覆盖 005 整机重启后的无盘身份恢复。独立 VPC B 的验收仍需平台实例标识和同卡分配记录。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+操作方补充确认，005 启动前后对应两个不同的 VPC 实例，来宾主机名沿用 005。管理员说明平台会分配原 GPU，两次主机实测的完整 GPU UUID 一致。结合上述 worker、凭据和 OCR 结果，P4 的 A→B 跨实例接续功能验收通过。本次使用人工下发 E5 引导配置和接续许可。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
 
 ## 退役与回退
 
