@@ -106,6 +106,8 @@ set +a
 
 Swagger `/docs`、`/openapi.json`与 `/healthz`仅可经API私有18830访问，当前Nginx路径白名单不转发它们。无客户 `/v1/models`、管理员HTTP接口、`/metrics`、批次/ZIP/视频接口。
 
+新 PC 同机容器集成使用方案 C 的 Base URL `http://maas-service:18831`。调用方保留原 Compose 网络，将 Base URL 和服务凭据作为部署配置，并沿用 [OCR 提交和轮询契约](../api/CONSUMER-OCR.md)。从实际调用容器验证 DNS 和鉴权，探测路径与预期状态见 [API 接入说明](../api/README.md#11-base-url)。
+
 TaskCreate有 `model/input/parameters/timeout_seconds/max_attempts`；默认总截止120秒（1–3600），最多attempt默认3（1–3）。排队时间计入总截止，不是“开始推理后再计时”。OCR输入为 `{"image":{"artifact_id":"art_..."}}`，参数必须为空对象。
 
 异步结果artifact外层为 `outputs/model_revision/attempt/usage`；OCR的outputs含text、lines、elapsed_ms、node。同步外层为Chat completion，`choices[0].message.content`是需要再次JSON解析的OCR对象。两者不是同一层级。

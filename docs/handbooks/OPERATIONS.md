@@ -18,6 +18,8 @@
 
 从空卷部署独立实体机时，使用[实体机全新部署与验收手册](../../deploy/maas/BARE-METAL.md)，按 GPUStack Server、Worker、OCR、MaaS、私有入口的顺序执行。下文涉及 001/002 的路径、拓扑和维护步骤属于现有试点环境。沿用现有环境时走发布或恢复流程。
 
+新 PC 的方案 C 固定入口为 `http://maas-service:18831`。检查 `maas-consumer-private.service` 与 `maas-consumer-private-policy.timer` 是否处于 active 状态，再查看 `nft list table inet maas_consumer_private`。从实际下游容器解析名称并访问模型能力路径，无凭据预期 `401`，授权凭据预期 `200`。若 DNS 正常但连接超时，核对当前 Docker 网桥是否已被策略刷新纳入。宿主机上直查 API 健康仍使用 `http://127.0.0.1:18830/healthz`。入口范围和停用步骤见[新 PC 上线计划](../../deploy/maas/NEW-PC-ROLLOUT.md#方案-c-固定-http-消费者入口)。
+
 ## 1. 拓扑、路径与操作权限
 
 | 项目 | 当前值 |

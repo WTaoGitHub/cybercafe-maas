@@ -16,6 +16,8 @@
 
 ### 1.1 Base URL
 
+**新 PC 同机 Docker 接入（方案 C）**使用 `http://maas-service:18831`。下游可保留自己的 Compose bridge 网络，使用新控制端登记的 Bearer 凭据。模型能力查询可用 `GET /maas/v1/models/ocr.default/capabilities` 验证，无凭据预期 `401`，授权凭据预期 `200`。根路径和健康检查路径返回 `404`。自定义 bridge 已验证可以解析此名称，Docker 自带的默认 `bridge` 若无法解析，可使用管理员提供的方案 C 私网 IP。详见[新 PC 接入说明](../../deploy/maas/NEW-PC-ROLLOUT.md#方案-c-固定-http-消费者入口)。
+
 ```text
 https://<管理员提供的私有访问地址>:<端口>
 ```
