@@ -88,6 +88,7 @@
 | 2026-11-10 | P2 无盘启动授权 | GPUStack v2.2.3 加装 enrollment 0.3.0，`required` 绑定 `maas-baremetal-workers`（ID `1`）。独立 Bootstrap `18841`、HTTPS 注册 `18444` 以及 `baremetal-diskless-r1` 发布已启用。保留普通发布 `baremetal-pilot-r1`，两份发布均通过 HTTPS 取回和验签。 | 合成占位验证预登记、授权签发和重复请求。错集群授权和普通集群 token 尝试注册受管 worker 均返回 `403`，无许可返回 `401`。占位记录已退役，试点副本为 0。真实首启和接续待验。 [无盘身份跟踪 #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16) |
 | 2026-11-10 | P2 默认集群 | 新 PC 的无盘 Bootstrap 部署 `dd9b041`。省略集群 ID 的镜像设置、授权项与发布输入重建出了原 `baremetal-diskless-r1` 签名发布，`cluster_id=1`。 | HTTPS 取配置并验签成功，无启动许可返回 `401`。容器内复核缺省授权项匹配集群 `1`，错误集群触发 `403`。原 Bootstrap 容器保留作回退，真实 VPC 首启待验。 |
 | 2026-11-10 | P2 试点母版准备 | 在母版安装 `dd9b041` 版 E5 和指向新 PC 的试点配置，启用等待启动许可的 `.path`。母版实测签名发布、HTTPS 原生 `/version` 和仓库鉴权通过，固定摘要的 worker 镜像已缓存。 | systemd 校验通过，母版无容器、原生身份或启动许可。旧配置与两份旧引导状态文件已异机备份。待管理员保存独立试点快照并交付首台克隆的实例 ID 和 SSH 入口。 [快照与首启跟踪 #20](https://github.com/WTaoGitHub/cybercafe-maas/issues/20) |
+| 2026-11-10 | Bootstrap 版本对齐 | 核对 `2229ea5`。普通 Bootstrap 切换到该提交的源码，无盘 Bootstrap 已运行相同代码。抽查 MaaS API、E17 日报、GPUStack 副本调节和预登记模块，与该提交一致。 | 原签名发布内容未变，普通 Bootstrap 鉴权请求返回 `200`、匿名返回 `401`，两套 Bootstrap、MaaS 和 GPUStack 健康检查通过。原普通 Bootstrap 容器保留作回退，真实克隆首启待验。 [验收跟踪 #48](https://github.com/WTaoGitHub/cybercafe-maas/issues/48) |
 
 ### 无盘启动试点接力
 
