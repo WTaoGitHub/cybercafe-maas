@@ -1,4 +1,4 @@
-"""Read-only MaaS counterpart of the GPUStack replica regulator."""
+"""MaaS replica planning and explicitly authorized scale-up."""
 import asyncio
 import logging
 from types import SimpleNamespace
@@ -41,7 +41,7 @@ async def native_devices(cluster, workers):
     return (await snapshot_devices((cluster,), normalized, allocated))[cluster]
 
 
-async def run(client, listing, signals, policy_file, *, interval=10):
+async def run(client, listing, signals, policy_file, *, interval=10, scale_up=None):
     pressure = PressureGate.from_environment()
     trusted = scope = session = event = started = last = None
     while True:
@@ -52,7 +52,8 @@ async def run(client, listing, signals, policy_file, *, interval=10):
             session = current_session
         try:
             policy = policy_file.refresh()
-            key = (policy.cluster, policy.owner)
+            mode = policy.execution.get('mode', 'observe')
+            key = (policy.cluster, policy.owner, mode)
             if key != scope:
                 trusted = event = started = None
                 scope = key
@@ -90,6 +91,20 @@ async def run(client, listing, signals, policy_file, *, interval=10):
                         pressure_up_preview_limit=plan.get('up_preview_limit', 0) if state == 'open' else 0)
             if signals.session != current_session:
                 raise ConnectionError('subscription_changed')
+            if scale_up is not None:
+                from .replica_apply import deployment_binding
+
+                def arrival_valid():
+                    return (signals.session == current_session
+                            and started is not None
+                            and monotonic() - started < policy.arrival_window_s)
+
+                bindings = ({ident: deployment_binding(models[ident]) for ident in policy.models}
+                            if mode == 'apply' and plan.get('up_preview_limit') else {})
+                plan['execution_state'] = await scale_up.advance(
+                    policy, event, devices, plan, refresh=policy_file.refresh,
+                    bindings=bindings, arrival_valid=arrival_valid,
+                )
         except Exception as exc:
             trusted = event = started = None
             plan = {'state': 'blocked', 'reason': type(exc).__name__}

@@ -3,8 +3,6 @@ from collections import defaultdict
 import hashlib
 import json
 
-from gpustack.schemas.models import ModelUpdate
-
 from maas_replica_execution import Deployment, Snapshot
 
 
@@ -13,14 +11,16 @@ def digest(value):
 
 
 def model_settings(row):
+    from gpustack.schemas.models import ModelUpdate
+
     # Omit read-only server fields while keeping the native model's settings.
     return ModelUpdate.model_validate(row).model_dump(mode="json")
 
 
-def binding(row, *, recovery=False):
-    settings = model_settings(row)
+def binding(row, *, recovery=False, serializer=model_settings):
+    settings = serializer(row)
     settings.pop("replicas")
-    settings.pop("ready_replicas")
+    settings.pop("ready_replicas", None)
     if recovery:
         # The scheduler may fill these during the first allocation.
         settings.pop("categories")
@@ -29,13 +29,14 @@ def binding(row, *, recovery=False):
 
 
 class NativeAdapter:
-    def __init__(self, request, *, revision, cluster_id, owner_id, model_ids, grow_only=False):
+    def __init__(self, request, *, revision, cluster_id, owner_id, model_ids, grow_only=False, serializer=model_settings):
         self.request = request
         self.revision = revision
         self.cluster_id = cluster_id
         self.owner_id = owner_id
         self.model_ids = frozenset(model_ids)
         self.grow_only = grow_only
+        self.serializer = serializer
 
     async def _pages(self, path):
         items = []
@@ -48,7 +49,15 @@ class NativeAdapter:
                     raise ValueError("Duplicate object in management API inventory")
                 ids.add(row["id"])
                 items.append(row)
-            if len(batch) < 100:
+            pagination = result.get("pagination")
+            if pagination is not None:
+                if pagination["page"] != page:
+                    raise ValueError("Unexpected management API page")
+                if page >= pagination["totalPage"]:
+                    if len(items) != pagination["total"]:
+                        raise ValueError("Management API inventory changed while paging")
+                    return items
+            elif len(batch) < 100:
                 return items
         raise ValueError("Management API inventory exceeded the supported bound")
 
@@ -94,8 +103,8 @@ class NativeAdapter:
                 for row in sorted(rows[model["id"]], key=lambda row: row["id"])
             )
             deployments[model["id"]] = Deployment(model["cluster_id"], model["owner_principal_id"],
-                                                   binding(model), model["replicas"], healthy,
-                                                   recovery_binding=binding(model, recovery=True))
+                                                   binding(model, serializer=self.serializer), model["replicas"], healthy,
+                                                   recovery_binding=binding(model, recovery=True, serializer=self.serializer))
         identity = [(i, m.cluster_id, m.owner_id, m.binding, m.replicas, m.healthy)
                     for i, m in sorted(deployments.items())]
         placement = sorted((row["id"], row["model_id"], row["state"], row["worker_id"],
@@ -112,8 +121,8 @@ class NativeAdapter:
             raise ValueError("Replica write outside the isolated deployment binding")
         path = f"/v2/models/{action.model_id}"
         row = await self.request("GET", path)
-        if (row["id"], row["cluster_id"], row["owner_principal_id"], row["replicas"], binding(row)) != (
+        if (row["id"], row["cluster_id"], row["owner_principal_id"], row["replicas"], binding(row, serializer=self.serializer)) != (
             action.model_id, action.cluster_id, action.owner_id, action.before, action.binding
         ):
             raise ValueError("Native deployment changed before the write")
-        await self.request("PUT", path, {**model_settings(row), "replicas": action.after})
+        await self.request("PUT", path, {**self.serializer(row), "replicas": action.after})

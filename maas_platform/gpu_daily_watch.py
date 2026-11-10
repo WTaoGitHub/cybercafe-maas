@@ -185,11 +185,20 @@ async def run():
                 from maas_replica_policy import PolicyFile
                 from .replica_observe import run as preview_replicas
 
+                scale_up = None
+                if os.getenv('MAAS_REPLICA_ENABLE_APPLY') == '1':
+                    from .replica_apply import from_environment
+                    scale_up = from_environment()
+                    if scale_up is None:
+                        raise ValueError('Replica Apply authorization is missing')
+                    if scale_up.request.url != os.environ['MAAS_GPUSTACK_URL'].rstrip('/'):
+                        raise ValueError('Replica observations and management must use the same GPUStack endpoint')
                 logging.basicConfig(level=logging.WARNING)
                 logging.getLogger(preview_replicas.__module__).setLevel(logging.INFO)
                 signals = SimpleNamespace(session=None, changed=asyncio.Event())
                 preview = asyncio.create_task(preview_replicas(
-                    client, listing, signals, PolicyFile(Path(policy_path), allow_apply=False)
+                    client, listing, signals, PolicyFile(Path(policy_path), allow_apply=scale_up is not None),
+                    scale_up=scale_up
                 ))
             task = asyncio.create_task(observe(db, client, catalog, signals))
             sealed_through = None

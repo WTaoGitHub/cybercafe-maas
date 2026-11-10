@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent
-from maas_replica_native import NativeAdapter
+from maas_replica_native import NativeAdapter, model_settings
 from maas_replica_policy import ARRIVAL_EVENTS, integer
 from maas_replica_pressure import PressureGate
 
@@ -51,16 +51,17 @@ class LocalManagement:
 
 
 class ScaleUp:
-    def __init__(self, cluster, journal, request, *, pressure=None, model_caps=None):
+    def __init__(self, cluster, journal, request, *, pressure=None, model_caps=None, serializer=model_settings):
         self.cluster = cluster
         self.journal = journal
         self.request = request
         self.version_checked = False
         self.pressure = pressure if pressure is not None else PressureGate(None)
         self.model_caps = model_caps
+        self.serializer = serializer
 
     @classmethod
-    def from_environment(cls):
+    def from_environment(cls, *, serializer=model_settings):
         cluster = os.environ.get("MAAS_REPLICA_APPLY_CLUSTER")
         if cluster is None:
             return None
@@ -83,7 +84,7 @@ class ScaleUp:
         pressure = PressureGate.from_environment()
         if pressure.path is None:
             raise ValueError("Apply requires a pressure feed")
-        return cls(ident, journal, request, pressure=pressure, model_caps=caps)
+        return cls(ident, journal, request, pressure=pressure, model_caps=caps, serializer=serializer)
 
     async def _adapter(self, policy, request):
         if not self.version_checked:
@@ -92,7 +93,7 @@ class ScaleUp:
                 raise ValueError("Unapproved GPUStack version")
             self.version_checked = True
         return NativeAdapter(request, revision=policy.revision, cluster_id=self.cluster,
-                             owner_id=policy.owner, model_ids=policy.models, grow_only=True)
+                             owner_id=policy.owner, model_ids=policy.models, grow_only=True, serializer=self.serializer)
 
     async def advance(self, policy, event, devices, plan, *, refresh, bindings, arrival_valid=None):
         if policy.cluster != self.cluster:

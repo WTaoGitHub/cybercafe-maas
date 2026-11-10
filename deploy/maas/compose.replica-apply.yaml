@@ -1,0 +1,13 @@
+# Use together with compose.replica-observe.yaml after transferring write ownership.
+services:
+  e17-daily:
+    environment:
+      MAAS_REPLICA_ENABLE_APPLY: "1"
+      MAAS_REPLICA_APPLY_CLUSTER: ${MAAS_REPLICA_APPLY_CLUSTER:?set explicitly authorized cluster}
+      MAAS_REPLICA_APPLY_MODEL_CAPS: ${MAAS_REPLICA_APPLY_MODEL_CAPS:?set authorized deployments and caps}
+      MAAS_REPLICA_MANAGEMENT_URL: ${MAAS_REPLICA_MANAGEMENT_URL:?set GPUStack loopback management endpoint}
+      MAAS_REPLICA_MANAGEMENT_KEY_FILE: /run/maas-replica-management/key
+      MAAS_REPLICA_WRITE_JOURNAL: /var/lib/maas-replica/write.json
+    volumes:
+      - ${MAAS_REPLICA_MANAGEMENT_KEY_PATH:?set private management key path}:/run/maas-replica-management/key:ro
+      - ${MAAS_REPLICA_JOURNAL_DIR:?set private durable journal directory}:/var/lib/maas-replica
