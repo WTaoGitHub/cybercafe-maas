@@ -57,6 +57,7 @@ class HandoffRequest(BaseModel):
     worker_id: PositiveInt
     session_id: UUID
     gpu_uuid: str | None = None
+    automatic: bool = False
     previous_session_id: UUID | None = None
     fence_receipt: FenceReceipt | None = None
 
@@ -177,6 +178,15 @@ class WorkerHandoff:
             if (not self.managed(worker) or worker.name != worker.external_id
                     or (request.gpu_uuid is not None and request.gpu_uuid != worker.external_id)):
                 raise HTTPException(404, "Enrolled worker not found")
+            if request.automatic and (request.gpu_uuid is None or request.previous_session_id or request.fence_receipt):
+                raise HTTPException(422, "Invalid automatic handoff scope")
+            if request.automatic:
+                matches = (await session.exec(select(Worker.id).where(
+                    Worker.cluster_id == self.cluster_id, Worker.deleted_at.is_(None),
+                    Worker.external_id == request.gpu_uuid,
+                ).limit(2))).all()
+                if matches != [worker.id]:
+                    raise HTTPException(409, "GPU binding is not unique")
             previous = await handoff_for(session, worker.id)
             keys = []
             principal_id = worker.system_principal_id
@@ -187,10 +197,15 @@ class WorkerHandoff:
                     raise HTTPException(409, "Existing identity requires an explicit migration")
                 await session.execute(handoffs.insert().values(worker_id=worker.id, **values))
             else:
-                if (previous["phase"] == "registering" or session_id == previous["session_id"]
+                if request.automatic:
+                    if (previous["phase"] != "active" or session_id == previous["session_id"]
+                            or worker.state != WorkerStateEnum.NOT_READY):
+                        raise HTTPException(409, "Worker is not eligible for automatic handoff")
+                elif (previous["phase"] == "registering" or session_id == previous["session_id"]
                         or str(request.previous_session_id) != previous["session_id"] or not request.fence_receipt):
                     raise HTTPException(409, "Current session must be fenced before handoff")
-                self.require_fenced(worker)
+                if not request.automatic:
+                    self.require_fenced(worker)
                 principal_id, keys = await revoke_identity(session, worker, {
                     "state": WorkerStateEnum.INITIALIZING, "heartbeat_time": None,
                     "state_message": "Waiting for diskless worker handoff", "status": WorkerStatus.get_default_status(),

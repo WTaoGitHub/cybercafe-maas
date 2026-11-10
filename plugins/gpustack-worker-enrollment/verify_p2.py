@@ -91,6 +91,8 @@ async def main():
         print("PASS one permit for competing sessions; binding and replay enforced", flush=True)
 
         session_b = str(uuid4())
+        automatic = {"worker_id": worker_id, "gpu_uuid": gpu, "session_id": session_b, "automatic": True}
+        post(HANDOFF, maas_key, automatic, 409)
         issue(worker_id, session_b, session_a, "verified-lab-fence", expected=409)
         offline(worker_id)
         issue(worker_id, session_b, session_a, expected=409)
@@ -101,7 +103,9 @@ async def main():
         print("PASS active or recently heard worker blocks handoff; offline alone grants nothing", flush=True)
 
         offline(worker_id)
-        second = issue(worker_id, session_b, session_a, "verified-lab-fence")
+        post(HANDOFF, maas_key, {**automatic, "gpu_uuid": other_gpu}, 404)
+        second = post(HANDOFF, maas_key, automatic)
+        post(HANDOFF, maas_key, {**automatic, "session_id": str(uuid4())}, 409)
         permit_b = second["registration_token"]
         assert second["worker_id"] == worker_id
         post(HEARTBEAT, token_a, expected=401)

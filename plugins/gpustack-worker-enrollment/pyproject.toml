@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maas-gpustack-worker-enrollment"
-version = "0.3.0"
+version = "0.4.0"
 requires-python = ">=3.11"
 
 [project.entry-points."gpustack.plugins"]

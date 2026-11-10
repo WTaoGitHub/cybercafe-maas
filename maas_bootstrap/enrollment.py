@@ -86,18 +86,17 @@ class WorkerStartBroker:
         worker_id = grant.get('auto_start_gpus', {}).get(gpu)
         if not positive_id(worker_id):
             raise StartDenied(403, 'WORKER_START_GPU_NOT_APPROVED')
-        state = LocalState(self.root / f'first-{cluster}-{gpu}')
+        gpu_state = LocalState(self.root / f'auto-{cluster}-{gpu}')
+        state = LocalState(gpu_state.root / boot)
         binding = dict(body, boot_id=boot, gpu_uuid=gpu, worker_id=worker_id,
-                       site_id=manifest['site_id'], batch_id=manifest['batch_id'])
-        with state.lock():
+                       site_id=manifest['site_id'], batch_id=manifest['batch_id'], automatic=True)
+        with gpu_state.lock(), state.lock():
             intent = state.read('intent.json')
             if intent is None:
                 intent = {'binding':binding, 'session_id':str(uuid4())}
                 atomic_json(state.root/'intent.json', intent)
             elif intent['binding'] != binding:
                 raise StartDenied(409, 'WORKER_START_BOOT_CONFLICT')
-            # No previous session or fence receipt: the native endpoint only
-            # authorizes a placeholder that has never had an approved session.
             return self.issue(state, binding, intent['session_id'])
 
     def start(self, authorization, body, releases):
@@ -138,6 +137,8 @@ class WorkerStartBroker:
             check_binding(result, cluster, gpu)
             worker_id = result['worker_id']
         body = {'worker_id':worker_id, 'gpu_uuid':gpu, 'session_id':session_id}
+        if grant.get('automatic'):
+            body['automatic'] = True
         if grant.get('previous_session_id'):
             body.update(previous_session_id=grant['previous_session_id'], fence_receipt=grant['fence_receipt'])
         # The plugin returns the permit only once. Persist intent before any

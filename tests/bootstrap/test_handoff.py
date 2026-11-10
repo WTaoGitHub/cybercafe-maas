@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from maas_bootstrap.client import BootstrapError, LocalState, ReleaseVerifier, atomic_json
-from maas_bootstrap.enrollment import WorkerStartBroker, approve
+from maas_bootstrap.enrollment import StartDenied, WorkerStartBroker, approve
 from maas_bootstrap import handoff
 from maas_bootstrap.service import create_app
 from maas_bootstrap.worker import NativeDockerWorker, WORKER_CA, apply
@@ -96,8 +96,12 @@ def test_automatic_first_start_requires_approved_gpu_and_serializes_boots(diskle
     entered, release = Event(), Event()
 
     class BlockingNative(Native):
+        offline = False
+
         def post(self, action, body):
-            assert action == 'handoff'
+            assert action == 'handoff' and body['automatic']
+            if self.calls and not self.offline:
+                raise StartDenied(409, 'NATIVE_HANDOFF_REJECTED')
             entered.set()
             assert release.wait(5)
             return super().post(action, body)
@@ -128,7 +132,15 @@ def test_automatic_first_start_requires_approved_gpu_and_serializes_boots(diskle
     assert first.status_code==200
     assert client.post(path,json=body,headers=headers).json()==first.json()
     assert client.post(path,json=other_boot,headers=headers).status_code==409
-    assert native.calls==[('handoff',{'worker_id':41,'gpu_uuid':GPU,'session_id':first.json()['session_id']})]
+    native.offline = True
+    second = client.post(path,json=other_boot,headers=headers)
+    assert second.status_code==200 and second.json()['worker_id']==41
+    assert second.json()['session_id']!=first.json()['session_id']
+    assert client.post(path,json=other_boot,headers=headers).json()==second.json()
+    assert native.calls==[
+        ('handoff',{'worker_id':41,'gpu_uuid':GPU,'automatic':True,'session_id':r.json()['session_id']})
+        for r in (first,second)
+    ]
 
 
 def test_automatic_client_sends_boot_id_and_prefers_manual_grant(diskless,monkeypatch):
