@@ -112,7 +112,9 @@ worker设置GPUSTACK_CACHE_DIR到独立缓存，显式启用原生mirrored并指
 
 试点应使用单独的配置服务实例和发布目录。每个发布目录只有一个活动版本。`test1` 可作为共同的原生目标集群，现有 `native-independent` 客户端继续读取原配置服务。
 
-在目标 GPUStack Server 安装 worker enrollment 0.2.1，并启用 `MAAS_WORKER_HANDOFF_MODE=required`。配置服务使用三个独立环境变量启用 `POST /bootstrap/v1/worker-start`。
+存量节点转入试点时，运维可保留已停止、`restart=no` 的旧 E5 容器及其原生数据。把旧容器改名后，在试点 `state_dir/maintenance-backups.json` 写入权限 0600 的记录，包含 `schema_version=2`、旧容器的完整 `container_id` 和实际原生 bind 来源 `legacy_worker_data_dir`。新 worker 仍使用独立 tmpfs 目录。客户端核对旧容器的完整 ID、E5 标签、镜像、状态和 bind 后才允许启动。
+
+在目标 GPUStack Server 安装 worker enrollment 0.3.0，并启用 `MAAS_WORKER_HANDOFF_MODE=required`。配置服务使用三个独立环境变量启用 `POST /bootstrap/v1/worker-start`。
 
 - `MAAS_BOOTSTRAP_WORKER_START_STATE` 指向仅服务账号可读写的授权目录，权限 0700。
 - `MAAS_BOOTSTRAP_NATIVE_ENROLLMENT_URL` 指向同一 GPUStack Server 的内部 HTTPS 或回环 HTTP 入口。

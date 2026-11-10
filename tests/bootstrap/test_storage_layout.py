@@ -91,6 +91,27 @@ def test_operator_backup_receipt_is_required_and_cannot_allow_running_or_foreign
         assert not worker.approved_stopped_backup(altered,s,sign())
 
 
+def test_diskless_receipt_allows_only_the_exact_stopped_legacy_worker(setup,tmp_path):
+    s,sign=setup
+    legacy_dir=str(tmp_path/'legacy-native')
+    old={'Id':'a'*64,'State':{'Running':False},'HostConfig':{'RestartPolicy':{'Name':'no'}},
+         'Config':{'Labels':{worker.LABEL:'worker-v1'},'Image':sign()['manifest']['worker_image_digest']},
+         'Mounts':[{'Type':'bind','Source':legacy_dir,'Destination':'/var/lib/gpustack'}]}
+    receipt=Path(s.data['state_dir'])/'maintenance-backups.json'
+    atomic_json(receipt,{'schema_version':1,'container_ids':[old['Id']]})
+    diskless=sign({**sign()['manifest'],'worker_name_policy':worker.DISKLESS_POLICY})
+    assert not worker.approved_stopped_backup(old,s,diskless)
+    atomic_json(receipt,{'schema_version':2,'container_id':old['Id'],'legacy_worker_data_dir':legacy_dir})
+    assert worker.approved_stopped_backup(old,s,diskless)
+    assert not worker.approved_stopped_backup(old,s,sign())
+    for altered in [
+        {**old,'State':{'Running':True}}, {**old,'Id':'b'*64}, {**old,'Mounts':[]},
+        {**old,'HostConfig':{'RestartPolicy':{'Name':'unless-stopped'}}},
+        {**old,'Config':{**old['Config'],'Labels':{worker.LABEL:'worker-v1',worker.LABEL+'.session-id':'active'}}},
+    ]:
+        assert not worker.approved_stopped_backup(altered,s,diskless)
+
+
 def test_apply_rejects_old_layout_before_runtime_changes(setup,monkeypatch):
     s,sign=setup;r=worker.NativeDockerWorker();image(monkeypatch)
     monkeypatch.setattr(r,'guard',lambda:None)

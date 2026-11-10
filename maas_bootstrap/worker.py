@@ -215,17 +215,32 @@ def identity_for(state,settings):
 def approved_stopped_backup(container,settings,envelope):
     """Only an explicit root-private maintenance receipt permits an old worker.
 
-    A running backup, different identity volume or unowned container is rejected
-    by the normal OTHER_WORKER_PRESENT check. No backup is automatically started.
+    A diskless migration can name the stopped legacy container and its old
+    identity volume. The new worker continues to use its separate tmpfs volume.
     """
     receipt=Path(settings.data['state_dir'])/'maintenance-backups.json'
     if not receipt.exists():return False
     approved=json.loads(read_file(receipt,secret=True))
-    if approved.get('schema_version')!=1 or container['Id'] not in approved.get('container_ids',[]):return False
+    data_dir=settings.data['worker_data_dir']
+    labels=container['Config'].get('Labels') or {}
+    if approved.get('schema_version')==1:
+        if container['Id'] not in approved.get('container_ids',[]):return False
+    elif approved.get('schema_version')==2:
+        if (envelope['manifest']['worker_name_policy']!=DISKLESS_POLICY
+                or approved.get('container_id')!=container['Id'] or LABEL+'.session-id' in labels):
+            return False
+        legacy_dir=approved.get('legacy_worker_data_dir')
+        if not isinstance(legacy_dir,str):return False
+        legacy_path=Path(legacy_dir)
+        if (not legacy_path.is_absolute() or legacy_path==Path('/') or legacy_path==Path(data_dir)
+                or legacy_path.resolve()!=legacy_path or str(legacy_path)!=legacy_dir):
+            return False
+        data_dir=legacy_dir
+    else:return False
     if container['State']['Running'] or container['HostConfig']['RestartPolicy']['Name']!='no':return False
-    if (container['Config'].get('Labels') or {}).get(LABEL)!='worker-v1':return False
+    if labels.get(LABEL)!='worker-v1':return False
     if container['Config']['Image']!=envelope['manifest']['worker_image_digest']:return False
-    return any(m.get('Type')=='bind' and m['Source']==settings.data['worker_data_dir'] and
+    return any(m.get('Type')=='bind' and m['Source']==data_dir and
                m['Destination']=='/var/lib/gpustack' for m in container['Mounts'])
 
 
