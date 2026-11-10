@@ -1,11 +1,13 @@
 # E5.F3 无盘接续 P4 试点
 
-目标是在 `test1` 的专用单卡上，验证两台可销毁 VPC 先后接入时保留同一个 GPUStack `worker_id`，并恢复专用测试模型的 OCR。只读预检确认 `test1` 仍承载正式 OCR，9 个副本均已运行。当前正式 selector 只有 `arch` 和 `os`，试点使用的 Linux x86_64 worker 也会匹配。当前 E5 活动发布使用 `native-independent` 和 HTTP 原生地址。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+目标是在 `test1` 的专用单卡上，验证两台可销毁 VPC 先后接入时保留同一个 GPUStack `worker_id`，并恢复专用测试模型的 OCR。当前 E5 活动发布使用 `native-independent` 和 HTTP 原生地址。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+
+正式 OCR 常态目标为 4 个副本。2026-11-10 将 GPUStack 部署的 `replicas` 设为 4，调节器策略修订 5 将最小值、最大值和自动缩容下限均设为 4。正式 selector 在原有 `arch` 和 `os` 上增加 `maas-pool=production`。验收时两台生产 worker 共运行 4 个副本，候选 A 上无正式实例，恢复接单的真实 OCR 探针返回预期的 46 行。后续试点验收和回退均以正式 OCR 4/4 为基线。 [副本策略跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 ## 放行前准备
 
 1. **资源归属。** 记录一张专用 GPU、可销毁的 A/B VPC、各自的 SSH 入口及同卡换绑方式。由能操作平台的人提供旧 VPC 的真实退出或隔离证据。XZ-31-001 和 XZ-31-002 排除出换绑实验。
-2. **正式与试点放置。** 对拟接入的 worker 复核正式 selector 和副本调节器的容量、压力采样范围。现有 selector 无法隔离时，先在维护窗口验证显式生产池标签及正式 selector 的更新，再复核正式 9/9。试点 worker 单独加试点池标签，测试模型按试点池和精确 `worker-name` 固定到该记录。可先通过 P1 建立未就绪占位记录，在发启动许可前由管理端补齐试点标签。核对副本调节器对新 GPU 的识别和压力门槛后才允许试点 worker 就绪。
+2. **正式与试点放置。** 对拟接入的 worker 复核正式 selector 和副本调节器的容量、压力采样范围，确认正式 4/4 仅落在带 `maas-pool=production` 标签的节点。试点 worker 单独加试点池标签，测试模型按试点池和精确 `worker-name` 固定到该记录。可先通过 P1 建立未就绪占位记录，在发启动许可前由管理端补齐试点标签。核对副本调节器对新 GPU 的识别和压力门槛后才允许试点 worker 就绪。
 3. **Server 组件。** 锁定现有 GPUStack v2.2.3 Server 镜像和已部署插件。构建带 enrollment 0.3.0 的同版本镜像，保留生产配置、数据库和监控。上线切换沿用暂停接单、排空、保留原容器及回退探针的流程。单独配置 `test1` 的 `required` 策略和 MaaS 服务密钥。 [生产组件切换边界](../../maas/REPLICA-REGULATOR.md)
 4. **独立发布。** 单独启动试点配置服务，独立发布目录、签名配置和授权状态。签名 `gpu-external-id` 发布引用试点 HTTPS 原生地址。现有 E5 活动发布继续面向普通 worker。MaaS 的 `worker-enrollment`、`worker-handoff`、`worker-retire` 只通过服务内部链路访问。 [E5 无盘引导配置](README.md#无盘-gpu-接续试点)
 
