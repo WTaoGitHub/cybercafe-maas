@@ -66,3 +66,13 @@ MaaS 复用插件的原生管理适配、压力门槛、在途预算和持久写
 3. 在 Observe 覆盖基础上叠加 `deploy/maas/compose.replica-apply.yaml`，为 E17 容器挂载只读管理凭据及持久日志目录。管理凭据为运行 UID 可读的私有文件，日志目录由该 UID 持有并设为 `0700`。读取与写入使用同一个 GPUStack 回环 HTTP 地址。先保持策略为 Observe，确认配置、压力源和日志可读，再将单一试点部署设为 Apply 并设置副本上限。
 4. 在新的 GPU 到达或恢复后，核对一次目标加一、读回确认、GPUStack 实例就绪及实际 OCR。执行同步入口或原生推理探针和 MaaS 异步业务回归，记录 E17 报表、监控告警与压力覆盖。旧事件、断线和压力缺失期间应无新增写入。
 5. 观察期间记录采集新鲜度、压力覆盖、在途数、待确认日志、目标与就绪数差异及探针结果。出现异常先将 MaaS 策略切回 Observe，保留管理读取权限和日志以核清结果。仍无法确认时保留现场并继续冻结写入。对账完成后才可把写入权交还旧插件，沿用 GPUStack 已确认的目标值。稳定观察通过后再安排旧插件退役。
+
+## 2026-11-10 新 PC 首台克隆验证
+
+首台快照克隆通过签名发布 `baremetal-diskless-r1` 的验签和 GPUStack HTTPS 预检。收到启动许可后，E5 引导成功，RTX 4080 SUPER 注册到集群 `1` 的 worker `2`。控制端以固定 SSH 主机公钥和来源受限的采样密钥读取该 worker 的网络接收与 Docker 盘写入速率，压力样本覆盖 worker `2`。
+
+北京时间 17:55:47，MaaS 识别到空集群首次获得可用 GPU。采样覆盖缺失时保持目标为 `0`，进入恢复观察后继续等待。17:57:40，压力门槛开放，MaaS 将 `maas-ocr` 目标从 `0` 调至 `1` 并读回确认，待确认日志为空。GPUStack 创建实例 `1`，落到 worker `2` 的 GPU `0`。
+
+首次就绪探测时，实例停在 `quay.io/gpustack/runtime:pause` 拉取。新 PC 上线台账记录从旧控制端缓存补齐该镜像。随后同一实例达到 Running，模型为 `1/1`，worker 本机 CUDA OCR 返回 `200` 和 2 行。 [辅助镜像 #57](https://github.com/WTaoGitHub/cybercafe-maas/issues/57) · [上线台账](../../deploy/maas/NEW-PC-ROLLOUT.md)
+
+MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED`。同一试点推理凭据可以列出模型，GPUStack 服务端 `/token-auth` 返回 `200`，两个原生推理入口均返回 `401`。首次扩容已验证，端到端 OCR 待上游鉴权修复后复验。 [调节器 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39) · [推理鉴权 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
