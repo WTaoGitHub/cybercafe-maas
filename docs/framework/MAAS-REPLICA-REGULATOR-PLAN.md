@@ -86,3 +86,7 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 2026-11-10 使用独立内部 Docker bridge、临时数据库和无端口发布的同版镜像复验。禁用嵌入式 Higress 后，原生 Uvicorn 的版本和健康接口均返回 `200`，匿名模型列表及推理请求均返回 `401`。启用受管注册后，`verify_p2.py` 的七项检查全部通过，包括合成 worker 原生注册、单次许可、旧凭据拒绝、心跳和普通 worker 注册。隔离资源已清理。普通 HTTP GET `/connect` 返回 `404`，未执行 WebSocket 握手，也未在隔离环境运行真实 GPU 推理。切换前仍须验证实际 HTTPS 隧道与授权推理。 [鉴权问题 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
 
 同版候选在独立内部 bridge 加入临时 Nginx TLS 入口，未发布宿主机端口。合成 worker 接续后，客户端校验证书并通过 `wss://…/connect` 使用新会话凭据完成握手及 ping/pong，旧凭据被拒绝。原七项注册回归同时通过，临时资源已清理。此轮验证覆盖 HTTPS 隧道握手和凭据轮换，真实 GPU 推理流量与 MaaS 计量仍待候选拓扑验证。现网入口未切换。
+
+### 新 PC 试点切换验收
+
+新 PC 在空闲时段备份 GPUStack PostgreSQL 并校验归档目录，保留原 Higress 容器。首轮探测遇到启动期间连接重置，自动恢复原容器。第二轮容忍启动阶段短暂断连，同一私有回环端口切换到禁用 Higress 的 GPUStack v2.2.3，沿用原网络、数据库和 worker 身份。worker 2 恢复 Ready，部署 1 保持 1/1。匿名模型查询返回 401，原生授权 CUDA OCR 返回 200 和两行。MaaS 异步 OCR 为 SUCCEEDED，返回两行，数据库核对一条成功用量、数量 1，UNKNOWN 为 0。两项控制面健康检查返回 200，压力采集活跃。现用候选容器保留原服务名称，停用的 Higress 容器保留作回退。未接入第二台 worker。 [鉴权问题 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
