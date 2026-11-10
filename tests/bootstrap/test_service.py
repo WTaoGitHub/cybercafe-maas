@@ -53,6 +53,8 @@ def test_auth_scope_and_expiry_fail_closed_without_secret(state):
     assert get(c).status_code==403
     edit(state,lambda d:d['grants'][0].update(expires_at=None,cluster_id=1))
     r=get(c);assert r.status_code==403 and NATIVE not in r.text and CODE not in r.text
+    edit(state,lambda d:d['grants'][0].pop('cluster_id'))
+    assert get(c).status_code==403
 
 def test_no_x_forwarded_for_bypass_and_multiple_cidrs(state):
     r=client(state,'192.0.2.2').get('/healthz',headers={'X-Forwarded-For':'10.11.31.3'})

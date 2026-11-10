@@ -1,7 +1,7 @@
 """Operator-only immutable release publishing; no HTTP write endpoint or worker action."""
 import argparse,base64,contextlib,fcntl,hashlib,json,os,tempfile
 from pathlib import Path
-from .client import BootstrapError,LocalSettings,ReleaseVerifier,canonical,read_file,SAFE_REVISION
+from .client import BootstrapError,LocalSettings,ReleaseVerifier,canonical,configured_cluster_id,read_file,SAFE_REVISION
 
 
 class Publisher:
@@ -43,6 +43,8 @@ class Publisher:
             if os.path.exists(tmp):os.unlink(tmp)
 
     def publish(self,manifest,registration,rollback_of=None):
+        manifest = {'cluster_id': self.settings.data['cluster_id'], **manifest}
+        registration = {'cluster_id': manifest['cluster_id'], **registration}
         with self.lock():return self._publish(manifest,registration,rollback_of)
 
     def _publish(self,manifest,registration,rollback_of=None):
@@ -51,7 +53,7 @@ class Publisher:
                                         'value':base64.b64encode(self.key.sign(canonical(manifest))).decode()}}
         metadata=ReleaseVerifier().verify(self.settings,envelope)
         policy=json.loads((self.root/'policy.json').read_text())
-        if not any((g['site_id'],g['batch_id'],g['cluster_id'])==
+        if not any((g['site_id'],g['batch_id'],configured_cluster_id(g))==
                    (manifest['site_id'],manifest['batch_id'],manifest['cluster_id']) for g in policy['grants']):
             raise BootstrapError('PUBLISH_SCOPE_NOT_CONFIGURED')
         releases=self.root/'releases'

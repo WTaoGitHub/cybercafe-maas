@@ -16,7 +16,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 
-from .client import BootstrapError, DISKLESS_POLICY
+from .client import BootstrapError, DISKLESS_POLICY, configured_cluster_id
 from .enrollment import NativeEnrollment, StartDenied, WorkerStartBroker
 
 REVISION = re.compile(r'[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}\Z')
@@ -94,9 +94,10 @@ class ReleaseStore:
             raise ValueError('Invalid manifest')
         if m['site_id'] != grant['site_id'] or m['batch_id'] != grant['batch_id']:
             raise AccessFailure(403, 'SCOPE_MISMATCH')
-        if m['cluster_id'] != grant['cluster_id'] or envelope['registration']['cluster_id'] != m['cluster_id']:
-            raise AccessFailure(403, 'CLUSTER_MISMATCH')
         registration = envelope['registration']
+        if (type(m['cluster_id']) is not int or type(registration['cluster_id']) is not int
+                or m['cluster_id'] != configured_cluster_id(grant) or registration['cluster_id'] != m['cluster_id']):
+            raise AccessFailure(403, 'CLUSTER_MISMATCH')
         valid_registration = ('token' not in registration if m.get('worker_name_policy') == DISKLESS_POLICY
                               else bool(registration.get('token')))
         if not valid_registration or envelope['manifest_signature'].get('algorithm') != 'Ed25519':

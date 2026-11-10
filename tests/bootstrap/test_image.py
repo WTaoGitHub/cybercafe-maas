@@ -61,6 +61,7 @@ def test_ubuntu_os_release_link_inside_image_is_supported(setup,tmp_path):
 def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setup,tmp_path):
     root,cfg=inputs(setup,tmp_path)
     data=json.loads(cfg.read_text())
+    del data['cluster_id']
     data.update(state_dir='/run/maas-bootstrap',worker_data_dir='/run/maas-bootstrap/gpustack-worker',
                 worker_start_grant_file='/run/maas-start/boot-grant')
     atomic_json(cfg,data)
@@ -78,4 +79,5 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
         '/etc/systemd/system/maas-worker-bootstrap.path')
     assert 'PathExists=/run/maas-start/boot-grant\n' in (units/'maas-worker-bootstrap.path').read_text()
     installed=json.loads((root/'etc/maas/bootstrap.json').read_text())
+    assert installed['cluster_id']==1
     assert installed['worker_start_grant_file']==data['worker_start_grant_file']

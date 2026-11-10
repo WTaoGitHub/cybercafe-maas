@@ -66,6 +66,8 @@ python3 -m maas_bootstrap.publisher \
 
 工具验签回读、核对客户端scope和policy、互斥发布、不可变revision、原子切换active摘要；写入文件继承private目录owner，避免root操作后API UID10001不可读。签名只覆盖公开manifest，原生token由HTTPS保护；均不写到输出或shell参数。失败不切换active，可能留下完整未激活版本，保留供检查。
 
+镜像设置和 `policy.json` 中的授权项省略 `cluster_id` 时默认使用 `1`。发布工具以镜像设置补齐省略的 manifest 集群 ID，再将该值写入省略集群 ID 的 registration。写出的 manifest 会带着明确的集群 ID 签名。指定其他集群时，镜像设置、策略授权、发布和服务端接入配置须指向同一个集群。
+
 回退以旧内容发布**新revision**，不覆盖历史、不操作任何worker：
 
 ```sh

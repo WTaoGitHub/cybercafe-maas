@@ -21,6 +21,7 @@ MAX_BYTES = 1024 * 1024
 SAFE_REVISION = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,79}\Z')
 IMAGE_DIGEST = re.compile(r'[a-z0-9][a-z0-9./:_-]*@sha256:[0-9a-f]{64}\Z')
 DISKLESS_POLICY = 'gpu-external-id'
+DEFAULT_CLUSTER_ID = 1
 
 
 class BootstrapError(Exception):
@@ -31,6 +32,13 @@ class BootstrapError(Exception):
 
 def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+
+
+def configured_cluster_id(config):
+    cluster_id = config.get('cluster_id', DEFAULT_CLUSTER_ID)
+    if type(cluster_id) is not int:
+        raise ValueError('cluster_id must be an integer')
+    return cluster_id
 
 
 def read_file(path, secret=False):
@@ -94,7 +102,7 @@ class LocalSettings:
             allowed=d.get('allowed_registry_endpoints',[])
             from .registry import ENDPOINT
             if not isinstance(allowed,list) or any(not isinstance(v,str) or not ENDPOINT.fullmatch(v) or int(v.rsplit(':',1)[1])>65535 for v in allowed):raise ValueError()
-            if not isinstance(d['cluster_id'], int) or isinstance(d['cluster_id'], bool):raise ValueError()
+            d['cluster_id'] = configured_cluster_id(d)
             if not d['allowed_server_urls'] or not isinstance(d['allowed_server_urls'], list):raise ValueError()
             if not SAFE_REVISION.fullmatch(d['image_id']):raise ValueError()
         except BootstrapError:raise
@@ -175,9 +183,11 @@ class ReleaseVerifier:
                 raise BootstrapError('RELEASE_SIGNATURE_INVALID')
             pub.verify(base64.b64decode(sig['value'], validate=True), canonical(m))
             if m['schema_version'] != 1 or not SAFE_REVISION.fullmatch(m['config_revision']):raise ValueError()
-            if (m['site_id'],m['batch_id'],m['cluster_id']) != (d['site_id'],d['batch_id'],d['cluster_id']):
+            if (type(m['cluster_id']) is not int
+                    or (m['site_id'],m['batch_id'],m['cluster_id']) != (d['site_id'],d['batch_id'],d['cluster_id'])):
                 raise BootstrapError('RELEASE_SCOPE_MISMATCH')
-            if registration['cluster_id'] != m['cluster_id']:raise BootstrapError('RELEASE_SCOPE_MISMATCH')
+            if type(registration['cluster_id']) is not int or registration['cluster_id'] != m['cluster_id']:
+                raise BootstrapError('RELEASE_SCOPE_MISMATCH')
             if d['image_id'] not in m['compatible_image_ids']:raise BootstrapError('CONFIG_INCOMPATIBLE')
             if m['architecture'] != d['architecture'] or m['gpustack_version'] != 'v2.2.3':
                 raise BootstrapError('CONFIG_INCOMPATIBLE')
