@@ -87,6 +87,7 @@
 
 ### 副本调节试点接力
 
+- 试点集群为新 PC 上的 `maas-baremetal-workers`（GPUStack 集群 ID `1`），试点模型为 `maas-ocr`（部署 ID `1`）。首台克隆的注册与 GPU 到达事件均以该集群为准。核对 worker 的 `cluster_id=1` 后，再配置其压力采样来源并验证 `0 → 1`。
 - 新 PC 的试点使用控制目录下独立的 `replica-maas-pilot` 目录，保留 `replica.env`、策略输入和持久日志。E17 日报后续重建须继续使用 `compose.yaml`、`compose.replica-observe.yaml`、`compose.replica-apply.yaml` 和该私有环境覆盖。专用管理凭据为 30 天有效期。写入日志为空表示当前没有待对账操作。
 - 首台试点克隆启动后，先核对实际来源准入、GPUStack worker ID 和主机公钥。配置压力采样专用公钥的受限采样命令、固定主机公钥及 `WORKER_ID=USER@HOST` 来源，启动 `maas-replica-pressure.service`。核对样本确实来自该 worker、覆盖其 ID 并持续刷新。当前试点每约 3 秒采样，最大样本年龄 20 秒，恢复观察期 10 秒。
 - 准备好首台克隆接入与压力采样的操作窗口。默认上线事件有效期为 600 秒。若真实样本在窗口内未就绪，保持停写，待条件满足后安排新的试点上线事件。记录一次原生目标更新、实例就绪与真实 OCR 后再考虑提高副本上限。
