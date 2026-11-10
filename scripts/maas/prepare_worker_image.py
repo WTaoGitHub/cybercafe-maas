@@ -50,11 +50,16 @@ def build(root,settings_path):
         if not isinstance(serialization.load_pem_public_key(pub),Ed25519PublicKey):raise ValueError()
     except Exception:raise BootstrapError('IMAGE_TRUST_MATERIAL_INVALID') from None
     if settings.data['architecture']!='x86_64':raise BootstrapError('IMAGE_ARCHITECTURE_UNSUPPORTED')
-    if settings.data['state_dir']!='/var/lib/maas-bootstrap' or settings.data['worker_data_dir']!='/var/lib/maas-bootstrap/gpustack-worker':
+    diskless='worker_start_grant_file' in settings.data
+    state='/run/maas-bootstrap' if diskless else '/var/lib/maas-bootstrap'
+    if settings.data['state_dir']!=state or settings.data['worker_data_dir']!=state+'/gpustack-worker':
+        raise BootstrapError('IMAGE_STATE_PATH_UNSUPPORTED')
+    if diskless and settings.data['worker_start_grant_file']!='/run/maas-start/boot-grant':
         raise BootstrapError('IMAGE_STATE_PATH_UNSUPPORTED')
     # Never erase the supplier's SSH access or registered identities. Fail for manual generalization.
     blockers=[]
-    for name in ('var/lib/gpustack','var/lib/maas-bootstrap','etc/gpustack','root/.gpustack','var/lib/docker/containers'):
+    for name in ('var/lib/gpustack','var/lib/maas-bootstrap','run/maas-bootstrap','run/maas-start',
+                 'etc/gpustack','root/.gpustack','var/lib/docker/containers'):
         p=safe_target(root,name)
         if p.exists() and (not p.is_dir() or any(p.iterdir())):blockers.append(name)
     for name in ('etc/machine-id','var/lib/dbus/machine-id'):
@@ -72,6 +77,7 @@ def build(root,settings_path):
         'schema_version','config_service_url','release_key_id','state_dir','worker_data_dir','model_root','model_cache_dir',
         'site_id','batch_id','cluster_id','image_id','architecture','allowed_server_urls','cloud_backup')}
     if 'allowed_registry_endpoints' in settings.data:cfg['allowed_registry_endpoints']=settings.data['allowed_registry_endpoints']
+    if diskless:cfg['worker_start_grant_file']=settings.data['worker_start_grant_file']
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
                release_public_key_file='/etc/maas/release-signing.pub')
     files={
@@ -80,7 +86,7 @@ def build(root,settings_path):
         'etc/maas/server.crt':(cert,0o644),
         'etc/maas/release-signing.pub':(pub,0o644),
     }
-    for name in ('__init__.py','client.py','storage.py','registry.py','worker.py','cli.py'):
+    for name in ('__init__.py','client.py','storage.py','registry.py','handoff.py','worker.py','cli.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),

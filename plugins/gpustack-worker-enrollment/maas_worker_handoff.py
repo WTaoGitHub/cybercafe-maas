@@ -53,6 +53,7 @@ class HandoffRequest(BaseModel):
 
     worker_id: PositiveInt
     session_id: UUID
+    gpu_uuid: str | None = None
     previous_session_id: UUID | None = None
     fence_receipt: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=128)] | None = None
 
@@ -105,7 +106,8 @@ class WorkerHandoff:
         expires_at = now() + PERMIT_TTL
         async with async_session() as session:
             worker = await Worker.one_by_id(session, request.worker_id, for_update=True)
-            if not self.managed(worker) or worker.name != worker.external_id:
+            if (not self.managed(worker) or worker.name != worker.external_id
+                    or (request.gpu_uuid is not None and request.gpu_uuid != worker.external_id)):
                 raise HTTPException(404, "Enrolled worker not found")
             previous = await handoff_for(session, worker.id)
             keys = []
@@ -147,7 +149,9 @@ class WorkerHandoff:
                 await delete_cache_by_key(APIKeyService.get_by_access_key, access_key)
             if principal_id is not None:
                 await delete_cache_by_key(UserService.get_by_id, principal_id)
-            return {"worker_id": worker.id, "session_id": session_id, "registration_token": permit,
+            return {"cluster_id": worker.cluster_id, "worker_id": worker.id,
+                    "worker_name": worker.name, "external_id": worker.external_id,
+                    "session_id": session_id, "registration_token": permit,
                     "expires_at": expires_at.isoformat()}
 
     async def claim_registration(self, worker_in, token):

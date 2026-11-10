@@ -136,7 +136,7 @@ systemctl disable cybercafe-provision.service
 install -d -m 755 /opt/maas/lib/maas_bootstrap /opt/maas/bin
 install -d -m 700 /etc/maas
 
-for E5_FILE in __init__.py client.py worker.py cli.py; do
+for E5_FILE in __init__.py client.py storage.py registry.py handoff.py worker.py cli.py; do
   install -o root -g root -m 644 "maas_bootstrap/$E5_FILE" "/opt/maas/lib/maas_bootstrap/$E5_FILE"
 done
 

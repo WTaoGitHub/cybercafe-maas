@@ -1,13 +1,14 @@
 """Explicit original GPUStack Docker worker launch, with no stop/remove/reboot operations."""
 import hashlib,json,os,platform,secrets,socket,stat,subprocess,time,urllib.request
 from pathlib import Path
-from .client import (BootstrapError,LocalState,HTTPSConfigFetcher,ReleaseVerifier,atomic_json,
-                     read_file,NoRedirect)
-from . import storage,registry
+from .client import (BootstrapError,LocalState,HTTPSConfigFetcher,ReleaseVerifier,atomic_json,atomic_bytes,
+                     read_file,NoRedirect,DISKLESS_POLICY,https_opener)
+from . import storage,registry,handoff
 
 NAME='maas-gpustack-worker'
 LABEL='com.cybercafe.maas.bootstrap'
 LAYOUT_VERSION='model-storage-v1'
+WORKER_CA='/run/maas-worker-server-ca.pem'
 LAYOUT_KEYS=('GPUSTACK_CACHE_DIR','GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT',
              'GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME','GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES')
 # Retired 002 names/addresses may be reused by a new test1 clone.
@@ -63,6 +64,13 @@ class NativeDockerWorker:
             spec['env']['GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY']='IfNotPresent'
             spec['mounts'].append({'source':access['auth_dir'],'target':registry.TARGET,'rw':False})
             spec['mounts'].sort(key=lambda x:x['target'])
+        if envelope['manifest']['worker_name_policy']==DISKLESS_POLICY:
+            spec['version']='gpu-external-id-v1'
+            spec['env']['SSL_CERT_FILE']=WORKER_CA
+            key='GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES'
+            spec['env'][key]=';'.join(sorted(ignore|{WORKER_CA}))
+            spec['mounts'].append({'source':settings.data['tls_certificate_file'],'target':WORKER_CA,'rw':False})
+            spec['mounts'].sort(key=lambda x:x['target'])
         spec['sha256']=hashlib.sha256(json.dumps(spec,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         return spec
 
@@ -85,11 +93,13 @@ class NativeDockerWorker:
             for m in row['Mounts']:
                 if m['Type']!='bind':raise BootstrapError('NEEDS_MAINTENANCE')
                 mounts.append({'source':m['Source'],'target':m['Destination'],'rw':m['RW']})
+            keys=(*LAYOUT_KEYS,'DOCKER_CONFIG','GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY')
+            if labels.get(LABEL+'.session-id'):keys+=('SSL_CERT_FILE',)
             return {'running':row['State']['Running'],'fingerprint':labels.get(LABEL+'.fingerprint'),
-                    'id':row['Id'],'status':row['State']['Status'],
+                    'id':row['Id'],'status':row['State']['Status'],'session_id':labels.get(LABEL+'.session-id'),
                     'layout':{'version':labels.get(LABEL+'.layout-version'),'sha256':labels.get(LABEL+'.layout-sha256'),
                               'mounts':sorted(mounts,key=lambda x:x['target']),
-                              'env':{k:env[k] for k in (*LAYOUT_KEYS,'DOCKER_CONFIG','GPUSTACK_RUNTIME_DEPLOY_IMAGE_PULL_POLICY') if k in env}}}
+                              'env':{k:env[k] for k in keys if k in env}}}
         except BootstrapError:raise
         except Exception:raise BootstrapError('RUNTIME_STATE_INVALID') from None
 
@@ -120,12 +130,21 @@ class NativeDockerWorker:
         try:
             with socket.create_connection((u.hostname,u.port or (443 if u.scheme=='https' else 80)),timeout=3):pass
         except OSError:raise BootstrapError('NATIVE_SERVER_UNREACHABLE') from None
+        if envelope['manifest']['worker_name_policy']==DISKLESS_POLICY:
+            try:
+                with https_opener(settings).open(envelope['manifest']['server_url']+'/version',timeout=3) as response:
+                    if json.loads(response.read(1024)).get('version')!='v2.2.3':raise ValueError()
+            except (OSError,ValueError,AttributeError):raise BootstrapError('NATIVE_TLS_PREFLIGHT_FAILED') from None
+        return lines[0].split(',')[0].strip()
+
+    def check_diskless_storage(self,settings):
+        data=private_native_directory(settings)
+        for path in (Path(settings.data['state_dir']),data):
+            if path.resolve()!=path or run(['findmnt','-n','-o','FSTYPE','--target',str(path)])!='tmpfs':
+                raise BootstrapError('DISKLESS_TMPFS_REQUIRED')
 
     def create(self,settings,envelope,metadata,identity,env_file):
-        data=Path(settings.data['worker_data_dir'])
-        data.mkdir(mode=0o700,parents=True,exist_ok=True)
-        if not stat.S_ISDIR(data.lstat().st_mode) or data.stat().st_mode&0o077:
-            raise BootstrapError('NATIVE_DIRECTORY_UNTRUSTED')
+        private_native_directory(settings)
         storage.prepare(settings)
         registry.prepare(settings,envelope)
         layout=self.desired_layout(settings,envelope)
@@ -138,6 +157,8 @@ class NativeDockerWorker:
              '--restart=no','--privileged','--gpus','all','--network','host',
              '--ulimit','nofile=65535:65535','--env-file',str(env_file)]
         for key,value in layout['env'].items():args+=['--env',key+'='+value]
+        if identity.get('session_id'):
+            args+=['--label',LABEL+'.session-id='+identity['session_id']]
         for mount in layout['mounts']:
             args+=['--volume',mount['source']+':'+mount['target']+('' if mount['rw'] else ':ro')]
         run(args+[image])
@@ -154,7 +175,9 @@ class NativeDockerWorker:
             name=read_file(data/'worker_name').decode().strip()
             if name!=identity['worker_name'] or not token or not uuid:return None
             url=envelope['manifest']['server_url']+'/v2/workers?me=true'
-            opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect())
+            diskless=identity.get('worker_name_policy')==DISKLESS_POLICY
+            opener=(https_opener(settings) if diskless else
+                    urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect()))
             req=urllib.request.Request(url,headers={'Authorization':'Bearer '+token})
             with opener.open(req,timeout=3) as r:
                 raw=r.read(1024*1024+1)
@@ -165,6 +188,11 @@ class NativeDockerWorker:
             # v2.2.3 WorkerPublic excludes worker_uuid. The individual worker
             # token authenticates ?me=true; require the server's explicit me flag.
             if w.get('me') is not True or w['cluster_id']!=settings.data['cluster_id'] or w['name']!=name:return None
+            if diskless:
+                devices=(w.get('status') or {}).get('gpu_devices') or []
+                if (w.get('id')!=identity['worker_id'] or w.get('external_id')!=identity['gpu_uuid']
+                        or len(devices)!=1 or handoff.gpu_uuid(devices[0].get('uuid'))!=identity['gpu_uuid']
+                        or w.get('state')!='ready' or w.get('unreachable') is not False):return None
             return {'worker_id':w['id'],'worker_name':name,'cluster_id':w['cluster_id'],'native_state':w['state']}
         except Exception:return None
 
@@ -201,10 +229,10 @@ def approved_stopped_backup(container,settings,envelope):
                m['Destination']=='/var/lib/gpustack' for m in container['Mounts'])
 
 
-def write_env(path,envelope,identity):
+def write_env(path,envelope,identity,permit=None):
     # Docker env-file is data, never sourced by a shell. Token syntax is verified before here.
     values={'GPUSTACK_SERVER_URL':envelope['manifest']['server_url'],
-            'GPUSTACK_TOKEN':envelope['registration']['token'],
+            'GPUSTACK_TOKEN':permit if permit is not None else envelope['registration']['token'],
             'GPUSTACK_DATA_DIR':'/var/lib/gpustack','GPUSTACK_WORKER_NAME':identity['worker_name'],
             'GPUSTACK_WORKER_PORT':'10150','GPUSTACK_WORKER_METRICS_PORT':'10151'}
     text=''.join(k+'='+v+'\n' for k,v in values.items())
@@ -220,7 +248,64 @@ def write_env(path,envelope,identity):
         if os.path.exists(tmp):os.unlink(tmp)
 
 
-def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper=time.sleep):
+def private_native_directory(settings):
+    data=Path(settings.data['worker_data_dir'])
+    if data.resolve()!=data:raise BootstrapError('NATIVE_DIRECTORY_UNTRUSTED')
+    data.mkdir(mode=0o700,parents=True,exist_ok=True)
+    st=data.lstat()
+    if not stat.S_ISDIR(st.st_mode) or st.st_mode&0o077 or st.st_uid not in (0,os.geteuid()):
+        raise BootstrapError('NATIVE_DIRECTORY_UNTRUSTED')
+    return data
+
+
+def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,permit_fetcher):
+    gpu=handoff.gpu_uuid(gpu)
+    runtime.check_diskless_storage(settings)
+    data=private_native_directory(settings)
+    external=data/'external_id'
+    stored=state.read('identity.json')
+    cluster=metadata['cluster_id']
+    if stored is not None:
+        if (stored.get('worker_name_policy')!=DISKLESS_POLICY or stored.get('gpu_uuid')!=gpu
+                or stored.get('worker_name')!=gpu or stored.get('cluster_id')!=cluster
+                or stored.get('fingerprint')!=metadata['fingerprint']
+                or not handoff.positive_id(stored.get('worker_id'))):
+            raise BootstrapError('LOCAL_IDENTITY_INVALID')
+    if current:
+        if (not stored or not stored.get('session_id') or current.get('session_id')!=stored['session_id']
+                or read_file(external,secret=True)!=gpu.encode()):
+            raise BootstrapError('LOCAL_IDENTITY_INVALID')
+        if current['running']:return stored
+        if current['status']!='created':raise BootstrapError('HANDOFF_REPROVISION_REQUIRED')
+    if any(path!=external for path in data.iterdir()) or (not stored and (external.exists() or external.is_symlink())):
+        raise BootstrapError('HANDOFF_REPROVISION_REQUIRED')
+    if (external.exists() or external.is_symlink()) and read_file(external,secret=True)!=gpu.encode():
+        raise BootstrapError('LOCAL_IDENTITY_INVALID')
+
+    result=permit_fetcher.fetch(settings,envelope['manifest'],gpu)
+    token=handoff.check_permit(result,cluster,gpu,stored['session_id'] if stored else result['session_id'],
+                               stored['worker_id'] if stored else None)
+    identity={'cluster_id':cluster,'worker_id':result['worker_id'],'worker_name':gpu,'gpu_uuid':gpu,
+              'worker_name_policy':DISKLESS_POLICY,'session_id':result['session_id'],
+              'fingerprint':metadata['fingerprint'],'permit_sha256':handoff.permit_fingerprint(token)}
+    if stored is not None and stored!=identity:raise BootstrapError('LOCAL_IDENTITY_INVALID')
+    if not current:
+        atomic_json(state.root/'identity.json',identity)
+        if not external.exists():atomic_bytes(external,gpu.encode())
+        env=target.parent/'worker.env'
+        try:
+            write_env(env,envelope,identity,permit=token)
+            runtime.create(settings,envelope,metadata,identity,env)
+        finally:
+            env.unlink(missing_ok=True)
+    # The native worker consumes the permit on first start. A created container
+    # can retry Docker start, while exited containers require a new session.
+    handoff.check_permit(result,cluster,gpu,identity['session_id'],identity['worker_id'])
+    runtime.start()
+    return identity
+
+
+def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper=time.sleep,permit_fetcher=None):
     if trigger not in ('boot','manual'):raise BootstrapError('TRIGGER_INVALID')
     runtime=backend or NativeDockerWorker();runtime.guard()
     state=LocalState(settings.data['state_dir'])
@@ -237,16 +322,20 @@ def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper
                 # Includes stopped containers: require operator maintenance/removal, never rm implicitly.
                 raise BootstrapError('NEEDS_MAINTENANCE')
             layout_info=runtime.validate_layout(settings,envelope,current) or {}
-            runtime.check_environment(settings,envelope)
+            gpu=runtime.check_environment(settings,envelope)
             target=state.prepare(envelope,metadata)
-            identity=identity_for(state,settings)
-            if current is None:
-                env=target.parent/'worker.env';write_env(env,envelope,identity)
-                runtime.create(settings,envelope,metadata,identity,env)
-                # Recover a start failure using this owned container, not another docker create.
-                runtime.start()
-            elif not current['running']:
-                runtime.start()
+            if envelope['manifest']['worker_name_policy']==DISKLESS_POLICY:
+                identity=start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,
+                                        permit_fetcher or handoff.WorkerStartFetcher())
+            else:
+                identity=identity_for(state,settings)
+                if current is None:
+                    env=target.parent/'worker.env';write_env(env,envelope,identity)
+                    runtime.create(settings,envelope,metadata,identity,env)
+                    # Recover a start failure using this owned container, not another docker create.
+                    runtime.start()
+                elif not current['running']:
+                    runtime.start()
             deadline=time.monotonic()+timeout
             while True:
                 registration=runtime.registered(settings,envelope,identity)
@@ -255,6 +344,7 @@ def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper
                 sleeper(min(1,max(0,deadline-time.monotonic())))
             code='UNCHANGED' if was_running and applied and applied['fingerprint']==metadata['fingerprint'] else 'APPLIED'
             result={'code':code,'trigger':trigger,**metadata,**registration,**layout_info}
+            if identity.get('session_id'):result.update(session_id=identity['session_id'],gpu_uuid=identity['gpu_uuid'])
             atomic_json(state.root/'applied.json',result)
             atomic_json(state.root/'last-result.json',result)
             return result

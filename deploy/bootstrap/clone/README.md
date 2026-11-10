@@ -105,3 +105,28 @@ worker设置GPUSTACK_CACHE_DIR到独立缓存，显式启用原生mirrored并指
 启动worker前准备精确Docker certs.d证书及state_dir/registry-auth/<payload_sha256>/config.json，目录700/文件600；专用目录只读挂入worker的/run/maas-registry-auth，DOCKER_CONFIG指向它。只配置单个endpoint认证，无全局registry用户名密码env、无publisher凭据。新挂载加入mirrored ignore列表，不传入推理容器。
 
 已有worker fingerprint/布局不匹配返回NEEDS_MAINTENANCE，不自动重建或覆盖证书；证书/凭据轮换仍须显式维护，不承诺热轮换。配置拉取失败不伪称应用成功。发布新版配置前先部署客户端，新快照首启须单独验收，当前不表示已向母版安装。
+
+## 无盘 GPU 接续试点
+
+试点使用签名的 `worker_name_policy=gpu-external-id`。配置服务和原生 GPUStack 入口都需要使用客户端信任的 HTTPS 证书，原生入口还须在本机 `allowed_server_urls` 内。此模式的 `registration` 保留 `cluster_id` 和可选仓库配置，启动许可通过独立接口下发。客户端设置 `state_dir=/run/maas-bootstrap`、`worker_data_dir=/run/maas-bootstrap/gpustack-worker` 和 `worker_start_grant_file=/run/maas-start/boot-grant`。镜像只带授权文件路径，运行时身份目录位于 tmpfs。
+
+试点应使用单独的配置服务实例和发布目录。每个发布目录只有一个活动版本。`test1` 可作为共同的原生目标集群，现有 `native-independent` 客户端继续读取原配置服务。
+
+在目标 GPUStack Server 安装 worker enrollment 0.2.1，并启用 `MAAS_WORKER_HANDOFF_MODE=required`。配置服务使用三个独立环境变量启用 `POST /bootstrap/v1/worker-start`。
+
+- `MAAS_BOOTSTRAP_WORKER_START_STATE` 指向仅服务账号可读写的授权目录，权限 0700。
+- `MAAS_BOOTSTRAP_NATIVE_ENROLLMENT_URL` 指向同一 GPUStack Server 的内部 HTTPS 或回环 HTTP 入口。
+- `MAAS_BOOTSTRAP_NATIVE_ENROLLMENT_KEY_FILE` 指向服务端插件专用密钥文件，权限 0600。
+
+操作员核对设备归属和旧 VPC 退出或隔离后，以服务账号运行授权命令。接续时额外传入 `--worker-id`、`--previous-session-id` 和 `--fence-receipt`，其中 receipt 填写经核验的退出记录编号。
+
+```sh
+python3 -m maas_bootstrap.enrollment \
+  --root "$APPROVAL_STATE" --output "$PRIVATE_BOOT_GRANT" \
+  --site-id "$SITE" --batch-id "$BATCH" --cluster-id "$CLUSTER_ID" \
+  --gpu "$GPU_UUID" --image-id "$IMAGE_ID" --config-revision "$CONFIG_REVISION"
+```
+
+通过受控渠道把 0600 的授权文件交给目标 VPC，放到 `/run/maas-start/boot-grant`，再运行 `apply`。共享配置码只用于读取签名发布。MaaS 绑定授权到发布版本、集群和 GPU，E5 启动前核对绑定，原生注册后再核对 `me=true`、worker ID、设备和 `ready`。重复调用可取回同一份有效许可。Docker 已创建、尚未执行的容器可重试启动。已退出的容器需要新的受控启动会话。
+
+`WORKER_START_NEEDS_RECONCILIATION` 表示 MaaS 发出原生许可请求后缺少确定结果。运维通过授权目录中的 `issue.json` 核对 worker ID，并查询 GPUStack 侧该 worker 的接续记录。若原生许可已发出，后续按已存在的会话处理。只有确认原请求未发出许可时，才可重新授权。真实退出和存量隧道、模型恢复属于 P4 现场验收。 [Issue #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)

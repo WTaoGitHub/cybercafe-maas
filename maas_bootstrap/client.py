@@ -1,4 +1,4 @@
-"""Small clone-side verified configuration client; no remote VM/session registration."""
+"""Clone-side verified configuration and private bootstrap state."""
 import base64
 import contextlib
 import fcntl
@@ -20,6 +20,7 @@ from pathlib import Path
 MAX_BYTES = 1024 * 1024
 SAFE_REVISION = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,79}\Z')
 IMAGE_DIGEST = re.compile(r'[a-z0-9][a-z0-9./:_-]*@sha256:[0-9a-f]{64}\Z')
+DISKLESS_POLICY = 'gpu-external-id'
 
 
 class BootstrapError(Exception):
@@ -50,13 +51,17 @@ def read_file(path, secret=False):
 
 
 def atomic_json(path, value):
+    atomic_bytes(path, canonical(value) + b'\n')
+
+
+def atomic_bytes(path, contents):
     path = Path(path)
     path.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix='.' + path.name, dir=path.parent)
     try:
         os.fchmod(fd, 0o600)
         with os.fdopen(fd, 'wb') as f:
-            f.write(canonical(value) + b'\n');f.flush();os.fsync(f.fileno())
+            f.write(contents);f.flush();os.fsync(f.fileno())
         os.replace(name, path)
         directory = os.open(path.parent, os.O_RDONLY)
         try:os.fsync(directory)
@@ -78,6 +83,12 @@ class LocalSettings:
                 raise ValueError()
             for k in ('shared_code_file','tls_certificate_file','release_public_key_file','state_dir','worker_data_dir'):
                 if not Path(d[k]).is_absolute():raise ValueError()
+            if 'worker_start_grant_file' in d:
+                grant = Path(d['worker_start_grant_file'])
+                if not grant.is_absolute() or grant == Path('/') or str(grant) != d['worker_start_grant_file'] or '..' in grant.parts:
+                    raise ValueError()
+                if any(grant == Path(d[key]) or Path(d[key]) in grant.parents for key in ('state_dir','worker_data_dir')):
+                    raise ValueError()
             from .storage import paths
             d['model_root'],d['model_cache_dir']=map(str,paths(d))
             allowed=d.get('allowed_registry_endpoints',[])
@@ -111,6 +122,14 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+def https_opener(settings):
+    cert = read_file(settings.data['tls_certificate_file'])
+    try:ctx = ssl.create_default_context(cadata=cert.decode())
+    except (ssl.SSLError, ValueError):raise BootstrapError('TLS_TRUST_INVALID') from None
+    return urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(),
+                                       urllib.request.HTTPSHandler(context=ctx))
+
+
 class HTTPSConfigFetcher:
     def __init__(self, endpoint=None, credential=None, sleeper=time.sleep):
         self.endpoint = endpoint or StaticEndpointResolver()
@@ -119,10 +138,7 @@ class HTTPSConfigFetcher:
 
     def fetch(self, settings):
         base = self.endpoint.resolve(settings)
-        cert = read_file(settings.data['tls_certificate_file']).decode()
-        try:ctx = ssl.create_default_context(cadata=cert)
-        except (ssl.SSLError, ValueError):raise BootstrapError('TLS_TRUST_INVALID') from None
-        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(), urllib.request.HTTPSHandler(context=ctx))
+        opener = https_opener(settings)
         url = base + '/bootstrap/v1/config?' + urllib.parse.urlencode({'image_id':settings.data['image_id']})
         headers = {'Authorization':'Bearer ' + self.credential.get(settings)}
         failure = 'CONFIG_SERVICE_UNAVAILABLE'
@@ -171,16 +187,25 @@ class ReleaseVerifier:
             if u.scheme not in ('http','https') or not u.hostname or u.username or u.password or u.path or u.query or u.fragment:
                 raise BootstrapError('RELEASE_TARGET_NOT_ALLOWED')
             if not IMAGE_DIGEST.fullmatch(m['worker_image_digest']):raise ValueError()
-            if m['model_mounts'] or m['worker_name_policy'] != 'native-independent':
+            policy = m['worker_name_policy']
+            if m['model_mounts'] or policy not in ('native-independent', DISKLESS_POLICY):
                 raise BootstrapError('RELEASE_OPTIONS_UNSUPPORTED')
             if m.get('cloud_backup',{}).get('enabled',False):raise BootstrapError('CLOUD_BACKUP_UNSUPPORTED')
-            token = registration['token']
-            if not isinstance(token,str) or not 16 <= len(token) <= 4096 or any(ord(x)<33 or ord(x)>126 for x in token):
-                raise ValueError()
+            if bool(d.get('worker_start_grant_file')) != (policy == DISKLESS_POLICY):
+                raise BootstrapError('DISKLESS_RELEASE_INVALID')
+            if policy == DISKLESS_POLICY:
+                if 'token' in registration or u.scheme != 'https':
+                    raise BootstrapError('DISKLESS_RELEASE_INVALID')
+                fingerprint = {'manifest':m}
+            else:
+                token = registration['token']
+                if not isinstance(token,str) or not 16 <= len(token) <= 4096 or any(ord(x)<33 or ord(x)>126 for x in token):
+                    raise ValueError()
+                fingerprint = {'manifest':m,'token_sha256':hashlib.sha256(token.encode()).hexdigest()}
             from .registry import validate as validate_registry
             validate_registry(settings,envelope)
             # Registration material travels over verified TLS; only the public manifest is signed.
-            digest = hashlib.sha256(canonical({'manifest':m,'token_sha256':hashlib.sha256(token.encode()).hexdigest()})).hexdigest()
+            digest = hashlib.sha256(canonical(fingerprint)).hexdigest()
             return {'revision':m['config_revision'],'fingerprint':digest,'cluster_id':m['cluster_id']}
         except BootstrapError:raise
         except Exception:raise BootstrapError('RELEASE_VERIFICATION_FAILED') from None

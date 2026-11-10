@@ -14,6 +14,10 @@ from collections import OrderedDict
 from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
+
+from .client import BootstrapError, DISKLESS_POLICY
+from .enrollment import NativeEnrollment, StartDenied, WorkerStartBroker
 
 REVISION = re.compile(r'[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}\Z')
 NO_CACHE = {'Cache-Control': 'no-store', 'Pragma': 'no-cache', 'X-Content-Type-Options': 'nosniff'}
@@ -92,17 +96,23 @@ class ReleaseStore:
             raise AccessFailure(403, 'SCOPE_MISMATCH')
         if m['cluster_id'] != grant['cluster_id'] or envelope['registration']['cluster_id'] != m['cluster_id']:
             raise AccessFailure(403, 'CLUSTER_MISMATCH')
-        if not envelope['registration'].get('token') or envelope['manifest_signature'].get('algorithm') != 'Ed25519':
+        registration = envelope['registration']
+        valid_registration = ('token' not in registration if m.get('worker_name_policy') == DISKLESS_POLICY
+                              else bool(registration.get('token')))
+        if not valid_registration or envelope['manifest_signature'].get('algorithm') != 'Ed25519':
             raise ValueError('Invalid protected registration or signature')
         if not isinstance(m.get('compatible_image_ids'), list) or not m['compatible_image_ids']:
             raise ValueError('Invalid compatibility list')
         return envelope
 
 
-def create_app(state_dir=None, authenticator=None, limiter=None):
+def create_app(state_dir=None, authenticator=None, limiter=None, worker_start=None):
     store = ReleaseStore(state_dir or os.environ['MAAS_BOOTSTRAP_STATE'])
     auth = authenticator or SharedCodeAuthenticator()
     throttle = limiter or BoundedLimiter()
+    if worker_start is None and os.getenv('MAAS_BOOTSTRAP_WORKER_START_STATE'):
+        worker_start = WorkerStartBroker(os.environ['MAAS_BOOTSTRAP_WORKER_START_STATE'], NativeEnrollment(
+            os.environ['MAAS_BOOTSTRAP_NATIVE_ENROLLMENT_URL'], os.environ['MAAS_BOOTSTRAP_NATIVE_ENROLLMENT_KEY_FILE']))
     app = FastAPI(title='MaaS bootstrap configuration', docs_url=None, redoc_url=None, openapi_url=None)
 
     def reply(status, code):
@@ -155,5 +165,26 @@ def create_app(state_dir=None, authenticator=None, limiter=None):
     @app.get('/bootstrap/v1/configs/{revision}')
     def exact(revision: str, request: Request):
         return fetch(request, revision)
+
+    if worker_start is not None:
+        @app.post('/bootstrap/v1/worker-start')
+        async def start_worker(request: Request):
+            try:
+                raw = bytearray()
+                async for chunk in request.stream():
+                    if len(raw) + len(chunk) > 4096:
+                        return reply(413, 'WORKER_START_REQUEST_TOO_LARGE')
+                    raw.extend(chunk)
+                try:body = json.loads(raw)
+                except (UnicodeError, ValueError):return reply(400, 'WORKER_START_REQUEST_INVALID')
+                result = await run_in_threadpool(worker_start.start, request.headers.get('authorization'), body, store)
+                return JSONResponse(result, headers=NO_CACHE)
+            except (AccessFailure, StartDenied) as error:
+                return reply(error.status, error.code)
+            except BootstrapError as error:
+                status = 409 if error.code in ('BOOTSTRAP_BUSY','WORKER_PERMIT_EXPIRED') else 503
+                return reply(status, error.code)
+            except Exception:
+                return reply(503, 'WORKER_START_UNAVAILABLE')
 
     return app
