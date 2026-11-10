@@ -68,6 +68,38 @@ class WorkerStartBroker:
         self.root = private_root(root)
         self.native = native
 
+    def automatic(self, grant, body, releases):
+        if not isinstance(body, dict) or set(body) != {'cluster_id','gpu_uuid','image_id','config_revision','boot_id'}:
+            raise StartDenied(400, 'WORKER_START_REQUEST_INVALID')
+        try:
+            gpu = gpu_uuid(body['gpu_uuid'])
+            boot = str(UUID(body['boot_id']))
+        except (BootstrapError, ValueError, TypeError, AttributeError):
+            raise StartDenied(400, 'WORKER_START_REQUEST_INVALID') from None
+        cluster = body['cluster_id']
+        if not positive_id(cluster) or not isinstance(body['config_revision'], str):
+            raise StartDenied(400, 'WORKER_START_REQUEST_INVALID')
+        manifest = releases.release(grant, body['config_revision'])['manifest']
+        if (manifest.get('worker_name_policy') != DISKLESS_POLICY or manifest['cluster_id'] != cluster
+                or body['image_id'] not in manifest['compatible_image_ids']):
+            raise StartDenied(403, 'WORKER_START_SCOPE_MISMATCH')
+        worker_id = grant.get('auto_start_gpus', {}).get(gpu)
+        if not positive_id(worker_id):
+            raise StartDenied(403, 'WORKER_START_GPU_NOT_APPROVED')
+        state = LocalState(self.root / f'first-{cluster}-{gpu}')
+        binding = dict(body, boot_id=boot, gpu_uuid=gpu, worker_id=worker_id,
+                       site_id=manifest['site_id'], batch_id=manifest['batch_id'])
+        with state.lock():
+            intent = state.read('intent.json')
+            if intent is None:
+                intent = {'binding':binding, 'session_id':str(uuid4())}
+                atomic_json(state.root/'intent.json', intent)
+            elif intent['binding'] != binding:
+                raise StartDenied(409, 'WORKER_START_BOOT_CONFLICT')
+            # No previous session or fence receipt: the native endpoint only
+            # authorizes a placeholder that has never had an approved session.
+            return self.issue(state, binding, intent['session_id'])
+
     def start(self, authorization, body, releases):
         token = (authorization or '').removeprefix('Bearer ')
         match = BOOT_GRANT.fullmatch(token)

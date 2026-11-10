@@ -4,10 +4,12 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import re
+from pathlib import Path
+from uuid import UUID
 import urllib.error
 import urllib.request
 
-from .client import BootstrapError, MAX_BYTES, StaticEndpointResolver, canonical, https_opener, read_file
+from .client import BootstrapError, MAX_BYTES, SharedCodeFileProvider, StaticEndpointResolver, canonical, https_opener, read_file
 
 
 GPU_UUID = re.compile(r'GPU-[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', re.IGNORECASE)
@@ -51,16 +53,28 @@ def check_permit(data, cluster_id, gpu, session_id, expected_id=None):
 
 class WorkerStartFetcher:
     def fetch(self, settings, manifest, gpu):
-        try:
-            grant = read_file(settings.data['worker_start_grant_file'], secret=True).decode().strip()
-        except (KeyError, UnicodeError):
-            raise BootstrapError('WORKER_START_GRANT_INVALID') from None
-        match = BOOT_GRANT.fullmatch(grant)
-        if not match:
-            raise BootstrapError('WORKER_START_GRANT_INVALID')
         body = {'cluster_id':manifest['cluster_id'], 'gpu_uuid':gpu, 'image_id':settings.data['image_id'],
                 'config_revision':manifest['config_revision']}
         url = StaticEndpointResolver().resolve(settings) + '/bootstrap/v1/worker-start'
+        try:
+            path = Path(settings.data['worker_start_grant_file'])
+        except KeyError:
+            raise BootstrapError('WORKER_START_GRANT_INVALID') from None
+        automatic = settings.data.get('worker_start_automatic', False) and not (path.exists() or path.is_symlink())
+        if automatic:
+            url += '/automatic'
+            body['boot_id'] = read_file('/proc/sys/kernel/random/boot_id').decode().strip()
+            grant = SharedCodeFileProvider().get(settings)
+            session_id = None
+        else:
+            try:
+                grant = read_file(path, secret=True).decode().strip()
+            except UnicodeError:
+                raise BootstrapError('WORKER_START_GRANT_INVALID') from None
+            match = BOOT_GRANT.fullmatch(grant)
+            if not match:
+                raise BootstrapError('WORKER_START_GRANT_INVALID')
+            session_id = match[1]
         request = urllib.request.Request(url, data=canonical(body), headers={
             'Authorization':'Bearer ' + grant, 'Content-Type':'application/json'}, method='POST')
         try:
@@ -75,7 +89,12 @@ class WorkerStartFetcher:
             raise BootstrapError(code.get(error.code, 'WORKER_START_UNAVAILABLE')) from None
         except (OSError, TimeoutError):
             raise BootstrapError('WORKER_START_UNAVAILABLE') from None
-        check_permit(result, manifest['cluster_id'], gpu, match[1])
+        if automatic:
+            try:
+                session_id = str(UUID(result['session_id']))
+            except (KeyError, TypeError, ValueError, AttributeError):
+                raise BootstrapError('WORKER_PERMIT_INVALID') from None
+        check_permit(result, manifest['cluster_id'], gpu, session_id)
         return result
 
 

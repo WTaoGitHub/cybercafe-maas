@@ -169,6 +169,7 @@ def create_app(state_dir=None, authenticator=None, limiter=None, worker_start=No
 
     if worker_start is not None:
         @app.post('/bootstrap/v1/worker-start')
+        @app.post('/bootstrap/v1/worker-start/automatic')
         async def start_worker(request: Request):
             try:
                 raw = bytearray()
@@ -178,7 +179,12 @@ def create_app(state_dir=None, authenticator=None, limiter=None, worker_start=No
                     raw.extend(chunk)
                 try:body = json.loads(raw)
                 except (UnicodeError, ValueError):return reply(400, 'WORKER_START_REQUEST_INVALID')
-                result = await run_in_threadpool(worker_start.start, request.headers.get('authorization'), body, store)
+                authorization = request.headers.get('authorization')
+                if request.url.path.endswith('/automatic'):
+                    grant = auth.authenticate(authorization, request.state.policy['grants'], time.time())
+                    result = await run_in_threadpool(worker_start.automatic, grant, body, store)
+                else:
+                    result = await run_in_threadpool(worker_start.start, authorization, body, store)
                 return JSONResponse(result, headers=NO_CACHE)
             except (AccessFailure, StartDenied) as error:
                 return reply(error.status, error.code)

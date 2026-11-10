@@ -58,12 +58,14 @@ def test_ubuntu_os_release_link_inside_image_is_supported(setup,tmp_path):
     assert image.build(root,cfg)['worker_started'] is False
 
 
-def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setup,tmp_path):
+@pytest.mark.parametrize('automatic', [False, True])
+def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setup,tmp_path,automatic):
     root,cfg=inputs(setup,tmp_path)
     data=json.loads(cfg.read_text())
     del data['cluster_id']
     data.update(state_dir='/run/maas-bootstrap',worker_data_dir='/run/maas-bootstrap/gpustack-worker',
                 worker_start_grant_file='/run/maas-start/boot-grant')
+    if automatic:data['worker_start_automatic']=True
     atomic_json(cfg,data)
     grant=root/'run/maas-start/boot-grant'
     grant.parent.mkdir(parents=True);grant.write_text('fixture')
@@ -74,10 +76,12 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     assert (root/'opt/maas/lib/maas_bootstrap/handoff.py').is_file()
     assert (root/'opt/maas/lib/maas_bootstrap/delivery.py').is_file()
     units=root/'etc/systemd/system'
-    assert not (units/'multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
-    assert (units/'multi-user.target.wants/maas-worker-bootstrap.path').readlink() == Path(
-        '/etc/systemd/system/maas-worker-bootstrap.path')
+    active, inactive = ('service','path') if automatic else ('path','service')
+    assert not (units/f'multi-user.target.wants/maas-worker-bootstrap.{inactive}').is_symlink()
+    assert (units/f'multi-user.target.wants/maas-worker-bootstrap.{active}').readlink() == Path(
+        f'/etc/systemd/system/maas-worker-bootstrap.{active}')
     assert 'PathExists=/run/maas-start/boot-grant\n' in (units/'maas-worker-bootstrap.path').read_text()
     installed=json.loads((root/'etc/maas/bootstrap.json').read_text())
     assert installed['cluster_id']==1
+    assert installed.get('worker_start_automatic',False)==automatic
     assert installed['worker_start_grant_file']==data['worker_start_grant_file']

@@ -1,7 +1,10 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 import hashlib
+import io
 import json
 from pathlib import Path
+from threading import Event
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -9,6 +12,7 @@ import pytest
 
 from maas_bootstrap.client import BootstrapError, LocalState, ReleaseVerifier, atomic_json
 from maas_bootstrap.enrollment import WorkerStartBroker, approve
+from maas_bootstrap import handoff
 from maas_bootstrap.service import create_app
 from maas_bootstrap.worker import NativeDockerWorker, WORKER_CA, apply
 from test_client import Fetcher, setup
@@ -86,6 +90,76 @@ def test_boot_grant_is_scoped_and_retries_return_same_permit(diskless,tmp_path):
                           ('handoff',{'worker_id':41,'gpu_uuid':GPU,'session_id':session})]
     config = client.get('/bootstrap/v1/config?image_id=tower-v1',headers={'Authorization':'Bearer '+CODE})
     assert config.status_code==200 and config.json()['registration']=={'cluster_id':3}
+
+
+def test_automatic_first_start_requires_approved_gpu_and_serializes_boots(diskless,tmp_path):
+    entered, release = Event(), Event()
+
+    class BlockingNative(Native):
+        def post(self, action, body):
+            assert action == 'handoff'
+            entered.set()
+            assert release.wait(5)
+            return super().post(action, body)
+
+    native = BlockingNative()
+    client,body,_,_ = service(diskless,tmp_path,native)
+    path = '/bootstrap/v1/worker-start/automatic'
+    body['boot_id'] = str(uuid4())
+    headers = {'Authorization':'Bearer '+CODE}
+    assert client.post(path,json=body).status_code==401
+    assert client.post(path,json=body,headers=headers).status_code==403
+    policy_path = tmp_path/'published'/'policy.json'
+    policy = json.loads(policy_path.read_bytes())
+    policy['grants'][0]['auto_start_gpus'] = {GPU:41}
+    atomic_json(policy_path, policy)
+    assert client.post(path,json=body|{'gpu_uuid':OTHER_GPU},headers=headers).status_code==403
+    assert client.post(path,json=body|{'cluster_id':4},headers=headers).status_code==403
+    assert not native.calls
+    other_boot = body|{'boot_id':str(uuid4())}
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pending = pool.submit(client.post, path, json=body, headers=headers)
+        try:
+            assert entered.wait(5)
+            assert client.post(path,json=other_boot,headers=headers).status_code==409
+        finally:
+            release.set()
+        first = pending.result(timeout=5)
+    assert first.status_code==200
+    assert client.post(path,json=body,headers=headers).json()==first.json()
+    assert client.post(path,json=other_boot,headers=headers).status_code==409
+    assert native.calls==[('handoff',{'worker_id':41,'gpu_uuid':GPU,'session_id':first.json()['session_id']})]
+
+
+def test_automatic_client_sends_boot_id_and_prefers_manual_grant(diskless,monkeypatch):
+    settings,envelope,_ = diskless
+    settings.data['worker_start_automatic'] = True
+    boot, session = str(uuid4()), str(uuid4())
+    calls = []
+    real_read = handoff.read_file
+    monkeypatch.setattr(handoff, 'read_file', lambda p,**kw:
+                        boot.encode() if str(p)=='/proc/sys/kernel/random/boot_id' else real_read(p,**kw))
+
+    class Response(io.BytesIO):
+        status = 200
+
+    class Opener:
+        def open(self, request, timeout):
+            calls.append(request)
+            return Response(json.dumps(permit(session)).encode())
+
+    monkeypatch.setattr(handoff, 'https_opener', lambda _:Opener())
+    fetcher = handoff.WorkerStartFetcher()
+    assert fetcher.fetch(settings,envelope['manifest'],GPU)['session_id']==session
+    assert calls[-1].full_url.endswith('/worker-start/automatic')
+    assert json.loads(calls[-1].data)['boot_id']==boot
+    manual = session+'.'+'a'*64
+    path = Path(settings.data['worker_start_grant_file'])
+    path.write_text(manual)
+    path.chmod(0o600)
+    fetcher.fetch(settings,envelope['manifest'],GPU)
+    assert calls[-1].full_url.endswith('/worker-start')
+    assert calls[-1].get_header('Authorization')=='Bearer '+manual
 
 
 def test_ambiguous_handoff_does_not_issue_again(diskless,tmp_path):

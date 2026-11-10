@@ -78,6 +78,7 @@ def build(root,settings_path):
         'site_id','batch_id','cluster_id','image_id','architecture','allowed_server_urls','cloud_backup')}
     if 'allowed_registry_endpoints' in settings.data:cfg['allowed_registry_endpoints']=settings.data['allowed_registry_endpoints']
     if diskless:cfg['worker_start_grant_file']=settings.data['worker_start_grant_file']
+    if settings.data.get('worker_start_automatic'):cfg['worker_start_automatic']=True
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
                release_public_key_file='/etc/maas/release-signing.pub')
     files={
@@ -94,8 +95,9 @@ def build(root,settings_path):
         files[dest]=((REPO/'deploy/bootstrap/clone'/name).read_bytes(),mode)
     boot_unit='maas-worker-bootstrap.service'
     if diskless:
-        boot_unit='maas-worker-bootstrap.path'
-        files['etc/systemd/system/'+boot_unit]=((REPO/'deploy/bootstrap/clone'/boot_unit).read_bytes(),0o644)
+        path_unit='maas-worker-bootstrap.path'
+        if not cfg.get('worker_start_automatic'):boot_unit=path_unit
+        files['etc/systemd/system/'+path_unit]=((REPO/'deploy/bootstrap/clone'/path_unit).read_bytes(),0o644)
         files['opt/maas/lib/maas_bootstrap/delivery.py']=((REPO/'maas_bootstrap/delivery.py').read_bytes(),0o644)
     link='etc/systemd/system/multi-user.target.wants/'+boot_unit
     manifest='opt/maas/image-manifest.json'

@@ -97,6 +97,9 @@ class LocalSettings:
                     raise ValueError()
                 if any(grant == Path(d[key]) or Path(d[key]) in grant.parents for key in ('state_dir','worker_data_dir')):
                     raise ValueError()
+            automatic = d.get('worker_start_automatic', False)
+            if type(automatic) is not bool or (automatic and 'worker_start_grant_file' not in d):
+                raise ValueError()
             from .storage import paths
             d['model_root'],d['model_cache_dir']=map(str,paths(d))
             allowed=d.get('allowed_registry_endpoints',[])

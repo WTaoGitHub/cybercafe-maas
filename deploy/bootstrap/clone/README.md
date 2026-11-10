@@ -153,3 +153,11 @@ python3 -m maas_bootstrap.delivery \
 `GRANT_DELIVERED` 表示许可已交付。用 `systemctl status maas-worker-bootstrap.service` 和 GPUStack 核对原 worker ID 恢复 `Ready`，再测试旧凭据和试点 OCR。开机时缺少许可的克隆应停在等待状态。
 
 `WORKER_START_NEEDS_RECONCILIATION` 表示 MaaS 发出原生许可请求后缺少确定结果。运维通过授权目录中的 `issue.json` 核对 worker ID，并查询 GPUStack 侧该 worker 的接续记录。若原生许可已发出，后续按已存在的会话处理。只有确认原请求未发出许可时，才可重新授权。真实退出和存量隧道、模型恢复属于 P4 现场验收。 [Issue #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+
+### 首次注册自动发证
+
+自动模式用于信任 worker 从本次运行环境上报实际单卡 GPU UUID 的试点。运维先在目标集群预登记 GPU，再在对应批次的 `policy.json` 授权项增加 `auto_start_gpus`，键为规范化的完整 GPU UUID，值为预登记返回的数字 `worker_id`。配置服务使用当前签名发布的集群、镜像和版本范围，并通过同一个内部许可入口核对绑定。
+
+构建试点镜像时，在无盘镜像设置中加上 `"worker_start_automatic": true`。开机启用引导服务，由 E5 读取实际 GPU UUID 和 `boot_id` 并认证申请。已交付的人工许可文件优先使用。未获许可时保持无 worker，systemd 按现有上限重试。
+
+同一启动复用同一份有效许可。MaaS 在授权目录保留该集群与 GPU 的启动绑定和签发记录，不同启动竞争时拒绝第二个请求。许可过期或签发结果不明确时，由运维对账。已有接续会话的 worker 继续使用人工确认退出与接续许可流程。
