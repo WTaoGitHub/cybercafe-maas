@@ -39,7 +39,13 @@ envsubst '$P4_NATIVE_LISTEN $P4_NATIVE_UPSTREAM_PORT' \
 
 独立 OCR 部署固定到试点池与该 worker。实际 GPU OCR 返回 HTTP 200 和预期的 46 行。正式 OCR 复核仍为 4/4，MaaS 正式 OCR 请求也返回 HTTP 200 和 46 行。调节器采集和状态检查已切到新 worker ID，修订 5 保持生效。
 
-A 保持在线，供后续同卡交接验证。B 的接入地址、同卡换绑方式和 A 的平台退出证据待确认。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+### 2026-11-10 005 重启后的身份恢复
+
+管理员重启 005 前，试点 OCR 模型 44 降到 0，试点 worker 停止并进入 `not_ready`。重启后直连核对 `boot_id` 已变化，完整 GPU UUID 与基线一致，tmpfs 原生身份目录为空。手动下发 E5 引导配置和绑定上一会话的一次性接续许可后，GPUStack 原记录 `worker_id=11` 恢复 `Ready`。新凭据查询返回 HTTP 200，旧凭据在同一查询上返回 HTTP 401。
+
+模型 44 恢复 1 个副本，新实例落在 worker 11，真实 CUDA OCR 返回 HTTP 200 和 46 行。正式 OCR 复核为 4/4，正式请求也返回 HTTP 200 和 46 行。试点压力采样已恢复，调节器修订 5 状态检查通过。
+
+本轮覆盖 005 整机重启后的无盘身份恢复。独立 VPC B 的验收仍需平台实例标识和同卡分配记录。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
 
 ## 退役与回退
 
