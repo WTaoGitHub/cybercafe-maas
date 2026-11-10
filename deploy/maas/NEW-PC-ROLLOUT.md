@@ -109,7 +109,7 @@
 | 重试与并发 | 同一启动重复请求复用同一个有效许可。按集群与 GPU 绑定串行处理，不同启动 ID 竞争时只允许一个会话获得许可。验收网络重试和并发时仍只有一条 worker 记录。 |
 | 同卡接续 | 已认证的克隆提交当前 GPU UUID。GPUStack 锁定原记录后核对绑定唯一，已有会话且状态为 `not_ready` 时签发新许可、保留原 `worker_id` 并撤销旧凭据。其他状态拒绝。旧实例临时断网并进入 `not_ready` 也可能触发接续。 |
 
-自动接续已实现。部署前需升级新 PC 的 enrollment 插件与 Bootstrap，并把试点 GPU 和现有 worker ID 加入试点批次授权项。用预置新版 E5 的快照重启 004 后，实测新启动自动接续、旧凭据失效及 OCR 恢复。 [无盘身份跟踪 #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+自动接续已部署到新 PC（`c6a79dd`，enrollment 0.4.0）。集群 1 已授权 worker 2 的 GPU，实测 `Ready` 时申请接续返回 `409`，未授权 GPU 返回 `403`，OCR 副本为 1/1。控制端保留升级前容器。自动启动安装包已在离线文件系统样本验证。原母版内网入口当前对应运行中的 worker，待确认独立母版入口或离线系统盘后安装并封版，再对 004 实测自动接续。 [无盘身份跟踪 #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
 
 ### 副本调节试点接力
 
