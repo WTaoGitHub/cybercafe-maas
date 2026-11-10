@@ -84,3 +84,5 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 隔离试验使用当前 Server 镜像、临时数据库和 `--network none`，未达到原生 API 就绪。诊断日志显示 Server 在迁移及扩展加载后因找不到非回环 IPv4 退出。后续应改用不发布端口的独立内部 bridge，验证禁用嵌入式网关时的 HTTPS 注册、隧道、按模型鉴权及推理，再决定是否切换。现网入口未切换，端到端验收仍待完成。 [鉴权问题 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
 
 2026-11-10 使用独立内部 Docker bridge、临时数据库和无端口发布的同版镜像复验。禁用嵌入式 Higress 后，原生 Uvicorn 的版本和健康接口均返回 `200`，匿名模型列表及推理请求均返回 `401`。启用受管注册后，`verify_p2.py` 的七项检查全部通过，包括合成 worker 原生注册、单次许可、旧凭据拒绝、心跳和普通 worker 注册。隔离资源已清理。普通 HTTP GET `/connect` 返回 `404`，未执行 WebSocket 握手，也未在隔离环境运行真实 GPU 推理。切换前仍须验证实际 HTTPS 隧道与授权推理。 [鉴权问题 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
+
+同版候选在独立内部 bridge 加入临时 Nginx TLS 入口，未发布宿主机端口。合成 worker 接续后，客户端校验证书并通过 `wss://…/connect` 使用新会话凭据完成握手及 ping/pong，旧凭据被拒绝。原七项注册回归同时通过，临时资源已清理。此轮验证覆盖 HTTPS 隧道握手和凭据轮换，真实 GPU 推理流量与 MaaS 计量仍待候选拓扑验证。现网入口未切换。
