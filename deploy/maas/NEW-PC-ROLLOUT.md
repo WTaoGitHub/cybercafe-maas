@@ -63,7 +63,7 @@
 - 新 GPUStack Docker 集群 `maas-baremetal-workers` 和 OCR 部署 `maas-ocr` 已建，部署、副本调节器均按新环境的实际集群和部署 ID 配置。OCR 期望和就绪副本均为 0。原生路由要求鉴权，独立非管理员推理 key 已绑定新 MaaS 项目，能力接口已验证。真实推理等 P2。
 - 新仓库的 OCR 镜像 `maas/ocr:registry-r1` 经临时 SSH 隧道从原仓库复制，`skopeo copy --preserve-digests` 后核对两端原始 manifest 的摘要均为 `sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9`。原生后端按摘要固定镜像。临时隧道已关闭，旧仓库未改。
 - Bootstrap 签名发布 `baremetal-pilot-r1` 已生效，以新集群的注册令牌和新仓库的只读凭据组装。已用项目克隆客户端经验证的 HTTPS 取回并验签。母版仍使用原设置。五文件交付包在新 PC 的 `control/bootstrap/operator/baremetal-pilot-mother/`，权限仅 root，包含 `bootstrap.json`、`clone-boundary.json`、`server.crt`、`release-signing.pub` 和 `shared-code`。母版变更前备份原五文件，只安装并核对配置及信任材料，母版自身保持 worker 与边界服务不运行。只有管理员保存快照并启动新 VPC。
-- 新 PC 的 `maas-control-worker-edge` 将三个 worker 入口转发到本机回环，由 `control/worker-edge/nginx.conf` 限定来源。目前只允许已验证的母版地址。母版访问 GPUStack 成功，registry 与 bootstrap 的证书及预期 HTTP 状态通过，旧控制端访问三端口均被拒绝。MaaS 消费者入口和 PostgreSQL 继续绑定回环。P2 为首台克隆核验其源地址，添加精确允许规则，再验证首启。若只能在克隆启动后获知地址，放行后按引导手册做受控重试，并如实记录首次启动结果。
+- 新 PC 的 `maas-control-worker-edge` 将三个 worker 入口转发到本机回环，由 `control/worker-edge/nginx.conf` 限定来源。初始只允许母版地址，母版已验证 GPUStack、registry 与 bootstrap 连通。2026-11-10 将三个入口的来源范围调整为 `10.11.0.0/16`，范围外连接由 Nginx 拒绝。P2 从首台克隆核对实际来源和三个入口的连通性，再进行首启验收。
 - 新 PC 当前运行 `maas-control-gpustack-observe`，已记录实际 Observe 计划，退役插件关闭。原 `maas-control-gpustack` 容器停在新 PC 上作为回退锚点，两者共享新 GPUStack 卷，切换时只运行其中一个。旧控制端的 GPUStack 和 MaaS 健康端点通过复核，未切流。
 
 每次会话追加一行，包含北京时间、阶段、操作范围、验证结果、脱敏证据或变更提交、阻塞及下一步。长报告放在 `results/` 并在此链接。只有满足该阶段门槛才标记通过。若中断，注明最后一次成功操作和恢复点。
@@ -84,6 +84,7 @@
 | 2026-11-09 | 方案 C 下游网络验证 | 从新 PC 上实际运行的下游后端网络命名空间探测，`maas-service` 解析成功，根路径 `404`，能力查询匿名 `401`、授权 `200`，无效 OCR 输入 `422 IMAGE_BASE64`。 | 此次探针覆盖实际下游网络及 API 校验。下游应用的真实 OCR 流程未在该次探测中执行。 |
 | 2026-11-10 | 控制端版本更新 | 部署 `bdd5f52` 到 MaaS API、执行器、观察器、E17 采样与日报及 Bootstrap，并升级 GPUStack 副本调节插件到 0.16.0，沿用 Observe 模式。MaaS、Bootstrap、GPUStack 健康接口均返回 `200`。实际下游容器的匿名能力查询返回 `401`，内部健康路径返回 `404`。 | 旧镜像、应用环境文件备份和手动管理的旧容器保留作回退。部署未启用 MaaS Apply 或新的无盘启动授权，真实 OCR 不在本次验证范围。参见 [构建修复 #56](https://github.com/WTaoGitHub/cybercafe-maas/issues/56)。 |
 | 2026-11-10 | 副本调节器空集群试点 | 只重建 E17 日报容器并叠加 MaaS Observe 与 Apply Compose 配置。只授权新集群的 `maas-ocr`，上限为 1，全局与集群在途预算各为 1。MaaS 日志进入等待 GPU，期望和就绪均为 0，worker 与实例均为 0，待确认日志为空。GPUStack 内旧插件保持 Observe，MaaS 与 GPUStack 健康检查均为 `200`。 | 压力采集已安装并启用，空来源时按条件保持待机，MaaS 压力门槛关闭。待首台克隆注册并核验身份后接入真实样本，再验证目标 `0 → 1`、实例就绪与 OCR。 [试点追踪 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39) |
+| 2026-11-10 | Worker 入口准入 | 将 Nginx 的三个 worker 入口放行范围调整为 `10.11.0.0/16`。`nginx -t` 通过并重载原容器。由网段内来源实测 GPUStack `/version` 和 Bootstrap `/healthz` 均返回 `200`，registry 匿名 `/v2/` 返回 `401`。 | 从网段外的本机源地址访问三个 worker 入口均被断开。原配置已备份，首台新克隆连通性待首启核对。 [迁移跟踪 #14](https://github.com/WTaoGitHub/cybercafe-maas/issues/14) |
 
 ### 副本调节试点接力
 
