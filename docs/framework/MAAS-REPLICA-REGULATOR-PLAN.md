@@ -76,3 +76,9 @@ MaaS 复用插件的原生管理适配、压力门槛、在途预算和持久写
 首次就绪探测时，实例停在 `quay.io/gpustack/runtime:pause` 拉取。新 PC 上线台账记录从旧控制端缓存补齐该镜像。随后同一实例达到 Running，模型为 `1/1`，worker 本机 CUDA OCR 返回 `200` 和 2 行。 [辅助镜像 #57](https://github.com/WTaoGitHub/cybercafe-maas/issues/57) · [上线台账](../../deploy/maas/NEW-PC-ROLLOUT.md)
 
 MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED`。同一试点推理凭据可以列出模型，GPUStack 服务端 `/token-auth` 返回 `200`，两个原生推理入口均返回 `401`。首次扩容已验证，端到端 OCR 待上游鉴权修复后复验。 [调节器 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39) · [推理鉴权 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
+
+### 推理鉴权排查
+
+同一试点凭据和图片经 Higress 返回 `401`，经 GPUStack Server 容器内回环原生 API 返回 `200` 和两行。GPUStack v2.2.3 的 Higress 认证回调为模型路由返回集群注册码，而原生 API 转发使用已选 worker 的会话凭据。两条路径的凭据口径差异与无盘 worker 的现象吻合。
+
+隔离试验使用当前 Server 镜像、临时数据库和 `--network none`，未达到原生 API 就绪。诊断日志显示 Server 在迁移及扩展加载后因找不到非回环 IPv4 退出。后续应改用不发布端口的独立内部 bridge，验证禁用嵌入式网关时的 HTTPS 注册、隧道、按模型鉴权及推理，再决定是否切换。现网入口未切换，端到端验收仍待完成。 [鉴权问题 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
