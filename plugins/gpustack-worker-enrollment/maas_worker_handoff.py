@@ -18,11 +18,13 @@ from gpustack.api.auth import get_user_from_api_token
 from gpustack.api.exceptions import HTTPException as NativeHTTPException
 from gpustack.schemas.api_keys import ApiKey
 from gpustack.schemas.clusters import Cluster
+from gpustack.schemas.models import Model, ModelInstance
 from gpustack.schemas.principals import Principal, PrincipalType
 from gpustack.schemas.workers import Worker, WorkerCreate, WorkerStateEnum, WorkerStatus, WorkerStatusStored
 from gpustack.server.cache import delete_cache_by_key
 from gpustack.server.db import async_session
 from gpustack.server.services import APIKeyService, UserService, WorkerService
+from gpustack.utils.model_instance_workers import get_model_instance_worker_match
 from pydantic import BaseModel, ConfigDict, PositiveInt, StringConstraints, TypeAdapter, ValidationError
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, MetaData, String, Table, delete, or_, text, update
 from sqlmodel import select
@@ -36,6 +38,7 @@ STATUS = "/v2/worker-status"
 HEARTBEAT = "/v2/worker-heartbeat"
 MANAGEMENT = re.compile(r"/v2/(workers|clusters)/([^/]+)(?:/(registration-token|manifests))?")
 RESOURCE_ID = TypeAdapter(int)
+FenceReceipt = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=128)]
 
 handoffs = Table(
     "maas_worker_handoffs", MetaData(),
@@ -55,7 +58,16 @@ class HandoffRequest(BaseModel):
     session_id: UUID
     gpu_uuid: str | None = None
     previous_session_id: UUID | None = None
-    fence_receipt: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=128)] | None = None
+    fence_receipt: FenceReceipt | None = None
+
+
+class RetirementRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    worker_id: PositiveInt
+    gpu_uuid: str
+    session_id: UUID | None = None
+    fence_receipt: FenceReceipt
 
 
 def now():
@@ -76,12 +88,58 @@ async def handoff_for(session, worker_id):
     return rows.mappings().one_or_none()
 
 
+async def revoke_identity(session, worker, updates):
+    keys = []
+    principal_id = worker.system_principal_id
+    principal = None
+    if principal_id is not None:
+        principal = await Principal.one_by_id(session, principal_id)
+        if principal is None or principal.kind != PrincipalType.SYSTEM or await Cluster.one_by_field(
+            session, "system_principal_id", principal_id
+        ) is not None:
+            raise HTTPException(409, "Existing worker credential binding needs review")
+        keys = (await session.execute(delete(ApiKey).where(ApiKey.user_id == principal_id)
+                                      .returning(ApiKey.access_key))).scalars().all()
+    await WorkerService(session).update(worker, {**updates, "token": None, "system_principal_id": None},
+                                        auto_commit=False)
+    if principal is not None:
+        await principal.delete(session, auto_commit=False)
+    return principal_id, keys
+
+
+async def invalidate_identity(principal_id, keys):
+    for access_key in keys:
+        await delete_cache_by_key(APIKeyService.get_by_access_key, access_key)
+    if principal_id is not None:
+        await delete_cache_by_key(UserService.get_by_id, principal_id)
+
+
+async def has_placement_references(session, worker):
+    instances = await ModelInstance.all_by_field(session, "cluster_id", worker.cluster_id)
+    if any(instance.deleted_at is None and get_model_instance_worker_match(
+        instance, worker_name=worker.name, worker_id=worker.id
+    ).matched for instance in instances):
+        return True
+    models = await Model.all_by_field(session, "cluster_id", worker.cluster_id)
+    for model in models:
+        if model.deleted_at is not None:
+            continue
+        gpu_ids = (model.gpu_selector.gpu_ids or ()) if model.gpu_selector else ()
+        if ((model.worker_selector or {}).get("worker-name") == worker.name
+                or any(gpu_id.partition(":")[0] == worker.name for gpu_id in gpu_ids)):
+            return True
+    return False
+
+
 class WorkerHandoff:
     def __init__(self, app, cluster_id, require_maas):
+        self.app = app
         self.cluster_id = cluster_id
         self.initialized = False
         app.post("/internal/maas/worker-handoff", dependencies=[Depends(require_maas)],
                  include_in_schema=False)(self.issue_permit)
+        app.post("/internal/maas/worker-retire", dependencies=[Depends(require_maas)],
+                 include_in_schema=False)(self.retire_worker)
         app.middleware("http")(self.guard)
 
     async def initialize(self):
@@ -99,6 +157,16 @@ class WorkerHandoff:
         if not self.initialized:
             raise HTTPException(503, "Worker handoff is initializing")
 
+    def require_fenced(self, worker):
+        if worker.system_principal_id is None:
+            return
+        stale_before = now() - timedelta(seconds=envs.WORKER_HEARTBEAT_GRACE_PERIOD)
+        if worker.state != WorkerStateEnum.NOT_READY or (worker.heartbeat_time and worker.heartbeat_time >= stale_before):
+            raise HTTPException(409, "Current worker must be offline")
+        handler = self.app.state.message_server_handler
+        if UUID(worker.worker_uuid) in handler.client_registry:
+            raise HTTPException(409, "Current worker tunnel is still connected")
+
     async def issue_permit(self, request: HandoffRequest):
         self.require_initialized()
         permit = PERMIT_PREFIX + token_hex(32)
@@ -111,7 +179,6 @@ class WorkerHandoff:
                 raise HTTPException(404, "Enrolled worker not found")
             previous = await handoff_for(session, worker.id)
             keys = []
-            principal = None
             principal_id = worker.system_principal_id
             values = {"session_id": session_id, "permit_hash": digest(permit), "expires_at": expires_at,
                       "phase": "reserved", "fence_receipt": request.fence_receipt}
@@ -123,36 +190,41 @@ class WorkerHandoff:
                 if (previous["phase"] == "registering" or session_id == previous["session_id"]
                         or str(request.previous_session_id) != previous["session_id"] or not request.fence_receipt):
                     raise HTTPException(409, "Current session must be fenced before handoff")
-                if principal_id is not None:
-                    last_heartbeat = worker.heartbeat_time
-                    stale_before = now() - timedelta(seconds=envs.WORKER_HEARTBEAT_GRACE_PERIOD)
-                    if worker.state != WorkerStateEnum.NOT_READY or (last_heartbeat and last_heartbeat >= stale_before):
-                        raise HTTPException(409, "Current worker must be offline before handoff")
-                    principal = await Principal.one_by_id(session, principal_id)
-                    if principal is None or principal.kind != PrincipalType.SYSTEM or await Cluster.one_by_field(
-                        session, "system_principal_id", principal_id
-                    ) is not None:
-                        raise HTTPException(409, "Existing worker credential binding needs review")
-                    keys = (await session.execute(delete(ApiKey).where(ApiKey.user_id == principal_id)
-                                                  .returning(ApiKey.access_key))).scalars().all()
-                await WorkerService(session).update(worker, {
-                    "token": None, "system_principal_id": None,
+                self.require_fenced(worker)
+                principal_id, keys = await revoke_identity(session, worker, {
                     "state": WorkerStateEnum.INITIALIZING, "heartbeat_time": None,
                     "state_message": "Waiting for diskless worker handoff", "status": WorkerStatus.get_default_status(),
                     "proxy_address": None, "advertise_address": None, "ip": "", "unreachable": False,
-                }, auto_commit=False)
-                if principal is not None:
-                    await principal.delete(session, auto_commit=False)
+                })
                 await session.execute(handoffs.update().where(handoffs.c.worker_id == worker.id).values(**values))
             await session.commit()
-            for access_key in keys:
-                await delete_cache_by_key(APIKeyService.get_by_access_key, access_key)
-            if principal_id is not None:
-                await delete_cache_by_key(UserService.get_by_id, principal_id)
+            await invalidate_identity(principal_id, keys)
             return {"cluster_id": worker.cluster_id, "worker_id": worker.id,
                     "worker_name": worker.name, "external_id": worker.external_id,
                     "session_id": session_id, "registration_token": permit,
                     "expires_at": expires_at.isoformat()}
+
+    async def retire_worker(self, request: RetirementRequest):
+        self.require_initialized()
+        async with async_session() as session:
+            worker = await Worker.one_by_id(session, request.worker_id, for_update=True)
+            if not self.managed(worker) or worker.name != worker.external_id or worker.external_id != request.gpu_uuid:
+                raise HTTPException(404, "Enrolled worker not found")
+            state = await handoff_for(session, worker.id)
+            if state is None:
+                if request.session_id is not None or worker.system_principal_id is not None:
+                    raise HTTPException(409, "Worker session binding needs review")
+            elif state["phase"] == "registering" or state["session_id"] != str(request.session_id):
+                raise HTTPException(409, "Current worker session must be confirmed before retirement")
+            self.require_fenced(worker)
+            if await has_placement_references(session, worker):
+                raise HTTPException(409, "Worker still has model placement references")
+            principal_id, keys = await revoke_identity(session, worker, {})
+            await WorkerService(session).delete(worker, soft=False, auto_commit=False)
+            await session.commit()
+            await invalidate_identity(principal_id, keys)
+            return {"cluster_id": worker.cluster_id, "worker_id": worker.id, "external_id": worker.external_id,
+                    "retired": True}
 
     async def claim_registration(self, worker_in, token):
         async with async_session() as session:
@@ -276,6 +348,8 @@ class WorkerHandoff:
         )
         if user.kind == PrincipalType.SYSTEM and (protected or self.managed(user.worker)):
             raise HTTPException(403, "System credentials cannot manage protected worker bindings or read cluster secrets")
+        if resource == "workers" and protected and request.method == "DELETE":
+            raise HTTPException(409, "Use the managed worker retirement endpoint")
 
     async def guard(self, request: Request, call_next):
         path = get_route_path(request.scope).rstrip("/")

@@ -19,6 +19,8 @@ MaaS 使用同一服务凭据调用 `POST /internal/maas/worker-handoff`，提�
 
 P2 验收覆盖新发起的 HTTP 注册和状态请求。系统凭据对受管 worker 和目标集群的原生修改入口受限，目标集群的加入凭据及 manifests 仅供有权限的管理用户获取。受管 worker 也不能读取其他集群的加入凭据。MaaS 确认退出或隔离时，还需核对旧进程、已建立的隧道和在途推理。受管记录应保持许可检查开启，直到完成受控退役或迁移。
 
+0.3.0 会在接续前检查旧 worker 在服务端登记的隧道。MaaS 私有退役入口 `POST /internal/maas/worker-retire` 接收 `worker_id`、`gpu_uuid`、当前 `session_id` 和 `fence_receipt`。确认旧会话、离线、隧道和模型放置引用后，撤销原生凭据并硬删除受管记录。未发放许可的占位记录用空 `session_id`。受管记录的原生 DELETE 返回 409，避免进入 Docker 供应商软删除流程。
+
 `verify_p1.py` 和 `verify_p2.py` 分别在全新、仅容器回环可达的 GPUStack v2.2.3 实例中运行。Server 启动前装入 wheel，使用临时 PostgreSQL、首次创建的 Docker 集群、禁用内嵌 worker，并在容器环境中设置 `GPUSTACK_BOOTSTRAP_PASSWORD` 和上述插件配置。P1 使用默认模式。P2 需要将两个验证脚本放在同一目录，并启用 `required` 模式。脚本使用合成 GPU 清单，P2 仅通过临时数据库模拟心跳和许可超时。
 
 [E5.F3 跟踪记录](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
