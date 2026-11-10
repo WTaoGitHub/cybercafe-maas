@@ -31,6 +31,16 @@ envsubst '$P4_NATIVE_LISTEN $P4_NATIVE_UPSTREAM_PORT' \
 | B 接续 | 同一卡分配给空身份目录的 B。凭上一会话、固定 worker ID 和退出证据申请授权。核对同一 `worker_id`、同一 GPU UUID、新实例地址、新凭据及 `ready`，并验证旧凭据失效。确认测试模型和路由已在 B 恢复，完成真实 OCR，记录注册和业务恢复耗时。 |
 | 正式负载复核 | 每阶段比较正式模型的副本、放置和真实 OCR 探针。出现偏离时停止试点并按切换窗口回退。 |
 
+### 2026-11-10 VPC A 首次接入
+
+现网 GPUStack v2.2.3 已启用 enrollment 0.3.0 的受管注册。独立 HTTPS 入口与 E5 配置服务仅放行 A，A 已完成签名验核，连接原生 HTTP 端口被拒绝。使用 A 的原生凭据通过试点入口发起 WSS 握手，返回 101。
+
+停止并保留 A 上的旧 E5 容器和身份卷。等原生状态变为 `not_ready` 后，从空 tmpfs 原生目录启动受管 worker。MaaS 发放单次启动许可，GPUStack 确认 `name`、`external_id` 与实际 GPU UUID 一致。新记录以 `worker_id=11` 进入 `ready`。
+
+独立 OCR 部署固定到试点池与该 worker。实际 GPU OCR 返回 HTTP 200 和预期的 46 行。正式 OCR 复核仍为 4/4，MaaS 正式 OCR 请求也返回 HTTP 200 和 46 行。调节器采集和状态检查已切到新 worker ID，修订 5 保持生效。
+
+A 保持在线，供后续同卡交接验证。B 的接入地址、同卡换绑方式和 A 的平台退出证据待确认。 [试点跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)
+
 ## 退役与回退
 
 1. 停止发放试点授权。排空专用测试模型并将副本降为零，删除专用模型，复核原生实例、显式绑定、路由和旧 VPC 隧道已清理。
