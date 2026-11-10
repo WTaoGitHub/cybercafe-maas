@@ -113,15 +113,21 @@ def main():
         check(admin.post('/auth/login', data={'username':'admin','password':os.environ['GPUSTACK_BOOTSTRAP_PASSWORD']}))
         assert check(admin.get('/v2/clusters'))['items'] == [] and workers(admin) == [], 'Fresh lab only'
         cluster = check(admin.post('/v2/clusters', json={'name':'e5-p3-lab','provider':'Docker'}))['id']
-        cert, tls_key = root/'tls.crt', root/'tls.key'
-        subprocess.run(['openssl','req','-x509','-nodes','-newkey','rsa:2048','-days','1', '-subj','/CN=127.0.0.1',
-                        '-addext','subjectAltName=IP:127.0.0.1','-keyout',str(tls_key),'-out',str(cert)],
-                       check=True, capture_output=True)
-        native = ThreadingHTTPServer(('127.0.0.1',0), NativeTLSProxy)
-        tls = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);tls.load_cert_chain(cert,tls_key)
-        native.socket = tls.wrap_socket(native.socket,server_side=True)
-        Thread(target=native.serve_forever,daemon=True).start()
-        native_url = f'https://127.0.0.1:{native.server_port}'
+        native_url = os.getenv('MAAS_P4_LAB_NATIVE_URL')
+        native = None
+        if native_url:
+            tls_dir = Path(os.environ['MAAS_P4_LAB_TLS_DIR'])
+            cert, tls_key = tls_dir/'tls.crt', tls_dir/'tls.key'
+        else:
+            cert, tls_key = root/'tls.crt', root/'tls.key'
+            subprocess.run(['openssl','req','-x509','-nodes','-newkey','rsa:2048','-days','1', '-subj','/CN=127.0.0.1',
+                            '-addext','subjectAltName=IP:127.0.0.1','-keyout',str(tls_key),'-out',str(cert)],
+                           check=True, capture_output=True)
+            native = ThreadingHTTPServer(('127.0.0.1',0), NativeTLSProxy)
+            tls = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);tls.load_cert_chain(cert,tls_key)
+            native.socket = tls.wrap_socket(native.socket,server_side=True)
+            Thread(target=native.serve_forever,daemon=True).start()
+            native_url = f'https://127.0.0.1:{native.server_port}'
         server_port = 18840
         releases, approvals = root/'releases-state', root/'approvals'
         releases.mkdir(mode=0o700);approvals.mkdir(mode=0o700)
@@ -195,7 +201,7 @@ def main():
         assert len(workers(admin))==1
         print('PASS active worker blocks takeover; approved handoff, created-container retry and old-token revocation',flush=True)
         service.should_exit = True
-        native.shutdown()
+        if native is not None:native.shutdown()
 
 
 if __name__ == '__main__':

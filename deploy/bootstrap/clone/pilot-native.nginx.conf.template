@@ -1,0 +1,54 @@
+# Render only P4_NATIVE_LISTEN and P4_NATIVE_UPSTREAM_PORT.
+worker_processes 1;
+pid /tmp/maas-p4-native.pid;
+error_log /dev/stderr warn;
+events { worker_connections 256; }
+http {
+    access_log off;
+    client_body_temp_path /tmp/p4-client;
+    proxy_temp_path /tmp/p4-proxy;
+    map $http_upgrade $p4_connection {
+        default upgrade;
+        '' close;
+    }
+    map "$request_method:$uri" $p4_native_path {
+        default 0;
+        ~^GET:/(version|healthz|connect)$ 1;
+        ~^GET:/v2/(workers|models|model-instances|model-files|inference-backends|benchmarks)(/[0-9]+)?$ 1;
+        "~^GET:/v2/(metrics/config|inference-backends/all)$" 1;
+        ~^POST:/v2/(workers|worker-heartbeat|worker-status)$ 1;
+        ~^PUT:/v2/(models|model-instances|model-files)/[0-9]+$ 1;
+        ~^DELETE:/v2/model-instances/[0-9]+$ 1;
+    }
+    server {
+        listen ${P4_NATIVE_LISTEN} ssl;
+        server_name _;
+        ssl_certificate /run/maas-p4/tls.crt;
+        ssl_certificate_key /run/maas-p4/tls.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        client_max_body_size 2m;
+        client_body_timeout 15s;
+
+        include /run/maas-p4/clients.conf;
+        deny all;
+
+        location / {
+            if ($p4_native_path = 0) { return 404; }
+            proxy_pass http://127.0.0.1:${P4_NATIVE_UPSTREAM_PORT};
+            proxy_http_version 1.1;
+            proxy_connect_timeout 3s;
+            proxy_read_timeout 600s;
+            proxy_next_upstream off;
+            proxy_buffering off;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $p4_connection;
+            proxy_set_header Authorization $http_authorization;
+            proxy_set_header Cookie "";
+            proxy_set_header X-API-Key "";
+            proxy_set_header Proxy-Authorization "";
+            proxy_set_header X-GPUStack-Auth-Token "";
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto https;
+        }
+    }
+}
