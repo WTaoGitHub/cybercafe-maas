@@ -1,0 +1,22 @@
+{
+  "ready_for_admin_snapshot_operation": true,
+  "admission_http_https": "new submissions return 503",
+  "maas_paused": true,
+  "maintenance_generation": 1,
+  "queued_tasks": 0,
+  "active_tasks": 0,
+  "unknown_activity": 0,
+  "ocr_target": 0,
+  "ocr_ready": 0,
+  "ocr_instances": 0,
+  "worker_id": 2,
+  "worker_state": "not_ready",
+  "worker_container_running": false,
+  "gpu_compute_processes": 0,
+  "regulators": "observe",
+  "maas_policy_revision": 2,
+  "cluster_default_proxy_mode": "direct",
+  "pressure_sampler": "intentionally stopped",
+  "vm_restart_performed": false,
+  "higress_candidate_spec_prepared": true
+}

@@ -49,3 +49,5 @@
 同日已通过原生集群更新 API 将 maas-baremetal-workers（ID 1）的 worker_config.proxy_mode 设为 direct，保存变更前私有配置并核对读回值及其他字段。此默认值在 worker 启动注册时读取。当前 worker 2 仍报告 Ready / worker，模型保持 1/1，当前服务入口为已验收的原生 API。
 
 管理员当前不能及时响应，真实克隆启动、direct 状态上报及常驻 Higress 切换待后续验收。新克隆可用后，先核对注册返回的 worker_config 和实际 proxy_mode，再核对动态模型端口、隔离规则及压力样本覆盖。Higress 候选采用当前 enrollment 版本的镜像，保留原生 API 回退配置。通过授权与拒绝测试后，核验一笔 MaaS 异步 OCR 的结果和唯一成功用量。
+
+同日用户安排先排空 004，再由管理员应用新快照。维护准备已完成，OCR 0/0、实例和 GPU 计算进程均为 0，worker 2 为 not_ready，两个调节器保持 Observe。入口已拦截新提交，MaaS 已暂停且排空。备份已保存至 Mac。详见[维护交接](MAINTENANCE-HANDOFF.md)。
