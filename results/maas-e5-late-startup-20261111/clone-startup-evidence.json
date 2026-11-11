@@ -1,0 +1,230 @@
+{
+  "source_commit": "b6ab211dc9c08b59a856558d5f019fa552cef877",
+  "operator_actions_read_only": true,
+  "manual_start_or_registration": false,
+  "clones": [
+    {
+      "node": "XZ-31-003",
+      "boot_id_sha256": "2e466e51ee89ec83ba3f095820066cf7ebb45f2a57d75eac813f1bcbff0f5752",
+      "gpu_uuid_sha256": "63c5e104800ef3270d36cea1127adb55510a3b0f682e9a1b8f3729352e65a1c6",
+      "matching_installed_files": 17,
+      "expected_installed_files": 17,
+      "startup_overlay": {
+        "source_commit": "b6ab211dc9c08b59a856558d5f019fa552cef877",
+        "trigger": "maas-worker-bootstrap.timer",
+        "wait_timeout_seconds": 600,
+        "retry_interval_seconds": 10
+      },
+      "signed_config": {
+        "verified": true,
+        "cluster_id": 1,
+        "worker_name_policy": "gpu-external-id"
+      },
+      "config_cluster_id": 1,
+      "state_filesystem": "tmpfs",
+      "system_target_active": true,
+      "docker_active": true,
+      "timing_seconds": {
+        "hostname_completed": 7.060516,
+        "docker_active": 11.896167,
+        "multi_user_active": 99.07825,
+        "bootstrap_process_started": 99.103164,
+        "startup_timeout": 699.14678
+      },
+      "timer_state": {
+        "LoadState": "loaded",
+        "UnitFileState": "enabled",
+        "ActiveState": "active",
+        "SubState": "elapsed",
+        "LastTriggerUSecMonotonic": "30.074136s"
+      },
+      "bootstrap_state": {
+        "ActiveState": "failed",
+        "SubState": "failed",
+        "Result": "exit-code",
+        "UnitFileState": "static"
+      },
+      "startup_result": {
+        "code": "BOOT_START_TIMEOUT",
+        "reason": "WORKER_START_DENIED",
+        "attempt": 57
+      },
+      "applied": null,
+      "worker_container_present": false,
+      "boundary_rules": {
+        "iptables-save": {
+          "read_ok": true,
+          "chains": [
+            "MAAS-CLONE-EARLY",
+            "MAAS-CLONE-FWD",
+            "MAAS-CLONE-HOST"
+          ],
+          "hook_count": 4
+        },
+        "ip6tables-save": {
+          "read_ok": true,
+          "chains": [
+            "MAAS-CLONE-EARLY",
+            "MAAS-CLONE-FWD",
+            "MAAS-CLONE-HOST"
+          ],
+          "hook_count": 4
+        }
+      },
+      "protected_host_rejections": 0,
+      "dependency_failures": 0,
+      "bootstrap_after_multi_user": true,
+      "retry_budget_elapsed_seconds": 600.043616
+    },
+    {
+      "node": "XZ-31-004",
+      "boot_id_sha256": "ecbea1f59d898cb6359369a8c1235bd8e8a3df48075f2d1e95454a558e5bcaf4",
+      "gpu_uuid_sha256": "de3d390cb02fdbc09b003c9c273363eff24b0fb6e41427c195407e629a6390e3",
+      "matching_installed_files": 17,
+      "expected_installed_files": 17,
+      "startup_overlay": {
+        "source_commit": "b6ab211dc9c08b59a856558d5f019fa552cef877",
+        "trigger": "maas-worker-bootstrap.timer",
+        "wait_timeout_seconds": 600,
+        "retry_interval_seconds": 10
+      },
+      "signed_config": {
+        "verified": true,
+        "cluster_id": 1,
+        "worker_name_policy": "gpu-external-id"
+      },
+      "config_cluster_id": 1,
+      "state_filesystem": "tmpfs",
+      "system_target_active": true,
+      "docker_active": true,
+      "timing_seconds": {
+        "hostname_completed": 9.428828,
+        "docker_active": 14.861928,
+        "multi_user_active": 101.565564,
+        "bootstrap_process_started": 101.580113,
+        "startup_timeout": 701.625152
+      },
+      "timer_state": {
+        "LoadState": "loaded",
+        "UnitFileState": "enabled",
+        "ActiveState": "active",
+        "SubState": "elapsed",
+        "LastTriggerUSecMonotonic": "30.334348s"
+      },
+      "bootstrap_state": {
+        "ActiveState": "failed",
+        "SubState": "failed",
+        "Result": "exit-code",
+        "UnitFileState": "static"
+      },
+      "startup_result": {
+        "code": "BOOT_START_TIMEOUT",
+        "reason": "WORKER_START_DENIED",
+        "attempt": 57
+      },
+      "applied": null,
+      "worker_container_present": false,
+      "boundary_rules": {
+        "iptables-save": {
+          "read_ok": true,
+          "chains": [
+            "MAAS-CLONE-EARLY",
+            "MAAS-CLONE-FWD",
+            "MAAS-CLONE-HOST"
+          ],
+          "hook_count": 4
+        },
+        "ip6tables-save": {
+          "read_ok": true,
+          "chains": [
+            "MAAS-CLONE-EARLY",
+            "MAAS-CLONE-FWD",
+            "MAAS-CLONE-HOST"
+          ],
+          "hook_count": 4
+        }
+      },
+      "protected_host_rejections": 0,
+      "dependency_failures": 0,
+      "bootstrap_after_multi_user": true,
+      "retry_budget_elapsed_seconds": 600.045039
+    },
+    {
+      "node": "XZ-31-002",
+      "boot_id_sha256": "146f495dd5fba09fca927b3e78edfaa519a56716b7a044c9fdf5829531a8a9b9",
+      "gpu_uuid_sha256": "52c495bd6d508b88800ddad30edf70e62ddd2817e69470f9368ea008143e4b88",
+      "matching_installed_files": 7,
+      "expected_installed_files": 17,
+      "startup_overlay": null,
+      "signed_config": {
+        "verified": true,
+        "cluster_id": 1,
+        "worker_name_policy": "gpu-external-id"
+      },
+      "config_cluster_id": 1,
+      "state_filesystem": "",
+      "system_target_active": true,
+      "docker_active": true,
+      "timing_seconds": {
+        "hostname_completed": 10.957111,
+        "docker_active": 15.875444,
+        "multi_user_active": 103.053658,
+        "bootstrap_process_started": 0.0,
+        "startup_timeout": null
+      },
+      "timer_state": {
+        "LoadState": "not-found",
+        "UnitFileState": "",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "LastTriggerUSecMonotonic": "0"
+      },
+      "bootstrap_state": {
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "Result": "success",
+        "UnitFileState": "enabled"
+      },
+      "startup_result": null,
+      "applied": null,
+      "worker_container_present": false,
+      "boundary_rules": {
+        "iptables-save": {
+          "read_ok": true,
+          "chains": [],
+          "hook_count": 0
+        },
+        "ip6tables-save": {
+          "read_ok": true,
+          "chains": [],
+          "hook_count": 0
+        }
+      },
+      "protected_host_rejections": 2,
+      "dependency_failures": 2,
+      "legacy_client_baseline": "c6a79dd; all seven original client modules match"
+    }
+  ],
+  "server_authorization": {
+    "cluster_id": 1,
+    "enabled_grant_count": 1,
+    "existing_approved_gpu_count": 2,
+    "new_gpu_approval_present": [
+      false,
+      false
+    ],
+    "new_gpu_approval_state_directory_present": [
+      false,
+      false
+    ],
+    "target_worker_record_count": 0,
+    "native_database_read_only_query_verified": true
+  },
+  "verification_scope": {
+    "new_snapshot_inheritance": "passed for two clones",
+    "post_boot_trigger_and_boundary": "passed for two clones",
+    "finite_timeout": "passed for two clones",
+    "first_gpu_automatic_registration": "blocked by missing GPU preregistration and authorization",
+    "same_gpu_handoff": "not covered"
+  }
+}

@@ -2,6 +2,8 @@
 
 2026-11-11，按用户授权在已核验的 `tower-*` 母版安装 [b6ab211](https://github.com/WTaoGitHub/cybercafe-maas/commit/b6ab211dc9c08b59a856558d5f019fa552cef877)。安装完成，真实新快照首启尚未验收。关联 [Issue #20](https://github.com/WTaoGitHub/cybercafe-maas/issues/20)，GPU 身份关联见 [Issue #16](https://github.com/WTaoGitHub/cybercafe-maas/issues/16)。
 
+后续更新：两台新版克隆已取得真实首启时序、边界执行和有限超时证据，首次自动注册受新 GPU 批准名单阻断。详见[新克隆实测](LIVE-CLONES.md)，下文保留母版安装时的状态与证据。
+
 ## 已安装行为
 
 - 一次性 timer 开机满 30 秒触发准备任务；任务排在 `multi-user.target` 与供应商命名单元之后，网络边界与 bootstrap 均不再成为系统基本启动、网络或 Docker 启动的前置条件。
