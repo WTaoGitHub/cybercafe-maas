@@ -90,3 +90,7 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 ### 新 PC 试点切换验收
 
 新 PC 在空闲时段备份 GPUStack PostgreSQL 并校验归档目录，保留原 Higress 容器。首轮探测遇到启动期间连接重置，自动恢复原容器。第二轮容忍启动阶段短暂断连，同一私有回环端口切换到禁用 Higress 的 GPUStack v2.2.3，沿用原网络、数据库和 worker 身份。worker 2 恢复 Ready，部署 1 保持 1/1。匿名模型查询返回 401，原生授权 CUDA OCR 返回 200 和两行。MaaS 异步 OCR 为 SUCCEEDED，返回两行，数据库核对一条成功用量、数量 1，UNKNOWN 为 0。两项控制面健康检查返回 200，压力采集活跃。现用候选容器保留原服务名称，停用的 Higress 容器保留作回退。未接入第二台 worker。 [鉴权问题 #58](https://github.com/WTaoGitHub/cybercafe-maas/issues/58)
+
+### 2026-11-11 Higress direct 候选
+
+原生 proxy_mode=direct 使 Higress 模型后端指向实际实例端口。独立 GPUStack/Higress 环境使用合成 worker 和实例元数据调用真实 GPU OCR，授权请求 200、两行，匿名和错误 Key 均 401，无模型权限 Key 为 403。原生配置及 Envoy 实际端点已交叉核对，旧控制端直连实例端口失败。隔离资源已清理，常驻原生 API 及 1/1 部署健康。下一轮先验证真实试点克隆由集群 worker_config 获取 direct、注册与路由刷新，再验证多副本和性能。 [报告](../../results/maas-higress-direct-20261111/REPORT.md) · [Issue #59](https://github.com/WTaoGitHub/cybercafe-maas/issues/59)

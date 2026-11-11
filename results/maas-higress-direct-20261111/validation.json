@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "case": "anonymous",
+      "http": 401
+    },
+    {
+      "case": "invalid-key",
+      "http": 401
+    },
+    {
+      "case": "denied-model",
+      "http": 403
+    },
+    {
+      "case": "authorized",
+      "http": 200,
+      "lines": 2
+    },
+    {
+      "case": "direct-engine-from-control-plane",
+      "http": 200,
+      "cuda": true
+    },
+    {
+      "case": "engine-from-untrusted-host",
+      "blocked": true
+    }
+  ],
+  "metadata": "synthetic direct worker and instance; actual existing GPU OCR upstream",
+  "envoy_endpoint_confirmed": true,
+  "direct_registry_files_matched": true,
+  "published_host_ports": false,
+  "native_worker_configuration_accepted": true,
+  "nontrusted_controller_engine_access_blocked": true,
+  "real_worker_restart_tested": false,
+  "metadata_source": "isolated synthetic worker and instance; actual existing GPU OCR engine",
+  "tracking_issue": 59,
+  "date": "2026-11-11"
+}
