@@ -1,0 +1,30 @@
+{
+  "unique_usage_rows": 1,
+  "quantity": 1,
+  "unknown": 0,
+  "alerts": [],
+  "ingress_reopened": true,
+  "maintenance_generation": 4,
+  "phase": "RECOVERY_VERIFIED",
+  "date": "2026-11-11",
+  "worker_id": 3,
+  "replicas": 1,
+  "ready_replicas": 1,
+  "instance_id": 3,
+  "automatic_scale": {
+    "from": 0,
+    "to": 1,
+    "event": "capacity_restored",
+    "policy_revision": 5,
+    "manual_replica_increase": false,
+    "pressure_missing_blocked": true,
+    "pressure_recovery_observed": true,
+    "write_confirmed": true
+  },
+  "same_gpu": true,
+  "new_boot": true,
+  "ocr_lines": 2,
+  "task_status": "SUCCEEDED",
+  "successful_images": 1,
+  "tracking_issue": 39
+}

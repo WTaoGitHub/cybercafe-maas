@@ -1,5 +1,7 @@
 # 003 排空与规模调节器恢复验收
 
+**最新结果：自动恢复验收通过。** 管理员启动后，003 的 boot ID 已变化、GPU UUID 保持一致，worker 3 恢复 Ready / direct。恢复受限压力采样后，调节器依次经历 pressure_unavailable、pressure_recovering、open，由真实 capacity_restored 事件自动将部署 1 从 0 增至 1，写入 confirmed；未人工增加副本。实例 3 在 worker 3 上 Running，OCR 1/1。经 Higress 的恢复探针和 MaaS 异步任务均成功、两行，SQL 核对唯一成功用量一条、数量 1，UNKNOWN=0、无告警。MaaS 已恢复，generation 4，HTTP/HTTPS 入口维护拦截已移除并校验、重载。Apply 修订 5、上限 1 保留。证据见 [recovery-validation.json](recovery-validation.json)，原始日志与身份保存在 Mac 私有目录。下文为此前准备记录；第二台 VPC 的 1→2 尚未验证。
+
 2026-11-11 · [模型规模调节器 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 本轮围绕模型服务规模调节器，先准备 003 的维护窗口，再由管理员使用相同快照启动。GPU UUID、启动 ID 和旧凭据用于关联操作前后记录；不将 E5 同卡接续协议作为本轮独立验收项。不由本会话执行 VM 重启、平台重建或快照还原。

@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-11 003 自动恢复已通过**。管理员启动后 worker 3 Ready/direct，压力覆盖恢复后调节器按 capacity_restored 自动 0→1、写入 confirmed，实例 3 Running，Higress/OCR 和 MaaS 异步任务成功、唯一计量 1，UNKNOWN=0。MaaS generation 4 已恢复、入口维护拦截解除；Apply 修订 5、上限 1 保留。第二台 VPC 尚未启动验收，需先准备策略与写授权上限 2、事件基线和采样覆盖。[验收](../../results/maas-replica-003-restart-20261111/HANDOFF.md)。以下维护暂停状态为历史。
+
 > **2026-11-11 当前处于 003 管理员启动前维护窗口**。003=worker 3，OCR 0/0、实例与 GPU 计算进程均为 0；worker 记录保留且为 not_ready。MaaS 已排空暂停，generation 3，新提交 503、查询可用、UNKNOWN=0。MaaS 调节器已重新待命为 Apply 修订 5、上限 1，原生插件 Observe，压力采样计划性停止。模型目标保持 0，等待管理员用相同快照启动后验证自动 0→1，不要手动恢复目标或重复启动测试。本会话聚焦规模调节器，不独立开展 E5 同卡接续验收。身份及前后备份已保存到 Mac 私有目录。[交接与验收步骤](../../results/maas-replica-003-restart-20261111/HANDOFF.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-11 新 PC / Higress 最新验收**。真实新 GPU 以 worker 3 加入集群 1，上报 Ready / direct，OCR 1/1。当前常驻为 embedded Higress，同版原生 API 容器已停止并保留回退。授权推理、拒绝测试、MaaS 异步任务与唯一成功计量通过，HTTP/HTTPS 私有入口已恢复，UNKNOWN=0。压力覆盖 worker 3；MaaS Apply 修订 3 仅限部署 1、最多 1 副本，旧插件 Observe。不同 GPU 注册不能替代同卡接续，首次主机名时序、多节点和动态路由 / 性能仍待验收。[详情](../../results/maas-higress-direct-20261111/LIVE-WORKER3.md) · [Issue #59](https://github.com/WTaoGitHub/cybercafe-maas/issues/59)。以下较早环境及等待状态为历史，以本条和新 PC 台账为准。

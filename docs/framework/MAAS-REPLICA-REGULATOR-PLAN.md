@@ -107,6 +107,8 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 
 ### 003 排空与自动恢复待验收
 
+本轮后续已通过真实恢复验收：003 以同一 GPU、新 boot ID 恢复 worker 3 Ready/direct；补齐压力采样后，由 capacity_restored 自动 0→1，经过缺失冻结、恢复观察及 open 后写入 confirmed。实例 3 Running，Higress/OCR 两行、MaaS 异步 SUCCEEDED、唯一成功用量 1、UNKNOWN=0。MaaS generation 4 和入口已恢复，Apply 修订 5、上限 1 保留。第二台 VPC 的 1→2 尚未开展。见同一交接页 recovery-validation.json；以下为准备阶段历史。
+
 用户明确本会话聚焦规模调节器，后续验证均围绕自动副本调整，不独立开展 E5 同卡接续验收。先安排管理员使用相同快照启动 003，再单独准备第二台 VPC。
 
 2026-11-11 已确认 003 对应集群 1 的 worker 3。保存 GPU UUID、Linux boot ID 和旧原生 worker 凭据至 Mac 私有目录，复制并校验两套数据库及配置备份。拦截新提交、排空 MaaS 后暂停，generation 3；调节器先切 Observe 修订 4，再将 OCR 降至 0/0，确认实例与 GPU 计算进程均为 0 后停止 worker 容器。VM 未重启，worker 3 记录保留且已由原生机制进入 not_ready。
