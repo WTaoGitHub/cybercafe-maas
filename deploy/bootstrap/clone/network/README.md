@@ -1,5 +1,9 @@
 # 克隆网络隔离 overlay
 
+2026-11-11 启动顺序调整。网络边界服务在网络和 Docker 就绪后执行，E5 仍通过 `Requires`、`After` 及 `ExecStartPre` 在注册前核对边界。边界单元启动超时为 45 秒，停止超时为 10 秒。失败会阻止本轮 E5 注册。此顺序需要部署到母版并由管理员保存新快照后生效。
+
+克隆需保持镜像内无自动启动的旧 worker 或模型容器，才能确保边界安装完成前没有这些服务监听。此调整覆盖 E5 管理的启动流程。其他业务的开机启动和 Docker 重启后的边界状态仍需分别核对。
+
 2026-10-28已在worker7/8部署并验证；随后通过SSH_PORT_REDACTED在母版tower-1lpDmdmo6完成文件安装和开机enable。**尚未由管理员保存新快照，也未验证新克隆首启继承规则。** 详见[实际部署](../../../../results/maas-e5-template-network-20261028/REPORT.md)。
 
 源程序为仓库`maas_bootstrap/clone_boundary.py`，目标`/opt/maas/ops/clone_boundary.py`。依赖Python3、iptables/ip6tables及raw/multiport/addrtype模块；IPv6规则安装失败时不得认定部署成功。示例JSON在母版不固定hostname；按实际LAN接口、控制机IPv4和Docker桥网段审阅后安装为`/etc/maas/clone-boundary.json`，root:root/600。
