@@ -43,3 +43,9 @@
 下一轮可先给集群 maas-baremetal-workers（ID 1）配置原生 worker_config.proxy_mode=direct，用独立试点克隆验证注册响应与真实状态上报，再安排现网路由切换。控制端要能访问模型端口，克隆边界只允许受信来源。当前 OCR 引擎没有独立 API Key；其他引擎的鉴权需逐项核验。
 
 源码依据为 GPUStack v2.2.3 的 schemas/config.py、cmd/start.py 和 gateway/utils.py 中的 ModelInstanceProxyModeEnum、--proxy-mode 以及 model_instance_registry。
+
+## 真实启动验收准备
+
+同日已通过原生集群更新 API 将 maas-baremetal-workers（ID 1）的 worker_config.proxy_mode 设为 direct，保存变更前私有配置并核对读回值及其他字段。此默认值在 worker 启动注册时读取。当前 worker 2 仍报告 Ready / worker，模型保持 1/1，当前服务入口为已验收的原生 API。
+
+管理员当前不能及时响应，真实克隆启动、direct 状态上报及常驻 Higress 切换待后续验收。新克隆可用后，先核对注册返回的 worker_config 和实际 proxy_mode，再核对动态模型端口、隔离规则及压力样本覆盖。Higress 候选采用当前 enrollment 版本的镜像，保留原生 API 回退配置。通过授权与拒绝测试后，核验一笔 MaaS 异步 OCR 的结果和唯一成功用量。

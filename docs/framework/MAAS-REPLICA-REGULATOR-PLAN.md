@@ -94,3 +94,5 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 ### 2026-11-11 Higress direct 候选
 
 原生 proxy_mode=direct 使 Higress 模型后端指向实际实例端口。独立 GPUStack/Higress 环境使用合成 worker 和实例元数据调用真实 GPU OCR，授权请求 200、两行，匿名和错误 Key 均 401，无模型权限 Key 为 403。原生配置及 Envoy 实际端点已交叉核对，旧控制端直连实例端口失败。隔离资源已清理，常驻原生 API 及 1/1 部署健康。下一轮先验证真实试点克隆由集群 worker_config 获取 direct、注册与路由刷新，再验证多副本和性能。 [报告](../../results/maas-higress-direct-20261111/REPORT.md) · [Issue #59](https://github.com/WTaoGitHub/cybercafe-maas/issues/59)
+
+2026-11-11 已备份新 PC 的集群配置，经原生 API 将集群 1 的 worker_config.proxy_mode 设为 direct，读回一致，并核对其他配置字段。该默认值由 worker 启动注册时读取，当前 worker 2 仍为 Ready / worker，OCR 为 1/1。管理员暂时无法提供新克隆，真实启动验收等待管理员响应，常驻入口继续使用已验收的原生 API。新克隆就绪后先核验身份、注册返回的配置及上报模式，再以当前 enrollment 版本镜像准备 Higress 候选，验证实例后端、授权与拒绝请求、MaaS 异步结果和单次计量。历史 Higress 回退容器的 enrollment 版本须重新核对后再使用。
