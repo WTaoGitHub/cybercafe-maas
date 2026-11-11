@@ -1,0 +1,63 @@
+{
+  "source_commit": "b6ab211dc9c08b59a856558d5f019fa552cef877",
+  "files_verified": 17,
+  "systemd_verified": true,
+  "timer_enabled_not_started": true,
+  "boot_units_removed_from_multi_user": true,
+  "template_worker_guard_rejected": true,
+  "template_boundary_guard_rejected": true,
+  "template_bounded_wait_verified": true,
+  "signed_release_verified": true,
+  "cluster_id": 1,
+  "worker_name_policy": "gpu-external-id",
+  "boundary_controller_matches_server": true,
+  "config_unchanged": true,
+  "firewall_unchanged": true,
+  "docker_unchanged": true,
+  "boot_unchanged": true,
+  "containers_empty": true,
+  "native_identity_absent": true,
+  "real_clone_boot_verified": false,
+  "units": {
+    "maas-worker-bootstrap.service": {
+      "Requires": "sysinit.target system.slice",
+      "Wants": "",
+      "Before": "shutdown.target",
+      "After": "system.slice maas-worker-bootstrap.timer basic.target network-online.target swcfghostname.service systemd-journald.socket multi-user.target docker.service sysinit.target",
+      "ActiveState": "inactive",
+      "UnitFileState": "static"
+    },
+    "maas-worker-bootstrap.timer": {
+      "Requires": "sysinit.target",
+      "Wants": "",
+      "Before": "shutdown.target maas-worker-bootstrap.service timers.target",
+      "After": "sysinit.target",
+      "ActiveState": "inactive",
+      "UnitFileState": "enabled"
+    },
+    "maas-worker-bootstrap.path": {
+      "Requires": "sysinit.target",
+      "Wants": "",
+      "Before": "shutdown.target maas-worker-bootstrap.timer paths.target",
+      "After": "sysinit.target -.mount",
+      "ActiveState": "inactive",
+      "UnitFileState": "disabled"
+    },
+    "maas-clone-boundary.service": {
+      "Requires": "sysinit.target system.slice",
+      "Wants": "",
+      "Before": "shutdown.target",
+      "After": "system.slice network-online.target docker.service swcfghostname.service multi-user.target systemd-journald.socket basic.target sysinit.target",
+      "ActiveState": "inactive",
+      "UnitFileState": "static"
+    }
+  },
+  "ownership_modes_verified": 17,
+  "local_bootstrap_tests_passed": 141,
+  "private_backup_saved_locally": true,
+  "public_bundle": {
+    "sha256": "4fe6fa555908e535a8a82a012ce95ab12f0c5407f22e7e37ace676ab7b20dde5",
+    "files_verified": 26,
+    "source_commit": "b6ab211dc9c08b59a856558d5f019fa552cef877"
+  }
+}

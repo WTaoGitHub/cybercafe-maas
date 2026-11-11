@@ -152,3 +152,5 @@
 2026-11-11，用户授权实现并部署系统就绪后的独立启动方案。新增一次性 timer，bootstrap 与网络边界服务移除直接开机启用关系，准备任务排在 `multi-user.target` 和供应商命名单元之后，检查命名完成、Docker、GPU UUID 及 Bootstrap HTTPS 健康接口，按 10 秒间隔在 600 秒总预算内重试。边界应用成功后才执行原有 E5；边界与 apply 分别限制 45、150 秒，并受剩余总预算约束。失败原因保留在 journal 与独立 `/run` 状态中。手动许可路径改为触发一次性 timer，避免持续存在的文件造成无限重启。离线镜像工具及交付包同步更新；001 普通注册与母版保护继续有效。
 
 本地 Bootstrap 测试 141 项通过，覆盖延迟就绪、边界失败、超时、互斥与镜像启用关系。已在独立母版暂存区完成新版 systemd 单元校验，无循环依赖错误；供应商已有可执行权限告警不属于本次修改。真实新快照首启与 GPU UUID 注册仍待管理员封版后验证，不将静态校验或在线安装当作整机启动验收。关联 [启动跟踪 #20](https://github.com/WTaoGitHub/cybercafe-maas/issues/20)。
+
+2026-11-11，`b6ab211` 已安装到用户确认的独立 tower 母版，17 个文件摘要与 root 权限核对通过。旧 bootstrap/boundary 开机链接已移除，timer enabled/inactive，两个服务 static/inactive，未启动 worker。安装后的 systemd 校验、母版拒绝与短预算等待检查、新 PC 签名配置验签通过；原私有配置、防火墙、Docker 和系统 boot ID 均未变化，母版无容器和原生身份。源文件和私有配置已异机备份，待管理员保存新快照并启动独立克隆验收。[部署证据](../../results/maas-e5-late-startup-20261111/REPORT.md)。
