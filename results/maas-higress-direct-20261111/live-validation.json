@@ -1,0 +1,146 @@
+{
+  "date": "2026-11-11",
+  "scope": "live managed diskless worker; actual GPU OCR through embedded Higress",
+  "gpustack_version": "v2.2.3",
+  "server_image": "maas-gpustack-enrollment:c6a79dd",
+  "cluster_id": 1,
+  "worker_id": 3,
+  "gpu_model": "NVIDIA GeForce RTX 4080 SUPER",
+  "gpu_uuid_matches_native_status": true,
+  "proxy_mode": "direct",
+  "explicit_worker_cli_or_env_override": false,
+  "managed_bootstrap_result": "success",
+  "boundary_service": "active",
+  "model": {
+    "id": 1,
+    "replicas": 1,
+    "ready_replicas": 1
+  },
+  "instances": [
+    {
+      "id": 2,
+      "worker_id": 3,
+      "state": "running"
+    }
+  ],
+  "higress": {
+    "worker_id": 3,
+    "proxy_mode": "direct",
+    "replicas": 1,
+    "ready_replicas": 1,
+    "instance_id": 2,
+    "instance_state": "running",
+    "cases": [
+      {
+        "case": "anonymous",
+        "http": 401
+      },
+      {
+        "case": "invalid-key",
+        "http": 401
+      },
+      {
+        "case": "denied-model",
+        "http": 403
+      },
+      {
+        "case": "authorized",
+        "http": 200,
+        "lines": 2
+      }
+    ],
+    "envoy_actual_target_matched": true,
+    "temporary_denied_key_revoked": true
+  },
+  "engine_health": {
+    "http": 200,
+    "cuda_providers": [
+      "text_det",
+      "text_cls",
+      "text_rec"
+    ],
+    "direction_policy": "guarded",
+    "version": "0.3"
+  },
+  "maas_async": {
+    "status": "SUCCEEDED",
+    "lines": 2,
+    "successful_images": 1,
+    "unique_success_usage_rows": 1,
+    "quantity": 1,
+    "request_replayed": false
+  },
+  "maas_recovery": {
+    "model_probe_lines": 2,
+    "maintenance_paused": false,
+    "maintenance_generation": 2
+  },
+  "ingress": {
+    "ingress_blocks_removed": true,
+    "nginx_syntax_passed": true,
+    "https_verified_capabilities": 200,
+    "https_invalid_ocr_body": 422,
+    "consumer_network_http_statuses": [
+      200,
+      422
+    ]
+  },
+  "monitor": {
+    "alerts": [],
+    "dispatch_paused": false,
+    "unknown": 0,
+    "policy": {
+      "revision": 3,
+      "mode": "apply"
+    }
+  },
+  "pressure": {
+    "worker_ids": [
+      3
+    ],
+    "fresh_at_verification": true,
+    "service_active": true,
+    "restricted_command": true,
+    "pinned_host_keys": true
+  },
+  "legacy_replica_plugin": {
+    "mode": "observe",
+    "revision": 1
+  },
+  "regulator": {
+    "mode": "apply",
+    "revision": 3,
+    "authorized_cluster": 1,
+    "authorized_deployment": 1,
+    "max_replicas": 1,
+    "pending_journal_files": 0
+  },
+  "native_fallback": {
+    "container_retained": true,
+    "running": false,
+    "database_backup_list_verified": true,
+    "private_archive_saved_to_mac": true,
+    "archive_sha256_verified": true
+  },
+  "nontrusted_host_model_port_probe": {
+    "blocked": true,
+    "timeout_seconds": 3
+  },
+  "boundaries": {
+    "model_0_to_1_restored_manually_while_observing": true,
+    "same_gpu_handoff_tested": false,
+    "unattended_first_boot_passed": false,
+    "instance_recreation_route_refresh_tested": false,
+    "multiple_ready_workers_tested": false,
+    "performance_comparison_tested": false,
+    "vm_reboot_by_agent": false,
+    "worker_restart_by_agent": false,
+    "docker_engine_restart_by_agent": false,
+    "public_entry_opened": false
+  },
+  "tracking_issues": [
+    59,
+    39,
+    16
+  ]
+}

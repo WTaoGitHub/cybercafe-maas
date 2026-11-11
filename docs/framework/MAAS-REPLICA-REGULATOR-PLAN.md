@@ -98,3 +98,9 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 2026-11-11 已备份新 PC 的集群配置，经原生 API 将集群 1 的 worker_config.proxy_mode 设为 direct，读回一致，并核对其他配置字段。该默认值由 worker 启动注册时读取，当前 worker 2 仍为 Ready / worker，OCR 为 1/1。管理员暂时无法提供新克隆，真实启动验收等待管理员响应，常驻入口继续使用已验收的原生 API。新克隆就绪后先核验身份、注册返回的配置及上报模式，再以当前 enrollment 版本镜像准备 Higress 候选，验证实例后端、授权与拒绝请求、MaaS 异步结果和单次计量。历史 Higress 回退容器的 enrollment 版本须重新核对后再使用。
 
 用户随后安排先排空 004。已拦截 HTTP/HTTPS 新提交，队列及在途活动清零后暂停 MaaS，generation 1。两个调节器均为 Observe，OCR 0/0、实例清空，004 worker 停止且 GPU 无计算进程，原生状态已为 not_ready。集群默认 direct 和同 GPU 接续授权就绪，压力采样计划性停止。配置、身份与数据库备份已保存到 Mac，等待管理员应用新快照。接手从[维护交接](../../results/maas-higress-direct-20261111/MAINTENANCE-HANDOFF.md)继续。
+
+### 真实 direct 克隆与常驻 Higress 验收
+
+2026-11-11，新 GPU 克隆以 worker 3 加入集群 1，实际上报 Ready / direct。Observe 期间受控恢复部署 1 至 1/1，实例 2 在新 worker 上 Running。当前 enrollment 镜像切换为 embedded Higress，Envoy 后端与真实实例端口一致。匿名与错误 Key 返回 401、无模型权限返回 403；授权 CUDA OCR 返回 200、两行。MaaS 恢复探针通过，异步任务 SUCCEEDED，成功计量一条、数量 1，UNKNOWN 为 0，HTTP/HTTPS 私有入口恢复。
+
+压力采样已改为 worker 3，固定主机公钥和来源受限命令核验通过。MaaS 恢复 Apply 修订 3，仍只授权集群 1、部署 1、最多 1 副本，待确认日志为空；旧插件保持 Observe 修订 1。此次 0→1 为受控手动恢复，未新增调节器自动扩容结论。不同 GPU 注册不覆盖同卡接续，首次主机名时序、多 worker、实例重建与性能对照仍待后续。备份已在 Mac 校验，原生 API 同版容器保留且停止。见[真实验收](../../results/maas-higress-direct-20261111/LIVE-WORKER3.md)与 [Issue #59](https://github.com/WTaoGitHub/cybercafe-maas/issues/59)。

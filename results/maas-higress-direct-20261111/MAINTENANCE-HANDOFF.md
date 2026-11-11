@@ -2,6 +2,8 @@
 
 2026-11-11 · 准备完成 · [Issue #59](https://github.com/WTaoGitHub/cybercafe-maas/issues/59)
 
+**后续状态：本次维护已结束。** 新 GPU 注册为 worker 3 / direct，OCR 1/1，Higress 与 MaaS 异步验收通过，入口及派发已恢复。MaaS 调节器恢复为 Apply 修订 3、最多 1 副本，旧插件继续 Observe。以下为快照前准备记录，不能当作当前暂停状态。详见[真实验收](LIVE-WORKER3.md)。
+
 004 的 OCR 已排空并停止，管理员可安排对 004 应用最新试点快照并启动。控制端保留 GPUStack worker 2 的原记录及 GPU 绑定，用于新实例的同卡接续。操作仅涉及服务和容器，VM 的快照与启动由管理员执行。
 
 ## 已完成并核验
