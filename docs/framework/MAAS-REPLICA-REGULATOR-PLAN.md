@@ -104,3 +104,11 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 2026-11-11，新 GPU 克隆以 worker 3 加入集群 1，实际上报 Ready / direct。Observe 期间受控恢复部署 1 至 1/1，实例 2 在新 worker 上 Running。当前 enrollment 镜像切换为 embedded Higress，Envoy 后端与真实实例端口一致。匿名与错误 Key 返回 401、无模型权限返回 403；授权 CUDA OCR 返回 200、两行。MaaS 恢复探针通过，异步任务 SUCCEEDED，成功计量一条、数量 1，UNKNOWN 为 0，HTTP/HTTPS 私有入口恢复。
 
 压力采样已改为 worker 3，固定主机公钥和来源受限命令核验通过。MaaS 恢复 Apply 修订 3，仍只授权集群 1、部署 1、最多 1 副本，待确认日志为空；旧插件保持 Observe 修订 1。此次 0→1 为受控手动恢复，未新增调节器自动扩容结论。不同 GPU 注册不覆盖同卡接续，首次主机名时序、多 worker、实例重建与性能对照仍待后续。备份已在 Mac 校验，原生 API 同版容器保留且停止。见[真实验收](../../results/maas-higress-direct-20261111/LIVE-WORKER3.md)与 [Issue #59](https://github.com/WTaoGitHub/cybercafe-maas/issues/59)。
+
+### 003 排空与自动恢复待验收
+
+用户明确本会话聚焦规模调节器，后续验证均围绕自动副本调整，不独立开展 E5 同卡接续验收。先安排管理员使用相同快照启动 003，再单独准备第二台 VPC。
+
+2026-11-11 已确认 003 对应集群 1 的 worker 3。保存 GPU UUID、Linux boot ID 和旧原生 worker 凭据至 Mac 私有目录，复制并校验两套数据库及配置备份。拦截新提交、排空 MaaS 后暂停，generation 3；调节器先切 Observe 修订 4，再将 OCR 降至 0/0，确认实例与 GPU 计算进程均为 0 后停止 worker 容器。VM 未重启，worker 3 记录保留且已由原生机制进入 not_ready。
+
+为下一轮真实容量恢复事件重新启用 Apply 修订 5，仍只授权部署 1、最多 1 副本，空 GPU 基线和待确认日志为空已核对；模型目标保持 0，不手动恢复。压力采样计划性停止。管理员启动后先满足 Ready 与有效压力样本前置条件，核对调节器自动 0→1、原生实例就绪、Higress 推理和唯一 MaaS 成功计量。当前仅准备完成，自动恢复尚未验收。第二台 VPC 的 1→2 留待本轮完成后，同时调整策略与写入授权并重建事件基线。见[003 交接](../../results/maas-replica-003-restart-20261111/HANDOFF.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

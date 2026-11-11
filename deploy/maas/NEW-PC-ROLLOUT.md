@@ -125,3 +125,5 @@
 2026-11-11，新克隆进一步核验为 RTX 4080 SUPER，GPU UUID 与原生上报一致，worker 3 为 Ready / direct，未用本地 CLI 或环境变量覆盖 proxy_mode。Observe 期间手动恢复一个 OCR 副本后，常驻 GPUStack 切换为 embedded Higress，保留同版原生 API 容器和经校验的数据库回退材料。授权推理 200、两行，匿名 / 错误 Key 401、无模型权限 403，Envoy 实际后端匹配实例 2。MaaS 异步任务 SUCCEEDED，唯一成功计量 1，UNKNOWN=0，私有 HTTP/HTTPS 入口恢复。压力样本已覆盖 worker 3；MaaS Apply 修订 3 仍限部署 1、最多 1 副本，旧插件 Observe。私有备份已复制到 Mac 并核对摘要。未重启 VM、worker 或 Docker 引擎。真实首启时序、同卡接续、多节点和路由刷新 / 性能对照边界见[验收记录](../../results/maas-higress-direct-20261111/LIVE-WORKER3.md)。
 
 2026-11-11，用户决定暂缓处理首启主机名更新时序问题。等待重试与事件触发方案保留在 Issue #20。现场遇到此类失败时，核对克隆主机名、GPU 和集群配置后，由运维手动重试现有 E5 上线流程，许可沿用 MaaS 自动申请。首启失败证据保留，接受该场景需要人工恢复的限制。
+
+2026-11-11，用户先安排 003 的维护及相同快照启动，再准备第二台 VPC。003 对应当前 worker 3，身份和旧凭据已在 Mac 私有留存，前后配置与数据库归档均已校验。已拦截新提交并排空暂停 MaaS（generation 3），Observe 修订 4 下将 OCR 降至 0/0，实例和 GPU 计算进程清零后仅停止 worker 容器；原记录保留，原生状态 not_ready。调节器随后恢复 Apply 修订 5、上限 1，空容量基线成立，模型目标仍为 0，压力采样计划性停止。等待管理员操作后验证调节器自动 0→1；不独立验收 E5 接续，不由本会话执行 VM 操作。[003 交接](../../results/maas-replica-003-restart-20261111/HANDOFF.md) · [调节器 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

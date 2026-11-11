@@ -1,0 +1,68 @@
+{
+  "worker_id": 3,
+  "hostname": "XZ-31-003",
+  "worker_state": "not_ready",
+  "worker_record_preserved": true,
+  "model_id": 1,
+  "replicas": 0,
+  "ready_replicas": 0,
+  "instances": 0,
+  "eligible_gpu_count": 0,
+  "regulator_mode": "apply",
+  "policy_revision": 5,
+  "max_replicas": 1,
+  "pending_journal_files": 0,
+  "maas": {
+    "paused": true,
+    "generation": 3,
+    "active_or_queued": 0,
+    "unknown": 0,
+    "alerts": [
+      "MAINTENANCE_PAUSED"
+    ]
+  },
+  "https": [
+    503,
+    200
+  ],
+  "consumer_http": [
+    503,
+    200
+  ],
+  "legacy_plugin": {
+    "mode": "observe",
+    "revision": 1
+  },
+  "pressure_planned_stop": true,
+  "phase": "READY_FOR_ADMIN",
+  "date": "2026-11-11",
+  "purpose": "model replica regulator recovery acceptance preparation",
+  "host": {
+    "boot_unchanged": true,
+    "worker_container_stopped": true,
+    "container_restart_policy": "no",
+    "ocr_containers": 0,
+    "gpu_compute_processes": 0
+  },
+  "private_identity": {
+    "gpu_uuid_recorded": true,
+    "boot_id_recorded": true,
+    "old_worker_token_recorded": true,
+    "saved_to_mac": true,
+    "permissions": "directory 700 / files 600"
+  },
+  "backups": {
+    "gpustack_database_list_verified": true,
+    "maas_database_list_verified": true,
+    "before_and_after_archives_on_mac": true,
+    "sha256_verified": true
+  },
+  "boundaries": {
+    "administrator_vm_operation_pending": true,
+    "vm_reboot_by_agent": false,
+    "worker_record_deleted": false,
+    "post_boot_automatic_scale_up_verified": false,
+    "e5_handoff_protocol_under_test": false
+  },
+  "tracking_issue": 39
+}

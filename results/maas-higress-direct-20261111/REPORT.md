@@ -2,6 +2,8 @@
 
 2026-11-11 · GPUStack v2.2.3 · [Issue #59](https://github.com/WTaoGitHub/cybercafe-maas/issues/59)
 
+**后续维护提示：** 用户随后安排 003 使用相同快照启动，当前 OCR 已受控排空到 0/0，MaaS 入口暂停，等待调节器自动恢复验收；此为计划性维护，Higress 验收结论保留。[当前交接](../maas-replica-003-restart-20261111/HANDOFF.md)。
+
 **最新进展：真实新克隆验收通过，常驻服务已切回 Higress。** worker 3 上报 Ready / direct，OCR 1/1，Higress 授权推理和 MaaS 异步任务均成功，拒绝测试和唯一成功计量通过，私有入口已恢复。详见[真实验收与剩余边界](LIVE-WORKER3.md)。下文隔离试验及等待状态为此前的阶段记录。
 
 独立 GPUStack/Higress 通过原生 direct 路由访问现有克隆上的真实 CUDA OCR 引擎，授权请求返回 HTTP 200 和两行识别结果。匿名、错误 Key 和无模型权限请求均被拒绝。原生 McpBridge 配置和 Envoy 实际后端都匹配模型实例端口。
