@@ -51,9 +51,9 @@ def test_dirty_native_directory_is_not_adopted_or_erased(setup):
     with pytest.raises(BootstrapError,match='NATIVE_IDENTITY_WITHOUT_LOCAL_OWNER'):apply(s,fetcher=Fetcher(sign()),backend=r)
     assert (data/'worker_token').read_text()=='old-state' and r.creates==0
 
-def test_protected_nodes_and_mother_cannot_launch(monkeypatch):
+def test_mother_cannot_launch(monkeypatch):
     import maas_bootstrap.worker as w
-    for host in ('XZ-31-001','xz-31-001','tower','TOWER','tower-mNST8iPdv','tower-8CbKAhaaf','ToWeR-new-template'):
+    for host in ('tower','TOWER','tower-mNST8iPdv','tower-8CbKAhaaf','ToWeR-new-template'):
         monkeypatch.setattr(w.platform,'node',lambda:host)
         with pytest.raises(BootstrapError,match='PROTECTED_HOST_WORKER_FORBIDDEN'):guard_clone_host()
 
@@ -109,13 +109,18 @@ def test_docker_create_pins_image_and_never_puts_token_in_arguments(setup,monkey
 
 
 @pytest.mark.parametrize('hostname,addresses', [
+    ('XZ-31-001',['10.11.31.1']),
+    ('xz-31-001',['10.11.31.1']),
+    ('XZ-31-001',['10.11.31.15']),
     ('XZ-31-002',['10.11.31.2']),
+    ('XZ-31-002',['10.11.31.2','10.11.31.1']),
     ('XZ-31-002',['10.11.31.15']),
+    ('new-clone',['10.11.31.1']),
     ('new-clone',['10.11.31.2']),
     ('towerish-worker',['10.11.31.15']),
     ('worker-tower',['10.11.31.15']),
 ])
-def test_replacement_clone_can_reuse_002_name_or_address(monkeypatch,hostname,addresses):
+def test_clone_can_reuse_retired_controller_name_or_address(monkeypatch,hostname,addresses):
     import maas_bootstrap.worker as w
     monkeypatch.setattr(w.platform,'node',lambda:hostname)
     monkeypatch.setattr(w.platform,'system',lambda:'Linux')
@@ -127,10 +132,10 @@ def test_replacement_clone_can_reuse_002_name_or_address(monkeypatch,hostname,ad
     guard_clone_host()
 
 
-def test_controller_address_still_blocks_reused_name_and_secondary_address(monkeypatch):
+@pytest.mark.parametrize('system,euid',[('Linux',1000),('Darwin',0)])
+def test_retired_controller_still_requires_linux_root(monkeypatch,system,euid):
     import maas_bootstrap.worker as w
-    monkeypatch.setattr(w.platform,'node',lambda:'XZ-31-002')
-    monkeypatch.setattr(w.platform,'system',lambda:'Linux')
-    monkeypatch.setattr(w.os,'geteuid',lambda:0)
-    monkeypatch.setattr(w,'run',lambda args:json.dumps([{'addr_info':[{'local':'10.11.31.2'},{'local':'10.11.31.1'}]}]))
-    with pytest.raises(BootstrapError,match='PROTECTED_HOST_WORKER_FORBIDDEN'):guard_clone_host()
+    monkeypatch.setattr(w.platform,'node',lambda:'XZ-31-001')
+    monkeypatch.setattr(w.platform,'system',lambda:system)
+    monkeypatch.setattr(w.os,'geteuid',lambda:euid)
+    with pytest.raises(BootstrapError,match='LINUX_ROOT_REQUIRED'):guard_clone_host()

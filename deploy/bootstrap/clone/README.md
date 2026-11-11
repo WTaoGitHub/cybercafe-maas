@@ -14,7 +14,7 @@ sudo /opt/maas/bin/maas-worker-bootstrap status
 
 `prepare`只拉取、验签和私有暂存，不启动worker。`apply`是boot/manual统一入口：拿进程锁→共享码HTTPS取配置→验证签名、scope、image_id、架构、固定原生地址、镜像摘要→核对依赖→启动自身worker→以原生worker_token查询`/v2/workers?me=true`并核对cluster/name/UUID。`status`只输出脱敏本地状态，**不是实时健康接口**。GPUStack原生state单独输出；注册成功不等于模型已经部署或可推理。
 
-新worker使用本机随机名称和独立空数据目录，不使用模板固定worker名，也不建立GPU UUID台账。CLI拒绝在001、002、tower及已知001/002地址上启动。实际克隆必须具有区别于受保护节点的主机名/IP；这依赖供应商首启初始化，当前工具不会更改hostname或网卡。
+普通命名策略下，新 worker 使用本机随机名称和独立空数据目录；`gpu-external-id` 无盘策略使用当前 GPU UUID 作为 name 和 external_id。CLI 拒绝在 `tower`、`tower-*` 母版上启动，当前工具不会更改 hostname 或网卡。2026-11-11 用户确认 XZ-31-001 已不再作为控制平面，允许其按普通 worker 流程注册；001、002 的主机名及旧地址不再作为注册禁用条件，Linux root、GPU、配置与身份校验继续生效。001、002 禁止整机重启的约束仍见根目录 AGENTS.md。
 
 - APPLIED：已启动或恢复所属容器，原生注册确认通过。
 - UNCHANGED：匹配的容器已经运行且此前相同配置已确认；不重复创建/启动。

@@ -1,3 +1,4 @@
+import json
 import pytest
 from maas_bootstrap.clone_boundary import render,validate,PORTS,RAW
 CFG={'schema_version':1,'interface':'enp3s0','controllers':['10.11.31.1'],'bridge_subnets':['172.17.0.0/16']}
@@ -36,3 +37,23 @@ def test_template_ethernet_prefix_survives_different_predictable_nic_names():
 @pytest.mark.parametrize('iface',['+','en++','en+;evil','lo+','en*','en+p3s0'])
 def test_interface_wildcard_is_only_a_safe_trailing_prefix(iface):
  with pytest.raises(ValueError):validate({**CFG,'interface':iface})
+
+
+@pytest.mark.parametrize('hostname',['XZ-31-001','xz-31-001','XZ-31-002'])
+def test_retired_controller_can_plan_worker_boundary(monkeypatch,tmp_path,capsys,hostname):
+ from maas_bootstrap import clone_boundary as boundary
+ policy=tmp_path/'policy.json';policy.write_text(json.dumps(CFG))
+ monkeypatch.setattr('sys.argv',['clone_boundary.py','plan','--policy',str(policy)])
+ monkeypatch.setattr(boundary.os,'getuid',lambda:0)
+ monkeypatch.setattr(boundary.socket,'gethostname',lambda:hostname)
+ boundary.main()
+ assert json.loads(capsys.readouterr().out)['policy']==CFG
+
+
+@pytest.mark.parametrize('hostname,uid',[('tower',0),('ToWeR-template',0),('XZ-31-001',1000)])
+def test_boundary_still_rejects_template_or_non_root_before_reading_policy(monkeypatch,hostname,uid):
+ from maas_bootstrap import clone_boundary as boundary
+ monkeypatch.setattr('sys.argv',['clone_boundary.py','plan'])
+ monkeypatch.setattr(boundary.os,'getuid',lambda:uid)
+ monkeypatch.setattr(boundary.socket,'gethostname',lambda:hostname)
+ with pytest.raises(RuntimeError,match='Root on a worker clone only'):boundary.main()

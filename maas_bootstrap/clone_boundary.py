@@ -146,7 +146,7 @@ def rollback():
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['plan','guarded-apply','apply','confirm','status','rollback']);p.add_argument('--policy',default='/etc/maas/clone-boundary.json');a=p.parse_args()
-    if os.getuid()!=0 or socket.gethostname().lower()=='xz-31-001' or socket.gethostname().lower().startswith('tower'):
+    if os.getuid()!=0 or socket.gethostname().lower().startswith('tower'):
         raise RuntimeError('Root on a worker clone only')
     cfg=validate(json.loads(Path(a.policy).read_text()))
     if cfg.get('hostname') and socket.gethostname()!=cfg['hostname']:raise RuntimeError('Node identity mismatch')

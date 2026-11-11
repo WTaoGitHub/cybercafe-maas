@@ -11,8 +11,6 @@ LAYOUT_VERSION='model-storage-v1'
 WORKER_CA='/run/maas-worker-server-ca.pem'
 LAYOUT_KEYS=('GPUSTACK_CACHE_DIR','GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT',
              'GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME','GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES')
-# Retired 002 names/addresses may be reused by a new test1 clone.
-PROTECTED_HOSTS={'xz-31-001'}
 
 
 def run(args, optional=False):
@@ -30,14 +28,10 @@ def run(args, optional=False):
 def guard_clone_host():
     host=platform.node().lower()
     # Administrator identifies TOWER as image maintenance; cover newly named templates.
-    if host in PROTECTED_HOSTS or host=='tower' or host.startswith('tower-'):
+    if host=='tower' or host.startswith('tower-'):
         raise BootstrapError('PROTECTED_HOST_WORKER_FORBIDDEN')
     if os.geteuid()!=0 or platform.system()!='Linux':
         raise BootstrapError('LINUX_ROOT_REQUIRED')
-    # Also reject a renamed controller retaining its known address.
-    rows=json.loads(run(['ip','-j','-4','address','show']))
-    if any(a.get('local') == '10.11.31.1' for n in rows for a in n.get('addr_info',[])):
-        raise BootstrapError('PROTECTED_HOST_WORKER_FORBIDDEN')
 
 
 class NativeDockerWorker:
