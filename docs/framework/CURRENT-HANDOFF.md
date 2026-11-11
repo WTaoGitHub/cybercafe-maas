@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-11 第二台 VPC 扩容准备完成**。策略 Apply 修订 7、策略与实际写授权上限均为 2；重建同镜像 E17 后重新订阅并建立单卡基线，当前 OCR 仍 1/1、执行 idle、日志为空，等待新增 GPU。第二台上线后需补齐实际压力覆盖，再验收自动 1→2；不要手动增加副本。[准备记录](../../results/maas-replica-003-restart-20261111/CAP2-READY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-11 003 自动恢复已通过**。管理员启动后 worker 3 Ready/direct，压力覆盖恢复后调节器按 capacity_restored 自动 0→1、写入 confirmed，实例 3 Running，Higress/OCR 和 MaaS 异步任务成功、唯一计量 1，UNKNOWN=0。MaaS generation 4 已恢复、入口维护拦截解除；Apply 修订 5、上限 1 保留。第二台 VPC 尚未启动验收，需先准备策略与写授权上限 2、事件基线和采样覆盖。[验收](../../results/maas-replica-003-restart-20261111/HANDOFF.md)。以下维护暂停状态为历史。
 
 > **2026-11-11 当前处于 003 管理员启动前维护窗口**。003=worker 3，OCR 0/0、实例与 GPU 计算进程均为 0；worker 记录保留且为 not_ready。MaaS 已排空暂停，generation 3，新提交 503、查询可用、UNKNOWN=0。MaaS 调节器已重新待命为 Apply 修订 5、上限 1，原生插件 Observe，压力采样计划性停止。模型目标保持 0，等待管理员用相同快照启动后验证自动 0→1，不要手动恢复目标或重复启动测试。本会话聚焦规模调节器，不独立开展 E5 同卡接续验收。身份及前后备份已保存到 Mac 私有目录。[交接与验收步骤](../../results/maas-replica-003-restart-20261111/HANDOFF.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

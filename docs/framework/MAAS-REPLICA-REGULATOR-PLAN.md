@@ -107,6 +107,8 @@ MaaS 异步 OCR 提交返回 `202`，任务最终为 `FAILED / UPSTREAM_REJECTED
 
 ### 003 排空与自动恢复待验收
 
+第二台 VPC 的下一轮准备已完成：策略 Apply 修订 7、策略及运行时写授权上限均提高为 2，单次增加及在途上限仍为 1；重建同镜像 E17 重新建立单卡事件基线，未沿用旧恢复事件，当前仍为 1/1，压力 open、执行 idle，等待第二台。双节点自动 1→2 尚未验收。[准备记录](../../results/maas-replica-003-restart-20261111/CAP2-READY.md)。
+
 本轮后续已通过真实恢复验收：003 以同一 GPU、新 boot ID 恢复 worker 3 Ready/direct；补齐压力采样后，由 capacity_restored 自动 0→1，经过缺失冻结、恢复观察及 open 后写入 confirmed。实例 3 Running，Higress/OCR 两行、MaaS 异步 SUCCEEDED、唯一成功用量 1、UNKNOWN=0。MaaS generation 4 和入口已恢复，Apply 修订 5、上限 1 保留。第二台 VPC 的 1→2 尚未开展。见同一交接页 recovery-validation.json；以下为准备阶段历史。
 
 用户明确本会话聚焦规模调节器，后续验证均围绕自动副本调整，不独立开展 E5 同卡接续验收。先安排管理员使用相同快照启动 003，再单独准备第二台 VPC。

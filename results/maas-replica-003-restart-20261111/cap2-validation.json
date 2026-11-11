@@ -1,0 +1,23 @@
+{
+  "revision": 7,
+  "mode": "apply",
+  "policy_cap": 2,
+  "runtime_cap": 2,
+  "eligible_gpus": 1,
+  "replicas": 1,
+  "ready": 1,
+  "instances": [
+    {
+      "id": 3,
+      "worker_id": 3,
+      "state": "running"
+    }
+  ],
+  "pressure_workers": [
+    3
+  ],
+  "pressure_fresh": true,
+  "pending_journal": 0,
+  "image_unchanged": true,
+  "phase": "WAITING_SECOND_VPC"
+}
