@@ -1,6 +1,6 @@
 # 克隆网络隔离 overlay
 
-2026-11-11 启动顺序调整。网络边界服务在网络和 Docker 就绪后执行，E5 仍通过 `Requires`、`After` 及 `ExecStartPre` 在注册前核对边界。边界单元启动超时为 45 秒，停止超时为 10 秒。失败会阻止本轮 E5 注册。此顺序需要部署到母版并由管理员保存新快照后生效。
+2026-11-11 启动方案更新。网络边界和 E5 由独立 timer 在系统完成基本启动后执行，网络单元不再开机 enable，也不再排在网络或 Docker 之前。E5 drop-in 改为 `MAAS_BOOTSTRAP_REQUIRE_BOUNDARY=1`，由准备任务在就绪后先应用边界，再执行注册；现存边界策略文件也会使边界成为必要条件。准备任务负责 10 分钟内有限重试，避免 `Requires` 失败使主程序无法执行。边界单元保留为手工静态入口，启动超时 45 秒、停止超时 10 秒；边界失败继续阻止 worker 启动。完整行为见[客户端启动说明](../README.md)。
 
 克隆需保持镜像内无自动启动的旧 worker 或模型容器，才能确保边界安装完成前没有这些服务监听。此调整覆盖 E5 管理的启动流程。其他业务的开机启动和 Docker 重启后的边界状态仍需分别核对。
 
@@ -8,7 +8,7 @@
 
 源程序为仓库`maas_bootstrap/clone_boundary.py`，目标`/opt/maas/ops/clone_boundary.py`。依赖Python3、iptables/ip6tables及raw/multiport/addrtype模块；IPv6规则安装失败时不得认定部署成功。示例JSON在母版不固定hostname；按实际LAN接口、控制机IPv4和Docker桥网段审阅后安装为`/etc/maas/clone-boundary.json`，root:root/600。
 
-unit和dropin分别安装到`/etc/systemd/system/maas-clone-boundary.service`、`/etc/systemd/system/maas-worker-bootstrap.service.d/20-clone-boundary.conf`，root:root/644，daemon-reload并enable boundary。**在母版只准备文件和enable，不运行apply，不启动worker；不重启现有VM或Docker。**独立克隆启动后执行规则，并在bootstrap执行前再次核对/应用。实际跨启动顺序和不同内核、接口/桥网段仍需管理员另建独立克隆验收。
+unit 和 drop-in 分别安装到 `/etc/systemd/system/maas-clone-boundary.service`、`/etc/systemd/system/maas-worker-bootstrap.service.d/20-clone-boundary.conf`，root:root/644；同步安装新版客户端、service、path 和 timer，移除旧 boundary/bootstrap 的开机启用链接，daemon-reload 后仅 enable timer。**在母版不使用 --now、不运行 apply、不启动 worker；不重启 VM 或 Docker。**独立克隆由准备任务应用规则后注册；真实跨启动顺序与快照继承仍须另建独立克隆验收。以下带日期的旧部署记录保留作历史证据。
 
 本包提供文件交付材料，不含自动安装器；母版本轮按核对及备份后的受控安装流程更新。集成时须核对原有systemd依赖和现有规则，先在获准独立克隆使用guarded-apply及180秒回退，再验证001→worker通畅、其他克隆→worker受阻、SSH与配置/仓库出站正常，最后confirm。不要在保护窗口外盲目重复guarded-apply。
 

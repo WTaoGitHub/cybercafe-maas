@@ -23,7 +23,11 @@ sudo /opt/maas/bin/maas-worker-bootstrap status
 - OTHER_WORKER_PRESENT / NATIVE_IDENTITY_WITHOUT_LOCAL_OWNER：发现其他worker或无本地所有权标记的旧身份，拒绝接管或清除。
 - BOOTSTRAP_BUSY：已有本机引导在执行，等待后再手动检查。
 
-systemd单元`maas-worker-bootstrap.service`等待网络与Docker，调用`apply --trigger boot`。失败每30秒重试，10分钟最多5次；超过次数需管理员处理后重新启动该单元（只用于新克隆）。容器`restart=no`，防止绕过开机配置核验。单元成功后不常驻轮询：**容器随后退出不会被本单元持续自动恢复**，管理员可手动apply。无SSH采集、配置后台刷新、云备用切换、容器自动停止或VM重启。
+2026-11-11 起，普通及自动发证镜像启用 `maas-worker-bootstrap.timer`，开机满 30 秒触发一次准备任务。`maas-worker-bootstrap.service` 排在 `multi-user.target` 和供应商命名单元之后，由 timer 独立拉起；不再作为系统完成基本启动、网络或 Docker 启动的前置条件。检查主机名保护、供应商命名完成、Docker、单张 GPU UUID 和 Bootstrap HTTPS 健康入口，条件未满足时每隔 10 秒重试，整个任务最多 600 秒。系统整体为 degraded 不影响这些独立条件的判断。
+
+就绪后先应用网络边界，再执行现有 E5 `apply --trigger boot`，继续验签、自动申请许可与核对原生注册。安装网络 overlay 的环境中，drop-in 或现存策略文件会使边界成为必要条件，边界失败时不启动 worker；准备任务自身负责有限重试，不依赖失败单元的 `Restart` 恢复。每次边界执行最多 45 秒、apply 最多 150 秒，均受整个任务剩余时间限制；子进程超时终止整组执行，systemd 总超时为 620 秒。失败原因写入 journal 和 `/run/maas-worker-startup/last-result.json`，超时后停止自动尝试，人工恢复使用 `systemctl restart maas-worker-bootstrap.service`。`boot-check` 只检查就绪条件，不写身份、发放许可或更改网络。
+
+非自动发证镜像仍由 `.path` 等待许可文件，但该路径触发一次性 timer；timer 触发后保持已触发状态，避免许可文件持续存在导致超时后无限重启。容器保持 `restart=no`，防止绕过开机配置核验。成功后的服务不常驻轮询，容器随后退出仍需人工恢复。已有镜像升级时必须一并更新 Python 模块、service、timer、path 和网络 drop-in，移除旧 bootstrap/boundary 的 `multi-user.target.wants` 链接；在母版只 enable timer，不使用 `--now`。
 
 ## 离线镜像安装
 

@@ -27,7 +27,9 @@ def test_offline_image_contains_only_template_configuration(setup,tmp_path):
     assert CODE not in json.dumps(r)
     assert (root/'etc/maas/shared-code').stat().st_mode&0o777==0o600
     assert (root/'etc/maas').stat().st_mode&0o777==0o700
-    assert (root/'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
+    assert (root/'etc/systemd/system/timers.target.wants/maas-worker-bootstrap.timer').is_symlink()
+    assert not (root/'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service').exists()
+    assert (root/'opt/maas/lib/maas_bootstrap/startup.py').is_file()
     assert not (root/'opt/maas/lib/maas_bootstrap/service.py').exists()
     assert (root/'opt/maas/lib/maas_bootstrap/storage.py').is_file()
     written=json.loads((root/'etc/maas/bootstrap.json').read_text())
@@ -76,11 +78,14 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     assert (root/'opt/maas/lib/maas_bootstrap/handoff.py').is_file()
     assert (root/'opt/maas/lib/maas_bootstrap/delivery.py').is_file()
     units=root/'etc/systemd/system'
-    active, inactive = ('service','path') if automatic else ('path','service')
-    assert not (units/f'multi-user.target.wants/maas-worker-bootstrap.{inactive}').is_symlink()
-    assert (units/f'multi-user.target.wants/maas-worker-bootstrap.{active}').readlink() == Path(
-        f'/etc/systemd/system/maas-worker-bootstrap.{active}')
+    assert not (units/'multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
+    timer=units/'timers.target.wants/maas-worker-bootstrap.timer'
+    path=units/'multi-user.target.wants/maas-worker-bootstrap.path'
+    assert timer.is_symlink()==automatic and path.is_symlink()!=automatic
+    active=timer if automatic else path
+    assert active.readlink()==Path('/etc/systemd/system/'+active.name)
     assert 'PathExists=/run/maas-start/boot-grant\n' in (units/'maas-worker-bootstrap.path').read_text()
+    assert 'Unit=maas-worker-bootstrap.timer\n' in (units/'maas-worker-bootstrap.path').read_text()
     installed=json.loads((root/'etc/maas/bootstrap.json').read_text())
     assert installed['cluster_id']==1
     assert installed.get('worker_start_automatic',False)==automatic

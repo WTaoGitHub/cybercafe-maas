@@ -87,23 +87,26 @@ def build(root,settings_path):
         'etc/maas/server.crt':(cert,0o644),
         'etc/maas/release-signing.pub':(pub,0o644),
     }
-    for name in ('__init__.py','client.py','storage.py','registry.py','handoff.py','worker.py','cli.py'):
+    for name in ('__init__.py','client.py','storage.py','registry.py','handoff.py','worker.py','cli.py','startup.py','clone_boundary.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),
-        ('maas-worker-bootstrap.service','etc/systemd/system/maas-worker-bootstrap.service',0o644)):
+        ('maas-worker-bootstrap.service','etc/systemd/system/maas-worker-bootstrap.service',0o644),
+        ('maas-worker-bootstrap.timer','etc/systemd/system/maas-worker-bootstrap.timer',0o644)):
         files[dest]=((REPO/'deploy/bootstrap/clone'/name).read_bytes(),mode)
-    boot_unit='maas-worker-bootstrap.service'
+    boot_unit='maas-worker-bootstrap.timer'
     if diskless:
         path_unit='maas-worker-bootstrap.path'
         if not cfg.get('worker_start_automatic'):boot_unit=path_unit
         files['etc/systemd/system/'+path_unit]=((REPO/'deploy/bootstrap/clone'/path_unit).read_bytes(),0o644)
         files['opt/maas/lib/maas_bootstrap/delivery.py']=((REPO/'maas_bootstrap/delivery.py').read_bytes(),0o644)
-    link='etc/systemd/system/multi-user.target.wants/'+boot_unit
+    enable_dir='etc/systemd/system/'+('timers.target.wants/' if boot_unit.endswith('.timer') else 'multi-user.target.wants/')
+    link=enable_dir+boot_unit
     manifest='opt/maas/image-manifest.json'
     # Full preflight before writing; never overwrite existing image files or links.
-    enable_dir='etc/systemd/system/multi-user.target.wants/'
-    for name in [*files,enable_dir+'maas-worker-bootstrap.service',enable_dir+'maas-worker-bootstrap.path',manifest]:
+    for name in [*files,'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service',
+                 'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.path',
+                 'etc/systemd/system/timers.target.wants/maas-worker-bootstrap.timer',manifest]:
         p=safe_target(root,name)
         if p.exists() or p.is_symlink():raise BootstrapError('IMAGE_DESTINATION_EXISTS')
     for name,(contents,mode) in files.items():
@@ -119,7 +122,7 @@ def build(root,settings_path):
             'required_before_sealing':['root ownership of installed files','Python3 with cryptography==41.0.7',
                 'Docker and NVIDIA Container Toolkit configured','pinned worker image cached',
                 'native instance identity absent; supplier OS identity preserved for pilot',
-                'fresh clone hostname does not match protected controller or tower prefix',
+                'fresh clone hostname does not match tower template naming',
                 'dedicated public model root and cache prepared by bootstrap; native identity volume excluded']}
     p=safe_target(root,manifest);p.write_text(json.dumps(result,indent=2)+'\n');p.chmod(0o644)
     return result

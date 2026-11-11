@@ -1,0 +1,11 @@
+[Unit]
+Description=Trigger E5 clone preparation independently of system boot targets
+
+[Timer]
+OnBootSec=30s
+AccuracySec=1s
+Unit=maas-worker-bootstrap.service
+RemainAfterElapse=yes
+
+[Install]
+WantedBy=timers.target

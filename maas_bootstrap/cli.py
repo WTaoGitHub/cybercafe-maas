@@ -5,13 +5,16 @@ from .client import BootstrapError,LocalSettings,LocalState,MAX_BYTES,prepare
 
 def main(argv=None):
     p=argparse.ArgumentParser();p.add_argument('--config',default='/etc/maas/bootstrap.json')
-    p.add_argument('action',choices=('prepare','apply','status','receive-grant'))
+    p.add_argument('action',choices=('prepare','apply','status','receive-grant','boot','boot-check'))
     p.add_argument('--trigger',choices=('boot','manual'),default='manual')
     a=p.parse_args(argv)
     try:
         settings=LocalSettings(a.config)
         if a.action=='status':result=LocalState(settings.data['state_dir']).status()
         elif a.action=='prepare':result=prepare(settings)
+        elif a.action in ('boot','boot-check'):
+            from .startup import readiness,start
+            result=readiness(settings) if a.action=='boot-check' else start(settings,config_path=a.config)
         elif a.action=='receive-grant':
             from .delivery import target
             def exchange(binding):
