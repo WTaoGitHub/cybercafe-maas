@@ -56,7 +56,7 @@ class Native:
         return permit(body['session_id'])
 
 
-def service(diskless, tmp_path, native, **previous):
+def service(diskless, tmp_path, native, *, manual_grant=True, **previous):
     settings,envelope,_ = diskless
     config, approvals = tmp_path/'published', tmp_path/'approvals'
     (config/'releases').mkdir(parents=True);approvals.mkdir(mode=0o700)
@@ -65,11 +65,12 @@ def service(diskless, tmp_path, native, **previous):
         'grants':[{**scope,'code_sha256':hashlib.sha256(CODE.encode()).hexdigest(),'enabled':True}]})
     publish(config,envelope)
     output = Path(settings.data['worker_start_grant_file'])
-    result = approve(approvals,output,**scope,gpu=GPU,**previous)
-    assert output.stat().st_mode & 0o777 == 0o600
+    result = approve(approvals,output,**scope,gpu=GPU,**previous) if manual_grant else None
+    if manual_grant:
+        assert output.stat().st_mode & 0o777 == 0o600
     body = {key:scope[key] for key in ('cluster_id','image_id','config_revision')} | {'gpu_uuid':GPU}
     client = TestClient(create_app(config,worker_start=WorkerStartBroker(approvals,native)),client=('127.0.0.1',12345))
-    return client,body,output.read_text().strip(),result['session_id']
+    return client,body,output.read_text().strip() if manual_grant else None,result['session_id'] if result else None
 
 
 def test_boot_grant_is_scoped_and_retries_return_same_permit(diskless,tmp_path):
@@ -92,7 +93,7 @@ def test_boot_grant_is_scoped_and_retries_return_same_permit(diskless,tmp_path):
     assert config.status_code==200 and config.json()['registration']=={'cluster_id':3}
 
 
-def test_automatic_first_start_requires_approved_gpu_and_serializes_boots(diskless,tmp_path):
+def test_restricted_automatic_start_requires_approved_gpu_and_serializes_boots(diskless,tmp_path):
     entered, release = Event(), Event()
 
     class BlockingNative(Native):
@@ -107,7 +108,7 @@ def test_automatic_first_start_requires_approved_gpu_and_serializes_boots(diskle
             return super().post(action, body)
 
     native = BlockingNative()
-    client,body,_,_ = service(diskless,tmp_path,native)
+    client,body,_,_ = service(diskless,tmp_path,native,manual_grant=False)
     path = '/bootstrap/v1/worker-start/automatic'
     body['boot_id'] = str(uuid4())
     headers = {'Authorization':'Bearer '+CODE}

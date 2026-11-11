@@ -1,6 +1,6 @@
-"""Read-only bootstrap configuration API. Private files are mounted read-only.
+"""Bootstrap configuration API with optional authenticated worker-start brokerage.
 
-No node registration, sessions, worker creation or remote shell execution.
+Release and policy files remain read-only; enrollment state has its own private mount.
 """
 import hashlib
 import hmac

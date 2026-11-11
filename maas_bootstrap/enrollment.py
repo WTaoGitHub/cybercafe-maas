@@ -83,9 +83,16 @@ class WorkerStartBroker:
         if (manifest.get('worker_name_policy') != DISKLESS_POLICY or manifest['cluster_id'] != cluster
                 or body['image_id'] not in manifest['compatible_image_ids']):
             raise StartDenied(403, 'WORKER_START_SCOPE_MISMATCH')
-        worker_id = grant.get('auto_start_gpus', {}).get(gpu)
-        if not positive_id(worker_id):
+        approved = grant.get('auto_start_gpus', {})
+        auto_enroll = grant.get('auto_enroll_gpus', False)
+        if not isinstance(approved, dict) or type(auto_enroll) is not bool:
+            raise BootstrapError('WORKER_START_POLICY_INVALID')
+        worker_id = approved.get(gpu)
+        if gpu in approved and not positive_id(worker_id):
+            raise BootstrapError('WORKER_START_POLICY_INVALID')
+        if worker_id is None and not auto_enroll:
             raise StartDenied(403, 'WORKER_START_GPU_NOT_APPROVED')
+        # issue() enrolls an unknown GPU under these locks before requesting a permit.
         gpu_state = LocalState(self.root / f'auto-{cluster}-{gpu}')
         state = LocalState(gpu_state.root / boot)
         binding = dict(body, boot_id=boot, gpu_uuid=gpu, worker_id=worker_id,

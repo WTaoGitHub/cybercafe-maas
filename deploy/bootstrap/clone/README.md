@@ -160,8 +160,10 @@ python3 -m maas_bootstrap.delivery \
 
 ### 首次注册与同卡接续自动发证
 
-自动模式用于信任 worker 从本次运行环境上报实际单卡 GPU UUID 的试点。运维先在目标集群预登记 GPU，再在对应批次的 `policy.json` 授权项增加 `auto_start_gpus`，键为规范化的完整 GPU UUID，值为预登记返回的数字 `worker_id`。配置服务使用当前签名发布的集群、镜像和版本范围，并通过同一个内部许可入口核对绑定。
+自动模式用于信任已认证 worker 从本次运行环境上报实际单卡 GPU UUID 的试点。在对应批次的 `policy.json` 授权项中设置 `"auto_enroll_gpus": true`，MaaS 校验当前签名发布的集群、镜像与批次范围后，自动调用既有预登记接口创建或匹配 `name=external_id=GPU UUID` 的记录，再发放启动许可。首次新 GPU 无需运维预建 worker 或逐卡填写批准映射。既有绑定的唯一性、并发与 `not_ready` 接续条件仍由原生插件在事务内检查。
 
-构建试点镜像时，在无盘镜像设置中加上 `"worker_start_automatic": true`。开机启用引导服务，由 E5 读取实际 GPU UUID 和 `boot_id` 并认证申请。已交付的人工许可文件优先使用。未获许可时保持无 worker，systemd 按现有上限重试。
+`auto_enroll_gpus` 缺省为 false，保留仅批准名单中的 GPU 可自动启动的受限模式。`auto_start_gpus` 仍可指定完整 GPU UUID 到数字 `worker_id` 的明确绑定；有此绑定时继续核对原 ID，不自动替换冲突记录。无映射且启用自动预登记时，由服务端预登记结果确定 ID，运行态保存在授权目录，MaaS 不改写只读策略文件。开关及绑定配置类型非法时拒绝发证。
+
+构建试点镜像时，在无盘镜像设置中加上 `"worker_start_automatic": true`，启用独立 timer，由 E5 读取实际 GPU UUID 和 `boot_id` 并认证申请。已交付的人工许可文件优先使用。未获许可时保持无 worker，准备任务按现有总预算重试。对已经支持自动申请的客户端，此次自动预登记修复只需更新 MaaS 服务端并启用批次开关，无需更新母版快照。
 
 同一启动复用同一份有效许可。MaaS 在授权目录保留该集群与 GPU 的启动绑定和签发记录，不同启动竞争时，已保留或正在注册的会话会阻止另一启动获批。已有活动会话时，enrollment 0.4.0 在数据库锁内确认 GPU 绑定唯一且旧 worker 为 `not_ready`，再撤销旧凭据并签发接续许可。许可过期或签发结果不明确时，由运维对账。
