@@ -1,6 +1,6 @@
 # 后续增强计划
 
-> **2026-11-12 调节器增补场景**：worker 骤降导致大量 Pending 时，需安全收缩当前副本目标、保留健康服务，资源恢复后按原策略扩容。规划可得目标，但现有健康保护会阻止仅剩一个健康副本的模型缩容，尚未完整覆盖；不能直接关闭保护或由 MaaS 删除实例。 [复现与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+> **2026-11-12 调节器增补场景修订**：资源不足导致 Pending 时允许有界缩容，但不得自动归零；最低为规则定义的非零最小副本数。到下限仍 Pending 则保持目标，无需继续为该 Pending 调节；继续观测资源恢复。不能以清空全部 Pending 为验收目标，尚待实现与验证。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 

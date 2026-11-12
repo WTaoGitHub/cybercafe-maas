@@ -1,6 +1,6 @@
 # 统一模型服务路线图 v0.2
 
-> **2026-11-12 调节器待补闭环**：新增多模型“资源骤降→Pending 目标安全收缩→资源恢复后扩容”验收。当前已本地复现执行保护阻塞，尚未完整覆盖，不因规划能计算目标而标记实现完成。 [复现与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+> **2026-11-12 调节器待补闭环修订**：资源不足 Pending 的有界缩容与恢复；不自动归零，到规则非零最小值仍 Pending 时保持目标并等待资源恢复。替代仅描述“节点骤降、大量 Pending”的范围，规划/执行下限和健康保护仍待实现验证。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 

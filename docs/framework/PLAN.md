@@ -1,6 +1,6 @@
 # 实施计划 v0.2
 
-> **2026-11-12 调节器新增验收（待实现/验证）**：资源骤降后，将 A=1/10、B=2/20、C=1/15 按剩余容量安全收敛到 1/1、2/2、1/1；保留原策略上限，资源恢复后逐步扩容。当前规划可得目标，执行保护仍可能阻塞，需补原生缩容选择与健康保护验证。 [复现与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+> **2026-11-12 调节器新增验收修订（待实现/验证）**：资源不足导致 Pending→按规则安全缩容，最低为非零最小副本数→到下限仍 Pending 时无追加调节动作→资源恢复后扩容。补下限 1/2/3、零资源、重复对账零额外写入；不要求消除全部 Pending，不限定节点骤降。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
