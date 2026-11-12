@@ -92,6 +92,11 @@ async def exercise(request, directory, *, model_id, protected_ids, maximum=1, li
             or expected_block not in (None, 'pressure_unavailable', 'pressure_high')
             or sample_case not in ('missing', 'stale', 'high', 'recover')):
         raise ValueError('Explicit isolated pilot scope and bounded deadline required')
+    if ((expected_block == 'pressure_unavailable' and
+         (pressure_mode != 'required' or sample_case not in ('missing', 'stale')))
+            or (expected_block == 'pressure_high' and
+                (pressure_mode == 'disabled' or sample_case != 'high'))):
+        raise ValueError('Expected-block pilot settings must prohibit all writes')
     # A fresh directory prevents accidentally replaying a stopped pilot.
     directory.mkdir(mode=0o700, exist_ok=False)
     lock = (directory/'pilot.lock').open('w')

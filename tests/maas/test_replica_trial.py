@@ -93,6 +93,17 @@ class PilotTest(unittest.IsolatedAsyncioTestCase):
             return {'items':[{'id':1}], 'pagination':{'page':1,'totalPage':1,'total':2}}
         with self.assertRaises(ValueError):await inventory(partial,'models')
 
+    async def test_inconsistent_expected_block_refuses_before_any_request(self):
+        async def forbidden(*args):raise AssertionError('No API call allowed')
+        for pressure, sample, reason in [('disabled','missing','pressure_unavailable'),
+                                        ('advisory','missing','pressure_unavailable'),
+                                        ('disabled','high','pressure_high'),
+                                        ('required','recover','pressure_high')]:
+            with self.assertRaises(ValueError):
+                await exercise(forbidden,self.directory,model_id=2,protected_ids=[1],
+                               pressure_mode=pressure,sample_case=sample,expected_block=reason)
+        self.assertFalse(self.directory.exists())
+
     def test_policy_has_explicit_scope_and_never_enlarges_pilot_bounds(self):
         for maximum, limit in [(5,1),(1,3),(True,1)]:
             with self.assertRaises(ValueError):
