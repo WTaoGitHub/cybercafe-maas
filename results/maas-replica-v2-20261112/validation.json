@@ -1,0 +1,69 @@
+{
+  "recorded_at": "2026-11-12T15:12:57.317010+08:00",
+  "scope": "R1-R3 implementation and R4 read-only compatibility",
+  "local_regression": {
+    "passed": 102,
+    "skipped": 2,
+    "skip_reason": "GPUStack SDK absent on Mac; corresponding runtime suite exercised separately"
+  },
+  "pinned_runtime_regression": {
+    "version": "v2.2.3",
+    "run": 34,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "live_native_writes": 0
+  },
+  "live_preflight": {
+    "version": "v2.2.3",
+    "ready_worker_count": 2,
+    "gpu_count": 2,
+    "managed_deployment_id": 1,
+    "desired_replicas": 1,
+    "ready_replicas": 1,
+    "unknown_write": false
+  },
+  "live_observe": {
+    "initial_state": "capacity_stabilizing",
+    "final_state": "observe_ready",
+    "stability_s": 2,
+    "snapshot_complete": true,
+    "observed_desired_replicas": 1,
+    "computed_target": 2,
+    "parallel_safe": true,
+    "startup_reservation": "reserved",
+    "pressure_mode": "disabled",
+    "ownership": "adoption_required",
+    "writes_enabled": false,
+    "native_writes": 0,
+    "production_deployed": false
+  },
+  "compatibility_fix": {
+    "symptom": "Default distributed_servers object with no subordinate workers incorrectly blocked parallel preview",
+    "fix": "Examine actual subordinate inventory; reject unknown or nonempty distributed placement"
+  },
+  "pending": [
+    "R4 independent real-GPU writes and loss/recovery tests",
+    "R4 serial versus parallel cold/warm startup timing",
+    "R4 Higress/OCR/async unique metering validation of the candidate",
+    "R5 controlled rollout and persistent release configuration",
+    "Per-deployment manual takeover isolation",
+    "Optional dynamic pressure adapter"
+  ],
+  "source_sha256": {
+    "maas_platform/replica_contract.py": "88328ccd11b639fad047c6728b9609b4b7af17e5a441f7c6c702086367e21b47",
+    "maas_platform/replica_reconcile.py": "da4b3e59c5409a748c2c7180fe26dced51a4fb746653b48c6c74bbc4db5973f5",
+    "maas_platform/replica_writer_v2.py": "ca618495ce9aee15eb3b97eb826f57be509a29370458ea13906ecf9deda7e832",
+    "maas_platform/replica_observe.py": "fc187043012acd30125c057233602d7346b0072a2ffc6e0ce7d4ed6be41c90d1",
+    "plugins/gpustack-replica/maas_replica_native.py": "722bd448714b17e1d68350a13c584d3d4171813815a111797a5cead7c32e69fa",
+    "plugins/gpustack-replica/maas_replica_planner.py": "9f6ce2924760318eb418d0d4bce33b4f5f92ac3c8a5e45e2bb42cd22f0d5a721"
+  },
+  "boundaries": {
+    "vm_restarted": false,
+    "worker_restarted": false,
+    "docker_engine_restarted": false,
+    "collector_restored": false,
+    "existing_target_changed": false,
+    "production_sla_claimed": false
+  }
+}

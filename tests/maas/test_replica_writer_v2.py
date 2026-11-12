@@ -223,6 +223,19 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.advance(), 'pressure_high')
         self.assertEqual(self.writes, [])
 
+    async def test_native_default_distributed_object_without_subordinates_is_single_card(self):
+        self.parallel()
+        self.rows['models'][1].update(replicas=1, ready_replicas=1)
+        self.rows['model-instances'][1] = dict(
+            id=1, model_id=1, worker_id=4, gpu_indexes=[0], state='running',
+            distributed_servers={'mode': 'delegated', 'download_model_files': True,
+                                 'subordinate_workers': None})
+        self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['allocated'] = 4
+        self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 1})
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertTrue(self.observer.view['plan']['parallel_safe'])
+        self.assertEqual(self.rows['models'][1]['replicas'], 2)
+
     async def test_initial_stability_deadline_does_not_wait_full_thirty_second_poll(self):
         self.policy = policy('apply', stability=1)
         self.policy.reconcile = replace(self.policy.reconcile, interval_s=30)

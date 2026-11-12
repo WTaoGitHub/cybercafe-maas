@@ -145,7 +145,14 @@ def startup_reservations(cluster, cards, models, instances):
             return budgets, 'instance_count_unsettled'
         for row in rows:
             allocation = row.gpu_indexes
-            if (getattr(row, 'deleted_at', None) or getattr(row, 'distributed_servers', None)
+            distributed = getattr(row, 'distributed_servers', None)
+            # v2.2.3 may serialize a default object for an ordinary single-card
+            # instance. The actual subordinate inventory determines distribution.
+            has_subordinates = distributed is not None and (
+                not isinstance(distributed, dict)
+                or bool(distributed.keys() - {'mode', 'download_model_files', 'subordinate_workers'})
+                or distributed.get('subordinate_workers') not in (None, []))
+            if (getattr(row, 'deleted_at', None) or has_subordinates
                     or row.state not in ('running', 'scheduled', 'initializing', 'downloading', 'starting')
                     or type(row.worker_id) is not int or not allocation
                     or any(type(index) is not int or index < 0 for index in allocation)
