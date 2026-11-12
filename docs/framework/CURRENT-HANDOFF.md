@@ -1,6 +1,6 @@
 # 当前状态与接力入口
 
-> **2026-11-12 调节器新版代码进展，未部署**：R1 契约诊断、R2 当前状态 Observe/持久接管基础、R3a 显式接管后的串行写入已本地实现，合并测试 90 通过、2 个固定 runtime 条件跳过。可在替身环境证明无新事件 0→1、缺样降级和未知结果不重发。实际仍为 serial_pilot、在途 1；R3b 预留与并行启动、R4 真实 GPU 及 R5 发布未完成。接续先读 [R3a 操作边界](REPLICA-V2-APPLY.md)、[启动效率设计](REPLICA-STARTUP-EFFICIENCY.md)；不要把示例 policy 直接覆盖现网或把本地替身当成远端验收。最近只读环境为人工 1/1，本轮没有修改现网。
+> **2026-11-12 R1—R3 本地实现，未部署**：已完成新版契约/诊断、持续对账/持久接管、压力解耦与显式有界并行启动；默认仍串行。未就绪实例完整计入名额并保守保留已分配 GPU，未分配/数量不齐则等待；原生写请求始终逐笔 +1。101 项本地回归通过，2 项原生 runtime 条件跳过。R4 真实 GPU/冷热缓存效率与 R5 发布尚未完成，现网人工副本及配置不变。[并行边界与后续验收](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-11 第二台 VPC 扩容准备完成**。策略 Apply 修订 7、策略与实际写授权上限均为 2；重建同镜像 E17 后重新订阅并建立单卡基线，当前 OCR 仍 1/1、执行 idle、日志为空，等待新增 GPU。第二台上线后需补齐实际压力覆盖，再验收自动 1→2；不要手动增加副本。[准备记录](../../results/maas-replica-003-restart-20261111/CAP2-READY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 

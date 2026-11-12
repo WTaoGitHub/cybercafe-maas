@@ -6,7 +6,8 @@ import json
 import time
 
 from maas_replica_planner import plan_capacity
-from .replica_apply import deployment_binding
+from maas_replica_native import NativeAdapter
+from .replica_apply import deployment_binding, model_settings
 from .replica_state import ControlState, atomic_private
 
 
@@ -39,6 +40,10 @@ class ReconcileObserve:
                 raise ValueError('Incomplete or conflicting resource identity')
             selected = {key: models[key] for key in policy.models}
             bindings = {key: deployment_binding(row) for key, row in selected.items()}
+            native = NativeAdapter(None, revision=policy.revision, cluster_id=policy.cluster,
+                                   owner_id=policy.owner, model_ids=policy.models,
+                                   serializer=model_settings).snapshot(
+                                       list(workers.values()), list(models.values()), list(instances.values()))
             signature = hashlib.sha256(json.dumps({
                 'revision': policy.revision, 'cluster': policy.cluster, 'owner': policy.owner,
                 'mode': policy.execution.get('mode'),
@@ -46,14 +51,17 @@ class ReconcileObserve:
                 'models': {key: [bindings[key], row['replicas']] for key, row in selected.items()},
                 'instances': sorted((row['id'], row['model_id'], row['state'], row.get('worker_id'),
                                      tuple(row.get('gpu_indexes') or [])) for row in instances.values()
-                                    if row['model_id'] in policy.models),
+                                    if row['model_id'] in models),
+                'global_targets': sorted((row['id'], row['replicas'], row['ready_replicas'])
+                                         for row in models.values()),
             }, sort_keys=True).encode()).hexdigest()
             now = self.clock()
             if signature != self.signature:
                 self.signature, self.stable_since = signature, now
             plan = await asyncio.to_thread(plan_capacity, policy, devices,
                                            list(map(_namespace, models.values())),
-                                           list(map(_namespace, instances.values())))
+                                           list(map(_namespace, instances.values())),
+                                           parallel=policy.startup.parallel_startup)
             if policy.pressure_mode == 'disabled':
                 diagnostic = {'state': 'disabled', 'reasons': ['configured_disabled']}
             else:
@@ -75,7 +83,8 @@ class ReconcileObserve:
             if pending:
                 plan['execution_state'] = 'pending_write_read_only'
             self.view = {'devices': devices, 'models': selected, 'models_binding': bindings, 'plan': plan,
-                         'stable': stable, 'read_monotonic': self.clock()}
+                         'stable': stable, 'read_monotonic': self.clock(),
+                         'native_fingerprint': native.fingerprint}
         except Exception as exc:
             self.signature = self.stable_since = None
             plan = {'state': 'blocked', 'reason': type(exc).__name__, 'writes_enabled': False,

@@ -64,6 +64,7 @@ class ContractTests(unittest.TestCase):
             ('reconcile', {'interval_s': 0}), ('reconcile', {'interval_s': True}),
             ('reconcile', {'stability_s': 121}), ('reconcile', {'unknown': 1}),
             ('startup', {'first_replica_fastpath': 1}),
+            ('startup', {'parallel_startup': 'true'}),
             ('startup', {'degraded_write_interval_s': 0}),
             ('startup', {'degraded_inflight_max': 3}),
             ('startup', {'degraded_grace_s': -1}),
@@ -87,6 +88,11 @@ class ContractTests(unittest.TestCase):
         raw['event_overrides'] = {'gpu_added': {'execution': {'max_inflight_global': 8}}}
         with self.assertRaises(ValueError):
             ControlPolicy(raw)
+
+    def test_parallel_startup_requires_explicit_v2_opt_in(self):
+        self.assertFalse(ControlPolicy(config()).startup.parallel_startup)
+        raw = config(); raw['startup'] = {'parallel_startup': True}
+        self.assertTrue(ControlPolicy(raw).startup.parallel_startup)
 
     def test_required_mode_cannot_authorize_first_replica_pressure_bypass(self):
         raw = config(pressure_mode='required')

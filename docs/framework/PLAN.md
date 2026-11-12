@@ -1,5 +1,7 @@
 # 实施计划 v0.2
 
+> **2026-11-12 R1—R3 本地实现，未部署**：已完成新版契约/诊断、持续对账/持久接管、压力解耦与显式有界并行启动；默认仍串行。未就绪实例完整计入名额并保守保留已分配 GPU，未分配/数量不齐则等待；原生写请求始终逐笔 +1。101 项本地回归通过，2 项原生 runtime 条件跳过。R4 真实 GPU/冷热缓存效率与 R5 发布尚未完成，现网人工副本及配置不变。[并行边界与后续验收](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 启动效率补充（设计，待实现）**：R1—R5 加入事件快路径、首副本优先、在途资源预留与可配置并行、缓存阶段画像；以首副本及目标容量就绪时间验收。串行预算用于保守起步，长期无压力数据源可显式禁用可选压力，使用实测启动预算。[补充设计](REPLICA-STARTUP-EFFICIENCY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 规模调节器优先改进（设计，待实现）**：先按 R1—R3 完成原因诊断、新版周期对账/持久接管、压力 advisory 与保守执行，再 R4 独立试点、R5 受控发布。动态压力来源适配后续推进，不作为核心可用性的硬依赖；现网保持原配置。[详细方案与验收矩阵](REPLICA-RECONCILIATION-IMPROVEMENT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

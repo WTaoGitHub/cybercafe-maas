@@ -1,5 +1,7 @@
 # 规模调节器：压力解耦与持续对账改进方案
 
+> **2026-11-12 R1—R3 本地实现，未部署**：已完成新版契约/诊断、持续对账/持久接管、压力解耦与显式有界并行启动；默认仍串行。未就绪实例完整计入名额并保守保留已分配 GPU，未分配/数量不齐则等待；原生写请求始终逐笔 +1。101 项本地回归通过，2 项原生 runtime 条件跳过。R4 真实 GPU/冷热缓存效率与 R5 发布尚未完成，现网人工副本及配置不变。[并行边界与后续验收](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 2026-11-12 · 设计完成，待实现及验证 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 本方案只针对 MaaS 模型服务规模调节器。当前模型副本、策略修订、写入授权和采样服务均未改变；不能把本文建议视为已上线。历史事故与原始时间线见[排查报告](../../results/maas-replica-investigation-20261112/REPORT.md)。

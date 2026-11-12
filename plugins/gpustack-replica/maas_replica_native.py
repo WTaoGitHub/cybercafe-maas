@@ -65,6 +65,10 @@ class NativeAdapter:
         workers = await self._pages("/v2/workers")
         models = await self._pages("/v2/models")
         instances = await self._pages("/v2/model-instances")
+        return self.snapshot(workers, models, instances)
+
+    def snapshot(self, workers, models, instances):
+        """Normalize full API rows identically for observation and final readback."""
         cards = {}
         gpu_inventory = defaultdict(dict)
         for worker in workers:
@@ -98,7 +102,7 @@ class NativeAdapter:
         deployments = {}
         for model in models:
             healthy = tuple(
-                row["state"] == "running" and bool(row.get("gpu_indexes")) and
+                not row.get('deleted_at') and row["state"] == "running" and bool(row.get("gpu_indexes")) and
                 all((row["worker_id"], index) in cards for index in row["gpu_indexes"])
                 for row in sorted(rows[model["id"]], key=lambda row: row["id"])
             )
@@ -108,7 +112,8 @@ class NativeAdapter:
         identity = [(i, m.cluster_id, m.owner_id, m.binding, m.replicas, m.healthy)
                     for i, m in sorted(deployments.items())]
         placement = sorted((row["id"], row["model_id"], row["state"], row["worker_id"],
-                            row.get("gpu_indexes")) for row in instances)
+                            row.get("gpu_indexes"), row.get('deleted_at'),
+                            digest(row.get('distributed_servers'))) for row in instances)
         inventory = [(key, sorted(value.items())) for key, value in gpu_inventory.items()]
         fingerprint = digest([sorted(inventory), identity, placement])
         return Snapshot(self.revision, fingerprint, deployments, gpu_inventory=dict(gpu_inventory))

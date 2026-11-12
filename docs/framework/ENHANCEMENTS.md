@@ -1,5 +1,7 @@
 # 后续增强计划
 
+> **2026-11-12 R1—R3 本地实现，未部署**：已完成新版契约/诊断、持续对账/持久接管、压力解耦与显式有界并行启动；默认仍串行。未就绪实例完整计入名额并保守保留已分配 GPU，未分配/数量不齐则等待；原生写请求始终逐笔 +1。101 项本地回归通过，2 项原生 runtime 条件跳过。R4 真实 GPU/冷热缓存效率与 R5 发布尚未完成，现网人工副本及配置不变。[并行边界与后续验收](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 Issue #39 补充启动效率使命**：快速将策略允许的闲置资源变成可服务副本，新增事件快路径、首副本优先、完整在途预留与可配置并行、冷热缓存分段度量。现有 planner 全受管部署等待收敛和 writer +1/在途 1 需一起改，不能仅改并发数字。缓存与辅助镜像优化复用既有分发任务。[方案](REPLICA-STARTUP-EFFICIENCY.md)。设计待实现，现网不变。
 
 > **2026-11-12 调节器改进（沿用 Issue #39，设计待实现）**：压力采样名单与动态 worker 脱节已造成实际扩容停滞，优先实现周期对账、事件过期后重新规划、持久接管/人工改动保护、advisory 缺样保守串行模式及结构化阻塞原因。旧 schema 保持 required 语义，动态指标来源后续优化，不新建重复调节器或 SSH 门禁。[改进方案、阶段与验收](REPLICA-RECONCILIATION-IMPROVEMENT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

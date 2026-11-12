@@ -31,6 +31,7 @@ class Startup:
     degraded_write_interval_s: int = 60
     degraded_inflight_max: int = 1
     first_replica_fastpath: bool = False
+    parallel_startup: bool = False
 
 
 class ControlPolicy:
@@ -56,14 +57,15 @@ class ControlPolicy:
                 bounded(raw['reconcile'].get('stability_s', 10), 0, 120))
             startup = raw.get('startup', {})
             fields(startup, {'degraded_grace_s', 'degraded_write_interval_s',
-                             'degraded_inflight_max', 'first_replica_fastpath'})
+                             'degraded_inflight_max', 'first_replica_fastpath', 'parallel_startup'})
             fast = startup.get('first_replica_fastpath', False)
-            if type(fast) is not bool:
-                raise ValueError('first_replica_fastpath must be boolean')
+            parallel = startup.get('parallel_startup', False)
+            if type(fast) is not bool or type(parallel) is not bool:
+                raise ValueError('Startup switches must be boolean')
             self.startup = Startup(
                 bounded(startup.get('degraded_grace_s', 30), 0, 300),
                 bounded(startup.get('degraded_write_interval_s', 60), 1, 3600),
-                bounded(startup.get('degraded_inflight_max', 1), 1, 32), fast)
+                bounded(startup.get('degraded_inflight_max', 1), 1, 32), fast, parallel)
             pressure = deepcopy(raw['pressure'])
             fields(pressure, {'mode', 'max_sample_age_s', 'recovery_hold_s',
                               'require_worker_coverage', 'signals'}, {'mode'})

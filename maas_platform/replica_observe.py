@@ -54,6 +54,8 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
         if session != current_session:
             trusted = event = started = None
             session = current_session
+            if reconcile is not None:
+                reconcile.signature = reconcile.stable_since = reconcile.view = None
         try:
             policy = policy_file.refresh()
             writer = scale_up
@@ -78,16 +80,25 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
                 plan = await reconcile.tick(client, listing, policy, subscribed=current_session is not None,
                                             pending_journal=getattr(writer, 'journal', None))
                 wait_interval = policy.reconcile.interval_s
+                if plan.get('state') == 'capacity_stabilizing':
+                    wait_interval = min(wait_interval, max(0, policy.reconcile.stability_s -
+                                                          plan['stable_for_s']))
                 if writer is not None and hasattr(writer, 'reconcile'):
                     plan['execution_state'] = await writer.reconcile(policy, reconcile, refresh=policy_file.refresh)
                     plan.pop('executable_preview_limit', None)
-                    plan.update(effective_startup_limit=1, execution_profile='serial_pilot',
+                    plan.update(effective_startup_limit=writer.effective_startup_limit,
+                                execution_profile=writer.execution_profile,
                                 write_attempted=writer.write_attempted,
                                 writes_enabled=(mode == 'apply' and plan.get('ownership') == 'adopted'
                                                 and writer.authorized(policy) is None))
                     if reconcile.state:
                         from .replica_state import atomic_private
                         atomic_private(reconcile.state.directory/'status.json', plan)
+                    if plan['execution_state'] == 'confirmed':
+                        # Confirmed native writes do not need another arrival or
+                        # the full fallback period to re-evaluate spare slots.
+                        wait_interval = 0
+                plan['next_check_in_s'] = wait_interval + 1
                 # Never pass v2 into the arrival-only writer.
             elif current_session is None:
                 raise ConnectionError('waiting_for_subscription')
@@ -159,7 +170,8 @@ def _log_identity(value):
     """Do not emit identical state transitions on every timestamp/age change."""
     if isinstance(value, dict):
         return {key: _log_identity(item) for key, item in value.items()
-                if key not in {'observed_at', 'stable_for_s', 'sample_age_s', 'snapshot_age_s'}}
+                if key not in {'observed_at', 'stable_for_s', 'sample_age_s', 'snapshot_age_s',
+                               'next_check_in_s'}}
     if isinstance(value, list):
         return [_log_identity(item) for item in value]
     return value

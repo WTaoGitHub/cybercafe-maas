@@ -1,5 +1,7 @@
 # R2：持续对账 Observe 与持久接管基础
 
+> **2026-11-12 R1—R3 本地实现，未部署**：已完成新版契约/诊断、持续对账/持久接管、压力解耦与显式有界并行启动；默认仍串行。未就绪实例完整计入名额并保守保留已分配 GPU，未分配/数量不齐则等待；原生写请求始终逐笔 +1。101 项本地回归通过，2 项原生 runtime 条件跳过。R4 真实 GPU/冷热缓存效率与 R5 发布尚未完成，现网人工副本及配置不变。[并行边界与后续验收](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 2026-11-12 · 本地实现，未部署 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 后续 R3a 已在独立受授权 writer 中接入串行写入、持久确认回调和私有接管命令，尚未部署。以下“尚未提供 writer/命令”的描述为 R2 时边界，最新见 [R3a](REPLICA-V2-APPLY.md)。只读覆盖配置依然关闭 Apply。

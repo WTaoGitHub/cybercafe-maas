@@ -19,6 +19,8 @@ from maas_platform.replica_control import control, targets
 from maas_replica_execution import PendingWrite
 from maas_replica_pressure import PressureGate
 from test_replica_reconcile import model, worker, policy
+from test_replica_contract import config
+from maas_platform.replica_contract import ControlPolicy
 
 
 class WriterV2Test(unittest.IsolatedAsyncioTestCase):
@@ -54,20 +56,22 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
             key = path.split('?')[0].split('/')[-1]
             values = list(self.rows[key].values())
             return {'items': deepcopy(values), 'pagination': {'page': 1, 'totalPage': 1, 'total': len(values)}}
-        self.assertEqual(path, '/v2/models/1')
+        self.assertTrue(path.startswith('/v2/models/'))
+        model_id = int(path.rsplit('/', 1)[-1])
+        row = self.rows['models'][model_id]
         if method == 'GET':
             if self.invalidate_on_get:
                 self.refresh_value = policy('apply', stability=0)
-            return deepcopy(self.rows['models'][1])
+            return deepcopy(row)
         self.assertEqual(method, 'PUT'); self.assertIsNotNone(self.journal.read())
         self.writes.append(deepcopy(body))
         if self.outcome == 'before_commit_timeout':
             raise TimeoutError()
-        self.rows['models'][1]['replicas'] = body['replicas']
+        row['replicas'] = body['replicas']
         if self.outcome == 'native_filled_fields':
-            self.rows['models'][1].update(categories=['llm'], distributable=False)
+            row.update(categories=['llm'], distributable=False)
         ident = len(self.rows['model-instances']) + 1
-        self.rows['model-instances'][ident] = dict(id=ident, model_id=1, worker_id=None,
+        self.rows['model-instances'][ident] = dict(id=ident, model_id=model_id, worker_id=None,
                                                   gpu_indexes=None, state='pending')
         if self.outcome == 'after_commit_timeout':
             raise TimeoutError()
@@ -85,6 +89,156 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.rows['models'][1]['ready_replicas'] = 1
         self.rows['model-instances'][1].update(state='running', worker_id=4, gpu_indexes=[0])
         self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['allocated'] = 4
+
+    def parallel(self, *, maximum=4, limit=2, pressure_mode='disabled'):
+        raw = config(mode='apply', pressure_mode=pressure_mode)
+        raw['models']['1']['max_replicas'] = maximum
+        raw['execution'].update(max_inflight_global=limit, max_inflight_per_cluster=limit)
+        raw['reconcile']['stability_s'] = 0
+        raw['startup'] = {'parallel_startup': True}
+        if pressure_mode != 'disabled':
+            raw['pressure']['recovery_hold_s'] = 0
+        self.policy = ControlPolicy(raw, allow_apply=True); self.refresh_value = self.policy
+        self.writer.model_caps[1] = maximum
+        self.state.adopt(self.policy, {1: self.rows['models'][1]}, expected_targets={1: 0})
+
+    def assign(self, ident, worker_id):
+        self.rows['model-instances'][ident].update(
+            state='starting', worker_id=worker_id, gpu_indexes=[0])
+
+    async def test_parallel_starts_second_card_before_first_is_running_despite_allocation_lag(self):
+        self.parallel(); self.rows['workers'][5] = worker(5)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assign(1, 4)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assign(2, 5)
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual([row['replicas'] for row in self.writes], [1, 2])
+        self.assertEqual(self.writer.execution_profile, 'parallel_reserved')
+        self.assertEqual(self.writer.effective_startup_limit, 2)
+        self.assertEqual(self.rows['models'][1]['ready_replicas'], 0)
+        # The safety proof withholds whole pending cards even while native
+        # allocated telemetry still says zero, rather than fitting four.
+        self.assertEqual(self.observer.view['plan']['policy_target'], {1: 2})
+
+    async def test_parallel_caps_one_two_and_four_bound_actual_startup_count(self):
+        for limit in (1, 2, 4):
+            with self.subTest(limit=limit):
+                self.rows = {'workers': {i: worker(i) for i in (4, 5, 6, 7)},
+                             'models': {1: model()}, 'model-instances': {}}
+                self.writes.clear(); self.parallel(maximum=8, limit=limit)
+                for ident in range(1, limit + 1):
+                    self.assertEqual(await self.advance(), 'confirmed')
+                    self.assign(ident, ident + 3)
+                self.assertEqual(await self.advance(), 'idle')
+                self.assertEqual(len(self.writes), limit)
+
+    async def test_unassigned_absent_surplus_error_and_distributed_pending_never_release_extra_slot(self):
+        self.parallel(); self.rows['workers'][5] = worker(5)
+        self.assertEqual(await self.advance(), 'confirmed')
+        original = deepcopy(self.rows['model-instances'])
+        changes = ({}, None, {'state': 'error'}, {'worker_id': 99, 'gpu_indexes': [0]},
+                   {'worker_id': 4, 'gpu_indexes': [0], 'distributed_servers': {'workers': [5]}},
+                   {'worker_id': 4, 'gpu_indexes': [0], 'deleted_at': 'now'})
+        for change in changes:
+            self.rows['model-instances'] = deepcopy(original)
+            if change is None:
+                self.rows['model-instances'].clear()
+            else:
+                self.rows['model-instances'][1].update(change)
+            self.assertEqual(await self.advance(), 'idle')
+            self.assertFalse(self.observer.view['plan']['parallel_safe'])
+        self.assign(1, 4)
+        self.rows['model-instances'][2] = {**self.rows['model-instances'][1], 'id': 2}
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual(len(self.writes), 1)
+
+    async def test_unmanaged_pending_in_same_cluster_is_reserved_too(self):
+        self.parallel(); self.rows['workers'][5] = worker(5)
+        self.rows['models'][2] = {**model(), 'id': 2, 'replicas': 1}
+        self.rows['model-instances'][10] = dict(
+            id=10, model_id=2, worker_id=None, gpu_indexes=[], state='pending')
+        self.assertEqual(await self.advance(), 'idle')
+        self.assign(10, 4)
+        self.assertEqual(await self.advance(), 'confirmed')
+        # One unmanaged and one new managed start exhaust the cluster limit.
+        self.assign(2, 5)
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual(len(self.writes), 1)
+
+    async def test_new_unmanaged_work_after_planning_invalidates_final_full_snapshot(self):
+        self.parallel(); self.rows['workers'][5] = worker(5)
+        await self.observer.tick(None, self.listing, self.policy, subscribed=False)
+        self.rows['models'][2] = {**model(), 'id': 2, 'replicas': 1}
+        self.rows['model-instances'][2] = dict(
+            id=2, model_id=2, worker_id=5, gpu_indexes=[0], state='starting')
+        self.assertEqual(await self.writer.reconcile(self.policy, self.observer,
+                                                    refresh=lambda: self.policy), 'native_snapshot_changed')
+        self.assertEqual(self.writes, [])
+
+    async def test_blocked_startup_in_one_model_leaves_another_models_reserved_budget_available(self):
+        self.rows['workers'][5] = worker(5)
+        self.rows['models'][1]['replicas'] = 1
+        self.rows['models'][2] = {**model(), 'id': 2}
+        self.rows['model-instances'][1] = dict(
+            id=1, model_id=1, worker_id=4, gpu_indexes=[0], state='downloading')
+        raw = config(mode='apply')
+        raw['models'] = {'1': {'vram_claim_bytes': 4, 'max_replicas': 2, 'min_replicas': 1},
+                         '2': {'vram_claim_bytes': 4, 'max_replicas': 2, 'min_replicas': 1}}
+        raw['startup'] = {'parallel_startup': True}; raw['reconcile']['stability_s'] = 0
+        self.policy = ControlPolicy(raw, allow_apply=True); self.refresh_value = self.policy
+        self.writer.model_caps = {1: 2, 2: 2}
+        self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 1, 2: 0})
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.rows['models'][1]['replicas'], 1)
+        self.assertEqual(self.rows['models'][2]['replicas'], 1)
+        self.assertEqual(len(self.writes), 1)
+
+    async def test_other_cluster_startup_consumes_global_but_not_local_budget(self):
+        self.rows['models'][2] = {**model(), 'id': 2, 'cluster_id': 2, 'replicas': 1}
+        self.rows['model-instances'][10] = dict(
+            id=10, model_id=2, worker_id=None, gpu_indexes=[], state='pending')
+        self.parallel(limit=1)
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual(self.writes, [])
+        self.parallel(limit=2)
+        self.assertEqual(await self.advance(), 'confirmed')
+
+    async def test_parallel_advisory_degrades_to_one_slot(self):
+        self.parallel(pressure_mode='advisory'); self.rows['workers'][5] = worker(5)
+        self.assertEqual(await self.advance(), 'pressure_unknown_grace')
+        self.now += 31
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assign(1, 4); self.now += 61
+        # The planner can see the free second card but the degraded writer cap
+        # still prevents it from overlapping the first startup.
+        self.assertEqual(await self.advance(), 'startup_budget_exhausted')
+        self.assertEqual(self.writer.effective_startup_limit, 1)
+        self.assertEqual(len(self.writes), 1)
+
+    async def test_high_pressure_blocks_otherwise_feasible_parallel_start(self):
+        self.parallel(pressure_mode='advisory'); self.rows['workers'][5] = worker(5)
+        self.sample.write_text(json.dumps({'observed_at': self.now, 'worker_ids': [4, 5],
+                                          'signals': {'network_rx_mib_s': 200}})); self.sample.chmod(0o600)
+        self.assertEqual(await self.advance(), 'pressure_high')
+        self.assertEqual(self.writes, [])
+
+    async def test_initial_stability_deadline_does_not_wait_full_thirty_second_poll(self):
+        self.policy = policy('apply', stability=1)
+        self.policy.reconcile = replace(self.policy.reconcile, interval_s=30)
+        self.writer.clock = time.monotonic
+        queue = asyncio.Queue()
+        signals = SimpleNamespace(session=None, changed=asyncio.Event())
+        with patch('maas_platform.replica_observe.LOG.info', side_effect=lambda _, p: queue.put_nowait(p)):
+            task = asyncio.create_task(run(None, self.listing, signals,
+                                           SimpleNamespace(refresh=lambda: self.policy),
+                                           writer_factory=lambda _: self.writer))
+            try:
+                self.assertEqual((await asyncio.wait_for(queue.get(), 4))['state'], 'capacity_stabilizing')
+                result = await asyncio.wait_for(queue.get(), 4)
+                self.assertEqual(result['execution_state'], 'confirmed')
+            finally:
+                task.cancel(); await asyncio.gather(task, return_exceptions=True)
 
     async def test_existing_ready_gpu_without_new_event_can_write_zero_to_one(self):
         self.assertEqual(await self.advance(), 'confirmed')

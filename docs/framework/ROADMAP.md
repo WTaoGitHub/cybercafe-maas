@@ -1,5 +1,7 @@
 # 统一模型服务路线图 v0.2
 
+> **2026-11-12 R1—R3 本地实现，未部署**：已完成新版契约/诊断、持续对账/持久接管、压力解耦与显式有界并行启动；默认仍串行。未就绪实例完整计入名额并保守保留已分配 GPU，未分配/数量不齐则等待；原生写请求始终逐笔 +1。101 项本地回归通过，2 项原生 runtime 条件跳过。R4 真实 GPU/冷热缓存效率与 R5 发布尚未完成，现网人工副本及配置不变。[并行边界与后续验收](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 调节器启动效率目标（设计）**：在可用性修复主线内补充预算约束的并行启动与首副本快路径，分别测量首个可服务副本和全目标就绪时间；冷热缓存、串行/并行 2/4 对照后选择配置，不把全局在途 1 作为长期上限。[设计](REPLICA-STARTUP-EFFICIENCY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 规模调节器主线调整（待实施）**：针对新注册 worker 缺少压力覆盖、事件过期后不再扩容的问题，优先完成“持续对账 + 可选压力节流 + 强制预算/授权保护”。R1 契约诊断 → R2 对账接管 → R3 压力解耦 → R4 独立试点 → R5 受控发布；千节点容量和可选指标适配另行验证。本轮只完成设计，不修改现网。[方案](REPLICA-RECONCILIATION-IMPROVEMENT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

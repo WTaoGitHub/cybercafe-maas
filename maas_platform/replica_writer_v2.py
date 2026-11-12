@@ -1,4 +1,4 @@
-"""Explicitly adopted current-state writes; serial pilot, never event replay."""
+"""Explicitly adopted current-state writes with bounded startup reservations."""
 import math
 import os
 from pathlib import Path
@@ -6,7 +6,7 @@ import time
 import json
 
 from maas_replica_apply import LocalManagement
-from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent
+from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent, inflight
 from maas_replica_native import NativeAdapter
 from maas_replica_policy import integer
 from maas_replica_pressure import PressureGate
@@ -22,6 +22,22 @@ class ReconcileWriter:
         self.pressure = pressure if pressure is not None else PressureGate(None)
         self.clock, self.wall_clock = clock, wall_clock
         self.write_attempted = False
+        self.effective_startup_limit = 1
+        self.execution_profile = 'serial_pilot'
+
+    def startup_limits(self, policy, plan, decision):
+        _, execution = policy.effective(None)
+        parallel = policy.startup.parallel_startup and plan.get('parallel_safe', False)
+        maximum = 32 if parallel else 1
+        if decision == 'pressure_unknown_degraded':
+            maximum = min(maximum, policy.startup.degraded_inflight_max)
+        limits = (min(maximum, execution['max_inflight_global']),
+                  min(maximum, execution['max_inflight_per_cluster']))
+        self.effective_startup_limit = min(limits)
+        self.execution_profile = ('parallel_reserved' if parallel else 'serial_pilot')
+        if decision == 'pressure_unknown_degraded':
+            self.execution_profile += '_degraded'
+        return limits
 
     @classmethod
     def from_environment(cls):
@@ -74,6 +90,8 @@ class ReconcileWriter:
 
     async def reconcile(self, policy, observer, *, refresh):
         self.write_attempted = False
+        self.effective_startup_limit = 1
+        self.execution_profile = 'serial_pilot'
         reason = self.authorized(policy)
         if reason:
             return reason
@@ -104,6 +122,7 @@ class ReconcileWriter:
         if decision not in ('allowed', 'pressure_unknown_degraded'):
             return decision
         plan = view['plan']
+        global_max, cluster_max = self.startup_limits(policy, plan, decision)
         if not plan.get('up_preview_limit'):
             return 'idle'
         version = await self.request('GET', '/version')
@@ -147,6 +166,8 @@ class ReconcileWriter:
 
         adapter.request = checked_request
         snapshot = await adapter.read()
+        if snapshot.fingerprint != view['native_fingerprint']:
+            return 'native_snapshot_changed'
         expected = {(card.worker_id, card.index): (uuid, card.total_vram, card.allocated_vram,
                     card.reserved_vram, card.labels, card.kind) for uuid, card in view['devices'].items()}
         if snapshot.gpu_inventory.get(self.cluster, {}) != expected:
@@ -154,7 +175,8 @@ class ReconcileWriter:
         for ident, count in plan['current'].items():
             actual = snapshot.deployments.get(ident)
             if (actual is None or actual.replicas != count
-                    or actual.binding != view['models_binding'][ident] or sum(actual.healthy) < count):
+                    or actual.binding != view['models_binding'][ident]
+                    or (not plan.get('parallel_safe') and sum(actual.healthy) < count)):
                 return 'deployment_changed_or_waiting'
         rules, execution = policy.effective(None)
         candidates = [key for key, count in plan['current'].items() if plan['policy_target'][key] > count]
@@ -163,12 +185,14 @@ class ReconcileWriter:
         first = [key for key in candidates if plan['current'][key] < rules[key].min_replicas]
         ident = min(first or candidates, key=lambda key: (rules[key].priority, key))
         model = snapshot.deployments[ident]
+        total, local = inflight(snapshot.deployments, self.cluster)
+        if total + 1 > global_max or local + 1 > cluster_max:
+            return 'startup_budget_exhausted'
         action = Action(snapshot.revision, snapshot.fingerprint, ident, model.cluster_id,
                         model.owner_id, model.binding, model.replicas, model.replicas + 1,
                         recovery_binding=model.recovery_binding)
-        # R3a serial pilot: explicit effective limits, parallel reservation is R3b.
+        # Writes remain serialized +1; confirmed native startups may overlap.
         executor = Executor(self.journal, adapter.read, adapter.write,
                             on_confirm=confirm, write_timeout=12, read_timeout=12)
         return await executor.submit(action, floor=0, batch_max=1,
-                                     global_max=min(1, execution['max_inflight_global']),
-                                     cluster_max=min(1, execution['max_inflight_per_cluster']))
+                                     global_max=global_max, cluster_max=cluster_max)
