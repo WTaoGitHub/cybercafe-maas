@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "revision": 1,
+  "scope": {"cluster_id": 1, "owner_principal_id": 1},
+  "models": {"1": {"vram_claim_bytes": 3758096384, "min_replicas": 1, "max_replicas": 2}},
+  "execution": {
+    "mode": "observe",
+    "scale_up_batch_max": 1,
+    "max_inflight_global": 2,
+    "max_inflight_per_cluster": 2
+  },
+  "reconcile": {"interval_s": 30, "stability_s": 10},
+  "startup": {
+    "degraded_grace_s": 30,
+    "degraded_write_interval_s": 60,
+    "degraded_inflight_max": 1,
+    "first_replica_fastpath": false
+  },
+  "pressure": {"mode": "disabled"}
+}

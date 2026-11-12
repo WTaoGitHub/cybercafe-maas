@@ -1,5 +1,7 @@
 # MaaS 模型副本调节器迁移计划
 
+> **2026-11-12 R1 本地代码完成，未部署**：新增 MaaS v2 契约解析、私有只读诊断与结构化压力原因，能复现“旧样本过期 + 新 worker 未覆盖”。旧 gate 冻结语义保持；现有 E17 执行入口尚未接入 v2，不能据此认定周期调节或并行已实现。[契约、命令与测试](REPLICA-V2-CONTRACT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 启动效率补充，待实现**：调节器还须尽快兑现闲置容量，正常路径采用事件快速唤醒、首副本优先和受预算约束的并行启动；原 +1/在途 1 是保守起步参数。R1—R5 同时纳入首副本/目标容量就绪时间、冷热缓存和并行档对照；只完成安全串行不能宣称效率完成。[补充设计](REPLICA-STARTUP-EFFICIENCY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 改进设计，待实现**：针对旧采样来源阻塞新 worker 扩容，新增[压力解耦与持续对账方案](REPLICA-RECONCILIATION-IMPROVEMENT.md)。建议新版显式启用周期对账和 advisory 压力模式，缺样走保守串行扩容；旧 schema 严格冻结语义不变。保留资源/授权/在途/未知写入强制门槛，增加持久接管基线和人工修改保护。R1—R5 为后续实现、试点和发布步骤，当前现网配置及人工 1/1 不变。由 [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39) 继续跟踪。下文首发仅到达事件/强制压力门槛的约束属于既有版本。
