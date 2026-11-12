@@ -21,6 +21,8 @@ from maas_replica_pressure import PressureGate
 from test_replica_reconcile import model, worker, policy
 from test_replica_contract import config
 from maas_platform.replica_contract import ControlPolicy
+from maas_platform.replica_apply import model_settings
+from maas_replica_native import NativeAdapter
 
 
 class WriterV2Test(unittest.IsolatedAsyncioTestCase):
@@ -77,7 +79,8 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
                         removed = rows.pop(ident)
                         if removed.get('worker_id') in self.rows['workers']:
                             memory = self.rows['workers'][removed['worker_id']]['status']['gpu_devices'][0]['memory']
-                            memory['allocated'] = max(0, memory['allocated'] - 4)
+                            amount = (removed.get('computed_resource_claim') or {}).get('vram', {}).get('0', 4)
+                            memory['allocated'] = max(0, memory['allocated'] - amount)
                         break
                 row['ready_replicas'] = sum(r['model_id'] == model_id and r['state'] == 'running' for r in rows.values())
             if self.outcome == 'after_commit_timeout':
@@ -103,6 +106,7 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
     def running(self):
         self.rows['models'][1]['ready_replicas'] = 1
         self.rows['model-instances'][1].update(state='running', worker_id=4, gpu_indexes=[0])
+        self.rows['model-instances'][1]['computed_resource_claim'] = {'vram': {'0': 4}}
         self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['allocated'] = 4
 
     def parallel(self, *, maximum=4, limit=2, pressure_mode='disabled'):
@@ -294,7 +298,7 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
             finally:
                 task.cancel(); await asyncio.gather(task, return_exceptions=True)
 
-    async def test_adoption_pause_and_protected_configuration_changes_block_new_writes(self):
+    async def test_explicit_pause_blocks_and_external_image_change_does_not_require_readoption(self):
         self.state.path.unlink()
         self.assertEqual(await self.advance(), 'adoption_required')
         self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 0})
@@ -302,10 +306,97 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.advance(), 'controller_paused')
         self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 0})
         self.state.set_paused(False, pending_guard=self.journal.read)
-        self.rows['models'][1]['replicas'] = 1
         self.rows['models'][1]['image_name'] = 'external-image'
-        self.assertEqual(await self.advance(), 'external_change')
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.writes[0]['image_name'], 'external-image')
+        self.assertFalse(self.state.read()['paused'])
+
+    async def test_config_change_at_satisfied_target_sends_no_native_update(self):
+        self.set_running(2)
+        self.rows['models'][1].update(image_name='externally-updated-image', backend_parameters=['new-option'])
+        self.rows['models'][1]['env'].update(GPUSTACK_MODEL_RAM_CLAIM='64', SERVICE_OPTION='new')
+        self.assertEqual(await self.advance(), 'idle')
         self.assertEqual(self.writes, [])
+        self.assertFalse(self.state.read()['paused'])
+        self.assertEqual(self.state.read()['last_configuration_change']['model_ids'], [1])
+
+    async def test_resource_claim_change_uses_live_value_and_writes_only_the_replica_difference(self):
+        self.rows['models'][1].update(image_name='new-image', backend_parameters=['new-option'])
+        self.rows['models'][1]['env'].update(GPUSTACK_MODEL_VRAM_CLAIM='8', GPUSTACK_MODEL_RAM_CLAIM='32')
+        before = model_settings(deepcopy(self.rows['models'][1]))
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.observer.view['plan']['policy_target'], {1: 1})
+        self.assertEqual(self.observer.view['plan']['vram_claim_bytes'], {1: 8})
+        self.assertEqual({key for key, value in self.writes[0].items() if value != before[key]}, {'replicas'})
+        # No policy file change or readoption is needed for a new native cost.
+        self.set_running(1)
+        self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = '4'
+        self.assertEqual(await self.advance(), 'idle')  # Old 8 still fills the first GPU.
+        self.rows['workers'][5] = worker(5)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual([row['replicas'] for row in self.writes], [1, 2])
+        self.assertEqual(self.writes[-1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'], '4')
+
+    async def test_invalid_resource_claim_blocks_planning_without_pausing_and_recovers_when_fixed(self):
+        self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = 'invalid'
+        self.assertEqual(await self.advance(), 'waiting_for_stable_snapshot')
+        self.assertEqual(json.loads((self.state.directory/'status.json').read_text())['reason'], 'resource_claim_invalid')
+        self.assertFalse(self.state.read()['paused'])
+        self.assertEqual(self.writes, [])
+        self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = '4'
+        self.assertEqual(await self.advance(), 'confirmed')
+
+    async def test_resource_and_image_edits_while_paused_are_used_after_explicit_resume(self):
+        self.state.pause()
+        self.rows['models'][1]['image_name'] = 'edited-while-paused'
+        self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = '8'
+        self.assertEqual(await self.advance(), 'controller_paused')
+        self.assertEqual(self.writes, [])
+        self.state.set_paused(False, pending_guard=self.journal.read)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.observer.view['plan']['policy_target'], {1: 1})
+        self.assertEqual(self.writes[0]['image_name'], 'edited-while-paused')
+        self.assertEqual(self.writes[0]['env']['GPUSTACK_MODEL_VRAM_CLAIM'], '8')
+
+    async def test_configuration_edit_at_final_get_replans_without_rolling_back_the_edit(self):
+        original = self.writer.request
+        edited = False
+
+        async def request(method, path, body=None):
+            nonlocal edited
+            if method == 'GET' and path == '/v2/models/1' and self.journal.read() is not None and not edited:
+                edited = True
+                self.rows['models'][1].update(image_name='changed-during-planning')
+                self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = '8'
+            return await original(method, path, body)
+
+        self.writer.request = request
+        self.assertEqual(await self.advance(), 'deployment_changed_before_dispatch')
+        self.assertEqual(self.writes, []); self.assertIsNone(self.journal.read())
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.writes[0]['image_name'], 'changed-during-planning')
+        self.assertEqual(self.writes[0]['env']['GPUSTACK_MODEL_VRAM_CLAIM'], '8')
+
+    async def test_send_boundary_rejects_any_non_replica_configuration_difference(self):
+        async def bad_write(adapter, action):
+            row = deepcopy(self.rows['models'][1])
+            await adapter.request('PUT', '/v2/models/1',
+                                  {**model_settings(row), 'replicas': action.after, 'image_name': 'unwanted-image'})
+
+        with patch.object(NativeAdapter, 'write', new=bad_write):
+            self.assertEqual(await self.advance(), 'non_replica_update_rejected')
+        self.assertEqual(self.writes, [])
+        self.assertIsNone(self.journal.read())
+        self.assertFalse(self.writer.write_attempted)
+
+    async def test_unknown_write_and_subsequent_config_edit_remains_readonly_conflict(self):
+        self.outcome = 'before_commit_timeout'
+        self.assertEqual(await self.advance(), 'unresolved')
+        original = self.journal.read()
+        self.rows['models'][1]['image_name'] = 'new-image'
+        self.assertEqual(await self.advance(), 'conflict')
+        self.assertEqual(self.journal.read(), original)
+        self.assertEqual(len(self.writes), 1)
 
     async def test_external_reset_to_zero_is_automatically_restored_even_for_identical_old_action(self):
         self.assertEqual(await self.advance(), 'confirmed')
@@ -334,9 +425,11 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.rows['model-instances'] = {
             i: dict(id=i, model_id=1, worker_id=4 if i <= ready else None,
                     gpu_indexes=[0] if i <= ready else None,
+                    computed_resource_claim={'vram': {'0': int(self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'])}} if i <= ready else None,
                     state='running' if i <= ready else 'pending')
             for i in range(1, count+1)}
-        self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['allocated'] = ready * 4
+        claim = int(self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'])
+        self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['allocated'] = ready * claim
 
     async def test_external_over_scale_shrinks_one_at_a_time_to_capacity_not_old_target(self):
         self.set_running(4)

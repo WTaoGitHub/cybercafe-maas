@@ -6,6 +6,7 @@ import json
 import time
 
 from .replica_targets import plan_controlled_capacity
+from .replica_resources import resolve_resources
 from maas_replica_native import NativeAdapter
 from .replica_apply import deployment_binding, model_settings
 from .replica_state import ControlState, atomic_private
@@ -39,6 +40,7 @@ class ReconcileObserve:
             if devices is None:
                 raise ValueError('Incomplete or conflicting resource identity')
             selected = {key: models[key] for key in policy.models}
+            runtime_policy = resolve_resources(policy, list(map(_namespace, selected.values())))
             bindings = {key: deployment_binding(row) for key, row in selected.items()}
             native = NativeAdapter(None, revision=policy.revision, cluster_id=policy.cluster,
                                    owner_id=policy.owner, model_ids=policy.models,
@@ -50,7 +52,8 @@ class ReconcileObserve:
                 'devices': {key: asdict(card) for key, card in devices.items()},
                 'models': {key: [bindings[key], row['replicas']] for key, row in selected.items()},
                 'instances': sorted((row['id'], row['model_id'], row['state'], row.get('worker_id'),
-                                     tuple(row.get('gpu_indexes') or [])) for row in instances.values()
+                                     tuple(row.get('gpu_indexes') or []),
+                                     json.dumps(row.get('computed_resource_claim'), sort_keys=True)) for row in instances.values()
                                     if row['model_id'] in models),
                 'global_targets': sorted((row['id'], row['replicas'], row['ready_replicas'])
                                          for row in models.values()),
@@ -58,7 +61,7 @@ class ReconcileObserve:
             now = self.clock()
             if signature != self.signature:
                 self.signature, self.stable_since = signature, now
-            plan = await asyncio.to_thread(plan_controlled_capacity, policy, devices,
+            plan = await asyncio.to_thread(plan_controlled_capacity, runtime_policy, devices,
                                            list(map(_namespace, models.values())),
                                            list(map(_namespace, instances.values())))
             if policy.pressure_mode == 'disabled':
@@ -82,11 +85,12 @@ class ReconcileObserve:
             if pending:
                 plan['execution_state'] = 'pending_write_read_only'
             self.view = {'devices': devices, 'models': selected, 'models_binding': bindings, 'plan': plan,
+                         'runtime_policy': runtime_policy,
                          'stable': stable, 'read_monotonic': self.clock(),
                          'native_fingerprint': native.fingerprint}
         except Exception as exc:
             self.signature = self.stable_since = None
-            plan = {'state': 'blocked', 'reason': type(exc).__name__, 'writes_enabled': False,
+            plan = {'state': 'blocked', 'reason': getattr(exc, 'code', type(exc).__name__), 'writes_enabled': False,
                     'execution_state': 'observe_blocked', 'policy_schema': 2,
                     'snapshot_complete': False,
                     'observed_at': self.wall_clock()}

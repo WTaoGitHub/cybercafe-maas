@@ -1,10 +1,23 @@
 """v2 authoritative targets; legacy plugin/event planning remains additive."""
+from dataclasses import replace
+from copy import copy
 from maas_replica_planner import plan_capacity
 from maas_replica_policy import solve, summarize
+from .replica_resources import resolve_resources, positive_bytes
 
 
 def plan_controlled_capacity(policy, devices, models, instances):
-    plan = plan_capacity(policy, devices, models, instances,
+    policy = resolve_resources(policy, models)
+    devices = reserve_native_claims(devices, instances)
+    planning_models = []
+    for row in models:
+        if row.id in policy.claims:
+            row = copy(row)
+            row.env = {**row.env, 'GPUSTACK_MODEL_VRAM_CLAIM': str(policy.claims[row.id])}
+        planning_models.append(row)
+    # Canonical numeric text is only for the legacy pure planner comparison;
+    # native model fields and the eventual write payload stay unchanged.
+    plan = plan_capacity(policy, devices, planning_models, instances,
                          parallel=policy.startup.parallel_startup)
     rules, execution = policy.effective(None)
     cards = sorted(devices.values(), key=lambda card: (card.worker_id, card.index))
@@ -38,10 +51,20 @@ def plan_controlled_capacity(policy, devices, models, instances):
             continue  # An absent/non-ready card contributes no usable capacity.
         claim = rules[row.model_id].vram_claim_bytes
         resource = getattr(row, 'computed_resource_claim', None)
-        if resource is not None and (not isinstance(resource, dict)
-                or resource.get('vram') not in ({str(allocation[0]): claim}, {allocation[0]: claim})):
+        if resource is None:
+            if proof == 'managed_claims_reclaimed':
+                proof = 'runtime_claim_unavailable'
+            continue
+        try:
+            vram = resource['vram']
+            if not isinstance(vram, dict) or len(vram) != 1:
+                raise ValueError('Unsupported allocation')
+            old_claim = positive_bytes(vram.get(str(allocation[0]), vram.get(allocation[0])))
+        except (TypeError, KeyError, ValueError):
             proof = 'allocation_unsettled'; break
-        reclaimed[at] += claim
+        if old_claim != claim and proof == 'managed_claims_reclaimed':
+            proof = 'mixed_resource_claims'
+        reclaimed[at] += old_claim
     if any(counts[key] > selected[key].replicas for key in rules):
         proof = 'allocation_unsettled'
     if proof == 'managed_claims_reclaimed':
@@ -55,8 +78,10 @@ def plan_controlled_capacity(policy, devices, models, instances):
     else:
         # Unknown placement cannot justify resource-driven shrink. An explicit
         # policy cap can still correct external over-scaling, subject to health.
-        capacity = {key: min(count, rules[key].max_replicas)
-                    for key, count in plan['current'].items()}
+        # Existing allocations of an old image/spec remain charged natively.
+        # Fresh starts may still use independently proven free capacity at the
+        # NEW claim. Never reprice or repack old instances at the new cost.
+        capacity = {key: min(plan['policy_target'][key], rules[key].max_replicas) for key in rules}
     targets = {}
     for key, count in plan['current'].items():
         desired = min(rules[key].max_replicas, capacity[key])
@@ -68,4 +93,30 @@ def plan_controlled_capacity(policy, devices, models, instances):
     preview = summarize(rules, execution, targets, plan['current'],
                         plan['global_inflight'], plan['cluster_inflight'])
     return {**plan, **preview, 'capacity_target': capacity,
-            'downscale_capacity_proof': proof, 'target_authority': 'policy_and_current_capacity'}
+            'downscale_capacity_proof': proof, 'target_authority': 'policy_and_current_capacity',
+            'resource_claim_source': 'gpustack_model_env', 'vram_claim_bytes': policy.claims}
+
+
+def reserve_native_claims(devices, instances):
+    """Do not treat a delayed worker allocation counter as released memory."""
+    usage = {}
+    for row in instances:
+        claim = getattr(row, 'computed_resource_claim', None)
+        vram = claim.get('vram') if isinstance(claim, dict) else None
+        if not isinstance(vram, dict):
+            continue
+        for index in row.gpu_indexes or []:
+            if type(row.worker_id) is not int or type(index) is not int:
+                continue
+            try:
+                amount = positive_bytes(vram.get(str(index), vram.get(index)))
+            except ValueError:
+                continue
+            key = row.worker_id, index
+            usage[key] = usage.get(key, 0) + amount
+    result = {}
+    for uuid, card in devices.items():
+        allocated = max(card.allocated_vram, usage.get((card.worker_id, card.index), 0))
+        result[uuid] = replace(card, allocated_vram=allocated,
+                               free_vram=min(card.free_vram, max(0, card.total_vram-card.reserved_vram-allocated)))
+    return result

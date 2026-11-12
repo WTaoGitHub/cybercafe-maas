@@ -98,6 +98,28 @@ class ReconcileTest(unittest.IsolatedAsyncioTestCase):
         self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['allocated'] = 4
         self.assertEqual((await self.tick())['state'], 'capacity_stabilizing')
 
+    async def test_new_native_resource_claim_resets_stability_and_changes_next_plan(self):
+        await self.tick(); self.now += 6
+        self.assertEqual((await self.tick())['policy_target'], {1: 2})
+        self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = '8'
+        changed = await self.tick()
+        self.assertEqual(changed['state'], 'capacity_stabilizing')
+        self.assertEqual(changed['policy_target'], {1: 1})
+        self.assertEqual(changed['vram_claim_bytes'], {1: 8})
+        self.now += 6
+        self.assertEqual((await self.tick())['state'], 'observe_ready')
+
+    async def test_instance_claim_change_invalidates_fingerprint_even_when_memory_telemetry_is_unchanged(self):
+        self.rows['models'][1].update(replicas=1, ready_replicas=1)
+        self.rows['model-instances'][1] = dict(id=1, model_id=1, state='running', worker_id=4,
+                                              gpu_indexes=[0], computed_resource_claim={'vram': {'0': 4}})
+        await self.tick(); self.now += 6; await self.tick()
+        before = self.observe.view['native_fingerprint']
+        self.rows['model-instances'][1]['computed_resource_claim']['vram']['0'] = 8
+        changed = await self.tick()
+        self.assertEqual(changed['state'], 'capacity_stabilizing')
+        self.assertNotEqual(self.observe.view['native_fingerprint'], before)
+
     async def test_failed_partial_read_cancels_remaining_requests(self):
         cancelled = []
 
@@ -170,7 +192,7 @@ class StateTest(unittest.TestCase):
         return Action(1, 'snapshot', 1, 1, 1, deployment_binding(row), 0, 1,
                       binding(row, recovery=True, serializer=model_settings))
 
-    def test_replica_count_drift_is_rebased_but_configuration_changes_are_fenced(self):
+    def test_count_and_configuration_drift_refresh_baseline_without_pausing(self):
         self.assertEqual(self.state.check(self.config, self.models), 'adoption_required')
         with self.assertRaises(ValueError):
             self.state.adopt(self.config, self.models, expected_targets={1: 1})
@@ -182,11 +204,17 @@ class StateTest(unittest.TestCase):
         self.assertEqual(self.state.read()['models']['1']['target'], 1)
         self.assertEqual(self.state.read()['last_external_change']['models']['1'], {'before': 0, 'observed': 1})
         self.models[1]['image_name'] = 'changed-image'
-        self.assertEqual(self.state.check(self.config, self.models), 'external_change')
-        self.adopt()
+        self.assertEqual(self.state.check(self.config, self.models), 'adopted')
+        self.state.rebase_targets(self.config, self.models, pending_guard=lambda: None)
+        self.assertEqual(self.state.read()['last_configuration_change']['model_ids'], [1])
         self.state.pause()
         self.assertEqual(self.state.check(self.config, self.models), 'controller_paused')
         self.assertEqual(ControlState(self.root/'state').read()['generation'], 4)
+
+    def test_native_scope_change_still_requires_explicit_authorization(self):
+        self.adopt()
+        self.models[1]['cluster_id'] = 2
+        self.assertEqual(self.state.check(self.config, self.models), 'adoption_scope_changed')
 
     def test_confirm_is_durable_idempotent_and_preserves_cooldown(self):
         self.adopt(); action = self.action(); after = {**self.models[1], 'replicas': 1}

@@ -113,7 +113,8 @@ class NativeAdapter:
                     for i, m in sorted(deployments.items())]
         placement = sorted((row["id"], row["model_id"], row["state"], row["worker_id"],
                             row.get("gpu_indexes"), row.get('deleted_at'),
-                            digest(row.get('distributed_servers'))) for row in instances)
+                            digest(row.get('distributed_servers')),
+                            digest(row.get('computed_resource_claim'))) for row in instances)
         inventory = [(key, sorted(value.items())) for key, value in gpu_inventory.items()]
         fingerprint = digest([sorted(inventory), identity, placement])
         return Snapshot(self.revision, fingerprint, deployments, gpu_inventory=dict(gpu_inventory))

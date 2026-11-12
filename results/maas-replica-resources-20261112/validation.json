@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-12",
+  "status": "LOCAL_CANDIDATE_VALIDATED_NOT_DEPLOYED",
+  "tests": {
+    "passed": 160,
+    "skipped": 3,
+    "existing_deprecation_warnings": 1
+  },
+  "controller_owned_fields": [
+    "replicas"
+  ],
+  "ordinary_configuration_drift": "refresh_current_input_without_pause_or_rollback",
+  "resource_source": "current GPUStack model env.GPUSTACK_MODEL_VRAM_CLAIM",
+  "v2_policy_vram_claim_bytes": "optional_compatibility_hint_not_used_for_planning",
+  "old_instances": "native_claims_and_conservative_worker_allocation_not_repriced",
+  "cpu_ram_joint_capacity_solver_added": false,
+  "write_boundary": "only replicas differs from latest snapshot; native ModelUpdate fields echoed",
+  "native_atomic_compare_and_swap": false,
+  "pause_scope": "global",
+  "unknown_write_protection": "unchanged_read_only_recovery",
+  "remote_access": false,
+  "deployment_changed": false,
+  "native_writes": false,
+  "vm_worker_docker_engine_restarted": false,
+  "issue": "https://github.com/WTaoGitHub/cybercafe-maas/issues/39"
+}

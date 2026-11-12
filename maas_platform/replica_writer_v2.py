@@ -132,6 +132,14 @@ class ReconcileWriter:
 
         async def checked_request(method, path, body=None):
             if method == 'PUT':
+                # The native API requires ModelUpdate settings. Enforce that
+                # every echoed setting is from this fresh snapshot and that
+                # only replicas differs; never apply stored image/env values.
+                expected_row = view['models'].get(action.model_id)
+                if (path != f'/v2/models/{action.model_id}' or not isinstance(body, dict)
+                        or type(body.get('replicas')) is not int or body['replicas'] != action.after
+                        or body != {**model_settings(expected_row), 'replicas': action.after}):
+                    raise WriteNotSent('non_replica_update_rejected')
                 try:
                     unchanged = refresh() is policy
                 except (OSError, ValueError, KeyError, TypeError):
@@ -178,7 +186,7 @@ class ReconcileWriter:
             if (actual is None or actual.replicas != count
                     or actual.binding != view['models_binding'][ident]):
                 return 'deployment_changed_or_waiting'
-        rules, execution = policy.effective(None)
+        rules, execution = view['runtime_policy'].effective(None)
         down = [key for key, count in plan['current'].items() if plan['policy_target'][key] < count]
         action = None
         if plan.get('down_preview_limit'):

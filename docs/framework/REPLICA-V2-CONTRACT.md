@@ -1,6 +1,8 @@
 # R1：新版调节策略契约与只读诊断
 
-> **2026-11-12 最新控制决议（候选已实现，未部署）**：新增运维全局暂停/恢复/查询 API。未暂停的 v2 Apply 根据当前策略和 GPU 容量纠正外部副本数量修改，支持受服务下限保护的逐个缩容；数量变化不再触发旧的人工漂移冻结。镜像等保护配置和未知写入仍阻止动作。接管不隐式解除暂停，恢复须显式 resume；新增模型事件唤醒。141 项调节/E17/插件回归与 18 项客户接口回归通过，3 项环境条件跳过。旧 R4 人工归零停写结果仅作历史证据；新语义尚待独立真实试点和 R5 发布。本轮未连接或修改服务器。[操作与设计](REPLICA-CONTROL-API.md) · [本地验收](../../results/maas-replica-control-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+> **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
+> **2026-11-12 前一版控制记录（普通配置冻结规则已被后续决议替代）**：新增运维全局暂停/恢复/查询 API。未暂停的 v2 Apply 根据当前策略和 GPU 容量纠正外部副本数量修改，支持受服务下限保护的逐个缩容；数量变化不再触发旧的人工漂移冻结。镜像等保护配置和未知写入仍阻止动作。接管不隐式解除暂停，恢复须显式 resume；新增模型事件唤醒。141 项调节/E17/插件回归与 18 项客户接口回归通过，3 项环境条件跳过。旧 R4 人工归零停写结果仅作历史证据；新语义尚待独立真实试点和 R5 发布。本轮未连接或修改服务器。[操作与设计](REPLICA-CONTROL-API.md) · [本地验收](../../results/maas-replica-control-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 R1—R3 代码和 R4 只读前检完成，未发布**：102 项本地回归通过（Mac 缺原生 SDK 的 2 项另在固定 runtime 补验），GPUStack v2.2.3 内 34 项回归全部通过。真实两卡 Ready、原 OCR 仍 1/1；新版 Observe 稳定后计算目标 2，因未接管而保持零写入。已修复原生空 distributed_servers 默认对象导致误冻结的问题。独立实写/启动耗时比较、故障恢复试点及 R5 发布未完成，现网配置与人工目标不变。[实施与证据](../../results/maas-replica-v2-20261112/REPORT.md) · [并行边界](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
@@ -65,4 +67,8 @@ worker ID 来自管理员当前核对的参与规划节点；本命令不连接 
 
 ## 显式暂停与自动数量纠正补充（2026-11-12）
 
-v2 执行契约增加可选 `scale_down_batch_max`，范围 0—32，默认 1；0 禁止自动缩容。当前实际写入仍每次 ±1，不因放宽批量数字一次删除多个副本。全局暂停由持久控制卷保存，通过独立运维 API 或 CLI 设置；不修改策略 revision，不因 adopt 而隐式恢复。计数变化更新观察基线并重算，保护配置变化仍停写。详见[控制说明](REPLICA-CONTROL-API.md)。旧 v1/插件入口不变。
+v2 执行契约增加可选 `scale_down_batch_max`，范围 0—32，默认 1；0 禁止自动缩容。当前实际写入仍每次 ±1，不因放宽批量数字一次删除多个副本。全局暂停由持久控制卷保存，通过独立运维 API 或 CLI 设置；不修改策略 revision，不因 adopt 而隐式恢复。计数和普通配置变化更新观察基线；配置保留最新值，只改副本数。授权范围变化和未知写入仍阻止动作。详见[控制说明](REPLICA-CONTROL-API.md)。旧 v1/插件入口不变。
+
+## 当前原生资源声明优先（同日后续决议）
+
+v2 `models.<id>.vram_claim_bytes` 已改为可选兼容字段，不再决定容量；每轮从 GPUStack 当前模型的 `env.GPUSTACK_MODEL_VRAM_CLAIM` 读取字节字符串。缺失或非法不回退旧策略值、不改变显式暂停状态，修复后重新规划。实例原生实际占用与未来副本声明分别核算，资源规格变化不会被当作已经释放旧资源。详见[当前资源输入方案](REPLICA-RESOURCE-INPUTS.md)。schema v1/插件资源核对规则保持。

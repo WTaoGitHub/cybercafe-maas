@@ -130,13 +130,12 @@ class ControlState:
             return 'adoption_scope_changed'
         for ident in policy.models:
             if ident not in models or models[ident]['id'] != ident:
-                return 'external_change'
-            before, now = data['models'][str(ident)], model_identity(models[ident])
-            # Replica counts are controlled outputs, not a manual ownership
-            # override. Protected configuration changes still require adoption.
-            if (before['binding'] != now['binding']
-                    and before['recovery_binding'] != now['recovery_binding']):
-                return 'external_change'
+                return 'adoption_scope_changed'
+            if (models[ident]['cluster_id'], models[ident]['owner_principal_id']) != (policy.cluster, policy.owner):
+                return 'adoption_scope_changed'
+            # The controller owns replica counts only. Configuration is adopted
+            # as current input, not a desired value to restore or a pause signal.
+            model_identity(models[ident])
         return 'adopted'
 
     def rebase_targets(self, policy, models, *, pending_guard):
@@ -152,6 +151,8 @@ class ControlState:
                                  'observed': row['replicas']}
                        for key, row in models.items()
                        if data['models'][str(key)]['target'] != row['replicas']}
+            configurations = [key for key, row in identities.items()
+                              if data['models'][key]['recovery_binding'] != row['recovery_binding']]
             if changed or any(data['models'][key] != identity for key, identity in identities.items()):
                 now = self.clock()
                 if type(now) not in (int, float) or not math.isfinite(now) or now < data['last_write_at']:
@@ -160,6 +161,8 @@ class ControlState:
                 data['models'] = identities
                 if changed:
                     data['last_external_change'] = {'observed_at': now, 'models': changed}
+                if configurations:
+                    data['last_configuration_change'] = {'observed_at': now, 'model_ids': sorted(map(int, configurations))}
                 # A future, identical 0->1 action must not reuse an older
                 # confirmation receipt after an external reset back to zero.
                 data['last_action'] = None

@@ -18,13 +18,13 @@ class TargetsTest(unittest.TestCase):
         row = SimpleNamespace(**{**model(), 'replicas': current, 'ready_replicas': current})
         if instances is None:
             instances = [SimpleNamespace(id=i, model_id=1, state='running', worker_id=4,
-                                         gpu_indexes=[0]) for i in range(current)]
+                                         gpu_indexes=[0], computed_resource_claim={'vram': {'0': 4}}) for i in range(current)]
         card = Device(4, 0, max(0, total-allocated), total, allocated, 0, (), 'cuda')
         return plan_controlled_capacity(policy, {'gpu': card}, [row, *extra_models], instances)
 
     def test_managed_allocations_are_reclaimed_once_without_reclaiming_unmanaged_bytes(self):
         instances = [SimpleNamespace(id=i, model_id=1, state='running', worker_id=4,
-                                     gpu_indexes=[0]) for i in range(2)]
+                                     gpu_indexes=[0], computed_resource_claim={'vram': {'0': 4}}) for i in range(2)]
         # 8 bytes belong to managed replicas; 4 remain occupied by another service.
         instances.append(SimpleNamespace(id=10, model_id=2, state='running', worker_id=4, gpu_indexes=[0]))
         extra = SimpleNamespace(**{**model(), 'id': 2, 'replicas': 1, 'ready_replicas': 1})
@@ -50,7 +50,7 @@ class TargetsTest(unittest.TestCase):
 
     def test_unknown_allocation_cannot_justify_resource_driven_shrink(self):
         for change in ({'gpu_indexes': [0, 1]}, {'state': 'error'}, {'deleted_at': 'pending'},
-                       {'computed_resource_claim': {'vram': {'0': 8}}}):
+                       {'computed_resource_claim': {'vram': {'0': 'invalid'}}}):
             row = SimpleNamespace(id=1, model_id=1, state='running', worker_id=4, gpu_indexes=[0])
             row.__dict__.update(change)
             plan = self.plan(current=3, total=4, allocated=4, instances=[row])

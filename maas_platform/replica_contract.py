@@ -91,6 +91,13 @@ class ControlPolicy:
                     execution['max_inflight_global'], execution['max_inflight_per_cluster']):
                 raise ValueError('Degraded limit cannot exceed normal startup limits')
             base['schema_version'] = 1
+            # v2 costs are resolved from every fresh native model snapshot.
+            # A placeholder satisfies the legacy pure policy schema; it never
+            # authorizes planning when the live declaration is missing/invalid.
+            for value in base['models'].values():
+                if 'vram_claim_bytes' in value:
+                    integer(value['vram_claim_bytes'], 1)  # Deprecated compatibility hint.
+                value['vram_claim_bytes'] = 1
             base.pop('reconcile')
             base.pop('startup', None)
         else:
