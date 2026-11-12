@@ -1,6 +1,6 @@
 # 资源不足导致 Pending 时的有界缩容与恢复
 
-2026-11-12 · 用户最新需求修订 · **待实现与验证** · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
+2026-11-12 · 用户最新需求修订 · **候选已实现，部署验证进行中** · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 ## 期望行为
 
@@ -74,3 +74,7 @@ T = max(R, L)
 原生源码只读核对：GPUStack v2.2.3 `server/controllers.py::find_scale_down_candidates` 使用状态、offload、placement 组合评分后排序，不能仅凭“有 Pending”就假定任何情况下都只删除 Pending。需要结合版本、实际评分配置和实例状态证明缩容选择，再补独立真实试点。
 
 该项为当前调节器验收缺口，尚未修改执行算法或部署；由 Issue #39 继续跟踪。3 分钟观察门槛、Ready 收敛与保持、非零下限及相应执行保护均待实现完善；现有校验仍允许下限 0，健康保护仍可能阻塞缩容。现有 160 项回归通过不等于本次修订后的场景已经通过。本轮只更新需求、计划和跟踪记录。
+
+## 实现进度（2026-11-12）
+
+180 秒观测、按最新 Ready/非零下限收敛、持久保持、原生 Pending 优先的受限证明和实例保护已接入 v2，新增本地回归已通过。上文“待补”保留为验收矩阵，历史 986dcf4 的缺口不代表最新候选；本轮实际部署/验证尚在执行，不能先标记上线。见[实现与发布说明](REPLICA-PENDING-IMPLEMENTATION.md)。

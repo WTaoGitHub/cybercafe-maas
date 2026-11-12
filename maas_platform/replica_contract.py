@@ -103,6 +103,11 @@ class ControlPolicy:
         else:
             raise ValueError('Unsupported policy schema')
         self.base = Policy(base, allow_apply=allow_apply)
+        if version == 2:
+            for event in (None, *self.base.overrides):
+                rules, _ = self.base.effective(event)
+                if any(min(r.min_replicas, r.auto_scale_down_min_replicas, r.max_replicas) < 1 for r in rules.values()):
+                    raise ValueError('v2 managed replica limits must stay positive')
 
     def __getattr__(self, name):
         return getattr(self.base, name)

@@ -10,6 +10,8 @@ from .replica_resources import resolve_resources
 from maas_replica_native import NativeAdapter
 from .replica_apply import deployment_binding, model_settings
 from .replica_state import ControlState, atomic_private
+from .replica_pending import PendingControl
+from maas_replica_policy import summarize
 
 
 class ReconcileObserve:
@@ -18,6 +20,7 @@ class ReconcileObserve:
         self.normalize, self.pressure = normalize, pressure
         self.clock, self.wall_clock = clock, wall_clock
         self.state = ControlState(state_directory, clock=wall_clock) if state_directory else None
+        self.pending_control = PendingControl(self.state, clock=clock, wall=wall_clock) if self.state else None
         self.signature = self.stable_since = None
         self.view = None
 
@@ -64,6 +67,22 @@ class ReconcileObserve:
             plan = await asyncio.to_thread(plan_controlled_capacity, runtime_policy, devices,
                                            list(map(_namespace, models.values())),
                                            list(map(_namespace, instances.values())))
+            decisions = (self.pending_control.observe(runtime_policy, devices, selected, instances, native,
+                                                      pending=pending) if self.pending_control else {})
+            targets = plan['policy_target'].copy()
+            for ident, decision in decisions.items():
+                if decision.get('qualified'):
+                    targets[ident] = decision['target']
+                elif decision.get('suppress'):
+                    targets[ident] = plan['current'][ident]
+                elif decision.get('suppress_down'):
+                    targets[ident] = max(targets[ident], plan['current'][ident])
+            rules, execution = runtime_policy.effective(None)
+            preview = summarize(rules, execution, targets, plan['current'],
+                                plan['global_inflight'], plan['cluster_inflight'])
+            preview.pop('capacity_target')  # Keep physical capacity separate from a gated target.
+            plan.update(preview)
+            plan['pending_control'] = decisions
             if policy.pressure_mode == 'disabled':
                 diagnostic = {'state': 'disabled', 'reasons': ['configured_disabled']}
             else:
@@ -86,9 +105,12 @@ class ReconcileObserve:
                 plan['execution_state'] = 'pending_write_read_only'
             self.view = {'devices': devices, 'models': selected, 'models_binding': bindings, 'plan': plan,
                          'runtime_policy': runtime_policy,
+                         'instances': instances,
                          'stable': stable, 'read_monotonic': self.clock(),
                          'native_fingerprint': native.fingerprint}
         except Exception as exc:
+            if self.pending_control:
+                self.pending_control.interrupted()
             self.signature = self.stable_since = None
             plan = {'state': 'blocked', 'reason': getattr(exc, 'code', type(exc).__name__), 'writes_enabled': False,
                     'execution_state': 'observe_blocked', 'policy_schema': 2,

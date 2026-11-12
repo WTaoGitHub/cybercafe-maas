@@ -5,3 +5,6 @@ services:
     environment:
       MAAS_REPLICA_ENABLE_APPLY: "1"
       MAAS_REPLICA_STATE_DIR: /var/lib/maas-replica/state
+      MAAS_REPLICA_NATIVE_SCALE_DOWN_PROOF_FILE: /run/maas-native-proof/proof.json
+    volumes:
+      - ${MAAS_REPLICA_NATIVE_PROOF_PATH:?set verified private native proof file}:/run/maas-native-proof/proof.json:ro

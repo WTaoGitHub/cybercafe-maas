@@ -245,7 +245,7 @@ def _log_identity(value):
     if isinstance(value, dict):
         return {key: _log_identity(item) for key, item in value.items()
                 if key not in {'observed_at', 'stable_for_s', 'sample_age_s', 'snapshot_age_s',
-                               'next_check_in_s'}}
+                               'next_check_in_s', 'observed_for_s'}}
     if isinstance(value, list):
         return [_log_identity(item) for item in value]
     return value

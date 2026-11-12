@@ -19,6 +19,8 @@ class Deployment:
     replicas: int
     healthy: tuple[bool, ...]  # One entry per observed, non-deleted instance.
     recovery_binding: str | None = None
+    instance_ids: tuple[int, ...] = ()
+    pending_unassigned_ids: tuple[int, ...] = ()
 
     def __post_init__(self):
         if type(self.replicas) is not int or self.replicas < 0:
@@ -65,7 +67,7 @@ def inflight(deployments, cluster_id, pending=None):
     return global_count, cluster_count
 
 
-def validate_action(snapshot, action, *, floor, batch_max, global_max, cluster_max):
+def validate_action(snapshot, action, *, floor, batch_max, global_max, cluster_max, pending_removal_proven=False):
     if any(type(value) is not int or value < 0
            for value in (floor, batch_max, global_max, cluster_max, action.after)):
         raise ValueError("Invalid execution bounds")
@@ -93,6 +95,16 @@ def validate_action(snapshot, action, *, floor, batch_max, global_max, cluster_m
         raise ValueError("Target violates the automatic scale-down floor")
     healthy = sum(model.healthy)
     worst_case_removals = max(model.replicas, len(model.healthy)) - action.after
+    if pending_removal_proven:
+        healthy_ids = {ident for ident, ok in zip(model.instance_ids, model.healthy) if ok}
+        pending_ids = set(model.pending_unassigned_ids)
+        if (len(model.instance_ids) == len(model.healthy) == model.replicas
+                and len(set(model.instance_ids)) == model.replicas
+                and healthy_ids.isdisjoint(pending_ids)
+                and healthy_ids | pending_ids == set(model.instance_ids)
+                and worst_case_removals <= len(pending_ids) and action.after >= healthy):
+            return
+        raise ValueError('Incomplete native Pending removal proof')
     if healthy and healthy - worst_case_removals < min(healthy, floor):
         raise ValueError("Native scale-down could remove a protected healthy instance")
 
@@ -188,13 +200,14 @@ class Executor:
         async with self.lock:
             return await self._recover()
 
-    async def submit(self, action, *, floor, batch_max, global_max, cluster_max):
+    async def submit(self, action, *, floor, batch_max, global_max, cluster_max, pending_removal_proven=False):
         async with self.lock:
             if self.journal.read() is not None:
                 return "unresolved"
             snapshot = await asyncio.wait_for(self.read(), timeout=self.read_timeout)
             validate_action(snapshot, action, floor=floor, batch_max=batch_max,
-                            global_max=global_max, cluster_max=cluster_max)
+                            global_max=global_max, cluster_max=cluster_max,
+                            pending_removal_proven=pending_removal_proven)
             self.journal.reserve(action)
             try:
                 await asyncio.wait_for(self.write(action), timeout=self.write_timeout)

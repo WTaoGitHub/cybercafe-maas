@@ -26,7 +26,9 @@ class RuntimePolicy:
 
     def effective(self, event):
         rules, execution = self.original.effective(event)
-        return {key: replace(rule, vram_claim_bytes=self.claims[key]) for key, rule in rules.items()}, execution
+        return {key: replace(rule, vram_claim_bytes=self.claims[key],
+                             auto_scale_down_min_replicas=max(1, rule.min_replicas, rule.auto_scale_down_min_replicas))
+                for key, rule in rules.items()}, execution
 
     def __getattr__(self, name):
         return getattr(self.original, name)

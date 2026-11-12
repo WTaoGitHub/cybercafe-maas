@@ -452,7 +452,9 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
 
     async def test_worst_case_healthy_removal_protects_last_service_replica(self):
         self.set_running(3, ready=1)
-        self.assertEqual(await self.advance(), 'scale_down_service_protected')
+        self.assertEqual(await self.advance(), 'idle')  # Unknown Pending cause is not permission to shrink.
+        self.assertEqual(self.observer.view['plan']['pending_control'][1]['state'],
+                         'pending_not_confirmed_resource_shortage')
         self.assertEqual(self.writes, [])
         self.assertIsNone(self.journal.read())
 
