@@ -1,6 +1,6 @@
 # 当前状态与接力入口
 
-> **2026-11-12 Pending 需求最新修订，待实现**：适用于资源不足导致的 Pending，不限定节点骤降或大量 Pending。自动缩容不归零，可降到规则的非零最小值；到下限仍因资源不足 Pending 时保持目标，不追加调节动作，但继续观测并在资源恢复后按规则扩容。现有代码允许下限 0、健康保护也可能阻塞缩容，尚未满足新约束。本轮仅更新描述与记录，未改算法或服务器。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+> **2026-11-12 Pending 收敛规则最新细化，待实现**：确认资源不足导致 Pending 时，先按 `T=max(当前Ready数,规则非零最小值)` 下调指定副本数。A=4/10、B=10/20、C=15/20 在各自下限不高于 Ready 时收敛到 4/4、10/10、15/15；不直接降到最小值。收敛后无变化不追加动作，后续真实变化再按规则响应；低于下限的 Ready 对应保留最小目标，即使仍 Pending。本次只更新设计/验收，代码及服务器未改。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
