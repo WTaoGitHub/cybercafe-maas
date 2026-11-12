@@ -1,6 +1,18 @@
 # 当前状态与接力入口
 
+> **2026-11-12 最新控制决议（候选已实现，未部署）**：新增运维全局暂停/恢复/查询 API。未暂停的 v2 Apply 根据当前策略和 GPU 容量纠正外部副本数量修改，支持受服务下限保护的逐个缩容；数量变化不再触发旧的人工漂移冻结。镜像等保护配置和未知写入仍阻止动作。接管不隐式解除暂停，恢复须显式 resume；新增模型事件唤醒。141 项调节/E17/插件回归与 18 项客户接口回归通过，3 项环境条件跳过。旧 R4 人工归零停写结果仅作历史证据；新语义尚待独立真实试点和 R5 发布。本轮未连接或修改服务器。[操作与设计](REPLICA-CONTROL-API.md) · [本地验收](../../results/maas-replica-control-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 R4 实际 E17 主循环演练通过，原配置已恢复**：实际订阅/写库与 v2 Observe、显式接管、自动 0→1/1→2、暂停跨进程恢复、人工漂移停写、错误接管拒绝均通过。修复 E17 SIGTERM 退出（e447154），候选实际退出码 0；2 次原生 OCR 与 1 个唯一计量的 MaaS 异步任务成功。原 OCR 1/1、试点 0/0、UNKNOWN=0，恢复原 E17 镜像/环境和 v1/revision 7 策略，未正式启用 v2。完整 R4 仍缺隔离通道/在途不确定写入及冷缓存竞争；R5 未发布。[报告](../../results/maas-replica-v2-e17-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-e17-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
+## 暂停接口与自动纠正接力（2026-11-12，最新）
+
+- 用户将语义改为：未暂停时按策略/当前资源自动纠正外部副本修改，包含调高后的受保护缩容；不再通过人工改数量表示接管。此次按全局暂停推进，未承诺逐模型暂停。
+- 已有 HTTP `GET /maas/ops/replica-regulator`、`POST .../pause`、`POST .../resume`，独立 operator Bearer；CLI 增加 resume。API 与 E17 必须共享同一持久 state，journal 对 API 只读。新增挂载覆盖和独立 OpenAPI 已提交，尚未部署。
+- 全局暂停由最终发送锁线性化；忙返回 409 而非虚假成功。暂停成功后不发新动作，已发出的请求只读确认可继续。adopt 保留已有暂停；未知写入存在时不能 resume 或 rebase。
+- v2 目标按现状重算，串行 ±1；保留最小服务副本及最坏情况健康删除保护。不能保证所有过量副本都可立即删除，保护触发需等健康状态恢复或运维处置。新增 models 事件只唤醒，不混入 E17 日报数据及会话。
+- 141 项专项通过、3 条环境跳过，18 项客户 OpenAPI/容器入口回归通过；API 未启用时无需本机加载可选 planner。本轮未连接服务器，因此不能宣称新语义已原生实测或现网生效。
+- 下一步先在独立试点验证新 HTTP 入口共享真实 E17 状态、人工 0→自动恢复、外部超量→保护缩容、暂停跨容器恢复及 models 事件；再继续 R4 余项和 R5 发布。旧“人工归零停写 96.7 秒”仅为旧语义证据，不重复作为新版验收。
+- [设计与操作](REPLICA-CONTROL-API.md)、[管理 OpenAPI](../api/replica-regulator.openapi.yaml)、[验收记录](../../results/maas-replica-control-20261112/REPORT.md)；沿用 [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 ## 实际 E17 演练最新接力（2026-11-12）
 

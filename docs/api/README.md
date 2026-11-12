@@ -1,5 +1,7 @@
 # MaaS 对外 API 文档（当前版本）
 
+运维专用的调节器全局暂停/恢复见[独立 OpenAPI](replica-regulator.openapi.yaml)和[操作说明](../framework/REPLICA-CONTROL-API.md)。此接口采用独立运维凭据，候选已实现但尚未部署，不属于客户推理 API。
+
 > **2026-11-03 代码契约待部署**。OpenAPI 中的 `POST /maas/v1/ocr` 已改为异步提交，可选传入 `Idempotency-Key`，返回 202 或幂等复用 200。下文现网同步说明适用于切换前。详见[消费者接口](CONSUMER-OCR.md)。
 
 > **2026-11-02已部署并完成真实OCR验收**：异步input.image支持artifact_id、image_base64、image_url三选一，兼容旧data_url/url别名。成功图片计量、两个用量查询、同步X-Usage-ID及异步metering已上线；当前PP-OCRv4的tokens实际为null/unavailable，不可据此按token收费。[发布记录](../../results/maas-ocr-release-20261102/REPORT.md)。

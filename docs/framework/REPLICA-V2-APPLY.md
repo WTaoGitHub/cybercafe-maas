@@ -1,5 +1,7 @@
 # R3a：周期对账的串行写入与接管控制
 
+> **2026-11-12 最新控制决议（候选已实现，未部署）**：新增运维全局暂停/恢复/查询 API。未暂停的 v2 Apply 根据当前策略和 GPU 容量纠正外部副本数量修改，支持受服务下限保护的逐个缩容；数量变化不再触发旧的人工漂移冻结。镜像等保护配置和未知写入仍阻止动作。接管不隐式解除暂停，恢复须显式 resume；新增模型事件唤醒。141 项调节/E17/插件回归与 18 项客户接口回归通过，3 项环境条件跳过。旧 R4 人工归零停写结果仅作历史证据；新语义尚待独立真实试点和 R5 发布。本轮未连接或修改服务器。[操作与设计](REPLICA-CONTROL-API.md) · [本地验收](../../results/maas-replica-control-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 R4 实际 E17 主循环演练通过，原配置已恢复**：实际订阅/写库与 v2 Observe、显式接管、自动 0→1/1→2、暂停跨进程恢复、人工漂移停写、错误接管拒绝均通过。修复 E17 SIGTERM 退出（e447154），候选实际退出码 0；2 次原生 OCR 与 1 个唯一计量的 MaaS 异步任务成功。原 OCR 1/1、试点 0/0、UNKNOWN=0，恢复原 E17 镜像/环境和 v1/revision 7 策略，未正式启用 v2。完整 R4 仍缺隔离通道/在途不确定写入及冷缓存竞争；R5 未发布。[报告](../../results/maas-replica-v2-e17-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-e17-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 R4 首轮真实试点通过，常驻未切换**：12 个实验、27 次自动 +1 确认、6 个容量点、7 次原生 OCR 与 2 个唯一计量的 MaaS 异步任务均通过。两卡达到 4 副本全部 Running，串行两轮均值 37.85 秒、上限 2 为 21.61 秒（缩短约 42.9%）；上限 4 实际在途仍峰值 2。原业务保持 1/1，原 E17 及 v1/revision 7 策略不变，试点归零、无待确认写入、UNKNOWN=0，临时 key 已撤销。完整 R4 尚缺常驻事件循环、受控冷热缓存及实际故障恢复；R5 未发布。[报告](../../results/maas-replica-v2-r4-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-r4-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
@@ -10,7 +12,7 @@
 
 新版 MaaS 执行器可以在没有新 GPU 到达事件的情况下，根据 R2 完整稳定快照执行受授权扩容。v2 的 disabled 模式不要求压力 feed；required 保持冻结；advisory 支持持久化缺样宽限、保守冷却和显式首副本快路径。schema v1 继续使用原 writer，不把周期动作伪装成旧事件。
 
-**本节描述默认 serial_pilot 路径，实际每次 +1、全局/集群在途最多 1。** 未开启 startup.parallel_startup 时，提高策略上限不会自动放开并行。显式并行选项见 R3b 文档；实际启动效率仍待 R4。当前现网镜像、配置和人工副本均未改变。
+**默认 serial_pilot 路径下，扩容每次 +1、启动在途最多 1；最新候选同时支持受保护的每次 -1 缩容。** 未开启 startup.parallel_startup 时，提高策略上限不会自动放开启动并行。显式并行选项见 R3b 文档；新暂停/自动纠正语义须补真实试点。当前现网镜像、配置和人工副本均未改变。
 
 ## 执行与恢复
 
@@ -36,18 +38,21 @@ python -m maas_platform.replica_control adopt \
 
 python -m maas_platform.replica_control pause \
   --policy /run/maas-replica/policy.json
+
+python -m maas_platform.replica_control resume \
+  --policy /run/maas-replica/policy.json
 ```
 
-adopt 先读取原生版本及当前模型，要求完整受管范围和显式 expected-target 匹配，检查没有未确认日志，再保存接管基线。它不发送模型 PUT。已有 PendingWrite 时禁止重新 adopt，以免吞掉未知写入。pause 只设置控制代次和暂停状态；发送临界区忙时命令失败，不宣称暂停已完成，需只读核对后重试。恢复接管仍用显式 adopt，无隐式 resume。
+adopt 先读取原生版本及当前模型，要求完整受管范围和显式 expected-target 匹配，检查没有未确认日志，再保存接管基线。它不发送模型 PUT，也不再隐式解除暂停。已有 PendingWrite 时禁止重新 adopt 或 resume，以免吞掉未知写入。pause 只设置控制代次和暂停状态；发送临界区忙时命令失败，不宣称暂停已完成，需只读核对后重试。恢复使用显式 resume，HTTP 等价入口见[控制接口](REPLICA-CONTROL-API.md)。
 
-当前串行试点中，受管范围内任一部署人工漂移会保守冻结整个 scope；这与模型启动慢时允许其他模型继续启动不同，尚不是逐部署人工接管隔离。
+最新候选在未暂停的 Apply 期间自动纠正副本数量漂移，重新按现状规划扩缩容。镜像、资源声明等受保护配置变更仍冻结；本轮暂停范围为整个调节器。旧 R4 中“人工归零后停写”的结果属于旧语义，不作为本轮自动纠正已实测的证据。
 
 ## 后续受控部署顺序
 
 1. 先保存私有备份、核对旧 v1 未确认日志为空；未解决时保持旧版只读对账，不跨版本强行接管。
 2. 用锁定代码的新 MaaS 镜像，原 Observe + Apply 覆盖后追加 [compose.replica-v2-apply.yaml](../../deploy/maas/compose.replica-v2-apply.yaml)，启用 e17-daily profile；不要叠加会关闭 Apply 的 v2-observe 覆盖。保留私有父控制卷，state/ 由 UID 10001 持有、权限 700。
 3. 新版 policy 初始保持 Observe，核对当前预览、实际模型、授权上限及无待确认日志。
-4. 明确采用当前副本，核验 adopt 输出；然后以递增 revision 将 policy 设为 Apply。这将允许模型向当前策略可行目标增长，未重新授权前不对现有人工 1/1 执行此步骤。
+4. 明确采用当前副本，核验 adopt 输出；然后以递增 revision 将 policy 设为 Apply，并在确认允许自动扩缩容后显式 resume。未重新授权前不对现有人工 1/1 执行此步骤。
 5. 先独立试点验证 0→1、模式差异、未知结果隔离和 OCR/Higress/异步计量，再决定现网发布。单元测试的模拟成功不代替真实 GPU 验收。
 
 当前状态文件写权限不正确、损坏或 scope 不匹配均停写。实际写入回调只在明确的本地管理授权开启时构造；配置错误阻塞调节器，不以重启 VM 或清除日志处理。
@@ -62,6 +67,6 @@ R3a 新增 20 项测试通过；与 MaaS 调节器及共享插件合并 pytest �
 
 e447154 起，`python -m maas_platform.gpu_daily_watch` 的服务入口接收 SIGTERM，取消并等待既有采集/订阅/调节任务清理；重复 SIGTERM 不再次取消清理。异常及非停止来源的取消继续传播。无需增加端口、依赖或数据库结构。
 
-运维先暂停调节器并核清 PendingWrite，保留私有控制卷后普通停止 E17 容器，沿用 Compose 的停止宽限。退出码 0 只确认进程完成退出清理，原生模型写入是否成功仍看持久确认日志；不据退出码清除未确认请求。停止 E17 不自动缩容模型。恢复时使用原持久卷和授权范围；观察订阅与新鲜写库，再显式采用当前目标解除暂停。E17 日报采集继续保持单实例数据库锁，不并行启动两个采集进程。
+运维先暂停调节器并核清 PendingWrite，保留私有控制卷后普通停止 E17 容器，沿用 Compose 的停止宽限。退出码 0 只确认进程完成退出清理，原生模型写入是否成功仍看持久确认日志；不据退出码清除未确认请求。停止 E17 不自动缩容模型。恢复时使用原持久卷和授权范围；观察订阅与新鲜写库，核对保护配置和目标后显式 resume。只有保护配置或范围变化才需先 adopt；adopt 不再解除暂停。E17 日报采集继续保持单实例数据库锁，不并行启动两个采集进程。
 
 实际演练和回退已通过，见[E17 报告](../../results/maas-replica-v2-e17-20261112/REPORT.md)。当前原常驻镜像已恢复，尚不含该修复，后续随 R5 发布。真实写入在途时的网络不确定结果仍须独立验证，不因本次暂停状态重启成功而标记完成。

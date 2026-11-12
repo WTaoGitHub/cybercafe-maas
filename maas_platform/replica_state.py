@@ -132,11 +132,39 @@ class ControlState:
             if ident not in models or models[ident]['id'] != ident:
                 return 'external_change'
             before, now = data['models'][str(ident)], model_identity(models[ident])
-            if before['target'] != now['target'] or (
-                    before['binding'] != now['binding']
+            # Replica counts are controlled outputs, not a manual ownership
+            # override. Protected configuration changes still require adoption.
+            if (before['binding'] != now['binding']
                     and before['recovery_binding'] != now['recovery_binding']):
                 return 'external_change'
         return 'adopted'
+
+    def rebase_targets(self, policy, models, *, pending_guard):
+        """Accept observed counts as the next action's before-value, never its goal."""
+        with self.locked():
+            if pending_guard() is not None:
+                raise ValueError('Pending write prevents baseline refresh')
+            if self.check(policy, models) != 'adopted':
+                raise ValueError('Control ownership changed')
+            data = self.read()
+            identities = {str(key): model_identity(row) for key, row in models.items()}
+            changed = {str(key): {'before': data['models'][str(key)]['target'],
+                                 'observed': row['replicas']}
+                       for key, row in models.items()
+                       if data['models'][str(key)]['target'] != row['replicas']}
+            if changed or any(data['models'][key] != identity for key, identity in identities.items()):
+                now = self.clock()
+                if type(now) not in (int, float) or not math.isfinite(now) or now < data['last_write_at']:
+                    raise ValueError('Control clock moved backwards')
+                data['generation'] += 1
+                data['models'] = identities
+                if changed:
+                    data['last_external_change'] = {'observed_at': now, 'models': changed}
+                # A future, identical 0->1 action must not reuse an older
+                # confirmation receipt after an external reset back to zero.
+                data['last_action'] = None
+                atomic_private(self.path, data)
+            return data
 
     def pause(self):
         return self.set_paused(True)

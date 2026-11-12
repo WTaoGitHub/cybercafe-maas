@@ -1,0 +1,25 @@
+{
+  "status": "LOCAL_CANDIDATE_VALIDATED_NOT_DEPLOYED",
+  "date": "2026-11-12",
+  "regulator_e17_plugin_tests": {
+    "passed": 141,
+    "skipped": 3
+  },
+  "customer_openapi_and_container_ingress_tests": {
+    "passed": 18
+  },
+  "pause_scope": "global",
+  "manual_replica_drift": "reconcile_from_policy_and_current_capacity",
+  "scale_down": "serialized_minus_one_with_floor_and_worst_case_healthy_protection",
+  "pending_write": "read_only_recovery_never_retry_or_rebase",
+  "customer_keys_may_control_regulator": false,
+  "remote_access_or_deployment": false,
+  "vm_worker_docker_engine_restarted": false,
+  "live_validation_pending": [
+    "v2 trial HTTP gate shared with actual E17",
+    "external target decrease and increase corrected by native GPUStack",
+    "native deletion convergence and protected-floor behavior",
+    "remaining isolated in-flight uncertainty and controlled cache experiments"
+  ],
+  "issue": "https://github.com/WTaoGitHub/cybercafe-maas/issues/39"
+}

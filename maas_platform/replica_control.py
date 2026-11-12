@@ -29,6 +29,10 @@ async def control(command, writer, policy, expected, *, refresh):
     if command == 'pause':
         writer.state.pause()
     elif command == 'resume':
+        owned = writer.state.read()
+        if (owned is None or (owned['cluster_id'], owned['owner_id']) != (policy.cluster, policy.owner)
+                or set(owned['models']) != {str(key) for key in policy.models}):
+            raise ValueError('Resume requires an adopted policy scope')
         writer.state.set_paused(False, pending_guard=writer.journal.read)
     elif command == 'adopt':
         if writer.journal.read() is not None:

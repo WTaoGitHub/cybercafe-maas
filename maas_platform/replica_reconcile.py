@@ -5,7 +5,7 @@ import hashlib
 import json
 import time
 
-from maas_replica_planner import plan_capacity
+from .replica_targets import plan_controlled_capacity
 from maas_replica_native import NativeAdapter
 from .replica_apply import deployment_binding, model_settings
 from .replica_state import ControlState, atomic_private
@@ -58,10 +58,9 @@ class ReconcileObserve:
             now = self.clock()
             if signature != self.signature:
                 self.signature, self.stable_since = signature, now
-            plan = await asyncio.to_thread(plan_capacity, policy, devices,
+            plan = await asyncio.to_thread(plan_controlled_capacity, policy, devices,
                                            list(map(_namespace, models.values())),
-                                           list(map(_namespace, instances.values())),
-                                           parallel=policy.startup.parallel_startup)
+                                           list(map(_namespace, instances.values())))
             if policy.pressure_mode == 'disabled':
                 diagnostic = {'state': 'disabled', 'reasons': ['configured_disabled']}
             else:

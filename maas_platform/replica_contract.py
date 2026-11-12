@@ -82,10 +82,11 @@ class ControlPolicy:
                 base['pressure'] = pressure
             execution = raw['execution']
             fields(execution, {'mode', 'scale_up_batch_max', 'max_inflight_global',
-                               'max_inflight_per_cluster', 'solve_timeout_s'},
+                               'max_inflight_per_cluster', 'solve_timeout_s', 'scale_down_batch_max'},
                    {'mode', 'scale_up_batch_max', 'max_inflight_global', 'max_inflight_per_cluster'})
             for key in ('scale_up_batch_max', 'max_inflight_global', 'max_inflight_per_cluster'):
                 bounded(execution[key], 1, 32)
+            bounded(execution.get('scale_down_batch_max', 1), 0, 32)
             if self.startup.degraded_inflight_max > min(
                     execution['max_inflight_global'], execution['max_inflight_per_cluster']):
                 raise ValueError('Degraded limit cannot exceed normal startup limits')

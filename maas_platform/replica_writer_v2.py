@@ -6,7 +6,7 @@ import time
 import json
 
 from maas_replica_apply import LocalManagement
-from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent, inflight
+from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent, inflight, validate_action
 from maas_replica_native import NativeAdapter
 from maas_replica_policy import integer
 from maas_replica_pressure import PressureGate
@@ -102,7 +102,7 @@ class ReconcileWriter:
 
         adapter = NativeAdapter(self.request, revision=policy.revision, cluster_id=self.cluster,
                                 owner_id=policy.owner, model_ids=policy.models,
-                                grow_only=True, serializer=model_settings)
+                                grow_only=False, serializer=model_settings)
         if self.journal.read() is not None:
             # Read-only recovery remains possible while paused/Observe; never resubmit.
             if (await self.request('GET', '/version')).get('version') != 'v2.2.3':
@@ -117,13 +117,14 @@ class ReconcileWriter:
         reason = self.state.check(policy, view['models'])
         if reason != 'adopted':
             return reason
-        generation = self.state.read()['generation']
+        generation = self.state.rebase_targets(policy, view['models'],
+                                                pending_guard=self.journal.read)['generation']
         decision = self.pressure_decision(policy, view)
         if decision not in ('allowed', 'pressure_unknown_degraded'):
             return decision
         plan = view['plan']
         global_max, cluster_max = self.startup_limits(policy, plan, decision)
-        if not plan.get('up_preview_limit'):
+        if not plan.get('up_preview_limit') and not plan.get('down_preview_limit'):
             return 'idle'
         version = await self.request('GET', '/version')
         if version.get('version') != 'v2.2.3':
@@ -175,24 +176,56 @@ class ReconcileWriter:
         for ident, count in plan['current'].items():
             actual = snapshot.deployments.get(ident)
             if (actual is None or actual.replicas != count
-                    or actual.binding != view['models_binding'][ident]
-                    or (not plan.get('parallel_safe') and sum(actual.healthy) < count)):
+                    or actual.binding != view['models_binding'][ident]):
                 return 'deployment_changed_or_waiting'
         rules, execution = policy.effective(None)
+        down = [key for key, count in plan['current'].items() if plan['policy_target'][key] < count]
+        action = None
+        if plan.get('down_preview_limit'):
+            # Prefer releasing lower-priority capacity, one native deletion at
+            # a time. An unsafe model must not hide another safe correction.
+            for ident in sorted(down, key=lambda key: (rules[key].priority, key), reverse=True):
+                model = snapshot.deployments[ident]
+                proposed = Action(snapshot.revision, snapshot.fingerprint, ident, model.cluster_id,
+                                  model.owner_id, model.binding, model.replicas, model.replicas - 1,
+                                  recovery_binding=model.recovery_binding)
+                try:
+                    validate_action(snapshot, proposed, floor=rules[ident].auto_scale_down_min_replicas,
+                                    batch_max=1, global_max=global_max, cluster_max=cluster_max)
+                except ValueError:
+                    continue
+                action = proposed; break
         candidates = [key for key, count in plan['current'].items() if plan['policy_target'][key] > count]
-        if not candidates:
-            return 'idle'
-        first = [key for key in candidates if plan['current'][key] < rules[key].min_replicas]
-        ident = min(first or candidates, key=lambda key: (rules[key].priority, key))
-        model = snapshot.deployments[ident]
-        total, local = inflight(snapshot.deployments, self.cluster)
-        if total + 1 > global_max or local + 1 > cluster_max:
-            return 'startup_budget_exhausted'
-        action = Action(snapshot.revision, snapshot.fingerprint, ident, model.cluster_id,
-                        model.owner_id, model.binding, model.replicas, model.replicas + 1,
-                        recovery_binding=model.recovery_binding)
-        # Writes remain serialized +1; confirmed native startups may overlap.
-        executor = Executor(self.journal, adapter.read, adapter.write,
+        if action is None:
+            if not candidates or not plan.get('up_preview_limit'):
+                return 'scale_down_service_protected' if down and plan.get('down_preview_limit') else 'idle'
+            if (not plan.get('parallel_safe') and any(sum(snapshot.deployments[key].healthy) < count
+                                                     for key, count in plan['current'].items())):
+                return 'deployment_changed_or_waiting'
+            first = [key for key in candidates if plan['current'][key] < rules[key].min_replicas]
+            ident = min(first or candidates, key=lambda key: (rules[key].priority, key))
+            model = snapshot.deployments[ident]
+            total, local = inflight(snapshot.deployments, self.cluster)
+            if total + 1 > global_max or local + 1 > cluster_max:
+                return 'startup_budget_exhausted'
+            action = Action(snapshot.revision, snapshot.fingerprint, ident, model.cluster_id,
+                            model.owner_id, model.binding, model.replicas, model.replicas + 1,
+                            recovery_binding=model.recovery_binding)
+        # Writes remain serialized +/-1; downscale waits for native deletion
+        # readback before another write, including after pause or restart.
+        async def dispatch(action):
+            try:
+                return await adapter.write(action)
+            except (ValueError, KeyError, TypeError):
+                # NativeAdapter's final GET may observe another external edit.
+                # A local validation rejection before the PUT is known unsent,
+                # so it must not manufacture an UNKNOWN that freezes control.
+                if not self.write_attempted:
+                    raise WriteNotSent('deployment_changed_before_dispatch') from None
+                raise
+
+        executor = Executor(self.journal, adapter.read, dispatch,
                             on_confirm=confirm, write_timeout=12, read_timeout=12)
-        return await executor.submit(action, floor=0, batch_max=1,
+        return await executor.submit(action, floor=rules[action.model_id].auto_scale_down_min_replicas,
+                                     batch_max=1,
                                      global_max=global_max, cluster_max=cluster_max)

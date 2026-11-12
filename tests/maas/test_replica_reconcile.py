@@ -170,18 +170,23 @@ class StateTest(unittest.TestCase):
         return Action(1, 'snapshot', 1, 1, 1, deployment_binding(row), 0, 1,
                       binding(row, recovery=True, serializer=model_settings))
 
-    def test_explicit_adoption_scope_and_manual_change_fencing(self):
+    def test_replica_count_drift_is_rebased_but_configuration_changes_are_fenced(self):
         self.assertEqual(self.state.check(self.config, self.models), 'adoption_required')
         with self.assertRaises(ValueError):
             self.state.adopt(self.config, self.models, expected_targets={1: 1})
         self.adopt()
         self.assertEqual(self.state.check(self.config, self.models), 'adopted')
         self.models[1]['replicas'] = 1
+        self.assertEqual(self.state.check(self.config, self.models), 'adopted')
+        self.state.rebase_targets(self.config, self.models, pending_guard=lambda: None)
+        self.assertEqual(self.state.read()['models']['1']['target'], 1)
+        self.assertEqual(self.state.read()['last_external_change']['models']['1'], {'before': 0, 'observed': 1})
+        self.models[1]['image_name'] = 'changed-image'
         self.assertEqual(self.state.check(self.config, self.models), 'external_change')
         self.adopt()
         self.state.pause()
         self.assertEqual(self.state.check(self.config, self.models), 'controller_paused')
-        self.assertEqual(ControlState(self.root/'state').read()['generation'], 3)
+        self.assertEqual(ControlState(self.root/'state').read()['generation'], 4)
 
     def test_confirm_is_durable_idempotent_and_preserves_cooldown(self):
         self.adopt(); action = self.action(); after = {**self.models[1], 'replicas': 1}

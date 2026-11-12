@@ -67,7 +67,22 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.writes.append(deepcopy(body))
         if self.outcome == 'before_commit_timeout':
             raise TimeoutError()
+        before = row['replicas']
         row['replicas'] = body['replicas']
+        if row['replicas'] < before:
+            rows = self.rows['model-instances']
+            if self.outcome != 'defer_scale_down':
+                for ident in sorted(rows, reverse=True):
+                    if rows[ident]['model_id'] == model_id:
+                        removed = rows.pop(ident)
+                        if removed.get('worker_id') in self.rows['workers']:
+                            memory = self.rows['workers'][removed['worker_id']]['status']['gpu_devices'][0]['memory']
+                            memory['allocated'] = max(0, memory['allocated'] - 4)
+                        break
+                row['ready_replicas'] = sum(r['model_id'] == model_id and r['state'] == 'running' for r in rows.values())
+            if self.outcome == 'after_commit_timeout':
+                raise TimeoutError()
+            return
         if self.outcome == 'native_filled_fields':
             row.update(categories=['llm'], distributable=False)
         ident = len(self.rows['model-instances']) + 1
@@ -279,7 +294,7 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
             finally:
                 task.cancel(); await asyncio.gather(task, return_exceptions=True)
 
-    async def test_adoption_pause_and_manual_target_changes_block_new_writes(self):
+    async def test_adoption_pause_and_protected_configuration_changes_block_new_writes(self):
         self.state.path.unlink()
         self.assertEqual(await self.advance(), 'adoption_required')
         self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 0})
@@ -288,8 +303,127 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 0})
         self.state.set_paused(False, pending_guard=self.journal.read)
         self.rows['models'][1]['replicas'] = 1
+        self.rows['models'][1]['image_name'] = 'external-image'
         self.assertEqual(await self.advance(), 'external_change')
         self.assertEqual(self.writes, [])
+
+    async def test_external_reset_to_zero_is_automatically_restored_even_for_identical_old_action(self):
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.rows['model-instances'].clear()
+        self.rows['models'][1].update(replicas=0, ready_replicas=0)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual([row['replicas'] for row in self.writes], [1, 1])
+        self.assertEqual(self.state.read()['models']['1']['target'], 1)
+        self.assertIsNone(self.journal.read())
+
+    async def test_paused_external_changes_never_write_until_explicit_resume(self):
+        self.state.pause()
+        self.rows['models'][1]['replicas'] = 5
+        self.assertEqual(await self.advance(), 'controller_paused')
+        self.assertEqual(self.state.read()['models']['1']['target'], 0)
+        self.assertEqual(self.writes, [])
+        self.state.set_paused(False, pending_guard=self.journal.read)
+        # No healthy instances need protecting; converge down even before all
+        # externally requested instances have appeared in the native inventory.
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.writes[0]['replicas'], 4)
+
+    def set_running(self, count, *, ready=None):
+        ready = count if ready is None else ready
+        self.rows['models'][1].update(replicas=count, ready_replicas=ready)
+        self.rows['model-instances'] = {
+            i: dict(id=i, model_id=1, worker_id=4 if i <= ready else None,
+                    gpu_indexes=[0] if i <= ready else None,
+                    state='running' if i <= ready else 'pending')
+            for i in range(1, count+1)}
+        self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['allocated'] = ready * 4
+
+    async def test_external_over_scale_shrinks_one_at_a_time_to_capacity_not_old_target(self):
+        self.set_running(4)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual([row['replicas'] for row in self.writes], [3, 2])
+        self.assertEqual(self.state.read()['models']['1']['target'], 2)
+        self.assertEqual(self.rows['models'][1]['ready_replicas'], 2)
+
+    async def test_over_scale_within_policy_cap_shrinks_when_current_gpu_capacity_is_smaller(self):
+        raw = config(mode='apply'); raw['models']['1']['max_replicas'] = 8
+        raw['reconcile']['stability_s'] = 0
+        self.policy = ControlPolicy(raw, allow_apply=True); self.refresh_value = self.policy
+        self.writer.model_caps[1] = 8
+        self.set_running(3)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.writes[0]['replicas'], 2)
+        self.assertEqual(self.observer.view['plan']['capacity_target'], {1: 2})
+
+    async def test_worst_case_healthy_removal_protects_last_service_replica(self):
+        self.set_running(3, ready=1)
+        self.assertEqual(await self.advance(), 'scale_down_service_protected')
+        self.assertEqual(self.writes, [])
+        self.assertIsNone(self.journal.read())
+
+    async def test_capacity_loss_keeps_minimum_service_target(self):
+        self.set_running(2)
+        self.rows['workers'][4]['state'] = 'not_ready'
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual([row['replicas'] for row in self.writes], [1])
+
+    async def test_downscale_pending_deletion_can_only_recover_readonly_while_paused(self):
+        self.set_running(3); self.outcome = 'defer_scale_down'
+        self.assertEqual(await self.advance(), 'converging')
+        self.state.pause()
+        self.assertEqual(await self.advance(), 'converging')
+        self.assertEqual(len(self.writes), 1)
+        del self.rows['model-instances'][3]
+        self.rows['models'][1]['ready_replicas'] = 2
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(await self.advance(), 'controller_paused')
+        self.assertIsNone(self.journal.read())
+        self.assertEqual(len(self.writes), 1)
+
+    async def test_downscale_timeout_is_never_replayed_or_rebased(self):
+        self.set_running(3); self.outcome = 'before_commit_timeout'
+        self.assertEqual(await self.advance(), 'unresolved')
+        self.rows['models'][1]['replicas'] = 4
+        self.assertEqual(await self.advance(), 'conflict')
+        self.assertEqual(len(self.writes), 1)
+        self.assertEqual(self.state.read()['models']['1']['target'], 3)
+        self.assertIsNotNone(self.journal.read())
+
+    async def test_pause_before_downscale_transport_also_prevents_the_write(self):
+        self.set_running(3); self.pause_on_refresh = True
+        self.assertEqual(await self.advance(), 'control_ownership_changed')
+        self.assertEqual(self.writes, [])
+        self.assertIsNone(self.journal.read())
+
+    async def test_observe_does_not_correct_external_counts(self):
+        self.set_running(3)
+        self.policy = policy('observe', stability=0); self.refresh_value = self.policy
+        self.assertEqual(await self.advance(), 'observe')
+        self.assertEqual(self.writes, [])
+        self.assertEqual(self.state.read()['models']['1']['target'], 0)
+
+    async def test_external_edit_at_final_get_is_known_unsent_not_an_unknown_write(self):
+        original = self.writer.request
+        edited = False
+
+        async def request(method, path, body=None):
+            nonlocal edited
+            if method == 'GET' and path == '/v2/models/1' and self.journal.read() is not None and not edited:
+                edited = True
+                self.rows['models'][1]['replicas'] = 1
+            return await original(method, path, body)
+
+        self.writer.request = request
+        self.assertEqual(await self.advance(), 'deployment_changed_before_dispatch')
+        self.assertEqual(self.writes, [])
+        self.assertFalse(self.writer.write_attempted)
+        self.assertIsNone(self.journal.read())
+        self.set_running(1)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual([row['replicas'] for row in self.writes], [2])
 
     async def test_unknown_response_with_old_target_is_not_retried(self):
         self.outcome = 'before_commit_timeout'
@@ -386,6 +520,12 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.outcome = 'native_filled_fields'
         self.assertEqual(await self.advance(), 'confirmed')
         self.assertEqual(self.state.check(self.policy, self.rows['models']), 'adopted')
+
+    async def test_native_metadata_filled_between_adoption_and_dispatch_refreshes_receipt_baseline(self):
+        self.rows['models'][1].update(categories=['llm'], distributable=False)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.state.read()['models']['1']['target'], 1)
+        self.assertIsNone(self.journal.read())
 
     async def test_operator_adoption_is_explicit_and_never_updates_native_models(self):
         self.state.path.unlink()

@@ -44,6 +44,44 @@ async def native_devices(cluster, workers):
 
 
 async def run(client, listing, signals, policy_file, *, interval=10, scale_up=None, writer_factory=None):
+    model_watch = None
+
+    def enable_model_watch():
+        nonlocal model_watch
+        if model_watch is None and hasattr(client, 'stream'):
+            model_watch = asyncio.create_task(_watch_models(client, signals.changed))
+
+    try:
+        await _run(client, listing, signals, policy_file, interval=interval,
+                   scale_up=scale_up, writer_factory=writer_factory, enable_model_watch=enable_model_watch)
+    finally:
+        if model_watch is not None:
+            model_watch.cancel()
+            await asyncio.gather(model_watch, return_exceptions=True)
+
+
+async def _watch_models(client, changed):
+    """Wake v2 for external count edits; never alters E17 coverage sessions."""
+    delay = 1
+    while True:
+        try:
+            async with client.stream('GET', 'models', params={'watch': 'true'}) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if line.strip():
+                        changed.set()
+                        delay = 1
+            raise ConnectionError('Model watch ended')
+        except Exception:
+            # Native periodic full reads remain authoritative. No cached event
+            # payload may authorize a write or change E17 observation coverage.
+            changed.set()
+            await asyncio.sleep(delay)
+            delay = min(30, delay * 2)
+
+
+async def _run(client, listing, signals, policy_file, *, interval, scale_up, writer_factory,
+               enable_model_watch):
     pressure = PressureGate.from_environment()
     reconcile = None
     writers = {}
@@ -73,6 +111,7 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
                 trusted = event = started = None
                 scope = key
             if getattr(policy, 'schema_version', 1) == 2:
+                enable_model_watch()
                 from .replica_reconcile import ReconcileObserve
                 if reconcile is None:
                     state_directory = os.getenv('MAAS_REPLICA_STATE_DIR')

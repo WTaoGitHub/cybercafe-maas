@@ -1,5 +1,5 @@
 import asyncio
-from dataclasses import replace
+from contextlib import asynccontextmanager
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 
 from maas_platform.replica_apply import deployment_binding
 from maas_platform.replica_control_web import ControlEndpoint, router
-from maas_platform.replica_observe import _control_stamp, _wait
+from maas_platform.replica_observe import _control_stamp, _wait, _watch_models
 from maas_platform.replica_state import ControlState
 from maas_replica_execution import Action, PendingWrite
 from test_replica_contract import config
@@ -102,6 +102,34 @@ class ControlWebTest(unittest.TestCase):
 
 
 class WakeTest(unittest.IsolatedAsyncioTestCase):
+    async def test_model_watch_is_only_a_wakeup_and_cancellation_closes_stream(self):
+        changed = asyncio.Event(); closed = []; received = []
+
+        class Response:
+            def raise_for_status(self):
+                pass
+
+            async def aiter_lines(self):
+                yield '{"type":"UPDATED","data":{"replicas":0}}'
+                await asyncio.Event().wait()
+
+        class Client:
+            @asynccontextmanager
+            async def stream(self, method, path, params):
+                received.append((method, path, params))
+                try:
+                    yield Response()
+                finally:
+                    closed.append(True)
+
+        task = asyncio.create_task(_watch_models(Client(), changed))
+        try:
+            await asyncio.wait_for(changed.wait(), 1)
+        finally:
+            task.cancel(); await asyncio.gather(task, return_exceptions=True)
+        self.assertEqual(received, [('GET', 'models', {'watch': 'true'})])
+        self.assertEqual(closed, [True])
+
     async def test_cross_process_gate_change_wakes_without_native_event(self):
         with TemporaryDirectory() as directory:
             state = ControlState(Path(directory)/'state')

@@ -9,11 +9,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 
-from maas_replica_execution import PendingWrite
-from .replica_contract import ControlPolicyFile
-from .replica_state import ControlState, atomic_private
-
-
 class ControlResponse(BaseModel):
     paused: bool = Field(description='Persistent global pause; survives process recreation.')
     generation: int = Field(description='Control generation; only a changed gate increments it.')
@@ -30,12 +25,17 @@ class ControlResponse(BaseModel):
 
 class ControlEndpoint:
     def __init__(self, policy_path, state_directory, journal_path):
+        # Disabled installations do not import the optional replica planner.
+        from maas_replica_execution import PendingWrite
+        from .replica_contract import ControlPolicyFile
+        from .replica_state import ControlState
         self.policy = ControlPolicyFile(Path(policy_path), allow_apply=True)
         self.state = ControlState(state_directory)
         self.journal = PendingWrite(Path(journal_path))
         self.lock = threading.Lock()
 
     def operate(self, command):
+        from .replica_state import atomic_private
         with self.lock, self.state.locked():
             policy = self.policy.refresh()
             if policy.schema_version != 2:
