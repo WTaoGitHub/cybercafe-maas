@@ -1,0 +1,14 @@
+# Append to the v2 Apply deployment. The API shares only durable control state,
+# a read-only policy/journal and a distinct operator key, never a native admin key.
+services:
+  api:
+    environment:
+      MAAS_REPLICA_CONTROL_KEY_FILE: /run/replica-operator/key
+      MAAS_REPLICA_CONTROL_POLICY_PATH: /run/replica-policy/policy.json
+      MAAS_REPLICA_CONTROL_STATE_DIR: /var/lib/replica-control
+      MAAS_REPLICA_CONTROL_JOURNAL_PATH: /run/replica-journal/write.json
+    volumes:
+      - ${MAAS_REPLICA_CONTROL_KEY_PATH:?set private operator key file}:/run/replica-operator/key:ro
+      - ${MAAS_REPLICA_OBSERVE_DIR:?set private policy directory}:/run/replica-policy:ro
+      - ${MAAS_REPLICA_JOURNAL_DIR:?set private journal directory}:/run/replica-journal:ro
+      - ${MAAS_REPLICA_JOURNAL_DIR:?set same journal directory}/state:/var/lib/replica-control

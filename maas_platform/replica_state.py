@@ -113,7 +113,7 @@ class ControlState:
             before = self.read()
             data = {'version': 1, 'generation': before['generation'] + 1 if before else 1,
                     'cluster_id': policy.cluster, 'owner_id': policy.owner,
-                    'models': identities, 'paused': False,
+                    'models': identities, 'paused': before['paused'] if before else False,
                     'last_write_at': before['last_write_at'] if before else 0,
                     'last_action': None}
             atomic_private(self.path, data)
@@ -139,12 +139,22 @@ class ControlState:
         return 'adopted'
 
     def pause(self):
+        return self.set_paused(True)
+
+    def set_paused(self, paused, *, pending_guard=None):
+        """Shares the final dispatch lock; never acknowledges an in-flight pause."""
+        if type(paused) is not bool:
+            raise ValueError('Pause must be boolean')
         with self.locked():
             data = self.read()
             if data is None:
                 raise ValueError('No adopted scope')
-            data['generation'] += 1; data['paused'] = True
-            atomic_private(self.path, data)
+            if not paused and pending_guard is not None and pending_guard():
+                raise ValueError('Pending write prevents resume')
+            if data['paused'] != paused:
+                data['generation'] += 1; data['paused'] = paused
+                atomic_private(self.path, data)
+            return data
 
     def pressure_unknown_since(self, active):
         with self.locked():

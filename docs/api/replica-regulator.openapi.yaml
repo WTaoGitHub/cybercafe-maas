@@ -1,0 +1,170 @@
+openapi: 3.1.0
+info:
+  title: MaaS replica regulator administration
+  description: Operator-only global pause/resume. Separate credentials from customer
+    inference and read-only E17 reports. Endpoints are disabled unless explicitly
+    configured. All operations have no request body.
+  version: 1.0.0
+paths:
+  /maas/ops/replica-regulator:
+    get:
+      tags:
+      - Replica regulator administration
+      summary: Read the persistent global control gate
+      description: Read pause state, managed scope and unresolved-write presence.
+        Does not query GPUStack.
+      operationId: status_maas_ops_replica_regulator_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlResponse'
+        '401':
+          description: Missing or invalid operator Bearer key
+        '404':
+          description: Control API is not configured
+        '409':
+          description: Control busy, pending write, missing adoption, wrong scope,
+            or non-v2 policy; see detail.code
+        '503':
+          description: Private control/authentication state is unavailable
+      security:
+      - ReplicaOperatorBearer: []
+  /maas/ops/replica-regulator/pause:
+    post:
+      tags:
+      - Replica regulator administration
+      summary: Pause automatic replica adjustments
+      description: 'Persist a global pause. After success no new scale request may
+        be dispatched.
+
+
+        Requests sent before pause may finish; their read-only confirmation remains
+        enabled.
+
+        A busy response does not acknowledge a pause. Repeating a successful pause
+        is safe.'
+      operationId: pause_maas_ops_replica_regulator_pause_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlResponse'
+        '401':
+          description: Missing or invalid operator Bearer key
+        '404':
+          description: Control API is not configured
+        '409':
+          description: Control busy, pending write, missing adoption, wrong scope,
+            or non-v2 policy; see detail.code
+        '503':
+          description: Private control/authentication state is unavailable
+      security:
+      - ReplicaOperatorBearer: []
+  /maas/ops/replica-regulator/resume:
+    post:
+      tags:
+      - Replica regulator administration
+      summary: Resume automatic replica adjustments
+      description: 'Clear the global pause without modifying native replica counts.
+
+
+        An unresolved write blocks resume. Observe mode and all writer safety checks
+        still apply.
+
+        Repeating a successful resume is safe. No request body is needed.'
+      operationId: resume_maas_ops_replica_regulator_resume_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlResponse'
+        '401':
+          description: Missing or invalid operator Bearer key
+        '404':
+          description: Control API is not configured
+        '409':
+          description: Control busy, pending write, missing adoption, wrong scope,
+            or non-v2 policy; see detail.code
+        '503':
+          description: Private control/authentication state is unavailable
+      security:
+      - ReplicaOperatorBearer: []
+components:
+  schemas:
+    ControlResponse:
+      properties:
+        paused:
+          type: boolean
+          title: Paused
+          description: Persistent global pause; survives process recreation.
+        generation:
+          type: integer
+          title: Generation
+          description: Control generation; only a changed gate increments it.
+        cluster_id:
+          type: integer
+          title: Cluster Id
+          description: GPUStack cluster ID from the current policy.
+        model_ids:
+          items:
+            type: integer
+          type: array
+          title: Model Ids
+          description: GPUStack deployment IDs in the current policy.
+        policy_mode:
+          type: string
+          title: Policy Mode
+          description: observe or apply; resume does not change policy mode.
+        pending_write:
+          type: boolean
+          title: Pending Write
+          description: A previously dispatched native write still requires read-only
+            confirmation.
+        state_updated:
+          type: boolean
+          title: State Updated
+          description: Whether this operation changed the persistent pause gate.
+        native_models_updated:
+          type: boolean
+          title: Native Models Updated
+          description: Always false; the HTTP operation itself never changes native
+            replicas.
+        scope:
+          type: string
+          title: Scope
+          description: Always global in this release.
+        pause_gate_open:
+          type: boolean
+          title: Pause Gate Open
+          description: Inverse of paused; other reconciliation checks can still block
+            dispatch.
+        reconcile_checks_required:
+          type: boolean
+          title: Reconcile Checks Required
+          description: Always true; fresh policy, capacity and write checks remain
+            mandatory.
+      type: object
+      required:
+      - paused
+      - generation
+      - cluster_id
+      - model_ids
+      - policy_mode
+      - pending_write
+      - state_updated
+      - native_models_updated
+      - scope
+      - pause_gate_open
+      - reconcile_checks_required
+      title: ControlResponse
+  securitySchemes:
+    ReplicaOperatorBearer:
+      type: http
+      scheme: bearer

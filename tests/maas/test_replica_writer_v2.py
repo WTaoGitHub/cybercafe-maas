@@ -286,6 +286,7 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.state.pause()
         self.assertEqual(await self.advance(), 'controller_paused')
         self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 0})
+        self.state.set_paused(False, pending_guard=self.journal.read)
         self.rows['models'][1]['replicas'] = 1
         self.assertEqual(await self.advance(), 'external_change')
         self.assertEqual(self.writes, [])

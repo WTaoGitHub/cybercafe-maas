@@ -17,6 +17,7 @@ from .consumer_ocr import ConsumerOCRRequest
 from .metering import UsageType, select_usage
 from .gpu_time_web import router as gpu_time_router
 from .gpu_daily import router as gpu_daily_router
+from .replica_control_web import router as replica_control_router
 
 
 def create_app(settings=None, auth=None):
@@ -28,6 +29,7 @@ def create_app(settings=None, auth=None):
     app = FastAPI(title='MaaS persistent tasks', version='0.1.0', lifespan=lifespan)
     app.include_router(gpu_time_router(service.db))
     app.include_router(gpu_daily_router(service.db))
+    app.include_router(replica_control_router(), include_in_schema=False)
     app.state.service = service
     app.state.sync_ingress=SyncIngress(service)
     app.add_middleware(JsonBodyLimit,sync_limit=settings.max_input_bytes*2,task_limit=max(65536,settings.max_input_bytes*2))

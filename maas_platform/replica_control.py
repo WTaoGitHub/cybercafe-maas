@@ -28,6 +28,8 @@ async def control(command, writer, policy, expected, *, refresh):
         raise ValueError('Targets are only meaningful for adoption')
     if command == 'pause':
         writer.state.pause()
+    elif command == 'resume':
+        writer.state.set_paused(False, pending_guard=writer.journal.read)
     elif command == 'adopt':
         if writer.journal.read() is not None:
             raise ValueError('Resolve the pending write before adoption')
@@ -53,7 +55,7 @@ async def control(command, writer, policy, expected, *, refresh):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('status', 'adopt', 'pause'))
+    parser.add_argument('command', choices=('status', 'adopt', 'pause', 'resume'))
     parser.add_argument('--policy', type=Path, required=True)
     parser.add_argument('--expected-target', action='append', default=[])
     args = parser.parse_args()

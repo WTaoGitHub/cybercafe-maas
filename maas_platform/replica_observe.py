@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import os
+from pathlib import Path
 from types import SimpleNamespace
 from time import monotonic
 
@@ -49,6 +50,8 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
     trusted = scope = session = event = started = last = None
     while True:
         wait_interval = interval
+        schema = 1
+        before_control = _control_stamp(policy_file, reconcile)
         signals.changed.clear()
         current_session = signals.session
         if session != current_session:
@@ -159,11 +162,43 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
         if comparison != last:
             LOG.info('MaaS replica observe %s', plan)
             last = comparison
+        await _wait(signals.changed, wait_interval, policy_file, reconcile,
+                    before_control if schema == 2 else None)
+        await asyncio.sleep(1)
+
+
+def _control_stamp(policy_file, reconcile):
+    paths = [getattr(policy_file, 'path', None)]
+    if reconcile is not None and reconcile.state is not None:
+        paths.append(reconcile.state.path)
+    result = []
+    for path in paths:
+        if path is None:
+            continue
         try:
-            await asyncio.wait_for(signals.changed.wait(), timeout=wait_interval)
+            value = Path(path).stat()
+            result.append((value.st_ino, value.st_mtime_ns, value.st_size))
+        except OSError:
+            result.append(None)
+    return tuple(result)
+
+
+async def _wait(changed, timeout, policy_file, reconcile, control_stamp):
+    """Cheap local file checks wake cross-container pause/resume within a second.
+
+    They do not poll GPUStack more frequently when the controls are unchanged.
+    """
+    deadline = monotonic() + timeout
+    while not changed.is_set():
+        if control_stamp is not None and _control_stamp(policy_file, reconcile) != control_stamp:
+            return
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            return
+        try:
+            await asyncio.wait_for(changed.wait(), timeout=min(1, remaining))
         except TimeoutError:
             pass
-        await asyncio.sleep(1)
 
 
 def _log_identity(value):
