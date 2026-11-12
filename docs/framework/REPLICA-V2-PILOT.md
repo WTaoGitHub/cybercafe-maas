@@ -1,5 +1,7 @@
 # R4 独立试点操作与边界
 
+> **2026-11-12 R4 实际 E17 主循环演练通过，原配置已恢复**：实际订阅/写库与 v2 Observe、显式接管、自动 0→1/1→2、暂停跨进程恢复、人工漂移停写、错误接管拒绝均通过。修复 E17 SIGTERM 退出（e447154），候选实际退出码 0；2 次原生 OCR 与 1 个唯一计量的 MaaS 异步任务成功。原 OCR 1/1、试点 0/0、UNKNOWN=0，恢复原 E17 镜像/环境和 v1/revision 7 策略，未正式启用 v2。完整 R4 仍缺隔离通道/在途不确定写入及冷缓存竞争；R5 未发布。[报告](../../results/maas-replica-v2-e17-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-e17-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 2026-11-12 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 试点使用 `maas_platform.replica_trial`，只对已经明确准备为 0/0 且无实例的独立部署执行。工具不创建/删除模型、不缩容，不调整原部署、不启动 E17 日报进程，不访问 worker SSH。只有原生管理 API 读取和对试点部署的单步 +1 更新。

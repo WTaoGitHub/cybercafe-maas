@@ -1,0 +1,152 @@
+{
+  "verified": true,
+  "automatic_confirmations": [
+    {
+      "before": 0,
+      "after": 1,
+      "observed_at": 1794472410.0796573,
+      "subscription_state": "connected"
+    },
+    {
+      "before": 1,
+      "after": 2,
+      "observed_at": 1794473102.6364665,
+      "subscription_state": "connected"
+    }
+  ],
+  "persisted_observation_during_drill": true,
+  "adopt_targets": [
+    0,
+    1,
+    0
+  ],
+  "wrong_adoption_rejected": true,
+  "pause_survived_unfixed_restart": {
+    "paused_survived": true,
+    "ownership_unchanged": true,
+    "target_unchanged": 1,
+    "native_instance_ids_unchanged": true,
+    "subscription_reconnected": true,
+    "new_e17_session_persisted": true,
+    "stop_exit_code": 137,
+    "elapsed_s": 15.621563273016363,
+    "at": 1794472670.4768004
+  },
+  "graceful_restart": {
+    "paused_survived": true,
+    "ownership_unchanged": true,
+    "target_unchanged": 1,
+    "native_instance_ids_unchanged": true,
+    "subscription_reconnected": true,
+    "new_e17_session_persisted": true,
+    "stop_exit_code": 0,
+    "elapsed_s": 5.617487028997857,
+    "at": 1794473030.394741
+  },
+  "manual_drift": {
+    "held_s": 96.71464228630066,
+    "current_target": 0,
+    "owned_target": 2,
+    "policy_target": 2,
+    "automatic_restore": false,
+    "at": 1794473439.5419466
+  },
+  "restore": {
+    "exact_original_container_config_restored": true,
+    "image_unchanged": true,
+    "original_policy_unchanged": true,
+    "candidate_stopped_exit_code": 0,
+    "original_ocr": "1/1",
+    "pilot": "0/0",
+    "unknown_tasks": 0,
+    "fresh_e17_observations": true,
+    "new_observation_session": true,
+    "elapsed_s": 1.6591070319991559,
+    "at": 1794473595.4084105
+  },
+  "final_query": {
+    "daily_report_http": 200,
+    "daily_report_matches_db": true,
+    "daily_record_count": 7,
+    "daily_coverage_present": true,
+    "api_health_http": 200,
+    "unknown_tasks": 0,
+    "exercise_window_s": 1641,
+    "exercise_covered_s": 1566,
+    "exercise_uncovered_s": 75,
+    "session_boundaries": [
+      {
+        "seconds": 12,
+        "session_changed": true
+      },
+      {
+        "seconds": 9,
+        "session_changed": true
+      },
+      {
+        "seconds": 12,
+        "session_changed": true
+      },
+      {
+        "seconds": 18,
+        "session_changed": true
+      },
+      {
+        "seconds": 11,
+        "session_changed": true
+      }
+    ],
+    "distinct_sessions": 6,
+    "temporary_key_revoked": true
+  },
+  "native_probes": 2,
+  "async_successes": 1,
+  "unique_async_attempts": 1,
+  "pending_writes": 0,
+  "candidate_final_mode": "observe",
+  "candidate_final_paused": true,
+  "candidate_final_target": 0,
+  "original_target": 1,
+  "original_ready": 1,
+  "original_policy_schema": 1,
+  "original_policy_revision": 7,
+  "new_feature_source_commit": "e447154",
+  "remaining": [
+    "Isolated management-channel API/network failure and in-flight uncertain-write recovery",
+    "Controlled cold-cache and shared download contention evidence",
+    "R5 conservative production v2 takeover, full release configuration and current backup"
+  ],
+  "before_backup": {
+    "sha256": "8a8442f40c7f3a6b72ef6c524104f609e5071e2d4e63e79c165ceb8f64fdbfcc",
+    "bytes": 295215,
+    "database_dump_list_checks": 2,
+    "copied_to_mac": true,
+    "headers_checked_on_mac": true,
+    "actual_database_restore_executed": false
+  },
+  "archive": {
+    "sha256": "481681c166e010b82925a6bc34f6ba70460d19cd5af4398ebd0f5bf9dc5ed194",
+    "bytes": 360937,
+    "copied_to_mac": true,
+    "verified_on_mac": true,
+    "public": false
+  },
+  "recorded_at": "2026-11-12T17:06:34.210494+08:00",
+  "stage": "R4 persistent E17 integration and ownership/restart drill; R5 not deployed",
+  "local_regression": {
+    "passed": 114,
+    "skipped": 3,
+    "skip_reason": "Pinned GPUStack SDK and isolated test database conditions absent locally"
+  },
+  "first_policy_apply_to_confirm_s": 12.34087610244751,
+  "initial_observe_switch_elapsed_s": 40.12912321090698,
+  "exercise_coverage_percent": 95.42961608775137,
+  "signal_fix_runtime_sha256": "d1412801c759f116fd1837e721d763abfc5f016aa818139563ab2d67bc6fe669",
+  "production_v2_active": false,
+  "production_signal_fix_active": false,
+  "scope": [
+    "Temporary replacement of E17 collector/regulator only",
+    "Independent model scope only; original OCR target remains 1",
+    "API/executor/GPUStack server/worker/VM/Docker engine not restarted"
+  ]
+}
