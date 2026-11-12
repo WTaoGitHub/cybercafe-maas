@@ -1,6 +1,6 @@
 # 统一模型服务路线图 v0.2
 
-> **2026-11-12 调节器待补闭环细化**：资源不足 Pending 时，指定副本数先收敛到 Ready 与规则非零最小值的较大者；完成后保持，真实变化后再按规则响应。不是直接降至最小值，也不要求下限目标全部 Ready；公式、保持状态和安全缩容执行仍待实现验证。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+> **2026-11-12 调节器待补闭环细化**：资源不足 Pending 连续观察 3 分钟（180 秒）后，指定副本数收敛到 Ready 与规则非零最小值的较大者；完成后保持，真实变化后再按规则响应。不是直接降至最小值，也不要求下限目标全部 Ready；公式、保持状态和安全缩容执行仍待实现验证。 条件消失或有效观测中断重新计时；同轮逐步缩容不重复等待 3 分钟。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
