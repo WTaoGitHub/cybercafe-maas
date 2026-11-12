@@ -1,5 +1,7 @@
 # 统一模型服务路线图 v0.2
 
+> **2026-11-12 规模调节器主线调整（待实施）**：针对新注册 worker 缺少压力覆盖、事件过期后不再扩容的问题，优先完成“持续对账 + 可选压力节流 + 强制预算/授权保护”。R1 契约诊断 → R2 对账接管 → R3 压力解耦 → R4 独立试点 → R5 受控发布；千节点容量和可选指标适配另行验证。本轮只完成设计，不修改现网。[方案](REPLICA-RECONCILIATION-IMPROVEMENT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-02当前已发布ocr-metering-r2**：规范字段image_base64/image_url、旧别名兼容、异步远程URL及E16两个计量查询均已完成真实验收。4异步+3同步成功，7条唯一收据；当前tokens实际null/unavailable，不能按tokens实际收费。generation488、监控健康、UNKNOWN=0，8副本profile保持，无VM/worker/Docker引擎重启。OpenAPI已内嵌真实脱敏响应；以下待部署状态为历史。[发布报告](../../results/maas-ocr-release-20261102/REPORT.md)。
 
 

@@ -1,5 +1,7 @@
 # 后续增强计划
 
+> **2026-11-12 调节器改进（沿用 Issue #39，设计待实现）**：压力采样名单与动态 worker 脱节已造成实际扩容停滞，优先实现周期对账、事件过期后重新规划、持久接管/人工改动保护、advisory 缺样保守串行模式及结构化阻塞原因。旧 schema 保持 required 语义，动态指标来源后续优化，不新建重复调节器或 SSH 门禁。[改进方案、阶段与验收](REPLICA-RECONCILIATION-IMPROVEMENT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-02当前已发布ocr-metering-r2**：规范字段image_base64/image_url、旧别名兼容、异步远程URL及E16两个计量查询均已完成真实验收。4异步+3同步成功，7条唯一收据；当前tokens实际null/unavailable，不能按tokens实际收费。generation488、监控健康、UNKNOWN=0，8副本profile保持，无VM/worker/Docker引擎重启。OpenAPI已内嵌真实脱敏响应；以下待部署状态为历史。[发布报告](../../results/maas-ocr-release-20261102/REPORT.md)。
 
 
