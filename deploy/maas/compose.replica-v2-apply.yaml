@@ -1,0 +1,7 @@
+# R3a: append after the original Observe + Apply overlays, not v2-observe.
+# Policy must initially remain Observe; explicit adoption is still required.
+services:
+  e17-daily:
+    environment:
+      MAAS_REPLICA_ENABLE_APPLY: "1"
+      MAAS_REPLICA_STATE_DIR: /var/lib/maas-replica/state

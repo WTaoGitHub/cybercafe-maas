@@ -185,20 +185,24 @@ async def run():
                 from .replica_contract import ControlPolicyFile as PolicyFile
                 from .replica_observe import run as preview_replicas
 
-                scale_up = None
-                if os.getenv('MAAS_REPLICA_ENABLE_APPLY') == '1':
+                enabled = os.getenv('MAAS_REPLICA_ENABLE_APPLY') == '1'
+                factory = None
+                if enabled:
                     from .replica_apply import from_environment
-                    scale_up = from_environment()
-                    if scale_up is None:
-                        raise ValueError('Replica Apply authorization is missing')
-                    if scale_up.request.url != os.environ['MAAS_GPUSTACK_URL'].rstrip('/'):
-                        raise ValueError('Replica observations and management must use the same GPUStack endpoint')
+
+                    def factory(policy):
+                        writer = from_environment(policy=policy)
+                        if writer is None:
+                            raise ValueError('Replica Apply authorization is missing')
+                        if writer.request.url != os.environ['MAAS_GPUSTACK_URL'].rstrip('/'):
+                            raise ValueError('Replica observations and management endpoints differ')
+                        return writer
                 logging.basicConfig(level=logging.WARNING)
                 logging.getLogger(preview_replicas.__module__).setLevel(logging.INFO)
                 signals = SimpleNamespace(session=None, changed=asyncio.Event())
                 preview = asyncio.create_task(preview_replicas(
-                    client, listing, signals, PolicyFile(Path(policy_path), allow_apply=scale_up is not None),
-                    scale_up=scale_up
+                    client, listing, signals, PolicyFile(Path(policy_path), allow_apply=enabled),
+                    writer_factory=factory
                 ))
             task = asyncio.create_task(observe(db, client, catalog, signals))
             sealed_through = None

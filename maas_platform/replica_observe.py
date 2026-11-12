@@ -42,9 +42,10 @@ async def native_devices(cluster, workers):
     return (await snapshot_devices((cluster,), normalized, allocated))[cluster]
 
 
-async def run(client, listing, signals, policy_file, *, interval=10, scale_up=None):
+async def run(client, listing, signals, policy_file, *, interval=10, scale_up=None, writer_factory=None):
     pressure = PressureGate.from_environment()
     reconcile = None
+    writers = {}
     trusted = scope = session = event = started = last = None
     while True:
         wait_interval = interval
@@ -55,6 +56,12 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
             session = current_session
         try:
             policy = policy_file.refresh()
+            writer = scale_up
+            schema = getattr(policy, 'schema_version', 1)
+            if writer_factory is not None:
+                if schema not in writers:
+                    writers[schema] = writer_factory(policy)
+                writer = writers[schema]
             mode = policy.execution.get('mode', 'observe')
             key = (getattr(policy, 'schema_version', 1), policy.cluster, policy.owner, mode)
             if key != scope:
@@ -63,12 +70,25 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
             if getattr(policy, 'schema_version', 1) == 2:
                 from .replica_reconcile import ReconcileObserve
                 if reconcile is None:
+                    state_directory = os.getenv('MAAS_REPLICA_STATE_DIR')
+                    if state_directory is None and getattr(writer, 'state', None) is not None:
+                        state_directory = writer.state.directory
                     reconcile = ReconcileObserve(native_devices, pressure,
-                                                 state_directory=os.getenv('MAAS_REPLICA_STATE_DIR'))
+                                                 state_directory=state_directory)
                 plan = await reconcile.tick(client, listing, policy, subscribed=current_session is not None,
-                                            pending_journal=getattr(scale_up, 'journal', None))
+                                            pending_journal=getattr(writer, 'journal', None))
                 wait_interval = policy.reconcile.interval_s
-                # R2 is Observe only. Never pass v2 into the arrival-only writer.
+                if writer is not None and hasattr(writer, 'reconcile'):
+                    plan['execution_state'] = await writer.reconcile(policy, reconcile, refresh=policy_file.refresh)
+                    plan.pop('executable_preview_limit', None)
+                    plan.update(effective_startup_limit=1, execution_profile='serial_pilot',
+                                write_attempted=writer.write_attempted,
+                                writes_enabled=(mode == 'apply' and plan.get('ownership') == 'adopted'
+                                                and writer.authorized(policy) is None))
+                    if reconcile.state:
+                        from .replica_state import atomic_private
+                        atomic_private(reconcile.state.directory/'status.json', plan)
+                # Never pass v2 into the arrival-only writer.
             elif current_session is None:
                 raise ConnectionError('waiting_for_subscription')
             else:
@@ -104,7 +124,7 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
                             pressure_up_preview_limit=plan.get('up_preview_limit', 0) if state == 'open' else 0)
                 if signals.session != current_session:
                     raise ConnectionError('subscription_changed')
-                if scale_up is not None:
+                if writer is not None:
                     from .replica_apply import deployment_binding
 
                     def arrival_valid():
@@ -114,7 +134,7 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
 
                     bindings = ({ident: deployment_binding(models[ident]) for ident in policy.models}
                                 if mode == 'apply' and plan.get('up_preview_limit') else {})
-                    plan['execution_state'] = await scale_up.advance(
+                    plan['execution_state'] = await writer.advance(
                         policy, event, devices, plan, refresh=policy_file.refresh,
                         bindings=bindings, arrival_valid=arrival_valid,
                     )
@@ -122,6 +142,7 @@ async def run(client, listing, signals, policy_file, *, interval=10, scale_up=No
             trusted = event = started = None
             if reconcile is not None:
                 reconcile.signature = reconcile.stable_since = None
+                reconcile.view = None
             plan = {'state': 'blocked', 'reason': type(exc).__name__}
         comparison = _log_identity(plan)
         if comparison != last:

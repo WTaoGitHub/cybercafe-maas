@@ -95,7 +95,7 @@ class ControlState:
             raise ValueError('Invalid confirmation receipt')
         return data
 
-    def adopt(self, policy, models, *, expected_targets):
+    def adopt(self, policy, models, *, expected_targets, pending_guard=None):
         if set(models) != set(policy.models) or set(expected_targets) != set(models):
             raise ValueError('Adoption must explicitly cover the complete policy scope')
         identities = {}
@@ -108,6 +108,8 @@ class ControlState:
                 raise ValueError('Adoption target or scope changed')
             identities[str(ident)] = model_identity(row)
         with self.locked():
+            if pending_guard is not None and pending_guard():
+                raise ValueError('Pending write prevents adoption')
             before = self.read()
             data = {'version': 1, 'generation': before['generation'] + 1 if before else 1,
                     'cluster_id': policy.cluster, 'owner_id': policy.owner,
@@ -144,6 +146,25 @@ class ControlState:
             data['generation'] += 1; data['paused'] = True
             atomic_private(self.path, data)
 
+    def pressure_unknown_since(self, active):
+        with self.locked():
+            data = self.read()
+            if data is None:
+                raise ValueError('No adopted scope')
+            previous = data.get('pressure_unknown_since')
+            if previous is not None and (type(previous) not in (int, float)
+                                         or not math.isfinite(previous) or previous < 0):
+                raise ValueError('Invalid pressure recovery clock')
+            now = self.clock()
+            if (type(now) not in (int, float) or not math.isfinite(now) or now < data['last_write_at']
+                    or (previous is not None and now < previous)):
+                raise ValueError('Control clock moved backwards')
+            value = (previous if previous is not None else now) if active else None
+            if value != previous:
+                data['pressure_unknown_since'] = value
+                atomic_private(self.path, data)
+            return value
+
     def confirm(self, action, row):
         """Idempotent confirmation hook; call before clearing PendingWrite."""
         action_id = hashlib.sha256(json.dumps(vars(action), sort_keys=True).encode()).hexdigest()
@@ -165,7 +186,7 @@ class ControlState:
             if before is None or before['target'] != action.before or before['binding'] != action.binding:
                 raise ValueError('Adopted baseline changed before confirmation')
             now = self.clock()
-            if not math.isfinite(now) or now < data['last_write_at']:
+            if type(now) not in (int, float) or not math.isfinite(now) or now < data['last_write_at']:
                 raise ValueError('Control write clock moved backwards')
             data['models'][str(action.model_id)] = identity
             data['last_write_at'] = now; data['last_action'] = action_id

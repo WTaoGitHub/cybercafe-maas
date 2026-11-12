@@ -2,6 +2,8 @@
 
 2026-11-12 · 本地实现，未部署 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
+最新进展：R3a 已接入独立的 v2 串行 writer 和私有接管命令，尚未部署；历史阶段边界不代表最终代码仍拒绝所有 v2 写入。[R3a 状态](REPLICA-V2-APPLY.md)。
+
 后续 R2 已将 v2 Observe 接入 MaaS 主循环，支持当前状态周期预览；实际 v2 写入仍明确禁用。以下“入口尚未接入”的描述是 R1 交付时边界，最新见 [R2 实现](REPLICA-V2-OBSERVE.md)。
 
 R1 增加 MaaS 专用 schema v2 解析、私有策略热加载、只读压力诊断命令，并为既有 PressureGate 补充结构化原因。原有 gate 的 open / pressure_unavailable / pressure_high / pressure_recovering 返回语义保持，旧插件仍仅接受 schema v1。

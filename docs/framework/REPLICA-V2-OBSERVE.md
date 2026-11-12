@@ -2,6 +2,8 @@
 
 2026-11-12 · 本地实现，未部署 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
+后续 R3a 已在独立受授权 writer 中接入串行写入、持久确认回调和私有接管命令，尚未部署。以下“尚未提供 writer/命令”的描述为 R2 时边界，最新见 [R3a](REPLICA-V2-APPLY.md)。只读覆盖配置依然关闭 Apply。
+
 MaaS 的 E17/调节器入口已能读取新版契约并运行 v2 只读对账：事件或周期唤醒后重新完整读取 worker、部署和实例，使用当前容量计算基础策略目标，不要求有新 GPU 上线事件，也不受旧事件 600 秒有效期限制。schema v1 继续走原先的到达事件和 writer。
 
 **本阶段仅输出预览，不会更新原生模型。** 即使 v2 的 policy 写了 Apply、运行环境保留旧 writer 授权，v2 也返回 `v2_apply_not_enabled`，`writes_enabled=false`；不把周期请求伪装成旧的上线事件。不把本阶段能力写成自动 0→1 已完成。

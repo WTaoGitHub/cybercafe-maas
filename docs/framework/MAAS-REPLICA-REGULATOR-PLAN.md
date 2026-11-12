@@ -1,5 +1,7 @@
 # MaaS 模型副本调节器迁移计划
 
+> **2026-11-12 R3a 串行写入本地实现，未部署**：v2 按现状执行 +1，不依赖新到达事件；disabled 不要求压力 feed，advisory 的宽限/冷却持久化。新增私有 status/adopt/pause，需明确采用当前目标；确认回执先落盘再清理 PendingWrite，未知结果不重发。实际在途仍限 1，R3b 并行预留和 R4/R5 真实验收发布尚未完成。[操作与边界](REPLICA-V2-APPLY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 R2 只读对账和持久状态基础完成，未部署**：已有 Ready GPU 无新事件也可按完整 API 现状重算；API 故障清空基线，轮询降级、稳定期、结构化私有状态已接入。接管/人工漂移/确认回执的持久函数已测试，真实 writer 和管理命令待 R3，v2 仍禁止发模型写请求。[实现边界与配置](REPLICA-V2-OBSERVE.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 R1 本地代码完成，未部署**：新增 MaaS v2 契约解析、私有只读诊断与结构化压力原因，能复现“旧样本过期 + 新 worker 未覆盖”。旧 gate 冻结语义保持；现有 E17 执行入口尚未接入 v2，不能据此认定周期调节或并行已实现。[契约、命令与测试](REPLICA-V2-CONTRACT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

@@ -17,8 +17,10 @@ class ReconcileObserve:
         self.clock, self.wall_clock = clock, wall_clock
         self.state = ControlState(state_directory, clock=wall_clock) if state_directory else None
         self.signature = self.stable_since = None
+        self.view = None
 
     async def tick(self, client, listing, policy, *, subscribed, pending_journal=None):
+        self.view = None
         try:
             pending = pending_journal.read() if pending_journal is not None else None
             reads = [asyncio.create_task(listing(client, kind))
@@ -72,6 +74,8 @@ class ReconcileObserve:
                 pending_write=bool(pending), executable_preview_limit=0, writes_enabled=False)
             if pending:
                 plan['execution_state'] = 'pending_write_read_only'
+            self.view = {'devices': devices, 'models': selected, 'models_binding': bindings, 'plan': plan,
+                         'stable': stable, 'read_monotonic': self.clock()}
         except Exception as exc:
             self.signature = self.stable_since = None
             plan = {'state': 'blocked', 'reason': type(exc).__name__, 'writes_enabled': False,
@@ -84,6 +88,7 @@ class ReconcileObserve:
                 atomic_private(self.state.directory / 'status.json', plan)
             except (OSError, ValueError):
                 self.signature = self.stable_since = None
+                self.view = None
                 plan = {'state': 'blocked', 'reason': 'control_status_unavailable',
                         'writes_enabled': False, 'execution_state': 'observe_blocked', 'policy_schema': 2}
         return plan

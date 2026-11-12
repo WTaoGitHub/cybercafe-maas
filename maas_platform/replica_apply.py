@@ -27,5 +27,8 @@ def deployment_binding(row):
     return binding(row, serializer=model_settings)
 
 
-def from_environment():
+def from_environment(*, policy=None):
+    if policy is not None and getattr(policy, 'schema_version', 1) == 2:
+        from .replica_writer_v2 import ReconcileWriter
+        return ReconcileWriter.from_environment()
     return ScaleUp.from_environment(serializer=model_settings)

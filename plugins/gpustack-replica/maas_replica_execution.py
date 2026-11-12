@@ -147,11 +147,12 @@ class WriteNotSent(Exception):
 class Executor:
     """Run a bounded write through an injected adapter and confirm by readback."""
 
-    def __init__(self, journal, read, write, *, write_timeout=2, read_timeout=5):
+    def __init__(self, journal, read, write, *, write_timeout=2, read_timeout=5, on_confirm=None):
         self.journal, self.read, self.write = journal, read, write
         self.write_timeout = write_timeout
         self.read_timeout = read_timeout
         self.lock = asyncio.Lock()
+        self.on_confirm = on_confirm
 
     async def _recover(self):
         pending = self.journal.read()
@@ -173,6 +174,11 @@ class Executor:
         if model.replicas == pending.after:
             if pending.after < pending.before and len(model.healthy) > pending.after:
                 return "converging"
+            if self.on_confirm is not None:
+                try:
+                    await asyncio.wait_for(self.on_confirm(pending), timeout=self.read_timeout)
+                except (OSError, TimeoutError, ValueError, KeyError):
+                    return "confirmation_unresolved"
             self.journal.clear()
             return "confirmed"
         # The old value is not proof that a timed-out request did not commit.
