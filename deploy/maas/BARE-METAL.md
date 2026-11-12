@@ -306,7 +306,7 @@ maas_compose exec -T api python -m maas_platform.cli drain-status
 | 测试目标 | 基线通过后按需增加 |
 | --- | --- |
 | 多机与冷缓存 | 新增 Worker 需规划私网 GPUStack 地址、Worker 回连端口、可信 CA 和镜像/模型分发。克隆自动入网及私有仓库各有独立部署步骤。[Bootstrap](../bootstrap/README.md) · [Registry](REGISTRY-SERVICE.md) · [模型存储](MODEL-STORAGE-V1.md) |
-| GPU 上线调节与退役 | GPUStack 插件安装到 Server 镜像。按当前提交构建 wheel，使用新集群/模型 ID；调节器从 `observe` 开始，退役从 `off` 开始，再按各自手册验收。[规模调节器](REPLICA-REGULATOR.md) · [Worker 退役](../../plugins/gpustack-worker-retirement/README.md) |
+| GPU 上线调节与身份 | 调节器按当前提交构建并从 `observe` 开始验收。默认 worker 使用 GPU UUID 的 name/external_id，保留 enrollment/handoff；不安装、不部署旧 `maas-gpustack-worker-retirement` 插件，长期离线不触发自动删除身份。[规模调节器](REPLICA-REGULATOR.md) · [旧退役插件归档说明](../../plugins/gpustack-worker-retirement/README.md) |
 | E17 统计和日报 | Compose 的 `e17`、`e17-daily` profile 独立启用。设置可由 UID 10001 读取的私有 `E17_GPUSTACK_KEY_PATH`，使用独立的 GPUStack 管理读取凭据。统计页另需 `E17_QUERY_KEY_FILE` 指向 API 容器内可读的私有文件。日报查询本身由私有入口限制，接口无需 key。[采样与统计](../../docs/framework/E17-GPU-TIME.md) · [日报协议](../../docs/api/GPU-DAILY-CONSUMER.md) |
 | 容器内下游、宿主机监控和备份 | 先按目标网络生成专用入口和访问规则，或配置独立监控/备份。现有安装脚本包含原试点路径及目标约束，先移植配置并复核目标。[容器入口](CONTAINER-HTTP.md) · [发布、备份与恢复](../../docs/framework/P4-RELEASE.md) |
 

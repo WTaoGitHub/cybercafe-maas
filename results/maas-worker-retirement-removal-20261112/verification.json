@@ -1,0 +1,35 @@
+{
+  "retirement_package_modules_entrypoint_absent": true,
+  "retirement_environment_removed": true,
+  "new_container_started": true,
+  "new_image": "sha256:ce1d4516309d18476b24f7819c0f8eb5f5e67ebd9baa2cfe46a1ecff2e53bfcb",
+  "enrollment_plugin_preserved": true,
+  "version_health_http": 200,
+  "worker_identity_rows_unchanged": true,
+  "worker_count": 2,
+  "mounts_and_network_addresses_preserved": true,
+  "obsolete_container_removed": true,
+  "private_database_and_container_backup_saved": true,
+  "retirement_package_absent": true,
+  "retirement_module_absent": true,
+  "retirement_entrypoint_absent": true,
+  "retirement_env_absent": true,
+  "enrollment_preserved": true,
+  "handoff_preserved": true,
+  "workers": [
+    {
+      "id": 4,
+      "state": "ready",
+      "cluster_id": 1
+    },
+    {
+      "id": 5,
+      "state": "ready",
+      "cluster_id": 1
+    }
+  ],
+  "image_retirement_environment_absent": true,
+  "image": "sha256:ce1d4516309d18476b24f7819c0f8eb5f5e67ebd9baa2cfe46a1ecff2e53bfcb",
+  "legacy_source_retained_not_deployed": true,
+  "vm_reboot_performed": false
+}

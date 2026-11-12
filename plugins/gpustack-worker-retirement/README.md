@@ -1,5 +1,7 @@
 # GPUStack E5 worker 自动退役
 
+**历史插件，当前默认部署禁止安装。** 当前 worker 使用 GPU UUID 同时作为 name 和 external_id，需要保留长期离线记录以恢复身份。本插件不适用于这种默认注册方式；源码仅保留作历史参考和隔离研究。下述安装步骤为历史说明，不是当前部署指令。不得将本包加入当前 GPUStack 镜像或启用配置；保留独立的 enrollment/handoff 插件与显式永久退役入口。
+
 插件运行在单进程、单实例 GPUStack Server v2.2.3。按配置的 E5 集群处理
 `e5-<24位十六进制>` worker。集群是同卡匹配的站点边界，部署时应选择单站点集群。
 策略依赖 GPUStack 心跳和设备清单。
@@ -15,9 +17,9 @@ Server 重启会重新累计同卡稳定期。删除前重新读取记录并检�
 分布式或普通模型实例引用及显式 GPU 选择器。每轮最多删除一条，调用 GPUStack
 原生 WorkerService 并记录 ID 和原因。
 
-## 安装与启用
+## 历史安装与启用方式（当前默认部署不得执行）
 
-构建 wheel 后安装进与现有 GPUStack Server 一致的 v2.2.3 镜像。
+以下保留旧版本的构建方式，当前 GPU UUID 注册方案不得按此安装到 GPUStack Server 镜像。
 
 ```sh
 python -m pip wheel --no-deps ./plugins/gpustack-worker-retirement -w /tmp/worker-retirement-wheel
