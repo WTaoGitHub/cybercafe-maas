@@ -1,5 +1,7 @@
 # R3a：周期对账的串行写入与接管控制
 
+> **2026-11-12 R4 首轮真实试点通过，常驻未切换**：12 个实验、27 次自动 +1 确认、6 个容量点、7 次原生 OCR 与 2 个唯一计量的 MaaS 异步任务均通过。两卡达到 4 副本全部 Running，串行两轮均值 37.85 秒、上限 2 为 21.61 秒（缩短约 42.9%）；上限 4 实际在途仍峰值 2。原业务保持 1/1，原 E17 及 v1/revision 7 策略不变，试点归零、无待确认写入、UNKNOWN=0，临时 key 已撤销。完整 R4 尚缺常驻事件循环、受控冷热缓存及实际故障恢复；R5 未发布。[报告](../../results/maas-replica-v2-r4-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-r4-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 R1—R3 代码和 R4 只读前检完成，未发布**：102 项本地回归通过（Mac 缺原生 SDK 的 2 项另在固定 runtime 补验），GPUStack v2.2.3 内 34 项回归全部通过。真实两卡 Ready、原 OCR 仍 1/1；新版 Observe 稳定后计算目标 2，因未接管而保持零写入。已修复原生空 distributed_servers 默认对象导致误冻结的问题。独立实写/启动耗时比较、故障恢复试点及 R5 发布未完成，现网配置与人工目标不变。[实施与证据](../../results/maas-replica-v2-20261112/REPORT.md) · [并行边界](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 2026-11-12 · 本地实现，未部署 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)

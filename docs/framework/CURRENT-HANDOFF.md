@@ -1,5 +1,17 @@
 # 当前状态与接力入口
 
+> **2026-11-12 R4 首轮真实试点通过，常驻未切换**：12 个实验、27 次自动 +1 确认、6 个容量点、7 次原生 OCR 与 2 个唯一计量的 MaaS 异步任务均通过。两卡达到 4 副本全部 Running，串行两轮均值 37.85 秒、上限 2 为 21.61 秒（缩短约 42.9%）；上限 4 实际在途仍峰值 2。原业务保持 1/1，原 E17 及 v1/revision 7 策略不变，试点归零、无待确认写入、UNKNOWN=0，临时 key 已撤销。完整 R4 尚缺常驻事件循环、受控冷热缓存及实际故障恢复；R5 未发布。[报告](../../results/maas-replica-v2-r4-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-r4-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
+## R4 最新接力要点（2026-11-12）
+
+- 先读 [R4 首轮报告](../../results/maas-replica-v2-r4-20261112/REPORT.md) 与 validation.json，再读 R3a/R3b 历史记录。本轮不是全部 R4/R5 完成。
+- 原业务部署 1：1/1，常驻 E17 未重建，v1/revision 7/Apply，上限 2；未迁移到 v2。试点部署/route 为独立对象，当前 0/0、0 实例，未加入 MaaS 客户目录。
+- 候选镜像为原依赖镜像上的 d262548 副本模块覆盖；6067dc7 为后续本地试点参数防误用加固。不要声称当前生产镜像已包含新调节逻辑。
+- 全部试点控制容器已退出，无常驻试点写入方；候选镜像、退出容器和证据保留。临时推理凭据已撤销，原客户凭据/绑定未变。
+- 私有源证据及回退材料在 Mac `.maas/replica-v2-r4-20261112/`；已校验 archive-private.tgz 的 SHA256。真实 SSH 信息/凭据只从私有现有配置读取，不写入报告或 Issue。
+- 下一步先做常驻 E17 订阅/周期循环的 v2 集成与接管/暂停演练；另补受控无缓存、共享下载和实际故障恢复验证，再确定 R5 发布边界及新鲜数据库备份。不能重发已完成试点、清除 UNKNOWN，或擅自改原模型目标。
+- 新建独立原生部署须准备其 Model Route。管理入口没有暴露 `/token-auth`；客户业务探针读实际 API 端口，不能写死容器默认端口；原生 key 核验使用列表接口。
+
 > **2026-11-12 R1—R3 代码和 R4 只读前检完成，未发布**：102 项本地回归通过（Mac 缺原生 SDK 的 2 项另在固定 runtime 补验），GPUStack v2.2.3 内 34 项回归全部通过。真实两卡 Ready、原 OCR 仍 1/1；新版 Observe 稳定后计算目标 2，因未接管而保持零写入。已修复原生空 distributed_servers 默认对象导致误冻结的问题。独立实写/启动耗时比较、故障恢复试点及 R5 发布未完成，现网配置与人工目标不变。[实施与证据](../../results/maas-replica-v2-20261112/REPORT.md) · [并行边界](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-11 第二台 VPC 扩容准备完成**。策略 Apply 修订 7、策略与实际写授权上限均为 2；重建同镜像 E17 后重新订阅并建立单卡基线，当前 OCR 仍 1/1、执行 idle、日志为空，等待新增 GPU。第二台上线后需补齐实际压力覆盖，再验收自动 1→2；不要手动增加副本。[准备记录](../../results/maas-replica-003-restart-20261111/CAP2-READY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

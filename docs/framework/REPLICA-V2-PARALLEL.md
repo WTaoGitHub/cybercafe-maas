@@ -1,5 +1,7 @@
 # R3b：有界并行启动与资源预留
 
+> **2026-11-12 R4 首轮真实试点通过，常驻未切换**：12 个实验、27 次自动 +1 确认、6 个容量点、7 次原生 OCR 与 2 个唯一计量的 MaaS 异步任务均通过。两卡达到 4 副本全部 Running，串行两轮均值 37.85 秒、上限 2 为 21.61 秒（缩短约 42.9%）；上限 4 实际在途仍峰值 2。原业务保持 1/1，原 E17 及 v1/revision 7 策略不变，试点归零、无待确认写入、UNKNOWN=0，临时 key 已撤销。完整 R4 尚缺常驻事件循环、受控冷热缓存及实际故障恢复；R5 未发布。[报告](../../results/maas-replica-v2-r4-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-r4-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 2026-11-12 · 本地实现，未部署 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 ## 如何发挥作用

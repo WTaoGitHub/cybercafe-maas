@@ -1,0 +1,335 @@
+{
+  "recorded_at": "2026-11-12T15:58:42.163719+08:00",
+  "stage": "R4 first real-GPU pilot; not full R4/R5 acceptance",
+  "verified": true,
+  "candidate_source": "d262548",
+  "local_tool_hardening_commit": "6067dc7",
+  "local_tests": {
+    "passed": 110,
+    "skipped": 2,
+    "skip_reason": "Pinned runtime SDK absent on Mac; pinned suite previously passed separately"
+  },
+  "capacity_summary": [
+    {
+      "startup_limit": 1,
+      "samples": 2,
+      "first_native_ready_mean_s": 10.261095852474682,
+      "all_native_ready_mean_s": 37.85210419099894,
+      "all_native_ready_min_s": 37.502064322994556,
+      "all_native_ready_max_s": 38.20214405900333,
+      "post_ready_probe_mean_from_launch_s": 40.65421440999489,
+      "peak_observed_inflight": 1
+    },
+    {
+      "startup_limit": 2,
+      "samples": 2,
+      "first_native_ready_mean_s": 9.77112414149451,
+      "all_native_ready_mean_s": 21.60996703649289,
+      "all_native_ready_min_s": 21.597961621009745,
+      "all_native_ready_max_s": 21.621972451976035,
+      "post_ready_probe_mean_from_launch_s": 24.423676134989364,
+      "peak_observed_inflight": 2
+    },
+    {
+      "startup_limit": 4,
+      "samples": 2,
+      "first_native_ready_mean_s": 10.787958277476719,
+      "all_native_ready_mean_s": 22.566217913496075,
+      "all_native_ready_min_s": 22.54312992701307,
+      "all_native_ready_max_s": 22.58930589997908,
+      "post_ready_probe_mean_from_launch_s": 25.396583010005997,
+      "peak_observed_inflight": 2
+    }
+  ],
+  "native_ready_reduction_limit2_vs_serial": 0.4290946963621737,
+  "cases": [
+    {
+      "case": "required-missing-01",
+      "phase": "EXPECTED_BLOCK_CONFIRMED",
+      "writes": 0,
+      "first_confirmed_write_s": null,
+      "first_native_ready_s": null,
+      "all_native_ready_s": null,
+      "pressure_mode": "required",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "advisory-missing-01",
+      "phase": "NATIVE_READY",
+      "writes": 1,
+      "first_confirmed_write_s": 32.502361361985095,
+      "first_native_ready_s": 131.74910445400747,
+      "all_native_ready_s": 131.74910445400747,
+      "pressure_mode": "advisory",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "disabled-serial-01",
+      "phase": "NATIVE_READY",
+      "writes": 1,
+      "first_confirmed_write_s": 2.2378306300379336,
+      "first_native_ready_s": 10.61645325605059,
+      "all_native_ready_s": 10.61645325605059,
+      "pressure_mode": "disabled",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "required-stale-01",
+      "phase": "EXPECTED_BLOCK_CONFIRMED",
+      "writes": 0,
+      "first_confirmed_write_s": null,
+      "first_native_ready_s": null,
+      "all_native_ready_s": null,
+      "pressure_mode": "required",
+      "synthetic_pressure_input": true
+    },
+    {
+      "case": "required-high-01",
+      "phase": "EXPECTED_BLOCK_CONFIRMED",
+      "writes": 0,
+      "first_confirmed_write_s": null,
+      "first_native_ready_s": null,
+      "all_native_ready_s": null,
+      "pressure_mode": "required",
+      "synthetic_pressure_input": true
+    },
+    {
+      "case": "required-recover-01",
+      "phase": "NATIVE_READY",
+      "writes": 1,
+      "first_confirmed_write_s": 8.712031686969567,
+      "first_native_ready_s": 15.03246262500761,
+      "all_native_ready_s": 15.03246262500761,
+      "pressure_mode": "required",
+      "synthetic_pressure_input": true
+    },
+    {
+      "case": "capacity-l1-r1",
+      "phase": "NATIVE_READY",
+      "writes": 4,
+      "first_confirmed_write_s": 2.6046836259774864,
+      "first_native_ready_s": 9.876845770981163,
+      "all_native_ready_s": 37.502064322994556,
+      "pressure_mode": "disabled",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "capacity-l2-r1",
+      "phase": "NATIVE_READY",
+      "writes": 4,
+      "first_confirmed_write_s": 2.325873379013501,
+      "first_native_ready_s": 9.777502651966643,
+      "all_native_ready_s": 21.621972451976035,
+      "pressure_mode": "disabled",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "capacity-l4-r1",
+      "phase": "NATIVE_READY",
+      "writes": 4,
+      "first_confirmed_write_s": 2.2912351429695264,
+      "first_native_ready_s": 10.78318504896015,
+      "all_native_ready_s": 22.58930589997908,
+      "pressure_mode": "disabled",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "capacity-l1-r2",
+      "phase": "NATIVE_READY",
+      "writes": 4,
+      "first_confirmed_write_s": 2.304107150004711,
+      "first_native_ready_s": 10.645345933968201,
+      "all_native_ready_s": 38.20214405900333,
+      "pressure_mode": "disabled",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "capacity-l2-r2",
+      "phase": "NATIVE_READY",
+      "writes": 4,
+      "first_confirmed_write_s": 2.302354114013724,
+      "first_native_ready_s": 9.764745631022379,
+      "all_native_ready_s": 21.597961621009745,
+      "pressure_mode": "disabled",
+      "synthetic_pressure_input": false
+    },
+    {
+      "case": "capacity-l4-r2",
+      "phase": "NATIVE_READY",
+      "writes": 4,
+      "first_confirmed_write_s": 2.29613045201404,
+      "first_native_ready_s": 10.792731505993288,
+      "all_native_ready_s": 22.54312992701307,
+      "pressure_mode": "disabled",
+      "synthetic_pressure_input": false
+    }
+  ],
+  "capacity_points": [
+    {
+      "case": "capacity-l1-r1",
+      "startup_limit": 1,
+      "target": 4,
+      "first_native_ready_s": 9.876845770981163,
+      "all_native_ready_s": 37.502064322994556,
+      "native_writes": 4,
+      "peak_observed_cluster_inflight": 1,
+      "confirmed_write_s": [
+        2.6046836259774864,
+        12.131117078009993,
+        21.669951140997,
+        30.167560297006276
+      ],
+      "cache_state": "unknown",
+      "inference_http_status": 200,
+      "inference_text_checked": true,
+      "launch_to_post_ready_probe_success_s": 40.32998281600885
+    },
+    {
+      "case": "capacity-l2-r1",
+      "startup_limit": 2,
+      "target": 4,
+      "first_native_ready_s": 9.777502651966643,
+      "all_native_ready_s": 21.621972451976035,
+      "native_writes": 4,
+      "peak_observed_cluster_inflight": 2,
+      "confirmed_write_s": [
+        2.325873379013501,
+        5.610952084010933,
+        12.043767476978246,
+        15.331619981967378
+      ],
+      "cache_state": "unknown",
+      "inference_http_status": 200,
+      "inference_text_checked": true,
+      "launch_to_post_ready_probe_success_s": 24.38885055895662
+    },
+    {
+      "case": "capacity-l4-r1",
+      "startup_limit": 4,
+      "target": 4,
+      "first_native_ready_s": 10.78318504896015,
+      "all_native_ready_s": 22.58930589997908,
+      "native_writes": 4,
+      "peak_observed_cluster_inflight": 2,
+      "confirmed_write_s": [
+        2.2912351429695264,
+        5.574633741984144,
+        13.020566449966282,
+        16.305194003973156
+      ],
+      "cache_state": "unknown",
+      "inference_http_status": 200,
+      "inference_text_checked": true,
+      "launch_to_post_ready_probe_success_s": 25.40450292499736
+    },
+    {
+      "case": "capacity-l1-r2",
+      "startup_limit": 1,
+      "target": 4,
+      "first_native_ready_s": 10.645345933968201,
+      "all_native_ready_s": 38.20214405900333,
+      "native_writes": 4,
+      "peak_observed_cluster_inflight": 1,
+      "confirmed_write_s": [
+        2.304107150004711,
+        12.870682132954244,
+        22.386499007989187,
+        30.885415703000035
+      ],
+      "cache_state": "unknown",
+      "inference_http_status": 200,
+      "inference_text_checked": true,
+      "launch_to_post_ready_probe_success_s": 40.978446003980935
+    },
+    {
+      "case": "capacity-l2-r2",
+      "startup_limit": 2,
+      "target": 4,
+      "first_native_ready_s": 9.764745631022379,
+      "all_native_ready_s": 21.597961621009745,
+      "native_writes": 4,
+      "peak_observed_cluster_inflight": 2,
+      "confirmed_write_s": [
+        2.302354114013724,
+        5.587958771036938,
+        12.008494122012053,
+        15.334475623036269
+      ],
+      "cache_state": "unknown",
+      "inference_http_status": 200,
+      "inference_text_checked": true,
+      "launch_to_post_ready_probe_success_s": 24.45850171102211
+    },
+    {
+      "case": "capacity-l4-r2",
+      "startup_limit": 4,
+      "target": 4,
+      "first_native_ready_s": 10.792731505993288,
+      "all_native_ready_s": 22.54312992701307,
+      "native_writes": 4,
+      "peak_observed_cluster_inflight": 2,
+      "confirmed_write_s": [
+        2.29613045201404,
+        5.560746297007427,
+        13.014952543016989,
+        16.288855279039126
+      ],
+      "cache_state": "unknown",
+      "inference_http_status": 200,
+      "inference_text_checked": true,
+      "launch_to_post_ready_probe_success_s": 25.388663095014635
+    }
+  ],
+  "total_confirmed_scale_ups": 27,
+  "native_ocr_successes": 7,
+  "maas_async_successes": 2,
+  "restored": {
+    "original_target": 1,
+    "original_ready": 1,
+    "original_config_unchanged": true,
+    "original_container_unchanged": true,
+    "pilot_target": 0,
+    "pilot_ready": 0,
+    "pilot_instances": 0,
+    "pending_writes": 0,
+    "ready_workers": 2,
+    "active_trial_controllers": 0,
+    "unknown_tasks": 0
+  },
+  "temporary_key_revoked": true,
+  "original_policy_preserved": {
+    "schema": 1,
+    "revision": 7,
+    "mode": "apply",
+    "scope_model": 1,
+    "cap": 2
+  },
+  "production_migrated": false,
+  "archive": {
+    "sha256": "6096ceb402a264a316352664f191c7f514037198e7825307362c28f05d55ffaa",
+    "bytes": 65237,
+    "copied_to_mac": true,
+    "verified_on_mac": true,
+    "public": false
+  },
+  "limitations": [
+    "Cache state not independently verified; no controlled cold-cache experiment",
+    "Native-ready time is not first request serving time",
+    "Only two samples per startup limit; not production SLA or global optimum",
+    "Actual max in-flight observed was two on two GPUs even with limit four",
+    "Real API outage, controller process crash and uncertain network write not injected on live services",
+    "Production E17/controller policy not migrated; R5 pending"
+  ],
+  "probe_setup_corrections": [
+    "Unsupported token-auth preflight on this entry was removed; no inference dispatched on that attempt",
+    "Independent native deployment required its own Model Route; added without changing the original route",
+    "MaaS probe initially used a fixed port and was refused; DB confirmed zero tasks; retry used the same key and runtime port",
+    "Temporary API-key revoke checked list endpoint because native API has no per-ID GET"
+  ],
+  "remaining": [
+    "Main E17 event-loop integration on the persistent deployment",
+    "Controlled cold-cache and shared download contention evidence",
+    "Real API outage and controller interruption recovery drill in independent scope",
+    "Fresh private release/database backup and controlled production takeover/rollback"
+  ]
+}
