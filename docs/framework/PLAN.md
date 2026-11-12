@@ -1,5 +1,7 @@
 # 实施计划 v0.2
 
+> **2026-11-12 故障与恢复实测补齐**：5/5 通过：订阅断开退为完整轮询并重连、读取 503 与不完整分页停写/恢复、原生已执行但回复超时后跨进程只读确认、未执行且读到旧目标仍保留未知 journal。每案例请求仅 1 次，前四项各提交原生 1 次、末项 0 次；最后试点 journal 按预期保留，已暂停/Observe、容器停止且 restart=no。正式 OCR 仍 2/2，generation15、正式 journal 空、客户 UNKNOWN0，API/E17/原生/DB 未重启；客户 OCR 唯一计量与日报回归通过。本地183通过/3条件跳过。工具独立运行，常驻镜像仍git-125298e；Pending 恢复耗时优化未开展。下一步补普通配置/资源热改和多模型联动，其他 R4 余项不改判。[报告](../../results/maas-replica-fault-20261112/REPORT.md) · [HTML](../../results/maas-replica-fault-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 最新常驻验收**：Pending 180 秒观察、Ready/非零下限收敛及持久保持已实现并部署；174 项本地通过、3 条原生环境条件跳过。真实 20→7/7 保留全部 Ready、3→2 Pending 保留下限、资源恢复 3/3、外部数量纠正、全局暂停/恢复及跨容器持久性均通过。API/E17 当前为 `git-125298e`，仅正式 OCR 获写入授权（min1/max2），当前 2/2，试点归零，UNKNOWN=0、PendingWrite 空。客户 OCR 唯一执行/计量与日报查询通过，旧插件 Observe，未重启 VM/worker/Docker。既有 Pending 的原生重调度仍有等待；本轮约 86.51 秒恢复，保留首次 30 秒超时，不宣称立即恢复。下方同日“未部署/未实现”及旧配置为历史，以本条和报告为准。完整故障/冷缓存/热改组合及规模验证仍未覆盖。[部署报告](../../results/maas-replica-pending-20261112/REPORT.md) · [HTML](../../results/maas-replica-pending-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 调节器新增验收细化（待实现/验证）**：A=4/10、B=10/20、C=15/20→资源不足 Pending 连续观察 180 秒→按 `max(Ready,非零最小值)` 安全收敛到 4/4、10/10、15/15（下限不高于各自Ready）→无变化零追加动作→后续变化再按规则响应。补 Ready 低于下限、零资源、写前 Ready 变化及自身事件不反复制造 Pending 等用例。 条件消失或有效观测中断重新计时；同轮逐步缩容不重复等待 3 分钟。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。

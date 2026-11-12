@@ -1,0 +1,136 @@
+{
+  "code_commit": "752ba4b",
+  "production_image": "git-125298e",
+  "local": {
+    "passed": 183,
+    "skipped": 3
+  },
+  "cases": [
+    {
+      "case": "watch_down",
+      "counts": {
+        "committed_puts": 1,
+        "forwarded_puts": 1,
+        "read_rejections": 0,
+        "received_puts": 1,
+        "watch_connections": 6,
+        "watch_rejections": 5
+      },
+      "journal_retained": false,
+      "passed": true,
+      "polling_fallback_wrote_once": true,
+      "protected_model_unchanged": true,
+      "subscriptions_reconnected": true
+    },
+    {
+      "automatic_recovery": true,
+      "blocked_observed_s": 5,
+      "blocked_snapshot_complete": false,
+      "case": "reads_down",
+      "counts": {
+        "committed_puts": 1,
+        "forwarded_puts": 1,
+        "read_rejections": 5,
+        "received_puts": 1,
+        "watch_connections": 3,
+        "watch_rejections": 0
+      },
+      "journal_retained": false,
+      "passed": true,
+      "protected_model_unchanged": true
+    },
+    {
+      "automatic_recovery": true,
+      "blocked_observed_s": 5,
+      "blocked_snapshot_complete": false,
+      "case": "incomplete_lists",
+      "counts": {
+        "committed_puts": 1,
+        "forwarded_puts": 1,
+        "read_rejections": 0,
+        "received_puts": 1,
+        "watch_connections": 3,
+        "watch_rejections": 0
+      },
+      "journal_retained": false,
+      "passed": true,
+      "protected_model_unchanged": true
+    },
+    {
+      "case": "after_commit",
+      "counts": {
+        "committed_puts": 1,
+        "forwarded_puts": 1,
+        "read_rejections": 19,
+        "received_puts": 1,
+        "watch_connections": 12,
+        "watch_rejections": 0
+      },
+      "journal_retained": false,
+      "passed": true,
+      "process_restarted": true,
+      "protected_model_unchanged": true,
+      "read_only_confirmation_while_paused": true,
+      "resume_rejected": true
+    },
+    {
+      "case": "before_commit",
+      "counts": {
+        "committed_puts": 0,
+        "forwarded_puts": 0,
+        "read_rejections": 16,
+        "received_puts": 1,
+        "watch_connections": 12,
+        "watch_rejections": 0
+      },
+      "journal_retained": true,
+      "old_target_did_not_clear_journal": true,
+      "passed": true,
+      "process_restarted": true,
+      "protected_model_unchanged": true,
+      "resume_rejected": true
+    }
+  ],
+  "live_cases_passed": 5,
+  "live_cases_total": 5,
+  "trial_container_exit": 0,
+  "trial_controller_starts": 7,
+  "trial_controller_graceful_stops": 7,
+  "actual_trial_process_restarts": 2,
+  "formal": {
+    "formal_ready": 2,
+    "formal_target": 2,
+    "trial_targets_zero": true,
+    "customer_unknown": 0,
+    "e17_sample_age_s": 19.630285263061523,
+    "daily_http": 200,
+    "daily_matches_db": true,
+    "health_http": 200,
+    "formal_containers_unchanged": true,
+    "formal_generation": 15,
+    "formal_pending_write_empty": true,
+    "trial_unknown_journal_retained": true,
+    "trial_controller_paused_observe": true
+  },
+  "customer_probe": {
+    "status": "SUCCEEDED",
+    "usage": {
+      "successful_images": 1
+    },
+    "has_result": true,
+    "usage_events": 1,
+    "attempts": 1,
+    "receipts": 1,
+    "unknown_count": 0
+  },
+  "initial_setup_failure": {
+    "preserved": true,
+    "error": "ModuleNotFoundError",
+    "before_any_case": true,
+    "fix": "PYTHONPATH=/app; new trial run"
+  },
+  "scope": "isolated management transport; real native API/instances; production reconcile/subscription/write code; isolated observation sink",
+  "no_vm_worker_native_or_formal_container_restart": true,
+  "observation_database_fault_tested": false,
+  "pending_latency_optimization_tested": false
+}

@@ -1,6 +1,6 @@
 # 调节器故障与恢复实测
 
-2026-11-12 · 工具已实现，真实执行待验收 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
+2026-11-12 · 工具与本轮五项真实执行均已验收 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 本轮补当前调节器的故障正确性，不开展恢复速度调优。正式 GPUStack、MaaS API/E17 及 worker 均不重启、不切换配置。选择一个当前为 0/0 的独立试点部署，明确指定另一个受保护的正式部署，执行前后核对其配置、Ready 和实例 ID。
 
@@ -26,6 +26,10 @@
 
 ## 操作要求
 
-使用当前已固定的 MaaS 镜像，在独立临时容器中挂载上述工具和专用私有输出目录，沿用只读管理 key 与 catalog。显式指定 `--trial-model`、`--protected-model` 和新的 `--output`。仅临时代理和试点进程运行在该容器，restart=no；不替换任何常驻容器，不修改 worker 网络规则。
+使用当前已固定的 MaaS 镜像，在独立临时容器中设置 `PYTHONPATH=/app`，挂载上述工具和专用私有输出目录，沿用只读管理 key 与 catalog。显式指定 `--trial-model`、`--protected-model` 和新的 `--output`。仅临时代理和试点进程运行在该容器，restart=no；不替换任何常驻容器，不修改 worker 网络规则。
 
 正式执行前先适当回归工具并保存新鲜基线到 Mac。每一条件有有限等待，未知结果不重发。遇到异常最多两次有界诊断，仍不能继续就停下并保存失败现场；不得通过重启 VM、worker、Docker 或清理未知日志恢复。执行后核对正式副本、原生插件 Observe、MaaS OCR/唯一计量、E17 采样与日报、UNKNOWN 及正式待确认日志，归档真实私有证据，公开报告只放脱敏结果。
+
+## 本轮完成记录
+
+[真实验收报告](../../results/maas-replica-fault-20261112/REPORT.md)：5/5通过，两个不确定写入场景各经过真实试点进程重启；正式服务不变，客户OCR/计量和日报回归通过。首轮启动环境缺失已保留，修正PYTHONPATH后在新目录执行；最后一个案例的私有未知journal保持暂停、离线留证，不自动解除。生产调节器核心和常驻镜像未改，源代码与报告按feature提交/push，继续沿用Issue39。
