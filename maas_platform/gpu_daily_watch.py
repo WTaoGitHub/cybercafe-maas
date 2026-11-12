@@ -5,6 +5,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import signal
 import time
 from types import SimpleNamespace
 from uuid import uuid4
@@ -227,5 +228,33 @@ async def run():
                 await asyncio.gather(task, return_exceptions=True)
 
 
+async def run_service(collector=run):
+    """Let container SIGTERM cancel and drain the existing collector cleanup.
+
+    In-flight replica requests keep their durable journal on cancellation. This
+    wrapper does not retry requests or change native model targets on exit.
+    """
+    loop = asyncio.get_running_loop()
+    stopped = False
+    task = asyncio.create_task(collector())
+    previous = signal.getsignal(signal.SIGTERM)
+
+    def terminate():
+        nonlocal stopped
+        if not stopped:
+            stopped = True
+            task.cancel()
+
+    loop.add_signal_handler(signal.SIGTERM, terminate)
+    try:
+        await task
+    except asyncio.CancelledError:
+        if not stopped:
+            raise
+    finally:
+        loop.remove_signal_handler(signal.SIGTERM)
+        signal.signal(signal.SIGTERM, previous)
+
+
 if __name__ == '__main__':
-    asyncio.run(run())
+    asyncio.run(run_service())
