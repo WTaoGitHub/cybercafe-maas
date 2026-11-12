@@ -1,0 +1,9 @@
+# R2: use with compose.yaml + compose.replica-observe.yaml and an R2 MaaS image.
+# Explicitly read-only; this overlay must not be used as an Apply release.
+services:
+  e17-daily:
+    environment:
+      MAAS_REPLICA_ENABLE_APPLY: "0"
+      MAAS_REPLICA_STATE_DIR: /var/lib/maas-replica/state
+    volumes:
+      - ${MAAS_REPLICA_CONTROL_STATE_DIR:?set private UID 10001 control state directory}:/var/lib/maas-replica/state

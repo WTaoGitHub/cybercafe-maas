@@ -58,6 +58,11 @@ async def snapshot_devices(cluster_ids, workers, allocated):
 def plan_snapshot(policy, event, devices, model_rows, instance_rows):
     if event not in ARRIVAL_EVENTS:
         raise ValueError("Phase one requires a confirmed GPU arrival")
+    return plan_capacity(policy, devices, model_rows, instance_rows, event=event)
+
+
+def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None):
+    """Pure current-capacity preview; no event or execution authority is implied."""
     rules, execution = policy.effective(event)
     models = {model.id: model for model in model_rows if model.id in rules}
     if models.keys() != rules.keys():

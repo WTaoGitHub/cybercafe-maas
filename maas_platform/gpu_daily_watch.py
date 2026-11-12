@@ -182,7 +182,7 @@ async def run():
             signals = preview = None
             policy_path = os.getenv('MAAS_REPLICA_OBSERVE_POLICY_PATH')
             if policy_path:
-                from maas_replica_policy import PolicyFile
+                from .replica_contract import ControlPolicyFile as PolicyFile
                 from .replica_observe import run as preview_replicas
 
                 scale_up = None
