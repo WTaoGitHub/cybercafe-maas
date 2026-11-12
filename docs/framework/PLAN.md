@@ -1,5 +1,7 @@
 # 实施计划 v0.2
 
+> **2026-11-12 启动效率补充（设计，待实现）**：R1—R5 加入事件快路径、首副本优先、在途资源预留与可配置并行、缓存阶段画像；以首副本及目标容量就绪时间验收。串行预算用于保守起步，长期无压力数据源可显式禁用可选压力，使用实测启动预算。[补充设计](REPLICA-STARTUP-EFFICIENCY.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 规模调节器优先改进（设计，待实现）**：先按 R1—R3 完成原因诊断、新版周期对账/持久接管、压力 advisory 与保守执行，再 R4 独立试点、R5 受控发布。动态压力来源适配后续推进，不作为核心可用性的硬依赖；现网保持原配置。[详细方案与验收矩阵](REPLICA-RECONCILIATION-IMPROVEMENT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-02当前已发布ocr-metering-r2**：规范字段image_base64/image_url、旧别名兼容、异步远程URL及E16两个计量查询均已完成真实验收。4异步+3同步成功，7条唯一收据；当前tokens实际null/unavailable，不能按tokens实际收费。generation488、监控健康、UNKNOWN=0，8副本profile保持，无VM/worker/Docker引擎重启。OpenAPI已内嵌真实脱敏响应；以下待部署状态为历史。[发布报告](../../results/maas-ocr-release-20261102/REPORT.md)。
