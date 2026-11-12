@@ -1,5 +1,7 @@
 # 资源不足导致 Pending 时的有界缩容与恢复
 
+> **实现状态**：本轮已完成并常驻启用。[实际验证与边界](../../results/maas-replica-pending-20261112/REPORT.md)。下方设计中的待办为当时计划，未覆盖的组合仍依报告列明。
+
 2026-11-12 · 用户最新需求修订 · **候选已实现，部署验证进行中** · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 ## 期望行为

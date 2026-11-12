@@ -1,6 +1,6 @@
 # Pending 观察、收敛和保持的实现与发布
 
-2026-11-12 · 候选已实现，本地验证完成，部署验证进行中 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
+2026-11-12 · 已实现、部署并完成本轮真实验收 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
 业务规则仍以[Pending 设计](REPLICA-CAPACITY-DROP.md)为准。该实现接入现有 v2 E17 对账，不新建节点采集器，不访问 worker SSH，只更新原生模型 `replicas`。
 
@@ -40,3 +40,7 @@ python3 scripts/maas/build_replica_native_proof.py \
 本地覆盖三模型 4/10、10/20、15/20 收敛到 4/4、10/10、15/15，并保持全部 29 个 Ready ID；179/180 秒边界、缺样/进程重建、最新 Ready、最小值 2 全 Pending、资源恢复、持久 hold、暂停、缺少/伪造原生证明、未知写入和意外健康实例丢失。
 
 先固定新镜像，在独立试点验证真实 180 秒资源不足、原生选择不删除健康实例、到下限仍 Pending 无额外写入、实际容量释放后恢复及管理员接口。验证通过后，再保存新鲜回退材料，将现有 E17/API 受控迁移，原模型初始 Observe/adopt 当前目标再 Apply/resume。Native Server、VM、worker 和 Docker 引擎不重启。正式实际结果以后续部署报告为准。
+
+## 本轮实际交付
+
+[常驻部署报告](../../results/maas-replica-pending-20261112/REPORT.md)包含真实 180 秒、20→7/7、3→下限2 Pending、资源恢复、全局控制及客户/日报回归。API/E17 已受控启用，正式 OCR 当前2/2；试点均归零、写入授权收紧至正式部署，原插件Observe。本轮约86.51秒完成容量恢复，原生已Pending重调度等待仍为优化项。源码/配置证明、私有回退包及最终归档已保存Mac并核对SHA；未覆盖的故障、冷热缓存和热改组合仍按报告边界保留。

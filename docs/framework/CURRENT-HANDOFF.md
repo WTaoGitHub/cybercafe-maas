@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-12 最新常驻验收**：Pending 180 秒观察、Ready/非零下限收敛及持久保持已实现并部署；174 项本地通过、3 条原生环境条件跳过。真实 20→7/7 保留全部 Ready、3→2 Pending 保留下限、资源恢复 3/3、外部数量纠正、全局暂停/恢复及跨容器持久性均通过。API/E17 当前为 `git-125298e`，仅正式 OCR 获写入授权（min1/max2），当前 2/2，试点归零，UNKNOWN=0、PendingWrite 空。客户 OCR 唯一执行/计量与日报查询通过，旧插件 Observe，未重启 VM/worker/Docker。既有 Pending 的原生重调度仍有等待；本轮约 86.51 秒恢复，保留首次 30 秒超时，不宣称立即恢复。下方同日“未部署/未实现”及旧配置为历史，以本条和报告为准。完整故障/冷缓存/热改组合及规模验证仍未覆盖。[部署报告](../../results/maas-replica-pending-20261112/REPORT.md) · [HTML](../../results/maas-replica-pending-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 Pending 收敛规则最新细化，待实现**：同一模型资源不足 Pending 连续有效观测满 3 分钟（180 秒）后，重新取最新状态，再按 `T=max(当前Ready数,规则非零最小值)` 下调指定副本数。A=4/10、B=10/20、C=15/20 在各自下限不高于 Ready 时收敛到 4/4、10/10、15/15；不直接降到最小值。收敛后无变化不追加动作，后续真实变化再按规则响应；低于下限的 Ready 对应保留最小目标，即使仍 Pending。本次只更新设计/验收，代码及服务器未改。 条件消失或有效观测中断重新计时；同轮逐步缩容不重复等待 3 分钟。 [需求与待办](REPLICA-CAPACITY-DROP.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
@@ -8,7 +10,14 @@
 
 > **2026-11-12 R4 实际 E17 主循环演练通过，原配置已恢复**：实际订阅/写库与 v2 Observe、显式接管、自动 0→1/1→2、暂停跨进程恢复、人工漂移停写、错误接管拒绝均通过。修复 E17 SIGTERM 退出（e447154），候选实际退出码 0；2 次原生 OCR 与 1 个唯一计量的 MaaS 异步任务成功。原 OCR 1/1、试点 0/0、UNKNOWN=0，恢复原 E17 镜像/环境和 v1/revision 7 策略，未正式启用 v2。完整 R4 仍缺隔离通道/在途不确定写入及冷缓存竞争；R5 未发布。[报告](../../results/maas-replica-v2-e17-20261112/REPORT.md) · [HTML](../../results/maas-replica-v2-e17-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
-## 只调副本与当前资源输入接力（2026-11-12，最新）
+## 当前接力操作（常驻版）
+
+- 当前只有正式 OCR 一个部署获得 v2 Apply 写入授权，min1/max2；更改 scope 必须同步授权并显式 adopt。API/E17 使用同一持久 state；全局暂停优先，不通过改副本数表示接管。
+- 活动私有版本清单位于控制机部署目录的 `ACTIVE-MAAS-RELEASE.json`；对应 `compose-release-private.yaml` 固定镜像 ID，仅包含 API/E17。旧镜像 Compose 标签仍为历史，禁止据它直接重建这两个服务；不要 remove-orphans。
+- Mac 私有 `.maas/replica-pending-20261112/CURRENT-RUN.md`、已验 SHA 的归档和操作脚本可接续；不能重放试点创建、外部修改或客户请求脚本。旧备份含真实凭据，不入 Git。
+- 只有 read/probe 未覆盖热改组合和故障等，不把源码回归写成真实验收。后续优先在 Issue #39 收敛 Pending 重调度等待、补 R4 未覆盖项，再考虑按模型暂停和规模验证。
+
+## 只调副本与当前资源输入接力（发布前历史）
 
 - 用户最新明确：模型服务规模调节器只修改副本数；外部改镜像、启动参数或资源声明不回滚、不暂停、不重新 adopt。集群/归属/受管 ID 仍受授权约束，PendingWrite 不允许借配置更新重置。
 - 新增 snapshot-local `replica_resources` 解析当前 `env.GPUSTACK_MODEL_VRAM_CLAIM`；v2 policy 重复 claim 改为可选并忽略，不需要手工同步两份规格。CPU/RAM 原样保留，未新增联合容量求解。缺失/非法声明只阻塞当前规划，不设置 paused，修复后自动重新规划。

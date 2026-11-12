@@ -1,5 +1,7 @@
 # 调节器显式暂停与恢复
 
+> **2026-11-12 最新常驻验收**：Pending 180 秒观察、Ready/非零下限收敛及持久保持已实现并部署；174 项本地通过、3 条原生环境条件跳过。真实 20→7/7 保留全部 Ready、3→2 Pending 保留下限、资源恢复 3/3、外部数量纠正、全局暂停/恢复及跨容器持久性均通过。API/E17 当前为 `git-125298e`，仅正式 OCR 获写入授权（min1/max2），当前 2/2，试点归零，UNKNOWN=0、PendingWrite 空。客户 OCR 唯一执行/计量与日报查询通过，旧插件 Observe，未重启 VM/worker/Docker。既有 Pending 的原生重调度仍有等待；本轮约 86.51 秒恢复，保留首次 30 秒超时，不宣称立即恢复。下方同日“未部署/未实现”及旧配置为历史，以本条和报告为准。完整故障/冷缓存/热改组合及规模验证仍未覆盖。[部署报告](../../results/maas-replica-pending-20261112/REPORT.md) · [HTML](../../results/maas-replica-pending-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 最新职责边界（候选已实现，未部署）**：调节器只管理副本数量；外部镜像、启动参数和资源声明变化不回滚、不暂停、不要求重新接管。每轮读取 GPUStack 当前显存声明规划新副本，旧实例仍按原生实际占用核算；v2 策略中的重复显存字段改为可选且不作规划依据。授权范围变化和未知写入保护保留，全局暂停优先，按模型控制仍是后续增强。此前“普通配置变化冻结”的记录已被本决议替代。本轮未连接或修改服务器。[职责与资源口径](REPLICA-RESOURCE-INPUTS.md) · [本地验收](../../results/maas-replica-resources-20261112/REPORT.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 2026-11-12 · 候选实现，尚未部署 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)

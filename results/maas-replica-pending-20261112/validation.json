@@ -1,0 +1,103 @@
+{
+  "stage1-result": {
+    "passed": true,
+    "first_qualified_s": 183.44133300398244,
+    "desired_before": 20,
+    "ready_before": 7,
+    "desired_after": 7,
+    "ready_after": 7,
+    "all_healthy_ids_preserved": true,
+    "original_model_unchanged": true,
+    "hold_checked_s": 12
+  },
+  "stage2-result": {
+    "passed": true,
+    "first_qualified_s": 182.7328739919467,
+    "desired_before": 3,
+    "ready_before": 0,
+    "desired_after": 2,
+    "ready_after": 0,
+    "minimum": 2,
+    "pending_retained": 2,
+    "hold_checked_s": 12
+  },
+  "recovery-result": {
+    "passed": true,
+    "residual_ready": 1,
+    "residual_desired": 2,
+    "minimum": 2,
+    "recovered_ready": 3,
+    "recovered_desired": 3,
+    "original_model_unchanged": true,
+    "recovery_wait_s": 86.51340651512146,
+    "short_deadline_preserved": true
+  },
+  "external-control-result": {
+    "passed": true,
+    "external_high": 4,
+    "policy_restored": 3,
+    "paused_target": 0,
+    "paused_observation_s": 10,
+    "resumed_ready": 3,
+    "original_model_unchanged": true
+  },
+  "formal-release-result": {
+    "passed": true,
+    "image": "git-125298e",
+    "desired": 2,
+    "ready": 2,
+    "managed_models": [
+      1
+    ],
+    "write_caps": {
+      "1": 2
+    },
+    "pause_survived_recreation": true,
+    "graceful_exit_code": 0,
+    "trial_targets_zero": true,
+    "original_ready_ids_preserved": true,
+    "pressure_mode": "disabled",
+    "reconcile_interval_s": 30,
+    "stability_s": 10
+  },
+  "daily-final-result": {
+    "unknown_tasks": 0,
+    "e17_latest_sample_age_s": 29.249,
+    "daily_http": 200,
+    "daily_matches_db": true,
+    "coverage_present": true,
+    "api_health": 200
+  },
+  "entry-result": {
+    "tls_verified": true,
+    "authorized": 200,
+    "unauthorized": 401,
+    "pause_resume_tls": true,
+    "repeated_pause_idempotent": true
+  },
+  "native-plugin-result": {
+    "mode": "observe",
+    "worker_container_lifecycle_untouched": true
+  },
+  "local": {
+    "passed": 174,
+    "skipped": 3
+  },
+  "async": {
+    "status": "SUCCEEDED",
+    "usage": {
+      "successful_images": 1
+    },
+    "has_result": true,
+    "usage_events": 1,
+    "attempts": 1,
+    "receipts": 1,
+    "unknown_count": 0
+  },
+  "code_commit": "125298e",
+  "pending_write": false,
+  "no_vm_worker_docker_restart": true,
+  "scope": "single-authorized-ocr-deployment",
+  "short_deadline_preserved": true,
+  "controller_generation": 15
+}
