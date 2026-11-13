@@ -1,0 +1,281 @@
+{
+  "date": "2026-11-13",
+  "tool_commit": "03de436",
+  "production_image": "git-125298e",
+  "local": {
+    "passed": 197,
+    "skipped": 3
+  },
+  "live_cases_passed": 6,
+  "live_cases_total": 6,
+  "cases": [
+    {
+      "case": "bootstrap_equal",
+      "controller_puts": 6,
+      "frozen_expected": [
+        2,
+        2,
+        2
+      ],
+      "minima_served_before_extra_replicas": true,
+      "passed": true,
+      "protected_models_unchanged": true,
+      "ready": [
+        2,
+        2,
+        2
+      ],
+      "target": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "allowed": [
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          3,
+          1,
+          2
+        ]
+      ],
+      "case": "weight_change",
+      "controller_puts": 8,
+      "minima_and_caps_respected": true,
+      "passed": true,
+      "protected_models_unchanged": true,
+      "ready": [
+        3,
+        2,
+        1
+      ],
+      "target": [
+        3,
+        2,
+        1
+      ],
+      "weights": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "capacity_release_recovered_third_model": true,
+      "case": "priority_recovery",
+      "controller_puts": 3,
+      "limited_target": [
+        1,
+        1,
+        0
+      ],
+      "passed": true,
+      "priorities": [
+        1,
+        2,
+        3
+      ],
+      "protected_models_unchanged": true,
+      "ready": [
+        1,
+        1,
+        1
+      ],
+      "target": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "case": "pending_contraction",
+      "controller_puts": 9,
+      "hold_observed_s": 10,
+      "minima": [
+        1,
+        1,
+        1
+      ],
+      "passed": true,
+      "pending_retained_at_floor": false,
+      "protected_models_unchanged": true,
+      "qualified_seconds": [
+        180.59810666798148,
+        183.8541626209626,
+        187.196863767982
+      ],
+      "ready": [
+        2,
+        2,
+        2
+      ],
+      "ready_ids_preserved": true,
+      "target": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "case": "minimum_pending",
+      "controller_puts": 7,
+      "hold_observed_s": 10,
+      "minima": [
+        2,
+        2,
+        2
+      ],
+      "passed": true,
+      "pending_retained_at_floor": true,
+      "protected_models_unchanged": true,
+      "qualified_seconds": [
+        181.83619256399106
+      ],
+      "ready": [
+        1,
+        2,
+        2
+      ],
+      "ready_ids_preserved": true,
+      "target": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "case": "pause_resume",
+      "controller_puts": 9,
+      "latest_weights_applied": [
+        2,
+        1,
+        1
+      ],
+      "passed": true,
+      "paused_additional_puts": 0,
+      "paused_observed_s": 8,
+      "protected_models_unchanged": true,
+      "ready": [
+        3,
+        2,
+        1
+      ],
+      "target": [
+        3,
+        2,
+        1
+      ]
+    }
+  ],
+  "controller_puts": 42,
+  "trial_processes": 6,
+  "trial_graceful_exits": 6,
+  "trial_container_exit": 0,
+  "formal": {
+    "formal_ready": 2,
+    "formal_target": 2,
+    "trial_targets_zero": true,
+    "customer_unknown": 0,
+    "e17_sample_age_s": 11.03529167175293,
+    "daily_http": 200,
+    "daily_matches_db": true,
+    "health_http": 200,
+    "formal_containers_unchanged": true,
+    "formal_generation": 15,
+    "formal_pending_write_empty": true,
+    "all_multi_trial_journals_empty": true,
+    "previous_fault_journal_unchanged": true,
+    "existing_engines_unchanged": true,
+    "protected_settings_equal": true,
+    "formal_ready_instance_ids_preserved": true,
+    "trial_container_stopped_exit_zero": true,
+    "six_children_exit_zero": true
+  },
+  "customer_probe": {
+    "status": "SUCCEEDED",
+    "usage": {
+      "successful_images": 1
+    },
+    "has_result": true,
+    "usage_events": 1,
+    "attempts": 1,
+    "receipts": 1,
+    "unknown_count": 0
+  },
+  "scope": {
+    "simultaneously_managed_deployments": 3,
+    "unmanaged_capacity_filler": 1,
+    "claim_per_new_replica_bytes": 3758096384,
+    "protected_deployments": 4,
+    "shared_controller_state_and_journal": true,
+    "ready_worker_count": 2,
+    "free_bytes_before_per_card": [
+      13413384192,
+      13413384192
+    ],
+    "frozen": {
+      "equal": [
+        2,
+        2,
+        2
+      ],
+      "minimum_ready": [
+        1,
+        2,
+        2
+      ],
+      "minimum_targets": [
+        2,
+        2,
+        2
+      ],
+      "pending_after": [
+        2,
+        2,
+        2
+      ],
+      "pending_before": [
+        3,
+        3,
+        3
+      ],
+      "priority_after": [
+        1,
+        1,
+        1
+      ],
+      "priority_before": [
+        1,
+        1,
+        0
+      ],
+      "slots_per_card": [
+        3,
+        3
+      ],
+      "weighted_allowed": [
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          3,
+          1,
+          2
+        ]
+      ]
+    },
+    "same_known_ocr_engine": true,
+    "native_scale_down_proof_freshly_verified": true
+  },
+  "no_vm_worker_docker_native_or_formal_container_restart": true,
+  "pending_latency_optimization_tested": false,
+  "different_model_algorithms_tested": false,
+  "scale_or_throughput_benchmark": false
+}

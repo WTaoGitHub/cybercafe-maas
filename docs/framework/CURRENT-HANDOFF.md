@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-13 多模型联动实测补齐**：同一试点调节器同时管理A/B/C，六组6/6通过。先各0→1再2/2/2；权重2:1:1实际3/2/1；容量受限先1/1/0，释放后1/1/1；三部署各3指定/2Ready连续观察≥180秒后收敛2/2/2且保留6个Ready；Ready低于min时仅收敛至指定2、保留Pending不再下降；全局暂停8秒零动作、恢复使用新权重。共42次自动更新，本地197通过/3条件跳过。正式仍2/2、gen15、未暂停/正式journal空、UNKNOWN0，原配置/实例/引擎与常驻容器未动；试点归零，旧未知journal保留，客户OCR唯一计量及日报回归通过。三部署复用同一OCR引擎，不是三种算法；冷热缓存/并行竞争、稳定观察与回退交接等余项仍待，不开展Pending耗时优化。[报告](../../results/maas-replica-multi-20261113/REPORT.md) · [HTML](../../results/maas-replica-multi-20261113/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-13 配置/资源热改实测补齐**：6/6通过。专属注册引擎B的镜像引用/命令/env有原生日志实证，普通修改不暂停、不回滚；单卡3.5→8及8→3.5混合占用均保留旧实例和计算申报，cap4实际2/2（错误重定价会为1或3）；非法/缺失声明停写，修复无需adopt/重启自动恢复；暂停后改B/8并归零保持，resume使用新配置，cap4实际1/1。共9次自动副本更新，本地190通过/3条件跳过。正式仍2/2、gen15、未暂停/正式journal空、UNKNOWN0，原引擎未改；新试点归零恢复基线，旧故障未知记录保留，所有常驻容器未动。镜像只换同digest引用，不是新权重/任意参数升级验证。下一步多模型联动，恢复耗时优化仍暂不开展。[报告](../../results/maas-replica-hot-20261113/REPORT.md) · [HTML](../../results/maas-replica-hot-20261113/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-12 故障与恢复实测补齐**：5/5 通过：订阅断开退为完整轮询并重连、读取 503 与不完整分页停写/恢复、原生已执行但回复超时后跨进程只读确认、未执行且读到旧目标仍保留未知 journal。每案例请求仅 1 次，前四项各提交原生 1 次、末项 0 次；最后试点 journal 按预期保留，已暂停/Observe、容器停止且 restart=no。正式 OCR 仍 2/2，generation15、正式 journal 空、客户 UNKNOWN0，API/E17/原生/DB 未重启；客户 OCR 唯一计量与日报回归通过。本地183通过/3条件跳过。工具独立运行，常驻镜像仍git-125298e；Pending 恢复耗时优化未开展。下一步补普通配置/资源热改和多模型联动，其他 R4 余项不改判。[报告](../../results/maas-replica-fault-20261112/REPORT.md) · [HTML](../../results/maas-replica-fault-20261112/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
@@ -19,7 +21,7 @@
 - 当前只有正式 OCR 一个部署获得 v2 Apply 写入授权，min1/max2；更改 scope 必须同步授权并显式 adopt。API/E17 使用同一持久 state；全局暂停优先，不通过改副本数表示接管。
 - 活动私有版本清单位于控制机部署目录的 `ACTIVE-MAAS-RELEASE.json`；对应 `compose-release-private.yaml` 固定镜像 ID，仅包含 API/E17。旧镜像 Compose 标签仍为历史，禁止据它直接重建这两个服务；不要 remove-orphans。
 - Mac 私有 `.maas/replica-pending-20261112/CURRENT-RUN.md`、已验 SHA 的归档和操作脚本可接续；不能重放试点创建、外部修改或客户请求脚本。旧备份含真实凭据，不入 Git。
-- 热改组合和其他未覆盖项仍不把源码回归写成真实验收。故障五项与热改六项已补齐；下一步在 Issue #39 做多模型联动，其他 R4 未覆盖项随后推进；Pending 重调度耗时为独立优化，不作为当前功能收尾前置。
+- 未覆盖的组合仍不能把源码回归写成真实验收。故障五项、热改六项及多模型联动六项已补齐；接续私有检查点见 `.maas/replica-multi-20261113-r1/CURRENT-RUN.md`，试点均已归零停止；其余受控冷热缓存/并行竞争、稳定观察与回退交接按 Issue #39 继续；Pending 重调度耗时为独立优化，不作为当前功能收尾前置。
 
 ## 只调副本与当前资源输入接力（发布前历史）
 
