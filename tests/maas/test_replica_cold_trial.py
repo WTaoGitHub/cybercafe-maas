@@ -6,7 +6,8 @@ import unittest
 
 from maas_replica_execution import WriteNotSent
 from maas_platform.replica_apply import MODEL_UPDATE_FIELDS, model_settings
-from maas_platform.replica_cold_trial import CLAIM, ColdRequest, policy, validate_proof
+from maas_platform.replica_cold_trial import (CLAIM, ColdRequest, WarmRequest, policy,
+                                            validate_proof, validate_warm_proof)
 from maas_platform.replica_state import atomic_private
 
 
@@ -78,6 +79,35 @@ class GateTest(unittest.IsolatedAsyncioTestCase):
     async def test_observe_refuses_every_mutation_even_with_valid_proof(self):
         atomic_private(self.root/'cold-proof.json', proof())
         with self.assertRaises(WriteNotSent):await self.put(self.request(False))
+        self.assertEqual(self.puts, [])
+        self.assertFalse((self.root/'one-shot-intent.json').exists())
+
+    async def test_warm_requires_cached_same_boot_success_and_separate_intent(self):
+        cold = {'worker_id': 6, 'gpu_uuid': 'GPU-new', 'boot_id': proof()['boot_id'],
+                'result_sha256': 'c'*64}
+        scope = {**spec(), 'successful_cold': cold}
+        warm = {**proof(), 'cache_phase': 'warm', 'image_present': True,
+                'successful_cold_sha256': 'c'*64}
+        with self.assertRaises(ValueError):validate_proof(warm, scope, now=200)
+        for change in [{'boot_id': '00000000-0000-0000-0000-000000000002'},
+                       {'successful_cold_sha256': 'd'*64}, {'image_present': False},
+                       {'cache_phase': 'cold'}, {'observed_controller_at': -500}]:
+            with self.assertRaises(ValueError):
+                validate_warm_proof({**warm, **change}, scope, now=200)
+        atomic_private(self.root/'warm-proof.json', warm)
+        request = WarmRequest(self.native, scope, self.root, allow_start=True, clock=lambda: 200)
+        await self.put(request)
+        with self.assertRaises(WriteNotSent):await self.put(request)
+        self.assertEqual(len(self.puts), 1)
+
+    async def test_warm_observe_never_releases_even_with_successful_cached_proof(self):
+        warm = {**proof(), 'cache_phase': 'warm', 'image_present': True,
+                'successful_cold_sha256': 'c'*64}
+        scope = {**spec(), 'successful_cold': {'worker_id': 6, 'gpu_uuid': 'GPU-new',
+                    'boot_id': proof()['boot_id'], 'result_sha256': 'c'*64}}
+        atomic_private(self.root/'warm-proof.json', warm)
+        with self.assertRaises(WriteNotSent):
+            await self.put(WarmRequest(self.native, scope, self.root, clock=lambda: 200))
         self.assertEqual(self.puts, [])
         self.assertFalse((self.root/'one-shot-intent.json').exists())
 

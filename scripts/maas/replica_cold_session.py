@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import httpx
 
 from maas_platform import gpu_daily_watch as daily
-from maas_platform.replica_cold_trial import ColdRequest
+from maas_platform.replica_cold_trial import ColdRequest, WarmRequest
 from maas_platform.replica_contract import ControlPolicyFile, private_json
 from maas_platform.replica_observe import run
 from maas_platform.replica_state import atomic_private
@@ -28,7 +28,8 @@ def append(path, kind, value):
 async def session(directory, duration, mode):
     spec = private_json(directory/'spec.json')
     writer = ReconcileWriter.from_environment()
-    writer.request = ColdRequest(writer.request, spec, directory, allow_start=mode == 'cold')
+    guard = WarmRequest if mode == 'warm' else ColdRequest
+    writer.request = guard(writer.request, spec, directory, allow_start=mode in ('cold', 'warm'))
     loader = ControlPolicyFile(directory/'policy.json', allow_apply=True)
     signatures = {}
     original_listing = daily.listing
@@ -82,7 +83,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--directory', type=Path, required=True)
     p.add_argument('--duration', type=int, default=7200)
-    p.add_argument('--mode', choices=('observe', 'cold'), default='observe')
+    p.add_argument('--mode', choices=('observe', 'cold', 'warm'), default='observe')
     args = p.parse_args()
     if not args.directory.is_absolute() or not 60 <= args.duration <= 7200:
         p.error('Absolute private directory and bounded window 60..7200 seconds required')

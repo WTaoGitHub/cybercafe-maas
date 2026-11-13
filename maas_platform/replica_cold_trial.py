@@ -24,15 +24,19 @@ def policy(model_id, cluster_id, owner_id):
             'pressure': {'mode': 'disabled'}, 'reconcile': {'interval_s': 1, 'stability_s': 1}}
 
 
-def validate_proof(proof, spec, *, now):
+def validate_proof(proof, spec, *, now, cache_phase='cold'):
+    if cache_phase not in ('cold', 'warm'):
+        raise ValueError('Explicit cold or warm cache phase required')
     if not isinstance(proof, dict):
         raise ValueError('Authenticated single-use cold evidence required')
     at = proof.get('observed_controller_at')
     if (proof.get('test_id') != spec['test_id'] or proof.get('model_id') != spec['model_id']
             or proof.get('image_digest') != spec['image_digest']
             or proof.get('source') != 'authenticated_ssh'
-            or proof.get('image_present') is not False
-            or proof.get('target_model_files_present') is not False
+            or proof.get('cache_phase', 'cold') != cache_phase
+            or proof.get('image_present') is not (cache_phase == 'warm')
+            or type(proof.get('target_model_files_present')) is not bool
+            or (cache_phase == 'cold' and proof['target_model_files_present'])
             or type(proof.get('worker_id')) is not int or proof['worker_id'] < 1
             or proof['worker_id'] in spec['protected_worker_ids']
             or not isinstance(proof.get('gpu_uuid'), str) or not proof['gpu_uuid'].startswith('GPU-')
@@ -45,12 +49,27 @@ def validate_proof(proof, spec, *, now):
     return proof
 
 
+def validate_warm_proof(proof, spec, *, now):
+    proof = validate_proof(proof, spec, now=now, cache_phase='warm')
+    prior = spec.get('successful_cold')
+    if (not isinstance(prior, dict) or prior.get('worker_id') != proof['worker_id']
+            or prior.get('gpu_uuid') != proof['gpu_uuid'] or prior.get('boot_id') != proof['boot_id']
+            or not isinstance(prior.get('result_sha256'), str)
+            or not re.fullmatch('[0-9a-f]{64}', prior['result_sha256'])
+            or proof.get('successful_cold_sha256') != prior['result_sha256']):
+        raise ValueError('Warm comparison requires the same successful cold node and boot')
+    return proof
+
+
 class ColdRequest:
     """Observe refuses every mutation; cold mode permits exactly one validated 0->1."""
     def __init__(self, request, spec, directory, *, allow_start=False, clock=time.time):
         policy(spec['model_id'], spec['cluster_id'], spec['owner_id'])
         self.request, self.url, self.spec = request, request.url, spec
         self.directory, self.allow_start, self.clock = Path(directory), allow_start, clock
+
+    def proof(self):
+        return validate_proof(private_json(self.directory/'cold-proof.json'), self.spec, now=self.clock())
 
     async def __call__(self, method, path, body=None):
         if method == 'GET':
@@ -59,7 +78,7 @@ class ColdRequest:
         if not self.allow_start or method != 'PUT' or path != f"/v2/models/{s['model_id']}":
             raise WriteNotSent('cold_trial_not_released')
         try:
-            proof = validate_proof(private_json(self.directory/'cold-proof.json'), s, now=self.clock())
+            proof = self.proof()
         except (OSError, ValueError, KeyError, TypeError):
             raise WriteNotSent('cold_trial_evidence_required') from None
         model = await self.request('GET', path)
@@ -95,3 +114,10 @@ class ColdRequest:
         try:os.fsync(directory_fd)
         finally:os.close(directory_fd)
         return await self.request(method, path, body)
+
+
+class WarmRequest(ColdRequest):
+    """A separate, single-use 0->1 after a verified cold run; cold intent is retained."""
+    def proof(self):
+        return validate_warm_proof(private_json(self.directory/'warm-proof.json'),
+                                   self.spec, now=self.clock())
