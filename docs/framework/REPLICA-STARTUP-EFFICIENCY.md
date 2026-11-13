@@ -1,5 +1,7 @@
 # 规模调节器：闲置资源到可服务容量的启动效率
 
+> **2026-11-13 热缓存并行启动实测补齐**：三部署共六副本、上限1/2/4交错各三轮，预热及计时9/9通过。全部Ready均值57.34/35.89/32.37秒，实测在途峰值1/2/2；上限2比串行均值缩短37.4%，4档更快但未形成四个实际同时启动，样本不足以宣称更优。建议2作受控候选，常驻仍上限1，未自动晋级。本地201通过/3条件跳过，759个快照与60笔发送前资源核对通过，81次原生OCR探针无错；客户异步唯一执行/计量和日报回归通过。正式2/2、gen15、未暂停/journal空，配置/实例/容器未动；试点归零、临时key撤销/路由删除，旧未知journal保留。冷缓存缺独立运行时仍待；下一步受控启用、稳定观察及回退交接，不做Pending耗时优化。[报告](../../results/maas-replica-startup-20261113/REPORT.md) · [HTML](../../results/maas-replica-startup-20261113/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-12 R1—R3 代码和 R4 只读前检完成，未发布**：102 项本地回归通过（Mac 缺原生 SDK 的 2 项另在固定 runtime 补验），GPUStack v2.2.3 内 34 项回归全部通过。真实两卡 Ready、原 OCR 仍 1/1；新版 Observe 稳定后计算目标 2，因未接管而保持零写入。已修复原生空 distributed_servers 默认对象导致误冻结的问题。独立实写/启动耗时比较、故障恢复试点及 R5 发布未完成，现网配置与人工目标不变。[实施与证据](../../results/maas-replica-v2-20261112/REPORT.md) · [并行边界](REPLICA-V2-PARALLEL.md) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 2026-11-12 · 补充设计，待实现及验证 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)

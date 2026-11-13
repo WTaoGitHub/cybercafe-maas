@@ -1,0 +1,733 @@
+{
+  "date": "2026-11-13",
+  "tool_commit": "17f1a0d",
+  "production_image": "git-125298e",
+  "local": {
+    "passed": 201,
+    "skipped": 3
+  },
+  "measured_passed": 9,
+  "measured_total": 9,
+  "prewarm_passed": true,
+  "points": [
+    {
+      "all_model_probes_success_s": 32.57375050400151,
+      "all_native_ready_s": 56.73123974201735,
+      "case": "warm-r1-l1",
+      "controller_puts": 6,
+      "first_native_ready_s": 9.311000076006167,
+      "first_probe_success_s": 11.775705008010846,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.0871129700099118,
+        0.11568521801382303,
+        0.09343540202826262,
+        0.08628781698644161,
+        0.09357571403961629,
+        0.09271308203460649
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 1,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "running": 258,
+        "scheduled": 1,
+        "starting": 69
+      },
+      "startup_limit": 1,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 9.311000076006167,
+          "starting": 3.344253908027895
+        },
+        "2": {
+          "running": 20.230694263009354,
+          "starting": 12.510961668042
+        },
+        "3": {
+          "running": 30.06568070704816,
+          "starting": 23.502651264017913
+        },
+        "4": {
+          "running": 38.24569843703648,
+          "starting": 32.75729261303786
+        },
+        "5": {
+          "running": 48.57282534200931,
+          "scheduled": 41.49318245204631,
+          "starting": 42.04637673503021
+        },
+        "6": {
+          "running": 56.73123974201735,
+          "starting": 51.251274312031455
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 20.549610929039773,
+      "all_native_ready_s": 32.174746883043554,
+      "case": "warm-r1-l2",
+      "controller_puts": 6,
+      "first_native_ready_s": 8.776066679041833,
+      "first_probe_success_s": 11.302648266020697,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.08328420098405331,
+        0.08869614498689771,
+        0.0786761170020327,
+        0.1017798520042561
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 2,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "analyzing": 2,
+        "running": 133,
+        "starting": 70
+      },
+      "startup_limit": 2,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 8.776066679041833,
+          "starting": 3.3556519240373746
+        },
+        "2": {
+          "running": 14.188837218040135,
+          "starting": 6.60961457103258
+        },
+        "3": {
+          "running": 18.01324535603635,
+          "starting": 12.039476623001974
+        },
+        "4": {
+          "analyzing": 16.9210556060425,
+          "running": 23.46809212298831,
+          "starting": 17.45718265901087
+        },
+        "5": {
+          "analyzing": 20.202055522997398,
+          "running": 27.31438455398893,
+          "starting": 20.75412293401314
+        },
+        "6": {
+          "running": 32.174746883043554,
+          "starting": 25.68254942400381
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 21.180919923994225,
+      "all_native_ready_s": 32.85493974300334,
+      "case": "warm-r1-l4",
+      "controller_puts": 6,
+      "first_native_ready_s": 9.321537782961968,
+      "first_probe_success_s": 11.848890137975104,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.09407061996171251,
+        0.10201942001003772,
+        0.10125952702946961,
+        0.09060735604725778
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 2,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "running": 136,
+        "scheduled": 1,
+        "starting": 70
+      },
+      "startup_limit": 4,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 9.321537782961968,
+          "starting": 3.3681220559519716
+        },
+        "2": {
+          "running": 14.228094994963612,
+          "starting": 6.636374028981663
+        },
+        "3": {
+          "running": 18.582441496953834,
+          "starting": 12.05210717197042
+        },
+        "4": {
+          "running": 23.570072247006465,
+          "starting": 16.95668270997703
+        },
+        "5": {
+          "running": 27.446882108983118,
+          "scheduled": 21.392365673964377,
+          "starting": 21.952334959991276
+        },
+        "6": {
+          "running": 32.85493974300334,
+          "starting": 26.889609866950195
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 19.469658727990463,
+      "all_native_ready_s": 39.368957224010956,
+      "case": "warm-r2-l2",
+      "controller_puts": 6,
+      "first_native_ready_s": 8.777535419038031,
+      "first_probe_success_s": 11.305833427002653,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.10330209799576551,
+        0.08623624598840252,
+        0.08438715699594468,
+        0.08677283499855548
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 2,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "running": 191,
+        "starting": 67
+      },
+      "startup_limit": 2,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 8.777535419038031,
+          "starting": 3.3117709680227563
+        },
+        "2": {
+          "running": 13.69131181499688,
+          "starting": 6.602985398028977
+        },
+        "3": {
+          "running": 16.96146265103016,
+          "starting": 12.054973477032036
+        },
+        "4": {
+          "running": 26.172277974023018,
+          "starting": 20.24518187000649
+        },
+        "5": {
+          "running": 29.99985172000015,
+          "starting": 23.500098879041616
+        },
+        "6": {
+          "running": 39.368957224010956,
+          "starting": 32.6777825410245
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 21.66220170399174,
+      "all_native_ready_s": 32.211205833998974,
+      "case": "warm-r2-l4",
+      "controller_puts": 6,
+      "first_native_ready_s": 9.818060329009313,
+      "first_probe_success_s": 12.333712537016254,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.09046191803645343,
+        0.08671426598448306,
+        0.0870598450419493,
+        0.08601334097329527
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 2,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "initializing": 1,
+        "running": 128,
+        "scheduled": 1,
+        "starting": 70
+      },
+      "startup_limit": 4,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 9.818060329009313,
+          "starting": 3.3000140099902637
+        },
+        "2": {
+          "running": 14.127345734043047,
+          "starting": 6.559455454989802
+        },
+        "3": {
+          "initializing": 13.040306934039108,
+          "running": 19.056258128024638,
+          "starting": 13.585267507005483
+        },
+        "4": {
+          "running": 22.974352499993984,
+          "scheduled": 16.319598002010025,
+          "starting": 16.87193267000839
+        },
+        "5": {
+          "running": 28.457979270024225,
+          "starting": 21.88701096503064
+        },
+        "6": {
+          "running": 32.211205833998974,
+          "starting": 26.24143944302341
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 31.89678372099297,
+      "all_native_ready_s": 55.844534525007475,
+      "case": "warm-r2-l1",
+      "controller_puts": 6,
+      "first_native_ready_s": 8.215761796978768,
+      "first_probe_success_s": 10.738925772020593,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.08655075402930379,
+        0.09569104399997741,
+        0.10539561102632433,
+        0.08172105101402849,
+        0.09213863901095465,
+        0.09325257403543219
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 1,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "analyzing": 1,
+        "initializing": 1,
+        "running": 256,
+        "scheduled": 1,
+        "starting": 68
+      },
+      "startup_limit": 1,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 8.215761796978768,
+          "starting": 2.7920211849850602
+        },
+        "2": {
+          "running": 19.557875694008544,
+          "starting": 11.438905519025866
+        },
+        "3": {
+          "running": 29.344472602009773,
+          "scheduled": 22.27671195100993,
+          "starting": 22.84411479497794
+        },
+        "4": {
+          "running": 37.26534455403453,
+          "starting": 32.06685349502368
+        },
+        "5": {
+          "initializing": 40.516547591018025,
+          "running": 47.602968030027114,
+          "starting": 41.06944194203243
+        },
+        "6": {
+          "analyzing": 49.83024481497705,
+          "running": 55.844534525007475,
+          "starting": 50.378507794986945
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 20.430295879021287,
+      "all_native_ready_s": 32.04612071602605,
+      "case": "warm-r3-l4",
+      "controller_puts": 6,
+      "first_native_ready_s": 8.825191662996076,
+      "first_probe_success_s": 11.396252805017866,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.08267561305547133,
+        0.08429508499102667,
+        0.09353892999934033,
+        0.08270069101126865
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 2,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "running": 134,
+        "scheduled": 2,
+        "starting": 70
+      },
+      "startup_limit": 4,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 8.825191662996076,
+          "starting": 3.276165956980549
+        },
+        "2": {
+          "running": 14.22769403399434,
+          "starting": 6.089093886024784
+        },
+        "3": {
+          "running": 17.951952364004683,
+          "scheduled": 11.050017270026729,
+          "starting": 11.580271198996343
+        },
+        "4": {
+          "running": 23.274069263017736,
+          "scheduled": 16.36974186601583,
+          "starting": 16.896546906034928
+        },
+        "5": {
+          "running": 26.557277204003185,
+          "starting": 21.156308185018133
+        },
+        "6": {
+          "running": 32.04612071602605,
+          "starting": 26.005008963984437
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 32.52266683103517,
+      "all_native_ready_s": 59.43819770304253,
+      "case": "warm-r3-l1",
+      "controller_puts": 6,
+      "first_native_ready_s": 8.76537073799409,
+      "first_probe_success_s": 11.239982547995169,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.0953408459899947,
+        0.08448758703889325,
+        0.09100448800018057,
+        0.08522750000702217,
+        0.0861143649672158,
+        0.08624456397956237
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 1,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "initializing": 1,
+        "running": 273,
+        "starting": 74
+      },
+      "startup_limit": 1,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 8.76537073799409,
+          "starting": 3.345286789990496
+        },
+        "2": {
+          "initializing": 11.981706396036316,
+          "running": 20.117467316042166,
+          "starting": 12.508317415020429
+        },
+        "3": {
+          "running": 29.984697055013385,
+          "starting": 22.911039106023964
+        },
+        "4": {
+          "running": 41.401774391997606,
+          "starting": 33.244637519994285
+        },
+        "5": {
+          "running": 51.253522098995745,
+          "starting": 44.743112631025724
+        },
+        "6": {
+          "running": 59.43819770304253,
+          "starting": 53.970739162003156
+        }
+      }
+    },
+    {
+      "all_model_probes_success_s": 26.00661406602012,
+      "all_native_ready_s": 36.12944804300787,
+      "case": "warm-r3-l2",
+      "controller_puts": 6,
+      "first_native_ready_s": 11.477500637993217,
+      "first_probe_success_s": 13.97063633200014,
+      "formal_probe_errors": 0,
+      "formal_probe_latencies_s": [
+        0.09205635299440473,
+        0.09806174802361056,
+        0.08227113197790459,
+        0.07525585900293663
+      ],
+      "measured": true,
+      "passed": true,
+      "peak_observed_global_inflight": 2,
+      "probe_dispatch_grace_after_ready_s": 2,
+      "probe_model_count": 3,
+      "protected_models_unchanged": true,
+      "ready_vector": [
+        2,
+        2,
+        2
+      ],
+      "sampled_state_counts": {
+        "running": 141,
+        "starting": 75
+      },
+      "startup_limit": 2,
+      "first_observed_instance_states_s": {
+        "1": {
+          "running": 11.477500637993217,
+          "starting": 3.348730864992831
+        },
+        "2": {
+          "running": 12.015745546028484,
+          "starting": 6.6243111889925785
+        },
+        "3": {
+          "running": 23.481959955999628,
+          "starting": 15.250978515017778
+        },
+        "4": {
+          "running": 24.031313835992478,
+          "starting": 18.546725029009394
+        },
+        "5": {
+          "running": 35.51715620298637,
+          "starting": 27.30310359201394
+        },
+        "6": {
+          "running": 36.12944804300787,
+          "starting": 30.553661171987187
+        }
+      }
+    }
+  ],
+  "groups": {
+    "1": {
+      "samples": 3,
+      "all_native_ready_mean_s": 57.33799065668912,
+      "all_native_ready_median_s": 56.73123974201735,
+      "all_native_ready_range_s": [
+        55.844534525007475,
+        59.43819770304253
+      ],
+      "first_native_ready_mean_s": 8.764044203659674,
+      "observed_peak_inflight": 1,
+      "formal_probe_count": 18,
+      "formal_probe_mean_s": 0.09177662367841953,
+      "formal_probe_max_s": 0.11568521801382303
+    },
+    "2": {
+      "samples": 3,
+      "all_native_ready_mean_s": 35.89105071668746,
+      "all_native_ready_median_s": 36.12944804300787,
+      "all_native_ready_range_s": [
+        32.174746883043554,
+        39.368957224010956
+      ],
+      "first_native_ready_mean_s": 9.677034245357694,
+      "observed_peak_inflight": 2,
+      "formal_probe_count": 12,
+      "formal_probe_mean_s": 0.08839831191289704,
+      "formal_probe_max_s": 0.10330209799576551
+    },
+    "4": {
+      "samples": 3,
+      "all_native_ready_mean_s": 32.37075543100946,
+      "all_native_ready_median_s": 32.211205833998974,
+      "all_native_ready_range_s": [
+        32.04612071602605,
+        32.85493974300334
+      ],
+      "first_native_ready_mean_s": 9.321596591655785,
+      "observed_peak_inflight": 2,
+      "formal_probe_count": 12,
+      "formal_probe_mean_s": 0.0901180510118138,
+      "formal_probe_max_s": 0.10201942001003772
+    }
+  },
+  "controller_puts_including_prewarm": 60,
+  "trial_processes": 10,
+  "trial_graceful_exits": 10,
+  "trial_container_exit": 0,
+  "formal": {
+    "formal_ready": 2,
+    "formal_target": 2,
+    "trial_targets_zero": true,
+    "customer_unknown": 0,
+    "e17_sample_age_s": 15.860830783843994,
+    "daily_http": 200,
+    "daily_matches_db": true,
+    "health_http": 200,
+    "cleanup_complete": true,
+    "key_revoked": true,
+    "trial_routes_deleted": 3,
+    "original_routes_preserved": true,
+    "formal_containers_unchanged": true,
+    "formal_generation": 15,
+    "formal_pending_write_empty": true,
+    "all_startup_trial_journals_empty": true,
+    "previous_fault_journal_unchanged": true,
+    "existing_engines_unchanged": true,
+    "protected_settings_equal": true,
+    "formal_ready_instance_ids_preserved": true,
+    "trial_container_stopped_exit_zero": true,
+    "ten_children_exit_zero": true
+  },
+  "customer_probe": {
+    "status": "SUCCEEDED",
+    "usage": {
+      "successful_images": 1
+    },
+    "has_result": true,
+    "usage_events": 1,
+    "attempts": 1,
+    "receipts": 1,
+    "unknown_count": 0
+  },
+  "independent_capacity_checks": {
+    "samples_checked": 759,
+    "prewrite_snapshots_checked": 60,
+    "vram_budget_respected": true,
+    "inflight_before_every_put_below_limit": true
+  },
+  "formal_baseline": {
+    "samples": 5,
+    "mean_s": 0.10480600559385493,
+    "range_s": [
+      0.07960107096005231,
+      0.17749160499079153
+    ]
+  },
+  "resources": {
+    "GPUStack": {
+      "samples": 6,
+      "max_cpu_docker_pct": 66.86,
+      "memory_usage_samples": [
+        "3.432GiB / 15.39GiB",
+        "3.439GiB / 15.39GiB",
+        "3.453GiB / 15.39GiB",
+        "3.415GiB / 15.39GiB",
+        "3.443GiB / 15.39GiB",
+        "3.436GiB / 15.39GiB"
+      ]
+    },
+    "E17": {
+      "samples": 6,
+      "max_cpu_docker_pct": 1.89,
+      "memory_usage_samples": [
+        "45.32MiB / 15.39GiB",
+        "45.67MiB / 15.39GiB",
+        "45.39MiB / 15.39GiB",
+        "45.32MiB / 15.39GiB",
+        "45.11MiB / 15.39GiB",
+        "45.09MiB / 15.39GiB"
+      ]
+    },
+    "MaaS API": {
+      "samples": 6,
+      "max_cpu_docker_pct": 0.2,
+      "memory_usage_samples": [
+        "46.85MiB / 15.39GiB",
+        "46.85MiB / 15.39GiB",
+        "46.85MiB / 15.39GiB",
+        "46.85MiB / 15.39GiB",
+        "46.85MiB / 15.39GiB",
+        "46.85MiB / 15.39GiB"
+      ]
+    },
+    "PostgreSQL": {
+      "samples": 6,
+      "max_cpu_docker_pct": 11.34,
+      "memory_usage_samples": [
+        "28.15MiB / 15.39GiB",
+        "28.31MiB / 15.39GiB",
+        "30.7MiB / 15.39GiB",
+        "29.7MiB / 15.39GiB",
+        "28.05MiB / 15.39GiB",
+        "28.46MiB / 15.39GiB"
+      ]
+    },
+    "trial": {
+      "samples": 6,
+      "max_cpu_docker_pct": 22.68,
+      "memory_usage_samples": [
+        "70.28MiB / 1GiB",
+        "29.1MiB / 1GiB",
+        "0B / 0B",
+        "70.29MiB / 1GiB",
+        "28.42MiB / 1GiB",
+        "70.55MiB / 1GiB"
+      ]
+    }
+  },
+  "scope": {
+    "managed_deployments": 3,
+    "target_each": 2,
+    "ready_worker_count": 2,
+    "claim_per_replica_bytes": 3758096384,
+    "same_approved_ocr_engine": true,
+    "cache": "prewarmed_on_both_current_workers",
+    "os_page_cache_controlled": false,
+    "probe_dispatch_grace_after_ready_s": 2,
+    "probe_uses_same_upstream_as_maas": true
+  },
+  "preparation_route_count_read_failed_before_mutations": true,
+  "preparation_route_count_read_fixed": true,
+  "cold_cache_tested": false,
+  "cold_cache_blocked_on_independent_runtime": true,
+  "four_simultaneous_starts_tested": false,
+  "automatic_production_promotion": false,
+  "production_startup_limit_unchanged": 1,
+  "no_vm_worker_docker_native_or_formal_container_restart": true
+}
