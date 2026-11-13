@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-13 002冷缓存只读前检**：用户确认的当前002未纳管、无容器/无OCR镜像、独立模型缓存空，GPU不同于正式两Ready worker；可保留运行作为冷测试候选，无须先关闭或排空OCR。其自动引导enabled/inactive，网络隔离依赖failed；当前名称/地址不触发旧保护、网卡通配匹配，但HTTPS/注册/拉取未验收。002同时是现有控制机SSH跳板，必须保留通路。本轮未改配置/启动服务或运行测试，冷验收仍未完成。下一步先备份并受控恢复引导依赖，再在002限定单副本冷试点；不重启VM/Docker，不自动执行。详[前检与计划](REPLICA-COLD-VALIDATION.md) · [匿名证据](../../results/maas-002-cold-preflight-20261113/validation.json) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+
 > **2026-11-13 热缓存并行启动实测补齐**：三部署共六副本、上限1/2/4交错各三轮，预热及计时9/9通过。全部Ready均值57.34/35.89/32.37秒，实测在途峰值1/2/2；上限2比串行均值缩短37.4%，4档更快但未形成四个实际同时启动，样本不足以宣称更优。建议2作受控候选，常驻仍上限1，未自动晋级。本地201通过/3条件跳过，759个快照与60笔发送前资源核对通过，81次原生OCR探针无错；客户异步唯一执行/计量和日报回归通过。正式2/2、gen15、未暂停/journal空，配置/实例/容器未动；试点归零、临时key撤销/路由删除，旧未知journal保留。冷缓存缺独立运行时仍待；下一步受控启用、稳定观察及回退交接，不做Pending耗时优化。[报告](../../results/maas-replica-startup-20261113/REPORT.md) · [HTML](../../results/maas-replica-startup-20261113/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-13 多模型联动实测补齐**：同一试点调节器同时管理A/B/C，六组6/6通过。先各0→1再2/2/2；权重2:1:1实际3/2/1；容量受限先1/1/0，释放后1/1/1；三部署各3指定/2Ready连续观察≥180秒后收敛2/2/2且保留6个Ready；Ready低于min时仅收敛至指定2、保留Pending不再下降；全局暂停8秒零动作、恢复使用新权重。共42次自动更新，本地197通过/3条件跳过。正式仍2/2、gen15、未暂停/正式journal空、UNKNOWN0，原配置/实例/引擎与常驻容器未动；试点归零，旧未知journal保留，客户OCR唯一计量及日报回归通过。三部署复用同一OCR引擎，不是三种算法；冷热缓存/并行竞争、稳定观察与回退交接等余项仍待，不开展Pending耗时优化。[报告](../../results/maas-replica-multi-20261113/REPORT.md) · [HTML](../../results/maas-replica-multi-20261113/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
