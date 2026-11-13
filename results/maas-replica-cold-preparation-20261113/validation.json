@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "phase": "PREPARED_AWAITING_NEW_VPC",
+  "prepared": true,
+  "cold_validation_passed": false,
+  "new_vpc_available": false,
+  "trial_source_commit": "19b4af1",
+  "production_image": "cybercafe-maas-tasks:git-125298e",
+  "local_tests": {
+    "passed": 208,
+    "skipped": 3,
+    "fixed_runtime_guard_tests_passed": 7,
+    "fixed_runtime_guard_transport": "fake_only"
+  },
+  "native_trial": {
+    "model_id": 9,
+    "route_id": 6,
+    "replicas": 0,
+    "ready_replicas": 0,
+    "instances": 0,
+    "cluster_id": 1,
+    "mode": "observe",
+    "paused": true,
+    "write_cap": 1,
+    "max_inflight": 1,
+    "vram_claim_bytes": 3758096384,
+    "selector_matches_existing_workers": false,
+    "proof_present": false,
+    "one_shot_intent_present": false,
+    "write_journal_empty": true,
+    "automatic_release": false,
+    "inference_key_lifetime_seconds": 86400
+  },
+  "isolated_maas": {
+    "logical_model": "ocr.cold-test",
+    "health_http": 200,
+    "capability_http": 200,
+    "production_logical_model_denied": true,
+    "production_logical_model_http": 404,
+    "independent_database": true,
+    "independent_database_role": true,
+    "production_tasks_table_access": false,
+    "independent_artifact_root": true,
+    "loopback_only": true,
+    "restart_policy": "no",
+    "tasks": 0,
+    "artifacts": 0,
+    "successful_task_usage_events": 0,
+    "ocr_usage_records": 0,
+    "ocr_inference_submitted": false
+  },
+  "observation": {
+    "state_at_preparation": "RUNNING",
+    "duration_seconds": 7200,
+    "started_at_beijing": "2026-11-13T14:00:44.384719+08:00",
+    "scheduled_end_at_beijing": "2026-11-13T16:00:44.384719+08:00",
+    "snapshot_kind": "preparation_prefix_not_full_window",
+    "automatic_extension": false,
+    "automatic_model_start": false
+  },
+  "image_metadata": {
+    "compressed_layers_bytes": 6658933504,
+    "layer_count": 21,
+    "expanded_image_bytes": 12297581081,
+    "source": "registry_manifest_and_existing_hot_node_docker_metadata",
+    "cold_target_download_performed": false,
+    "shared_layers_absent_proven": false,
+    "cold_deadline_frozen": false,
+    "theoretical_transfer_seconds_at_100mbps": 532.71468032,
+    "transfer_estimate_is_measurement": false
+  },
+  "formal": {
+    "replicas": 2,
+    "ready_replicas": 2,
+    "ready_workers": 2,
+    "ownership_generation": 15,
+    "paused": false,
+    "startup_limit": 1,
+    "write_journal_empty": true,
+    "customer_unknown": 0,
+    "settings_and_instance_ids_preserved": true,
+    "core_container_ids_images_started_at_preserved": true,
+    "old_unknown_journal_preserved": true,
+    "no_vm_worker_docker_restart": true,
+    "old002_bootstrap_unchanged": true,
+    "formal_api_and_e17_unchanged": true
+  },
+  "backup": {
+    "before_bytes": 96976,
+    "before_sha256": "d63e0c4e0bc13652dd367e0209fc6629989d2a787f2d59fa4ac1fa313482f1e4",
+    "before_saved_to_mac": true
+  },
+  "not_yet_verified": [
+    "new_vpc_first_boot_automatic_registration",
+    "new_vpc_cache_and_disk_preflight",
+    "cold_0_to_1",
+    "cold_model_ready_and_real_gpu",
+    "cold_ocr_task_result_and_unique_metering",
+    "same_node_warm_comparison",
+    "two_fully_cold_nodes_startup_limit_comparison"
+  ],
+  "at_beijing": "2026-11-13T14:16:52.399155+08:00"
+}
