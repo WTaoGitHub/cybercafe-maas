@@ -1,8 +1,10 @@
 # 新VPC首启与冷模型串联验收：控制端准备
 
-2026-11-13 · 控制端已准备，新001/003冷前置核对通过，实际冷验收未执行 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
+2026-11-13 · 单节点冷/热及真实OCR通过并收尾；双全冷并行对照未完成 · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
 
-最新拓扑：新001=worker7、新003=worker6，均Ready/direct、不同GPU/启动ID、目标OCR镜像/缓存缺失、无模型实例，可继续试点。正式2/2均在worker5，实例为5、181，旧实例63已不在；原配置/四核心容器保持，后续须建立新基线，不再套用旧实例ID不变断言。[拓扑检查报告](../../results/maas-replica-cold-topology-20261113/REPORT.md)。实际冷轮尚未放行；当前17:00只结束独立观测，不影响模型服务，后续执行另行安排足够窗口。
+最新验收：新001/worker7冷/热自动0→1各一次，Apply→Ready89.48/12.40秒；两任务结果、唯一计量及正式回归通过。试点已0/0恢复选择器，临时key/路由清理，测试API/执行器和调节/事件进程停止；冷/热单次意图保留，未重放。正式2/2、gen15/启动上限1和E17保持，003仍冷。冷/热工具已实际使用，9项固定运行镜像模拟保护测试及210本地/3跳过核对通过。单对不代表性能分布或并行竞争结论。[完整报告](../../results/maas-replica-cold-warm-20261113/REPORT.md)。
+
+16:49前检拓扑（历史快照）：新001=worker7、新003=worker6，均Ready/direct、不同GPU/启动ID、目标OCR镜像/缓存缺失、无模型实例，可继续试点。正式2/2均在worker5，实例为5、181，旧实例63已不在；原配置/四核心容器保持，后续须建立新基线，不再套用旧实例ID不变断言。[拓扑检查报告](../../results/maas-replica-cold-topology-20261113/REPORT.md)。实际冷轮尚未放行；当前17:00只结束独立观测，不影响模型服务，后续执行另行安排足够窗口。
 
 准备及延期阶段结果（历史快照）：冷部署model9、路由6已创建，0/0、无实例，占位选择器不匹配现有worker；Observe且持久暂停，写入journal/单次意图/缓存证明均不存在。独立测试API/单执行器/测试数据库已启动，逻辑模型仅`ocr.cold-test`，health与能力查询HTTP200、正式逻辑模型请求被拒绝；任务/文件/成功计量全0。原正式OCR仍2/2、generation15未暂停、启动上限1、UNKNOWN0，原配置/实例/四核心容器及旧未知journal保持。本地208通过/3条件跳过；固定运行镜像中7项模拟传输保护测试通过，不冒充真实冷启动验证。[准备报告](../../results/maas-replica-cold-preparation-20261113/REPORT.md) · [匿名证据](../../results/maas-replica-cold-preparation-20261113/validation.json)。
 
