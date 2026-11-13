@@ -1,0 +1,43 @@
+{
+  "client_source": "b6ab211",
+  "client_files_matched": 17,
+  "cluster_id": 1,
+  "worker_id": 6,
+  "hostname": "XZ-31-003",
+  "gpu_uuid_sha256": "13e526744d43e6b25694ae9f78887d98bf440f25382ce30a9c6567e2d774223f",
+  "boot_id_sha256": "a194c781057cf124d867b58e6e6e9ce8a42a2b7cc28867a9f57bffcf408eb211",
+  "first_agent_inspection_uptime_seconds": 206.11,
+  "registration_complete_uptime_seconds": 120.936123,
+  "basic_target_uptime_seconds": 104.263915,
+  "bootstrap_start_uptime_seconds": 104.288092,
+  "timer_trigger": "30.081084s",
+  "bootstrap_start_events": 1,
+  "attempt": 1,
+  "startup_code": "APPLIED",
+  "native_state": "ready",
+  "native_me_http": 200,
+  "identity_and_device_match": true,
+  "automatic_intent": true,
+  "initial_worker_id": null,
+  "worker_created_between_intent_and_permit": true,
+  "gpu_in_approved_map": false,
+  "agent_manual_start_or_service_retry": false,
+  "agent_configuration_change": false,
+  "same_gpu_handoff_tested": false,
+  "platform_instance_id_verified": false,
+  "existing_workers": [
+    {
+      "id": 4,
+      "state": "not_ready",
+      "cluster_id": 1
+    },
+    {
+      "id": 5,
+      "state": "ready",
+      "cluster_id": 1
+    }
+  ],
+  "old003_ssh_reachable": false,
+  "old003_platform_lifecycle_verified": false,
+  "old004_original_boot_id_verified": true
+}
