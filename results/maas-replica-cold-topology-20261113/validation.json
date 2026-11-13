@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "phase": "READONLY_CHECK_PASSED_COLD_ELIGIBLE_NOT_RUN",
+  "at_beijing": "2026-11-13T16:52:55.784564+08:00",
+  "management_access_restored": true,
+  "controller_ssh_host_check": "previously_trusted_key",
+  "new_vm_ssh_host_check": "per_run_first_use_pinned_user_supplied_endpoints",
+  "read_only_remote_inspection": true,
+  "nodes": [
+    {
+      "node_label": "001",
+      "worker_id": 7,
+      "cluster_id": 1,
+      "state": "ready",
+      "proxy_mode": "direct",
+      "gpu_model": "NVIDIA GeForce RTX 4080 SUPER",
+      "vram_mib": 16376,
+      "gpu_uuid_matches_native": true,
+      "gpu_not_in_protected_baseline": true,
+      "worker_name_is_gpu_uuid": true,
+      "bootstrap_automatic": true,
+      "bootstrap_service_exit": 0,
+      "initializing_observed_beijing": "2026-11-13T16:10:22.015864+08:00",
+      "ready_observed_beijing": "2026-11-13T16:10:38.061413+08:00",
+      "initializing_to_ready_seconds": 16.045549392700195,
+      "observed_model_instances": 0,
+      "docker_images": 1,
+      "target_image_by_repo_digest_present": false,
+      "target_image_by_config_digest_present": false,
+      "target_related_tags_present": false,
+      "model_marker_bytes": 138,
+      "writable_cache_files": 0,
+      "available_disk_bytes": 470338121728,
+      "inventory_at_beijing": "2026-11-13T16:47:02.359020+08:00",
+      "inventory_sha256_verified": true
+    },
+    {
+      "node_label": "003",
+      "worker_id": 6,
+      "cluster_id": 1,
+      "state": "ready",
+      "proxy_mode": "direct",
+      "gpu_model": "NVIDIA GeForce RTX 4080 SUPER",
+      "vram_mib": 16376,
+      "gpu_uuid_matches_native": true,
+      "gpu_not_in_protected_baseline": true,
+      "worker_name_is_gpu_uuid": true,
+      "bootstrap_automatic": true,
+      "bootstrap_service_exit": 0,
+      "initializing_observed_beijing": "2026-11-13T15:58:02.321225+08:00",
+      "ready_observed_beijing": "2026-11-13T15:58:18.012285+08:00",
+      "initializing_to_ready_seconds": 15.691060066223145,
+      "observed_model_instances": 0,
+      "docker_images": 1,
+      "target_image_by_repo_digest_present": false,
+      "target_image_by_config_digest_present": false,
+      "target_related_tags_present": false,
+      "model_marker_bytes": 138,
+      "writable_cache_files": 0,
+      "available_disk_bytes": 470337150976,
+      "inventory_at_beijing": "2026-11-13T16:47:03.055227+08:00",
+      "inventory_sha256_verified": true
+    }
+  ],
+  "two_distinct_gpu_uuids": true,
+  "two_distinct_boot_ids": true,
+  "all_target_shared_layers_absent_proven": false,
+  "automatic_registration_observed": true,
+  "earlier_failed_boot_attempt_diagnosed": false,
+  "formal": {
+    "target": 2,
+    "ready": 2,
+    "running_worker_ids": [
+      5
+    ],
+    "current_instance_ids": [
+      5,
+      181
+    ],
+    "previous_instance_ids": [
+      5,
+      63
+    ],
+    "original_deployment_settings_preserved": true,
+    "core_container_ids_images_start_times_preserved": true,
+    "generation": 15,
+    "paused": false,
+    "write_journal_present": false,
+    "customer_unknown": 0,
+    "observed_target_readiness_timeline": [
+      {
+        "at_beijing": "2026-11-13T14:00:44.519734+08:00",
+        "target": 2,
+        "ready": 2
+      },
+      {
+        "at_beijing": "2026-11-13T15:52:33.946131+08:00",
+        "target": 2,
+        "ready": 1
+      },
+      {
+        "at_beijing": "2026-11-13T15:56:59.787240+08:00",
+        "target": 2,
+        "ready": 2
+      }
+    ]
+  },
+  "cold_trial": {
+    "model_id": 9,
+    "target": 0,
+    "ready": 0,
+    "mode": "observe",
+    "paused": true,
+    "write_cap": 1,
+    "selector_is_sentinel": true,
+    "journal_present": false,
+    "single_use_intent_present": false,
+    "tasks": 0,
+    "ocr_usage_records": 0,
+    "inference_submitted": false,
+    "new_cold_run_started": false
+  },
+  "observation": {
+    "running_at_inspection": true,
+    "ends_at_beijing": "2026-11-13T17:00:00+08:00",
+    "further_extension_performed": false,
+    "handoff_gap_seconds_previously_recorded": 2.9880318641662598
+  },
+  "coverage": {
+    "successful_new_node_bootstrap_and_registration": "OBSERVED_TWO_NODES",
+    "single_cold_trial_0_to_1": "ELIGIBLE_NOT_RUN",
+    "cold_ocr_and_unique_usage": "NOT_RUN",
+    "same_node_warm_comparison": "AFTER_COLD_SUCCESS_SEPARATE_PHASE",
+    "two_fully_cold_nodes_startup_limit_comparison": "NEEDS_SEPARATE_CASES_AND_COLD_SAMPLES_PER_ARM",
+    "same_gpu_handoff": "OUT_OF_CURRENT_SCOPE"
+  },
+  "next_candidate_node_label": "001",
+  "next_candidate_worker_id": 7,
+  "no_vm_worker_docker_restart": true,
+  "native_replica_writes_performed": false,
+  "cache_cleared_or_image_pulled_by_agent": false,
+  "public_inference_probe_performed": false
+}
