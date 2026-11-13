@@ -1,0 +1,146 @@
+{
+  "date": "2026-11-13",
+  "tool_commit": "b824fbf",
+  "production_image": "git-125298e",
+  "local": {
+    "passed": 190,
+    "skipped": 3
+  },
+  "live_cases_passed": 6,
+  "live_cases_total": 6,
+  "cases": [
+    {
+      "actual_ready": 1,
+      "actual_target": 1,
+      "case": "config_change",
+      "controller_puts": 1,
+      "latest_backend_version_retained": true,
+      "latest_environment_retained": true,
+      "new_image_command_env_in_native_provisioning_log": true,
+      "ordinary_edit_did_not_pause": true,
+      "passed": true,
+      "protected_models_unchanged": true
+    },
+    {
+      "actual_ready": 2,
+      "actual_target": 2,
+      "available_card_bytes_excluding_other_models": 13413384192,
+      "case": "old_small_new_large",
+      "controller_puts": 2,
+      "expected_actual_cost_target": 2,
+      "incorrect_repriced_target": 1,
+      "native_claims_bytes": [
+        3758096384,
+        8589934592
+      ],
+      "new_claim_bytes": 8589934592,
+      "new_instance_uses_latest_claim": true,
+      "old_claim_bytes": 3758096384,
+      "old_instance_and_claim_preserved": true,
+      "passed": true,
+      "protected_models_unchanged": true
+    },
+    {
+      "actual_ready": 2,
+      "actual_target": 2,
+      "available_card_bytes_excluding_other_models": 13413384192,
+      "case": "old_large_new_small",
+      "controller_puts": 2,
+      "expected_actual_cost_target": 2,
+      "incorrect_repriced_target": 3,
+      "native_claims_bytes": [
+        3758096384,
+        8589934592
+      ],
+      "new_claim_bytes": 3758096384,
+      "new_instance_uses_latest_claim": true,
+      "old_claim_bytes": 8589934592,
+      "old_instance_and_claim_preserved": true,
+      "passed": true,
+      "protected_models_unchanged": true
+    },
+    {
+      "actual_ready": 1,
+      "actual_target": 1,
+      "blocked_controller_puts": 0,
+      "blocked_observed_s": 5,
+      "blocked_reason": "resource_claim_invalid",
+      "case": "invalid_claim",
+      "controller_puts": 1,
+      "fixed_without_adoption_or_restart": true,
+      "passed": true,
+      "protected_models_unchanged": true
+    },
+    {
+      "actual_ready": 1,
+      "actual_target": 1,
+      "blocked_controller_puts": 0,
+      "blocked_observed_s": 5,
+      "blocked_reason": "resource_claim_missing",
+      "case": "missing_claim",
+      "controller_puts": 1,
+      "fixed_without_adoption_or_restart": true,
+      "passed": true,
+      "protected_models_unchanged": true
+    },
+    {
+      "actual_ready": 1,
+      "actual_resource_target": 1,
+      "actual_target": 1,
+      "case": "paused_config",
+      "controller_puts": 2,
+      "passed": true,
+      "paused_additional_puts": 0,
+      "paused_observed_s": 5,
+      "policy_cap": 4,
+      "protected_models_unchanged": true,
+      "resumed_claim_bytes": 8589934592,
+      "resumed_latest_version_and_claim": true
+    }
+  ],
+  "controller_puts": 9,
+  "trial_processes": 6,
+  "trial_graceful_exits": 6,
+  "trial_container_exit": 0,
+  "formal": {
+    "formal_ready": 2,
+    "formal_target": 2,
+    "trial_targets_zero": true,
+    "customer_unknown": 0,
+    "e17_sample_age_s": 18.11330509185791,
+    "daily_http": 200,
+    "daily_matches_db": true,
+    "health_http": 200,
+    "formal_containers_unchanged": true,
+    "formal_generation": 15,
+    "formal_pending_write_empty": true,
+    "all_hot_trial_journals_empty": true,
+    "previous_fault_journal_unchanged": true,
+    "original_engine_unchanged": true,
+    "trial_config_restored": true
+  },
+  "customer_probe": {
+    "status": "SUCCEEDED",
+    "usage": {
+      "successful_images": 1
+    },
+    "has_result": true,
+    "usage_events": 1,
+    "attempts": 1,
+    "receipts": 1,
+    "unknown_count": 0
+  },
+  "configuration_scope": {
+    "dedicated_trial_model": 4,
+    "dedicated_trial_backend": 13,
+    "registered_engine_versions": true,
+    "same_image_content_digest": true,
+    "different_image_references": true,
+    "only_known_arguments_reordered": true,
+    "original_backend_preserved": true,
+    "model_inline_image_override_tested": false
+  },
+  "no_vm_worker_docker_native_or_formal_container_restart": true,
+  "pending_latency_optimization_tested": false,
+  "multi_model_competition_tested": false
+}
