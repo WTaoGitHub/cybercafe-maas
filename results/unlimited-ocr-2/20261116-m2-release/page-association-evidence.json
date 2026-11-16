@@ -1,0 +1,125 @@
+{
+  "checked_multi_page_documents": 22,
+  "checked_pages": 68,
+  "passed": true,
+  "gpu_requests_sent": 0,
+  "purpose": "Offline page association only; original quality metrics and waiver unchanged",
+  "records": [
+    {
+      "task_id": "task_8e576a35b3fc4b3dafa46de1b5e1f676",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_ba1cbaa05544424ea220b566a02bdf2f",
+      "pages": 10,
+      "case": "evaluation-mixed-ten"
+    },
+    {
+      "task_id": "task_5628bafc9bb24ac690723dd69976ee72",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_caa3e383efa84757a47a5da993bdfc7e",
+      "pages": 10,
+      "case": "synthetic-10"
+    },
+    {
+      "task_id": "task_6825c095bcdc4114a5669b34dbf2d9e6",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_f6089a7dfe2443199d779e3bba3949ea",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_3f730173bb344d3ea1f86c52b81fc8cb",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_3891e81c2222495bb64e534dfe84975a",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_78136f12527d4f2db660d76a674967ad",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_731f4d654ed04b85b04efcd6ad7a98a2",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_018ee72175c34470bcaa8069b41ced55",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_89f12c3a70b14a38ba8adecbef0c6d82",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_9fd8f1f45d984c958981138e8dba7a29",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_953660594d224269af7bdb4b8d8b51d3",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_e5e1b15e0bad472bba57eb62907c614f",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_40581b967ef84088b5ca132c5bccc375",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_f2f0846547a148858b4e2c665947c180",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_7d878238efa049d39ced07c1b49d8a1a",
+      "pages": 2,
+      "case": "synthetic-2"
+    },
+    {
+      "task_id": "task_64835959d73a4a2e8cac86f07a9ba55e",
+      "pages": 10,
+      "case": "evaluation-mixed-ten"
+    },
+    {
+      "task_id": "task_bb07fb8ec463464ca53b32501e82fac6",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_758b40ccca5d46b4a746ddb67cdfc6c1",
+      "pages": 2,
+      "case": "evaluation-mixed-two"
+    },
+    {
+      "task_id": "task_d2d63b768d6945aea90bdf3fcc7e5087",
+      "pages": 2,
+      "case": "synthetic-2"
+    }
+  ],
+  "methods": {
+    "synthetic": "REFERENCE ALPHA N equals the expected page ordinal",
+    "natural": "Source-identity text anchors from existing non-ignored annotations; >=6 normalized alphanumeric characters, fallback >=4 when all references are shorter",
+    "blank": "No alphanumeric block content"
+  },
+  "metric_scope": "Page association only, not a new quality grade; Chinese quality waiver and original failed scores unchanged"
+}
