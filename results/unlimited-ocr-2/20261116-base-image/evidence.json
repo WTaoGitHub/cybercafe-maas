@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-16",
+  "status": "base_image_published_and_reader_pull_verified",
+  "download": {
+    "exit": 0,
+    "elapsed_seconds": 1372
+  },
+  "archive": {
+    "manifest_digest": "sha256:6b6617592b94e7dcc6ffbe6d00720eed27bc6e3b4f06b26b93b4070c31f57391",
+    "config_digest": "sha256:ec9a1a479ad110600f15a0959a7b4c5bc9ddaed8b34a2d020abb7aea8b5b1707",
+    "archive_sha256": "sha256:af90c8b24a899deae2a11c8eef3d497c4ffef32d11c83f6c5d4c6099b2e9a7bc",
+    "archive_bytes": 3960720896,
+    "compressed_layers_verified": 11
+  },
+  "offline_delivery": {
+    "worker_id": 6,
+    "image_id": "sha256:ec9a1a479ad110600f15a0959a7b4c5bc9ddaed8b34a2d020abb7aea8b5b1707",
+    "base_alias": "maas-uocr2-cuda-base:13.0.2-ec9a1a479ad1",
+    "archive_sha256": "sha256:af90c8b24a899deae2a11c8eef3d497c4ffef32d11c83f6c5d4c6099b2e9a7bc",
+    "rootfs_layers_verified": 11,
+    "running_containers": [
+      "maas-gpustack-worker"
+    ],
+    "inference_started": false
+  },
+  "registry": {
+    "registry_repository": "maas/base-cuda",
+    "registry_tag": "13.0.2-devel-ubuntu22.04-uocr2",
+    "manifest_digest": "sha256:00fde7d4b087eb46c66aecebba22543c978f9071fbd0270a7a4c54d7da756dcb",
+    "source_manifest_digest": "sha256:6b6617592b94e7dcc6ffbe6d00720eed27bc6e3b4f06b26b93b4070c31f57391",
+    "original_manifest_preserved": false,
+    "config_digest": "sha256:ec9a1a479ad110600f15a0959a7b4c5bc9ddaed8b34a2d020abb7aea8b5b1707",
+    "config_identity_preserved": true,
+    "layer_count": 11,
+    "archive_sha256": "sha256:af90c8b24a899deae2a11c8eef3d497c4ffef32d11c83f6c5d4c6099b2e9a7bc",
+    "archive_bytes": 3960720896,
+    "registry_get_by_digest_http": 200,
+    "already_present": false,
+    "temporary_publisher_auth_removed": true,
+    "worker_pull_verification_pending": false,
+    "worker_reader_pull": {
+      "worker_id": 6,
+      "registry_repository": "maas/base-cuda",
+      "manifest_digest": "sha256:00fde7d4b087eb46c66aecebba22543c978f9071fbd0270a7a4c54d7da756dcb",
+      "image_id": "sha256:ec9a1a479ad110600f15a0959a7b4c5bc9ddaed8b34a2d020abb7aea8b5b1707",
+      "reader_manifest_http": 200,
+      "docker_reader_pull_verified": true,
+      "tls_verified": true,
+      "rootfs_layer_count": 11,
+      "repository_digest_confirmed": true,
+      "used_existing_bootstrap_reader_config": true,
+      "publisher_credentials_copied_to_worker": false,
+      "running_containers": [
+        "maas-gpustack-worker"
+      ],
+      "compute_process_count": 0,
+      "cold_pull_verified": false
+    }
+  },
+  "model_service_image_built": false,
+  "gpu_inference_started": false,
+  "cold_pull_verified": false,
+  "production_ocr_configuration_changed": false,
+  "vm_or_docker_engine_restarted": false
+}
