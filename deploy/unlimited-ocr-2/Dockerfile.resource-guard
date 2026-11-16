@@ -1,0 +1,4 @@
+ARG PARENT_IMAGE
+FROM ${PARENT_IMAGE}
+COPY resource_guard.py /opt/maas/resource_guard.py
+ENTRYPOINT ["python3", "/opt/maas/resource_guard.py"]
