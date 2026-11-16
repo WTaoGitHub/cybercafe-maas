@@ -1,0 +1,27 @@
+{
+  "model_id": 11,
+  "route_id": 8,
+  "replicas_at_validation": 0,
+  "route_access_policy": "allowed_principals",
+  "ordinary_principal_grants": 0,
+  "old_key_value_rotated": false,
+  "old_key_allowed_models": ["maas-ocr", "maas-ocr-r4-20261112"],
+  "trial_key_allowed_models": ["unlimited-ocr-2"],
+  "callback_http": {
+    "old_key_old_routes": [200, 200],
+    "old_key_new_route": 403,
+    "trial_key_new_route": 200,
+    "trial_key_old_route": 403,
+    "wrong_key_new_route": 401,
+    "anonymous_new_route": 401
+  },
+  "old_ocr_before_and_after_succeeded": true,
+  "old_ocr_successful_images_each": 1,
+  "raw_old_key_new_route_http": 404,
+  "raw_old_key_spoofed_header_http": 404,
+  "raw_old_key_new_route_message": "Model not found",
+  "raw_trial_key_zero_instances_http": 404,
+  "raw_trial_key_zero_instances_message": "Model not found or no running instances available",
+  "higress_data_plane_verified": false,
+  "main_e06_repair_attempts": 1
+}
