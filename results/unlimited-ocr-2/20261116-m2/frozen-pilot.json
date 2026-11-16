@@ -1,0 +1,357 @@
+{
+  "profile": "m2-controlled-pilot-v1",
+  "dataset": "ocr-mixed-v1",
+  "split": "evaluation",
+  "selection": "first four in manifest order per source among evaluation IDs with <=10MP; frozen before GPU tests",
+  "samples": [
+    {
+      "id": "doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731",
+      "source": "doclaynet",
+      "original_id": "333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731",
+      "image": "images/doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731.png",
+      "ground_truth": "ground_truth/doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731.txt",
+      "annotation": "annotations/doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731.json",
+      "language": "en_auto_detected",
+      "width": 1025,
+      "height": 1025,
+      "bytes": 445435,
+      "sha256": "6a582b06acdbfffe27ffe56e93b0f7bff00043ca343892430c29f02e3cdf86be",
+      "characters": 2623,
+      "regions": 58,
+      "ignored_regions": 0,
+      "reference_type": "PDF digital text; not manually corrected OCR gold",
+      "commercial_permission": "CDLA-Permissive-1.0"
+    },
+    {
+      "id": "doclaynet_690318223c7002136140e49eafeb98774aa1cc2ad983871b6fac21848cd47b05",
+      "source": "doclaynet",
+      "original_id": "690318223c7002136140e49eafeb98774aa1cc2ad983871b6fac21848cd47b05",
+      "image": "images/doclaynet_690318223c7002136140e49eafeb98774aa1cc2ad983871b6fac21848cd47b05.png",
+      "ground_truth": "ground_truth/doclaynet_690318223c7002136140e49eafeb98774aa1cc2ad983871b6fac21848cd47b05.txt",
+      "annotation": "annotations/doclaynet_690318223c7002136140e49eafeb98774aa1cc2ad983871b6fac21848cd47b05.json",
+      "language": "en_auto_detected",
+      "width": 1025,
+      "height": 1025,
+      "bytes": 283963,
+      "sha256": "2df759edffe5a8e585d2de8f3db952bfcdf80cde8897a45c20789c1f7d8dae34",
+      "characters": 2049,
+      "regions": 151,
+      "ignored_regions": 0,
+      "reference_type": "PDF digital text; not manually corrected OCR gold",
+      "commercial_permission": "CDLA-Permissive-1.0"
+    },
+    {
+      "id": "doclaynet_1cb3589058c15556bffde4e18fd796974ef844d7f6ef051792163de15ce4be9f",
+      "source": "doclaynet",
+      "original_id": "1cb3589058c15556bffde4e18fd796974ef844d7f6ef051792163de15ce4be9f",
+      "image": "images/doclaynet_1cb3589058c15556bffde4e18fd796974ef844d7f6ef051792163de15ce4be9f.png",
+      "ground_truth": "ground_truth/doclaynet_1cb3589058c15556bffde4e18fd796974ef844d7f6ef051792163de15ce4be9f.txt",
+      "annotation": "annotations/doclaynet_1cb3589058c15556bffde4e18fd796974ef844d7f6ef051792163de15ce4be9f.json",
+      "language": "en_auto_detected",
+      "width": 1025,
+      "height": 1025,
+      "bytes": 411216,
+      "sha256": "d4bb2e13e55106fd200b1cb0f198bbec591c1e22b552f4ff0ced546d9d360566",
+      "characters": 2899,
+      "regions": 84,
+      "ignored_regions": 0,
+      "reference_type": "PDF digital text; not manually corrected OCR gold",
+      "commercial_permission": "CDLA-Permissive-1.0"
+    },
+    {
+      "id": "doclaynet_7fa3de4bc10d43e24399cf47f1ca54f42fdb05f3833ee3bd60c7918a0fcf5000",
+      "source": "doclaynet",
+      "original_id": "7fa3de4bc10d43e24399cf47f1ca54f42fdb05f3833ee3bd60c7918a0fcf5000",
+      "image": "images/doclaynet_7fa3de4bc10d43e24399cf47f1ca54f42fdb05f3833ee3bd60c7918a0fcf5000.png",
+      "ground_truth": "ground_truth/doclaynet_7fa3de4bc10d43e24399cf47f1ca54f42fdb05f3833ee3bd60c7918a0fcf5000.txt",
+      "annotation": "annotations/doclaynet_7fa3de4bc10d43e24399cf47f1ca54f42fdb05f3833ee3bd60c7918a0fcf5000.json",
+      "language": "en_auto_detected",
+      "width": 1025,
+      "height": 1025,
+      "bytes": 255438,
+      "sha256": "31d9dfad9721f95b221990d36accf619960dd536bb31dc78d74475cd7672bd45",
+      "characters": 1236,
+      "regions": 41,
+      "ignored_regions": 0,
+      "reference_type": "PDF digital text; not manually corrected OCR gold",
+      "commercial_permission": "CDLA-Permissive-1.0"
+    },
+    {
+      "id": "rctw17_image_4702",
+      "source": "rctw17",
+      "original_id": "image_4702",
+      "image": "images/rctw17_image_4702.jpg",
+      "ground_truth": "ground_truth/rctw17_image_4702.txt",
+      "annotation": "annotations/rctw17_image_4702.json",
+      "language": "zh_mixed",
+      "width": 2448,
+      "height": 3264,
+      "bytes": 1389957,
+      "sha256": "a580177c49fa6dde1c48618d36b941949466b07ffd8d7009f59333fd77de7a07",
+      "characters": 30,
+      "regions": 3,
+      "ignored_regions": 0,
+      "reference_type": "RCTW-17 annotations redistributed as OpenDataLab DSDL",
+      "commercial_permission": "unconfirmed"
+    },
+    {
+      "id": "rctw17_image_6361",
+      "source": "rctw17",
+      "original_id": "image_6361",
+      "image": "images/rctw17_image_6361.jpg",
+      "ground_truth": "ground_truth/rctw17_image_6361.txt",
+      "annotation": "annotations/rctw17_image_6361.json",
+      "language": "zh_mixed",
+      "width": 2448,
+      "height": 2448,
+      "bytes": 432789,
+      "sha256": "e112b097ae7810d3cbd1b781a3ea0f081948dc9adace78da748823f647de0414",
+      "characters": 63,
+      "regions": 12,
+      "ignored_regions": 6,
+      "reference_type": "RCTW-17 annotations redistributed as OpenDataLab DSDL",
+      "commercial_permission": "unconfirmed"
+    },
+    {
+      "id": "rctw17_image_3756",
+      "source": "rctw17",
+      "original_id": "image_3756",
+      "image": "images/rctw17_image_3756.jpg",
+      "ground_truth": "ground_truth/rctw17_image_3756.txt",
+      "annotation": "annotations/rctw17_image_3756.json",
+      "language": "zh_mixed",
+      "width": 435,
+      "height": 463,
+      "bytes": 14855,
+      "sha256": "86177feb6a111b11ea41facf9a70139264989768f52542501d314289f439cd70",
+      "characters": 10,
+      "regions": 2,
+      "ignored_regions": 0,
+      "reference_type": "RCTW-17 annotations redistributed as OpenDataLab DSDL",
+      "commercial_permission": "unconfirmed"
+    },
+    {
+      "id": "rctw17_image_1947",
+      "source": "rctw17",
+      "original_id": "image_1947",
+      "image": "images/rctw17_image_1947.jpg",
+      "ground_truth": "ground_truth/rctw17_image_1947.txt",
+      "annotation": "annotations/rctw17_image_1947.json",
+      "language": "zh_mixed",
+      "width": 2448,
+      "height": 3264,
+      "bytes": 1375978,
+      "sha256": "d38e95b8f592a29119ff000b1a5a97e21a28e2752b367fd09a28d77fb9ddba03",
+      "characters": 22,
+      "regions": 2,
+      "ignored_regions": 0,
+      "reference_type": "RCTW-17 annotations redistributed as OpenDataLab DSDL",
+      "commercial_permission": "unconfirmed"
+    }
+  ],
+  "cases": [
+    {
+      "name": "evaluation-1",
+      "file": "evaluation-1.pdf",
+      "pages": 1,
+      "source_ids": [
+        "doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731"
+      ],
+      "sha256": "bc6e502a35cd9b7d400480414c11504866bf8014bd78609a3bb74586c4aca681",
+      "bytes": 392728,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-2",
+      "file": "evaluation-2.pdf",
+      "pages": 1,
+      "source_ids": [
+        "doclaynet_690318223c7002136140e49eafeb98774aa1cc2ad983871b6fac21848cd47b05"
+      ],
+      "sha256": "e7f26c171c03630805fb44c6a6b1b5e6ec738b13bef07ce4cd0dd3a51a07c8be",
+      "bytes": 306920,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-3",
+      "file": "evaluation-3.pdf",
+      "pages": 1,
+      "source_ids": [
+        "doclaynet_1cb3589058c15556bffde4e18fd796974ef844d7f6ef051792163de15ce4be9f"
+      ],
+      "sha256": "19b91a5d0d34ab4d6debb0a297598ec9e267cac9752859f63c8116b407c5d5d3",
+      "bytes": 359451,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-4",
+      "file": "evaluation-4.pdf",
+      "pages": 1,
+      "source_ids": [
+        "doclaynet_7fa3de4bc10d43e24399cf47f1ca54f42fdb05f3833ee3bd60c7918a0fcf5000"
+      ],
+      "sha256": "879c74b52be0f87c03aa7076481c66c13a3f519ffc411f812138fb491929a41d",
+      "bytes": 314145,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-5",
+      "file": "evaluation-5.pdf",
+      "pages": 1,
+      "source_ids": [
+        "rctw17_image_4702"
+      ],
+      "sha256": "0bd0462c84b5a1dc9d670a099dda2db2d39a320daf8bd79c56a06ef7968f5de7",
+      "bytes": 1734922,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-6",
+      "file": "evaluation-6.pdf",
+      "pages": 1,
+      "source_ids": [
+        "rctw17_image_6361"
+      ],
+      "sha256": "d69c0341972bacf3a5ca62b069b6975b3357ccd84a5ae830f60e664788b1284d",
+      "bytes": 542646,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-7",
+      "file": "evaluation-7.pdf",
+      "pages": 1,
+      "source_ids": [
+        "rctw17_image_3756"
+      ],
+      "sha256": "43c9b88d1e2de65a987dd26de47e2fae08595e9debd04658a788fecf4cd9317b",
+      "bytes": 20221,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-8",
+      "file": "evaluation-8.pdf",
+      "pages": 1,
+      "source_ids": [
+        "rctw17_image_1947"
+      ],
+      "sha256": "885505fc2f0158ffef82428e702c0b432eeed5e8f1775f2eacf701115450e1f8",
+      "bytes": 1717442,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-mixed-two",
+      "file": "evaluation-mixed-two.pdf",
+      "pages": 2,
+      "source_ids": [
+        "doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731",
+        "rctw17_image_4702"
+      ],
+      "sha256": "64b9082fb79975d6b2b7a798f7cdf982e475e89a9dcae5b0aeff89861a607479",
+      "bytes": 2126742,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-mixed-ten",
+      "file": "evaluation-mixed-ten.pdf",
+      "pages": 10,
+      "source_ids": [
+        "doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731",
+        "doclaynet_690318223c7002136140e49eafeb98774aa1cc2ad983871b6fac21848cd47b05",
+        "doclaynet_1cb3589058c15556bffde4e18fd796974ef844d7f6ef051792163de15ce4be9f",
+        "doclaynet_7fa3de4bc10d43e24399cf47f1ca54f42fdb05f3833ee3bd60c7918a0fcf5000",
+        "rctw17_image_4702",
+        "rctw17_image_6361",
+        "rctw17_image_3756",
+        "rctw17_image_1947",
+        "doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731"
+      ],
+      "sha256": "91ccda56fdd9a3e92748e045b71353f22efc9cd919bf8c9455d14296fcdd4405",
+      "bytes": 5383044,
+      "rotated": false
+    },
+    {
+      "name": "evaluation-rotated",
+      "file": "evaluation-rotated.pdf",
+      "pages": 1,
+      "source_ids": [
+        "doclaynet_333147fa4e0e4c61f1ef3a3df85b9e1afd8c42b2beb9b06d2f25a359b969d731"
+      ],
+      "sha256": "67dc79918245eb56de36485de37bc5742fd9884aea5b5d35f2a9692b4a6aa10c",
+      "bytes": 392729,
+      "rotated": true
+    },
+    {
+      "name": "blank",
+      "file": "blank.pdf",
+      "pages": 1,
+      "source_ids": [],
+      "sha256": "077c3686682d50eecdaf7768cbfbda9d19bc1535f730c57810009ef17f8fd677",
+      "bytes": 1298,
+      "rotated": false
+    },
+    {
+      "name": "synthetic-1",
+      "file": "synthetic-1.pdf",
+      "pages": 1,
+      "source_ids": [],
+      "sha256": "b572ab42f293c66071e4e94264235e85eea38c5a150c74f3d561c920a4c0749f",
+      "bytes": 1610,
+      "anchors": [
+        "REFERENCE",
+        "ALPHA",
+        "20261116",
+        "80.00"
+      ]
+    },
+    {
+      "name": "synthetic-2",
+      "file": "synthetic-2.pdf",
+      "pages": 2,
+      "source_ids": [],
+      "sha256": "e6775515682d5ab4c629405d05193350b86609f3aacec2d4df7c360cf8d953de",
+      "bytes": 2170,
+      "anchors": [
+        "REFERENCE",
+        "ALPHA",
+        "20261116",
+        "80.00"
+      ]
+    },
+    {
+      "name": "synthetic-10",
+      "file": "synthetic-10.pdf",
+      "pages": 10,
+      "source_ids": [],
+      "sha256": "42939d12be51c6a3bb4e081c746217196aaec4a7421b2871a556120be1f5de9f",
+      "bytes": 6662,
+      "anchors": [
+        "REFERENCE",
+        "ALPHA",
+        "20261116",
+        "80.00"
+      ]
+    }
+  ],
+  "gates": {
+    "complete_ordered_pages_ratio": 1,
+    "synthetic_anchor_recall": 1,
+    "doclaynet_exact_region_recall": 0.8,
+    "rctw17_exact_region_recall": 0.6,
+    "latency_p95_seconds": 600,
+    "deadline_seconds": 900,
+    "gpu_peak_mib": 14500,
+    "inference_container_peak_bytes": 16106127360,
+    "api_or_executor_peak_bytes": 1610612736,
+    "oom_allowed": 0,
+    "unknown_allowed": 0,
+    "max_running_documents": 1,
+    "http_offered_concurrency": [
+      1,
+      2,
+      4
+    ],
+    "rounds_per_http_level": 3
+  },
+  "quality_rules": "Exact-region recall: NFKC + lower + remove whitespace; reference non-ignored region text must occur contiguously in normalized output. Source-weighted character recall reported separately. Whole-page CER descriptive only; source reading order is not gold. No held-out business generalization claim; RCTW license unconfirmed.",
+  "pdf_generation": "reportlab 4.4.9, images embedded with native pixel dimensions at150DPI; raster input PDFs, not original upstream PDFs; synthetic PDFs native text; rotation is PDF /Rotate90"
+}
