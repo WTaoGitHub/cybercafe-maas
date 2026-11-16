@@ -1,0 +1,3 @@
+ARG PARENT_IMAGE
+FROM ${PARENT_IMAGE}
+RUN timeout 300 apt-get update && timeout 600 apt-get install -y --no-install-recommends python3-dev && test -f /usr/include/python3.10/Python.h && rm -rf /var/lib/apt/lists/*
