@@ -79,3 +79,5 @@ def merge_document(doc):
     paths['/maas/v1/tasks/{ident}']['get']['description'] += ' 文档成功时result为DocumentResult，默认usage为successful_pages。'
     doc['info']['version'] = '2026-11-16'
     doc['info']['description'] += ' 文档异步模型为独立受控M2试点，使用运维提供的独立Base URL，能力和许可依入口catalog为准；旧OCR入口不会自动切换。文档仅JSON、单份执行，PDF≤10页/10MiB，默认150DPI、最高300DPI、每页≤10MP/总≤50MP，600秒执行/900秒总期限，max_attempts=1；token用量不可用。'
+    doc['info']['description'] = doc['info']['description'].replace('当前运行配置8副本/8执行器', '2026-11-02验收配置为8副本/8执行器')
+    doc['info']['description'] += ' 2026-11-16文档试点因中文场景质量门槛未通过已停止新上传/提交（503），历史任务/结果/页收据查询保留；M2尚未交付，不代表已开放正式文档服务。'

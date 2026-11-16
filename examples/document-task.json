@@ -1,0 +1,7 @@
+{
+  "model": "document.unlimited-ocr-2",
+  "input": {"document": {"artifact_id": "art_REPLACE_WITH_UPLOADED_ID"}},
+  "parameters": {"dpi": 150},
+  "timeout_seconds": 900,
+  "max_attempts": 1
+}

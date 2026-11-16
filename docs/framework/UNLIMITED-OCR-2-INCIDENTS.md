@@ -24,3 +24,6 @@
 | — | `UOCR2-INC-014` | M2离线构建辅助脚本错误替换变量，随后BuildKit将裸image ID当作仓库名 | 主代理第1次修正生成脚本语法，第2次为已核验本地镜像创建固定tag并禁用pull；断网构建成功，PDFium wheel哈希及pip check通过。未修改旧服务或Docker守护进程 |
 | — | `UOCR2-INC-015` | M2测试辅助脚本未使用现有PostgreSQL端口 | 首次连接默认5432被拒，未创建或修改数据库；主代理一次读取实际DSN端口后仅创建新的`_test`数据库，执行隔离测试 |
 | — | `UOCR2-INC-016` | 扩展回归收集依赖的maas_bench未挂载 | 主代理一次补挂仓库既有测试依赖后，165项通过、1项跳过；一项既有同步历史测试仍请求旧根路径/ocr导致404，已在[#25](https://github.com/WTaoGitHub/cybercafe-maas/issues/25)另行记录，不冒充模型故障或全套通过 |
+| — | `UOCR2-INC-017` | PDF查看辅助脚本将PdfPage误作context manager | 一次改为显式close后，15份PDF重新打开、页数核对及渲染查看完成；未影响部署代码 |
+| — | `UOCR2-INC-018` | 实际下游只有curl，无Python/jq | 推理前停止；一次改由新PC编排、每次HTTP仍在实际下游执行curl，15份/35页完整链路通过；交付无Python的curl步骤，不在下游安装工具 |
+| — | `UOCR2-INC-019` | M2中文场景区域精确召回42.1%，低于冻结60%门槛 | 主代理第1次原始JPEG绕过PDF、第2次167DPI候选均为26.3%，未解决，按两次上限停止。新入口关闭提交、独立执行器暂停且排空，历史查询保留；不进入容量加压或M2发布，见[M2停止报告](../../results/unlimited-ocr-2/20261116-m2/REPORT.md) |

@@ -1,0 +1,502 @@
+{
+  "phase": "M2_STOPPED_QUALITY_GATE",
+  "source_commit": "31eaaa2",
+  "frozen_profile_commit": "48b697e",
+  "pilot_status": "STOPPED",
+  "stop_reason": "Frozen quality gate failed: rctw17",
+  "records": [
+    {
+      "task_id": "task_10e58037c2f041b89e856306893716ea",
+      "case": "synthetic-1",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 3.606480304035358,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_f4671d3815f744e7808e6174631acf7b",
+      "usage_id": "usage_task_task_10e58037c2f041b89e856306893716ea",
+      "successful_pages": 1
+    },
+    {
+      "task_id": "task_6798fdca75dd4140a83f379d036eb924",
+      "case": "evaluation-1",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 11.195917610893957,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_a251bdaf1b084d48835896a13e43a866",
+      "usage_id": "usage_task_task_6798fdca75dd4140a83f379d036eb924",
+      "successful_pages": 1,
+      "reference_regions": 58,
+      "matched_regions": 58,
+      "reference_characters": 2623,
+      "matched_characters": 2623,
+      "source": "doclaynet"
+    },
+    {
+      "task_id": "task_f550cfe249524765b77401ba29b941a7",
+      "case": "evaluation-2",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 16.062267257948406,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_e12f12467df049ffb304e06095f9da6a",
+      "usage_id": "usage_task_task_f550cfe249524765b77401ba29b941a7",
+      "successful_pages": 1,
+      "reference_regions": 151,
+      "matched_regions": 145,
+      "reference_characters": 2049,
+      "matched_characters": 1944,
+      "source": "doclaynet"
+    },
+    {
+      "task_id": "task_e8827f640a5248aba4523e32f1bf9aad",
+      "case": "evaluation-3",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 13.695401693927124,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_c1e29e20e5bb45b58abb73847f9fc2e2",
+      "usage_id": "usage_task_task_e8827f640a5248aba4523e32f1bf9aad",
+      "successful_pages": 1,
+      "reference_regions": 84,
+      "matched_regions": 79,
+      "reference_characters": 2899,
+      "matched_characters": 2819,
+      "source": "doclaynet"
+    },
+    {
+      "task_id": "task_cd0bf0cb60e04896bc080a232ecd04f7",
+      "case": "evaluation-4",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 9.328271573991515,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_679b1c471d444d86b413c095cbb45c4b",
+      "usage_id": "usage_task_task_cd0bf0cb60e04896bc080a232ecd04f7",
+      "successful_pages": 1,
+      "reference_regions": 41,
+      "matched_regions": 39,
+      "reference_characters": 1236,
+      "matched_characters": 1219,
+      "source": "doclaynet"
+    },
+    {
+      "task_id": "task_9bd04452e8a84e988eb36bd323947c5f",
+      "case": "evaluation-5",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 4.2636225880123675,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_3b2ffc9210474233acc4e0365b715a7b",
+      "usage_id": "usage_task_task_9bd04452e8a84e988eb36bd323947c5f",
+      "successful_pages": 1,
+      "reference_regions": 3,
+      "matched_regions": 2,
+      "reference_characters": 30,
+      "matched_characters": 24,
+      "source": "rctw17"
+    },
+    {
+      "task_id": "task_6f3697c13d6846728a8c911cf1b3c215",
+      "case": "evaluation-6",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 2.8903347000014037,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_b2de7f291df34bfebdb85374310a0553",
+      "usage_id": "usage_task_task_6f3697c13d6846728a8c911cf1b3c215",
+      "successful_pages": 1,
+      "reference_regions": 12,
+      "matched_regions": 3,
+      "reference_characters": 63,
+      "matched_characters": 26,
+      "source": "rctw17"
+    },
+    {
+      "task_id": "task_2f8c2f9231724eb98f90804b60481925",
+      "case": "evaluation-7",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 1.2814621770521626,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_df2dd77d6cdf490c88cb565aaa332770",
+      "usage_id": "usage_task_task_2f8c2f9231724eb98f90804b60481925",
+      "successful_pages": 1,
+      "reference_regions": 2,
+      "matched_regions": 2,
+      "reference_characters": 10,
+      "matched_characters": 10,
+      "source": "rctw17"
+    },
+    {
+      "task_id": "task_b8fbe2828af849479648009a94abb2bc",
+      "case": "evaluation-8",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 3.4695122690172866,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_3b9bb2bdfe214b8f9484d6838ab3124c",
+      "usage_id": "usage_task_task_b8fbe2828af849479648009a94abb2bc",
+      "successful_pages": 1,
+      "reference_regions": 2,
+      "matched_regions": 1,
+      "reference_characters": 22,
+      "matched_characters": 7,
+      "source": "rctw17"
+    },
+    {
+      "task_id": "task_8e576a35b3fc4b3dafa46de1b5e1f676",
+      "case": "evaluation-mixed-two",
+      "pages": 2,
+      "label": "quality",
+      "elapsed_seconds": 15.283548990963027,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_d0499f484bb04b799f1ecafe9a145fab",
+      "usage_id": "usage_task_task_8e576a35b3fc4b3dafa46de1b5e1f676",
+      "successful_pages": 2
+    },
+    {
+      "task_id": "task_ba1cbaa05544424ea220b566a02bdf2f",
+      "case": "evaluation-mixed-ten",
+      "pages": 10,
+      "label": "quality",
+      "elapsed_seconds": 70.46541456808336,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_f8f0d5acdd0b4863a38394ebe8908313",
+      "usage_id": "usage_task_task_ba1cbaa05544424ea220b566a02bdf2f",
+      "successful_pages": 10
+    },
+    {
+      "task_id": "task_57870aeffa1e41f393fc227a45b025b8",
+      "case": "evaluation-rotated",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 10.608215937973,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_30424af029a647768da911cb6c5e6991",
+      "usage_id": "usage_task_task_57870aeffa1e41f393fc227a45b025b8",
+      "successful_pages": 1
+    },
+    {
+      "task_id": "task_96add09f15f5449c994bb5fdb28e4279",
+      "case": "blank",
+      "pages": 1,
+      "label": "quality",
+      "elapsed_seconds": 1.2547067769337445,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_c886f6c601c24e56ad07d609a857aa9a",
+      "usage_id": "usage_task_task_96add09f15f5449c994bb5fdb28e4279",
+      "successful_pages": 1
+    },
+    {
+      "task_id": "task_5628bafc9bb24ac690723dd69976ee72",
+      "case": "synthetic-2",
+      "pages": 2,
+      "label": "quality",
+      "elapsed_seconds": 4.757141922018491,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_8d39ae98a69c4ba588c8ec853475de07",
+      "usage_id": "usage_task_task_5628bafc9bb24ac690723dd69976ee72",
+      "successful_pages": 2
+    },
+    {
+      "task_id": "task_caa3e383efa84757a47a5da993bdfc7e",
+      "case": "synthetic-10",
+      "pages": 10,
+      "label": "quality",
+      "elapsed_seconds": 21.805835622013547,
+      "status": "SUCCEEDED",
+      "error": null,
+      "result_artifact_id": "art_41275ec17dc743bfb101209ea54e8c57",
+      "usage_id": "usage_task_task_caa3e383efa84757a47a5da993bdfc7e",
+      "successful_pages": 10
+    }
+  ],
+  "quality": [
+    {
+      "source": "doclaynet",
+      "samples": 4,
+      "regions": 334,
+      "matched_regions": 321,
+      "exact_region_recall": 0.9610778443113772,
+      "character_weighted_exact_recall": 0.9770636993300783,
+      "gate": 0.8
+    },
+    {
+      "source": "rctw17",
+      "samples": 4,
+      "regions": 19,
+      "matched_regions": 8,
+      "exact_region_recall": 0.42105263157894735,
+      "character_weighted_exact_recall": 0.536,
+      "gate": 0.6
+    }
+  ],
+  "main_attempts": [
+    {
+      "main_attempt": 1,
+      "input_mode": "original_jpeg",
+      "dpi": 150,
+      "exact_region_recall": 0.2631578947368421,
+      "frozen_gate": 0.6,
+      "passed": false
+    },
+    {
+      "main_attempt": 2,
+      "input_mode": "pdf",
+      "dpi": 167,
+      "exact_region_recall": 0.2631578947368421,
+      "frozen_gate": 0.6,
+      "passed": false
+    }
+  ],
+  "stop_safety": {
+    "entry_closed": true,
+    "paused": true,
+    "managed_drained": true,
+    "unknown_activity": false,
+    "backup_created": true,
+    "backup_archive_list_checked": true,
+    "backup_restore_tested": false,
+    "http_checks": [
+      {
+        "path": "/maas/v1/tasks",
+        "method": "POST",
+        "http": 503
+      },
+      {
+        "path": "/maas/v1/artifacts",
+        "method": "POST",
+        "http": 503
+      },
+      {
+        "path": "/maas/v1/tasks/task_ba1cbaa05544424ea220b566a02bdf2f",
+        "method": "GET",
+        "http": 200
+      },
+      {
+        "path": "/maas/v1/artifacts/art_f8f0d5acdd0b4863a38394ebe8908313",
+        "method": "GET",
+        "http": 200
+      },
+      {
+        "path": "/maas/v1/tasks/task_ba1cbaa05544424ea220b566a02bdf2f/usage?usage_type=pages",
+        "method": "GET",
+        "http": 200
+      }
+    ],
+    "counts": {
+      "tasks": 15,
+      "receipts": 15,
+      "task_events": 15,
+      "probe_usage_events": 0,
+      "successful_pages": 35
+    },
+    "timing": [
+      {
+        "id": "task_10e58037c2f041b89e856306893716ea",
+        "queue_seconds": 0.119213,
+        "run_seconds": 3.190932
+      },
+      {
+        "id": "task_6798fdca75dd4140a83f379d036eb924",
+        "queue_seconds": 0.17053,
+        "run_seconds": 10.699882
+      },
+      {
+        "id": "task_f550cfe249524765b77401ba29b941a7",
+        "queue_seconds": 0.157078,
+        "run_seconds": 15.722382
+      },
+      {
+        "id": "task_e8827f640a5248aba4523e32f1bf9aad",
+        "queue_seconds": 0.271147,
+        "run_seconds": 13.396138
+      },
+      {
+        "id": "task_cd0bf0cb60e04896bc080a232ecd04f7",
+        "queue_seconds": 0.347515,
+        "run_seconds": 8.691701
+      },
+      {
+        "id": "task_9bd04452e8a84e988eb36bd323947c5f",
+        "queue_seconds": 0.013316,
+        "run_seconds": 4.071878
+      },
+      {
+        "id": "task_6f3697c13d6846728a8c911cf1b3c215",
+        "queue_seconds": 0.330583,
+        "run_seconds": 2.313374
+      },
+      {
+        "id": "task_2f8c2f9231724eb98f90804b60481925",
+        "queue_seconds": 0.164651,
+        "run_seconds": 0.891946
+      },
+      {
+        "id": "task_b8fbe2828af849479648009a94abb2bc",
+        "queue_seconds": 0.126226,
+        "run_seconds": 2.962494
+      },
+      {
+        "id": "task_8e576a35b3fc4b3dafa46de1b5e1f676",
+        "queue_seconds": 0.055949,
+        "run_seconds": 14.949105
+      },
+      {
+        "id": "task_ba1cbaa05544424ea220b566a02bdf2f",
+        "queue_seconds": 0.19824,
+        "run_seconds": 69.86229
+      },
+      {
+        "id": "task_57870aeffa1e41f393fc227a45b025b8",
+        "queue_seconds": 0.062582,
+        "run_seconds": 10.231827
+      },
+      {
+        "id": "task_96add09f15f5449c994bb5fdb28e4279",
+        "queue_seconds": 0.180276,
+        "run_seconds": 0.754397
+      },
+      {
+        "id": "task_5628bafc9bb24ac690723dd69976ee72",
+        "queue_seconds": 0.032246,
+        "run_seconds": 4.372606
+      },
+      {
+        "id": "task_caa3e383efa84757a47a5da993bdfc7e",
+        "queue_seconds": 0.015549,
+        "run_seconds": 21.419244
+      }
+    ]
+  },
+  "containers": [
+    {
+      "name": "maas-document-api-m2",
+      "image": "sha256:fa05b3688f1c9b5e73d308807e6210b8f16a3a1e349628ab4b5fd91de70a96cb",
+      "running": true,
+      "restarts": 0,
+      "oom_killed": false,
+      "memory_limit_bytes": 2147483648,
+      "memory_current_bytes": 71135232,
+      "memory_peak_bytes": 285745152
+    },
+    {
+      "name": "maas-document-executor-m2",
+      "image": "sha256:fa05b3688f1c9b5e73d308807e6210b8f16a3a1e349628ab4b5fd91de70a96cb",
+      "running": true,
+      "restarts": 0,
+      "oom_killed": false,
+      "memory_limit_bytes": 2147483648,
+      "memory_current_bytes": 42729472,
+      "memory_peak_bytes": 228605952
+    },
+    {
+      "name": "maas-document-edge-m2",
+      "image": "sha256:0f8324a725154d18927f2a1241b2dd8bf3574156eaf8ae02b2b51e7064888613",
+      "running": true,
+      "restarts": 0,
+      "oom_killed": false,
+      "memory_limit_bytes": 134217728,
+      "memory_current_bytes": 2359296,
+      "memory_peak_bytes": 12582912
+    }
+  ],
+  "old_ocr_before": [
+    {
+      "task_id": "task_f44ca103aab44750a55697ab6ac6d856",
+      "elapsed_seconds": 0.7574781179428101,
+      "text_sha256": "ee3f22f4aac785374eba4bfaed5b010ff71999df5ba3421de3aff9e34ef3a468",
+      "successful_images": 1
+    },
+    {
+      "task_id": "task_d79ec6c3d4f84594b33ed2ffc7a9c492",
+      "elapsed_seconds": 0.760363542009145,
+      "text_sha256": "ee3f22f4aac785374eba4bfaed5b010ff71999df5ba3421de3aff9e34ef3a468",
+      "successful_images": 1
+    },
+    {
+      "task_id": "task_1a85c3dafb054a5786f751a397142a57",
+      "elapsed_seconds": 0.7721820569131523,
+      "text_sha256": "ee3f22f4aac785374eba4bfaed5b010ff71999df5ba3421de3aff9e34ef3a468",
+      "successful_images": 1
+    }
+  ],
+  "old_ocr_after": [
+    {
+      "task_id": "task_1b9091f49189409cb18405c077bfb7f8",
+      "elapsed_seconds": 0.7233044209424406,
+      "text_sha256": "ee3f22f4aac785374eba4bfaed5b010ff71999df5ba3421de3aff9e34ef3a468",
+      "successful_images": 1
+    },
+    {
+      "task_id": "task_efa4de4c318f4e8c9acfa2bd6530ef4a",
+      "elapsed_seconds": 0.7318854910554364,
+      "text_sha256": "ee3f22f4aac785374eba4bfaed5b010ff71999df5ba3421de3aff9e34ef3a468",
+      "successful_images": 1
+    },
+    {
+      "task_id": "task_7aebca849c774ba58f25e4ab39ec1494",
+      "elapsed_seconds": 0.786040639039129,
+      "text_sha256": "ee3f22f4aac785374eba4bfaed5b010ff71999df5ba3421de3aff9e34ef3a468",
+      "successful_images": 1
+    }
+  ],
+  "protected_containers": [
+    {
+      "container": "maas-control-api-1",
+      "id_unchanged": true,
+      "image_unchanged": true,
+      "started_at_unchanged": true,
+      "running": true
+    },
+    {
+      "container": "maas-control-gpustack-observe",
+      "id_unchanged": true,
+      "image_unchanged": true,
+      "started_at_unchanged": true,
+      "running": true
+    },
+    {
+      "container": "maas-control-executor-1",
+      "id_unchanged": true,
+      "image_unchanged": true,
+      "started_at_unchanged": true,
+      "running": true
+    },
+    {
+      "container": "maas-control-db-1",
+      "id_unchanged": true,
+      "image_unchanged": true,
+      "started_at_unchanged": true,
+      "running": true
+    }
+  ],
+  "linux_tests": {
+    "passed": 167,
+    "skipped": 1,
+    "skip_reason": "Requires isolated host-side database interruption harness",
+    "known_unrelated_test_failure": "test_sync_history_integration.py requests legacy root /ocr; recorded in issue25"
+  },
+  "not_run": [
+    "HTTP concurrency2/4 capacity rounds",
+    "business holdout quality",
+    "cold-start/full initialization memory peak",
+    "backup restoration rehearsal",
+    "P6 production release"
+  ]
+}

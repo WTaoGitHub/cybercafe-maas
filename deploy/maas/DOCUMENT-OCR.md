@@ -1,6 +1,6 @@
 # 文档异步任务接入
 
-P4–P6实施中，尚未部署M2。复用现有 `/maas/v1/artifacts`、`/maas/v1/tasks`、任务取消、结果下载和usage查询；不新增PDF专用API。模型服务M1见[验收报告](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)。
+P4隔离候选已实现并部署；P5中文场景质量未通过，主代理两次处理后按规则停止，**M2尚未交付**。当前文档入口关闭新提交，独立执行器暂停且排空，保留历史查询和下载，详见[M2停止检查点](../../results/unlimited-ocr-2/20261116-m2/REPORT.md)。复用现有 `/maas/v1/artifacts`、`/maas/v1/tasks`、任务取消、结果下载和usage查询；不新增PDF专用API。模型服务M1见[验收报告](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)。
 
 PDF预处理使用 `requirements-document.txt` 固定的pypdfium2；不改变旧图片OCR的10 MiB/20MP契约。PDF要求真实格式、无加密且1–10页；150 DPI默认、最高300 DPI，每页最多10MP、合计50MP，超出预算拒绝，不静默丢页或降采样。图片经校验和EXIF方向归一化，输出坐标依据归一化后的页面尺寸。
 
@@ -22,7 +22,7 @@ PDF解析/渲染在独立进程执行：Linux地址空间512 MiB、CPU时间15�
 }
 ```
 
-上传 `POST /maas/v1/artifacts` 使用 `Content-Type: application/pdf` 和原始PDF字节；新任务 `POST /maas/v1/tasks` 必须提供稳定的 `Idempotency-Key`。原键及原请求重发仅返回原任务，不自动重跑推理。沿用查询、取消与结果下载路径。示例完整流程见 [verify_document_task.sh](../../examples/verify_document_task.sh)。
+上传 `POST /maas/v1/artifacts` 使用 `Content-Type: application/pdf` 和原始PDF字节；新任务 `POST /maas/v1/tasks` 必须提供稳定的 `Idempotency-Key`。原键及原请求重发仅返回原任务，不自动重跑推理。沿用查询、取消与结果下载路径。自动校验脚本 [verify_document_task.sh](../../examples/verify_document_task.sh) 需要Python3和curl；无Python的实际下游容器使用[纯curl步骤及请求文件](../../examples/verify_document_task.curl.md)。
 
 结果JSON的 `outputs.schema_version` 为 `unlimited-ocr-2.document.v1`，包含输入顺序的页面、渲染尺寸和源尺寸、版面块、原始标记与Markdown。块的bbox在方向归一化后的渲染页面中使用0–1000坐标，未提供行置信度。首版不生成裁剪图，转换器的悬空图片链接替换为 `[image omitted]`，只登记一个结果artifact。下游显示原文或Markdown时应按不可信文档内容处理。
 

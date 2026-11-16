@@ -1,0 +1,18 @@
+{
+  "sampler_stopped": true,
+  "samples": 515,
+  "interval_seconds": 2,
+  "observed_seconds": 1035.6675653457642,
+  "gpu_peak_mib": 10922,
+  "gpu_total_mib": 16376,
+  "gpu_latest": "10922, 16376, 0",
+  "container_observed_memory_peak_bytes": 9619513344,
+  "container_cgroup_lifetime_peak_bytes": 9634615296,
+  "container_memory_after_bytes": 9543733248,
+  "memory_events_before": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "memory_events_after": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "shm_peak_bytes": 130613248,
+  "host_memavailable_min_bytes": 21781012480,
+  "initialization_covered": false,
+  "warm_document_requests_covered": true
+}
