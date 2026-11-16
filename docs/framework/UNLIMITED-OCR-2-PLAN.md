@@ -49,7 +49,7 @@ flowchart LR
 | --- | --- | --- |
 | SGLang 环境 | 官方模型配方使用专用 dev13 wheel；前次已检查 wheel 元数据 | P1 重新取得固定 revision、SHA-256 和依赖锁，执行安装及内核验证 |
 | 依赖版本 | 前次元数据：torch 2.13.0、transformers 5.12.1、tokenizers 0.22.2、cuda-python ≥13.0、FlashInfer cu13 0.6.18、sglang-kernel 0.4.7；另声明 torchaudio 2.11.0 | 不是已通过的依赖组合；特别检查 torch/torchaudio 二进制关系，不混装 Transformers 快速测试配方 |
-| GPU 容量 | 前次参数统计约 3.344B BF16，权重约 6.23 GiB | 仅为权重估算；16 GiB 是否足够、可处理页数及并发均待实测 |
+| GPU 容量 | 前次参数统计约 3.344B BF16，权重约 6.23 GiB；另发现官方仓库社区报告 12GB SGLang 长文档与 16GB Transformers 单页成功，详见下节 | 16GB 单副本低并发有可行性依据；初始化修复、配置差异及本机容量仍须复核，不能只按权重大小判断 |
 | GPUStack | 仓库既有基线 v2.2.3，支持自定义容器后端 | 当前运行版本、插件、runtime 和路由配置仍须现场核对 |
 | 文档输出 | 官方输出是版面标记文本，另提供 Markdown 后处理 | 保留原始输出，检查页关联、表格合并和 Markdown 图片引用完整性 |
 | MaaS 接入 | 当前仅注册 `gpustack.ocr` 等已有 driver；PDF MIME 未开放 | 新 driver/schema 与受限 PDF 上传均需实现，不能靠 octet-stream 绕过 |
@@ -57,6 +57,21 @@ flowchart LR
 | 故障影响范围 | 现有准入/派发遇未知后端活动会全局阻断 | 初期使用独立试点任务库、artifact 根目录和执行器；共享生产任务库前单独评估此影响 |
 
 代码核对位置：[driver registry](../../maas_platform/adapters.py)、[OCR schema](../../maas_platform/ocr_connector.py)、[任务与后端活动](../../maas_platform/service.py)、[执行器](../../maas_platform/worker.py)、[计量](../../maas_platform/metering.py)、[同步限制](../../maas_platform/sync_ingress.py)。这些是本地源码证据，不代表已核对现场部署字节。
+
+### 3.1 显存资料补充与证据等级（2026-11-16）
+
+官方资料有显存相关说明，但未给出适用于所有运行方式的 16GB 最低配置保证。此前仅写“16GB 待实测”遗漏了以下可行性证据，应按来源和条件分别使用：
+
+| 来源 | 报告内容 | 适用边界 |
+| --- | --- | --- |
+| [官方模型卡](https://huggingface.co/baidu/Unlimited-OCR-2) | Transformers 示例注明在 A800-80GB 上测试；SGLang 部分说明内存参数与窗口取舍 | 80GB 是列出的测试环境，不是公布的最低显存要求 |
+| [官方论文 §5.3.1 / Table 4](https://arxiv.org/html/2610.39308v1#S5.SS3.SSS1) | 百页基准中，单序列峰值 KV cache 从 47.00GB 降至 1.77GB | 是 KV cache 测量，不是引擎总显存；不能直接拿 1.77GB 作为 GPU 需求 |
+| [官方仓库社区 Issue #116](https://github.com/baidu/Unlimited-OCR/issues/116)及[作者补充](https://github.com/baidu/Unlimited-OCR/issues/116#issuecomment-6885407712) | RTX 3060 12GB、dev13 wheel（模型 revision 0480966）、torch 2.13.0+cu130、CUDA 13.0、驱动 580；修复后报告 98 页文档成功，采用 gundam 与 3 页窗口，decode graph 开启。后续补充报告加载约 6.38GB、峰值约 10.1GB | 社区原始报告，不是官方最低配置承诺或本项目复现；按报告原单位 GB 保留，不当作精确 GiB 或可用余量 |
+| [官方仓库社区 Issue #117](https://github.com/baidu/Unlimited-OCR/issues/117) | RTX 5060 Ti 16GB，Transformers 路径下整页推理成功 | 支持 16GB 单页可运行的判断，但不能代替 SGLang 多页容量验收；该 Issue 同时报告外部区域裁剪导致空文本 |
+
+#116 指出的额外风险在**模型构造阶段**：父类先建立 v1 language tower，构造 v2 tower 时旧对象尚未释放，可能出现重复占用。作者最初只加 `del self.model`，随后发现循环引用使该修复不稳定，补充 `gc.collect()` 后重新报告结果。截至本次核对该 Issue 仍 Open；没有在本项目验证补丁，也未据此修改运行镜像。
+
+据此，试点优先评估现有 16GB GPU，先确认初始化问题和低内存配置，再测目标页数与并发。若一次启动 OOM，先区分构造峰值、运行峰值及其他业务占用，不立即推断“16GB 无法运行”。
 
 ## 4. P0：现场只读预检与试点范围冻结
 
@@ -82,6 +97,7 @@ flowchart LR
 - [ ] 在独立 Linux 构建环境构建镜像；目标 GPU 上才进行 CUDA 运算核验。Mac 构建或 import 成功不能证明 NVIDIA kernel 可运行。
 - [ ] 将运行依赖固化进镜像，模型只读、缓存/临时输出可写；首次 worker 启动不做在线 pip 安装。按当前存储机制选择显式模型挂载或经验证的镜像内模型布局，记录下载与缓存去向。
 - [ ] 从固定 wheel 的 `--help` 和代码确认启动参数及默认值，特别是 chat template、custom logit processor、streaming session、radix cache 和图像预处理；编制实际完整命令和环境变量清单。
+- [ ] 按上游 #116 核对该 wheel 是否仍会重复构造 language tower，及循环引用是否及时释放；若需修补，仅在候选镜像保存可审查 diff、原 wheel/补丁哈希与独立版本，验证多次进程启动、权重加载和输出回归。不能只抄 `del self.model` 或只调低 KV 比例掩盖构造峰值。
 - [ ] 初期限制一个在执行请求；CUDA graph 先采取该 wheel 支持的低内存配置或关闭，再与开启配置对照。显存分配比例、prefill、页窗口、输出预算按 GPU 预算冻结，不直接照搬官方 64 并发配置。
 - [ ] 将镜像推入已有受控 registry，固定 digest 并核对 worker 拉取结果。不把口令、访问 token、SSH 私钥或正式业务图片加入镜像。
 
@@ -96,7 +112,7 @@ flowchart LR
 | `--chat-template unlimited-ocr`、`--enable-custom-logit-processor` | 与固定客户端的请求构造一致；processor 来自同版 wheel |
 | `--enable-streaming-session`、`--disable-radix-cache` | 保留专用调度要求，验证是否实际产生跨 HTTP 请求的会话 |
 | `SGLANG_UOCR_EANABLE_DOC_LIMIT` | 按官方拼写核对，不擅自改为 ENABLE；决定窗口模式 |
-| `SGLANG_UOCR_DOC_GUNDAM_PAGE_WINDOW`、`SGLANG_UOCR_DOC_BASE_PAGE_WINDOW` | 两种图像模式分别核对；10 页为跨窗口测试的候选起点 |
+| `SGLANG_UOCR_DOC_GUNDAM_PAGE_WINDOW`、`SGLANG_UOCR_DOC_BASE_PAGE_WINDOW` | 两种图像模式分别核对；小显存先验证社区报告的 3 页窗口，再与官方 10 页窗口候选对照，分别记录质量与峰值 |
 | `SGLANG_UOCR_MAX_PAGE_TOKENS`、请求的 `max_tokens` | 页级与整文档预算分别限制；核对截断检测和页结束行为 |
 | `SGLANG_UOCR_SHM_WRAP_MODEL_DATA`、`SGLANG_UOCR_SHM_WRAP_MIN_MB` | 同时验证真实容器共享内存与 RAM 预算，不只设置变量 |
 | `SGLANG_OPT_UOCR_SAM_REL_POS_BIAS_MB`、prefill 与 CUDA graph 参数 | 先采用低峰值配置，实际支持的参数以固定 wheel 为准 |
