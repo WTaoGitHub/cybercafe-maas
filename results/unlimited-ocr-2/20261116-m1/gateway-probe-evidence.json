@@ -1,0 +1,98 @@
+{
+  "requests": {
+    "normal": {
+      "status": 200,
+      "bytes": 248,
+      "json_complete": true,
+      "elapsed_seconds": 0.016
+    },
+    "503": {
+      "status": 503,
+      "bytes": 43,
+      "json_complete": true,
+      "elapsed_seconds": 0.083
+    },
+    "502": {
+      "status": 502,
+      "bytes": 43,
+      "json_complete": true,
+      "elapsed_seconds": 0.086
+    },
+    "reset": {
+      "status": 503,
+      "bytes": 118,
+      "json_complete": false,
+      "elapsed_seconds": 0.049
+    },
+    "partial": {
+      "exception": "RemoteProtocolError",
+      "elapsed_seconds": 1.023
+    },
+    "delay": {
+      "exception": "ReadTimeout",
+      "elapsed_seconds": 0.303
+    }
+  },
+  "route_policy": {
+    "retry_on": "5xx,non_idempotent,retriable-status-codes",
+    "num_retries": 2,
+    "per_try_timeout": "0s",
+    "retry_host_predicate": [
+      {
+        "name": "envoy.retry_host_predicates.previous_hosts",
+        "typed_config": {
+          "@type": "type.googleapis.com/envoy.extensions.retry.host.previous_hosts.v3.PreviousHostsPredicate"
+        }
+      }
+    ],
+    "host_selection_retry_max_attempts": "5",
+    "retriable_status_codes": [
+      503,
+      502
+    ]
+  },
+  "probe_route_paths": 19,
+  "trial_route_paths": 17,
+  "route_policy_matches_trial": true,
+  "protected_routes_unchanged": true,
+  "cleanup": {
+    "probe_objects_removed": true,
+    "probe_instances_removed": true,
+    "formal_ocr_replicas": 2,
+    "trial_replicas": 1,
+    "route_count": 3
+  },
+  "backend_observations": {
+    "counts": {
+      "direct-normal": 1,
+      "direct-503": 1,
+      "gateway-normal": 1,
+      "gateway-503": 3,
+      "gateway-502": 3,
+      "gateway-reset": 3,
+      "gateway-partial": 1,
+      "gateway-delay": 1
+    },
+    "framing": {
+      "content-length": 2,
+      "chunked": 12
+    }
+  },
+  "worker_cleanup": {
+    "probe_containers_absent": true,
+    "probe_port_released": true,
+    "trial_running": true,
+    "trial_limits_verified": true
+  },
+  "fixture_sha256": "140bbf037c5661cec02c82177994cadb4e07842f6733de81adb662d94eada671",
+  "fixture_limits": {
+    "memory_bytes": 268435456,
+    "cpu_cores": 0.5,
+    "swap_bytes": 0,
+    "server_lifetime_seconds": 300,
+    "body_bytes": 1048576,
+    "max_chunks": 1024,
+    "socket_timeout_seconds": 5
+  },
+  "scope": "CPU-only disposable route with same retry policy as model service; no GPU execution counter or exactly-once promise"
+}

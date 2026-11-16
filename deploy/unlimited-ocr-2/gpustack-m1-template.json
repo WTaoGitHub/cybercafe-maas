@@ -1,0 +1,82 @@
+{
+  "note": "Illustrative GPUStack v2.2.3 pilot values: replace placeholders and validate the current schema before use. Set replica count to zero during preparation; independently verify the worker identity, read-only model mount, limits, and access policy before activation.",
+  "backend": {
+    "backend_name": "Unlimited-OCR-2-SGLang-custom",
+    "default_version": "1.0",
+    "health_check_path": "/health",
+    "version_configs": {
+      "1.0": {
+        "image_name": "<REGISTRY_AUTHORITY>/maas/unlimited-ocr-2@sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6",
+        "custom_framework": "cuda",
+        "entrypoint": "python3 /opt/maas/resource_guard.py",
+        "run_command": "--model-path {{model_path}} --served-model-name {{model_name}} --host <CONTAINER_BIND_HOST> --port {{port}} --dtype bfloat16 --chat-template unlimited-ocr --tokenizer-backend fastokens --tokenizer-worker-num 1 --enable-custom-logit-processor --enable-streaming-session --disable-radix-cache --max-running-requests 1 --mem-fraction-static 0.6 --chunked-prefill-size 2048 --max-prefill-tokens 2048 --disable-cuda-graph"
+      }
+    }
+  },
+  "model": {
+    "name": "unlimited-ocr-2",
+    "source": "local_path",
+    "local_path": "<READ_ONLY_FIXED_REVISION_MODEL_PATH>",
+    "backend": "Unlimited-OCR-2-SGLang-custom",
+    "backend_version": "1.0",
+    "replicas": 0,
+    "restart_on_error": false,
+    "gpu_selector": {
+      "gpu_ids": [
+        "<VERIFIED_GPUSTACK_GPU_ID>"
+      ],
+      "gpus_per_replica": 1
+    },
+    "env": {
+      "HF_HUB_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1",
+      "SGLANG_UOCR_EANABLE_DOC_LIMIT": "1",
+      "SGLANG_UOCR_DOC_GUNDAM_PAGE_WINDOW": "3",
+      "SGLANG_UOCR_DOC_BASE_PAGE_WINDOW": "3",
+      "SGLANG_UOCR_MAX_PAGE_TOKENS": "20000",
+      "SGLANG_OPT_UOCR_SAM_REL_POS_BIAS_MB": "64",
+      "SGLANG_UOCR_SHM_WRAP_MODEL_DATA": "1",
+      "SGLANG_UOCR_SHM_WRAP_MIN_MB": "1",
+      "SGLANG_VLM_CACHE_SIZE_MB": "0",
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "GPUSTACK_MODEL_VRAM_CLAIM": "12884901888",
+      "GPUSTACK_MODEL_RUNTIME_SHM_SIZE_GIB": "4"
+    },
+    "cluster_id": "<VERIFIED_CLUSTER_ID_INTEGER>",
+    "categories": [
+      "llm"
+    ],
+    "enable_model_route": false,
+    "generic_proxy": false,
+    "cpu_offloading": false,
+    "distributed_inference_across_workers": false,
+    "access_policy": "allowed_principals"
+  },
+  "route": {
+    "name": "unlimited-ocr-2",
+    "categories": [
+      "llm"
+    ],
+    "generic_proxy": false,
+    "targets": [
+      {
+        "model_id": "<MODEL_ID>",
+        "weight": 100
+      }
+    ]
+  },
+  "runtime_limits": {
+    "memory_bytes": 17179869184,
+    "cpu_cores": 4,
+    "swap_bytes": 0,
+    "shm_bytes": 4294967296
+  },
+  "route_access": {
+    "method": "POST",
+    "path": "/v2/model-routes/<ROUTE_ID>/access",
+    "body": {
+      "access_policy": "allowed_principals",
+      "principals": []
+    }
+  }
+}
