@@ -44,7 +44,16 @@ class TaskService:
     def upload(self, identity, data, media_type):
         if not data or len(data) > self.settings.max_input_bytes:
             raise ServiceError('INPUT_SIZE', 'Empty or oversized input', 413)
-        if media_type not in ('image/png', 'image/jpeg', 'text/plain', 'application/json', 'application/octet-stream'):
+        if media_type == 'application/pdf':
+            catalog = self.settings.catalog()
+            allowed = [name for name, model in catalog.items()
+                       if name in identity.models and model['driver'] == 'gpustack.document_ocr']
+            if not allowed:
+                raise ServiceError('MEDIA_TYPE', 'PDF upload requires an authorized document model', 415)
+            self.auth.authorize(identity, allowed[0], catalog[allowed[0]])
+            from .documents import validate_pdf
+            validate_pdf(data)
+        elif media_type not in ('image/png', 'image/jpeg', 'text/plain', 'application/json', 'application/octet-stream'):
             raise ServiceError('MEDIA_TYPE', 'Unsupported upload media type', 415)
         try:
             with self.db.transaction() as c:
@@ -63,6 +72,17 @@ class TaskService:
         if not idem or len(idem) > 128:
             raise ServiceError('IDEMPOTENCY_REQUIRED', 'Supply Idempotency-Key (1..128 characters)')
         model = self.model(body.model); self.auth.authorize(identity, body.model, model)
+        if model['driver'] == 'gpustack.document_ocr':
+            updates = {}
+            if 'max_attempts' not in body.model_fields_set:
+                updates['max_attempts'] = 1
+            elif body.max_attempts != 1:
+                raise ServiceError('DOCUMENT_REPLAY_UNSAFE', 'Document tasks require max_attempts=1', 422)
+            if 'timeout_seconds' not in body.model_fields_set:
+                updates['timeout_seconds'] = 900
+            elif body.timeout_seconds > 900:
+                raise ServiceError('INPUT_INVALID', 'Document task deadline cannot exceed 900 seconds', 422)
+            body = body.model_copy(update=updates)
         try:
             inp, params, art_id = adapter_for(model['driver']).validate(body.input, body.parameters)
         except ValidationError:
@@ -107,6 +127,8 @@ class TaskService:
                     row = c.execute('SELECT * FROM artifacts WHERE id=%s AND project=%s AND kind=\'input\' AND deleted_at IS NULL AND expires_at>now() FOR UPDATE', (art_id, identity.project)).fetchone()
                     if not row:
                         raise ServiceError('INPUT_NOT_FOUND', 'Input artifact unavailable', 404)
+                    if model['driver'] == 'gpustack.document_ocr' and row['media_type'] not in ('application/pdf', 'image/png', 'image/jpeg'):
+                        raise ServiceError('MEDIA_TYPE', 'Document task requires a PDF, PNG or JPEG artifact', 415)
                 ident = 'task_' + uuid.uuid4().hex
                 row = c.execute("""INSERT INTO tasks(id,project,credential_id,idempotency_key,request_hash,model,revision,model_fingerprint,input,parameters,input_artifact_id,state,max_attempts,deadline)
                     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'QUEUED',%s,now()+%s*interval '1 second') RETURNING *""",

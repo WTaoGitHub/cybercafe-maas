@@ -1,6 +1,6 @@
 # Unlimited-OCR-2 检查、试点与发布计划
 
-2026-11-16 · 状态：**M1受控JSON模型服务试点验收完成，M2未开始。** 最终试点1/1，通过Higress完成单页、2/10/11页及无在途实例替换；旧OCR回归、鉴权及独立CPU失败计数通过。详见[M1报告](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)。原All models权限保留，服务端固定处理器并拒绝流式请求。历史UOCR2-INC-008两次处理及[停止检查点](../../results/unlimited-ocr-2/20261116-uocr2-inc-008-stop/REPORT.md)保留，本轮未进行第三次EnvoyFilter禁重试；SSE断连问题仍未修复。
+2026-11-16 · 状态：**M1受控JSON模型服务试点验收完成；用户已授权主代理直接推进P4–P6，M2实施中。** 最终试点1/1，通过Higress完成单页、2/10/11页及无在途实例替换；旧OCR回归、鉴权及独立CPU失败计数通过。详见[M1报告](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)。原All models权限保留，服务端固定处理器并拒绝流式请求。历史UOCR2-INC-008两次处理及[停止检查点](../../results/unlimited-ocr-2/20261116-uocr2-inc-008-stop/REPORT.md)保留，本轮未进行第三次EnvoyFilter禁重试；SSE断连问题仍未修复。
 
 主跟踪：[E10 / Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。容量联动关联 [#60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)，部署与副本策略关联 [#39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)，文件契约沿用[文件能力计划](ARTIFACT-EVOLUTION-PLAN.md)，计量沿用 [E16](OCR-METERING.md)。不重复创建 OCR 选型 Issue。
 
@@ -19,7 +19,7 @@ M1 接续验收发现原始 SSE 断连残留跨窗口 KV。主代理第1次候�
 
 执行顺序：`P0 现场预检 → P1 固定运行环境 → P2 独立 GPU 推理 → P3 GPUStack/Higress（M1）→ P4 MaaS 隔离实现 → P5 容量与下游验收 → P6 受控发布（M2）`。
 
-首次制定本计划时仅授权文档与 Issue 更新；随后用户授权 GPT-6.1 Terra Light 子代理实施，并明确每项故障由子代理先处理一次、主代理最多两次，未解决停止。镜像供应及旧重试覆盖均保留当时停止记录；用户后续另行授权接续至M1，最终构建、部署及限定契约验收见M1报告。故障处理规则和下述生产隔离、VM约束继续有效，未授权自动推进M2或再次修复SSE。
+首次制定本计划时仅授权文档与 Issue 更新；随后用户授权 GPT-6.1 Terra Light 子代理实施，并明确每项故障由子代理先处理一次、主代理最多两次，未解决停止。镜像供应及旧重试覆盖均保留当时停止记录；用户后续另行授权接续至M1，最终构建、部署及限定契约验收见M1报告。故障处理规则和下述生产隔离、VM约束继续有效，随后用户明确授权推进P4–P6交付M2，要求主代理直接执行并优先复用现有异步API；SSE仍不在本轮修复范围。
 
 ## 2. 架构与名称
 
@@ -268,9 +268,9 @@ M1/M2 首轮可使用已验证的固定单副本、单文档上限，动态并�
 | P0 现场预检 | [只读快照](../../results/unlimited-ocr-2/20261116-p0/REPORT.md)及本轮fresh复核完成，实例替换见M1；未做VM重启或独立冷环境恢复 | 后续接续重新核验现场，不外推持久性 |
 | P1 / M1 准备 | 最终固定镜像已发布并经worker reader拉取，CUDA/Triton及实际模型加载通过 | 后续镜像/配置变更须重新核验 |
 | P2–P3 / M1 | [受控JSON试点验收完成](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)，保留1/1及新路由；临时探针/负向Key清理，原All models保留 | 仅单文档、固定合成样本范围；SSE不支持，M2尚未开始 |
-| P4–P6 / M2 | 未开始 | M1 后实现并验证文档契约、计量和发布 |
+| P4–P6 / M2 | W1已提交；文档driver、公共任务生命周期、页收据和API文档已实现，独立Linux数据库联调完成 | P5实际GPU/下游质量容量及P6受控发布仍待验收，未宣称M2完成 |
 
-本轮止于已授权的M1，不自动开始M2或第三次SSE修复。下次接续先读取本计划、根 `AGENTS.md`、Issue #11及M1报告，再核对现场；不重放未知推理或把旧阶段证据当作新配置已验证。
+本轮按用户后续授权推进M2；主代理直接执行，不再使用子代理。用户已指定使用仓库现有evaluation样本完成试点。接续先核对现场；不重放未知推理，不进行第三次SSE修复，不把旧阶段证据当作新配置已验证。
 
 ## 官方依据
 

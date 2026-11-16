@@ -21,3 +21,6 @@
 | — | `UOCR2-INC-011` | CPU探针后端名缺少`-custom` | 路由层400、无对象创建；主代理一次修正后创建成功，见[M1](../../results/unlimited-ocr-2/20261116-m1/REPORT.md) |
 | — | `UOCR2-INC-012` | 辅助脚本固定17条路径不适用于generic路由的19条 | 主代理一次改为动态核对，实际retry_policy与试点相同；不是模型故障 |
 | — | `UOCR2-INC-013` | CPU探针仅按Content-Length读取，未支持实际chunked请求 | 初次探针400拒绝，不作为重试计数；主代理一次补有界分块读取，本机真实chunked自检及现场12次请求验证通过，探针对象和容器已清理 |
+| — | `UOCR2-INC-014` | M2离线构建辅助脚本错误替换变量，随后BuildKit将裸image ID当作仓库名 | 主代理第1次修正生成脚本语法，第2次为已核验本地镜像创建固定tag并禁用pull；断网构建成功，PDFium wheel哈希及pip check通过。未修改旧服务或Docker守护进程 |
+| — | `UOCR2-INC-015` | M2测试辅助脚本未使用现有PostgreSQL端口 | 首次连接默认5432被拒，未创建或修改数据库；主代理一次读取实际DSN端口后仅创建新的`_test`数据库，执行隔离测试 |
+| — | `UOCR2-INC-016` | 扩展回归收集依赖的maas_bench未挂载 | 主代理一次补挂仓库既有测试依赖后，165项通过、1项跳过；一项既有同步历史测试仍请求旧根路径/ocr导致404，已在[#25](https://github.com/WTaoGitHub/cybercafe-maas/issues/25)另行记录，不冒充模型故障或全套通过 |

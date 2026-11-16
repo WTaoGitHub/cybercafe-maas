@@ -1,0 +1,12 @@
+{
+  "document.unlimited-ocr-2": {
+    "driver": "gpustack.document_ocr",
+    "revision": "unlimited-ocr-2-0480966-document-v1",
+    "upstream_model": "unlimited-ocr-2",
+    "max_runtime_s": 600,
+    "model_revision": "0480966938291445591f69f08a13b041c073a96a",
+    "runtime_image_digest": "sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6",
+    "postprocessor_revision": "64e6f066023b305ab03860603a9cf358a8b70148",
+    "document_profile": "pdfium5.15.2-pages10-pixels50m-json-v1"
+  }
+}

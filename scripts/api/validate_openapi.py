@@ -44,9 +44,11 @@ for path_item in doc['paths'].values():
   if method not in ('get','post'):continue
   for body in [operation.get('requestBody',{}),*operation['responses'].values()]:
    for media in body.get('content',{}).values():
-    if body is operation.get('requestBody') and 'example' in media:
-     Draft202012Validator({'allOf':[media['schema']],'components':doc['components']}).validate(media['example'])
-     count+=1
+    if body is operation.get('requestBody'):
+     values=([media['example']] if 'example' in media else [])+[e['value'] for e in media.get('examples',{}).values()]
+     for value in values:
+      Draft202012Validator({'allOf':[media['schema']],'components':doc['components']}).validate(value)
+      count+=1
     lines=[]
     if 'x-jsonl-line-schema' in media:
      lines.extend((media['x-jsonl-line-schema'],line) for line in media['example'].splitlines())

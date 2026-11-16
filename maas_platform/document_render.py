@@ -115,7 +115,10 @@ def main():
     output = Path(output)
     try:
         isolate(int(parent))
-        if media == 'application/pdf':
+        if mode == 'parse':
+            from .document_output import parse_document_output
+            value = parse_document_output(json.loads(Path(source).read_bytes()))
+        elif media == 'application/pdf':
             value = pdf_pages(Path(source), output, int(dpi), mode == 'inspect')
         else:
             value = image_page(Path(source), output, media)
@@ -124,7 +127,7 @@ def main():
     except Exception as error:
         # Native parser diagnostics and document contents never enter API errors.
         from .errors import ServiceError
-        value = {'error': error.code if isinstance(error, ServiceError) else 'DOCUMENT_RESOURCE_LIMIT' if isinstance(error, MemoryError) else 'PDF_INVALID'}
+        value = {'error': error.code if isinstance(error, ServiceError) else 'DOCUMENT_RESOURCE_LIMIT' if isinstance(error, MemoryError) else 'OUTPUT_INVALID' if mode == 'parse' else 'PDF_INVALID'}
     (output / 'metadata.json').write_text(json.dumps(value))
 
 

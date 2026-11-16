@@ -36,6 +36,7 @@ class ExecutionContext:
     model: dict | None = None
     identity: object = None
     metering_tokens: dict | None = None
+    metering_pages: int | None = None
 
     def check(self):
         if time.monotonic() >= self.deadline:
@@ -91,8 +92,10 @@ class DigestAdapter(LocalAdapter):
 
 
 from .ocr_connector import OCRAdapter
+from .document_ocr import DocumentOCRAdapter
 
-_REGISTRY = {'mock': EchoAdapter(), 'local.sha256': DigestAdapter(), 'gpustack.ocr': OCRAdapter()}
+_REGISTRY = {'mock': EchoAdapter(), 'local.sha256': DigestAdapter(), 'gpustack.ocr': OCRAdapter(),
+             'gpustack.document_ocr': DocumentOCRAdapter()}
 
 
 def adapter_for(driver):

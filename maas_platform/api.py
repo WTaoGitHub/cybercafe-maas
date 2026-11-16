@@ -108,10 +108,11 @@ def create_app(settings=None, auth=None):
         return submit_task(task, who, key)
 
     @app.get('/maas/v1/tasks/{ident}', response_model=TaskDetail)
-    def get(ident: str, usage_type: UsageType = 'images', who=Depends(identity)):
+    def get(ident: str, usage_type: UsageType | None = None, who=Depends(identity)):
         task = service.get(who, ident)
         if task['usage'] is not None:
-            task['usage'] = select_usage(task['usage'], usage_type)
+            selected = usage_type or ('pages' if 'successful_pages' in task['usage'] else 'images')
+            task['usage'] = select_usage(task['usage'], selected)
         status = task.pop('state')
         code = task.pop('error_code')
         error = None
@@ -126,7 +127,7 @@ def create_app(settings=None, auth=None):
                 'STORAGE_QUOTA': 'The project or service file quota was exceeded.',
             }.get(code, 'Task execution reported an error.')
             error = {'code': code, 'message': message}
-        if status == 'SUCCEEDED' and task['result_artifact_id'] and task['model'].startswith('ocr.'):
+        if status == 'SUCCEEDED' and task['result_artifact_id'] and task['model'].startswith(('ocr.', 'document.')):
             try:
                 data, _ = service.artifact(who, task['result_artifact_id'])
                 result = json.loads(data)['outputs']
@@ -150,6 +151,10 @@ def create_app(settings=None, auth=None):
     @app.get('/maas/v1/models/{name}/capabilities')
     def capability(name:str,who=Depends(identity)):
         model=service.model(name);service.auth.authorize(who,name,model)
-        return {'model':name,'revision':model['revision'],'execution_modes':['async'],'max_runtime_s':model['max_runtime_s'],'input_schema':adapter_for(model['driver']).input_schema.model_json_schema(),'parameters_schema':adapter_for(model['driver']).parameter_schema.model_json_schema()}
+        adapter = adapter_for(model['driver'])
+        result = {'model':name,'revision':model['revision'],'execution_modes':['async'],'max_runtime_s':model['max_runtime_s'],'input_schema':adapter.input_schema.model_json_schema(),'parameters_schema':adapter.parameter_schema.model_json_schema()}
+        if model['driver'] == 'gpustack.document_ocr':
+            result.update(input_limits=adapter.input_limits, output_schema_version='unlimited-ocr-2.document.v1', usage_types=['pages'])
+        return result
 
     return app

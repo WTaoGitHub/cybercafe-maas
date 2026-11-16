@@ -85,4 +85,6 @@ class Settings:
                     or not isinstance(model.get('max_runtime_s'), (int,float))
                     or not math.isfinite(model['max_runtime_s']) or not 0<model['max_runtime_s']<=3600):
                 raise ValueError('Each model requires a revision and runtime limit')
+            if model['driver'] == 'gpustack.document_ocr':
+                adapter.validate_model(model)
         return data

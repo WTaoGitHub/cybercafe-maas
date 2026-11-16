@@ -1,0 +1,9 @@
+# Build offline from the inspected MaaS API image; only the document image gains PDFium.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+USER root
+COPY wheels/pypdfium2-5.15.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl /tmp/document.whl
+RUN echo 'dc31aea5b0fb9fefc9b537a65f4113980b2c40798445736a7e6565bc85161e37  /tmp/document.whl' | sha256sum -c - && mv /tmp/document.whl /tmp/pypdfium2-5.15.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl && python -m pip install --no-index --no-deps /tmp/pypdfium2-5.15.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl && python -m pip check && rm /tmp/pypdfium2-5.15.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+COPY maas_platform /app/maas_platform
+COPY deploy/maas/catalog.document.example.json /app/deploy/maas/catalog.document.example.json
+USER maas

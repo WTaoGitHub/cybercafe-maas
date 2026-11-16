@@ -5,14 +5,17 @@ from .errors import ServiceError
 from psycopg.types.json import Jsonb
 
 
-UsageType = Literal['images', 'tokens']
+UsageType = Literal['images', 'pages', 'tokens']
 
 
 def select_usage(value, usage_type: UsageType | None):
     if usage_type is None:
         return value
-    if usage_type == 'images':
-        return {'successful_images': value['successful_images']}
+    if usage_type in ('images', 'pages'):
+        key = 'successful_' + usage_type
+        if key not in value:
+            raise ServiceError('USAGE_TYPE_UNSUPPORTED', f'{usage_type} usage is unavailable for this model', 422)
+        return {key: value[key]}
     tokens = value['tokens']
     if tokens['status'] != 'available':
         raise ServiceError(
@@ -35,9 +38,12 @@ def tokens_from_response(envelope):
     return {'status':'unavailable','input_tokens':None,'output_tokens':None,'source':None,'reason':'UPSTREAM_USAGE_INVALID'}
 
 
-def receipt(source_type, source_id, model, revision, tokens=None):
+def receipt(source_type, source_id, model, revision, tokens=None, *, pages=None):
+    if pages is not None and (type(pages) is not int or not 1 <= pages <= 10):
+        raise ValueError('Page receipt requires 1..10 completed pages')
     return {'id':'usage_'+source_type+'_'+source_id,'status':'final','source_type':source_type,
-            'source_id':source_id,'model':model,'revision':revision,'successful_images':1,
+            'source_id':source_id,'model':model,'revision':revision,
+            **({'successful_images':1} if pages is None else {'successful_pages':pages}),
             'tokens':tokens or tokens_from_response(None),
             'recorded_at':datetime.now(timezone.utc).isoformat()}
 

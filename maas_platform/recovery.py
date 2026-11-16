@@ -1,9 +1,36 @@
 """Private real-inference recovery probes; never exposed as a customer route."""
 import asyncio,base64,json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import threading
+import time
+from types import SimpleNamespace
 from .errors import ServiceError
 from .ocr_connector import OCRResult
 from .sync_ingress import SyncIngress
+
+
+def probe_document(service, ingress, who, name, model, data, media):
+    from .adapters import adapter_for, ExecutionContext
+    service.auth.authorize(who, name, model)
+    state = {'token': None, 'confirmed': False}
+    def begin(_):
+        state['token'] = ingress.begin(who, name, model['max_runtime_s'], probe=True)
+    def complete(_):
+        state['confirmed'] = True
+    proxy = SimpleNamespace(settings=service.settings, auth=service.auth,
+        cancelled=lambda _: False, read_task_input=lambda _: (data, media),
+        begin_backend=begin, complete_backend=complete)
+    task = {'parameters': {'dpi': 150}, 'deadline': datetime.now(timezone.utc) + timedelta(seconds=model['max_runtime_s'])}
+    ctx = ExecutionContext(task, proxy, threading.Event(), time.monotonic() + model['max_runtime_s'], model, who)
+    successful = False
+    try:
+        output = adapter_for(model['driver']).execute(ctx)
+        successful = True
+        return {'model': name, 'revision': model['revision'], 'pages': output['page_count']}
+    finally:
+        if state['token'] is not None:
+            ingress.finish(state['token'], state['confirmed'], successful)
 
 
 def probe_registered_models(service,credential_id,image_path):
@@ -19,6 +46,9 @@ def probe_registered_models(service,credential_id,image_path):
     if not media or len(data)>service.settings.max_input_bytes:raise ValueError('Probe must be a bounded PNG/JPEG file')
     outputs=[];ingress=SyncIngress(service)
     for name,model in models.items():
+        if model['driver']=='gpustack.document_ocr':
+            outputs.append(probe_document(service,ingress,who,name,model,data,media))
+            continue
         if model['driver']!='gpustack.ocr':
             raise ServiceError('RECOVERY_UNSUPPORTED','Register a recovery probe for each network connector',409)
         body={'model':name,'stream':False,'messages':[{'role':'user','content':[{'type':'image_url','image_url':{'url':'data:'+media+';base64,'+base64.b64encode(data).decode()}}]}]}

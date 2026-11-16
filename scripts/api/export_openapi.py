@@ -188,5 +188,7 @@ for path in usage_paths:
 # Keep the existing document order for readers comparing API versions.
 doc['paths']={'/maas/v1/ocr':P['/maas/v1/ocr'],**{path:item for path,item in P.items() if path != '/maas/v1/ocr'}}
 merge_batch(doc)
+from merge_document_openapi import merge_document
+merge_document(doc)
 path=ROOT/'docs/api/openapi.json';path.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')
 print('Exported',len(P),'paths',sum(len(v) for v in P.values()),'operations')

@@ -50,9 +50,15 @@ class Worker:
             output = {'outputs': outputs, 'model_revision': task['revision'],
                       'attempt': task['attempts'], 'usage': {'unit':'task','quantity':1}}
             metering = None
-            if model['driver']=='gpustack.ocr':
+            if model['driver'] in ('gpustack.ocr', 'gpustack.document_ocr'):
                 from .metering import receipt
-                metering=receipt('task',task['id'],task['model'],task['revision'],getattr(ctx,'metering_tokens',None))
+                kwargs = {}
+                if model['driver'] == 'gpustack.document_ocr':
+                    pages = getattr(ctx, 'metering_pages', None)
+                    if type(pages) is not int or not 1 <= pages <= 10:
+                        raise ServiceError('OUTPUT_INVALID', 'Document completion has no verified page count')
+                    kwargs['pages'] = pages
+                metering=receipt('task',task['id'],task['model'],task['revision'],getattr(ctx,'metering_tokens',None),**kwargs)
                 output['metering']=metering
             committed = self.service.finish(task, output=output, metering=metering)
             log.info('task_finished executor=%s task=%s committed=%s outcome=success', self.executor_id, task['id'], bool(committed))
