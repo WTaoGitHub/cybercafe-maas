@@ -4,7 +4,7 @@
 
 用户要求使用 GPT-6.1 Terra Light 子代理推进，实际调用 `gpt-6.1-terra` / reasoning `low`。故障先由子代理尝试处理一次；未解决则主代理最多处理两次，仍未解决就停止，处理成功则交回子代理。
 
-本轮已完成现场只读预检和 P1 静态准备，**未完成候选镜像构建，M1/M2 均未交付**。基础镜像获取故障 E03 在主代理两次处理后仍未解决，已按用户规则停止实施。不是模型推理 OOM，也不能据此判断 16GB 不够。
+本轮已完成现场只读预检和 P1 静态准备，**未完成候选镜像构建，M1/M2 均未交付**。基础镜像获取故障 UOCR2-INC-003 在主代理两次处理后仍未解决，已按用户规则停止实施。不是模型推理 OOM，也不能据此判断 16GB 不够。
 
 ## 已完成的检查与准备
 
@@ -21,10 +21,10 @@
 
 | 编号 | 故障 | 子代理的一次处理 | 主代理处理 | 结果 |
 | --- | --- | --- | --- | --- |
-| E01 | 旧 SSH MCP inventory 挂起 | 改用已受信 SSH 与新 PC 只读管理接口 | 不需要 | 已取得 P0 证据，继续 |
-| E02 | legacy Docker builder 不接受 `--cpus` | 查 help，改为 period/quota，但随后又因不支持 `--progress` 失败 | 第 1 次：核对完整 help、上下文及 wheel 哈希，去掉 `--progress`，仅对子进程设置 `DOCKER_BUILDKIT=0` | 已进入 Step 1/7，原命令兼容问题解决，交回子代理；不代表构建成功 |
-| E03 | worker 访问 Docker Hub `/v2/` 超时，构建在 FROM 失败 | worker 直接访问超时后，改在 Mac 只读验证该端点返回 401；证明有可达替代位置，但尚未交付镜像 | 第 1 次：尝试仅回环的临时双跳 SSH 中转通道，SSH 退出 255，代理探针 connection refused，未建立可用通道 | 未解决，未修改 SSH/daemon 全局配置 |
-| E03 | 同一镜像获取故障 | 不再重试 | 第 2 次：Mac 使用经官方校验和验证的 crane 获取固定镜像，拟离线交付 | 镜像清单摘要通过；仅取得不完整离线包，连续 354 秒无归档写入进展后终止；未交付 worker，停止 |
+| UOCR2-INC-001 | 旧 SSH MCP inventory 挂起 | 改用已受信 SSH 与新 PC 只读管理接口 | 不需要 | 已取得 P0 证据，继续 |
+| UOCR2-INC-002 | legacy Docker builder 不接受 `--cpus` | 查 help，改为 period/quota，但随后又因不支持 `--progress` 失败 | 第 1 次：核对完整 help、上下文及 wheel 哈希，去掉 `--progress`，仅对子进程设置 `DOCKER_BUILDKIT=0` | 已进入 Step 1/7，原命令兼容问题解决，交回子代理；不代表构建成功 |
+| UOCR2-INC-003 | worker 访问 Docker Hub `/v2/` 超时，构建在 FROM 失败 | worker 直接访问超时后，改在 Mac 只读验证该端点返回 401；证明有可达替代位置，但尚未交付镜像 | 第 1 次：尝试仅回环的临时双跳 SSH 中转通道，SSH 退出 255，代理探针 connection refused，未建立可用通道 | 未解决，未修改 SSH/daemon 全局配置 |
+| UOCR2-INC-003 | 同一镜像获取故障 | 不再重试 | 第 2 次：Mac 使用经官方校验和验证的 crane 获取固定镜像，拟离线交付 | 镜像清单摘要通过；仅取得不完整离线包，连续 354 秒无归档写入进展后终止；未交付 worker，停止 |
 
 第 2 次处理使用官方 `go-containerregistry` v0.20.6 的 Darwin arm64 工具包，校验和 `ae30b28498de3e1ac51a37042eab46116ec70d86aa9d10431a1fbde35b9918b9`。来源：[官方 release](https://github.com/google/go-containerregistry/releases/tag/v0.20.6)。没有安装系统级工具或改变系统代理。
 

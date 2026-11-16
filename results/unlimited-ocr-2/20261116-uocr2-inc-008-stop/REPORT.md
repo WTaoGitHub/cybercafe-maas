@@ -2,15 +2,15 @@
 
 2026-11-16 · [Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11) · [执行计划](../../../docs/framework/UNLIMITED-OCR-2-PLAN.md)
 
-本轮停在 P3 / E08，未完成 M1。子代理做过一次安全定位，主代理两次处理后仍未取得完整的网关不重放证据，按用户约定停止实施；没有继续第三次修复。P4–P6 的 MaaS PDF/文档 driver、页计量和业务容量验收未开始。
+本轮停在 P3 / UOCR2-INC-008，未完成 M1。子代理做过一次安全定位，主代理两次处理后仍未取得完整的网关不重放证据，按用户约定停止实施；没有继续第三次修复。P4–P6 的 MaaS PDF/文档 driver、页计量和业务容量验收未开始。
 
 ## 已取得的证据
 
 - CUDA 基础镜像、固定依赖、模型19文件、gc候选补丁及完整服务镜像已构建、校验并保存到新 PC registry。守卫镜像 manifest 为 `sha256:6e7145c45fe1673912451c3734799fca22d00965a71f43a9519c79b79fb52169`，config 为 `sha256:0f1e8e1564f98a23a1c0f50f5530ff7b86caae9b48c69afcd2e9352f17a6aa10`，19层，worker reader 实际拉取匹配。
 - RTX 4080 SUPER 16376 MiB 在 BF16、单请求、窗口3、CUDA graph关闭的配置下，单页、2/10/11页、旋转、中英混排、简单表格/公式和串行隔离的合成样本通过；容器再启动后的单页输出逐字节一致。全程2秒采样观测显存峰值10776 MiB，不是精确瞬时峰值、业务质量或并发容量结论。详见[P2](../20261116-p2/REPORT.md)。
-- GPUStack 管理实例曾进入 Running，实际16 GiB RAM/4CPU/禁swap/4 GiB shm/只读模型挂载通过，managed直连单页和双页与P2基线逐字节一致。E04头文件由子代理一次修复，E05启动资源守卫和E07镜像authority各由主代理一次处理成功。详见[运行限额证据](../20261116-p3-image-authority/REPORT.md)与[managed直连报告](../20261116-p3-managed/REPORT.md)。
+- GPUStack 管理实例曾进入 Running，实际16 GiB RAM/4CPU/禁swap/4 GiB shm/只读模型挂载通过，managed直连单页和双页与P2基线逐字节一致。UOCR2-INC-004头文件由子代理一次修复，UOCR2-INC-005启动资源守卫和UOCR2-INC-007镜像authority各由主代理一次处理成功。详见[运行限额证据](../20261116-p3-image-authority/REPORT.md)与[managed直连报告](../20261116-p3-managed/REPORT.md)。
 
-## E08 两次处理与未验边界
+## UOCR2-INC-008 两次处理与未验边界
 
 实际 Higress route8 曾指向实例186的健康后端；其默认策略允许5xx、非幂等和指定状态码重试，次数为2。发现后暂停了真实文档的网关测试。
 
@@ -21,7 +21,7 @@
 
 ## All models 与收尾状态
 
-用户确认，执行期间主动将既有 forDownStream Key 改为 All models。这解释了收尾读到的 `allowed_model_names=[]`，不是已证实的异常回写。已保留用户设置，没有在收尾覆盖。此前[E06报告](../20261116-p3-auth/REPORT.md)的Key缩限与拒绝结果仅为当时快照，不能作为当前或未来发布的权限预期；以后不得以收窄此Key来满足试点隔离。
+用户确认，执行期间主动将既有 forDownStream Key 改为 All models。这解释了收尾读到的 `allowed_model_names=[]`，不是已证实的异常回写。已保留用户设置，没有在收尾覆盖。此前[UOCR2-INC-006报告](../20261116-p3-auth/REPORT.md)的Key缩限与拒绝结果仅为当时快照，不能作为当前或未来发布的权限预期；以后不得以收窄此Key来满足试点隔离。
 
 收尾已验证：
 

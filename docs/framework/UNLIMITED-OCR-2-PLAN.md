@@ -1,8 +1,10 @@
 # Unlimited-OCR-2 检查、试点与发布计划
 
-2026-11-16 · 状态：按故障次数上限停止于P3/E08，主代理两次处理后未取得完整网关不重放证据；M1未验收、M2未开始。试点已回到0副本，新路由/试点Key/实验filter已撤销，镜像与模型保留。用户指定既有下游Key为All models，该设置保留。详见[最终停止检查点](../../results/unlimited-ocr-2/20261116-e08-stop/REPORT.md)及[P2功能证据](../../results/unlimited-ocr-2/20261116-p2/REPORT.md)；历史阶段报告保留，不改写为整体成功。
+2026-11-16 · 状态：按故障次数上限停止于P3/UOCR2-INC-008，主代理两次处理后未取得完整网关不重放证据；M1未验收、M2未开始。试点已回到0副本，新路由/试点Key/实验filter已撤销，镜像与模型保留。用户指定既有下游Key为All models，该设置保留。详见[最终停止检查点](../../results/unlimited-ocr-2/20261116-uocr2-inc-008-stop/REPORT.md)及[P2功能证据](../../results/unlimited-ocr-2/20261116-p2/REPORT.md)；历史阶段报告保留，不改写为整体成功。
 
 主跟踪：[E10 / Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。容量联动关联 [#60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)，部署与副本策略关联 [#39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)，文件契约沿用[文件能力计划](ARTIFACT-EVOLUTION-PLAN.md)，计量沿用 [E16](OCR-METERING.md)。不重复创建 OCR 选型 Issue。
+
+执行故障统一使用 `UOCR2-INC-三位序号`，与增强项E10分别编号；旧编号映射及各项结论见[故障登记](UNLIMITED-OCR-2-INCIDENTS.md)。更名不重置处理次数或停止状态。
 
 ## 1. 交付目标与执行顺序
 
@@ -260,7 +262,7 @@ M1/M2 首轮可使用已验证的固定单副本、单文档上限，动态并�
 | 计划与源码差距核对 | 已形成文档；不是运行验收 | 由 Git 提交和 #11 更新记录发布状态 |
 | P0 现场预检 | [只读核验及快照已记录](../../results/unlimited-ocr-2/20261116-p0/REPORT.md)；端口由P2/P3单独验证，恢复演练未完成 | 接续前复核身份、容量、策略与快照新鲜度 |
 | P1 / M1 准备 | 候选服务镜像已构建、发布并经 worker reader 拉取；P2 已验证 CUDA 和 Triton 算子 | P3 使用带资源守卫的受控候选镜像 |
-| P2–P3 / M1 | P2功能通过；GPUStack管理实例曾Running且直连通过；E08未验通过，已收尾至零副本，无新路由/Key | 等待用户明确接续授权；先解决网关不重放、All models授权与服务端处理器边界 |
+| P2–P3 / M1 | P2功能通过；GPUStack管理实例曾Running且直连通过；UOCR2-INC-008未验通过，已收尾至零副本，无新路由/Key | 等待用户明确接续授权；先解决网关不重放、All models授权与服务端处理器边界 |
 | P4–P6 / M2 | 未开始 | M1 后实现并验证文档契约、计量和发布 |
 
 本轮已按上限停止，不自动开始第三次修复。用户明确授权接续后，先读取本计划、根 `AGENTS.md`、Issue #11 最新更新和停止检查点，再核对现场；不重放未知推理或把旧阶段证据当作新配置已验证。
