@@ -1,12 +1,12 @@
 openapi: 3.1.0
 info:
-  title: Cybercafe MaaS 对外OCR API
+  title: Cybercafe MaaS OCR与文档异步API
   version: '2026-11-16'
   description: 代码契约。/v1/ocr异步提交待部署。2026-11-02现网基线：artifact_id/image_base64/image_url三种输入、E16成功图片计量收据及两个查询接口均已部署并完成真实OCR验收。当前PP-OCRv4无真实token报告，tokens实际为null/unavailable。所有操作要求管理员登记且具有相应权限的Bearer推理key；资源按project隔离，客户端身份头不选择project。用量查询支持usage_type参数；下载的图片URL可有查询参数，但不得包含用户密码或片段。当前入口≤20MiB、同步JSON默认≤20MiB、异步引用JSON≤64KiB、内嵌任务JSON≤20MiB、原图≤10MiB；入口错误可能返回HTML/plain
     text而非ApiError。2026-11-02验收配置为8副本/8执行器、执行并发8/8、等待队列25/25，均可调整且不构成SLA。单次模型运行预算与总任务期限不同。未开放/v1/models、/healthz、管理API、Swagger
     UI或/openapi.json；此文件用于Swagger Editor/UI离线或自行托管导入。内嵌提交已发布，保留原artifact引用兼容。 成功及部分错误响应示例取自2026-11-02真实验收，自建文字测试图与默认白图请求不同；节点已脱敏，历史测试ID不可复用，不包含凭据或真实连接地址。
     E2 批次接口及文件接口的 JSONL/ZIP 扩展为待实现草案。 文档异步模型为独立受控M2试点，使用运维提供的独立Base URL，能力和许可依入口catalog为准；旧OCR入口不会自动切换。文档仅JSON、单份执行，PDF≤10页/10MiB，默认150DPI、最高300DPI、每页≤10MP/总≤50MP，600秒执行/900秒总期限，max_attempts=1；token用量不可用。
-    2026-11-16文档试点因中文场景质量门槛未通过已停止新上传/提交（503），历史任务/结果/页收据查询保留；M2尚未交付，不代表已开放正式文档服务。
+    2026-11-16中文场景质量未达门槛的失败记录保留；用户明确豁免该发布阻断后，M2已完成容量、恢复/回退和受控开放。仅当前试点项目、单文档执行，中文场景质量仍为已知限制。文档请求使用独立document Server，原OCR入口继续保留。
 servers:
 - url: http://{host}:{port}
   description: HTTP：本机/授权SSH转发或受控容器入口。localhost仅指当前调用环境；跨容器须替换host为运维提供的宿主机地址。
@@ -22,6 +22,13 @@ servers:
       default: localhost
     port:
       default: '18832'
+- url: http://{document_host}:{document_port}
+  description: M2受控文档入口：运维提供可达私网地址或SSH转发，仅开放文档异步路径。
+  variables:
+    document_host:
+      default: localhost
+    document_port:
+      default: '18837'
 security:
 - BearerAuth: []
 tags:
@@ -420,6 +427,21 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ChatRequest'
+      servers:
+      - url: http://{host}:{port}
+        description: HTTP：本机/授权SSH转发或受控容器入口。localhost仅指当前调用环境；跨容器须替换host为运维提供的宿主机地址。
+        variables:
+          host:
+            default: localhost
+          port:
+            default: '18831'
+      - url: https://{host}:{port}
+        description: HTTPS：本机或授权SSH转发的私有TLS入口；须使用正确host并信任运维提供的证书，不默认绕过校验。
+        variables:
+          host:
+            default: localhost
+          port:
+            default: '18832'
   /maas/v1/artifacts:
     post:
       operationId: uploadArtifact
@@ -1576,7 +1598,7 @@ paths:
       - name: name
         in: path
         required: true
-        description: 已登记逻辑模型名，当前ocr.default；不是GPUStack内部部署名。
+        description: 已授权逻辑模型名，如ocr.default或受控文档入口的document.unlimited-ocr-2。
         schema:
           type: string
           example: ocr.default

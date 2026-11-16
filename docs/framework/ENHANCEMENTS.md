@@ -783,12 +783,14 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 <a id="e10-ocr-model-selection"></a>
 ## E10：OCR模型选型与PDF文档解析优化
 
+> **2026-11-16 M1/M2受控试点交付**：Unlimited-OCR-2经固定SGLang/GPUStack/Higress服务及MaaS文档异步driver发布，复用artifact/tasks/usage API。用户明确豁免中文场景质量阻断，原42.1%失败与两次处理保留；容量、独立恢复/回退、registry reader和180秒开放观察通过，45任务/91页唯一计量。固定单文档执行，旧OCR仍2/2；新模型独立入口/任务库/项目绑定，原Key可沿用。其余候选、业务质量与长期容量继续待评估。[M2交付](../../results/unlimited-ocr-2/20261116-m2-release/REPORT.md) · [原停止记录](../../results/unlimited-ocr-2/20261116-m2/REPORT.md) · [Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。
+
 > **2026-11-02 PDF计量补充**：与E16协同，PDF成功页数规划successful_pages，区别于successful_images；内部逐页渲染、缩放/切图/重试不重复计数。部分成功业务语义与收费交由下游，不在PDF适配中另建部分成功计费或新任务状态。
 
 > PDF输入/页码结果与统一artifact演进遵循[分阶段计划](ARTIFACT-EVOLUTION-PLAN.md)：先图片OCR完善、再PDF OCR；E10复用E14文件能力，不另建上传下载接口，不承担音视频生成。
 
 
-状态：**2026-10-28用户要求记录为后续优化任务；已有历史比较和Unlimited-OCR-2部署文档调研，尚未启动本轮候选部署、业务盲测或压力测试。** 不作为E3/E8/E7的前置条件，不改变当前平台执行顺序。开始实验前先明确业务需求、资源与独立验证范围；本登记不授权安装模型、停止现有实例、调整副本/显存预算、升级驱动或切换线上模型。
+状态：**2026-11-16 Unlimited-OCR-2已按后续授权完成M1/M2受控试点，见上方交付记录。** 其余候选、业务盲测和长期生产容量尚未完成。不作为E3/E8/E7的前置条件；原2026-10-28任务登记不构成其他候选安装、现有实例停止、驱动升级或旧OCR流量切换授权。
 
 与[E14多模型API契约](#e14-multimodel-api)协同：先冻结三类能力的最小输入/输出和参数边界，再开展候选测试；独立模型可行性探索不必等待完整API实现。候选测试反哺专属参数与限额，正式多模型接入前完成E14兼容实现和验收。E10负责模型、算法和质量取舍，公共协议/adapter框架归E14，避免重复建设。
 
@@ -829,8 +831,8 @@ PP-OCRv5 server调整为第二轮备选：真实拍照样本出现明确需求�
 - 保留v4的决策依据：[历史服务比较](../../results/ocr-service-v4/REPORT.md)中两GPU/四副本、约120秒混合负载下，v4方向保护方案在所选并发16时14.26张/秒，v6 small在所选并发8时9.02张/秒；不同并发下的已测服务配置比较不是同并发纯模型消融，也不是当前拓扑容量承诺。v4已有MaaS同步/异步、计量及维护接入验证，迁移成本更低。新模型只有在质量、效率或能力上产生可验证收益才保留；收益不足继续使用v4，不按版本新旧决定替换。
 - 历史160张集（DocLayNet英文文档80、RCTW中文/混合街景80）的结果、候选与决策见[模型比较](../../results/ocr-model-v3/REPORT.md)、[决策](../../results/ocr-model-v3/DECISION.md)。v6 small文档CER相对v4关闭方向分类控制组有收益，不能仅据该对照认定全面优于当前方向保护方案；当前方向保护的历史分组结果另见服务报告；v5 server街景相对基线的配对95%区间跨零，不能认定普遍胜出；medium当时成本更高。不同前后处理/字典属于流水线比较，已看过的集合不能作为新盲测，CER不能换算为商业准确率承诺。
 - [服务比较](../../results/ocr-service-v4/REPORT.md)与[方向保护](../../results/ocr-service-v4/DIRECTION.md)为历史环境证据，不代表当前拓扑吞吐；旧v5 server约9.3GiB采样值不是模型固定显存要求。方向保护不承诺90/270度或EXIF自动处理。
-- 本会话对invoice_sample.pdf原始内容的实际请求中，/ocr返回422 IMAGE_INVALID，Chat返回400 UPSTREAM_REJECTED，artifact上传返回415 MEDIA_TYPE。当前MaaS不直接接收PDF；这些结果不能用于推断底层模型的页面识别质量。后续保留原始请求/响应和文件摘要作为正式验收证据。
-- [Unlimited-OCR-2官方模型卡](https://huggingface.co/baidu/Unlimited-OCR-2)及[仓库](https://github.com/baidu/Unlimited-OCR)提供定制SGLang wheel部署路径，PDF示例先渲染为页面图片；属于文档调研，尚未证明普通SGLang镜像、当前驱动或实际worker兼容。不能把001物理GPU作为默认部署目标；001是控制端，模型实验应在重新只读核对后的实际克隆worker/独立资源开展，旧worker、端口及副本状态不可直接沿用。
+- 历史会话对invoice_sample.pdf原始内容的实际请求中，/ocr返回422 IMAGE_INVALID，Chat返回400 UPSTREAM_REJECTED，artifact上传返回415 MEDIA_TYPE。当时图片入口不接收PDF；2026-11-16新增独立文档入口见M2交付。这些历史结果不能用于推断底层模型的页面识别质量。后续保留原始请求/响应和文件摘要作为正式验收证据。
+- [Unlimited-OCR-2官方模型卡](https://huggingface.co/baidu/Unlimited-OCR-2)及[仓库](https://github.com/baidu/Unlimited-OCR)提供定制SGLang wheel部署路径，PDF示例先渲染为页面图片；初始文档调研不证明普通SGLang镜像兼容，本轮固定定制wheel、驱动及worker的实测见M1/M2交付。部署目标须按最新登记、可用GPU及独立预算选择；001现允许按普通worker注册，不因旧控制端角色阻止。后续实验仍须只读核对实际worker、端口及副本，不能直接沿用旧状态。
 
 ### 后续任务与验收
 

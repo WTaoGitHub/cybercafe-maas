@@ -1,6 +1,6 @@
 # Unlimited-OCR-2 检查、试点与发布计划
 
-2026-11-16 · 状态：**M1受控JSON模型服务试点验收完成；P4隔离文档候选已实现，P5中文场景质量门槛未通过，主代理两次处理后停止，M2尚未交付。** 最终试点1/1，通过Higress完成单页、2/10/11页及无在途实例替换；旧OCR回归、鉴权及独立CPU失败计数通过。详见[M1报告](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)。原All models权限保留，服务端固定处理器并拒绝流式请求。历史UOCR2-INC-008两次处理及[停止检查点](../../results/unlimited-ocr-2/20261116-uocr2-inc-008-stop/REPORT.md)保留，本轮未进行第三次EnvoyFilter禁重试；SSE断连问题仍未修复。
+2026-11-16 · 状态：**M1及M2受控试点交付完成；中文场景质量失败保留，经用户明确豁免发布阻断后完成容量、恢复/回退与受控开放。** 最终试点1/1，通过Higress完成单页、2/10/11页及无在途实例替换；旧OCR回归、鉴权及独立CPU失败计数通过。详见[M1报告](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)。原All models权限保留，服务端固定处理器并拒绝流式请求。历史UOCR2-INC-008两次处理及[停止检查点](../../results/unlimited-ocr-2/20261116-uocr2-inc-008-stop/REPORT.md)保留，本轮未进行第三次EnvoyFilter禁重试；SSE断连问题仍未修复。
 
 主跟踪：[E10 / Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。容量联动关联 [#60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)，部署与副本策略关联 [#39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)，文件契约沿用[文件能力计划](ARTIFACT-EVOLUTION-PLAN.md)，计量沿用 [E16](OCR-METERING.md)。不重复创建 OCR 选型 Issue。
 
@@ -231,10 +231,10 @@ M1/M2 首轮可使用已验证的固定单副本、单文档上限，动态并�
 
 ### 发布前
 
-- [ ] 汇总 M1/M2 证据和实际支持范围，选定首版页数、DPI、超时、并发、显存与宿主内存预算。
-- [ ] 确认发布版本、镜像 digest、模型/后处理哈希、DB 迁移、catalog/bindings、Higress 路由及调节器授权范围，备份且校验恢复材料。
-- [ ] 以实现得到的机制限制新文档入口，确认旧任务和未知活动可追踪；不能以现有全局 pause 冒充单模型暂停或提交拦截。
-- [ ] 初始只授权试点项目和单副本，功能探针通过后按已约定的观察窗口逐步开放；不自动把 `ocr.default` 流量切入新模型。
+- [x] 汇总 M1/M2 证据和实际支持范围，选定首版页数、DPI、超时、并发、显存与宿主内存预算。
+- [x] 确认发布版本、镜像 digest、模型/后处理哈希、DB 迁移、catalog/bindings、Higress 路由及调节器授权范围，备份且校验恢复材料。
+- [x] 以实现得到的机制限制新文档入口，确认旧任务和未知活动可追踪；不能以现有全局 pause 冒充单模型暂停或提交拦截。
+- [x] 初始只授权试点项目和单副本，功能探针通过后按已约定的观察窗口逐步开放；不自动把 `ocr.default` 流量切入新模型。
 
 ### 观察项
 
@@ -267,8 +267,8 @@ M1/M2 首轮可使用已验证的固定单副本、单文档上限，动态并�
 | 计划与源码差距核对 | 已形成文档；不是运行验收 | 由 Git 提交和 #11 更新记录发布状态 |
 | P0 现场预检 | [只读快照](../../results/unlimited-ocr-2/20261116-p0/REPORT.md)及本轮fresh复核完成，实例替换见M1；未做VM重启或独立冷环境恢复 | 后续接续重新核验现场，不外推持久性 |
 | P1 / M1 准备 | 最终固定镜像已发布并经worker reader拉取，CUDA/Triton及实际模型加载通过 | 后续镜像/配置变更须重新核验 |
-| P2–P3 / M1 | [受控JSON试点验收完成](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)，保留1/1及新路由；临时探针/负向Key清理，原All models保留 | 仅单文档、固定合成样本范围；SSE不支持，M2尚未开始 |
-| P4–P6 / M2 | P4已实现并隔离联调；实际下游15份/35页链路成功，P5中文场景42.1%低于冻结60%，两次处理仍失败，见[停止报告](../../results/unlimited-ocr-2/20261116-m2/REPORT.md) | 新文档入口关闭提交、独立执行器暂停且排空，历史查询保留；容量加压与P6发布未执行，M2未交付 |
+| P2–P3 / M1 | [受控JSON试点验收完成](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)，保留1/1及新路由；临时探针/负向Key清理，原All models保留 | M1保持固定JSON模型服务；SSE不支持，M2独立接入见下行 |
+| P4–P6 / M2 | 用户豁免中文质量阻断后[受控交付完成](../../results/unlimited-ocr-2/20261116-m2-release/REPORT.md)：容量24任务/38页，恢复与回退、180秒开放观察及registry reader验证通过 | 独立文档入口开放、执行预算1；历史与本轮累计45任务/91页唯一计量，中文质量失败及未验边界保留 |
 
 本轮按用户后续授权推进M2；主代理直接执行，不再使用子代理。用户已指定使用仓库现有evaluation样本完成试点。接续先核对现场；不重放未知推理，不进行第三次SSE修复，不把旧阶段证据当作新配置已验证。
 
@@ -280,4 +280,6 @@ M1/M2 首轮可使用已验证的固定单副本、单文档上限，动态并�
 - [官方后处理说明](https://github.com/baidu/Unlimited-OCR/blob/main/utils/README.md)：版面标记输出、跨页合并与 Markdown 转换；生成图片引用不等于已生成对应图片文件。
 - [GPUStack v2.2.3 后端管理](https://github.com/gpustack/gpustack/blob/v2.2.3/docs/user-guide/inference-backend-management.md)及[自定义后端教程](https://github.com/gpustack/gpustack/blob/v2.2.3/docs/tutorials/using-custom-backends.md)：作为已有版本配置路径的依据，不代表新模型已通过兼容验证。
 
-M2停止点：`UOCR2-INC-019` 主代理两次处理额度已用完，不继续第三次处理或自动恢复发布。8个evaluation样本和质量门槛已在GPU试验前冻结；业务留出集、容量及恢复演练未完成。后续接续保留失败成绩、原成功任务与页收据，不通过换样本或放宽门槛改写本次结论。
+历史M2停止点：`UOCR2-INC-019` 主代理两次处理额度已用完，不继续第三次处理或自动恢复发布。8个evaluation样本和质量门槛已在GPU试验前冻结；当时业务留出集、容量及恢复演练未完成。后续接续保留失败成绩、原成功任务与页收据，不通过换样本或放宽门槛改写本次结论。
+
+2026-11-16续行授权与交付：用户要求忽略中文场景质量未达标的阻断，未授权第三次质量修复。保留原停止点及UOCR2-INC-019额度，按[续行验收范围](../../results/unlimited-ocr-2/20261116-m2-release/acceptance.json)完成P5/P6；受控M2已开放，容量执行仍固定1，不提高GPU执行并发、不切换旧OCR入口。独立恢复、排队接续、持久探针及原生curl交付已通过；业务留出集、长期容量、真实跨页表格专项和无人值守GPU恢复仍未认证。

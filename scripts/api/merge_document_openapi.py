@@ -78,6 +78,12 @@ def merge_document(doc):
             operation['responses']['200']['content']['application/json']['schema']['oneOf'] += [ref('DocumentUsage'), page_summary]
     paths['/maas/v1/tasks/{ident}']['get']['description'] += ' 文档成功时result为DocumentResult，默认usage为successful_pages。'
     doc['info']['version'] = '2026-11-16'
+    doc['info']['title'] = 'Cybercafe MaaS OCR与文档异步API'
     doc['info']['description'] += ' 文档异步模型为独立受控M2试点，使用运维提供的独立Base URL，能力和许可依入口catalog为准；旧OCR入口不会自动切换。文档仅JSON、单份执行，PDF≤10页/10MiB，默认150DPI、最高300DPI、每页≤10MP/总≤50MP，600秒执行/900秒总期限，max_attempts=1；token用量不可用。'
     doc['info']['description'] = doc['info']['description'].replace('当前运行配置8副本/8执行器', '2026-11-02验收配置为8副本/8执行器')
-    doc['info']['description'] += ' 2026-11-16文档试点因中文场景质量门槛未通过已停止新上传/提交（503），历史任务/结果/页收据查询保留；M2尚未交付，不代表已开放正式文档服务。'
+    doc['info']['description'] += ' 2026-11-16中文场景质量未达门槛的失败记录保留；用户明确豁免该发布阻断后，M2已完成容量、恢复/回退和受控开放。仅当前试点项目、单文档执行，中文场景质量仍为已知限制。文档请求使用独立document Server，原OCR入口继续保留。'
+    paths['/gpustack/v1/chat/completions']['post']['servers'] = copy.deepcopy(doc['servers'])
+    doc['servers'].append({'url': 'http://{document_host}:{document_port}',
+        'description': 'M2受控文档入口：运维提供可达私网地址或SSH转发，仅开放文档异步路径。',
+        'variables': {'document_host': {'default': 'localhost'}, 'document_port': {'default': '18837'}}})
+    paths['/maas/v1/models/{name}/capabilities']['get']['parameters'][0]['description'] = '已授权逻辑模型名，如ocr.default或受控文档入口的document.unlimited-ocr-2。'

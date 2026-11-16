@@ -1,0 +1,72 @@
+{
+  "sampler_stopped": true,
+  "samples": 821,
+  "interval_seconds": 2,
+  "observed_seconds": 1652.3905065059662,
+  "gpu_peak_mib": 10922,
+  "gpu_total_mib": 16376,
+  "gpu_latest": "10922, 16376, 0",
+  "container_memory_observed_peak_bytes": 10383716352,
+  "container_cgroup_lifetime_peak_bytes": 10565222400,
+  "container_memory_first_bytes": 9543741440,
+  "container_memory_last_bytes": 9763782656,
+  "memory_events_before": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "memory_events_after": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "shm_peak_bytes": 155779072,
+  "cpu_observed_peak_cores": 2.1131160515600493,
+  "host_memavailable_min_bytes": 21132787712,
+  "engine_quiescence_samples": [
+    {
+      "at": 1794829600.6144376,
+      "load": [
+        {
+          "dp_rank": 0,
+          "num_reqs": 0,
+          "num_waiting_reqs": 0,
+          "num_tokens": 0,
+          "num_pending_tokens": 0,
+          "ts_tic": 273023.80855932
+        }
+      ]
+    },
+    {
+      "at": 1794829603.675128,
+      "load": [
+        {
+          "dp_rank": 0,
+          "num_reqs": 0,
+          "num_waiting_reqs": 0,
+          "num_tokens": 0,
+          "num_pending_tokens": 0,
+          "ts_tic": 273026.869432681
+        }
+      ]
+    },
+    {
+      "at": 1794829606.7429543,
+      "load": [
+        {
+          "dp_rank": 0,
+          "num_reqs": 0,
+          "num_waiting_reqs": 0,
+          "num_tokens": 0,
+          "num_pending_tokens": 0,
+          "ts_tic": 273029.937359757
+        }
+      ]
+    }
+  ],
+  "registry_reader": {
+    "anonymous_http": 401,
+    "reader_http": 200,
+    "reader_docker_pull_verified": true,
+    "image_preexisting": false,
+    "manifest_digest": "sha256:fa05b3688f1c9b5e73d308807e6210b8f16a3a1e349628ab4b5fd91de70a96cb",
+    "config_digest": "sha256:f26a78c87c867314cd5b8a83e9cb26abd4f0e3075f2d0b36b5ff88aa9a74c59d",
+    "layers": 16,
+    "rootfs_diff_ids_sha256": "9be32fc3bbb9358ee28766f143fa794fb1837e2d3308cf1f6ce091367f6a9ae2",
+    "reader_config_unchanged": true,
+    "model_container_running": true
+  },
+  "initialization_covered": false
+}
