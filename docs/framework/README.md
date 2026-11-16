@@ -11,7 +11,7 @@
 - [实施计划](PLAN.md)：工作包、代码组织、测试矩阵与发布步骤。
 - [路线图](ROADMAP.md)：P0–P4阶段、门槛及初步工程量。
 - [架构图SVG](ARCHITECTURE.svg)、[PNG](ARCHITECTURE.png)、[Mermaid源文件](ARCHITECTURE.mmd)。
-- [Unlimited-OCR-2 检查与执行计划](UNLIMITED-OCR-2-PLAN.md)：2026-11-16 新增，分 GPUStack/Higress 模型服务试点和 MaaS 文档异步接入两个里程碑；现场检查与部署尚未开始。
+- [Unlimited-OCR-2 检查与执行计划](UNLIMITED-OCR-2-PLAN.md)：分 GPUStack/Higress 模型服务试点和 MaaS 文档异步接入两个里程碑；2026-11-16 已做现场预检，镜像获取受阻后按故障处理上限停止于 P1，尚未运行 GPU 推理。
 
 核心决策：同步/SSE走GPUStack；异步经持久任务API、PostgreSQL、执行器，再调用GPUStack；结果持久保存于001。复用既有身份和模型路由，但新任务端点需要验证安全身份桥接。首期采用全局受控维护，不承诺普通worker精确逐节点无损drain。
 
