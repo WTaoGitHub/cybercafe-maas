@@ -1,0 +1,9 @@
+from PIL import Image,ImageDraw,ImageFont
+from pathlib import Path
+root=Path('/work');font=ImageFont.truetype('/fonts/LiberationSans-Regular.ttf',38);bold=ImageFont.truetype('/fonts/LiberationSans-Bold.ttf',44);cn=ImageFont.truetype('/fonts-cn/DroidSansFallbackFull.ttf',48)
+Image.new('RGB',(1240,1754),'white').save(root/'case-blank.png')
+im=Image.new('RGB',(1240,1754),'white');d=ImageDraw.Draw(im);d.text((90,80),'Rotated Document Reference 78123',font=bold,fill='black');d.text((90,200),'This page tests rotated document reading.',font=font,fill='black');im.rotate(90,expand=True).save(root/'case-rotated.png')
+im=Image.new('RGB',(1240,1754),'white');d=ImageDraw.Draw(im);d.text((90,80),'Table and Formula Report',font=bold,fill='black');d.text((90,165),'Reference 78234',font=font,fill='black');d.text((90,260),'Item                 Count                 Price',font=font,fill='black');d.text((90,335),'Paper                  12                      24',font=font,fill='black');d.text((90,410),'Books                   5                       50',font=font,fill='black');d.text((90,540),'Formula: F = m x a',font=font,fill='black');im.save(root/'case-table.png')
+im=Image.new('RGB',(1240,1754),'white');d=ImageDraw.Draw(im);d.text((90,80),'中文识别测试',font=cn,fill='black');d.text((90,190),'这是一个文档识别测试页面。',font=cn,fill='black');d.text((90,310),'Reference 78345',font=font,fill='black');im.save(root/'case-chinese.png')
+for name,word,ref in [('alpha','ALPHA',78456),('beta','BETA',78567)]:
+ im=Image.new('RGB',(1240,1754),'white');d=ImageDraw.Draw(im);d.text((90,80),f'{word} SERVICE REPORT',font=bold,fill='black');d.text((90,200),f'Unique reference {ref}',font=font,fill='black');d.text((90,320),'This is an independent document for session isolation.',font=font,fill='black');im.save(root/f'case-{name}.png')

@@ -1,6 +1,6 @@
 # Unlimited-OCR-2 检查、试点与发布计划
 
-2026-11-16 · 状态：P1 候选服务镜像已构建、发布并经 worker reader 拉取；尚未运行 GPU 推理。详见[P1 报告](../../results/unlimited-ocr-2/20261116-p1-build/REPORT.md)；[首轮停止记录](../../results/unlimited-ocr-2/20261116-p1/REPORT.md)和[基础镜像报告](../../results/unlimited-ocr-2/20261116-base-image/REPORT.md)保留。
+2026-11-16 · 状态：P1 候选镜像已构建发布，P2 隔离 GPU 与固定样本功能验证已完成；P3 尚未验收。详见[P2 报告](../../results/unlimited-ocr-2/20261116-p2/REPORT.md)和[P1 报告](../../results/unlimited-ocr-2/20261116-p1-build/REPORT.md)；[首轮停止记录](../../results/unlimited-ocr-2/20261116-p1/REPORT.md)和[基础镜像报告](../../results/unlimited-ocr-2/20261116-base-image/REPORT.md)保留。
 
 主跟踪：[E10 / Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。容量联动关联 [#60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)，部署与副本策略关联 [#39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)，文件契约沿用[文件能力计划](ARTIFACT-EVOLUTION-PLAN.md)，计量沿用 [E16](OCR-METERING.md)。不重复创建 OCR 选型 Issue。
 
@@ -260,7 +260,7 @@ M1/M2 首轮可使用已验证的固定单副本、单文档上限，动态并�
 | 计划与源码差距核对 | 已形成文档；不是运行验收 | 由 Git 提交和 #11 更新记录发布状态 |
 | P0 现场预检 | [只读核验及快照已记录](../../results/unlimited-ocr-2/20261116-p0/REPORT.md)；试点端口和恢复演练尚未验证 | 恢复时复核身份、容量、策略与快照新鲜度 |
 | P1 / M1 准备 | 候选服务镜像已构建、发布并经 worker reader 拉取；GPU kernel 尚未验证 | 复核现场后进入 P2 GPU 验证 |
-| P2–P3 / M1 | 未开始 | P1 通过后再执行 GPU 与网关验收 |
+| P2–P3 / M1 | P2 固定样本及容器重启已验证；P3 未开始 | 校验后端 schema、受信权限及 Higress 路由后受控试点 |
 | P4–P6 / M2 | 未开始 | M1 后实现并验证文档契约、计量和发布 |
 
 下一执行会话先读取本计划、根 `AGENTS.md`、Issue #11 最新更新与最近阶段证据；先核对当前现场再操作。若中断，记录最后成功步骤、仍运行的试点任务/容器及待确认活动，不从头重跑推理。
