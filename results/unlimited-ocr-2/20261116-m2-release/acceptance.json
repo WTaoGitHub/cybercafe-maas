@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-16",
+  "user_instruction": "忽略 中文场景的质量未达标问题。继续推进。",
+  "scope": "Continue P5 capacity and P6 controlled M2 release using the existing implementation and single-document execution budget.",
+  "chinese_scene_quality": {
+    "decision": "waived_by_user_as_release_blocker",
+    "original_result": "failed",
+    "original_exact_region_recall": 0.42105263157894735,
+    "original_gate": 0.6,
+    "preserve_history": true,
+    "further_quality_tuning": false
+  },
+  "unchanged": {
+    "execution_concurrency": 1,
+    "max_attempts": 1,
+    "json_only": true,
+    "runtime_seconds": 600,
+    "deadline_seconds": 900,
+    "default_dpi": 150,
+    "unknown_requires_manual_evidence": true,
+    "no_vm_or_docker_daemon_restart": true
+  },
+  "capacity_trial": {
+    "http_offered_concurrency": [1, 2, 4],
+    "interleaved_rounds": 3,
+    "round_inputs": ["synthetic-1", "evaluation-mixed-two", "synthetic-2"],
+    "warmup_before_each_level": "synthetic-1",
+    "p95_seconds_limit": 600,
+    "gpu_peak_mib_limit": 14500,
+    "inference_container_peak_bytes_limit": 16106127360,
+    "api_executor_peak_bytes_limit": 1610612736,
+    "oom_allowed": 0,
+    "unknown_allowed": 0,
+    "stop_on_first_failure": true
+  },
+  "release_scope": "Pilot project only, independent task DB/artifact root/bindings/API/executor; existing OCR entry unchanged.",
+  "previous_evidence": "../20261116-m2/REPORT.md"
+}
