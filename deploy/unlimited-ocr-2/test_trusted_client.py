@@ -1,4 +1,4 @@
-"""Check curl request generation and stream completion without SGLang."""
+"""Check curl request generation and document completion without SGLang."""
 import importlib.util
 import json
 from pathlib import Path
@@ -28,15 +28,14 @@ class ClientTests(unittest.TestCase):
             self.assertEqual(payload['custom_logit_processor'], 'maas.unlimited-ocr-2.ngram.v1')
             self.assertEqual(payload['messages'][0]['content'][0]['image_url']['url'],
                              'data:image/png;base64,Zml4dHVyZQ==')
-            self.assertTrue(payload['stream'])
+            self.assertFalse(payload['stream'])
             self.assertNotIn('Authorization', payload)
 
-    def test_incomplete_stream_is_not_success(self):
+    def test_incomplete_document_is_not_success(self):
         with self.assertRaises(ValueError):
-            client.collect(['data: {"choices":[{"delta":{"content":"partial"}}]}'], [])
+            client.collect({'choices': [{'finish_reason': 'length', 'message': {'content': 'partial'}}]}, [])
         chunks = []
-        client.collect(['data: {"choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}',
-                        'data: [DONE]'], chunks)
+        client.collect({'choices': [{'finish_reason': 'stop', 'message': {'content': 'ok'}}]}, chunks)
         self.assertEqual(chunks, ['ok'])
 
 

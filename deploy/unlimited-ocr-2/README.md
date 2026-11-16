@@ -20,6 +20,8 @@ GPUStack v2.2.3 的试点部署使用 `Dockerfile.resource-guard` 从已验证�
 
 `Dockerfile.processor-policy` 在固定资源守卫镜像上追加处理器约束。`patch_processor_policy.py` 校验两个上游源文件的 SHA-256 后，将客户端处理器解析限制为内置 `DeepseekOCRNoRepeatNGramLogitProcessor`：接受固定符号 `maas.unlimited-ocr-2.ngram.v1` 或旧内置类的严格匹配 JSON，不反序列化客户端对象；非法值在 tokenizer 调度前拒绝。构建内执行 `test_processor_policy.py`，包括禁止调用 `dill.loads` 的允许/拒绝用例。该限制作用于本候选镜像，不修改其他模型或共享 SGLang 后端。
 
+`Dockerfile.pilot-policy` 从固定处理器约束镜像派生，将 M1 限定为 `stream=false`：Chat 入口在处理文档前拒绝 SSE，统一 tokenizer 也在调度前拒绝原生流式请求，两个源文件均有 SHA-256 守卫。此前 SSE 断连实测出现跨窗口 KV 残留，候选清理补丁未解决；本策略不声称修复了 SSE，而是按 M1 原定范围提供完整 JSON 文档响应。客户端超时不保证后台计算取消，必须等待并核实当前请求及 KV 释放后再派发；不自动重发。
+
 `trusted_client.py` 使用上述固定符号，不需要安装 SGLang；实际发送时需要 `requests`。以固定模型的 `config.json`、按顺序排列的 PNG/JPEG 页面和明确的整文档输出预算运行；受保护网关的 Key 从 `UOCR_API_KEY` 环境变量读取，不写进源码。例如：
 
 ```sh
@@ -32,13 +34,13 @@ python3 trusted_client.py --url "$UOCR_GATEWAY_URL" --config /path/to/config.jso
 ```sh
 python3 trusted_client.py --config /path/to/config.json --request-json /private/request.json \
   --max-tokens 3000 /path/to/page-01.png /path/to/page-02.png
-curl --silent --show-error --fail-with-body --no-buffer \
+curl --silent --show-error --fail-with-body --noproxy '*' \
   --connect-timeout 10 --max-time 900 \
   -H "Authorization: Bearer $UOCR_API_KEY" -H 'Content-Type: application/json' \
   --data-binary @/private/request.json \
-  "$UOCR_GATEWAY_URL/v1/chat/completions" > /private/response.sse
+  "$UOCR_GATEWAY_URL/v1/chat/completions" > /private/response.json
 ```
 
-curl 不配置自动重试。退出码0只说明HTTP/传输成功，仍须核对 `[DONE]`、`finish_reason=stop`、页标记数、内容完整性及错误事件；`trusted_client.py` 的直接发送方式会检查前三项。请求和输出包含文档内容，放在私有目录。
+curl 不配置自动重试。退出码0只说明HTTP/传输成功，仍须核对唯一 choice 的 `finish_reason=stop`、页标记数和内容完整性；`trusted_client.py` 的直接发送方式会检查完成原因、非空文本及页标记数。请求和输出包含文档内容，放在私有目录。
 
-客户端限制1–11页，验证 SSE 完成、stop 和页标记数，并在错误时保留已收到的原始文本；这不是质量验收或生产 PDF 入口。发送请求后的总期限为900秒（不含本地图片读取和编码），断连或超时不证明服务端停止：应先核对后端活动，不能自动重放。用户指定的 All models 权限保留，服务端处理器约束独立于 Key 的模型范围；客户端约束不能替代服务端校验。
+客户端限制1–11页，验证 JSON 完成、stop 和页标记数，并保留成功解析的原始文本；这不是质量验收或生产 PDF 入口。发送请求后的总期限为900秒（不含本地图片读取和编码），断连或超时不证明服务端停止：应先核对后端活动，不能自动重放。用户指定的 All models 权限保留，服务端处理器约束独立于 Key 的模型范围；客户端约束不能替代服务端校验。

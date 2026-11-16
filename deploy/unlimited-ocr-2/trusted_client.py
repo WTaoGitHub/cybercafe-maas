@@ -8,22 +8,14 @@ import pathlib
 import signal
 
 
-def collect(lines, chunks):
-    done = False
-    finishes = []
-    for line in lines:
-        if not line or not line.startswith('data:'):
-            continue
-        data = line[5:].strip()
-        if data == '[DONE]':
-            done = True
-            break
-        for choice in json.loads(data).get('choices') or []:
-            chunks.append((choice.get('delta') or {}).get('content') or '')
-            if choice.get('finish_reason') is not None:
-                finishes.append(choice['finish_reason'])
-    if not done or finishes != ['stop']:
-        raise ValueError('stream ended without a successful finish')
+def collect(response, chunks):
+    choices = response.get('choices') or []
+    if len(choices) != 1 or choices[0].get('finish_reason') != 'stop':
+        raise ValueError('document ended without a successful finish')
+    text = (choices[0].get('message') or {}).get('content')
+    if not isinstance(text, str) or not text:
+        raise ValueError('document returned no text')
+    chunks.append(text)
 
 
 def main():
@@ -58,7 +50,7 @@ def main():
         'custom_params': {'ngram_size': 35, 'window_size': 1024 if len(args.images) > 1 else 128,
                           'page_token_id': config['sparse_attention_config']['page_token_id'],
                           'eos_token_id': config['eos_token_id'], 'max_page_tokens': 20000},
-        'stream': True,
+        'stream': False,
     }
     if args.request_json:
         args.request_json.write_text(json.dumps(payload))
@@ -77,10 +69,10 @@ def main():
     signal.alarm(900)
     try:
         with session.post(args.url.rstrip('/') + '/v1/chat/completions', json=payload,
-                          headers=headers, timeout=(10, 600), stream=True,
+                          headers=headers, timeout=(10, 600),
                           allow_redirects=False) as response:
             response.raise_for_status()
-            collect(response.iter_lines(decode_unicode=True), chunks)
+            collect(response.json(), chunks)
         text = ''.join(chunks)
         if not text or text.count('<PAGE>') != len(args.images):
             raise ValueError('output page count does not match the document')

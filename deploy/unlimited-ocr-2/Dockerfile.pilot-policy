@@ -1,0 +1,4 @@
+ARG PARENT_IMAGE
+FROM ${PARENT_IMAGE}
+COPY patch_pilot_request_policy.py /opt/maas/
+RUN python3 /opt/maas/patch_pilot_request_policy.py && python3 /opt/maas/test_processor_policy.py
