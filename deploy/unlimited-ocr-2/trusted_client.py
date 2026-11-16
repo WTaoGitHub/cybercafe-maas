@@ -28,18 +28,18 @@ def collect(lines, chunks):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--url', required=True, help='trusted engine or gateway base URL')
+    parser.add_argument('--url', help='trusted engine or gateway base URL')
     parser.add_argument('--model', default='unlimited-ocr-2')
     parser.add_argument('--config', type=pathlib.Path, required=True, help='fixed model config.json')
-    parser.add_argument('--output', type=pathlib.Path, required=True, help='private raw output file')
+    parser.add_argument('--output', type=pathlib.Path, help='private raw output file')
+    parser.add_argument('--request-json', type=pathlib.Path, help='write the request for curl without sending it')
     parser.add_argument('--max-tokens', type=int, required=True, help='whole-document output budget')
     parser.add_argument('images', nargs='+', type=pathlib.Path, help='pages in document order')
     args = parser.parse_args()
     if not 1 <= len(args.images) <= 11 or not 1 <= args.max_tokens <= 20000 * len(args.images):
         parser.error('pilot supports 1–11 pages and a positive bounded output budget')
-
-    import requests
-    from sglang.srt.sampling.custom_logit_processor import DeepseekOCRNoRepeatNGramLogitProcessor
+    if not args.request_json and (not args.url or not args.output):
+        parser.error('--url and --output are required when sending a request')
 
     config = json.loads(args.config.read_text())
     content = []
@@ -54,12 +54,17 @@ def main():
         'model': args.model, 'messages': [{'role': 'user', 'content': content}],
         'max_tokens': args.max_tokens, 'temperature': 0, 'skip_special_tokens': False,
         'images_config': {'crop_mode': True},
-        'custom_logit_processor': DeepseekOCRNoRepeatNGramLogitProcessor.to_str(),
+        'custom_logit_processor': 'maas.unlimited-ocr-2.ngram.v1',
         'custom_params': {'ngram_size': 35, 'window_size': 1024 if len(args.images) > 1 else 128,
                           'page_token_id': config['sparse_attention_config']['page_token_id'],
                           'eos_token_id': config['eos_token_id'], 'max_page_tokens': 20000},
         'stream': True,
     }
+    if args.request_json:
+        args.request_json.write_text(json.dumps(payload))
+        return
+
+    import requests
     import os
     key = os.environ.get('UOCR_API_KEY')
     headers = {'Authorization': 'Bearer ' + key} if key else {}
@@ -72,7 +77,8 @@ def main():
     signal.alarm(900)
     try:
         with session.post(args.url.rstrip('/') + '/v1/chat/completions', json=payload,
-                          headers=headers, timeout=(10, 600), stream=True) as response:
+                          headers=headers, timeout=(10, 600), stream=True,
+                          allow_redirects=False) as response:
             response.raise_for_status()
             collect(response.iter_lines(decode_unicode=True), chunks)
         text = ''.join(chunks)

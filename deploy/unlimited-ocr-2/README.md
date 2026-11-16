@@ -18,11 +18,27 @@ GPUStack v2.2.3 的试点部署使用 `Dockerfile.resource-guard` 从已验证�
 
 构建运行镜像需依次执行两个阶段：先用 `Dockerfile` 和固定基础摘要构建候选，再用 `Dockerfile.python-headers`、以该候选的不可变 digest 或已核验 image ID 作为 `PARENT_IMAGE` 构建头文件层。不要直接部署第一阶段镜像；P2 运行使用第二阶段镜像。
 
-`trusted_client.py` 供受信内部试点使用，按固定 wheel 生成处理器，不接受外部处理器字符串。以固定模型的 `config.json`、按顺序排列的 PNG/JPEG 页面和明确的整文档输出预算运行；受保护网关的试点 Key 从 `UOCR_API_KEY` 环境变量读取，不写进命令行。例如：
+`Dockerfile.processor-policy` 在固定资源守卫镜像上追加处理器约束。`patch_processor_policy.py` 校验两个上游源文件的 SHA-256 后，将客户端处理器解析限制为内置 `DeepseekOCRNoRepeatNGramLogitProcessor`：接受固定符号 `maas.unlimited-ocr-2.ngram.v1` 或旧内置类的严格匹配 JSON，不反序列化客户端对象；非法值在 tokenizer 调度前拒绝。构建内执行 `test_processor_policy.py`，包括禁止调用 `dill.loads` 的允许/拒绝用例。该限制作用于本候选镜像，不修改其他模型或共享 SGLang 后端。
+
+`trusted_client.py` 使用上述固定符号，不需要安装 SGLang；实际发送时需要 `requests`。以固定模型的 `config.json`、按顺序排列的 PNG/JPEG 页面和明确的整文档输出预算运行；受保护网关的 Key 从 `UOCR_API_KEY` 环境变量读取，不写进源码。例如：
 
 ```sh
 python3 trusted_client.py --url "$UOCR_GATEWAY_URL" --config /path/to/config.json \
   --output /private/result.txt --max-tokens 3000 /path/to/page-01.png /path/to/page-02.png
 ```
 
-客户端限制1–11页，验证 SSE 完成、stop 和页标记数，并在错误时保留已收到的原始文本；这不是质量验收或生产 PDF 入口。发送请求后的总期限为900秒（不含本地图片读取和编码），断连或超时不证明服务端停止：应先核对后端活动，不能自动重放。模型原始路由只允许受信试点身份，不能把客户端约束当成网关权限控制。
+也可仅用 Python 标准库生成请求，再用 curl 验证；`UOCR_GATEWAY_URL` 是包含模型路由的实际推理入口，`UOCR_API_KEY` 使用已有授权 Key：
+
+```sh
+python3 trusted_client.py --config /path/to/config.json --request-json /private/request.json \
+  --max-tokens 3000 /path/to/page-01.png /path/to/page-02.png
+curl --silent --show-error --fail-with-body --no-buffer \
+  --connect-timeout 10 --max-time 900 \
+  -H "Authorization: Bearer $UOCR_API_KEY" -H 'Content-Type: application/json' \
+  --data-binary @/private/request.json \
+  "$UOCR_GATEWAY_URL/v1/chat/completions" > /private/response.sse
+```
+
+curl 不配置自动重试。退出码0只说明HTTP/传输成功，仍须核对 `[DONE]`、`finish_reason=stop`、页标记数、内容完整性及错误事件；`trusted_client.py` 的直接发送方式会检查前三项。请求和输出包含文档内容，放在私有目录。
+
+客户端限制1–11页，验证 SSE 完成、stop 和页标记数，并在错误时保留已收到的原始文本；这不是质量验收或生产 PDF 入口。发送请求后的总期限为900秒（不含本地图片读取和编码），断连或超时不证明服务端停止：应先核对后端活动，不能自动重放。用户指定的 All models 权限保留，服务端处理器约束独立于 Key 的模型范围；客户端约束不能替代服务端校验。
