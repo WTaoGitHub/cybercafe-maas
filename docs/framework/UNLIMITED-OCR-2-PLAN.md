@@ -1,6 +1,6 @@
 # Unlimited-OCR-2 检查、试点与发布计划
 
-2026-11-16 · 状态：P1 候选镜像已构建发布，P2 隔离 GPU 与固定样本功能验证已完成；P3 尚未验收。详见[P2 报告](../../results/unlimited-ocr-2/20261116-p2/REPORT.md)和[P1 报告](../../results/unlimited-ocr-2/20261116-p1-build/REPORT.md)；[首轮停止记录](../../results/unlimited-ocr-2/20261116-p1/REPORT.md)和[基础镜像报告](../../results/unlimited-ocr-2/20261116-base-image/REPORT.md)保留。
+2026-11-16 · 状态：按故障次数上限停止于P3/E08，主代理两次处理后未取得完整网关不重放证据；M1未验收、M2未开始。试点已回到0副本，新路由/试点Key/实验filter已撤销，镜像与模型保留。用户指定既有下游Key为All models，该设置保留。详见[最终停止检查点](../../results/unlimited-ocr-2/20261116-e08-stop/REPORT.md)及[P2功能证据](../../results/unlimited-ocr-2/20261116-p2/REPORT.md)；历史阶段报告保留，不改写为整体成功。
 
 主跟踪：[E10 / Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。容量联动关联 [#60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)，部署与副本策略关联 [#39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)，文件契约沿用[文件能力计划](ARTIFACT-EVOLUTION-PLAN.md)，计量沿用 [E16](OCR-METERING.md)。不重复创建 OCR 选型 Issue。
 
@@ -144,16 +144,16 @@ flowchart LR
 
 ## 7. P3：GPUStack 管理与 Higress 路由（M1）
 
-先创建独立后端、部署和模型路由，仅试点 Key 可访问。创建后记录实际 ID，不能写死历史集群或部署 ID。
+先准备独立后端和零副本部署，记录实际ID，不能写死历史集群或部署ID。用户已将既有下游Key设为All models，不得为试点再次收窄它；新路由进入该用户可见范围后，按All models预期验收。发布前须在服务端固定或限制原始SGLang处理器反序列化，不能只用客户端固定值或旧Key模型范围作为安全边界。
 
 ### 发布清单
 
 - [ ] 先对当前 GPUStack schema 校验自定义后端定义；配置独立后端名、版本、镜像 digest、CUDA framework、健康路径、entrypoint 和参数。
-- [ ] 入口为 `python -m sglang.launch_server`，参数使用 `{{model_path}}`、`{{model_name}}`、`{{port}}`；不要把完整可执行命令再附加到已有 entrypoint 后面，不在 run_command 拼 shell 操作符。
+- [ ] 最终引擎入口为 `python -m sglang.launch_server`；当前v2.2.3试点先使用已验证的资源守卫，确认cgroup限额后再exec引擎。参数使用 `{{model_path}}`、`{{model_name}}`、`{{port}}`；不要重复拼完整命令或shell操作符。原生限额/无人值守恢复仍需单独闭环。
 - [ ] 复制 P2 已验证的完整启动配置；核对实际容器内参数、环境变量、GPU 可见性、模型挂载与 `/dev/shm`，不能只检查 UI 输入值。
 - [ ] 依据实测峰值和余量设置显存 claim；明确它是调度预算，不是 SGLang 显存硬限制。核对 GPUStack 的显存分配账与实际使用，初期一张卡不安排多个新模型副本。
 - [ ] 新部署先以 0 副本准备，读取当前调节器范围，防止试点被自动扩缩；用独立授权范围或 Observe 准备，再受控启动 1 副本。不能为了试点把正式 OCR 的全局调节器停掉。
-- [ ] 读取 GPUStack 的模型路由到部署/实例关系，验证 Higress 实际后端匹配该实例。使用私有网络既有边界，确认匿名、错误 Key、无模型权限均被拒绝。
+- [ ] 读取 GPUStack 的模型路由到部署/实例关系，验证 Higress 实际后端匹配该实例。使用私有网络既有边界，确认匿名、错误Key、无模型权限均被拒绝；用户指定All models且所属用户可见时应允许，不把拒绝该Key作为通过门槛。
 - [ ] 用固定客户端向 Higress 发相同样本，比较直连引擎与网关结果，核对多图片、专用参数、模型名及流式字段透传。
 - [ ] 验证首响应超时、总超时、SSE 空闲超时、请求体和响应体限制，以及上下游断连。记录 Higress 实际重试配置，执行过或完成情况不明的文档不能因网关重试而盲目重放。
 - [ ] 仅在试点无活动请求时做实例进程/容器替换，核对 Higress 后端更新、旧地址剔除、重新加载时间及再次真实推理。不操作 VM 或 Docker 引擎。
@@ -258,12 +258,12 @@ M1/M2 首轮可使用已验证的固定单副本、单文档上限，动态并�
 | 阶段 | 当前状态 | 下一项 |
 | --- | --- | --- |
 | 计划与源码差距核对 | 已形成文档；不是运行验收 | 由 Git 提交和 #11 更新记录发布状态 |
-| P0 现场预检 | [只读核验及快照已记录](../../results/unlimited-ocr-2/20261116-p0/REPORT.md)；试点端口和恢复演练尚未验证 | 恢复时复核身份、容量、策略与快照新鲜度 |
+| P0 现场预检 | [只读核验及快照已记录](../../results/unlimited-ocr-2/20261116-p0/REPORT.md)；端口由P2/P3单独验证，恢复演练未完成 | 接续前复核身份、容量、策略与快照新鲜度 |
 | P1 / M1 准备 | 候选服务镜像已构建、发布并经 worker reader 拉取；P2 已验证 CUDA 和 Triton 算子 | P3 使用带资源守卫的受控候选镜像 |
-| P2–P3 / M1 | P2 固定样本及容器重启已验证；P3 后端与模型已建为零副本 | 验证资源守卫与受信权限，再受控验证 Higress 路由 |
+| P2–P3 / M1 | P2功能通过；GPUStack管理实例曾Running且直连通过；E08未验通过，已收尾至零副本，无新路由/Key | 等待用户明确接续授权；先解决网关不重放、All models授权与服务端处理器边界 |
 | P4–P6 / M2 | 未开始 | M1 后实现并验证文档契约、计量和发布 |
 
-下一执行会话先读取本计划、根 `AGENTS.md`、Issue #11 最新更新与最近阶段证据；先核对当前现场再操作。若中断，记录最后成功步骤、仍运行的试点任务/容器及待确认活动，不从头重跑推理。
+本轮已按上限停止，不自动开始第三次修复。用户明确授权接续后，先读取本计划、根 `AGENTS.md`、Issue #11 最新更新和停止检查点，再核对现场；不重放未知推理或把旧阶段证据当作新配置已验证。
 
 ## 官方依据
 
