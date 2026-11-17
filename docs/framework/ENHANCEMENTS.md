@@ -787,6 +787,8 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 <a id="e10-ocr-model-selection"></a>
 ## E10：OCR模型选型与PDF文档解析优化
 
+> **2026-11-17 MiniCPM-OCR 1.0 部署调研完成，未部署：** 已只读核验 GPUStack v2.2.3 及 worker7 无模型实例的 RTX 4080 SUPER 16GB/580.95.05，具备隔离试点条件，16GB 初始化及完整解析仍待实测。建议固定官方镜像摘要、绕过忽略参数的 vLLM 包装脚本、关闭权重同步，采用 CPU 版面检测和单文档/低区域并发；SDK 自动重试、输出坐标及专属 MaaS adapter 须独立处理，不能只替换 Unlimited 模型名。详见[调研与验证顺序](../reports/minicpm-ocr-1.0-deployment-20261117.md)，继续由[Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)跟踪；不据本调研改变已有服务、默认模型或部署排期。
+
 > **2026-11-16 M1/M2受控试点交付**：Unlimited-OCR-2经固定SGLang/GPUStack/Higress服务及MaaS文档异步driver发布，复用artifact/tasks/usage API。用户明确豁免中文场景质量阻断，原42.1%失败与两次处理保留；容量、独立恢复/回退、registry reader和180秒开放观察通过，45任务/91页唯一计量。固定单文档执行，旧OCR仍2/2；新模型独立入口/任务库/项目绑定，原Key可沿用。其余候选、业务质量与长期容量继续待评估。[M2交付](../../results/unlimited-ocr-2/20261116-m2-release/REPORT.md) · [原停止记录](../../results/unlimited-ocr-2/20261116-m2/REPORT.md) · [Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。
 
 > **2026-11-02 PDF计量补充**：与E16协同，PDF成功页数规划successful_pages，区别于successful_images；内部逐页渲染、缩放/切图/重试不重复计数。部分成功业务语义与收费交由下游，不在PDF适配中另建部分成功计费或新任务状态。

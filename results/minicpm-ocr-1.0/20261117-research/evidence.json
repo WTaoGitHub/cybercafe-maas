@@ -1,0 +1,259 @@
+{
+  "scope": "deployment research only; no model inference or runtime changes",
+  "environment": {
+    "observed_at_utc": "2026-11-17T04:20:37.337937+00:00",
+    "source": "read-only controller SSH and authenticated GPUStack management GET; worker data is management telemetry, not direct nvidia-smi",
+    "controller": {
+      "architecture": "x86_64",
+      "cpu_count": 8,
+      "memory_total_bytes": 16526422016,
+      "memory_available_bytes": 9974349824,
+      "disk_free_bytes": 290189922304
+    },
+    "gpustack_version": {
+      "version": "v2.2.3",
+      "git_commit": "1cfcbbf"
+    },
+    "workers": [
+      {
+        "worker_id": 7,
+        "state": "ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454915584,
+        "ram_used_bytes": 2482544640,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 2.64,
+              "is_unified_memory": false,
+              "used": 454033408,
+              "allocated": 0
+            }
+          }
+        ],
+        "instances": [],
+        "root_disk_available_bytes": 457926680576
+      },
+      {
+        "worker_id": 6,
+        "state": "ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454911488,
+        "ram_used_bytes": 12376113152,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 69.33,
+              "is_unified_memory": false,
+              "used": 11905531904,
+              "allocated": 12884901888
+            }
+          }
+        ],
+        "instances": [
+          {
+            "id": 190,
+            "model_id": 11,
+            "state": "running"
+          }
+        ],
+        "root_disk_available_bytes": 350415855616
+      },
+      {
+        "worker_id": 5,
+        "state": "ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454911488,
+        "ram_used_bytes": 4491395072,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 20.66,
+              "is_unified_memory": false,
+              "used": 3548381184,
+              "allocated": 7516192768
+            }
+          }
+        ],
+        "instances": [
+          {
+            "id": 181,
+            "model_id": 1,
+            "state": "running"
+          },
+          {
+            "id": 5,
+            "model_id": 1,
+            "state": "running"
+          }
+        ],
+        "root_disk_available_bytes": 457595625472
+      },
+      {
+        "worker_id": 4,
+        "state": "not_ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454907392,
+        "ram_used_bytes": 3441057792,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 11.54,
+              "is_unified_memory": false,
+              "used": 1980760064,
+              "allocated": 0
+            }
+          }
+        ],
+        "instances": [],
+        "root_disk_available_bytes": 457920987136
+      }
+    ],
+    "models": [
+      {
+        "id": 11,
+        "name": "unlimited-ocr-2",
+        "replicas": 1,
+        "ready_replicas": 1,
+        "backend": "Unlimited-OCR-2-SGLang-custom",
+        "backend_version": "1.0"
+      },
+      {
+        "id": 1,
+        "name": "maas-ocr",
+        "replicas": 2,
+        "ready_replicas": 2,
+        "backend": "MaaS-Baremetal-OCR-custom",
+        "backend_version": "1.0"
+      }
+    ]
+  },
+  "model": {
+    "modelscope_revision": "a165c0943964e167b46e32d67bbcb9deab26a8d4",
+    "modelscope_metadata_url": "https://modelscope.cn/api/v1/models/OpenBMB/MiniCPM-OCR-1.0/repo/files?Revision=a165c0943964e167b46e32d67bbcb9deab26a8d4&Recursive=true",
+    "huggingface_revision": "883ca368d17335b9ce5aa6fef4d000ef0684fcaa",
+    "weight_bytes_advertised": 2600969816,
+    "weight_sha256_advertised_by_both_hosts": "83f4e433b044fd23f9ea7eb3acbc7d59e4fe11a1fdf3c3129b7021d0ab4f8fd4",
+    "full_weight_downloaded_or_verified": false,
+    "architectures": [
+      "MiniCPMOcrForConditionalGeneration"
+    ],
+    "model_type": "minicpm_ocr"
+  },
+  "official_image": {
+    "tag": "105-vlm-with-model",
+    "index_digest": "sha256:3cfeaf0d251ecb4e5615cf5ce97cb8c90583cfb70dc21d6978ca50a4bfc6fdd9",
+    "platform_digest": "sha256:42773d0ece292c0d8abe9edd92d5a405f37849db134c094554532880ab0d7a12",
+    "config_digest": "sha256:eaca12947aceac14cd4ffd7aba3e8ef255d8fbdb2376df4874a2572fc0c51343",
+    "compressed_layer_bytes": 11207282798,
+    "architecture": "amd64",
+    "os": "linux",
+    "created": "2026-11-16T15:57:01.728710368+08:00",
+    "entrypoint": null,
+    "cmd": [
+      "bash"
+    ],
+    "env": [
+      "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    ],
+    "healthcheck": {
+      "Test": [
+        "CMD-SHELL",
+        "curl -fs http://127.0.0.1:${PORT}/ready >/dev/null || exit 1"
+      ],
+      "Interval": 30000000000,
+      "Timeout": 5000000000,
+      "StartPeriod": 1200000000000,
+      "Retries": 3
+    },
+    "source": "Docker Hub tag API and registry manifests/config; final entrypoint read from the named small layer",
+    "tag_metadata_url": "https://hub.docker.com/v2/repositories/openbmbofficial/minicpm-ocr/tags/105-vlm-with-model",
+    "advertised_sdk_version_in_description": "1.0.4",
+    "sdk_version_in_build_history": "1.0.5",
+    "sdk_source_revision_in_build_history": "f5357c72e1605698fa857d74222c0414ca369ae3",
+    "vllm_version_in_build_history": "0.31.1rc1.dev379+g484a12539",
+    "transformers_version_in_build_history": "5.19.0.dev0",
+    "cuda_version_in_build_history": "12.9",
+    "full_image_pulled_or_executed": false,
+    "script_layer_digest_verified": "sha256:66d1d1462ed67ee6730e52975e28c6a01d47b47f8b92ed9ba108537f73368a92",
+    "entrypoint_sha256": "9cd9ccb97f6bd4c3d51293dd4e5bb20fbcfaaa7202bd96cf49f2cdd65d6da926",
+    "static_entrypoint_facts": {
+      "accepted_cli_options": [
+        "--port",
+        "--served-model-name"
+      ],
+      "other_cli_options_ignored": true,
+      "max_model_len": 40960,
+      "max_num_batched_tokens": 8192,
+      "max_num_seqs": 256,
+      "default_gpu_memory_utilization": 0.9,
+      "weight_sync_default": true,
+      "weight_sync_disable_env": "HF_WEIGHT_SYNC=0",
+      "dspark_configured": false
+    }
+  },
+  "official_source": {
+    "revision": "f5357c72e1605698fa857d74222c0414ca369ae3",
+    "files": [
+      {
+        "path": "README.md",
+        "sha256": "b8ff05f64f253dbd82762dc6ea93c0ea6ae0cbe89d177840e7906efa3cef53c6",
+        "url": "https://github.com/OpenBMB/MiniCPM-OCR/blob/f5357c72e1605698fa857d74222c0414ca369ae3/README.md"
+      },
+      {
+        "path": "docs/minicpm_ocr_tutorial_en.md",
+        "sha256": "8d3346c371378076ce735d8b8d564606393c2621a8f38c8ed67ea53e55d6fe08",
+        "url": "https://github.com/OpenBMB/MiniCPM-OCR/blob/f5357c72e1605698fa857d74222c0414ca369ae3/docs/minicpm_ocr_tutorial_en.md"
+      },
+      {
+        "path": "pyproject.toml",
+        "sha256": "cc6393cde5d6f5c7fa942445f6c1eafa9daa43d8c956bdf3736d9f3f3ddf45fe",
+        "url": "https://github.com/OpenBMB/MiniCPM-OCR/blob/f5357c72e1605698fa857d74222c0414ca369ae3/pyproject.toml"
+      },
+      {
+        "path": "sdk/minicpmvocr/backends/client.py",
+        "sha256": "fcce4a5290a7f49d2b14398530a98c6c617909d847d9f6577c630a15ebd70a48",
+        "url": "https://github.com/OpenBMB/MiniCPM-OCR/blob/f5357c72e1605698fa857d74222c0414ca369ae3/sdk/minicpmvocr/backends/client.py"
+      },
+      {
+        "path": "sdk/minicpmvocr/configs/minicpmvocr.yaml",
+        "sha256": "c392d6c7f1dc67f2ec61c2071754136a0dd8894474e9276dd27256cf62daaf0f",
+        "url": "https://github.com/OpenBMB/MiniCPM-OCR/blob/f5357c72e1605698fa857d74222c0414ca369ae3/sdk/minicpmvocr/configs/minicpmvocr.yaml"
+      },
+      {
+        "path": "docs/minicpm_ocr_sdk_api_en.md",
+        "sha256": "d882ffd74b039d66377cd4e63a0bcecfa1bac9d83dc1fb35e85d74862d204e59",
+        "url": "https://github.com/OpenBMB/MiniCPM-OCR/blob/f5357c72e1605698fa857d74222c0414ca369ae3/docs/minicpm_ocr_sdk_api_en.md"
+      }
+    ]
+  },
+  "unverified": [
+    "direct worker7 identity/process/runtime inspection",
+    "image-contained weights matching model repository revision",
+    "full image pull and package imports",
+    "GPU kernels and model initialization on 16GB",
+    "accuracy, throughput, long documents, cold start, sustained load and recovery",
+    "GPUStack/Higress and MaaS integration",
+    "centralized NFS deployment"
+  ]
+}
