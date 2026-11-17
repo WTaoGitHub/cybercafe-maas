@@ -1,0 +1,47 @@
+{
+  "scope": "local service quality; benchmarks used only as sample sources",
+  "model": "document.unlimited-ocr-2",
+  "test_counts": {
+    "warmup_tasks": 1,
+    "formal_tasks": 7,
+    "total_success_tasks": 8,
+    "successful_pages": 18,
+    "unique_input_cases": 4,
+    "unique_input_pages": 8
+  },
+  "execution": [
+    "warmup a-cn",
+    "serial a-cn,b-en,c-body,d-table",
+    "reuse original key/body for completed c-body",
+    "invalid create without artifact_id:422",
+    "repeat c-body with fresh key",
+    "submit c-body and d-table concurrently"
+  ],
+  "gates": {
+    "single_page_seconds": 60,
+    "three_page_seconds": 120,
+    "two_submit_group_seconds": 240,
+    "max_running_documents": 1,
+    "formal_tasks": 7,
+    "warmup_tasks": 1,
+    "total_pages": 18
+  },
+  "checks": [
+    "SUCCEEDED and result downloadable",
+    "versioned result JSON; nonempty raw_output and markdown",
+    "expected ordered page indices, rendering sizes and valid optional bbox",
+    "one final receipt and one MaaS attempt per successful task",
+    "same idempotency key returns same task; invalid request creates no task",
+    "no UNKNOWN/OOM/container restart; engine idle at completion"
+  ],
+  "excluded": [
+    "OCR accuracy or benchmark scores",
+    "cross-page semantic merging quality",
+    "byte-for-byte OCR determinism",
+    "cold start",
+    "hundred-page workload",
+    "long-duration load",
+    "claim of exactly-once GPU execution"
+  ],
+  "stop_rule": "first failure or latency gate: no subsequent submissions; preserve IDs and confirm accepted task outcomes"
+}

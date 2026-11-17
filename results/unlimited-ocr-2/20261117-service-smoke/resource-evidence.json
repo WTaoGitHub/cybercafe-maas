@@ -1,0 +1,57 @@
+{
+  "samples": 141,
+  "sample_interval_seconds": 2,
+  "observed_seconds": 290.83895111083984,
+  "gpu_peak_mib": 10922,
+  "gpu_total_mib": 16376,
+  "engine_ram_sampled_peak_bytes": 10738970624,
+  "engine_ram_first_bytes": 9763557376,
+  "engine_ram_last_bytes": 10443403264,
+  "max_running_requests_observed": 1,
+  "max_waiting_requests_observed": 0,
+  "memory_events_unchanged": true,
+  "engine_unchanged_running_no_restart": true,
+  "engine_quiescence_samples": [
+    {
+      "at": 1794884474.3235857,
+      "load": [
+        {
+          "dp_rank": 0,
+          "num_reqs": 0,
+          "num_waiting_reqs": 0,
+          "num_tokens": 0,
+          "num_pending_tokens": 0,
+          "ts_tic": 327897.51781886
+        }
+      ]
+    },
+    {
+      "at": 1794884476.3815985,
+      "load": [
+        {
+          "dp_rank": 0,
+          "num_reqs": 0,
+          "num_waiting_reqs": 0,
+          "num_tokens": 0,
+          "num_pending_tokens": 0,
+          "ts_tic": 327899.575763891
+        }
+      ]
+    },
+    {
+      "at": 1794884478.4478972,
+      "load": [
+        {
+          "dp_rank": 0,
+          "num_reqs": 0,
+          "num_waiting_reqs": 0,
+          "num_tokens": 0,
+          "num_pending_tokens": 0,
+          "ts_tic": 327901.642216005
+        }
+      ]
+    }
+  ],
+  "initialization_covered": false,
+  "worker_sampler_stopped": true
+}

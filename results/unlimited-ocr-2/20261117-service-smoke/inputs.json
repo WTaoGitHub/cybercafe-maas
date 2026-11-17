@@ -1,0 +1,186 @@
+{
+  "profile": "local-service-smoke-20261117",
+  "purpose": "service contract and availability only; no model accuracy gate",
+  "cases": [
+    {
+      "name": "a-cn",
+      "file": "a-cn.png",
+      "media_type": "image/png",
+      "pages": 1,
+      "sha256": "ab448b5bd897b25259d3d0c08a7faf5adf3f897a329aa24e1b236571fef1d954",
+      "bytes": 56933,
+      "sources": [
+        {
+          "file": "a-cn.png",
+          "source": "omni",
+          "path": "images/book_zh_CNASGL0072018_extracted_page_48.png",
+          "url": "https://huggingface.co/datasets/opendatalab/OmniDocBench/resolve/aa1ee96d106dbe53d0ae59474d75c6e6d9b53fec/images/book_zh_CNASGL0072018_extracted_page_48.png",
+          "revision": "aa1ee96d106dbe53d0ae59474d75c6e6d9b53fec",
+          "sha256": "ab448b5bd897b25259d3d0c08a7faf5adf3f897a329aa24e1b236571fef1d954",
+          "bytes": 56933,
+          "width": 596,
+          "height": 842
+        }
+      ],
+      "expected_page_sizes": [
+        [
+          596,
+          842
+        ]
+      ]
+    },
+    {
+      "name": "b-en",
+      "file": "b-en.png",
+      "media_type": "image/png",
+      "pages": 1,
+      "sha256": "6b91b8be02fd82b9ad9e52310644bed7af1e6cce12e18cb1b58fc1d5b70975d1",
+      "bytes": 139454,
+      "sources": [
+        {
+          "file": "b-en.png",
+          "source": "omni",
+          "path": "images/PPT_1001115_eng_page_003.png",
+          "url": "https://huggingface.co/datasets/opendatalab/OmniDocBench/resolve/aa1ee96d106dbe53d0ae59474d75c6e6d9b53fec/images/PPT_1001115_eng_page_003.png",
+          "revision": "aa1ee96d106dbe53d0ae59474d75c6e6d9b53fec",
+          "sha256": "6b91b8be02fd82b9ad9e52310644bed7af1e6cce12e18cb1b58fc1d5b70975d1",
+          "bytes": 139454,
+          "width": 2000,
+          "height": 1500
+        }
+      ],
+      "expected_page_sizes": [
+        [
+          2000,
+          1500
+        ]
+      ]
+    },
+    {
+      "name": "c-body",
+      "file": "c-body.pdf",
+      "media_type": "application/pdf",
+      "pages": 3,
+      "sha256": "e0501e4f6ac162e10955fca2be7edf895ed98f4a35c40075a143efc60dd5de62",
+      "bytes": 1236865,
+      "sources": [
+        {
+          "file": "d-10.png",
+          "source": "marathon",
+          "path": "images/mp3lan_0105/page_10.png",
+          "url": "https://modelscope.cn/api/v1/datasets/baidu/MarathonDocBench/repo?Revision=master&FilePath=images%2Fmp3lan_0105%2Fpage_10.png",
+          "revision": "master-at-20261117",
+          "sha256": "f5406af3a18784df1285f721584de30fb9992a39a6d3f30ddf766ab10678e6f4",
+          "bytes": 478781,
+          "width": 1191,
+          "height": 1749
+        },
+        {
+          "file": "d-11.png",
+          "source": "marathon",
+          "path": "images/mp3lan_0105/page_11.png",
+          "url": "https://modelscope.cn/api/v1/datasets/baidu/MarathonDocBench/repo?Revision=master&FilePath=images%2Fmp3lan_0105%2Fpage_11.png",
+          "revision": "master-at-20261117",
+          "sha256": "673800f62540f5f26a29963f59cc0521f6530604a03e148037199c7bee1bf414",
+          "bytes": 618483,
+          "width": 1191,
+          "height": 1749
+        },
+        {
+          "file": "d-12.png",
+          "source": "marathon",
+          "path": "images/mp3lan_0105/page_12.png",
+          "url": "https://modelscope.cn/api/v1/datasets/baidu/MarathonDocBench/repo?Revision=master&FilePath=images%2Fmp3lan_0105%2Fpage_12.png",
+          "revision": "master-at-20261117",
+          "sha256": "784aeac8595799fc0a63b9cd7c2fdfe808c5136943808a734ce57612d8c1a0c0",
+          "bytes": 895450,
+          "width": 1191,
+          "height": 1749
+        }
+      ],
+      "expected_page_sizes": [
+        [
+          1191,
+          1749
+        ],
+        [
+          1191,
+          1749
+        ],
+        [
+          1191,
+          1749
+        ]
+      ]
+    },
+    {
+      "name": "d-table",
+      "file": "d-table.pdf",
+      "media_type": "application/pdf",
+      "pages": 3,
+      "sha256": "06c4f3547b3844463279017fd6f77d214d79c8900859bd20747e0312417ddd76",
+      "bytes": 1798258,
+      "sources": [
+        {
+          "file": "e-50.png",
+          "source": "marathon",
+          "path": "images/mp3lan_0101/page_50.png",
+          "url": "https://modelscope.cn/api/v1/datasets/baidu/MarathonDocBench/repo?Revision=master&FilePath=images%2Fmp3lan_0101%2Fpage_50.png",
+          "revision": "master-at-20261117",
+          "sha256": "72a7472c3cbd831474de8578acb3de45b59b7d8609f8dd94529c3146d1b8e78c",
+          "bytes": 791526,
+          "width": 1188,
+          "height": 1638
+        },
+        {
+          "file": "e-51.png",
+          "source": "marathon",
+          "path": "images/mp3lan_0101/page_51.png",
+          "url": "https://modelscope.cn/api/v1/datasets/baidu/MarathonDocBench/repo?Revision=master&FilePath=images%2Fmp3lan_0101%2Fpage_51.png",
+          "revision": "master-at-20261117",
+          "sha256": "056e4b874933c30efc5ca4491cd46354926d9e5686dd354ae6d89e964e7803a6",
+          "bytes": 1021598,
+          "width": 1188,
+          "height": 1638
+        },
+        {
+          "file": "e-52.png",
+          "source": "marathon",
+          "path": "images/mp3lan_0101/page_52.png",
+          "url": "https://modelscope.cn/api/v1/datasets/baidu/MarathonDocBench/repo?Revision=master&FilePath=images%2Fmp3lan_0101%2Fpage_52.png",
+          "revision": "master-at-20261117",
+          "sha256": "45eee34ff9ead82183f6701cef302af254700af63602a7c1ad12eb32a14aa5f5",
+          "bytes": 1192454,
+          "width": 1188,
+          "height": 1638
+        }
+      ],
+      "expected_page_sizes": [
+        [
+          1188,
+          1638
+        ],
+        [
+          1188,
+          1638
+        ],
+        [
+          1188,
+          1638
+        ]
+      ]
+    }
+  ],
+  "pdf_dpi": 150,
+  "gates": {
+    "single_page_seconds": 60,
+    "three_page_seconds": 120,
+    "two_submit_group_seconds": 240,
+    "max_running_documents": 1,
+    "formal_tasks": 7,
+    "warmup_tasks": 1,
+    "total_pages": 18
+  },
+  "data_use": "research test inputs; source images and OCR content are not redistributed in Git",
+  "frozen_before_requests": true
+}
