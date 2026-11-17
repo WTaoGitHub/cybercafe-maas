@@ -1,7 +1,10 @@
 # Install under nfs-server.service.d after replacing the verified pilot address.
-# These rules restrict only the new NFS port and preserve all other firewall rules.
+# Add one source RETURN per verified client; preserve the existing INPUT policy.
 [Service]
-ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C INPUT -p tcp --dport 2049 ! -s 192.0.2.20/32 -m comment --comment maas-model-nfs -j REJECT --reject-with tcp-reset || /usr/sbin/iptables -w 3 -I INPUT 1 -p tcp --dport 2049 ! -s 192.0.2.20/32 -m comment --comment maas-model-nfs -j REJECT --reject-with tcp-reset'
+ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -S MAAS-MODEL-NFS >/dev/null 2>&1 || /usr/sbin/iptables -w 3 -N MAAS-MODEL-NFS'
+ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C MAAS-MODEL-NFS -s 192.0.2.20/32 -j RETURN || /usr/sbin/iptables -w 3 -I MAAS-MODEL-NFS 1 -s 192.0.2.20/32 -j RETURN'
+ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C MAAS-MODEL-NFS -p tcp -j REJECT --reject-with tcp-reset || /usr/sbin/iptables -w 3 -A MAAS-MODEL-NFS -p tcp -j REJECT --reject-with tcp-reset'
+ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C INPUT -p tcp --dport 2049 -m comment --comment maas-model-nfs -j MAAS-MODEL-NFS || /usr/sbin/iptables -w 3 -I INPUT 1 -p tcp --dport 2049 -m comment --comment maas-model-nfs -j MAAS-MODEL-NFS'
 ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C INPUT -p udp --dport 2049 -m comment --comment maas-model-nfs -j DROP || /usr/sbin/iptables -w 3 -I INPUT 1 -p udp --dport 2049 -m comment --comment maas-model-nfs -j DROP'
 ExecStartPre=/bin/sh -ec '/usr/sbin/ip6tables -w 3 -C INPUT -p tcp --dport 2049 -m comment --comment maas-model-nfs -j REJECT --reject-with tcp-reset || /usr/sbin/ip6tables -w 3 -I INPUT 1 -p tcp --dport 2049 -m comment --comment maas-model-nfs -j REJECT --reject-with tcp-reset'
 ExecStartPre=/bin/sh -ec '/usr/sbin/ip6tables -w 3 -C INPUT -p udp --dport 2049 -m comment --comment maas-model-nfs -j DROP || /usr/sbin/ip6tables -w 3 -I INPUT 1 -p udp --dport 2049 -m comment --comment maas-model-nfs -j DROP'
