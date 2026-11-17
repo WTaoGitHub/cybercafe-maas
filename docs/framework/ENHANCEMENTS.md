@@ -444,6 +444,8 @@ GPUStack调度预算不是CUDA实际占用，也不是强制显存硬上限；�
 
 ## E5：统一启动配置分发与GPUStack原生注册
 
+**2026-11-17模型分发目标确认：** 新PC集中维护全部已发布模型，worker启动自动只读挂载NFS，GPUStack按统一固定路径启动实例；管理员负责版本校验、发布、回退和回收。现有model-storage-v1仅实现本地目录及容器映射，集中NFS/管理员发布/自动挂载未完成。详见[方案与验收顺序](MODEL-WEIGHTS-NFS.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)，本次仅记录设计，未改现有服务或挂载。
+
 **设计基线为2026-10-23修订六；实现状态更新至2026-10-28：配置服务、引导/母版交付、单克隆正常首启和双克隆自动扩容14副本门槛均已通过。当前优先收尾新拓扑维护与网络边界；异常矩阵及E5.F1–F5不因此完成，见 [双克隆证据](../../results/maas-e5-dual-clone-20261028/REPORT.md)。** 同站点/批次启动配置相同，共享码直接授权读取；不登记VM、不发会话凭据。详见 [设计](E5-DESIGN.md)、[开发计划](E5-IMPLEMENTATION.md)及 [部署测试](E5-TEST-DEPLOYMENT.md)。
 
 ### 首版范围
