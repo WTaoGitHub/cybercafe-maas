@@ -331,6 +331,8 @@ def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper
                 # Includes stopped containers: require operator maintenance/removal, never rm implicitly.
                 raise BootstrapError('NEEDS_MAINTENANCE')
             layout_info=runtime.validate_layout(settings,envelope,current) or {}
+            if 'model_nfs' in settings.data:
+                storage.prepare(settings)
             gpu=runtime.check_environment(settings,envelope)
             target=state.prepare(envelope,metadata)
             if envelope['manifest']['worker_name_policy']==DISKLESS_POLICY:

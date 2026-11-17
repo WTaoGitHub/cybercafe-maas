@@ -145,6 +145,9 @@ def start(settings, *, config_path='/etc/maas/bootstrap.json', timeout=600, inte
                 return result
             except BootstrapError as error:
                 reason = error.code
+                if reason.startswith('NFS_'):
+                    record({'code': reason, 'attempt': attempt})
+                    raise
                 record({'code': 'BOOT_WAITING', 'reason': reason, 'attempt': attempt})
             sleeper(max(0, min(interval, deadline - clock())))
         record({'code': 'BOOT_START_TIMEOUT', 'reason': reason, 'attempt': attempt})

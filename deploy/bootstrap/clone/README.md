@@ -94,6 +94,8 @@ python3 -m maas_bootstrap.publisher \
 客户端已手动部署到tower，固定镜像已缓存；旧agent/provision disabled/inactive，E5开机单元enabled/inactive，母版不注册worker。发布CLI仍未在001线上演练，封版/真实新克隆验收待完成。后续以[实际部署手册](MANUAL-TOWER-DEPLOYMENT.md)为准；其第15节记录本次证据，不把本文早期未部署状态作为现状。
 # 独立模型存储启动契约 model-storage-v1
 
+2026-11-17补充：[宿主NFS按需挂载](NFS.md)已实现客户端及离线验证，真实环境待验。显式配置`model_nfs`的节点在启动时准备本地automount，首次目录访问才尝试连接远端；启动不试读权重。默认服务端目录为`/root/maas/data/modelsWeights`。下述本地marker准备只用于未配置NFS的原有模式，NFS模式不向共享目录写marker，也不扩展推理容器配置。
+
 客户端默认创建/srv/maas/models只读发布目录和/srv/maas/model-cache可写缓存，通过明确bind传给原生worker；配置可用model_root/model_cache_dir指定独立规范路径。二者不得覆盖/包含原生身份目录、bootstrap秘密、对方目录或宽泛系统根目录，不跟随symlink。image-contained/model内只预置公开marker，实际OCR权重仍在推理镜像中。
 
 worker设置GPUSTACK_CACHE_DIR到独立缓存，显式启用原生mirrored并指定自身容器名；保留固定镜像内既有ignore列表，并加入/var/lib/gpustack，防止原生身份卷被传给模型容器。只读发布目录保持只读，可写缓存会保持可写；这不构成privileged容器的强隔离，也不等于HF/ModelScope下载已验收。

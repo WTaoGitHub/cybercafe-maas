@@ -15,17 +15,21 @@ def paths(data):
         if not isinstance(value,str) or any(c in value for c in ':\n\r\x00'):
             raise ValueError('Invalid storage path')
         p=Path(value)
-        if not p.is_absolute() or str(p)!=value or '..' in p.parts or p.resolve()!=p:
+        if not p.is_absolute() or str(p)!=value or '..' in p.parts:
             raise ValueError('Storage path must be canonical without symlinks')
         if value in ['/', '/srv','/root','/home','/etc','/var','/var/lib','/usr','/opt','/tmp','/var/tmp']:
             raise ValueError('Dedicated storage directory required')
         result.append(p)
-    private=[Path(data[k]) for k in ['state_dir','worker_data_dir']]+[Path('/var/lib/gpustack')]
+    private=[Path(data[k]) for k in ['state_dir','worker_data_dir']]+[Path('/var/lib/gpustack'),Path('/var/lib/docker'),Path('/var/lib/containerd')]
     for a,b in [(result[0],result[1])]+[(p,q) for p in result for q in private]:
         if a==b or a in b.parents or b in a.parents:raise ValueError('Storage overlaps private state or another storage root')
     for key in ['shared_code_file','tls_certificate_file','release_public_key_file']:
         p=Path(data[key])
         if any(root==p or root in p.parents for root in result):raise ValueError('Storage contains bootstrap trust/credentials')
+    for index,p in enumerate(result):
+        # Never resolve the remote root here: this would trigger an automount or stall on NFS.
+        if not (index==0 and 'model_nfs' in data) and p.resolve()!=p:
+            raise ValueError('Storage path must be canonical without symlinks')
     return tuple(result)
 
 
@@ -41,6 +45,12 @@ def directory(path,create=False):
 def prepare(settings):
     try:models,cache=paths(settings.data)
     except ValueError:raise BootstrapError('MODEL_STORAGE_UNTRUSTED') from None
+    if 'model_nfs' in settings.data:
+        from . import nfs
+        result=nfs.prepare(settings,create=True)
+        directory(cache,create=True)
+        return {'model_root':str(models),'model_cache_dir':str(cache),
+                'published_models_readonly':True,'cache_writable':True,**result}
     for p in [models,cache,models/'image-contained',models/'image-contained/model']:directory(p,create=True)
     marker=models/'image-contained/model/deployment.json'
     if marker.is_symlink():raise BootstrapError('MODEL_STORAGE_UNTRUSTED')
@@ -54,6 +64,12 @@ def prepare(settings):
 def status(settings):
     try:models,cache=paths(settings.data)
     except ValueError:raise BootstrapError('MODEL_STORAGE_UNTRUSTED') from None
+    if 'model_nfs' in settings.data:
+        from . import nfs
+        result=nfs.prepare(settings)
+        directory(cache)
+        return {'model_root':str(models),'model_cache_dir':str(cache),
+                'published_models_readonly':True,'cache_writable':True,**result}
     for p in [models,cache,models/'image-contained',models/'image-contained/model']:directory(p)
     if json.loads(read_file(models/'image-contained/model/deployment.json'))!=MARKER:
         raise BootstrapError('MODEL_MARKER_CONFLICT')

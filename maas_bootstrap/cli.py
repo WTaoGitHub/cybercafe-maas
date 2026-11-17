@@ -5,12 +5,26 @@ from .client import BootstrapError,LocalSettings,LocalState,MAX_BYTES,prepare
 
 def main(argv=None):
     p=argparse.ArgumentParser();p.add_argument('--config',default='/etc/maas/bootstrap.json')
-    p.add_argument('action',choices=('prepare','apply','status','receive-grant','boot','boot-check'))
+    p.add_argument('action',choices=('prepare','apply','status','receive-grant','boot','boot-check','storage-prepare','storage-check'))
     p.add_argument('--trigger',choices=('boot','manual'),default='manual')
     a=p.parse_args(argv)
     try:
         settings=LocalSettings(a.config)
         if a.action=='status':result=LocalState(settings.data['state_dir']).status()
+        elif a.action in ('storage-prepare','storage-check'):
+            from . import storage
+            from .client import HTTPSConfigFetcher,ReleaseVerifier
+            from .worker import guard_clone_host
+            if a.action=='storage-prepare':guard_clone_host()
+            with LocalState(settings.data['state_dir']).lock():
+                if a.action=='storage-prepare':
+                    envelope=HTTPSConfigFetcher().fetch(settings)
+                    ReleaseVerifier().verify(settings,envelope)
+                result=storage.prepare(settings) if a.action=='storage-prepare' else storage.status(settings)
+                if a.action=='storage-check' and 'model_nfs' in settings.data:
+                    from .nfs import verify
+                    result.update(verify(settings))
+                result={'code':'MODEL_STORAGE_PREPARED' if a.action=='storage-prepare' else 'MODEL_STORAGE_VERIFIED',**result}
         elif a.action=='prepare':result=prepare(settings)
         elif a.action in ('boot','boot-check'):
             from .startup import readiness,start

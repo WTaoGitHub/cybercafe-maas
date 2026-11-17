@@ -131,6 +131,19 @@ def test_child_failure_logs_only_code_and_retries_existing_apply(boot):
     assert len(count) == 2 and 'never-log-this' not in json.dumps(reports)
 
 
+@pytest.mark.parametrize('code', ['NFS_MOUNT_FAILED', 'NFS_OPERATION_TIMEOUT', 'NFS_OPERATION_PENDING'])
+def test_nfs_failure_stops_boot_without_automatic_retry(boot, code):
+    kwargs, reports = boot
+    calls = []
+    def runner(argv, timeout):
+        calls.append(argv)
+        return 1, json.dumps({'code': code})
+    with pytest.raises(BootstrapError, match=code):
+        s.start(SETTINGS, probe=ready, runner=runner, **kwargs)
+    assert len(calls) == 1 and kwargs['clock'].now == 0
+    assert reports[-1] == {'code': code, 'attempt': 1}
+
+
 def test_concurrent_start_does_not_launch_second_attempt(boot):
     kwargs, _ = boot
     with LocalState(kwargs['state_dir']).lock(), pytest.raises(BootstrapError, match='BOOTSTRAP_BUSY'):

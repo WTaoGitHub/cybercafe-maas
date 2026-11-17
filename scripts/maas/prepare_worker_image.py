@@ -77,6 +77,7 @@ def build(root,settings_path):
         'schema_version','config_service_url','release_key_id','state_dir','worker_data_dir','model_root','model_cache_dir',
         'site_id','batch_id','cluster_id','image_id','architecture','allowed_server_urls','cloud_backup')}
     if 'allowed_registry_endpoints' in settings.data:cfg['allowed_registry_endpoints']=settings.data['allowed_registry_endpoints']
+    if 'model_nfs' in settings.data:cfg['model_nfs']=settings.data['model_nfs']
     if diskless:cfg['worker_start_grant_file']=settings.data['worker_start_grant_file']
     if settings.data.get('worker_start_automatic'):cfg['worker_start_automatic']=True
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
@@ -87,7 +88,7 @@ def build(root,settings_path):
         'etc/maas/server.crt':(cert,0o644),
         'etc/maas/release-signing.pub':(pub,0o644),
     }
-    for name in ('__init__.py','client.py','storage.py','registry.py','handoff.py','worker.py','cli.py','startup.py','clone_boundary.py'):
+    for name in ('__init__.py','client.py','storage.py','nfs.py','registry.py','handoff.py','worker.py','cli.py','startup.py','clone_boundary.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),
@@ -124,6 +125,8 @@ def build(root,settings_path):
                 'native instance identity absent; supplier OS identity preserved for pilot',
                 'fresh clone hostname does not match tower template naming',
                 'dedicated public model root and cache prepared by bootstrap; native identity volume excluded']}
+    if 'model_nfs' in cfg:
+        result['required_before_sealing'].append('nfs-common installed; signed model_nfs matches local policy; independent host NFS pilot passed')
     p=safe_target(root,manifest);p.write_text(json.dumps(result,indent=2)+'\n');p.chmod(0o644)
     return result
 

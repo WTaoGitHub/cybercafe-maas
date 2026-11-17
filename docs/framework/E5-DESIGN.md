@@ -1,6 +1,6 @@
 # E5：统一启动配置分发与GPUStack原生注册
 
-**2026-11-17 NFS功能边界确认：** 本功能只负责worker VPC启动时，将远程server暴露的模型目录自动只读挂载到宿主`/srv/maas/models`，校验真实来源、只读及可读取性，交付相应母版与快照；服务端可用export由管理员提供。容器创建/目录映射、模型路径/版本/缓存、GPUStack选择器及推理验收归模型部署业务，不是本功能完成条件；管理员模型发布应用独立安排。完整权重镜像与外置文件仍是两种正式部署方式，不要求提取镜像权重到NFS。自动挂载尚未实现或部署。详见[宿主NFS挂载方案](MODEL-WEIGHTS-NFS.md)、[实施计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)；身份、角色及禁止VM重启约束按最新用户约定执行。
+**2026-11-17 NFS功能边界及按需访问：** 本功能只负责VPC启动时为宿主`/srv/maas/models`准备本地automount，首次访问才连接新PC的`/root/maas/data/modelsWeights`只读目录。启动不读远端文件，入口准备和实际读取分别验收；交付仍含母版及快照。容器映射、模型配置、调度和推理归部署业务，模型发布应用独立安排。客户端已实现并离线回归，001基线已部分预检；真实NFS、母版及首启待验。详见[方案](MODEL-WEIGHTS-NFS.md)、[实施计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。两种权重交付方式、GPU UUID身份和禁止VM重启约束保持。
 
 2026-10-23修订六，当前实施基线。实际前置进展见 [准备记录](../../results/maas-e5-preparation/REPORT.md)：test1(ID3)已建，001原worker/本机旧OCR已停止，配置服务未部署。最高优先级；**配置读取服务已部分实现并部署001的18840；引导程序尚未实现，E5未整体验收。最新证据见 [实施报告](../../results/maas-e5-preparation/BOOTSTRAP-HTTPS.md)。** P4既定两节点私有试点验收通过不代表E5已验收。
 

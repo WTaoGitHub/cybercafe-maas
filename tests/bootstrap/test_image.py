@@ -39,6 +39,19 @@ def test_offline_image_contains_only_template_configuration(setup,tmp_path):
     with pytest.raises(BootstrapError,match='IMAGE_DESTINATION_EXISTS'):image.build(root,cfg)
 
 
+def test_offline_image_preserves_nfs_policy_without_mounting_or_adding_instance_state(setup, tmp_path):
+    from test_nfs import CONFIG
+    root, cfg = inputs(setup, tmp_path)
+    data = json.loads(cfg.read_text())
+    data['model_nfs'] = CONFIG
+    atomic_json(cfg, data)
+    result = image.build(root, cfg)
+    assert json.loads((root/'etc/maas/bootstrap.json').read_text())['model_nfs'] == CONFIG
+    assert (root/'opt/maas/lib/maas_bootstrap/nfs.py').is_file()
+    assert any('nfs-common' in text for text in result['required_before_sealing'])
+    assert not result['state_included'] and not result['worker_started']
+
+
 @pytest.mark.parametrize('name', ['etc/machine-id','etc/ssh/ssh_host_ed25519_key','var/lib/gpustack/worker_token','var/lib/docker/containers/old/config.v2.json'])
 def test_rejects_dirty_identity_without_deleting_it(setup,tmp_path,name):
     root,cfg=inputs(setup,tmp_path);p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('preserve-me')

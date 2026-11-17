@@ -100,6 +100,8 @@ class LocalSettings:
             automatic = d.get('worker_start_automatic', False)
             if type(automatic) is not bool or (automatic and 'worker_start_grant_file' not in d):
                 raise ValueError()
+            from .nfs import configuration
+            configuration(d)
             from .storage import paths
             d['model_root'],d['model_cache_dir']=map(str,paths(d))
             allowed=d.get('allowed_registry_endpoints',[])
@@ -217,6 +219,8 @@ class ReleaseVerifier:
                 fingerprint = {'manifest':m,'token_sha256':hashlib.sha256(token.encode()).hexdigest()}
             from .registry import validate as validate_registry
             validate_registry(settings,envelope)
+            from .nfs import validate_release
+            validate_release(settings,m)
             # Registration material travels over verified TLS; only the public manifest is signed.
             digest = hashlib.sha256(canonical(fingerprint)).hexdigest()
             return {'revision':m['config_revision'],'fingerprint':digest,'cluster_id':m['cluster_id']}

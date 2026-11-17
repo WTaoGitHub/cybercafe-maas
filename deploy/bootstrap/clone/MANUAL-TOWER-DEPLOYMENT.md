@@ -561,10 +561,10 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 
 ## 34. 2026-11-17：NFS模型库母版更新与快照应用计划
 
-本节为待实施计划，未安装文件、保存快照或变更现有VPC。本次功能只负责VPC启动时将远程NFS模型目录自动只读挂载到宿主`/srv/maas/models`并校验来源、只读和可读取性；需纳入母版交付。完整顺序见[实施与母版快照应用计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)，由[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)跟踪。
+客户端现已实现并离线验证，母版尚未启动，未安装本次文件或保存/应用新快照。本功能在VPC启动时只准备宿主`/srv/maas/models`的本地automount，首次访问才连接新PC的`/root/maas/data/modelsWeights`；启动不试读远端。入口准备、实际NFS读取及母版/快照首启分别验收。详[实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)、[按需挂载交接](NFS.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。
 
 独立宿主挂载试点通过后，我们负责实际母版备份、NFS客户端及引导文件安装、权限/摘要/保护/无身份污染核对，再出具可制作快照清单；管理员在平台保存并指定新版快照创建独立A/B。我们在无手动mount/apply或复制文件补配置的首启现场验收宿主挂载，之后再小批推广。分别记录软件提交、逻辑image_id、平台snapshot ID及NFS来源/测试文件摘要，安装完成不等于快照已保存或应用。
 
 服务端管理员提供可用的只读export。模型副本容器的创建、目录映射、模型配置、调度选择器及推理验收由模型部署业务负责；管理员模型发布应用独立安排。它们均不作为本功能交付条件。完整模型镜像仍可直接使用，无需提取权重到NFS；本次不修改既有容器布局或模型加载来源。
 
-保留[2026-11-11延后启动机制](../../../results/maas-e5-late-startup-20261111/REPORT.md)：系统基本启动及供应商命名先完成，NFS节点在worker启动前准备挂载，仅镜像节点不要求NFS；不阻塞基本系统、网络或Docker启动，NFS失败不自动切换节点模式。沿用GPU UUID默认身份和自动预登记/发证，不重新安装旧退役插件；001按普通worker角色处理，母版保护保留。存量节点另走维护迁移，XZ-31-001/002禁止整机重启、恢复快照或其他等效操作。
+保留[2026-11-11延后启动机制](../../../results/maas-e5-late-startup-20261111/REPORT.md)：系统基本启动及供应商命名先完成，NFS节点在worker启动前准备本地automount，不要求先连接远端；仅镜像节点不要求NFS。沿用GPU UUID身份和自动预登记/发证，不部署旧退役插件。001按普通worker处理并用于本次宿主试点，母版保护保留；001/002禁止整机重启、恢复快照或其他等效操作，新快照首启另用获准新VPC。
