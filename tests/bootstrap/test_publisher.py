@@ -43,6 +43,53 @@ def test_bad_publish_leaves_active_and_releases_unchanged(setup,tmp_path):
     with pytest.raises(BootstrapError):p.rollback('../policy','r3')
 
 
+def test_nfs_image_publish_and_rollback_preserve_default_release(setup, tmp_path):
+    from test_nfs import CONFIG
+    p, envelope = publisher(setup, tmp_path)
+    atomic_json(p.root/'policy.json', {'schema_version':1,'allowed_cidrs':['127.0.0.1/32'],
+        'grants':[{'site_id':'lab','batch_id':'pilot','cluster_id':3,'enabled':True,
+                   'code_sha256':hashlib.sha256(CODE.encode()).hexdigest()}]})
+    p.publish(envelope['manifest'], envelope['registration'])
+    default = (p.root/'active.json').read_bytes()
+    old = get(client(p.root, '127.0.0.1')).json()
+    p.settings.data.update(image_id='tower-nfs', model_nfs=CONFIG)
+    manifest = {**envelope['manifest'], 'config_revision':'nfs-r1',
+                'compatible_image_ids':['tower-nfs'], 'model_nfs':CONFIG}
+    result = p.publish(manifest, envelope['registration'], image_id='tower-nfs')
+    assert result['image_id'] == 'tower-nfs' and (p.root/'active.json').read_bytes() == default
+    api = client(p.root, '127.0.0.1')
+    assert get(api).json() == old
+    release = get(api, image='tower-nfs').json()
+    assert release['manifest']['model_nfs'] == CONFIG
+    assert ReleaseVerifier().verify(p.settings, release)['revision'] == 'nfs-r1'
+    p.rollback('nfs-r1', 'nfs-r2', image_id='tower-nfs')
+    assert (p.root/'active.json').read_bytes() == default and get(api).json() == old
+    assert get(api, image='tower-nfs').json()['manifest']['config_revision'] == 'nfs-r2'
+    assert api.get('/bootstrap/v1/configs/nfs-r1', headers={'Authorization':'Bearer '+CODE},
+                   params={'image_id':'tower-nfs'}).status_code == 404
+
+
+@pytest.mark.parametrize('image,compatible', [('../escape',['../escape']), ('tower-nfs',['tower-v1']),
+                                            ('tower-v1',['tower-v1','other'])])
+def test_image_publication_requires_one_matching_safe_image(setup, tmp_path, image, compatible):
+    p, envelope = publisher(setup, tmp_path)
+    with pytest.raises(BootstrapError, match='PUBLISH_IMAGE_SCOPE_INVALID'):
+        p.publish({**envelope['manifest'], 'compatible_image_ids':compatible},
+                  envelope['registration'], image_id=image)
+    assert not (p.root/'active.json').exists()
+
+
+def test_nfs_cannot_replace_default_configuration_by_omitting_image_scope(setup, tmp_path):
+    from test_nfs import CONFIG
+    p, envelope = publisher(setup, tmp_path)
+    p.publish(envelope['manifest'], envelope['registration'])
+    original = (p.root/'active.json').read_bytes()
+    p.settings.data['model_nfs'] = CONFIG
+    with pytest.raises(BootstrapError, match='PUBLISH_NFS_IMAGE_SCOPE_REQUIRED'):
+        p.publish({**envelope['manifest'],'model_nfs':CONFIG,'config_revision':'nfs-r1'}, envelope['registration'])
+    assert (p.root/'active.json').read_bytes() == original
+
+
 @pytest.mark.parametrize('explicit_cluster', [None, 3])
 @pytest.mark.parametrize('diskless', [False, True])
 def test_published_cluster_defaults_to_settings_and_is_served(setup, tmp_path, explicit_cluster, diskless):

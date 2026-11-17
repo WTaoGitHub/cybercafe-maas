@@ -42,12 +42,26 @@ class Publisher:
         finally:
             if os.path.exists(tmp):os.unlink(tmp)
 
-    def publish(self,manifest,registration,rollback_of=None):
+    def publish(self,manifest,registration,rollback_of=None,image_id=None):
         manifest = {'cluster_id': self.settings.data['cluster_id'], **manifest}
         registration = {'cluster_id': manifest['cluster_id'], **registration}
-        with self.lock():return self._publish(manifest,registration,rollback_of)
+        with self.lock():return self._publish(manifest,registration,rollback_of,image_id)
 
-    def _publish(self,manifest,registration,rollback_of=None):
+    def _publish(self,manifest,registration,rollback_of=None,image_id=None):
+        pointer=self.root/'active.json'
+        if 'model_nfs' in manifest and image_id is None:
+            raise BootstrapError('PUBLISH_NFS_IMAGE_SCOPE_REQUIRED')
+        if image_id is not None:
+            if (not isinstance(image_id,str) or not SAFE_REVISION.fullmatch(image_id)
+                    or manifest.get('compatible_image_ids')!=[image_id]):
+                raise BootstrapError('PUBLISH_IMAGE_SCOPE_INVALID')
+            images=self.root/'images'
+            if images.is_symlink():raise BootstrapError('PUBLISH_DIRECTORY_UNTRUSTED')
+            images.mkdir(mode=0o700,exist_ok=True)
+            if images.stat().st_mode&0o077:raise BootstrapError('PUBLISH_DIRECTORY_UNTRUSTED')
+            if os.geteuid()==0:os.chown(images,*self.owner)
+            pointer=images/(image_id+'.json')
+            if pointer.is_symlink():raise BootstrapError('PUBLISH_DIRECTORY_UNTRUSTED')
         envelope={'manifest':manifest,'registration':registration,
                   'manifest_signature':{'algorithm':'Ed25519','key_id':self.settings.data['release_key_id'],
                                         'value':base64.b64encode(self.key.sign(canonical(manifest))).decode()}}
@@ -66,11 +80,11 @@ class Publisher:
         if target.exists():
             if target.read_bytes()!=raw:raise BootstrapError('REVISION_IMMUTABLE')
         else:self.atomic(target,raw,immutable=True)
-        self.atomic(self.root/'active.json',canonical({'revision':metadata['revision'],
+        self.atomic(pointer,canonical({'revision':metadata['revision'],
                     'sha256':hashlib.sha256(raw).hexdigest()})+b'\n')
-        return {'code':'PUBLISHED',**metadata,'rollback_of':rollback_of,'worker_actions':False}
+        return {'code':'PUBLISHED',**metadata,'rollback_of':rollback_of,'worker_actions':False,**({'image_id':image_id} if image_id is not None else {})}
 
-    def rollback(self,source,new_revision):
+    def rollback(self,source,new_revision,image_id=None):
         if not SAFE_REVISION.fullmatch(source) or not SAFE_REVISION.fullmatch(new_revision) or source==new_revision:
             raise BootstrapError('ROLLBACK_REVISION_INVALID')
         with self.lock():
@@ -80,19 +94,21 @@ class Publisher:
             metadata=ReleaseVerifier().verify(self.settings,old)
             if metadata['revision']!=source:raise BootstrapError('ROLLBACK_SOURCE_INVALID')
             manifest={**old['manifest'],'config_revision':new_revision}
-            return self._publish(manifest,old['registration'],source)
+            return self._publish(manifest,old['registration'],source,image_id)
 
 
 def main(argv=None):
     p=argparse.ArgumentParser();p.add_argument('--root',required=True);p.add_argument('--settings',required=True)
     p.add_argument('--signing-key',required=True);sub=p.add_subparsers(dest='action',required=True)
     a=sub.add_parser('publish');a.add_argument('--manifest',required=True);a.add_argument('--registration-file',required=True)
+    a.add_argument('--image-id')
     a=sub.add_parser('rollback');a.add_argument('--source',required=True);a.add_argument('--new-revision',required=True)
+    a.add_argument('--image-id')
     a=p.parse_args(argv)
     try:
         publisher=Publisher(a.root,LocalSettings(a.settings),a.signing_key)
-        if a.action=='publish':result=publisher.publish(json.loads(read_file(a.manifest)),json.loads(read_file(a.registration_file,secret=True)))
-        else:result=publisher.rollback(a.source,a.new_revision)
+        if a.action=='publish':result=publisher.publish(json.loads(read_file(a.manifest)),json.loads(read_file(a.registration_file,secret=True)),image_id=a.image_id)
+        else:result=publisher.rollback(a.source,a.new_revision,image_id=a.image_id)
         print(json.dumps(result));return 0
     except BootstrapError as e:print(json.dumps({'code':e.code}));return 1
     except Exception:print(json.dumps({'code':'PUBLISH_FAILED'}));return 1

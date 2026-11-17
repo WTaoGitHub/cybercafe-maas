@@ -106,6 +106,27 @@ def test_auto_enrollment_still_requires_valid_enabled_authentication(diskless, t
     assert not native.calls
 
 
+def test_image_scoped_release_keeps_default_and_uses_original_gpu_enrollment(diskless, tmp_path):
+    import hashlib
+    native = EnrollingNative();api, body = automatic(diskless, tmp_path, native)
+    root = tmp_path/'published'
+    default = (root/'active.json').read_bytes()
+    envelope = json.loads((root/'releases/r1.json').read_text())
+    envelope['manifest'].update(config_revision='nfs-r1', compatible_image_ids=['tower-nfs'])
+    raw = json.dumps(envelope).encode();(root/'releases/nfs-r1.json').write_bytes(raw)
+    (root/'images').mkdir()
+    atomic_json(root/'images/tower-nfs.json', {'revision':'nfs-r1','sha256':hashlib.sha256(raw).hexdigest()})
+    request = body | {'image_id':'tower-nfs','config_revision':'nfs-r1'}
+    assert api.post(PATH, json=request | {'config_revision':'r1'}, headers=HEADERS).status_code == 404
+    assert not native.calls
+    response = api.post(PATH, json=request, headers=HEADERS)
+    assert response.status_code == 200 and response.json()['external_id'] == GPU
+    assert [action for action, _ in native.calls] == ['enrollment','handoff']
+    old = api.post(PATH, json=body | {'gpu_uuid':OTHER_GPU,'boot_id':str(uuid4())}, headers=HEADERS)
+    assert old.status_code == 200 and old.json()['external_id'] == OTHER_GPU
+    assert (root/'active.json').read_bytes() == default
+
+
 @pytest.mark.parametrize('policy', [
     {'auto_enroll_gpus':'true'}, {'auto_enroll_gpus':1},
     {'auto_start_gpus':[]}, {'auto_start_gpus':{GPU:True}},

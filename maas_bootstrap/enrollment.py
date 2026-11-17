@@ -79,7 +79,7 @@ class WorkerStartBroker:
         cluster = body['cluster_id']
         if not positive_id(cluster) or not isinstance(body['config_revision'], str):
             raise StartDenied(400, 'WORKER_START_REQUEST_INVALID')
-        manifest = releases.release(grant, body['config_revision'])['manifest']
+        manifest = releases.release(grant, body['config_revision'], body['image_id'])['manifest']
         if (manifest.get('worker_name_policy') != DISKLESS_POLICY or manifest['cluster_id'] != cluster
                 or body['image_id'] not in manifest['compatible_image_ids']):
             raise StartDenied(403, 'WORKER_START_SCOPE_MISMATCH')
@@ -124,7 +124,7 @@ class WorkerStartBroker:
             expected = {key:grant[key] for key in ('cluster_id','gpu_uuid','image_id','config_revision')}
             if not isinstance(body, dict) or not positive_id(body.get('cluster_id')) or body != expected:
                 raise StartDenied(403, 'WORKER_START_SCOPE_MISMATCH')
-            manifest = releases.release(grant, grant['config_revision'])['manifest']
+            manifest = releases.release(grant, grant['config_revision'], grant['image_id'])['manifest']
             if (manifest.get('worker_name_policy') != DISKLESS_POLICY
                     or grant['image_id'] not in manifest['compatible_image_ids']):
                 raise StartDenied(409, 'WORKER_START_RELEASE_MISMATCH')

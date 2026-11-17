@@ -77,8 +77,19 @@ class ReleaseStore:
             raise ValueError('Invalid policy')
         return p
 
-    def release(self, grant, revision=None):
-        pointer = json.loads((self.root / 'active.json').read_text())
+    def release(self, grant, revision=None, image_id=None):
+        pointer_path = self.root / 'active.json'
+        image_pointer = None
+        if image_id is not None:
+            if not isinstance(image_id, str) or not REVISION.fullmatch(image_id):
+                raise AccessFailure(400, 'IMAGE_ID_INVALID')
+            images = self.root / 'images'
+            image_pointer = images / (image_id + '.json')
+            if images.is_symlink() or image_pointer.is_symlink():
+                raise ValueError('Invalid image release pointer')
+            if image_pointer.exists():
+                pointer_path = image_pointer
+        pointer = json.loads(pointer_path.read_text())
         rev = pointer['revision']
         if not isinstance(rev, str) or not REVISION.fullmatch(rev):
             raise ValueError('Invalid release pointer')
@@ -104,6 +115,8 @@ class ReleaseStore:
             raise ValueError('Invalid protected registration or signature')
         if not isinstance(m.get('compatible_image_ids'), list) or not m['compatible_image_ids']:
             raise ValueError('Invalid compatibility list')
+        if pointer_path == image_pointer and m['compatible_image_ids'] != [image_id]:
+            raise ValueError('Image release scope mismatch')
         return envelope
 
 
@@ -146,8 +159,8 @@ def create_app(state_dir=None, authenticator=None, limiter=None, worker_start=No
     def fetch(request, revision=None):
         try:
             grant = auth.authenticate(request.headers.get('authorization'), request.state.policy['grants'], time.time())
-            data = store.release(grant, revision)
             image = request.query_params.get('image_id')
+            data = store.release(grant, revision, image)
             if not image:
                 raise AccessFailure(400, 'IMAGE_ID_REQUIRED')
             if image not in data['manifest']['compatible_image_ids']:

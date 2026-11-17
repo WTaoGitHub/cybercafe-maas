@@ -12,6 +12,8 @@
 
 将[配置示例](model-nfs.example.json)作为`model_nfs`字段，分别加入本机root-only的`bootstrap.json`与对应的签名release manifest；两处必须完全一致。示例地址为文档保留地址，须替换为实际NFS地址。不能仅修改本机而绕过签名，也不能给未配置NFS的节点直接发布启用NFS的release；兼容image_id与发布范围须对应。未配置该字段的节点保留原本地存储流程。
 
+NFS母版使用独立逻辑`image_id`。配置发布器的`publish --image-id <该ID>`将新版本激活到`images/<该ID>.json`，manifest的`compatible_image_ids`须仅包含该ID；NFS发布不允许省略此参数来覆盖默认`active.json`。配置读取、精确revision读取和自动/人工worker许可均按同一image_id选择版本。旧节点继续默认发布，GPU UUID预登记/发证不变；回退同样使用`rollback --image-id <该ID>`。发布文件不可覆盖，回退创建新revision。
+
 示例测试文件的内容为`host-nfs-pilot-v1`加一个LF换行，SHA-256已固定在示例中。管理员放置此小文件供显式试读；也可选择另一个不超过1MiB的普通文件并登记实际摘要。启动阶段只检查配置，不读取该文件。
 
 母版/试点客户端需要Ubuntu的`nfs-common`和系统systemd工具。本次源码交付包和离线母版安装器已纳入`maas_bootstrap/nfs.py`及配置示例；安装器不代替系统包安装，也不代表已经更新真实母版。

@@ -91,3 +91,19 @@ def test_replace_authenticator_without_changing_release_or_api(state):
             return grants[0]
     c=client(state,authenticator=Alternate())
     assert c.get('/bootstrap/v1/config?image_id=tower-v1').json()['manifest']['config_revision']=='r1'
+
+
+@pytest.mark.parametrize('kind', ['wrong-image','symlink-directory','symlink-pointer','bad-hash'])
+def test_image_specific_pointer_cannot_bypass_release_scope_or_fall_back(state, kind):
+    default = (state/'active.json').read_bytes()
+    images = state/'images';images.mkdir()
+    pointer = images/'tower-nfs.json'
+    pointer.write_bytes(default)
+    if kind == 'symlink-directory':
+        images.rename(state/'actual-images');images.symlink_to(state/'actual-images')
+    elif kind == 'symlink-pointer':
+        pointer.unlink();pointer.symlink_to(state/'active.json')
+    elif kind == 'bad-hash':
+        pointer.write_text(json.dumps({'revision':'r1','sha256':'0'*64}))
+    assert get(client(state), image='tower-nfs').status_code == 503
+    assert (state/'active.json').read_bytes() == default
