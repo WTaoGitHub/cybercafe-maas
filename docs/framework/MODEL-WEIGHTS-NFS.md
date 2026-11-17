@@ -42,11 +42,11 @@ NFS节点的宿主挂载点统一为`/srv/maas/models`。`/srv/maas/model-cache`
 
 ### worker准入与NFS授权来源（2026-11-17用户补充）
 
-用户要求NFS访问范围以worker接入准入为准，避免分别维护两份相互不一致的名单。实际核验：当前默认worker接入由已认证批次、签名发布范围、GPU UUID和短期会话许可控制，`auto_enroll_gpus`已启用；未发现独立的worker源IP白名单。NFS目前仍为服务端静态IP授权，两者没有自动联动，不能写成已经共用白名单。
+**用户最新决定：继续采用静态名单，默认允许`10.11.x.x`，对应`10.11.0.0/16`。** NFS export和2049/TCP规则已实际同步为该网段，保留只读、root_squash和all_squash；原001/005逐IP条目已移除。其他IPv4来源仍被拒绝，IPv6和2049/UDP限制保持。网段内新节点不再需要逐IP加入名单，仍须核对真实出口、路由和读取；网段外来源须另行明确授权。
 
-后续联动以现有worker准入为唯一授权依据，将准入通过的worker映射到服务端核验的NFS出口地址，并在worker容器创建/启动前同步NFS export与2049规则，不再要求对同一worker手工做第二次准入。不得等待worker Ready后才放行NFS，否则Docker路径访问与注册形成启动依赖。仅镜像节点仍不要求挂载NFS。
+当前默认worker接入仍由已认证批次、签名发布范围、GPU UUID和短期会话许可控制，`auto_enroll_gpus`已启用；未发现独立worker源IP名单。此次只更新NFS静态授权，不改变worker准入或发证，不强制仅镜像节点挂载NFS。
 
-GPU UUID、GPUStack登记/上报IP和NFS服务端观察到的源IP含义不同；不能直接照抄worker上报IP或未经信任的转发头作为授权地址。换址和明确撤销准入须与NFS地址引用同步，临时离线不能当作永久撤销，共用出口时须保留其他已准入worker的有效引用。本补充是待实施要求；本轮只核验并记录，没有扩大现网NFS或变更worker发证策略，继续由[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)跟踪。
+此前“worker准入为唯一来源并自动同步NFS”的建议暂缓，当前不实施，也不作为本轮继续验收的前置条件。若以后恢复该联动，应在准入通过后、worker容器创建/启动前授权，并区分GPU UUID、上报IP与实际出口，不等待Ready或直接信任转发头。当前静态网段已[实际应用并验证](../../results/maas-nfs-static-cidr-20261117/REPORT.md)，由[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)跟踪。
 
 ## 挂载与启动契约
 

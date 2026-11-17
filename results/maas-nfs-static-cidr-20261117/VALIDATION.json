@@ -1,0 +1,33 @@
+{
+  "server": {
+    "approved_static_cidr": "10.11.0.0/16",
+    "exports_active_cidr_matches": true,
+    "readonly_root_and_all_squash_preserved": true,
+    "firewall_cidr_matches_export": true,
+    "legacy_per_ip_entries_removed": true,
+    "persistent_dropin_matches": true,
+    "idempotent_execution_twice": true,
+    "outside_cidr_tcp_rejected_and_rule_counter_increased": true,
+    "unrelated_firewall_rules_unchanged": true,
+    "vm_docker_nfs_and_service_containers_not_restarted": true,
+    "worker_admission_policy_unchanged": true
+  },
+  "client_005": {
+    "existing_005_read_and_digest_passed": true,
+    "source_ro_hard_tcp_unchanged": true,
+    "one_nfs_mount_plus_autofs": true,
+    "native_gpu_uuid_worker_ready": true,
+    "worker_container_not_restarted": true,
+    "inherited_client_configuration_unchanged": true,
+    "vm_not_restarted": true
+  },
+  "client_001": {
+    "original_worker_running": true,
+    "legacy_client_nfs_tcp_still_allowed": true,
+    "original_model_root_still_local": true
+  },
+  "schema_version": 1,
+  "static_network": "10.11.0.0/16",
+  "automatic_worker_admission_sync": "deferred_by_user",
+  "new_vpc_zero_intervention_boot_verified": false
+}

@@ -2,13 +2,13 @@
 
 服务端真实文件目录为用户指定的`/root/maas/data/modelsWeights`。本配置将该专用目录作为NFSv4根（`fsid=0`），因此客户端source为`<已核验的新PC地址>:/`；这个远端根只包含模型共享目录，不导出服务器系统根。宿主路径继续为`/srv/maas/models`。不得把旧示例中的完整服务器磁盘路径直接拼在NFSv4根之后。
 
-三个example均使用文档保留地址，不可直接部署。先确认服务器没有既有export/fsid=0及NFS业务，核对客户端到新PC的真实源地址与回程路由；示例仅包含一个IPv4客户端，不自动开放整个网段。真实连接和渲染配置保留在私有操作目录，不提交仓库。
+当前用户明确保留静态名单，默认允许`10.11.x.x`，对应`10.11.0.0/16`；exports和网络drop-in使用这一相同网段，覆盖原001/005的单IP条目，见[实际应用与验证](../../../results/maas-nfs-static-cidr-20261117/REPORT.md)。GPUStack准入自动联动暂不实施。服务端监听地址仍使用文档保留地址，部署前须替换为核验的新PC地址；真实连接和渲染配置留在私有操作目录。其他网段不因worker注册而自动获准。
 
 服务端安装`nfs-kernel-server`，仅启用NFSv4/TCP。将`maas-models.conf.example`渲染到`/etc/nfs.conf.d/maas-models.conf`，只绑定核验的私网IPv4；将exports渲染到`/etc/exports.d/maas-models.exports`。权限为root:root/0644，原配置先备份。NFSv4不需要给客户端开放rpcbind或动态mountd端口；若rpcbind此前没有业务，可保持其socket/service禁用以避免新引入监听。
 
-网络drop-in在NFS服务启动前安装仅针对2049的新规则：IPv4 TCP进入专用`MAAS-MODEL-NFS`链，每个核验源地址各有一条RETURN，回到既有INPUT策略继续检查，末尾拒绝其他来源；全部IPv6的NFS TCP被拒绝，2049/UDP被丢弃。不清空原有链、不修改SSH或应用端口，也不以ACCEPT绕过原防火墙。没有通过规则安装时NFS服务不启动。
+网络drop-in在NFS服务启动前安装仅针对2049的新规则：IPv4 TCP进入专用`MAAS-MODEL-NFS`链，`10.11.0.0/16`经RETURN回到既有INPUT策略继续检查，末尾拒绝其他来源；全部IPv6的NFS TCP被拒绝，2049/UDP被丢弃。不清空原有链、不修改SSH或应用端口，也不以ACCEPT绕过原防火墙。没有通过规则安装时NFS服务不启动。
 
-新增节点须先保留首启现场、核验服务端实际观察到的源地址，再同时更新exports与对应RETURN；新RETURN插在末尾拒绝之前，drop-in同步持久化，重复执行后不叠加规则。不直接扩大为整个网段。若从旧版单客户端`! -s`拒绝规则迁移，先备份、建立并核对专用链及hook，再删除精确匹配的旧规则，否则旧规则仍会拒绝新增客户端；不重启NFS或清空INPUT来迁移。当前核验范围不代表已经支持全部worker网络。
+新增节点若真实出口位于`10.11.0.0/16`，无需再逐IP扩白；仍须核对实际路由和读取。其他出口需另行明确授权并同步exports与网络规则。切换本轮网段策略时先备份、reload export、插入并核对网段RETURN，再精确移除原001/005的冗余/32条目；不清空自有链或INPUT。若仍有更早的单客户端`! -s`拒绝规则，应核对并精确迁移。drop-in同步持久化，重复执行不叠加，不重启NFS来应用。
 
 导出使用`ro,sync,root_squash,all_squash`，不放开共享写权限或映射客户端root。该目录是ext4中的子目录，使用`subtree_check`约束文件句柄访问范围；已发布目录不移动或改名，减少子树检查的旧句柄风险。模型目录只放已发布文件；以实际读取UID验证目录遍历和普通文件读取，不对`/root`或既有模型做递归chmod。首次试点只放固定小测试文件，不下载/迁移模型权重。
 

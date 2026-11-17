@@ -1,8 +1,8 @@
-# Install under nfs-server.service.d after replacing the verified pilot address.
-# Add one source RETURN per verified client; preserve the existing INPUT policy.
+# Install under nfs-server.service.d; the user-approved client network is 10.11.0.0/16.
+# Preserve the existing INPUT policy after the static NFS source check.
 [Service]
 ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -S MAAS-MODEL-NFS >/dev/null 2>&1 || /usr/sbin/iptables -w 3 -N MAAS-MODEL-NFS'
-ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C MAAS-MODEL-NFS -s 192.0.2.20/32 -j RETURN || /usr/sbin/iptables -w 3 -I MAAS-MODEL-NFS 1 -s 192.0.2.20/32 -j RETURN'
+ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C MAAS-MODEL-NFS -s 10.11.0.0/16 -j RETURN || /usr/sbin/iptables -w 3 -I MAAS-MODEL-NFS 1 -s 10.11.0.0/16 -j RETURN'
 ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C MAAS-MODEL-NFS -p tcp -j REJECT --reject-with tcp-reset || /usr/sbin/iptables -w 3 -A MAAS-MODEL-NFS -p tcp -j REJECT --reject-with tcp-reset'
 ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C INPUT -p tcp --dport 2049 -m comment --comment maas-model-nfs -j MAAS-MODEL-NFS || /usr/sbin/iptables -w 3 -I INPUT 1 -p tcp --dport 2049 -m comment --comment maas-model-nfs -j MAAS-MODEL-NFS'
 ExecStartPre=/bin/sh -ec '/usr/sbin/iptables -w 3 -C INPUT -p udp --dport 2049 -m comment --comment maas-model-nfs -j DROP || /usr/sbin/iptables -w 3 -I INPUT 1 -p udp --dport 2049 -m comment --comment maas-model-nfs -j DROP'

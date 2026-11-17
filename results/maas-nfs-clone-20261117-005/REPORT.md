@@ -1,5 +1,7 @@
 # 新VPC 005运行时继承、NFS故障与恢复验收
 
+本报告保留005首次启动及逐IP恢复的历史现场。用户随后明确继续静态名单、默认允许`10.11.0.0/16`，服务端已实际切换且005读取仍通过，见[最新网段应用结果](../maas-nfs-static-cidr-20261117/REPORT.md)。以下原始失败及恢复不被改写为首次成功。
+
 2026-11-17 · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) · [母版实际安装](../maas-nfs-live-20261117/REPORT.md)
 
 ## 结论

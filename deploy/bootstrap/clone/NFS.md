@@ -8,7 +8,7 @@
 
 管理员提供可达的NFS地址、指定目录的只读export、允许的客户端网络和读取权限。只共享模型目录，不导出`/root`、暂存目录或管理凭据。模型导入/发布/回收仍是独立管理工作。若NFSv4导出使用了不同的客户端路径，必须先核对真实export，不能凭服务器磁盘路径猜测。
 
-用户新增要求：NFS授权以现有worker准入为唯一来源，不维护独立的第二份业务批准名单。目前worker采用批次/GPU UUID/短期许可及自动预登记，未发现同类型IP名单；NFS仍是人工维护静态IP，自动同步尚未实现。后续需在准入通过后、worker容器创建/启动前，将服务端核验的实际出口同步到export与2049规则；换址和明确撤销同样同步，不能等待Ready或直接信任上报IP。详见[准入来源约定](../../../docs/framework/MODEL-WEIGHTS-NFS.md#worker准入与nfs授权来源2026-11-17用户补充)。本轮核验没有变更现网授权。
+用户最新决定保留静态名单，默认允许`10.11.x.x`即`10.11.0.0/16`。服务端export与2049/TCP规则已同步该网段，网段内真实出口无需逐IP扩白；其他网段须另行明确授权，IPv6/UDP和只读限制保持。worker准入仍使用原批次/GPU UUID/短期许可，自动同步NFS的建议暂缓，不增加本轮验收门槛。详见[当前授权约定](../../../docs/framework/MODEL-WEIGHTS-NFS.md#worker准入与nfs授权来源2026-11-17用户补充)及[实际应用结果](../../../results/maas-nfs-static-cidr-20261117/REPORT.md)。
 
 本次[服务端配置](../nfs-server/README.md)将该模型目录设为NFSv4根，客户端source使用`<新PC地址>:/`；示例已按此更新。物理目录仍是`/root/maas/data/modelsWeights`，不会为了遍历它而放开`/root`权限。
 
