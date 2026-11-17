@@ -444,7 +444,7 @@ GPUStack调度预算不是CUDA实际占用，也不是强制显存硬上限；�
 
 ## E5：统一启动配置分发与GPUStack原生注册
 
-**2026-11-17模型分发目标确认：** 新PC集中维护全部已发布模型，worker启动自动只读挂载NFS，GPUStack按统一固定路径启动实例；管理员负责版本校验、发布、回退和回收。现有model-storage-v1仅实现本地目录及容器映射，集中NFS/管理员发布/自动挂载未完成。详见[方案与验收顺序](MODEL-WEIGHTS-NFS.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)，本次仅记录设计，未改现有服务或挂载。
+**2026-11-17模型分发目标确认（按完整镜像流程补充）：** 完整模型镜像由私有Registry保存，worker直接拉取启动，不要求管理员额外下载/提取权重；外置模型由新PC只读NFS提供，按统一固定路径加载。两种方式均为正式交付，旧OCR不必迁出镜像。仅镜像节点不要求NFS，外置部署须限定到已核验NFS节点；管理员分别维护镜像digest和外置文件版本/回退/引用保护。现有Registry/本地映射可复用，集中NFS、管理员外置发布、自动挂载及存储能力校验未完成。详见[方案与验收顺序](MODEL-WEIGHTS-NFS.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)，本次仅记录设计，未改现有服务或挂载。
 
 **实施计划补充：** [分阶段实施与母版快照应用计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)已明确母版实际更新、管理员保存/应用新快照、新建独立VPC首启验收、小批推广和存量在线维护迁移。保留2026-11-11系统就绪后的延后启动链，NFS故障不阻塞基本开机；没有实际首启证据继续标记待验。当前仅计划，未部署。
 
