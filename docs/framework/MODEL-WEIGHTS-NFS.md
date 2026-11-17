@@ -40,6 +40,14 @@ flowchart LR
 
 NFS节点的宿主挂载点统一为`/srv/maas/models`。`/srv/maas/model-cache`保留为本地可写缓存目录；worker身份、注册材料、设备私钥、API Key和Docker数据目录不进入NFS。容器是否使用这些目录由部署业务决定。
 
+### worker准入与NFS授权来源（2026-11-17用户补充）
+
+用户要求NFS访问范围以worker接入准入为准，避免分别维护两份相互不一致的名单。实际核验：当前默认worker接入由已认证批次、签名发布范围、GPU UUID和短期会话许可控制，`auto_enroll_gpus`已启用；未发现独立的worker源IP白名单。NFS目前仍为服务端静态IP授权，两者没有自动联动，不能写成已经共用白名单。
+
+后续联动以现有worker准入为唯一授权依据，将准入通过的worker映射到服务端核验的NFS出口地址，并在worker容器创建/启动前同步NFS export与2049规则，不再要求对同一worker手工做第二次准入。不得等待worker Ready后才放行NFS，否则Docker路径访问与注册形成启动依赖。仅镜像节点仍不要求挂载NFS。
+
+GPU UUID、GPUStack登记/上报IP和NFS服务端观察到的源IP含义不同；不能直接照抄worker上报IP或未经信任的转发头作为授权地址。换址和明确撤销准入须与NFS地址引用同步，临时离线不能当作永久撤销，共用出口时须保留其他已准入worker的有效引用。本补充是待实施要求；本轮只核验并记录，没有扩大现网NFS或变更worker发证策略，继续由[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)跟踪。
+
 ## 挂载与启动契约
 
 1. 核实服务端与worker之间的真实NFS数据通道、稳定寻址和受控网络范围；SSH跳板可达不能代替NFS可达。不向不受控公网客户端开放模型共享。

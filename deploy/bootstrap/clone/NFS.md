@@ -8,6 +8,8 @@
 
 管理员提供可达的NFS地址、指定目录的只读export、允许的客户端网络和读取权限。只共享模型目录，不导出`/root`、暂存目录或管理凭据。模型导入/发布/回收仍是独立管理工作。若NFSv4导出使用了不同的客户端路径，必须先核对真实export，不能凭服务器磁盘路径猜测。
 
+用户新增要求：NFS授权以现有worker准入为唯一来源，不维护独立的第二份业务批准名单。目前worker采用批次/GPU UUID/短期许可及自动预登记，未发现同类型IP名单；NFS仍是人工维护静态IP，自动同步尚未实现。后续需在准入通过后、worker容器创建/启动前，将服务端核验的实际出口同步到export与2049规则；换址和明确撤销同样同步，不能等待Ready或直接信任上报IP。详见[准入来源约定](../../../docs/framework/MODEL-WEIGHTS-NFS.md#worker准入与nfs授权来源2026-11-17用户补充)。本轮核验没有变更现网授权。
+
 本次[服务端配置](../nfs-server/README.md)将该模型目录设为NFSv4根，客户端source使用`<新PC地址>:/`；示例已按此更新。物理目录仍是`/root/maas/data/modelsWeights`，不会为了遍历它而放开`/root`权限。
 
 将[配置示例](model-nfs.example.json)作为`model_nfs`字段，分别加入本机root-only的`bootstrap.json`与对应的签名release manifest；两处必须完全一致。示例地址为文档保留地址，须替换为实际NFS地址。不能仅修改本机而绕过签名，也不能给未配置NFS的节点直接发布启用NFS的release；兼容image_id与发布范围须对应。未配置该字段的节点保留原本地存储流程。
