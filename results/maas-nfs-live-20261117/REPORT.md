@@ -1,5 +1,7 @@
 # NFS服务端、宿主试点与母版软件安装
 
+本报告保留母版安装时点的结果。后续已交接新VPC 005，文件继承和人工恢复后运行时通过，首次零干预启动失败；平台快照ID按用户决定记录未知。详见[005最新报告](../maas-nfs-clone-20261117-005/REPORT.md)，以下“尚未交付”对应安装时点。
+
 2026-11-17 · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) · [实施计划](../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)
 
 ## 当前结论

@@ -51,3 +51,7 @@ SSH_PORT_REDACTED/tower-1lpDmdmo6已安装clone-network-v1-r2四文件，静态�
 管理员下一步保存当前母版新快照，交接真实snapshot ID、独立新VPC与快照对应、GPU分配及安全入口；先验收一个，通过后再做第二个。首次访问前核验NFS真实出口源地址并更新受限白名单，不扩开整个网段。旧VPC只检查未受影响，不重启/重建001/002作对比。平台保存、选择/应用、新VPC零干预首启、后续小批推广均未标记完成。
 
 实际版本、安装清单、服务回退及证据边界见[部署报告](../../../results/maas-nfs-live-20261117/REPORT.md)、[安装摘要](../../../results/maas-nfs-live-20261117/INSTALLATION.json)及[实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)。保留供应商OS/SSH身份流程；软件更新不代表平台镜像已更新，也不宣称模型部署或推理可用。
+
+## 2026-11-17 新VPC 005运行时交接
+
+管理员已交接使用最新快照的新VPC 005，17个文件继承匹配。用户明确快照ID/版本未知，以运行时为准，不再等待平台标识。首次启动因新出口未在NFS试点白名单内失败，首启现场已保存；服务端精确增加005后，显式mount恢复及过期许可的受控接续均通过。目前宿主NFS只读/摘要、worker同GPU UUID及同ID Ready、重复apply和准备service均正常，无VM重启或客户端代码/配置补拷。零干预完整首启、第二VPC与推广仍待验，见[005报告](../../../results/maas-nfs-clone-20261117-005/REPORT.md)。

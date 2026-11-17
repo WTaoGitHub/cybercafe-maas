@@ -2,7 +2,9 @@
 
 2026-11-17 · [目标架构](MODEL-WEIGHTS-NFS.md) · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)
 
-**本计划包含实际更新母版、保存新版快照、将新版快照应用于独立VPC及分批推广。** 服务端只读NFS、001隔离目录准备/读取/拒写/故障恢复及母版软件安装已完成并分别取证；管理员尚未交付新快照和独立新VPC，不能将全部阶段勾选完成。详见[真实部署与母版安装记录](../../results/maas-nfs-live-20261117/REPORT.md)及[安装摘要](../../results/maas-nfs-live-20261117/INSTALLATION.json)。
+**本计划包含实际更新母版、保存新版快照、将新版快照应用于独立VPC及分批推广。** 服务端、001隔离试点及母版安装已完成；管理员已交接使用最新快照的新VPC 005，17个安装文件继承匹配，人工恢复后宿主NFS和worker Ready通过。原始首启因新地址未在NFS白名单内失败，不能勾选零干预首启或全部阶段。见[005原始故障与运行时](../../results/maas-nfs-clone-20261117-005/REPORT.md)、[母版安装记录](../../results/maas-nfs-live-20261117/REPORT.md)及[安装摘要](../../results/maas-nfs-live-20261117/INSTALLATION.json)。
+
+本轮用户明确平台snapshot ID/版本未知，以实际运行时为准：平台标识记录未知，不再作为阻塞项，也不虚构ID；软件继承、启动日志和当前状态继续分别取证。下一独立VPC须在首次NFS访问前完成真实出口白名单，不能把试点地址授权视为全部新节点已获准。
 
 ## 范围和完成口径
 

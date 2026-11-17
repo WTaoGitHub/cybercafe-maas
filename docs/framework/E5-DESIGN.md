@@ -1,6 +1,6 @@
 # E5：统一启动配置分发与GPUStack原生注册
 
-**2026-11-17 NFS功能边界及按需访问：** 本功能只负责VPC启动时为宿主`/srv/maas/models`准备本地automount，首次访问才连接新PC的`/root/maas/data/modelsWeights`只读目录。准备过程不读远端文件，入口准备和实际读取分别验收；交付仍含母版及快照。容器映射、模型配置、调度和推理归部署业务，模型发布应用独立安排。新PC只读NFS、001隔离目录真实读取/故障试点及母版软件已实际安装，233项回归通过；平台快照、新VPC首启及推广待验，见[实际取证](../../results/maas-nfs-live-20261117/REPORT.md)。详见[方案](MODEL-WEIGHTS-NFS.md)、[实施计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。两种权重交付方式、GPU UUID身份和禁止VM重启约束保持。
+**2026-11-17 NFS功能边界及按需访问：** 本功能只负责VPC启动时为宿主`/srv/maas/models`准备本地automount，首次访问才连接新PC的`/root/maas/data/modelsWeights`只读目录。准备过程不读远端文件，入口准备和实际读取分别验收；交付仍含母版及快照。容器映射、模型配置、调度和推理归部署业务，模型发布应用独立安排。新PC、001试点及母版安装已取证，233项回归通过；新VPC 005继承文件匹配，白名单故障及过期许可经显式恢复后NFS/worker运行时通过，原始零干预首启失败。平台快照ID按用户决定记未知，第二VPC及推广待验，见[005实际记录](../../results/maas-nfs-clone-20261117-005/REPORT.md)。详见[方案](MODEL-WEIGHTS-NFS.md)、[实施计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。两种权重交付方式、GPU UUID身份和禁止VM重启约束保持。
 
 2026-10-23修订六，当前实施基线。实际前置进展见 [准备记录](../../results/maas-e5-preparation/REPORT.md)：test1(ID3)已建，001原worker/本机旧OCR已停止，配置服务未部署。最高优先级；**配置读取服务已部分实现并部署001的18840；引导程序尚未实现，E5未整体验收。最新证据见 [实施报告](../../results/maas-e5-preparation/BOOTSTRAP-HTTPS.md)。** P4既定两节点私有试点验收通过不代表E5已验收。
 

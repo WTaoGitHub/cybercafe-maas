@@ -2,7 +2,7 @@
 
 2026-11-17 · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) · [实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)
 
-客户端实现、233项回归、新PC只读NFS、001隔离目录首次访问/故障试验和母版软件安装已完成，见[实际部署记录](../../../results/maas-nfs-live-20261117/REPORT.md)。新快照保存/应用、新VPC首启及推广仍须分别验收。默认服务端目录按用户指定为`/root/maas/data/modelsWeights`，宿主入口为`/srv/maas/models`。本功能不配置模型服务容器。
+客户端实现、233项回归、新PC只读NFS、001隔离试点和母版安装已完成，见[部署记录](../../../results/maas-nfs-live-20261117/REPORT.md)。新VPC 005继承文件全部匹配，首次启动因白名单缺失失败；精确放行和显式恢复后NFS/worker运行时通过，见[005记录](../../../results/maas-nfs-clone-20261117-005/REPORT.md)。平台快照ID按用户决定记录未知，零干预完整首启及推广仍待验。默认服务端目录按用户指定为`/root/maas/data/modelsWeights`，宿主入口为`/srv/maas/models`。本功能不配置模型服务容器。
 
 ## 配置交接
 
