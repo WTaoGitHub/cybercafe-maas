@@ -561,7 +561,7 @@ model-storage-v1已在独立新克隆完成容器维护、身份保持、只读�
 
 ## 34. 2026-11-17：NFS模型库母版更新与快照应用计划
 
-客户端现已实现并离线验证，母版尚未启动，未安装本次文件或保存/应用新快照。本功能在VPC启动时只准备宿主`/srv/maas/models`的本地automount，首次访问才连接新PC的`/root/maas/data/modelsWeights`；启动不试读远端。入口准备、实际NFS读取及母版/快照首启分别验收。详[实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)、[按需挂载交接](NFS.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。
+新PC只读NFS、001隔离宿主试点及母版实际软件安装已完成；母版版本`48ff46a`、逻辑image_id为`tower-e5-nfs-automount-v1`、签名revision为`nfs-automount-20261117-r1`。见[实际安装及分阶段证据](../../../results/maas-nfs-live-20261117/REPORT.md)。平台新快照保存/选择/应用和独立新VPC首启仍待验。本功能在VPC启动时只准备宿主`/srv/maas/models`的本地automount，首次访问才连接新PC的`/root/maas/data/modelsWeights`；准备过程不试读远端。入口准备、实际NFS读取及母版/快照首启分别验收。详[实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)、[按需挂载交接](NFS.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。
 
 独立宿主挂载试点通过后，我们负责实际母版备份、NFS客户端及引导文件安装、权限/摘要/保护/无身份污染核对，再出具可制作快照清单；管理员在平台保存并指定新版快照创建独立A/B。我们在无手动mount/apply或复制文件补配置的首启现场验收宿主挂载，之后再小批推广。分别记录软件提交、逻辑image_id、平台snapshot ID及NFS来源/测试文件摘要，安装完成不等于快照已保存或应用。
 

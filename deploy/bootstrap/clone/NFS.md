@@ -2,7 +2,7 @@
 
 2026-11-17 · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) · [实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)
 
-客户端实现和离线回归已完成，真实服务端、首次访问和新快照首启仍须分别验收。默认服务端目录按用户指定为`/root/maas/data/modelsWeights`，宿主入口为`/srv/maas/models`。本功能不配置模型服务容器。
+客户端实现、233项回归、新PC只读NFS、001隔离目录首次访问/故障试验和母版软件安装已完成，见[实际部署记录](../../../results/maas-nfs-live-20261117/REPORT.md)。新快照保存/应用、新VPC首启及推广仍须分别验收。默认服务端目录按用户指定为`/root/maas/data/modelsWeights`，宿主入口为`/srv/maas/models`。本功能不配置模型服务容器。
 
 ## 配置交接
 
@@ -16,7 +16,7 @@ NFS母版使用独立逻辑`image_id`。配置发布器的`publish --image-id <�
 
 示例测试文件的内容为`host-nfs-pilot-v1`加一个LF换行，SHA-256已固定在示例中。管理员放置此小文件供显式试读；也可选择另一个不超过1MiB的普通文件并登记实际摘要。启动阶段只检查配置，不读取该文件。
 
-母版/试点客户端需要Ubuntu的`nfs-common`和系统systemd工具。本次源码交付包和离线母版安装器已纳入`maas_bootstrap/nfs.py`及配置示例；安装器不代替系统包安装，也不代表已经更新真实母版。
+母版/试点客户端需要Ubuntu的`nfs-common`和系统systemd工具。本次源码交付包和离线母版安装器已纳入`maas_bootstrap/nfs.py`及配置示例；安装器不代替系统包安装。真实母版已另行按核验过的在线流程备份、安装并读回，版本为`48ff46a`。
 
 ## 启动与实际访问
 

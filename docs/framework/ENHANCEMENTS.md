@@ -444,9 +444,9 @@ GPUStack调度预算不是CUDA实际占用，也不是强制显存硬上限；�
 
 ## E5：统一启动配置分发与GPUStack原生注册
 
-**2026-11-17 NFS客户端实施：** 用户指定服务端目录`/root/maas/data/modelsWeights`及按需访问，001作为无业务宿主试点但不得重启。客户端已实现启动只准备automount、首次访问才连接NFS，兼容旧本地模式；受控配置验签、只读/来源校验、幂等和有界故障处理已离线回归。001已读预检，服务端和真实NFS读取、母版/快照仍待验。容器映射、模型配置、调度和推理仍归部署业务。详[方案](MODEL-WEIGHTS-NFS.md)、[实施记录](../../results/maas-nfs-client-20261117/REPORT.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。
+**2026-11-17 NFS客户端实施：** 用户指定服务端目录`/root/maas/data/modelsWeights`及按需访问，001作为无业务宿主试点但不得重启。客户端已实现启动只准备automount、首次访问才连接NFS，兼容旧本地模式；受控配置验签、只读/来源校验、幂等和有界故障处理已离线回归。新PC只读NFS、001隔离目录真实读取/服务端拒写/故障恢复及母版软件已实际安装，233项回归通过；平台快照、新VPC首启和推广仍待验。容器映射、模型配置、调度和推理仍归部署业务。详[方案](MODEL-WEIGHTS-NFS.md)、[实际部署记录](../../results/maas-nfs-live-20261117/REPORT.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。
 
-**实施计划补充：** [分阶段实施与母版快照应用计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)保留母版实际更新、管理员保存/应用新快照、独立VPC首启、小批推广和存量维护迁移；按需入口准备、实际NFS读取和异常行为分别取证，不要求部署模型。客户端已离线验证，真实服务端、母版及快照应用仍待验；没有首启证据继续标记待验。
+**实施计划补充：** [分阶段实施与母版快照应用计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)保留母版实际更新、管理员保存/应用新快照、独立VPC首启、小批推广和存量维护迁移；按需入口准备、实际NFS读取和异常行为分别取证，不要求部署模型。服务端、宿主独立试点及母版软件已实际取证；平台快照应用和新VPC首启仍待验，没有首启证据继续标记待验。
 
 **设计基线为2026-10-23修订六；实现状态更新至2026-10-28：配置服务、引导/母版交付、单克隆正常首启和双克隆自动扩容14副本门槛均已通过。当前优先收尾新拓扑维护与网络边界；异常矩阵及E5.F1–F5不因此完成，见 [双克隆证据](../../results/maas-e5-dual-clone-20261028/REPORT.md)。** 同站点/批次启动配置相同，共享码直接授权读取；不登记VM、不发会话凭据。详见 [设计](E5-DESIGN.md)、[开发计划](E5-IMPLEMENTATION.md)及 [部署测试](E5-TEST-DEPLOYMENT.md)。
 

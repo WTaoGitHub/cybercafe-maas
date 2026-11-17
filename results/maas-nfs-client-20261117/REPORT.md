@@ -1,5 +1,7 @@
 # NFS按需挂载客户端实现与基线预检
 
+本文件保留客户端和早期本地试点阶段的历史结果。后续真实NFS、故障试验和母版实际安装见[最新报告](../maas-nfs-live-20261117/REPORT.md)，以下“尚未实施”描述对应当时阶段。
+
 2026-11-17 · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)
 
 ## 当前结论
