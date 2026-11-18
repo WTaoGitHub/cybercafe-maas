@@ -30,6 +30,8 @@ def test_offline_image_contains_only_template_configuration(setup,tmp_path):
     assert (root/'etc/systemd/system/timers.target.wants/maas-worker-bootstrap.timer').is_symlink()
     assert not (root/'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service').exists()
     assert (root/'opt/maas/lib/maas_bootstrap/startup.py').is_file()
+    assert (root/'opt/maas/lib/maas_bootstrap/shutdown_events.py').is_file()
+    assert not (root/'etc/systemd/system/multi-user.target.wants/maas-worker-shutdown-notify.service').exists()
     assert not (root/'opt/maas/lib/maas_bootstrap/service.py').exists()
     assert (root/'opt/maas/lib/maas_bootstrap/storage.py').is_file()
     written=json.loads((root/'etc/maas/bootstrap.json').read_text())
@@ -103,3 +105,32 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     assert installed['cluster_id']==1
     assert installed.get('worker_start_automatic',False)==automatic
     assert installed['worker_start_grant_file']==data['worker_start_grant_file']
+
+
+def test_notification_image_has_public_ca_and_enabled_unit_but_no_node_credential(setup,tmp_path):
+    root,cfg=inputs(setup,tmp_path)
+    data=json.loads(cfg.read_text())
+    data.update(state_dir='/run/maas-bootstrap',worker_data_dir='/run/maas-bootstrap/gpustack-worker',
+                worker_start_grant_file='/run/maas-start/boot-grant',worker_start_automatic=True)
+    data['shutdown_events']={'url':'https://maas.example.invalid/maas/internal/worker-shutdown-events',
+                             'tls_certificate_file':data['tls_certificate_file']}
+    atomic_json(cfg,data)
+    image.build(root,cfg)
+    installed=json.loads((root/'etc/maas/bootstrap.json').read_text())
+    assert installed['shutdown_events']['tls_certificate_file']=='/etc/maas/shutdown-events-ca.crt'
+    assert (root/'etc/maas/shutdown-events-ca.crt').stat().st_mode&0o777==0o644
+    assert (root/'etc/systemd/system/multi-user.target.wants/maas-worker-shutdown-notify.service').is_symlink()
+    assert not (root/'run/maas-bootstrap').exists()
+    assert not list(root.rglob('shutdown-event.json'))
+    assert 'shutdown_event_credential' not in (root/'etc/maas/bootstrap.json').read_text()
+
+
+def test_notification_cannot_be_enabled_for_legacy_random_identity_image(setup,tmp_path):
+    root,cfg=inputs(setup,tmp_path)
+    data=json.loads(cfg.read_text())
+    data['shutdown_events']={'url':'https://maas.example.invalid/maas/internal/worker-shutdown-events',
+                             'tls_certificate_file':data['tls_certificate_file']}
+    atomic_json(cfg,data)
+    with pytest.raises(BootstrapError,match='GPU_IDENTITY_REQUIRED'):
+        image.build(root,cfg)
+    assert not (root/'etc/maas').exists()

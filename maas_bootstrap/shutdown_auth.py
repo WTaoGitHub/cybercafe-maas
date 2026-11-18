@@ -2,6 +2,7 @@
 import base64
 import hmac
 import json
+import os
 import re
 from uuid import UUID
 
@@ -44,7 +45,6 @@ def main():
     """Private operator delivery from an already verified binding; no native writes."""
     import argparse
     from pathlib import Path
-    from .client import atomic_bytes
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--key-file', required=True)
     p.add_argument('--binding-file', required=True)
@@ -53,9 +53,10 @@ def main():
     try:
         token = issue(a.key_file, json.loads(read_file(a.binding_file, secret=True)))
         output = Path(a.output)
-        if output.exists() or output.is_symlink():
-            raise BootstrapError('SHUTDOWN_EVENT_OUTPUT_EXISTS')
-        atomic_bytes(output, token.encode() + b'\n')
+        output.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
+        fd = os.open(output, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd,'w') as handle:
+            handle.write(token+'\n');handle.flush();os.fsync(handle.fileno())
         print('{"code":"SHUTDOWN_EVENT_CREDENTIAL_WRITTEN"}')
         return 0
     except Exception:

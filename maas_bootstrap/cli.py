@@ -1,16 +1,23 @@
 """Local clone bootstrap commands. Never display credential payloads or raw exceptions."""
 import argparse,json,sys
-from .client import BootstrapError,LocalSettings,LocalState,MAX_BYTES,prepare
+from .client import BootstrapError,LocalSettings,LocalState,MAX_BYTES,prepare,read_file
 
 
 def main(argv=None):
     p=argparse.ArgumentParser();p.add_argument('--config',default='/etc/maas/bootstrap.json')
-    p.add_argument('action',choices=('prepare','apply','status','receive-grant','boot','boot-check','storage-prepare','storage-check'))
+    p.add_argument('action',choices=('prepare','apply','status','receive-grant','boot','boot-check','storage-prepare','storage-check','shutdown-prepare'))
     p.add_argument('--trigger',choices=('boot','manual'),default='manual')
+    p.add_argument('--credential-file')
     a=p.parse_args(argv)
     try:
         settings=LocalSettings(a.config)
         if a.action=='status':result=LocalState(settings.data['state_dir']).status()
+        elif a.action=='shutdown-prepare':
+            if not a.credential_file:p.error('--credential-file is required')
+            from .shutdown_events import prepare as prepare_shutdown
+            state=LocalState(settings.data['state_dir'])
+            with state.lock():
+                result=prepare_shutdown(settings,state.read('identity.json'),read_file(a.credential_file,secret=True).decode().strip())
         elif a.action in ('storage-prepare','storage-check'):
             from . import storage
             from .client import HTTPSConfigFetcher,ReleaseVerifier

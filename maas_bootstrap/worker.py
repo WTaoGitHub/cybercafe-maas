@@ -284,7 +284,7 @@ def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,p
         if (not stored or not stored.get('session_id') or current.get('session_id')!=stored['session_id']
                 or read_file(external,secret=True)!=gpu.encode()):
             raise BootstrapError('LOCAL_IDENTITY_INVALID')
-        if current['running']:return stored
+        if current['running']:return stored,None
         if current['status']!='created':raise BootstrapError('HANDOFF_REPROVISION_REQUIRED')
     if any(path!=external for path in data.iterdir()) or (not stored and (external.exists() or external.is_symlink())):
         raise BootstrapError('HANDOFF_REPROVISION_REQUIRED')
@@ -311,7 +311,7 @@ def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,p
     # can retry Docker start, while exited containers require a new session.
     handoff.check_permit(result,cluster,gpu,identity['session_id'],identity['worker_id'])
     runtime.start()
-    return identity
+    return identity,result.get('shutdown_event_credential')
 
 
 def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper=time.sleep,permit_fetcher=None):
@@ -335,9 +335,10 @@ def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper
                 storage.prepare(settings)
             gpu=runtime.check_environment(settings,envelope)
             target=state.prepare(envelope,metadata)
+            shutdown_credential=None
             if envelope['manifest']['worker_name_policy']==DISKLESS_POLICY:
-                identity=start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,
-                                        permit_fetcher or handoff.WorkerStartFetcher())
+                identity,shutdown_credential=start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,
+                                                            permit_fetcher or handoff.WorkerStartFetcher())
             else:
                 identity=identity_for(state,settings)
                 if current is None:
@@ -356,6 +357,12 @@ def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper
             code='UNCHANGED' if was_running and applied and applied['fingerprint']==metadata['fingerprint'] else 'APPLIED'
             result={'code':code,'trigger':trigger,**metadata,**registration,**layout_info}
             if identity.get('session_id'):result.update(session_id=identity['session_id'],gpu_uuid=identity['gpu_uuid'])
+            if settings.data.get('shutdown_events') is not None:
+                try:
+                    from .shutdown_events import prepare as prepare_shutdown
+                    result['shutdown_event']=prepare_shutdown(settings,identity,shutdown_credential)['code']
+                except Exception:
+                    result['shutdown_event']='SHUTDOWN_EVENT_PREPARE_UNAVAILABLE'
             atomic_json(state.root/'applied.json',result)
             atomic_json(state.root/'last-result.json',result)
             return result

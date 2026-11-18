@@ -38,3 +38,11 @@ def test_bundle_manifest_rejects_path_escape_and_extra_members(tmp_path):
     p.write_text(json.dumps({'schema_version':1,'contains_secrets':False,'files':{},'source_commit':'test'}))
     (tmp_path/'unexpected-secret').write_text('dummy')
     with pytest.raises(ValueError,match='Unexpected'):v.verify(tmp_path)
+
+
+def test_public_bundle_includes_notification_runtime_and_unit():
+    sources=module('build_worker_bundle').SOURCES
+    for path in ('maas_bootstrap/shutdown_auth.py','maas_bootstrap/shutdown_events.py',
+                 'deploy/bootstrap/clone/maas-worker-shutdown-notify.service'):
+        assert path in sources and (REPO/path).is_file()
+    assert not any(path.endswith('shutdown-event.json') for path in sources)

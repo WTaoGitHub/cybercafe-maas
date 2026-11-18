@@ -12,7 +12,7 @@ import urllib.parse
 import urllib.request
 from uuid import uuid4
 
-from .client import BootstrapError, canonical, https_opener, read_file
+from .client import BootstrapError, atomic_json, canonical, https_opener, read_file
 from .shutdown_auth import validate_scope
 from .worker import guard_clone_host
 
@@ -55,8 +55,38 @@ def credential_scope(token):
 
 
 def binding(identity, boot_id):
-    return validate_scope({**{k:identity[k] for k in ('cluster_id','worker_id','gpu_uuid','session_id')},
-                           'boot_id':boot_id})
+    try:
+        return validate_scope({**{k:identity[k] for k in ('cluster_id','worker_id','gpu_uuid','session_id')},
+                               'boot_id':boot_id})
+    except (KeyError, TypeError):
+        raise BootstrapError('SHUTDOWN_EVENT_IDENTITY_UNAVAILABLE') from None
+
+
+def private_root(cfg):
+    root = Path(cfg['state_dir'])
+    if (not root.is_absolute() or '..' in root.parts or root.is_symlink()
+            or root.stat().st_mode & 0o077 or root.stat().st_uid not in (0, os.geteuid())):
+        raise BootstrapError('SHUTDOWN_EVENT_STATE_UNTRUSTED')
+    return root
+
+
+def prepare(settings, identity, credential=None):
+    events = configuration(settings.data.get('shutdown_events'))
+    if events is None:
+        return {'code':'SHUTDOWN_EVENT_DISABLED'}
+    guard_clone_host()
+    root = private_root(settings.data)
+    if credential is None:
+        prior = root/'shutdown-event.json'
+        if not prior.exists():
+            return {'code':'SHUTDOWN_EVENT_NOT_PREPARED'}
+        credential = json.loads(read_file(prior, secret=True))['credential']
+    current = binding(identity, read_file(BOOT_ID).decode().strip())
+    if credential_scope(credential) != current:
+        raise BootstrapError('SHUTDOWN_EVENT_BINDING_CHANGED')
+    https_opener(SimpleNamespace(data=events))
+    atomic_json(root/'shutdown-event.json', dict(events, scope=current, credential=credential))
+    return {'code':'SHUTDOWN_EVENT_PREPARED'}
 
 
 def remaining(deadline):
@@ -90,10 +120,7 @@ def notify(config_path='/etc/maas/bootstrap.json', *, deadline=None):
     events = configuration(cfg.get('shutdown_events'))
     if events is None:
         return {'code':'SHUTDOWN_EVENT_DISABLED'}
-    root = Path(cfg['state_dir'])
-    if (not root.is_absolute() or '..' in root.parts or root.is_symlink()
-            or root.stat().st_mode & 0o077 or root.stat().st_uid not in (0, os.geteuid())):
-        raise BootstrapError('SHUTDOWN_EVENT_STATE_UNTRUSTED')
+    root = private_root(cfg)
     prepared = json.loads(read_file(root/'shutdown-event.json', secret=True))
     current = binding(json.loads(read_file(root/'identity.json', secret=True)), read_file(BOOT_ID).decode().strip())
     if (prepared['scope'] != current or credential_scope(prepared['credential']) != current

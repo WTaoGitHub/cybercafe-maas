@@ -1,12 +1,14 @@
 # worker 关机事件：设计与开发实施方案
 
-2026-11-18 · **SD01–SD03 已实现并本地验证；SD04–SD05 继续实施，未部署** · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+2026-11-18 · **SD01–SD04 已实现并本地验证；SD05 本地联调与部署材料实施中，未部署** · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
 SD01 验证：节点范围签发/验签、消息校验、人工/自动引导兼容共 57 项通过。
 
 SD02 验证：独立 PostgreSQL 16.14 上，接收/清理与原客户 API、配置、迁移、认证回归 110 项通过，1 项既有环境条件跳过；新增数据库测试未跳过。每次新 UUID、48 小时边界、并行/锁跳过、接收关闭后清理、API 重建及私有清理命令通过。尚未验证客户端发送或真实关机。
 
 SD03 验证：发送器、系统作业解析、母版/角色保护及认证/引导回归 86 项通过；阻塞替身下三轮进程级截止均约 1 秒结束，无重试。实际 Ubuntu 关机作业时序、systemd 进程组回收仍待 SD05 独立环境验证，未操作真实 VM。
+
+SD04 验证：全部 bootstrap 测试 287 项通过，覆盖注册后私有准备、失败不阻塞、存量交付不改身份、模板无节点凭据、启用链接和 bundle 清单。用户确认当前无独立环境，实际 Ubuntu/systemd 关机验收保留待办，不阻止其余开发和本地联调。
 
 ## 1. 范围与完成标准
 
@@ -174,7 +176,7 @@ WantedBy=multi-user.target
 
 说明：签发和验签逻辑各自只实现固定用途的小函数，使用同一协议测试向量核对；不为跨包复用把整套 bootstrap 装进 MaaS 镜像。当前 Dockerfile 已整体复制 `maas_platform`，但仍须验证新 Python/SQL 文件实际进入运行镜像；bootstrap bundle 采用显式清单，必须逐项加入新增文件。
 
-拟新增测试分别放在 `tests/bootstrap/test_shutdown_auth.py`、`test_shutdown_events.py` 与 `tests/maas/test_shutdown_events.py`、`test_shutdown_events_integration.py`。与现有 `tests/bootstrap/test_worker.py`、`test_auto_enrollment.py`、`test_handoff.py`、`test_startup.py`、`test_image.py`、`test_bundle.py`，以及 `tests/maas/test_migration_assets.py`、入口大小限制相关测试一起执行；不改现有推理选择、任务派发与计量逻辑。数据库回归沿用 `MAAS_TEST_DATABASE_URL` 且库名必须以 `_test` 结尾；不把“未设置数据库而跳过”算作数据库通过。
+拟新增测试分别放在 `tests/bootstrap/test_shutdown_auth.py`、`test_shutdown_sender.py`、`test_shutdown_prepare.py` 与 `tests/maas/test_shutdown_events.py`、`test_shutdown_events_integration.py`。与现有 `tests/bootstrap/test_worker.py`、`test_auto_enrollment.py`、`test_handoff.py`、`test_startup.py`、`test_image.py`、`test_bundle.py`，以及 `tests/maas/test_migration_assets.py`、入口大小限制相关测试一起执行；不改现有推理选择、任务派发与计量逻辑。数据库回归沿用 `MAAS_TEST_DATABASE_URL` 且库名必须以 `_test` 结尾；不把“未设置数据库而跳过”算作数据库通过。
 
 ## 8. 验证矩阵
 

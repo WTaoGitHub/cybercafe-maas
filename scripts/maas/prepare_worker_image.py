@@ -8,7 +8,8 @@ import argparse,hashlib,json,sys
 from pathlib import Path
 REPO=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(REPO))
-from maas_bootstrap.client import BootstrapError,LocalSettings,SharedCodeFileProvider,StaticEndpointResolver,read_file
+from maas_bootstrap.client import BootstrapError,LocalSettings,SharedCodeFileProvider,StaticEndpointResolver,read_file,https_opener
+from maas_bootstrap.shutdown_events import configuration as shutdown_configuration
 
 
 def safe_target(root,relative):
@@ -82,17 +83,27 @@ def build(root,settings_path):
     if settings.data.get('worker_start_automatic'):cfg['worker_start_automatic']=True
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
                release_public_key_file='/etc/maas/release-signing.pub')
+    shutdown=shutdown_configuration(settings.data.get('shutdown_events'))
+    shutdown_cert=None
+    if shutdown is not None:
+        if not diskless:raise BootstrapError('SHUTDOWN_EVENT_GPU_IDENTITY_REQUIRED')
+        from types import SimpleNamespace
+        https_opener(SimpleNamespace(data=shutdown))
+        shutdown_cert=read_file(shutdown['tls_certificate_file'])
+        cfg['shutdown_events']=dict(shutdown,tls_certificate_file='/etc/maas/shutdown-events-ca.crt')
     files={
         'etc/maas/bootstrap.json':(json.dumps(cfg,indent=2).encode()+b'\n',0o600),
         'etc/maas/shared-code':(code.encode()+b'\n',0o600),
         'etc/maas/server.crt':(cert,0o644),
         'etc/maas/release-signing.pub':(pub,0o644),
     }
-    for name in ('__init__.py','client.py','storage.py','nfs.py','registry.py','handoff.py','worker.py','cli.py','startup.py','clone_boundary.py'):
+    if shutdown_cert is not None:files['etc/maas/shutdown-events-ca.crt']=(shutdown_cert,0o644)
+    for name in ('__init__.py','client.py','storage.py','nfs.py','registry.py','handoff.py','worker.py','cli.py','startup.py','clone_boundary.py','shutdown_auth.py','shutdown_events.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),
         ('maas-worker-bootstrap.service','etc/systemd/system/maas-worker-bootstrap.service',0o644),
+        ('maas-worker-shutdown-notify.service','etc/systemd/system/maas-worker-shutdown-notify.service',0o644),
         ('maas-worker-bootstrap.timer','etc/systemd/system/maas-worker-bootstrap.timer',0o644)):
         files[dest]=((REPO/'deploy/bootstrap/clone'/name).read_bytes(),mode)
     boot_unit='maas-worker-bootstrap.timer'
@@ -107,7 +118,8 @@ def build(root,settings_path):
     # Full preflight before writing; never overwrite existing image files or links.
     for name in [*files,'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service',
                  'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.path',
-                 'etc/systemd/system/timers.target.wants/maas-worker-bootstrap.timer',manifest]:
+                 'etc/systemd/system/timers.target.wants/maas-worker-bootstrap.timer',
+                 'etc/systemd/system/multi-user.target.wants/maas-worker-shutdown-notify.service',manifest]:
         p=safe_target(root,name)
         if p.exists() or p.is_symlink():raise BootstrapError('IMAGE_DESTINATION_EXISTS')
     for name,(contents,mode) in files.items():
@@ -117,6 +129,10 @@ def build(root,settings_path):
     safe_target(root,'etc/maas').chmod(0o700)
     p=safe_target(root,link);p.parent.mkdir(parents=True,exist_ok=True)
     p.symlink_to('/etc/systemd/system/'+boot_unit)
+    if shutdown is not None:
+        p=safe_target(root,'etc/systemd/system/multi-user.target.wants/maas-worker-shutdown-notify.service')
+        p.parent.mkdir(parents=True,exist_ok=True)
+        p.symlink_to('/etc/systemd/system/maas-worker-shutdown-notify.service')
     result={'schema_version':1,'image_id':cfg['image_id'],'cluster_id':cfg['cluster_id'],
             'architecture':cfg['architecture'],'state_included':False,'worker_started':False,
             'hashes':{n:hashlib.sha256(b).hexdigest() for n,(b,m) in files.items() if n!='etc/maas/shared-code'},
