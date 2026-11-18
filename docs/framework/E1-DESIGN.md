@@ -1,10 +1,10 @@
 # E1：逐 worker 隔离候选设计
 
-> **2026-11-18 最新范围**：用户明确关机事件通知模块仅负责 **worker 发送事件、MaaS 保存事件、MaaS 删除保留超过 48 小时的事件**。此前加入本模块的退出状态、重新上线、模型副本关联与撤路/排空设计不再属于本模块职责。通知发送、接收、清理及交付材料已实现并完成本地验证，未部署；真实 Ubuntu/systemd 关机验收按用户决定保留待办。沿用 [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)。
+> **2026-11-18 最新范围**：用户明确关机事件通知模块仅负责 **worker 发送事件、MaaS 保存事件、MaaS 删除保留超过 48 小时的事件**。此前加入本模块的退出状态、重新上线、模型副本关联与撤路/排空设计不再属于本模块职责。MaaS 接收、Bootstrap 签发和母版客户端已部署，真实 Ubuntu/systemd 关机验收按用户决定保留待办。沿用 [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)。
 
 > 下方原 E1 候选中的 001 控制端角色属于历史；XZ-31-001 当前可按普通 worker 注册。母版保护及 XZ-31-001/002 禁止整机重启与等效操作的约束继续有效。
 
-## worker 关机事件通知（2026-11-18，本地实现，未部署）
+## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：
 
@@ -14,7 +14,7 @@
 
 接口为 `POST /maas/internal/worker-shutdown-events`，复用现有 FastAPI/PostgreSQL。节点范围凭据随已有 Bootstrap 启动响应准备，关机时不再访问发证或 GPUStack 认证接口；首次只支持既有 GPU UUID/启动会话身份，不改变注册校验。事件只包含节点/启动信息和发生/接收/到期时间，不维护 worker 或副本状态，不做恢复、撤路、排空、调度和容量调整。
 
-SD01 协议/认证、SD02 接收/存储/清理、SD03 发送/systemd、SD04 凭据准备与镜像/bundle，以及 SD05 本地 HTTPS/数据库联调和部署材料均已完成。文件范围、验收证据、发布及回退见[独立方案](WORKER-SHUTDOWN-EVENTS.md)。用户确认暂无独立环境，实际 Ubuntu/systemd 关机验收待办；尚未部署。XZ-31-001/002 不执行整机关机、重启或等效操作。下方原 E1 路由与排空工作包独立推进，不作为通知模块前置。
+SD01 协议/认证、SD02 接收/存储/清理、SD03 发送/systemd、SD04 凭据准备与镜像/bundle，以及 SD05 本地 HTTPS/数据库联调和部署材料均已完成。文件范围、验收证据、发布及回退见[独立方案](WORKER-SHUTDOWN-EVENTS.md)。MaaS、Bootstrap 和母版上的安装与现场 HTTPS 验证通过。新快照、克隆首启和实际 Ubuntu/systemd 关机验收待办。XZ-31-001/002 不执行整机关机、重启或等效操作。下方原 E1 路由与排空工作包独立推进，不作为通知模块前置。
 
 ## 路由决策
 

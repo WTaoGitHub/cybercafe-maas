@@ -1,6 +1,6 @@
 # worker 关机事件：实现与本地验证
 
-2026-11-18 · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2) · **本地候选完成，未部署；真实关机验收待办**
+2026-11-18 · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2) · **本地验证记录** · 最新状态见[现场部署记录](DEPLOYMENT.md)
 
 ## 交付范围
 
@@ -8,7 +8,7 @@
 
 发送器及 systemd 单元配置整体等待预算 1 秒，无重试；失败照常结束。启动流程准备精确节点/启动范围的私有凭据，关机不申请凭据或访问 GPUStack 认证。MaaS 本地验签，事务提交后 201。迁移 `011_worker_shutdown_events.sql` 只建事件表/索引；API 独立清理任务每 60 秒最多删除 500 条到期事件，关闭接收后仍清理。48 小时从数据库接收时间计算，实际物理删除受周期、停机或积压影响。
 
-默认未配置接收密钥及客户端配置时不启用通知。代码、单元、离线镜像和公开 bundle 清单、精确入口模板、配置片段、存量节点无重启私有交付及回退步骤均已完成。完整配置和操作见[设计方案](../../docs/framework/WORKER-SHUTDOWN-EVENTS.md)、[MaaS 部署说明](../../deploy/maas/README.md#worker-关机事件2026-11-18本地候选未部署)、[worker 交付说明](../../deploy/bootstrap/clone/README.md#可选-worker-关机事件2026-11-18本地候选未部署)。
+默认未配置接收密钥及客户端配置时不启用通知。代码、单元、离线镜像和公开 bundle 清单、精确入口模板、配置片段、存量节点无重启私有交付及回退步骤均已完成。完整配置和操作见[设计方案](../../docs/framework/WORKER-SHUTDOWN-EVENTS.md)、[MaaS 部署说明](../../deploy/maas/README.md#worker-关机事件2026-11-18)、[worker 交付说明](../../deploy/bootstrap/clone/README.md#可选-worker-关机事件2026-11-18)。
 
 ## 分包提交
 
@@ -55,7 +55,7 @@ SD05 推送后，使用原有构建器从提交 `1c27a4132766ac112eef45b39c90b38
 
 归档 SHA-256：`f67858d8a0d13cb99a5348cce298fc0665b453059286d64d8125b5e2672b0658`。这验证源码包的来源及完整性，不代替 Ubuntu 镜像、systemd 或现场部署验收。任务专用 PostgreSQL 测试实例已停止。
 
-## 发布前待办
+## 本地验证时的待办
 
 - 用户确认暂无独立可销毁环境，保留真实 Ubuntu/systemd 关机验收：poweroff/halt 作业可见性、网络停止顺序、从停止动作起的总预算与调度误差、进程组无残留、正常关机后第二次新事件，以及失败仍关机。
 - 实际管理工具是否走正常 Ubuntu 关机路径，尚未现场确认；突然断电、强制终止无法保证送达。单次尽力通知可能丢失，201 回复丢失时数据库也可能已经提交。

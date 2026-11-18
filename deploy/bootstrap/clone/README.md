@@ -171,7 +171,9 @@ python3 -m maas_bootstrap.delivery \
 同一启动复用同一份有效许可。MaaS 在授权目录保留该集群与 GPU 的启动绑定和签发记录，不同启动竞争时，已保留或正在注册的会话会阻止另一启动获批。已有活动会话时，enrollment 0.4.0 在数据库锁内确认 GPU 绑定唯一且旧 worker 为 `not_ready`，再撤销旧凭据并签发接续许可。许可过期或签发结果不明确时，由运维对账。
 
 
-## 可选 worker 关机事件（2026-11-18，本地候选，未部署）
+## 可选 worker 关机事件（2026-11-18）
+
+母版已安装通知客户端并设置开机启用。新平台快照与独立克隆首启待验收。[现场部署记录](../../../results/maas-worker-shutdown-events-20261118/DEPLOYMENT.md)
 
 客户端在正常 Ubuntu poweroff/halt 的停止事务中尽力发送一次通知，整体预算 1 秒，失败照常关机，不重试、不等待排空。每次新生成 UUID；该功能只记录事件，不更改 worker/模型状态。服务端保存 48 小时。[方案与实施状态](../../../docs/framework/WORKER-SHUTDOWN-EVENTS.md)。
 
