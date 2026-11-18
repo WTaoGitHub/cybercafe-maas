@@ -1,0 +1,48 @@
+{
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER",
+  "model_revision": "0480966938291445591f69f08a13b041c073a96a",
+  "deployment": {
+    "model_id": 13,
+    "instance_id": 195,
+    "model_name": "unlimited-ocr-2-nfs",
+    "route_id": 11,
+    "worker_id": 8,
+    "replicas": 1,
+    "ready_replicas": 1,
+    "instance_state": "running",
+    "existing_model_configs_instances_and_routes_unchanged": true
+  },
+  "runtime": {
+    "container": "unlimited-ocr-2-nfs-e4pmh-run-0",
+    "container_id": "497ae4723dfe",
+    "image_id": "sha256:69a1189e272f63a6218a8067ea8a51171eeba7ea42e8dae4127f14e99a2c2750",
+    "nfs_read_only_verified": true,
+    "model_path": "/srv/maas/models/unlimited-ocr-2-0480966",
+    "memory_bytes": 17179869184,
+    "cpu_max": "400000 100000",
+    "swap_max_bytes": 0,
+    "shm_bytes": 4294967296,
+    "health_http": 200,
+    "served_model_name": "unlimited-ocr-2-nfs",
+    "sglang_pid1_confirmed": true,
+    "restart_count": 0,
+    "started_at": "2026-11-18T02:10:29.070514823Z"
+  },
+  "route": {
+    "route_id": 11,
+    "name": "unlimited-ocr-2-nfs",
+    "target_model_id": 13,
+    "access_policy": "allowed_principals",
+    "additional_principals": 0
+  },
+  "gateway_sample": {
+    "name": "unlimited-ocr-2-nfs",
+    "http_status": 200,
+    "elapsed_seconds": 9.193,
+    "finish_reason": "stop",
+    "page_markers": 1,
+    "characters": 1809,
+    "expected_fields_ok": true,
+    "request_sha256": "a9cdf8a9ce300c1718342f24a948183a656354a29f59b714e56b279079ce29e0"
+  }
+}
