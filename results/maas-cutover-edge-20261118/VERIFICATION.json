@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-18",
+  "maas_revision": "aeca549",
+  "negativeAuthHttp": 401,
+  "old_history_gate": {
+    "new_upload_http": 503,
+    "cancel_http": 503,
+    "new_task_http": 503,
+    "same_key_replay_http": 200,
+    "same_location": true,
+    "unlisted_path_http": 404
+  },
+  "forward_retry": {
+    "wrong_store_http": 409,
+    "original_replay_http": 200,
+    "same_task_id": true
+  },
+  "reverse_retry": {
+    "wrong_store_http": 409,
+    "original_replay_http": 200,
+    "same_task_id": true
+  },
+  "status": "passed",
+  "actual_downstream_container": true,
+  "source_and_target_nginx_validated": true,
+  "async_tasks": 4,
+  "document_pages": 3,
+  "images": 1,
+  "unique_receipts": 4,
+  "unknown": 0,
+  "old_and_new_history_bytes_and_receipts_unchanged": true,
+  "image_ocr_after_rollback": true,
+  "cleanup": {
+    "downstream_fixture_removed": true,
+    "trial_containers_removed": true,
+    "test_key_revoked": true,
+    "prior_container_ids_and_start_times_unchanged": true
+  }
+}
