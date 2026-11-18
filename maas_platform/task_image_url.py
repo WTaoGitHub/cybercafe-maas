@@ -6,6 +6,7 @@ import psycopg
 from .errors import ServiceError
 from .image_fetch import PublicImageFetcher, image_url
 from .consumer_ocr import validate_image
+from .task_cutover import existing_submission
 
 MAX_GLOBAL_DOWNLOADS = 4
 MAX_PROJECT_DOWNLOADS = 2
@@ -47,10 +48,8 @@ def submit_url(service, identity, body, idem, model, inp, params):
     digest=fingerprint(body.model_dump())
     def preflight():
         with service.db.transaction() as conn:
-            old=conn.execute('SELECT * FROM tasks WHERE project=%s AND idempotency_key=%s',(identity.project,idem)).fetchone()
+            old=existing_submission(conn,identity.project,body.model,idem,digest)
             if old:
-                if old['request_hash']!=digest:
-                    raise ServiceError('IDEMPOTENCY_CONFLICT','Key already used for different content',409)
                 return service.public(old),False
             revision=conn.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1').fetchone()['capacity_policy_hash']
             service.check_queue(conn, identity.project, body.model, revision)

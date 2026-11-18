@@ -11,6 +11,7 @@ from .artifact_gc import ArtifactGC
 from .metering import UsageType, select_usage
 from .capacity_admission import Admission, configuration, queue_counts, read_budget, unavailable
 from .quarantine import blocks, unresolved
+from .task_cutover import existing_submission
 
 ACTIVE = ('QUEUED', 'RETRY_WAIT', 'RUNNING', 'CANCEL_REQUESTED')
 
@@ -103,15 +104,13 @@ class TaskService:
 
     def _accept(self, identity, body, idem, model, inp, params, art_id, inline):
         request_hash = fingerprint(body.model_dump())
-        self.store.ensure_space()
         with lifecycle_lock(self.store) if inline is not None else nullcontext():
             with self.db.transaction() as c:
                 revision = c.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1 FOR UPDATE').fetchone()['capacity_policy_hash']
-                old = c.execute('SELECT * FROM tasks WHERE project=%s AND idempotency_key=%s', (identity.project, idem)).fetchone()
+                old = existing_submission(c, identity.project, body.model, idem, request_hash)
                 if old:
-                    if old['request_hash'] != request_hash:
-                        raise ServiceError('IDEMPOTENCY_CONFLICT', 'Key already used for different content', 409)
                     return self.public(old), False
+                self.store.ensure_space()
                 self.check_queue(c, identity.project, body.model, revision)
                 if inline is not None:
                     raw, media = inline
