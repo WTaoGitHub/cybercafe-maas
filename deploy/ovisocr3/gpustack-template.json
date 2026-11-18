@@ -1,0 +1,54 @@
+{
+  "note": "Replace registry digest, cluster and owner placeholders with verified values. Keep worker_selector empty and gpu_selector null so GPUStack chooses placement. Prepare with zero replicas; set one replica after NFS and registry publication checks.",
+  "backend": {
+    "backend_name": "OvisOCR3-vLLM-custom",
+    "default_version": "0.22.1-guard-r1",
+    "health_check_path": "/health",
+    "version_configs": {
+      "0.22.1-guard-r1": {
+        "image_name": "<REGISTRY_AUTHORITY>/maas/ovisocr3-vllm@sha256:34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20",
+        "custom_framework": "cuda",
+        "entrypoint": "python3 /opt/maas/ovisocr3_entrypoint.py",
+        "run_command": "{{model_path}} --served-model-name {{model_name}} --host 0.0.0.0 --port {{port}} --dtype bfloat16 --max-model-len 16384 --max-num-batched-tokens 4096 --max-num-seqs 1 --gpu-memory-utilization 0.50 --enforce-eager --gdn-prefill-backend triton --limit-mm-per-prompt '{\"image\":1,\"video\":0}' --mm-processor-kwargs '{\"images_kwargs\":{\"min_pixels\":200704,\"max_pixels\":2073600}}' --default-chat-template-kwargs '{\"enable_thinking\":false}'"
+      }
+    }
+  },
+  "model": {
+    "name": "ovisocr3",
+    "description": "OvisOCR3 5b252386, BF16, read-only NFS weights, automatic GPUStack placement",
+    "source": "local_path",
+    "local_path": "/srv/maas/models/ovisocr3-5b252386",
+    "backend": "OvisOCR3-vLLM-custom",
+    "backend_version": "0.22.1-guard-r1",
+    "cluster_id": "<VERIFIED_CLUSTER_ID_INTEGER>",
+    "owner_principal_id": "<VERIFIED_OWNER_ID_INTEGER>",
+    "replicas": 0,
+    "restart_on_error": false,
+    "worker_selector": {},
+    "gpu_selector": null,
+    "placement_strategy": "spread",
+    "categories": ["llm"],
+    "cpu_offloading": false,
+    "distributed_inference_across_workers": false,
+    "enable_model_route": false,
+    "generic_proxy": false,
+    "access_policy": "allowed_principals",
+    "env": {
+      "HF_HUB_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1",
+      "HF_HOME": "/tmp/ovisocr3-cache/hf",
+      "VLLM_CACHE_ROOT": "/tmp/ovisocr3-cache/vllm",
+      "TRITON_CACHE_DIR": "/tmp/ovisocr3-cache/triton",
+      "OMP_NUM_THREADS": "4",
+      "TOKENIZERS_PARALLELISM": "false",
+      "GPUSTACK_MODEL_VRAM_CLAIM": "8589934592",
+      "GPUSTACK_MODEL_RUNTIME_SHM_SIZE_GIB": "4"
+    }
+  },
+  "runtime_limits": {
+    "memory_bytes": 17179869184,
+    "cpu_cores": 4,
+    "swap_bytes": 0,
+    "shm_bytes": 4294967296
+  }
+}

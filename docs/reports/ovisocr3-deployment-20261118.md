@@ -1,8 +1,10 @@
 # OvisOCR3 部署调研
 
-2026-11-18 · [E10 / Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11) · **调研完成；未部署、安装依赖或运行模型。**
+2026-11-18 · [E10 / Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11) · **部署前调研归档；实际部署记录见下方。**
 
-## 结论
+> 后续已按用户要求在当前测试环境完成部署：权重先发布NFS、引擎先进入私有Registry，worker/GPU由GPUStack自动选择，1/1 Ready及三类真实图片调用通过。见[实际部署、故障恢复及清理记录](../../results/ovisocr3/20261118-deploy/REPORT.md)。下文保留部署前的调研基线与候选建议。
+
+## 部署前建议
 
 建议采用 **固定 OvisOCR3 仓库版本＋独立 vLLM 0.22.1 镜像＋单 GPU 单副本**。先验证单页结构化解析与指定字段抽取，再由 GPUStack 管理运行实例，最后接入已有 MaaS 统一任务接口。OvisOCR3 的整页模式不要求另加 Paddle/PaddleX 版面检测模型；跨页表格递归重建则有额外的渲染和编排成本，单独验收。
 

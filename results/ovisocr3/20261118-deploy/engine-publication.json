@@ -1,0 +1,17 @@
+{
+  "status": "published",
+  "repository": "maas/ovisocr3-vllm",
+  "tag": "0.22.1-guard-r1",
+  "index_digest": "sha256:99884135cefbb78864ae0902c87e2da4fbef0744842317cbc3444cac4715fa7d",
+  "manifest_digest": "sha256:34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20",
+  "config_digest": "sha256:17d04c74b424d324e9d1144c8bc85e073d79a7946c30561b174f333c874bc5ab",
+  "parent_manifest_digest": "sha256:55c9bcee9fc66644b139fddae8a7a03e4c0c8a25ab5c64b0ce614554a8abf5d5",
+  "compressed_layer_bytes": 9223576034,
+  "layers": 33,
+  "source_sha256": {
+    "Dockerfile": "8b3c6e918f3743239f9a340b1079f7f6ac396929eb7ccaa91ca6a865038000ec",
+    "entrypoint.py": "cb3ff81f4b4220accdd43b11fcce3467d74cc5b8e705b3e110f2f6c74826f914",
+    "resource_guard.py": "275951bc00c8493b8c29100e5cdd4610a9226ea3e3163b722a34b2092859c2f8"
+  },
+  "registry_blobs_verified": true
+}

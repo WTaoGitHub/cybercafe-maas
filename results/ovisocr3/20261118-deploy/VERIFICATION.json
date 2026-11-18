@@ -1,0 +1,478 @@
+{
+  "scope": "Requested model deployment retained in the current test environment; no MaaS adapter or business-task fixture created",
+  "deployment": {
+    "unrelated_model_specs_unchanged": true,
+    "observed_at_utc": "2026-11-18T12:05:12.398741+00:00",
+    "model": {
+      "id": 14,
+      "name": "ovisocr3",
+      "replicas": 1,
+      "ready_replicas": 1,
+      "source": "local_path",
+      "local_path": "/srv/maas/models/ovisocr3-5b252386",
+      "worker_selector": {},
+      "gpu_selector": null,
+      "restart_on_error": false,
+      "backend": "OvisOCR3-vLLM-custom",
+      "backend_version": "0.22.1-guard-r1"
+    },
+    "instance": {
+      "id": 199,
+      "model_id": 14,
+      "worker_id": 7,
+      "state": "running",
+      "gpu_indexes": [
+        0
+      ],
+      "computed_resource_claim": {
+        "is_unified_memory": false,
+        "offload_layers": null,
+        "total_layers": null,
+        "ram": 2147483648,
+        "vram": {
+          "0": 8589934592
+        },
+        "tensor_split": null,
+        "vram_utilization": null
+      }
+    },
+    "route": {
+      "id": 12,
+      "name": "ovisocr3",
+      "target_model_id": 14,
+      "access_policy": "allowed_principals",
+      "additional_principals": 0
+    },
+    "route_access": {
+      "access_policy": "allowed_principals",
+      "additional_principals": 0
+    },
+    "other_models": [
+      {
+        "id": 13,
+        "name": "unlimited-ocr-2-nfs",
+        "replicas": 1,
+        "ready_replicas": 1
+      },
+      {
+        "id": 1,
+        "name": "maas-ocr",
+        "replicas": 2,
+        "ready_replicas": 2
+      }
+    ],
+    "workers": [
+      {
+        "id": 8,
+        "state": "ready"
+      },
+      {
+        "id": 7,
+        "state": "ready"
+      },
+      {
+        "id": 6,
+        "state": "ready"
+      },
+      {
+        "id": 5,
+        "state": "not_ready"
+      },
+      {
+        "id": 4,
+        "state": "not_ready"
+      }
+    ],
+    "active_instances": [
+      {
+        "id": 199,
+        "name": "ovisocr3-ywtcl",
+        "model_id": 14,
+        "worker_id": 7,
+        "state": "running"
+      },
+      {
+        "id": 198,
+        "name": "maas-ocr-c9qgd",
+        "model_id": 1,
+        "worker_id": 7,
+        "state": "running"
+      },
+      {
+        "id": 197,
+        "name": "maas-ocr-0301i",
+        "model_id": 1,
+        "worker_id": 6,
+        "state": "running"
+      },
+      {
+        "id": 195,
+        "name": "unlimited-ocr-2-nfs-e4pmh",
+        "model_id": 13,
+        "worker_id": 8,
+        "state": "running"
+      }
+    ]
+  },
+  "runtime_software": {
+    "packages": {
+      "vllm": "0.22.1",
+      "torch": "2.11.0+cu130",
+      "transformers": "5.10.2",
+      "flashinfer-python": "0.6.11.post2"
+    },
+    "copied_sources_verified": true,
+    "pip_check_exit": 1,
+    "pip_check_output": "pygobject 3.42.1 requires pycairo, which is not installed.",
+    "core_imports": {
+      "torch_import": true,
+      "transformers_import": true,
+      "vllm_import": true,
+      "qwen3_5_architecture_registered": true
+    },
+    "core_metadata_verified": true,
+    "pip_check_exception": "Unchanged upstream GTK/PyGObject dependency only; no inference dependencies changed. Full pip check is not clean."
+  },
+  "base_image_publication": {
+    "status": "mirrored",
+    "source": "vllm/vllm-openai:v0.22.1",
+    "transport": "daocloud mirror; pinned upstream manifest preserved",
+    "repository": "maas/vllm-openai",
+    "tag": "0.22.1-amd64-55c9bcee",
+    "manifest_digest": "sha256:55c9bcee9fc66644b139fddae8a7a03e4c0c8a25ab5c64b0ce614554a8abf5d5",
+    "config_digest": "sha256:0204ba447a71c42f300e5218e1fe236f539f8b44da74198132366c3baec5887b",
+    "compressed_layer_bytes": 9223574602,
+    "layers": 31,
+    "cuda_version": "13.0.2",
+    "layers_verified_in_registry": true
+  },
+  "model_package": {
+    "repository": "ATH-MaaS/OvisOCR3",
+    "revision": "5b252386ba615bd464a5a26597560eaba87dae5c",
+    "files": 37,
+    "bytes": 1732391626
+  },
+  "worker_proofs": {
+    "6": {
+      "mount": {
+        "mount_unit": "srv-maas-models-ovisocr3\\x2d5b252386.mount",
+        "model_path": "/srv/maas/models/ovisocr3-5b252386",
+        "worker_container_id_preserved": true,
+        "nfs": {
+          "type": "nfs4",
+          "readonly": true,
+          "source_sha256": "5937d46ea171a743000feceb96429fcd7dd5896c04d4f296677cbd2b4266334c"
+        },
+        "existing_ocr_containers_unchanged": true,
+        "vm_restarted": false,
+        "boot_mount_verified": false
+      },
+      "recovery": {
+        "worker_id": 6,
+        "same_gpu_and_worker_id": true,
+        "new_startup_session": true,
+        "boot_id_unchanged": true,
+        "new_worker_container": true,
+        "existing_inference_containers_still_running": true
+      },
+      "inference_containers": [
+        {
+          "name": "maas-ocr-0301i-run-0",
+          "image_id": "sha256:b46b348685e9c49c2b8b44110a8f7858c02afc3c32bf149037f7f200a84f4a6b",
+          "running": true
+        }
+      ],
+      "vm_boot_id_sha256": "be27cc7c23072c448160b632aa70bfc662607918a81dfc40b48e21a67956147a"
+    },
+    "7": {
+      "mount": {
+        "mount_unit": "srv-maas-models-ovisocr3\\x2d5b252386.mount",
+        "model_path": "/srv/maas/models/ovisocr3-5b252386",
+        "worker_container_id_preserved": true,
+        "nfs": {
+          "type": "nfs4",
+          "readonly": true,
+          "source_sha256": "5937d46ea171a743000feceb96429fcd7dd5896c04d4f296677cbd2b4266334c"
+        },
+        "existing_ocr_containers_unchanged": true,
+        "vm_restarted": false,
+        "boot_mount_verified": false
+      },
+      "recovery": {
+        "worker_id": 7,
+        "same_gpu_and_worker_id": true,
+        "new_startup_session": true,
+        "boot_id_unchanged": true,
+        "new_worker_container": true,
+        "existing_inference_containers_still_running": true
+      },
+      "runtime": {
+        "container": "ovisocr3-ywtcl-run-0",
+        "container_id": "4e7325729e05",
+        "image_id": "sha256:17d04c74b424d324e9d1144c8bc85e073d79a7946c30561b174f333c874bc5ab",
+        "model_path": "/srv/maas/models/ovisocr3-5b252386",
+        "nfs_readonly_verified": true,
+        "nfs_source_sha256": "5937d46ea171a743000feceb96429fcd7dd5896c04d4f296677cbd2b4266334c",
+        "config_sha256_verified": true,
+        "weight_bytes_verified": 1706030528,
+        "memory_bytes": 17179869184,
+        "cpu_max": "400000 100000",
+        "swap_bytes": 0,
+        "shm_bytes": 4294967296
+      },
+      "engine_health": {
+        "health_http": 200,
+        "models_http": 200,
+        "pid1_uses_nfs_model_path": true
+      },
+      "memory_sampling": {
+        "samples": 276,
+        "interval_seconds": 1,
+        "covers_initialization": false,
+        "model_gpu_peak_mib": 8076,
+        "board_gpu_peak_mib": 8395,
+        "cgroup_memory_peak_bytes": 5898330112,
+        "sampling_errors": 0,
+        "model_gpu_last_mib": 8076,
+        "board_gpu_last_mib": 8395
+      },
+      "inference_containers": [
+        {
+          "name": "ovisocr3-ywtcl-run-0",
+          "image_id": "sha256:17d04c74b424d324e9d1144c8bc85e073d79a7946c30561b174f333c874bc5ab",
+          "running": true
+        },
+        {
+          "name": "maas-ocr-c9qgd-run-0",
+          "image_id": "sha256:b46b348685e9c49c2b8b44110a8f7858c02afc3c32bf149037f7f200a84f4a6b",
+          "running": true
+        }
+      ],
+      "vm_boot_id_sha256": "bbd55c433566d94d7fff6cac36c0fc6d4141e91ecb06c33d285ef330ff9cfdb1"
+    }
+  },
+  "weight_and_image_verification": {
+    "weight_full_sha256": "aa2311c6b22b07cf3afe9aac6e8bcb02a2b19dd8671b2a91d0b144071577e600",
+    "weight_bytes": 1706030528,
+    "private_registry_manifest_verified": true,
+    "offline_model_loading": true
+  },
+  "cgroup_lifetime_memory": {
+    "cgroup_lifetime_memory_peak_bytes": 6142025728,
+    "memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    }
+  },
+  "bootstrap_idempotence": {
+    "worker6": "UNCHANGED",
+    "worker7": "UNCHANGED"
+  },
+  "inference_probes": [
+    {
+      "task": "plain",
+      "http_status": 200,
+      "gateway": true,
+      "elapsed_seconds": 3.015,
+      "finish_reason": "stop",
+      "output_characters": 207,
+      "sample_sha256": "033381386bbbe4ac701f3792be523dbddaa0be3bf1d8570ac1bfc18d91290516",
+      "output_sha256": "8c5cc2c8603d712b5d13d6cca87e29059b6a20eb34101e26f96eb24842e539de",
+      "usage": {
+        "prompt_tokens": 1226,
+        "total_tokens": 1293,
+        "completion_tokens": 67,
+        "prompt_tokens_details": null
+      },
+      "expected_terms": {
+        "Quarterly Service Report": true,
+        "QSR-2026-0410": true,
+        "128": true,
+        "12 minutes": true
+      }
+    },
+    {
+      "task": "fields",
+      "http_status": 200,
+      "gateway": true,
+      "elapsed_seconds": 0.742,
+      "finish_reason": "stop",
+      "output_characters": 109,
+      "sample_sha256": "033381386bbbe4ac701f3792be523dbddaa0be3bf1d8570ac1bfc18d91290516",
+      "output_sha256": "1f813f37a573b5f66207c306b75465d55525bbaed23307d0e2c94de36029768c",
+      "usage": {
+        "prompt_tokens": 1195,
+        "total_tokens": 1232,
+        "completion_tokens": 37,
+        "prompt_tokens_details": null
+      },
+      "parsed_fields": {
+        "Report ID": "QSR-2026-0410",
+        "Ticket count": "128",
+        "Average resolution time": "12 minutes",
+        "Status": "Complete"
+      }
+    },
+    {
+      "task": "structured",
+      "http_status": 200,
+      "gateway": true,
+      "elapsed_seconds": 3.15,
+      "finish_reason": "stop",
+      "output_characters": 770,
+      "sample_sha256": "033381386bbbe4ac701f3792be523dbddaa0be3bf1d8570ac1bfc18d91290516",
+      "output_sha256": "f3e17aa5dc3945c2e3777a3798133a5d42007512807bb960667e3bf3c034b18d",
+      "usage": {
+        "prompt_tokens": 1432,
+        "total_tokens": 1701,
+        "completion_tokens": 269,
+        "prompt_tokens_details": null
+      },
+      "elements": 3,
+      "categories": [
+        "paragraph_title",
+        "table",
+        "text"
+      ],
+      "bbox_schema_verified": true
+    }
+  ],
+  "authentication": {
+    "unauthenticated_inference_http": 401,
+    "rejected": true
+  },
+  "pp_ocrv4_regression": {
+    "model": "maas-ocr",
+    "http_status": 200,
+    "elapsed_seconds": 0.638,
+    "finish_reason": "stop",
+    "expected_terms": {
+      "Quarterly Service Report": true,
+      "QSR-2026-0410": true,
+      "128": true,
+      "12 minutes": true
+    },
+    "sample_sha256": "033381386bbbe4ac701f3792be523dbddaa0be3bf1d8570ac1bfc18d91290516"
+  },
+  "runtime_initialization_log_evidence": {
+    "filesystem": "NFS4",
+    "checkpoint_gib_reported": 1.59,
+    "model_loading_gpu_gib_reported": 1.72,
+    "model_loading_seconds_reported": 10.335482,
+    "available_kv_cache_gib_reported": 5.6,
+    "profile_cache_warmup_seconds_reported": 39.07,
+    "source": "observed vLLM engine logs; raw logs not published"
+  },
+  "cleanup": {
+    "controller_assets": {
+      "abandoned_uploads_removed": 6,
+      "abandoned_upload_bytes_removed": 962955559,
+      "controller_build_cache_records_removed": 36,
+      "controller_image_tag_removed": true,
+      "temporary_check_container_absent": true,
+      "temporary_operator_grant_copies_removed": true,
+      "reverse_forward_port_released": true,
+      "registry_images_retained": true,
+      "nfs_model_retained": true
+    },
+    "workers": {
+      "6": {
+        "worker_temp_directory_removed": true,
+        "files_removed": 21,
+        "temporary_jobs_stopped": true,
+        "temporary_forward_port_released": true,
+        "model_and_nfs_mounts_retained": true
+      },
+      "7": {
+        "worker_temp_directory_removed": true,
+        "files_removed": 27,
+        "temporary_jobs_stopped": true,
+        "temporary_forward_port_released": true,
+        "model_and_nfs_mounts_retained": true
+      }
+    },
+    "controller_temp_directory": {
+      "controller_temp_directory_removed": true,
+      "files_removed": 52,
+      "private_registry_manifests_and_all_layers_verified_after_cleanup": true,
+      "published_nfs_files": 37,
+      "requested_deployment_retained": true
+    },
+    "local_temp_directory": {
+      "removed": true,
+      "files_removed": 112,
+      "path_verified_absent": true
+    },
+    "database_test_fixtures": "not created; actual deployment, startup-session and normal inference audit records retained",
+    "reusable_assets": [
+      "deploy/ovisocr3",
+      "tests/ovisocr3"
+    ]
+  },
+  "limitations": [
+    "one synthetic English page only; no business accuracy benchmark",
+    "no sustained or concurrent mixed-load qualification",
+    "GPU sampling starts after initialization; sampled peak is not minimum VRAM",
+    "CPU inference, quantization, PDF/cross-page orchestration and MaaS adapter not validated",
+    "upstream pip check has the documented GTK/PyGObject missing-pycairo error",
+    "replacement model containers need resource caps applied again; restart_on_error is false",
+    "PP-OCRv4 image-contained marker incompatibility on standard NFS workers remains open as Issue #64",
+    "no VM reboot or model-mount boot verification performed"
+  ],
+  "issues": {
+    "deployment": "https://github.com/WTaoGitHub/cybercafe-maas/issues/11",
+    "pp_marker": "https://github.com/WTaoGitHub/cybercafe-maas/issues/64"
+  },
+  "final_environment": {
+    "observed_at_utc": "2026-11-18T12:21:39.522049+00:00",
+    "maas_task_status_counts": {
+      "FAILED": 1,
+      "SUCCEEDED": 48
+    },
+    "maas_unknown_tasks": 0,
+    "maas_health_http": 200
+  },
+  "final_engine_health": {
+    "engine_health_http": 200,
+    "serving_container_running": true
+  },
+  "issue_comments": {
+    "deployment": "https://github.com/WTaoGitHub/cybercafe-maas/issues/11#issuecomment-6978263432",
+    "pp_marker": "https://github.com/WTaoGitHub/cybercafe-maas/issues/64#issuecomment-6978264906"
+  },
+  "post_cleanup_management": {
+    "models": [
+      {
+        "id": 14,
+        "name": "ovisocr3",
+        "replicas": 1,
+        "ready_replicas": 1
+      },
+      {
+        "id": 1,
+        "name": "maas-ocr",
+        "replicas": 2,
+        "ready_replicas": 2
+      },
+      {
+        "id": 13,
+        "name": "unlimited-ocr-2-nfs",
+        "replicas": 1,
+        "ready_replicas": 1
+      }
+    ],
+    "worker_selector": {},
+    "gpu_selector": null,
+    "ready_worker_ids": [
+      8,
+      7,
+      6
+    ],
+    "route12_target_model14_verified": true,
+    "observed_at_utc": "2026-11-18T12:24:34.571384+00:00"
+  }
+}

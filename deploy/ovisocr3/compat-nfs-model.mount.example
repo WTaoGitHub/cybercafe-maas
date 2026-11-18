@@ -1,0 +1,15 @@
+[Unit]
+Description=Read-only OvisOCR3 NFS model directory
+Wants=network-online.target
+After=network-online.target
+Before=maas-worker-bootstrap.service
+
+[Mount]
+What=<VERIFIED_NFS_V4_ROOT_SERVER>:/ovisocr3-5b252386
+Where=/srv/maas/models/ovisocr3-5b252386
+Type=nfs4
+Options=ro,hard,proto=tcp,fg,retry=0,nosuid,nodev
+TimeoutSec=20
+
+[Install]
+WantedBy=multi-user.target
