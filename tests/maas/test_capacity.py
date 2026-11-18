@@ -94,6 +94,16 @@ def test_only_verified_routes_and_joint_gpu_layouts_add_capacity():
     assert reasons == {'arbitrary-model-1': 'route_unavailable', 'arbitrary-model-2': 'binding_unverified'}
 
 
+@pytest.mark.parametrize('peers', [None, [], [{'worker_id': 2, 'gpu_indexes': [0]}]])
+def test_delegated_metadata_without_subordinates_is_single_worker(peers):
+    raw, catalog, native = topology(1)
+    native[2][1]['distributed_servers'] = {'mode': 'delegated', 'download_model_files': True,
+                                          'subordinate_workers': peers}
+    policy = Policy.model_validate(raw)
+    candidates, _ = ready_candidates(policy, catalog_routes(policy, catalog), *native)
+    assert sorted(candidates['arbitrary-model-1']) == ([] if peers else [1])
+
+
 def test_native_read_rejects_incomplete_pages_and_filters_heartbeat_noise():
     _, _, native = topology(2)
 

@@ -95,10 +95,11 @@ def ready_candidates(policy, names, workers, models, instances, routes, targets)
         for key in keys:
             # Count other deployments and starting instances as potential co-tenants.
             occupants[key][by_model.get(instance['model_id'])] += 1
-        for peer in (instance.get('distributed_servers') or {}).get('subordinate_workers') or []:
+        peers = (instance.get('distributed_servers') or {}).get('subordinate_workers') or []
+        for peer in peers:
             for index in peer.get('gpu_indexes') or []:
                 occupants[peer.get('worker_id'), index][None] += 1
-        if len(keys) == 1 and not instance.get('distributed_servers') and instance['state'] == 'running':
+        if len(keys) == 1 and not peers and instance['state'] == 'running':
             placements[ident] = keys[0]
 
     candidates = {key: {} for key in policy.pools}
