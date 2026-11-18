@@ -1,0 +1,9 @@
+# Apply with compose.yaml to publish shadow capacity using the existing observer.
+services:
+  observer:
+    environment:
+      MAAS_CAPACITY_POLICY_FILE: /run/maas-capacity/policy.json
+      MAAS_CAPACITY_GPUSTACK_KEY_FILE: /run/maas-capacity/gpustack-key
+    volumes:
+      - ${MAAS_CAPACITY_POLICY_PATH:?set private capacity policy path}:/run/maas-capacity/policy.json:ro
+      - ${MAAS_CAPACITY_GPUSTACK_KEY_PATH:?set read-only GPUStack key path}:/run/maas-capacity/gpustack-key:ro
