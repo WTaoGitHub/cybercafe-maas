@@ -36,10 +36,13 @@ class Settings:
     cleanup_time_budget_ms: int = 100
     cleanup_interval_seconds: int = 5
     min_free_bytes: int = 2 * 1024 * 1024 * 1024
+    capacity_policy_file: Path | None = None
 
     @classmethod
     def from_env(cls):
         values = {}
+        if policy := os.getenv('MAAS_CAPACITY_POLICY_FILE'):
+            values['capacity_policy_file'] = Path(policy)
         integers = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
                     'max_running','max_project_running','lease_seconds','result_ttl_seconds',
                     'input_ttl_seconds','min_free_bytes','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size',

@@ -4,8 +4,11 @@ Only this ingress is covered. Native GPUStack/Playground/worker ports must be
 closed to customers at the network edge before claiming global maintenance.
 """
 import asyncio,json,uuid
+from threading import BoundedSemaphore
 import httpx
 from fastapi.responses import Response
+from starlette.concurrency import run_in_threadpool
+from .capacity_admission import Admission, unavailable
 from .errors import ServiceError
 
 
@@ -13,6 +16,7 @@ class SyncIngress:
     def __init__(self,service,client_factory=None):
         self.service=service
         self.client_factory=client_factory or httpx.AsyncClient
+        self.input_slots=BoundedSemaphore(getattr(service.settings, 'max_running', 1))
 
     def begin(self,who,name,runtime,probe=False):
         with self.service.db.transaction() as c:
@@ -20,18 +24,28 @@ class SyncIngress:
             self.service.expire_sync(c)
             if (maintenance['paused'] and not probe) or (probe and not maintenance['paused']):
                 raise ServiceError('MAINTENANCE_PAUSED','Inference admission is paused or probe window is closed',503)
-            if self.service.has_unknown(c):
-                raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks inference',503)
-            total=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) n").fetchone()['n']
-            own=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING' AND project=%s) + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND project=%s) n",(who.project,who.project)).fetchone()['n']
-            if total>=self.service.settings.max_running or own>=self.service.settings.max_project_running:
-                raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
-            token=uuid.uuid4().hex
-            c.execute("INSERT INTO sync_activity(token,project,model,state,deadline,is_probe) VALUES(%s,%s,%s,'DISPATCHING',now()+%s*interval '1 second',%s)",(token,who.project,name,runtime,probe))
-            return token
+            if not self.service.has_unknown(c):
+                revision = maintenance['capacity_policy_hash']
+                if revision:
+                    admission = Admission(c, self.service.settings, revision, include_preparing=False)
+                    if not admission.pool(name).get('total') or not admission.fresh(c):
+                        raise unavailable()
+                    allowed = admission.allows(name, who.project, asynchronous=False)
+                else:
+                    total=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) n").fetchone()['n']
+                    own=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING' AND project=%s) + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND project=%s) n",(who.project,who.project)).fetchone()['n']
+                    allowed = total < self.service.settings.max_running and own < self.service.settings.max_project_running
+                if not allowed:
+                    raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
+                token=uuid.uuid4().hex
+                c.execute("INSERT INTO sync_activity(token,project,model,state,deadline,is_probe) VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s)",(token,who.project,name,runtime,probe))
+                return token
+        raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks inference',503)
 
     def finish(self,token,confirmed,successful=False,metering=None):
         with self.service.db.transaction() as c:
+            if not confirmed:
+                c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             row=c.execute("UPDATE sync_activity SET state=%s,outcome=%s,finished_at=now(),updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING *",('COMPLETED' if confirmed else 'UNKNOWN','SUCCEEDED' if confirmed and successful else ('REJECTED' if confirmed else 'UNKNOWN'),token)).fetchone()
             if row and confirmed and successful and not row['is_probe']:
                 c.execute('INSERT INTO sync_usage_events(token,project,model) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING',(token,row['project'],row['model']))
@@ -48,14 +62,21 @@ class SyncIngress:
         self.service.auth.authorize(who,name,model)
         key=self.service.auth.key_for(who)
         runtime=min(model['max_runtime_s'],120)
-        token=self.begin(who,name,runtime+(10 if prepare_input else 0),probe)
+        if prepare_input and getattr(self.service.settings, 'capacity_policy_file', None):
+            if not self.input_slots.acquire(blocking=False):
+                raise ServiceError('SYNC_CAPACITY','Synchronous input preparation is full',429,True)
+            try:
+                body = await self.prepare(prepare_input)
+                token = await run_in_threadpool(self.begin, who, name, runtime, probe)
+            finally:
+                self.input_slots.release()
+            prepare_input = None
+        else:
+            token=await run_in_threadpool(self.begin,who,name,runtime+(10 if prepare_input else 0),probe)
         confirmed=True;successful=False;metering=None
         try:
             if prepare_input:
-                try:
-                    async with asyncio.timeout(10):body=await prepare_input()
-                except TimeoutError:
-                    raise ServiceError('IMAGE_FETCH_TIMEOUT','Input preparation exceeded its budget before inference',408) from None
+                body=await self.prepare(prepare_input)
             confirmed=False
             async with asyncio.timeout(runtime):
                 async with self.client_factory(trust_env=False,follow_redirects=False,timeout=httpx.Timeout(runtime,connect=min(5,runtime))) as client:
@@ -90,4 +111,12 @@ class SyncIngress:
         finally:
             # A crashed process may not reach this write. Its expired DISPATCHING
             # record becomes UNKNOWN on the next admission/status inspection.
-            self.finish(token,confirmed,successful,metering=metering)
+            await run_in_threadpool(self.finish,token,confirmed,successful,metering=metering)
+
+    @staticmethod
+    async def prepare(prepare_input):
+        try:
+            async with asyncio.timeout(10):
+                return await prepare_input()
+        except TimeoutError:
+            raise ServiceError('IMAGE_FETCH_TIMEOUT','Input preparation exceeded its budget before inference',408) from None

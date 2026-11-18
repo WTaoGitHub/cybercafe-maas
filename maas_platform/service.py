@@ -9,6 +9,7 @@ from .errors import ServiceError
 from .adapters import adapter_for
 from .artifact_gc import ArtifactGC
 from .metering import UsageType, select_usage
+from .capacity_admission import Admission, configuration, queue_counts, read_budget, unavailable
 
 ACTIVE = ('QUEUED', 'RETRY_WAIT', 'RUNNING', 'CANCEL_REQUESTED')
 
@@ -104,16 +105,13 @@ class TaskService:
         self.store.ensure_space()
         with lifecycle_lock(self.store) if inline is not None else nullcontext():
             with self.db.transaction() as c:
-                c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+                revision = c.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1 FOR UPDATE').fetchone()['capacity_policy_hash']
                 old = c.execute('SELECT * FROM tasks WHERE project=%s AND idempotency_key=%s', (identity.project, idem)).fetchone()
                 if old:
                     if old['request_hash'] != request_hash:
                         raise ServiceError('IDEMPOTENCY_CONFLICT', 'Key already used for different content', 409)
                     return self.public(old), False
-                total = c.execute("SELECT count(*) AS n FROM tasks WHERE state IN ('QUEUED','RETRY_WAIT')").fetchone()['n']
-                own = c.execute("SELECT count(*) AS n FROM tasks WHERE project=%s AND state IN ('QUEUED','RETRY_WAIT')", (identity.project,)).fetchone()['n']
-                if total >= self.settings.max_queued or own >= self.settings.max_project_queued:
-                    raise ServiceError('QUEUE_FULL', 'Task queue capacity reached', 429, True)
+                self.check_queue(c, identity.project, body.model, revision)
                 if inline is not None:
                     raw, media = inline
                     self.check_storage(c, identity.project, len(raw))
@@ -134,6 +132,22 @@ class TaskService:
                     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'QUEUED',%s,now()+%s*interval '1 second') RETURNING *""",
                     (ident, identity.project, identity.credential_id, idem, request_hash, body.model, model['revision'], fingerprint(model), Jsonb(inp), Jsonb(params), art_id, body.max_attempts, body.timeout_seconds)).fetchone()
                 return self.public(row), True
+
+    def check_queue(self, c, project, model, revision):
+        if revision:
+            policy, aliases, local_revision = configuration(self.settings)
+            key = aliases.get(model)
+            if local_revision != revision or key is None:
+                raise unavailable()
+            pool = policy.pools[key]
+            counts = queue_counts(c, project, list(pool.routes))
+            full = counts['pool'] >= pool.queue_limit
+        else:
+            counts = c.execute("SELECT count(*) total,count(*) FILTER(WHERE project=%s) own "
+                               "FROM tasks WHERE state IN ('QUEUED','RETRY_WAIT')", (project,)).fetchone()
+            full = False
+        if full or counts['total'] >= self.settings.max_queued or counts['own'] >= self.settings.max_project_queued:
+            raise ServiceError('QUEUE_FULL', 'Task queue capacity reached', 429, True)
 
     def usage(self, identity, ident, *, task=False, usage_type: UsageType | None = None):
         with self.db.transaction() as c:
@@ -201,15 +215,35 @@ class TaskService:
     def claim(self):
         with self.db.transaction() as c:
             maintenance = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
+            revision = maintenance['capacity_policy_hash']
+            if revision:
+                self.expire_queued(c)
             if maintenance['paused']: return None
             self.expire_sync(c)
             if self.has_unknown(c): return None
-            c.execute("UPDATE tasks SET state='FAILED',error_code='DEADLINE_EXCEEDED',updated_at=now() WHERE state IN ('QUEUED','RETRY_WAIT') AND deadline<=now()")
-            running = c.execute("SELECT (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') AS n").fetchone()['n']
-            if running >= self.settings.max_running: return None
-            row = c.execute("""SELECT * FROM tasks t WHERE state IN ('QUEUED','RETRY_WAIT') AND next_run<=now() AND deadline>now()
-                AND (SELECT count(*) FROM tasks r WHERE r.project=t.project AND r.state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity s WHERE s.project=t.project AND s.state='DISPATCHING') < %s
-                ORDER BY created_at FOR UPDATE OF t SKIP LOCKED LIMIT 1""", (self.settings.max_project_running,)).fetchone()
+            if revision:
+                admission = Admission(c, self.settings, revision, include_preparing=True)
+                if not admission.budget:
+                    return None
+                ready = "state IN ('QUEUED','RETRY_WAIT') AND next_run<=clock_timestamp() AND deadline>clock_timestamp()"
+                pairs = c.execute(f'SELECT DISTINCT project, model FROM tasks WHERE {ready}').fetchall()
+                eligible = [(r['project'], r['model']) for r in pairs
+                            if admission.allows(r['model'], r['project'], asynchronous=True)]
+                if not eligible:
+                    return None
+                projects, models = zip(*eligible)
+                row = c.execute(f'''SELECT * FROM tasks WHERE {ready} AND (project,model) IN
+                    (SELECT * FROM unnest(%s::text[],%s::text[]))
+                    ORDER BY created_at,id FOR UPDATE SKIP LOCKED LIMIT 1''', (list(projects), list(models))).fetchone()
+                if not admission.fresh(c):
+                    return None
+            else:
+                self.expire_queued(c)
+                running = c.execute("SELECT (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') AS n").fetchone()['n']
+                if running >= self.settings.max_running: return None
+                row = c.execute("""SELECT * FROM tasks t WHERE state IN ('QUEUED','RETRY_WAIT') AND next_run<=now() AND deadline>now()
+                    AND (SELECT count(*) FROM tasks r WHERE r.project=t.project AND r.state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity s WHERE s.project=t.project AND s.state='DISPATCHING') < %s
+                    ORDER BY created_at FOR UPDATE OF t SKIP LOCKED LIMIT 1""", (self.settings.max_project_running,)).fetchone()
             if not row: return None
             token = uuid.uuid4().hex
             row = c.execute("UPDATE tasks SET state='RUNNING',attempts=attempts+1,token=%s,lease_until=now()+%s*interval '1 second',updated_at=now() WHERE id=%s RETURNING *", (token, self.settings.lease_seconds, row['id'])).fetchone()
@@ -225,10 +259,34 @@ class TaskService:
             self.expire_sync(c)
             if self.has_unknown(c):
                 raise ServiceError('BACKEND_QUARANTINED', 'Unresolved backend activity blocks dispatch', 503)
-            row = c.execute("SELECT id FROM tasks WHERE id=%s AND token=%s AND state='RUNNING' AND lease_until>now() AND deadline>now() FOR UPDATE", (task['id'], task['token'])).fetchone()
+            row = c.execute("""SELECT *, deadline>clock_timestamp() timely FROM tasks WHERE id=%s AND token=%s
+                AND state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until>clock_timestamp() FOR UPDATE""", (task['id'], task['token'])).fetchone()
             if not row:
                 raise ServiceError('INTERRUPTED', 'Attempt is no longer eligible for dispatch')
-            c.execute("INSERT INTO backend_activity(token,task_id,state) VALUES(%s,%s,'DISPATCHING')", (task['token'],task['id']))
+            revision = maintenance['capacity_policy_hash']
+            allowed = row['timely'] and row['state'] == 'RUNNING'
+            if revision and allowed:
+                try:
+                    admission = Admission(c, self.settings, revision, include_preparing=False)
+                    allowed = admission.allows(row['model'], row['project'], asynchronous=True) and admission.fresh(c)
+                except ServiceError as exc:
+                    if exc.code != 'CAPACITY_UNAVAILABLE':
+                        raise
+                    allowed = False
+            if allowed:
+                inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state)
+                    SELECT token,id,'DISPATCHING' FROM tasks WHERE id=%s
+                    AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''', (task['id'],)).rowcount
+                if inserted:
+                    return
+            if not revision or not self._defer(c, row, 'CAPACITY_REDUCED'):
+                raise ServiceError('INTERRUPTED', 'Attempt is no longer eligible for dispatch')
+        raise ServiceError('DISPATCH_DEFERRED', 'Unsent dispatch has been deferred', 503, True)
+
+    @staticmethod
+    def expire_queued(c):
+        c.execute("UPDATE tasks SET state='FAILED',error_code='DEADLINE_EXCEEDED',updated_at=now() "
+                  "WHERE state IN ('QUEUED','RETRY_WAIT') AND deadline<=clock_timestamp()")
 
     def complete_backend(self, task):
         # Only a fully received successful inference response proves remote completion.
@@ -242,13 +300,39 @@ class TaskService:
         with self.db.transaction() as c:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             row = c.execute("SELECT * FROM tasks WHERE id=%s AND token=%s AND state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until>now() FOR UPDATE", (task['id'],task['token'])).fetchone()
-            if not row or c.execute('SELECT 1 FROM backend_activity WHERE token=%s', (task['token'],)).fetchone():
-                return False
-            state = 'CANCELLED' if row['state']=='CANCEL_REQUESTED' else ('FAILED' if row['deadline']<=datetime.now(timezone.utc) else 'QUEUED')
-            code = 'DEADLINE_EXCEEDED' if state=='FAILED' else None
-            c.execute("UPDATE task_attempts SET state='DEFERRED',error_code=%s,ended_at=now() WHERE token=%s", (reason,task['token']))
-            c.execute('UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now(),updated_at=now() WHERE id=%s', (state,code,row['id']))
-            return True
+            return bool(row and self._defer(c, row, reason))
+
+    @staticmethod
+    def _defer(c, row, reason):
+        if c.execute('SELECT 1 FROM backend_activity WHERE token=%s', (row['token'],)).fetchone():
+            return False
+        expired = c.execute('SELECT %s<=clock_timestamp() expired', (row['deadline'],)).fetchone()['expired']
+        state = 'CANCELLED' if row['state']=='CANCEL_REQUESTED' else ('FAILED' if expired else 'QUEUED')
+        code = 'DEADLINE_EXCEEDED' if state=='FAILED' else None
+        c.execute("UPDATE task_attempts SET state='DEFERRED',error_code=%s,ended_at=now() WHERE token=%s", (reason,row['token']))
+        delay = 1 if reason == 'CAPACITY_REDUCED' else 0
+        c.execute("UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state,code,delay,row['id']))
+        return True
+
+    def set_capacity_mode(self, enforce):
+        with self.db.transaction() as c:
+            row = c.execute('SELECT paused FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
+            if not row['paused'] or self.has_unknown(c) or c.execute('''SELECT 1 FROM tasks
+                WHERE state IN ('RUNNING','CANCEL_REQUESTED') UNION ALL SELECT 1 FROM sync_activity
+                WHERE state='DISPATCHING' LIMIT 1''').fetchone():
+                raise ServiceError('MAINTENANCE_REQUIRED', 'Pause and drain inference before switching capacity mode', 409)
+            revision = None
+            if enforce:
+                policy, _, revision = configuration(self.settings)
+                budget = read_budget(c, revision)
+                if not all(pool.gateway_verified for pool in policy.pools.values()) or not budget or not budget['global']['total']:
+                    raise unavailable()
+            mode = 'enforce' if enforce else 'static'
+            result = c.execute('''UPDATE maintenance SET capacity_policy_hash=%s, generation=generation+1,
+                updated_at=now() WHERE id=1 RETURNING generation''', (revision,)).fetchone()
+            c.execute("INSERT INTO maintenance_events(generation,action,reason) VALUES(%s,%s,%s)",
+                      (result['generation'], 'capacity-'+mode, 'Capacity admission mode changed'))
+            return mode
 
     def resolve_backend(self, token, reason):
         if len(reason.strip()) < 10:
@@ -346,7 +430,7 @@ class TaskService:
 
     @staticmethod
     def expire_sync(c):
-        c.execute("UPDATE sync_activity SET state='UNKNOWN',updated_at=now() WHERE state='DISPATCHING' AND deadline<=now()")
+        c.execute("UPDATE sync_activity SET state='UNKNOWN',updated_at=now() WHERE state='DISPATCHING' AND deadline<=clock_timestamp()")
 
     @staticmethod
     def has_unknown(c):

@@ -1,0 +1,12 @@
+# Load policy in the API and executors. The shared database mode stays static until explicitly switched.
+services:
+  api:
+    environment:
+      MAAS_CAPACITY_POLICY_FILE: /run/maas-capacity/policy.json
+    volumes:
+      - ${MAAS_CAPACITY_POLICY_PATH:?set private capacity policy path}:/run/maas-capacity/policy.json:ro
+  executor:
+    environment:
+      MAAS_CAPACITY_POLICY_FILE: /run/maas-capacity/policy.json
+    volumes:
+      - ${MAAS_CAPACITY_POLICY_PATH:?set private capacity policy path}:/run/maas-capacity/policy.json:ro

@@ -65,7 +65,7 @@ class Worker:
         except ServiceError as exc:
             if exc.code == 'MAINTENANCE_PAUSED':
                 self.service.defer_dispatch(task)
-            else:
+            elif exc.code != 'DISPATCH_DEFERRED':
                 self.service.finish(task, error=exc)
         except Exception:
             # Keep lease for recovery rather than releasing an uncommitted/unknown attempt.

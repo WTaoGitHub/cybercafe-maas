@@ -115,6 +115,12 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 通过隔离试点确认路由、就绪判据及单副本并发后，才将对应池的 `gateway_verified` 设为 `true`。当前原生判定支持同一 GPUStack 来源内的单部署路由及单卡副本。共同占用一张卡时，可在 `shared_gpu_layouts` 中以 GPU 名称配置已联合验证的精确布局，例如 `{"已验证GPU名称": [{"example-pool": 2}]}`。未验证的布局不计入可用预算。详见[设计与实施方案](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md)。
 
+### 隔离环境启用动态准入
+
+在只观测叠加之外使用 `compose.capacity-admission.yaml`，把同一份策略只读挂载给 API 和所有执行器。配置中需覆盖目录中所有有上游的模型。先确保同一任务库的 API 和执行器均已运行支持动态准入的版本，暂停并排空在途请求，核对只观测预算与配置版本。通过现有私有 CLI 执行 `capacity-enforce`，然后完成维护探针并恢复派发。模式存于任务库，迁移后的默认模式为静态。启用后，策略不匹配、缺失及过期预算会阻止相关派发。
+
+回退时暂停并排空，再执行 `capacity-static`，用原静态限额和探针恢复。两个命令都要求已暂停、无在途及 `UNKNOWN`。配置、任务、预算和计量仍可保留检查。在动态模式下，可能归队的已领取任务保留等待位，以免降额后归队突破队列硬上限。
+
 ## 验证
 
 ```sh

@@ -52,9 +52,8 @@ def submit_url(service, identity, body, idem, model, inp, params):
                 if old['request_hash']!=digest:
                     raise ServiceError('IDEMPOTENCY_CONFLICT','Key already used for different content',409)
                 return service.public(old),False
-            counts=conn.execute("SELECT count(*) total,count(*) FILTER(WHERE project=%s) own FROM tasks WHERE state IN ('QUEUED','RETRY_WAIT')",(identity.project,)).fetchone()
-            if counts['total']>=service.settings.max_queued or counts['own']>=service.settings.max_project_queued:
-                raise ServiceError('QUEUE_FULL','Task queue capacity reached',429,True)
+            revision=conn.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1').fetchone()['capacity_policy_hash']
+            service.check_queue(conn, identity.project, body.model, revision)
             # An early lower-bound check only; final byte-accurate check remains atomic.
             service.check_storage(conn,identity.project,0)
         service.store.ensure_space()
