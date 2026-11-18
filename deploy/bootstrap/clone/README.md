@@ -169,3 +169,40 @@ python3 -m maas_bootstrap.delivery \
 构建试点镜像时，在无盘镜像设置中加上 `"worker_start_automatic": true`，启用独立 timer，由 E5 读取实际 GPU UUID 和 `boot_id` 并认证申请。已交付的人工许可文件优先使用。未获许可时保持无 worker，准备任务按现有总预算重试。对已经支持自动申请的客户端，此次自动预登记修复只需更新 MaaS 服务端并启用批次开关，无需更新母版快照。
 
 同一启动复用同一份有效许可。MaaS 在授权目录保留该集群与 GPU 的启动绑定和签发记录，不同启动竞争时，已保留或正在注册的会话会阻止另一启动获批。已有活动会话时，enrollment 0.4.0 在数据库锁内确认 GPU 绑定唯一且旧 worker 为 `not_ready`，再撤销旧凭据并签发接续许可。许可过期或签发结果不明确时，由运维对账。
+
+
+## 可选 worker 关机事件（2026-11-18，本地候选，未部署）
+
+客户端在正常 Ubuntu poweroff/halt 的停止事务中尽力发送一次通知，整体预算 1 秒，失败照常关机，不重试、不等待排空。每次新生成 UUID；该功能只记录事件，不更改 worker/模型状态。服务端保存 48 小时。[方案与实施状态](../../../docs/framework/WORKER-SHUTDOWN-EVENTS.md)。
+
+1. 服务端先配置专用 HMAC 密钥并开放批准节点可达的精确 HTTPS 接收路径；Bootstrap 服务配置 `MAAS_BOOTSTRAP_SHUTDOWN_EVENT_KEY_FILE`，见 [服务端变量示例](../shutdown-events.env.example)。两端分别保存同一密钥内容的 0600 文件，按各自服务 UID 配置，worker 和母版不持有该密钥。
+2. 将 [客户端配置片段](shutdown-events.example.json) 的 `shutdown_events` 合并进受控本地 Bootstrap JSON，URL 为实际受信的 MaaS HTTPS 接收地址，CA 文件须能验证该地址。新镜像使用 GPU UUID/启动会话模式；原启动流程附加下发节点范围凭据，注册成功后原子写入 `state_dir/shutdown-event.json`，0600；身份/状态查询不输出凭据。通知准备失败只在 apply 结果的 `shutdown_event` 字段记录代码，不阻塞 worker 注册。
+3. 离线镜像构建工具会复制发送模块与独立单元，校验并复制公开 CA，只有配置了本功能才创建通知单元 enable 链接；不打包节点凭据。存量安装须同步更新客户端依赖文件及 `maas-worker-shutdown-notify.service`，不能只复制单个 Python 文件。
+
+存量运行节点补装不需要重新注册或重启：只读核对现有 `identity.json` 和本次 `boot_id`，生成仅含 `cluster_id/worker_id/gpu_uuid/boot_id/session_id` 的私有绑定文件；在 Bootstrap 受控端使用同一签发 helper：
+
+```sh
+python3 -m maas_bootstrap.shutdown_auth \
+  --key-file <private-event-key-file> --binding-file <verified-private-binding.json> \
+  --output <new-private-credential-file>
+```
+
+命令以 0600 新建文件，拒绝覆盖，不打印凭据。将该文件私有交付到对应 worker，再执行：
+
+```sh
+/opt/maas/bin/maas-worker-bootstrap --config /etc/maas/bootstrap.json \
+  shutdown-prepare --credential-file <private-credential-file>
+```
+
+只显示 `SHUTDOWN_EVENT_PREPARED` 等代码，不操作原生注册/worker 容器。此后检查安装的单元和配置，才启用 armed 状态：
+
+```sh
+systemd-analyze verify /etc/systemd/system/maas-worker-shutdown-notify.service
+systemctl daemon-reload
+systemctl enable --now maas-worker-shutdown-notify.service
+systemctl is-active maas-worker-shutdown-notify.service
+```
+
+armed 单元通过单个同步 ExecStop 发送，systemd 设置 `TimeoutStopSec=1s`、超时 kill 整个进程组。发送器检查本次 poweroff/halt 作业，因此普通 service stop/restart、容器停止、重启系统的作业不发关机预告；不替换系统 shutdown 命令。测试/实际时序仍需独立 Ubuntu 验证，不能把静态单元检查当作真实关机验收。
+
+禁用使用 `systemctl disable --now maas-worker-shutdown-notify.service`，正常运行中不应发事件。移除节点凭据和可选配置前，仍保留服务端旧事件的 48 小时清理。母版保护继续生效；XZ-31-001 可按普通 worker 使用，不因旧控制端角色被拒绝。XZ-31-001/002 均不执行整机关机、重启或等效测试；用户已确认实际关机验收暂缓。

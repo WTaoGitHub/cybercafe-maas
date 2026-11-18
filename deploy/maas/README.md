@@ -183,3 +183,26 @@ host网络适用于当前受信任001试点；客户入口仍通过既有回环1
 ### P4发布与长时验收
 
 私有TLS回环18832、独立宿主机监控和有界指标历史、任务数据加密异机备份/独立恢复、两节点启动前拦截/Docker重启、兼容镜像回退均已验证。Compose可通过MAAS_TASK_IMAGE选择已批准应用镜像。8小时测试已改为今晚19:00定时启动（北京时间），未标记P4整体验收；使用 [P4发布手册](../../docs/framework/P4-RELEASE.md) 与 [进展报告](../../results/maas-p4-release/REPORT.html) 查看当前状态。公网按用户选择保持关闭，不在负载测试期间随意重启或变更服务。
+
+
+## worker 关机事件（2026-11-18，本地候选，未部署）
+
+本模块只接收并保存 worker 关机预告，按接收时间保留 48 小时，定期删除过期记录；不修改节点、模型副本、任务或调度状态。[完整设计与实施状态](../../docs/framework/WORKER-SHUTDOWN-EVENTS.md) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)。
+
+- 接收：`POST /maas/internal/worker-shutdown-events`，JSON 最大 4 KiB，节点专用 Bearer，提交数据库事务后返回 201；每次新 UUID 独立保存，同一 worker 可有多条事件。
+- 默认关闭：不设置 `MAAS_SHUTDOWN_EVENT_KEY_FILE` 时返回 404。启用时，该变量指向现有只读 secret 挂载中的私有文件，例如 `/run/secrets/shutdown-event-key`；内容为同一专用随机密钥的 64 个小写十六进制字符。MaaS 副本由 UID 10001 持有、0600；Bootstrap 的独立副本按其服务 UID 持有、0600。两端内容相同，不要求共用文件。密钥不属于注册 token、消费者 key 或发布签名私钥，不放进镜像/worker。
+- 迁移：新增 `011_worker_shutdown_events.sql`，只在独立 MaaS 数据库建事件表与过期索引，沿用已有迁移机制；不改历史迁移，不向 GPUStack 数据库写入。
+- 清理：API 内启动先执行一批、每 60 秒一批、每批最多 500 条；关闭接收或没有 executor 时仍清理。事件过期后由下一批删除，服务停机/积压会延后，恢复补清理，不永久归档。
+
+私有运维手工执行一批清理，沿用已审核的 Compose/env 配置：
+
+```sh
+docker compose --env-file <private-env> -f deploy/maas/compose.yaml exec -T api \
+  python -m maas_platform.cli shutdown-events-cleanup
+```
+
+输出仅为 `deleted_events` 数量。正常记录通过数据库运维查询取证，本次不增加查询 API/UI。接收入口的默认部署模板已有精确 POST 路径、小体积限制和关闭上游重试；实际对外 HTTPS 与批准 worker 来源的限制仍由现有 TLS/网络部署层配置，不以修改模板等同已完成网络发布。客户端总等待最多 1 秒，服务端迟到提交可能已经成功，客户端不重试。
+
+发布顺序：先服务端/迁移和精确入口，再 Bootstrap 可选签发，再客户端程序/凭据准备及单元启用。回退先停用客户端通知单元，关闭接收/签发；保留事件表和清理直到满 48 小时后删完。如回退旧 API 镜像不再有清理功能，使用候选镜像的同一私有命令安排按分钟执行，直到表空，再撤去临时清理。
+
+当前只完成本地与隔离数据库/HTTPS 验证。用户确认暂无独立测试机，真实 Ubuntu/systemd 关机时序、实际关机验收、Docker 镜像运行及 Nginx 现场语法/网络验证仍待，不在 XZ-31-001/002 上通过整机关机/重启补验。

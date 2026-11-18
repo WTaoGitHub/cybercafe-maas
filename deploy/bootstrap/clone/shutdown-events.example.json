@@ -1,0 +1,6 @@
+{
+  "shutdown_events": {
+    "url": "https://maas.example.invalid/maas/internal/worker-shutdown-events",
+    "tls_certificate_file": "/etc/maas/shutdown-events-ca.crt"
+  }
+}

@@ -1,6 +1,6 @@
 # worker 关机事件：设计与开发实施方案
 
-2026-11-18 · **SD01–SD04 已实现并本地验证；SD05 本地联调与部署材料实施中，未部署** · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+2026-11-18 · **SD01–SD05 代码、交付材料与本地验证完成；未部署，真实关机验收待办** · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
 SD01 验证：节点范围签发/验签、消息校验、人工/自动引导兼容共 57 项通过。
 
@@ -9,6 +9,8 @@ SD02 验证：独立 PostgreSQL 16.14 上，接收/清理与原客户 API、配�
 SD03 验证：发送器、系统作业解析、母版/角色保护及认证/引导回归 86 项通过；阻塞替身下三轮进程级截止均约 1 秒结束，无重试。实际 Ubuntu 关机作业时序、systemd 进程组回收仍待 SD05 独立环境验证，未操作真实 VM。
 
 SD04 验证：全部 bootstrap 测试 287 项通过，覆盖注册后私有准备、失败不阻塞、存量交付不改身份、模板无节点凭据、启用链接和 bundle 清单。用户确认当前无独立环境，实际 Ubuntu/systemd 关机验收保留待办，不阻止其余开发和本地联调。
+
+SD05 验证：真实本地 HTTPS→MaaS→独立 PostgreSQL 联调及事件/入口测试共 30 项通过；证书错误时发送器正常退出且不入库。扩展回归为 bootstrap 287 通过，MaaS 在隔离两项既有问题后 882 通过、6 跳过、4 个旧同步压测路径失败；不宣称全库全绿。部署/回退步骤、配置片段及入口模板已补齐。[交付与验证报告](../../results/maas-worker-shutdown-events-20261118/REPORT.md)。
 
 ## 1. 范围与完成标准
 
@@ -41,7 +43,7 @@ flowchart LR
 
 ## 3. 消息与接收接口
 
-拟定接口：`POST /maas/internal/worker-shutdown-events`。它是节点专用入口，使用 `Authorization: Bearer <节点事件凭据>`；不经过消费者推理鉴权，不向 GPUStack 发认证或实例查询请求。接收端校验、插入事务完成后返回 `201 Created`，不在回复前执行清理。
+接口：`POST /maas/internal/worker-shutdown-events`。它是节点专用入口，使用 `Authorization: Bearer <节点事件凭据>`；不经过消费者推理鉴权，不向 GPUStack 发认证或实例查询请求。接收端校验、插入事务完成后返回 `201 Created`，不在回复前执行清理。
 
 请求字段固定，未知字段拒绝；整数不接受布尔值，UUID、GPU UUID 与带时区时间按字段校验：
 
@@ -110,7 +112,7 @@ flowchart LR
 
 ## 5. worker 发送与正常关机识别
 
-拟增加独立 `maas-worker-shutdown-notify.service`，启动时只进入 armed 状态，关机时运行发送器，不依赖推理 worker 是否正在运行。候选单元骨架如下，**本文件不安装或启用单元**：
+已增加独立 `maas-worker-shutdown-notify.service`，启动时只进入 armed 状态，关机时运行发送器，不依赖推理 worker 是否正在运行。候选单元如下，**本文件不安装或启用单元**：
 
 ```ini
 [Unit]
@@ -146,7 +148,7 @@ WantedBy=multi-user.target
 
 ### 事件表
 
-新增一份 SQL 迁移，暂记 `NNN_worker_shutdown_events.sql`；当前最大已跟踪编号为 010，开发提交前重新取下一个空闲编号，不改历史迁移。表名 `worker_shutdown_events`，字段对应请求加服务端 `received_at/expires_at`：
+新增 SQL 迁移 `011_worker_shutdown_events.sql`，不改历史迁移。表名 `worker_shutdown_events`，字段对应请求加服务端 `received_at/expires_at`：
 
 - `event_id uuid PRIMARY KEY`；事件类型限定一个值，标识字段非空并做基本范围约束。
 - `received_at` 使用入库语句的数据库服务端时间；`expires_at` 用同一时间值加 `interval '48 hours'`，两者存为 `timestamptz`。客户端不能提交或覆盖这两个字段。
@@ -169,7 +171,7 @@ WantedBy=multi-user.target
 | 顺序 | 工作包与交付 | 主要文件（拟新增标 +） | 完成门槛 |
 |---|---|---|---|
 | SD01 | 冻结字段、签发/验签与启动响应兼容 | `+maas_bootstrap/shutdown_auth.py`、`+maas_platform/shutdown_events.py`；`enrollment.py`、`handoff.py` | 身份范围不能被修改；无外部认证请求；旧启动协议和无模块配置仍通过 |
-| SD02 | MaaS 接收、事件表和自动/手工清理 | `+migrations/NNN_worker_shutdown_events.sql`、`api.py`、`limits.py`、`cli.py`、`shutdown_events.py`、`config.py` | 独立 PostgreSQL 中提交/错误/48 小时边界/并行清理及 API 进程恢复通过 |
+| SD02 | MaaS 接收、事件表和自动/手工清理 | `+migrations/011_worker_shutdown_events.sql`、`api.py`、`limits.py`、`cli.py`、`shutdown_events.py`、`config.py` | 独立 PostgreSQL 中提交/错误/48 小时边界/并行清理及 API 进程恢复通过 |
 | SD03 | 关机发送器与独立单元 | `+maas_bootstrap/shutdown_events.py`、`+deploy/bootstrap/clone/maas-worker-shutdown-notify.service` | 一次发送；守卫不误报；总预算、错误后继续、进程组无遗留有测量证据 |
 | SD04 | 凭据准备、离线镜像与 bundle 交付 | `worker.py`、`client.py`、`service.py`；`prepare_worker_image.py`、`build_worker_bundle.py`、`verify_worker_bundle.py` | 根文件权限/原子写入/模板无凭据；启动不被通知失败阻塞；安装清单及 enable 链接完整，无依赖环 |
 | SD05 | 入口和部署材料、独立环境联调 | `deploy/maas/compose.yaml`、实际 TLS 入口模板、bootstrap 服务配置模板、两端 README、测试与脱敏报告 | HTTPS/身份/入库/清理连通；消费者入口回归、回退流程及运维步骤完整 |
@@ -202,4 +204,4 @@ WantedBy=multi-user.target
 5. **回退**：先停用客户端通知单元，再关闭接收入口及可选签发配置；正常运行中的单元停止因无 poweroff/halt 作业不得发出伪事件。保留事件表和服务端清理，原记录满 48 小时后自动删除。若必须回退到不含清理代码的旧 API 镜像，先用候选镜像的私有清理命令安排按分钟清理，直至表空，再撤去临时清理；不以回退为由提前删除未到期记录或无限保留。
 6. **交接材料**：给出源码/镜像提交、迁移号、两端启用配置结构、单元状态、凭据权限检查、测试计数、清理批次/删除数量与回退步骤。报告仅保留脱敏摘要；不提交真实地址、bearer、密钥或私有日志。
 
-当前未确认的发布前条件只有实际管理工具关机路径、目标 systemd 作业时序/网络停止顺序与 TLS/允许列表部署参数；它们不阻止先完成本地开发，但必须在发布前关闭。用户已授权按计划实施，当前从 SD01 顺序推进；正式部署和真实关机验证另记实际证据。
+代码与本地交付材料已按 SD01–SD05 完成。发布前仍须确认实际管理工具关机路径、目标 systemd 作业时序/网络停止顺序与 TLS/允许列表部署参数，并验证 Docker 镜像及实际 Nginx 配置。用户确认暂无独立环境，真实 Ubuntu/systemd 关机验收明确保留待办，不能将本地替身或 HTTPS 联调记为真实关机通过；XZ-31-001/002 不用于补验。正式部署另记实际证据。

@@ -59,3 +59,13 @@ def test_private_consumer_edge_binds_only_configured_private_address():
     for address in ('0.0.0.0', '127.0.0.1', '192.0.2.10'):
         with pytest.raises(ValueError):
             render_private_consumer_nginx(template, address)
+
+
+@pytest.mark.parametrize('name',['edge.nginx.conf','edge.nginx.conf.example'])
+def test_shutdown_post_has_exact_path_small_body_and_no_upstream_retry(name):
+    template=(Path(__file__).resolve().parents[2]/'deploy/maas'/name).read_text()
+    location=template.split('location = /maas/internal/worker-shutdown-events {',1)[1].split('proxy_set_header Authorization $http_authorization;',1)[0]
+    assert 'limit_except POST { deny all; }' in location
+    assert 'client_max_body_size 4k;' in location
+    assert 'proxy_next_upstream off;' in location
+    assert 'proxy_pass http://127.0.0.1:18830;' in location

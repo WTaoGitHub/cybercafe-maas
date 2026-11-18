@@ -13,6 +13,7 @@ SOURCES=[
  'deploy/bootstrap/clone/maas-worker-bootstrap','deploy/bootstrap/clone/maas-worker-bootstrap.service',
  'deploy/bootstrap/clone/maas-worker-bootstrap.path','deploy/bootstrap/clone/maas-worker-bootstrap.timer',
  'deploy/bootstrap/clone/maas-worker-shutdown-notify.service',
+ 'deploy/bootstrap/clone/shutdown-events.example.json','deploy/bootstrap/shutdown-events.env.example',
  'deploy/bootstrap/clone/network/maas-clone-boundary.service','deploy/bootstrap/clone/network/20-clone-boundary.conf',
  'deploy/bootstrap/clone/image-settings.example.json','deploy/bootstrap/clone/README.md',
  'deploy/bootstrap/clone/model-nfs.example.json','deploy/bootstrap/clone/NFS.md',

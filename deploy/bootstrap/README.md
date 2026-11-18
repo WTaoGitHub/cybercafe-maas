@@ -45,3 +45,12 @@ API下一请求重新读取policy；不要为此重启Docker引擎或现有服�
 ## 母版人工部署手册
 
 管理员后续手动向tower安装业务层时，使用[母版手动部署手册](clone/MANUAL-TOWER-DEPLOYMENT.md)。它区分运行中母版的手动安装、首启身份/快照交接和独立克隆验收；编写手册不改变当前禁止自动部署到tower的暂停点。
+
+
+## 可选关机事件凭据签发（2026-11-18，未部署）
+
+新 Bootstrap 代码可通过 `MAAS_BOOTSTRAP_SHUTDOWN_EVENT_KEY_FILE` 启用专用于事件入口的范围凭据签发，见 [变量示例](shutdown-events.env.example)及[客户端交付步骤](clone/README.md#可选-worker-关机事件2026-11-18本地候选未部署)。文件内容为 64 个小写十六进制字符、0600、属于服务 UID，与 MaaS 接收端的独立私有副本内容相同。该密钥不能下发到 worker、放入母版、Git 或日志，也不复用发布签名私钥。
+
+自动启动响应按已有 GPU/worker/boot/session 附加 `shutdown_event_credential`；新人工许可客户端可附带 boot_id。未启用、旧协议或事件签发失败均保留原许可/注册结果。48 小时只约束 MaaS 事件存储，不限制长期开机节点的事件凭据。通知入口的认证不提升现有 Bootstrap 批次授权为硬件身份认证，不作为已关机或可接续的证明。
+
+此变量只改变可选签发，不更改 enrollment/handoff 的注册、接续或永久退役约束。正式启用前需核对 MaaS 接收端和客户端 TLS/允许列表及清理；当前没有现场部署，真实关机验收按用户决定保留待办。
