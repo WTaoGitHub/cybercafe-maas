@@ -1,4 +1,4 @@
-import json, logging, uuid
+import asyncio, json, logging, uuid
 from hashlib import sha256
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, Header, Request
@@ -18,6 +18,7 @@ from .metering import UsageType, select_usage
 from .gpu_time_web import router as gpu_time_router
 from .gpu_daily import router as gpu_daily_router
 from .replica_control_web import router as replica_control_router
+from .shutdown_events import router as shutdown_router, periodic_cleanup as shutdown_cleanup
 
 
 def create_app(settings=None, auth=None):
@@ -25,11 +26,19 @@ def create_app(settings=None, auth=None):
     service = TaskService(settings, auth or AuthConnector(settings))
     @asynccontextmanager
     async def lifespan(app):
-        service.db.migrate(); yield
+        service.db.migrate()
+        stop = asyncio.Event()
+        cleanup = asyncio.create_task(shutdown_cleanup(service.db, stop))
+        try:
+            yield
+        finally:
+            stop.set()
+            await cleanup
     app = FastAPI(title='MaaS persistent tasks', version='0.1.0', lifespan=lifespan)
     app.include_router(gpu_time_router(service.db))
     app.include_router(gpu_daily_router(service.db))
     app.include_router(replica_control_router(), include_in_schema=False)
+    app.include_router(shutdown_router(service.db, settings.shutdown_event_key_file))
     app.state.service = service
     app.state.sync_ingress=SyncIngress(service)
     app.add_middleware(JsonBodyLimit,sync_limit=settings.max_input_bytes*2,task_limit=max(65536,settings.max_input_bytes*2))

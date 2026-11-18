@@ -1,7 +1,8 @@
 """Authenticate and record shutdown reports without changing worker state."""
 import base64
+import asyncio
 import hmac
-import json
+import logging
 import re
 from datetime import datetime
 from pathlib import Path
@@ -9,6 +10,9 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator
+import psycopg
+from fastapi import APIRouter, Request
+from starlette.concurrency import run_in_threadpool
 
 from .config import private_text
 from .errors import ServiceError
@@ -16,6 +20,7 @@ from .errors import ServiceError
 PATH = '/maas/internal/worker-shutdown-events'
 PREFIX = b'maas-worker-shutdown-v1\0'
 GPU = re.compile(r'GPU-[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', re.IGNORECASE)
+LOG = logging.getLogger(__name__)
 
 
 class NodeScope(BaseModel):
@@ -91,3 +96,65 @@ def authenticate(authorization, key_file):
         return NodeScope.model_validate_json(payload)
     except (ValueError, TypeError):
         raise ServiceError('SHUTDOWN_UNAUTHENTICATED', 'Invalid node event credential', 401) from None
+
+
+def record(db, event, scope):
+    if any(getattr(event, name) != getattr(scope, name) for name in NodeScope.model_fields):
+        raise ServiceError('SHUTDOWN_SCOPE_MISMATCH', 'Event does not match credential scope', 403)
+    try:
+        with db.transaction() as conn:
+            conn.execute("SET LOCAL lock_timeout = '100ms'")
+            conn.execute("SET LOCAL statement_timeout = '500ms'")
+            return conn.execute('''INSERT INTO worker_shutdown_events
+                (event_id,event_type,cluster_id,worker_id,gpu_uuid,boot_id,session_id,occurred_at,received_at,expires_at)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,statement_timestamp(),statement_timestamp()+interval '48 hours')
+                RETURNING event_id,received_at,expires_at''',
+                (event.event_id, event.event_type, event.cluster_id, event.worker_id, event.gpu_uuid,
+                 event.boot_id, event.session_id, event.occurred_at)).fetchone()
+    except psycopg.errors.UniqueViolation:
+        raise ServiceError('SHUTDOWN_EVENT_EXISTS', 'Event ID already exists', 409) from None
+    except (psycopg.Error, OSError):
+        raise ServiceError('SHUTDOWN_STORAGE_UNAVAILABLE', 'Event storage unavailable', 503) from None
+
+
+def cleanup(db, *, now=None):
+    """One bounded batch; the optional cutoff is for deterministic private tests."""
+    with db.transaction() as conn:
+        conn.execute("SET LOCAL lock_timeout = '100ms'")
+        conn.execute("SET LOCAL statement_timeout = '500ms'")
+        result = conn.execute('''WITH expired AS (
+            SELECT event_id FROM worker_shutdown_events
+            WHERE expires_at <= coalesce(%s::timestamptz,statement_timestamp())
+            ORDER BY expires_at,event_id LIMIT 500 FOR UPDATE SKIP LOCKED
+        ) DELETE FROM worker_shutdown_events e USING expired WHERE e.event_id=expired.event_id''', (now,))
+        return result.rowcount
+
+
+async def periodic_cleanup(db, stop):
+    while not stop.is_set():
+        try:
+            await asyncio.to_thread(cleanup, db)
+        except Exception:
+            LOG.warning('shutdown_event_cleanup_unavailable')
+        try:
+            await asyncio.wait_for(stop.wait(), timeout=60)
+        except TimeoutError:
+            pass
+
+
+def router(db, key_file=None):
+    routes = APIRouter(include_in_schema=False)
+
+    @routes.post(PATH, status_code=201)
+    async def receive(request: Request):
+        scope = authenticate(request.headers.get('authorization', ''), key_file)
+        try:
+            event = ShutdownEvent.model_validate_json(await request.body())
+        except ValueError:
+            raise ServiceError('SHUTDOWN_EVENT_INVALID', 'Invalid shutdown event', 422) from None
+        result = await run_in_threadpool(record, db, event, scope)
+        from fastapi.encoders import jsonable_encoder
+        from fastapi.responses import JSONResponse
+        return JSONResponse(jsonable_encoder(result), status_code=201, headers={'Cache-Control':'no-store'})
+
+    return routes
