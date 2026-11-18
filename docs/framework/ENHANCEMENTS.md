@@ -803,6 +803,8 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 <a id="e10-ocr-model-selection"></a>
 ## E10：OCR模型选型与PDF文档解析优化
 
+> **2026-11-18 OvisOCR3 部署调研完成，未部署：** 已固定模型revision及vLLM 0.22.1候选镜像元数据，建议先独立单GPU验证整页结构化解析和KIE，再接入GPUStack及已有MaaS统一任务链。实时基线为worker6/7各承载PP-OCRv4、worker8承载NFS版Unlimited，无独立空闲Ready GPU；共卡峰值和CPU路径未验。跨页递归另需浏览器渲染与编排，不能直接套用Unlimited driver。详见[部署调研与验证顺序](../reports/ovisocr3-deployment-20261118.md)，继续由[Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)跟踪；不据本调研改变已有服务、首轮候选排期或执行部署。
+
 > **2026-11-17 MiniCPM-OCR 1.0 部署调研完成，未部署：** 已只读核验 GPUStack v2.2.3 及 worker7 无模型实例的 RTX 4080 SUPER 16GB/580.95.05，具备隔离试点条件，16GB 初始化及完整解析仍待实测。建议固定官方镜像摘要、绕过忽略参数的 vLLM 包装脚本、关闭权重同步，采用 CPU 版面检测和单文档/低区域并发；SDK 自动重试、输出坐标及专属 MaaS adapter 须独立处理，不能只替换 Unlimited 模型名。详见[调研与验证顺序](../reports/minicpm-ocr-1.0-deployment-20261117.md)，继续由[Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)跟踪；不据本调研改变已有服务、默认模型或部署排期。
 
 > **2026-11-16 M1/M2受控试点交付**：Unlimited-OCR-2经固定SGLang/GPUStack/Higress服务及MaaS文档异步driver发布，复用artifact/tasks/usage API。用户明确豁免中文场景质量阻断，原42.1%失败与两次处理保留；容量、独立恢复/回退、registry reader和180秒开放观察通过，45任务/91页唯一计量。固定单文档执行，旧OCR仍2/2；新模型独立入口/任务库/项目绑定，原Key可沿用。其余候选、业务质量与长期容量继续待评估。[M2交付](../../results/unlimited-ocr-2/20261116-m2-release/REPORT.md) · [原停止记录](../../results/unlimited-ocr-2/20261116-m2/REPORT.md) · [Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)。

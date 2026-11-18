@@ -1,0 +1,509 @@
+{
+  "scope": "read-only deployment research; not a deployment or inference validation",
+  "environment": {
+    "observed_at_utc": "2026-11-18T10:09:17.831492+00:00",
+    "source": "read-only controller SSH and authenticated management GET; GPU values are worker telemetry, not direct GPU runtime tests",
+    "controller": {
+      "architecture": "x86_64",
+      "cpu_count": 8,
+      "ram_total_bytes": 16526422016,
+      "ram_available_bytes": 11284643840,
+      "disk_free_bytes": 282501738496
+    },
+    "gpustack_version": {
+      "version": "v2.2.3",
+      "git_commit": "1cfcbbf"
+    },
+    "workers": [
+      {
+        "id": 8,
+        "state": "ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454784512,
+        "ram_used_bytes": 8516145152,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 64.73,
+              "is_unified_memory": false,
+              "used": 11114905600,
+              "allocated": 12884901888
+            }
+          }
+        ],
+        "instances": [
+          {
+            "id": 195,
+            "model_id": 13,
+            "state": "running",
+            "computed_resource_claim": {
+              "is_unified_memory": false,
+              "offload_layers": null,
+              "total_layers": null,
+              "ram": 2147483648,
+              "vram": {
+                "0": 12884901888
+              },
+              "tensor_split": null,
+              "vram_utilization": 0.0
+            }
+          }
+        ],
+        "root_disk_available_bytes": 453158490112
+      },
+      {
+        "id": 7,
+        "state": "ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454915584,
+        "ram_used_bytes": 3424034816,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 11.96,
+              "is_unified_memory": false,
+              "used": 2054160384,
+              "allocated": 3758096384
+            }
+          }
+        ],
+        "instances": [
+          {
+            "id": 193,
+            "model_id": 1,
+            "state": "running",
+            "computed_resource_claim": {
+              "is_unified_memory": false,
+              "offload_layers": null,
+              "total_layers": null,
+              "ram": 2147483648,
+              "vram": {
+                "0": 3758096384
+              },
+              "tensor_split": null,
+              "vram_utilization": null
+            }
+          }
+        ],
+        "root_disk_available_bytes": 457911308288
+      },
+      {
+        "id": 6,
+        "state": "ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454911488,
+        "ram_used_bytes": 3547389952,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 11.97,
+              "is_unified_memory": false,
+              "used": 2056257536,
+              "allocated": 3758096384
+            }
+          }
+        ],
+        "instances": [
+          {
+            "id": 194,
+            "model_id": 1,
+            "state": "running",
+            "computed_resource_claim": {
+              "is_unified_memory": false,
+              "offload_layers": null,
+              "total_layers": null,
+              "ram": 2147483648,
+              "vram": {
+                "0": 3758096384
+              },
+              "tensor_split": null,
+              "vram_utilization": null
+            }
+          }
+        ],
+        "root_disk_available_bytes": 338031038464
+      },
+      {
+        "id": 5,
+        "state": "not_ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454911488,
+        "ram_used_bytes": 4495589376,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 20.66,
+              "is_unified_memory": false,
+              "used": 3548381184,
+              "allocated": 0
+            }
+          }
+        ],
+        "instances": [],
+        "root_disk_available_bytes": 457595187200
+      },
+      {
+        "id": 4,
+        "state": "not_ready",
+        "cpu_count": 24,
+        "ram_total_bytes": 33454907392,
+        "ram_used_bytes": 3441057792,
+        "gpus": [
+          {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "index": 0,
+            "driver_version": "580.95.05",
+            "compute_capability": "8.9",
+            "memory": {
+              "total": 17171480576,
+              "utilization_rate": 11.54,
+              "is_unified_memory": false,
+              "used": 1980760064,
+              "allocated": 0
+            }
+          }
+        ],
+        "instances": [],
+        "root_disk_available_bytes": 457920987136
+      }
+    ],
+    "active_models": [
+      {
+        "id": 13,
+        "name": "unlimited-ocr-2-nfs",
+        "replicas": 1,
+        "ready_replicas": 1,
+        "backend": "Unlimited-OCR-2-SGLang-custom",
+        "backend_version": "1.0"
+      },
+      {
+        "id": 1,
+        "name": "maas-ocr",
+        "replicas": 2,
+        "ready_replicas": 2,
+        "backend": "MaaS-Baremetal-OCR-custom",
+        "backend_version": "1.0"
+      }
+    ],
+    "catalog": {
+      "ocr.default": {
+        "driver": "gpustack.ocr",
+        "upstream_model": "maas-ocr",
+        "revision": "ocr-git-2efbb30",
+        "max_runtime_s": 25,
+        "document_profile": null
+      },
+      "document.unlimited-ocr-2": {
+        "driver": "gpustack.document_ocr",
+        "upstream_model": "unlimited-ocr-2-nfs",
+        "revision": "unlimited-ocr-2-0480966-document-v1-nfs",
+        "max_runtime_s": 600,
+        "document_profile": "pdfium5.15.2-pages10-pixels50m-json-v1"
+      }
+    },
+    "maas_containers": [
+      "maas-document-history-gc",
+      "maas-document-api-m2",
+      "maas-control-api-1",
+      "maas-control-executor-1",
+      "maas-control-bootstrap-diskless",
+      "maas-document-edge-m2",
+      "maas-control-e17-daily-1",
+      "maas-control-gpustack-observe",
+      "maas-control-bootstrap",
+      "maas-control-worker-edge-diskless",
+      "maas-control-e17-sampler-1",
+      "maas-control-observer-1",
+      "maas-consumer-private",
+      "maas-control-worker-edge",
+      "maas-control-db-1",
+      "maas-control-edge",
+      "maas-control-registry-tls",
+      "maas-control-registry-store"
+    ]
+  },
+  "model": {
+    "repository": "ATH-MaaS/OvisOCR3",
+    "revision": "5b252386ba615bd464a5a26597560eaba87dae5c",
+    "model_card_url": "https://huggingface.co/ATH-MaaS/OvisOCR3/blob/5b252386ba615bd464a5a26597560eaba87dae5c/README.md",
+    "model_type": "qwen3_5",
+    "architectures": [
+      "Qwen3_5ForConditionalGeneration"
+    ],
+    "safetensors_parameter_metadata": {
+      "parameters": {
+        "BF16": 852985920
+      },
+      "total": 852985920
+    },
+    "text_dtype": "bfloat16",
+    "text_max_position_embeddings": 262144,
+    "weight_bytes_advertised": 1706030528,
+    "prompt_count": 18,
+    "weights_downloaded_or_verified": false,
+    "files": [
+      {
+        "path": "LICENSE",
+        "advertised_bytes": 11544
+      },
+      {
+        "path": "README.md",
+        "advertised_bytes": 27267,
+        "downloaded_sha256": "43dd8104e1c78fe851f3b2954378dd8e3b6448bd2e8b02b0754611aca9a7e6b8"
+      },
+      {
+        "path": "chat_template.jinja",
+        "advertised_bytes": 7755,
+        "downloaded_sha256": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80"
+      },
+      {
+        "path": "config.json",
+        "advertised_bytes": 2908,
+        "downloaded_sha256": "37674e15aefced4df9aa8123f6634b7201d72756685e2e1b591d8f7d8d3b69bc"
+      },
+      {
+        "path": "document_crosspage.py",
+        "advertised_bytes": 70672,
+        "downloaded_sha256": "3c5d4ded915fee1e27c4b662b37f11f231f0b5fb9b8a12e60a3586a53272e2ad"
+      },
+      {
+        "path": "generation_config.json",
+        "advertised_bytes": 147,
+        "downloaded_sha256": "c3ff3171724248f377efaf37197cce6f7bf1f4918a1ed3f31ef2ce53be91ecc1"
+      },
+      {
+        "path": "merges.txt",
+        "advertised_bytes": 3353259
+      },
+      {
+        "path": "model.safetensors",
+        "advertised_bytes": 1706030528,
+        "advertised_sha256": "aa2311c6b22b07cf3afe9aac6e8bcb02a2b19dd8671b2a91d0b144071577e600"
+      },
+      {
+        "path": "preprocessor_config.json",
+        "advertised_bytes": 390,
+        "downloaded_sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+      },
+      {
+        "path": "prompts/chart_parsing.txt",
+        "advertised_bytes": 853,
+        "downloaded_sha256": "bb933216bdad5a81a3eca59e770bdb7d4b936ab85f97a2af6de5dd0890371f38"
+      },
+      {
+        "path": "prompts/crosspage_table.txt",
+        "advertised_bytes": 614,
+        "downloaded_sha256": "b5f38187df651d83bb46b6756d1b9386d04120cb6b299cfd1e93f9e0dec564d1"
+      },
+      {
+        "path": "prompts/document_layout.txt",
+        "advertised_bytes": 615,
+        "downloaded_sha256": "89bcc73c7340ff9fd83673c1aee2354c2cc735c6eded0ce2aa4501f28b914361"
+      },
+      {
+        "path": "prompts/document_markdown.txt",
+        "advertised_bytes": 512,
+        "downloaded_sha256": "dbf31d5899a86047ce0cd4d0d12cdc5616df1bea5d9a600b823098442c32997c"
+      },
+      {
+        "path": "prompts/document_structured.txt",
+        "advertised_bytes": 1110,
+        "downloaded_sha256": "1b6139ec72888e087c8af75f2e2dfb78b425e15ae1c1529940b96137613d1db1"
+      },
+      {
+        "path": "prompts/figure_captioning.txt",
+        "advertised_bytes": 1298,
+        "downloaded_sha256": "944bb410dbe17aa1cbe65f6acb14585053473e8a988b120f98c95d97a7e844de"
+      },
+      {
+        "path": "prompts/formula_recognition.txt",
+        "advertised_bytes": 898,
+        "downloaded_sha256": "b07b4c70a7585ddc2b4db33a1fff19bcacb1faf57b6db8ae2ebdb1035eeeb5b4"
+      },
+      {
+        "path": "prompts/image_classification.txt",
+        "advertised_bytes": 263,
+        "downloaded_sha256": "b6136303c28ef0b486dc6c7e2c5aafa3cb7192a00ae5d3d4c4a71e546a828307"
+      },
+      {
+        "path": "prompts/kie_fields.txt",
+        "advertised_bytes": 243,
+        "downloaded_sha256": "14d6098b2c7a5d31a328676fd5706d1385228e3e6d4fc2f27cd0f4c8bb3ec6ad"
+      },
+      {
+        "path": "prompts/kie_open.txt",
+        "advertised_bytes": 200,
+        "downloaded_sha256": "76276d075a455aa795a58c128b6c1640d424accb1bd18d9d7b1ffd7edf760dad"
+      },
+      {
+        "path": "prompts/kie_schema.txt",
+        "advertised_bytes": 177,
+        "downloaded_sha256": "e4cef2aec8d0e0b4a91b1c2af46a7af5048279e70fe5b152d039cf9454c245e5"
+      },
+      {
+        "path": "prompts/plain_ocr.txt",
+        "advertised_bytes": 419,
+        "downloaded_sha256": "e037cf0013a757e19eae6d4d701f3b90848449fbebe44d1f8fa7d8ca4a5af9a7"
+      },
+      {
+        "path": "prompts/position_aware_vqa.txt",
+        "advertised_bytes": 530,
+        "downloaded_sha256": "33338234f4ce8ae14269302280f06a191c0526bc30eff9443c1e0acd5d8d3ac9"
+      },
+      {
+        "path": "prompts/reference_grounding.txt",
+        "advertised_bytes": 1333,
+        "downloaded_sha256": "9e9304cbd800c997f612634811b43159bcb17bbec5bf93809c03cd716794662a"
+      },
+      {
+        "path": "prompts/region_ocr.txt",
+        "advertised_bytes": 625,
+        "downloaded_sha256": "0b7d7f40b2dffc744e7e93007bea8f8bc5039da65b92c37465a11159a7c88dfc"
+      },
+      {
+        "path": "prompts/text_translation.txt",
+        "advertised_bytes": 628,
+        "downloaded_sha256": "82d6fecdacebd20f864e43c4d5d024b4dba03801118a83b48c5943b1c8b38dd7"
+      },
+      {
+        "path": "prompts/visual_question_answering.txt",
+        "advertised_bytes": 82,
+        "downloaded_sha256": "910753f062284aeb81a4b02e7233ba838dc34b427e245801713381cd3e60c2d9"
+      },
+      {
+        "path": "prompts/word_spotting.txt",
+        "advertised_bytes": 1007,
+        "downloaded_sha256": "7fb246da0a3b37529562e71e2fc685ac43fcf0266d22a443855fac70cc768a77"
+      },
+      {
+        "path": "tokenizer.json",
+        "advertised_bytes": 12807982,
+        "advertised_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42"
+      },
+      {
+        "path": "tokenizer_config.json",
+        "advertised_bytes": 16709,
+        "downloaded_sha256": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c"
+      },
+      {
+        "path": "video_preprocessor_config.json",
+        "advertised_bytes": 385
+      },
+      {
+        "path": "vocab.json",
+        "advertised_bytes": 6722759
+      }
+    ]
+  },
+  "runtime_candidate": {
+    "vllm_version": "0.22.1",
+    "pypi_requires_python": "<3.15,>=3.10",
+    "pypi_torch_dependency": "torch==2.11.0",
+    "pypi_transformers_dependency": "transformers!=5.0.*,!=5.1.*,!=5.2.*,!=5.3.*,!=5.4.*,!=5.5.0,>=4.56.0",
+    "pypi_metadata_url": "https://pypi.org/pypi/vllm/0.22.1/json",
+    "image": {
+      "tag": "v0.22.1",
+      "index_digest": "sha256:953d3a06d5e64ab582985cd7401289d3abf2a2c14ef2158e9a84313daeec77d7",
+      "linux_amd64_digest": "sha256:55c9bcee9fc66644b139fddae8a7a03e4c0c8a25ab5c64b0ce614554a8abf5d5",
+      "config_digest": "sha256:0204ba447a71c42f300e5218e1fe236f539f8b44da74198132366c3baec5887b",
+      "compressed_linux_amd64_bytes": 9223574602,
+      "entrypoint": [
+        "vllm",
+        "serve"
+      ],
+      "cmd": null,
+      "working_dir": "/vllm-workspace",
+      "cuda_version": "13.0.2",
+      "layers_pulled_or_executed": false
+    },
+    "source_files": [
+      {
+        "path": "vllm/entrypoints/openai/cli_args.py",
+        "source_url": "https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/entrypoints/openai/cli_args.py",
+        "sha256": "d8ba2b318c5fafa42fe1488fa8843a1028bfe9e60bfa3deb2cf5af158a267bdd"
+      },
+      {
+        "path": "vllm/multimodal/processing/processor.py",
+        "source_url": "https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/multimodal/processing/processor.py",
+        "sha256": "deda51d93d244c0782e0f5d4f4d3ec75b0c986d0d7580fb31bbefa1fc6e52f06"
+      },
+      {
+        "path": "vllm/engine/arg_utils.py",
+        "source_url": "https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/engine/arg_utils.py",
+        "sha256": "ee107df77e59d1ca860d826feda540158bdefbdcaa3a2b786967396d83315d16"
+      },
+      {
+        "path": "vllm/model_executor/models/qwen3_5.py",
+        "source_url": "https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/model_executor/models/qwen3_5.py",
+        "sha256": "eaf9885c0dc2be01cbce6b8d3ce9ad051074f098f61bcc4e3826ada566940e1e"
+      }
+    ]
+  },
+  "official_example_profile": {
+    "gpu_memory_utilization": 0.8,
+    "gdn_prefill_backend": "triton",
+    "image_limit": 2,
+    "max_output_tokens": 16384,
+    "min_image_pixels": 200704,
+    "max_image_pixels": 8294400,
+    "max_model_len_explicitly_set": false,
+    "cpu_inference_verified_by_project": false
+  },
+  "proposed_single_page_trial_profile": {
+    "status": "proposal only; no runtime tests",
+    "gpu_memory_utilization": 0.5,
+    "context_tokens": 16384,
+    "max_num_batched_tokens": 4096,
+    "max_num_seqs": 1,
+    "max_output_tokens": 4096,
+    "max_image_pixels": 2073600,
+    "images_per_request": 1,
+    "video_enabled": false,
+    "eager": true,
+    "host_memory_limit_gib": 16,
+    "cpu_limit": 4,
+    "shm_gib": 4
+  },
+  "not_verified": [
+    "direct worker identity and nvidia-smi process inspection",
+    "container pull, imports, dependency resolution and GPU kernel execution",
+    "complete model weight SHA-256 and safetensors contents",
+    "GPU initialization and inference peak VRAM/RAM",
+    "co-residency with PP-OCRv4",
+    "CPU or quantized inference",
+    "HTTP parity with the offline example",
+    "model-output correctness or business-field accuracy",
+    "GPUStack/Higress and MaaS adapter integration",
+    "cross-page Chromium rendering and resource isolation"
+  ],
+  "static_validation": {
+    "metadata_files_hashed": 25,
+    "task_prompts": 18,
+    "vllm_sources_hashed": 4,
+    "shell_syntax": "passed; not executed",
+    "json_cli_arguments": 3,
+    "local_report_links": 4,
+    "sanitized_publishable_files": "passed",
+    "runtime_validation": false
+  }
+}
