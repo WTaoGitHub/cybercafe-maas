@@ -22,7 +22,7 @@ def alerts(service, data):
     out=[]
     def add(code,severity,message):out.append({'code':code,'severity':severity,'message':message})
     if data['unknown_backend_activity'] or data['unknown_sync_activity']:
-        add('BACKEND_QUARANTINED','critical','Dispatch blocked: inspect backend activity before manual resolution')
+        add('BACKEND_QUARANTINED','critical','Unconfirmed execution: inspect the affected dispatch scopes and completion evidence')
     if data['storage']['free_bytes']<service.settings.min_free_bytes+service.settings.max_output_bytes:
         add('DISK_LOW','critical','Free storage cannot safely accommodate the next maximum result')
     if data['storage']['live_bytes']>=service.settings.max_storage_bytes*.8:

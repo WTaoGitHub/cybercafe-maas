@@ -15,7 +15,7 @@ def probe_document(service, ingress, who, name, model, data, media):
     service.auth.authorize(who, name, model)
     state = {'token': None, 'confirmed': False}
     def begin(_):
-        state['token'] = ingress.begin(who, name, model['max_runtime_s'], probe=True)
+        state['token'] = ingress.begin(who, name, model['max_runtime_s'], probe=True, expected_model=model)
     def complete(_):
         state['confirmed'] = True
     proxy = SimpleNamespace(settings=service.settings, auth=service.auth,

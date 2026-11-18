@@ -423,9 +423,10 @@ def test_quarantine_commit_serializes_with_other_remote_dispatch(env):
         if contender.ident:contender.join(5)
         s.db.transaction=original
     assert not finisher.is_alive() and not contender.is_alive()
-    assert errors==['BACKEND_QUARANTINED']
+    assert errors==['DISPATCH_DEFERRED']
     with original() as c:
         assert c.execute('SELECT count(*) n FROM backend_activity').fetchone()['n']==1
+        assert c.execute('SELECT state FROM tasks WHERE id=%s',(second['id'],)).fetchone()['state']=='QUEUED'
 
 
 def test_pause_after_claim_defers_unsent_attempt_without_spending_retry(env):
@@ -480,7 +481,7 @@ def test_sync_admission_pause_unknown_and_manual_resolution(env,monkeypatch):
     s.pause(False)
     result=client.post('/gpustack/v1/chat/completions',headers=headers(),json=body)
     assert result.status_code==503 and result.json()['error']['code']=='UNKNOWN_BACKEND_ACTIVITY'
-    submit(client);assert s.claim() is None
+    submit(client,key='b');assert Worker(s).run_once()
     assert client.post('/gpustack/v1/chat/completions',headers=headers(),json=body).json()['error']['code']=='BACKEND_QUARANTINED'
     s.pause(True);m=Maintenance(s);status=m.status()
     assert not status['managed_requests_drained'] and not status['safe_to_poweroff']

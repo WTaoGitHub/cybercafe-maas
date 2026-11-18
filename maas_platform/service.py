@@ -10,6 +10,7 @@ from .adapters import adapter_for
 from .artifact_gc import ArtifactGC
 from .metering import UsageType, select_usage
 from .capacity_admission import Admission, configuration, queue_counts, read_budget, unavailable
+from .quarantine import blocks, unresolved
 
 ACTIVE = ('QUEUED', 'RETRY_WAIT', 'RUNNING', 'CANCEL_REQUESTED')
 
@@ -220,7 +221,10 @@ class TaskService:
                 self.expire_queued(c)
             if maintenance['paused']: return None
             self.expire_sync(c)
-            if self.has_unknown(c): return None
+            unknown = unresolved(c)
+            if any(row['dispatch_route'] is None for row in unknown):
+                return None
+            catalog = self.settings.catalog() if unknown else {}
             if revision:
                 admission = Admission(c, self.settings, revision, include_preparing=True)
                 if not admission.budget:
@@ -228,7 +232,9 @@ class TaskService:
                 ready = "state IN ('QUEUED','RETRY_WAIT') AND next_run<=clock_timestamp() AND deadline>clock_timestamp()"
                 pairs = c.execute(f'SELECT DISTINCT project, model FROM tasks WHERE {ready}').fetchall()
                 eligible = [(r['project'], r['model']) for r in pairs
-                            if admission.allows(r['model'], r['project'], asynchronous=True)]
+                            if admission.allows(r['model'], r['project'], asynchronous=True)
+                            and not blocks(unknown, r['model'], catalog.get(r['model'], {}).get('upstream_model'),
+                                           admission.pool_ids.get(r['model']))]
                 if not eligible:
                     return None
                 projects, models = zip(*eligible)
@@ -239,11 +245,15 @@ class TaskService:
                     return None
             else:
                 self.expire_queued(c)
-                running = c.execute("SELECT (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') AS n").fetchone()['n']
+                running = c.execute('SELECT count(*) AS n FROM inference_slots').fetchone()['n']
                 if running >= self.settings.max_running: return None
+                blocked = {row['model'] for row in unknown}
+                blocked.update(name for name, model in catalog.items()
+                               if blocks(unknown, name, model.get('upstream_model'), None))
                 row = c.execute("""SELECT * FROM tasks t WHERE state IN ('QUEUED','RETRY_WAIT') AND next_run<=now() AND deadline>now()
-                    AND (SELECT count(*) FROM tasks r WHERE r.project=t.project AND r.state IN ('RUNNING','CANCEL_REQUESTED')) + (SELECT count(*) FROM sync_activity s WHERE s.project=t.project AND s.state='DISPATCHING') < %s
-                    ORDER BY created_at FOR UPDATE OF t SKIP LOCKED LIMIT 1""", (self.settings.max_project_running,)).fetchone()
+                    AND NOT (t.model=ANY(%s::text[]))
+                    AND (SELECT count(*) FROM inference_slots s WHERE s.project=t.project) < %s
+                    ORDER BY created_at FOR UPDATE OF t SKIP LOCKED LIMIT 1""", (list(blocked), self.settings.max_project_running,)).fetchone()
             if not row: return None
             token = uuid.uuid4().hex
             row = c.execute("UPDATE tasks SET state='RUNNING',attempts=attempts+1,token=%s,lease_until=now()+%s*interval '1 second',updated_at=now() WHERE id=%s RETURNING *", (token, self.settings.lease_seconds, row['id'])).fetchone()
@@ -257,29 +267,35 @@ class TaskService:
             if maintenance['paused']:
                 raise ServiceError('MAINTENANCE_PAUSED', 'Inference dispatch is paused', 503)
             self.expire_sync(c)
-            if self.has_unknown(c):
-                raise ServiceError('BACKEND_QUARANTINED', 'Unresolved backend activity blocks dispatch', 503)
             row = c.execute("""SELECT *, deadline>clock_timestamp() timely FROM tasks WHERE id=%s AND token=%s
                 AND state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until>clock_timestamp() FOR UPDATE""", (task['id'], task['token'])).fetchone()
             if not row:
                 raise ServiceError('INTERRUPTED', 'Attempt is no longer eligible for dispatch')
+            model = self.model(row['model'])
+            if fingerprint(model) != row['model_fingerprint']:
+                raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed')
+            route = model.get('upstream_model') or ''
+            pool_id = None
             revision = maintenance['capacity_policy_hash']
             allowed = row['timely'] and row['state'] == 'RUNNING'
             if revision and allowed:
                 try:
                     admission = Admission(c, self.settings, revision, include_preparing=False)
+                    pool_id = admission.pool_ids.get(row['model'])
                     allowed = admission.allows(row['model'], row['project'], asynchronous=True) and admission.fresh(c)
                 except ServiceError as exc:
                     if exc.code != 'CAPACITY_UNAVAILABLE':
                         raise
                     allowed = False
-            if allowed:
-                inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state)
-                    SELECT token,id,'DISPATCHING' FROM tasks WHERE id=%s
-                    AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''', (task['id'],)).rowcount
+            quarantined = blocks(unresolved(c), row['model'], route, pool_id)
+            if allowed and not quarantined:
+                inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id)
+                    SELECT token,id,'DISPATCHING',%s,%s FROM tasks WHERE id=%s
+                    AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''', (route, pool_id, task['id'])).rowcount
                 if inserted:
                     return
-            if not revision or not self._defer(c, row, 'CAPACITY_REDUCED'):
+            reason = 'BACKEND_QUARANTINED' if quarantined else 'CAPACITY_REDUCED'
+            if not (revision or quarantined) or not self._defer(c, row, reason):
                 raise ServiceError('INTERRUPTED', 'Attempt is no longer eligible for dispatch')
         raise ServiceError('DISPATCH_DEFERRED', 'Unsent dispatch has been deferred', 503, True)
 
@@ -289,9 +305,12 @@ class TaskService:
                   "WHERE state IN ('QUEUED','RETRY_WAIT') AND deadline<=clock_timestamp()")
 
     def complete_backend(self, task):
-        # Only a fully received successful inference response proves remote completion.
+        # The owning request proved completion for this exact transport attempt.
         with self.db.transaction() as c:
-            c.execute("UPDATE backend_activity SET state='COMPLETED',updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN')", (task['token'],))
+            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+            c.execute("""UPDATE backend_activity SET state='COMPLETED',updated_at=now(),
+                      resolution_reason=CASE WHEN state='UNKNOWN' THEN 'Transport confirmed completion' ELSE resolution_reason END
+                      WHERE token=%s AND task_id=%s AND state IN ('DISPATCHING','UNKNOWN')""", (task['token'], task['id']))
 
     def defer_dispatch(self, task, reason='MAINTENANCE_PAUSED'):
         """Return an unsent attempt to the queue without spending an execution retry."""
@@ -310,7 +329,7 @@ class TaskService:
         state = 'CANCELLED' if row['state']=='CANCEL_REQUESTED' else ('FAILED' if expired else 'QUEUED')
         code = 'DEADLINE_EXCEEDED' if state=='FAILED' else None
         c.execute("UPDATE task_attempts SET state='DEFERRED',error_code=%s,ended_at=now() WHERE token=%s", (reason,row['token']))
-        delay = 1 if reason == 'CAPACITY_REDUCED' else 0
+        delay = 1 if reason in ('CAPACITY_REDUCED', 'BACKEND_QUARANTINED') else 0
         c.execute("UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state,code,delay,row['id']))
         return True
 
@@ -338,6 +357,7 @@ class TaskService:
         if len(reason.strip()) < 10:
             raise ValueError('Provide evidence of backend termination (at least 10 characters)')
         with self.db.transaction() as c:
+            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             return bool(c.execute("UPDATE backend_activity SET state='RESOLVED',resolution_reason=%s,updated_at=now() WHERE token=%s AND state='UNKNOWN' RETURNING token", (reason,token)).fetchone())
 
     def heartbeat(self, task):

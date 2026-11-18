@@ -10,6 +10,7 @@ from fastapi.responses import Response
 from starlette.concurrency import run_in_threadpool
 from .capacity_admission import Admission, unavailable
 from .errors import ServiceError
+from .quarantine import blocks, unresolved
 
 
 class SyncIngress:
@@ -18,35 +19,43 @@ class SyncIngress:
         self.client_factory=client_factory or httpx.AsyncClient
         self.input_slots=BoundedSemaphore(getattr(service.settings, 'max_running', 1))
 
-    def begin(self,who,name,runtime,probe=False):
+    def begin(self,who,name,runtime,probe=False,expected_model=None):
         with self.service.db.transaction() as c:
             maintenance=c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
             self.service.expire_sync(c)
             if (maintenance['paused'] and not probe) or (probe and not maintenance['paused']):
                 raise ServiceError('MAINTENANCE_PAUSED','Inference admission is paused or probe window is closed',503)
-            if not self.service.has_unknown(c):
-                revision = maintenance['capacity_policy_hash']
-                if revision:
-                    admission = Admission(c, self.service.settings, revision, include_preparing=False)
+            model = self.service.model(name)
+            if expected_model is not None and model != expected_model:
+                raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed', 409)
+            route = model.get('upstream_model') or ''
+            revision = maintenance['capacity_policy_hash']
+            admission = Admission(c, self.service.settings, revision, include_preparing=False) if revision else None
+            pool_id = admission.pool_ids.get(name) if admission else None
+            if not blocks(unresolved(c), name, route, pool_id):
+                if admission:
                     if not admission.pool(name).get('total') or not admission.fresh(c):
                         raise unavailable()
                     allowed = admission.allows(name, who.project, asynchronous=False)
                 else:
-                    total=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING') + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')) n").fetchone()['n']
-                    own=c.execute("SELECT (SELECT count(*) FROM sync_activity WHERE state='DISPATCHING' AND project=%s) + (SELECT count(*) FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND project=%s) n",(who.project,who.project)).fetchone()['n']
-                    allowed = total < self.service.settings.max_running and own < self.service.settings.max_project_running
+                    slots=c.execute("SELECT count(*) total,count(*) FILTER (WHERE project=%s) own FROM inference_slots",(who.project,)).fetchone()
+                    allowed = slots['total'] < self.service.settings.max_running and slots['own'] < self.service.settings.max_project_running
                 if not allowed:
                     raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
                 token=uuid.uuid4().hex
-                c.execute("INSERT INTO sync_activity(token,project,model,state,deadline,is_probe) VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s)",(token,who.project,name,runtime,probe))
+                c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,is_probe,dispatch_route,dispatch_pool_id)
+                    VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s,%s,%s)""",
+                    (token,who.project,name,runtime,probe,route,pool_id))
                 return token
-        raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks inference',503)
+        raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks this inference scope',503)
 
     def finish(self,token,confirmed,successful=False,metering=None):
         with self.service.db.transaction() as c:
-            if not confirmed:
-                c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
-            row=c.execute("UPDATE sync_activity SET state=%s,outcome=%s,finished_at=now(),updated_at=now() WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING *",('COMPLETED' if confirmed else 'UNKNOWN','SUCCEEDED' if confirmed and successful else ('REJECTED' if confirmed else 'UNKNOWN'),token)).fetchone()
+            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+            row=c.execute("""UPDATE sync_activity SET state=%s,outcome=%s,finished_at=now(),updated_at=now(),
+                resolution_reason=CASE WHEN state='UNKNOWN' AND %s THEN 'Transport confirmed completion' ELSE resolution_reason END
+                WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING *""",
+                ('COMPLETED' if confirmed else 'UNKNOWN','SUCCEEDED' if confirmed and successful else ('REJECTED' if confirmed else 'UNKNOWN'),confirmed,token)).fetchone()
             if row and confirmed and successful and not row['is_probe']:
                 c.execute('INSERT INTO sync_usage_events(token,project,model) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING',(token,row['project'],row['model']))
                 if metering is not None:
@@ -67,12 +76,12 @@ class SyncIngress:
                 raise ServiceError('SYNC_CAPACITY','Synchronous input preparation is full',429,True)
             try:
                 body = await self.prepare(prepare_input)
-                token = await run_in_threadpool(self.begin, who, name, runtime, probe)
+                token = await run_in_threadpool(self.begin, who, name, runtime, probe, model)
             finally:
                 self.input_slots.release()
             prepare_input = None
         else:
-            token=await run_in_threadpool(self.begin,who,name,runtime+(10 if prepare_input else 0),probe)
+            token=await run_in_threadpool(self.begin,who,name,runtime+(10 if prepare_input else 0),probe,model)
         confirmed=True;successful=False;metering=None
         try:
             if prepare_input:

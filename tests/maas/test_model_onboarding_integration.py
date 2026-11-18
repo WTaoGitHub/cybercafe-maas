@@ -187,7 +187,7 @@ def test_configured_pools_share_a_global_budget(unified, tmp_path):
     assert calls == [ADDED_ROUTE]
 
 
-def test_document_unknown_blocks_other_model_and_project_until_resolved(unified, tmp_path):
+def test_document_unknown_isolates_document_while_image_ocr_continues(unified, tmp_path):
     client, service, _, calls, failures = unified
     worker = Worker(service)
     prior = submit_image(client)
@@ -195,28 +195,27 @@ def test_document_unknown_blocks_other_model_and_project_until_resolved(unified,
     failures.add('unlimited-ocr-2')
     document = submit_document(client)
     queued = submit_image(client, idem='other-project', key='b')
-    assert worker.run_once() and not worker.run_once()
+    assert worker.run_once()
     failed = client.get('/maas/v1/tasks/' + document, headers=headers()).json()
     assert failed['status'] == 'FAILED' and failed['error']['code'] == 'UNKNOWN_BACKEND_ACTIVITY'
     assert failed['usage'] is None
-    blocked = sync_ocr(client, key='b')
-    assert blocked.status_code == 503 and blocked.json()['error']['code'] == 'BACKEND_QUARANTINED'
-    assert client.get('/maas/v1/tasks/' + queued, headers=headers('b')).json()['status'] == 'QUEUED'
+    assert sync_ocr(client, key='b').status_code == 200
+    assert worker.run_once() and not worker.run_once()
+    assert client.get('/maas/v1/tasks/' + queued, headers=headers('b')).json()['status'] == 'SUCCEEDED'
     assert check_task(client, prior, IMAGE, 'images', 1)['text'] == IMAGE_ROUTE
-    assert calls == [IMAGE_ROUTE, 'unlimited-ocr-2']
+    assert calls == [IMAGE_ROUTE, 'unlimited-ocr-2', IMAGE_ROUTE, IMAGE_ROUTE]
     service.pause(True, 'isolated incident')
     maintenance = Maintenance(service)
     with pytest.raises(ServiceError, match='Pause and resolve'):
         maintenance.resume(lambda: pytest.fail('Unresolved task must block recovery probes'))
     unknown, = maintenance.status()['backend_activity']
-    assert unknown['task_id'] == document and unknown['state'] == 'UNKNOWN'
+    assert unknown['task_id'] == document and unknown['state'] == 'UNKNOWN' and unknown['dispatch_route'] == 'unlimited-ocr-2'
     assert service.resolve_backend(unknown['token'], 'Test transport completed; no remote execution exists')
     failures.clear()
     probe = tmp_path / 'probe.png'
     probe.write_bytes(png())
     assert maintenance.resume(lambda: probe_registered_models(service, 'a', probe))['paused'] is False
-    assert worker.run_once() and not worker.run_once()
-    assert client.get('/maas/v1/tasks/' + queued, headers=headers('b')).json()['status'] == 'SUCCEEDED'
-    assert calls == [IMAGE_ROUTE, 'unlimited-ocr-2', IMAGE_ROUTE, 'unlimited-ocr-2', IMAGE_ROUTE]
+    assert not worker.run_once()
+    assert calls == [IMAGE_ROUTE, 'unlimited-ocr-2', IMAGE_ROUTE, IMAGE_ROUTE, IMAGE_ROUTE, 'unlimited-ocr-2']
     with service.db.transaction() as c:
-        assert c.execute('SELECT count(*) n FROM ocr_usage_records').fetchone()['n'] == 2
+        assert c.execute('SELECT count(*) n FROM ocr_usage_records').fetchone()['n'] == 3

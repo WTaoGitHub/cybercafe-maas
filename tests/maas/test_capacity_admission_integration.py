@@ -26,7 +26,7 @@ def dynamic(env, tmp_path):
     model = {'driver': 'mock', 'revision': '1', 'max_runtime_s': 30}
     settings.catalog_file.write_text(json.dumps({
         'mock.echo': {**model, 'upstream_model': 'route-a'},
-        'mock.alias': {**model, 'upstream_model': 'route-a'},
+        'mock.alias': {**model, 'upstream_model': 'route-a-alias'},
         'mock.other': {**model, 'upstream_model': 'route-b'},
     }))
     bindings = json.loads(settings.bindings_file.read_text())
@@ -36,7 +36,7 @@ def dynamic(env, tmp_path):
     common = {'cluster_id': 1, 'owner_principal_id': 1, 'gpu_names': ['example'],
               'slots_per_replica': 1, 'hard_limit': 8, 'gateway_verified': True}
     settings.capacity_policy_file.write_text(json.dumps({'global_limit': 8, 'sync_percent': 25, 'pools': {
-        'a': {**common, 'model_id': 1, 'routes': {'mock.echo': 1, 'mock.alias': 1}, 'queue_limit': 12, 'sync_percent': 25},
+        'a': {**common, 'model_id': 1, 'routes': {'mock.echo': 1, 'mock.alias': 3}, 'queue_limit': 12, 'sync_percent': 25},
         'b': {**common, 'model_id': 2, 'routes': {'mock.other': 2}, 'queue_limit': 2},
     }}))
     settings.capacity_policy_file.chmod(0o600)
@@ -150,6 +150,32 @@ def test_queue_pool_and_requeue_credit_with_healthy_pool_bypass(dynamic):
         c.execute("UPDATE tasks SET deadline=clock_timestamp()-interval '1 second' WHERE id=%s", (a,))
     assert service.claim() is None
     assert client.get('/maas/v1/tasks/'+a, headers={'Authorization': 'Bearer gpustack_registered_a'}).json()['status'] == 'FAILED'
+
+
+def test_unknown_quarantines_distinct_routes_in_same_pool_and_late_completion_reopens(dynamic):
+    client, service, _, identity, set_capacity = dynamic
+    set_capacity(4, 3)
+    first = submit(client, 'uncertain').json()['id']
+    original = service.claim()
+    assert original['id'] == first
+    service.begin_backend(original)
+    service.finish(original, error=ServiceError('TRANSPORT_TIMEOUT', 'Uncertain execution'))
+    same_pool = submit(client, 'alias', model='mock.alias').json()['id']
+    other_pool = submit(client, 'elsewhere', model='mock.other').json()['id']
+    assert service.claim()['id'] == other_pool
+    with pytest.raises(ServiceError) as blocked:
+        SyncIngress(service).begin(identity, 'mock.alias', 30)
+    assert blocked.value.code == 'BACKEND_QUARANTINED'
+    assert service.claim() is None
+    service.complete_backend({**original, 'id': other_pool})
+    assert service.claim() is None
+    service.complete_backend(original)
+    assert service.claim()['id'] == same_pool
+    with service.db.transaction() as c:
+        ledger = c.execute('SELECT state,dispatch_pool_id,resolution_reason FROM backend_activity WHERE token=%s',
+                           (original['token'],)).fetchone()
+    assert ledger == {'state': 'COMPLETED', 'dispatch_pool_id': 1, 'resolution_reason': 'Transport confirmed completion'}
+    assert service.get(identity, first)['state'] == 'FAILED' and service.metrics()['successful_tasks'] == 0
 
 
 def test_stale_snapshot_and_mixed_config_fail_closed_and_require_drained_switch(dynamic):

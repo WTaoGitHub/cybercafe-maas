@@ -47,6 +47,7 @@ class Admission:
         policy, self.aliases, local_revision = configuration(settings)
         if revision != local_revision:
             raise unavailable()
+        self.pool_ids = {name: policy.pools[key].model_id for name, key in self.aliases.items()}
         self.revision = revision
         self.budget = read_budget(c, revision)
         self.project_limit = settings.max_project_running
@@ -55,17 +56,13 @@ class Admission:
         self.project = Counter()
         if not self.budget:
             return
-        rows = c.execute('''SELECT t.model,t.project,count(*) AS n,true AS async
-              FROM tasks t WHERE t.state IN ('RUNNING','CANCEL_REQUESTED') AND
-                (%s OR EXISTS(SELECT 1 FROM backend_activity b WHERE b.token=t.token))
-              GROUP BY t.model,t.project
-              UNION ALL SELECT model,project,count(*),false FROM sync_activity
-              WHERE state='DISPATCHING' GROUP BY model,project''', (include_preparing,)).fetchall()
+        rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous FROM inference_slots
+                            WHERE %s OR dispatched GROUP BY model,project,asynchronous''', (include_preparing,)).fetchall()
         for row in rows:
             key, n = self.aliases.get(row['model']), row['n']
             self.project[row['project']] += n
             self.claimed[key] += n
-            if row['async']:
+            if row['asynchronous']:
                 self.asynchronous[key] += n
         self.total, self.async_total = self.claimed.total(), self.asynchronous.total()
 
