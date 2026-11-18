@@ -1,0 +1,287 @@
+{
+  "revision": "9c4a6e5c41831adb7f670dd6449664e9b936900f",
+  "records": [
+    {
+      "label": "baseline-sync",
+      "model": "ocr.default",
+      "receipt_unit": "successful_images",
+      "units": 1,
+      "seconds": 0.892
+    },
+    {
+      "label": "baseline-image",
+      "model": "ocr.default",
+      "receipt_unit": "successful_images",
+      "units": 1,
+      "seconds": 1.297
+    },
+    {
+      "label": "baseline-document",
+      "model": "document.unlimited-ocr-2",
+      "receipt_unit": "successful_pages",
+      "units": 3,
+      "seconds": 23.619
+    },
+    {
+      "label": "mixed-sync",
+      "model": "ocr.default",
+      "receipt_unit": "successful_images",
+      "units": 1,
+      "seconds": 4.071
+    },
+    {
+      "label": "mixed-image-1",
+      "model": "ocr.default",
+      "receipt_unit": "successful_images",
+      "units": 1,
+      "seconds": 1.509
+    },
+    {
+      "label": "mixed-image-2",
+      "model": "ocr.default",
+      "receipt_unit": "successful_images",
+      "units": 1,
+      "seconds": 1.578
+    },
+    {
+      "label": "mixed-document-1",
+      "model": "document.unlimited-ocr-2",
+      "receipt_unit": "successful_pages",
+      "units": 3,
+      "seconds": 26.397
+    },
+    {
+      "label": "mixed-document-2",
+      "model": "document.unlimited-ocr-2",
+      "receipt_unit": "successful_pages",
+      "units": 3,
+      "seconds": 48.814
+    }
+  ],
+  "observations": [
+    {
+      "global": 0,
+      "pools": {
+        "ocr.default": 0,
+        "document.unlimited-ocr-2": 0
+      },
+      "ready_ids": {
+        "ocr.default": [],
+        "document.unlimited-ocr-2": []
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    },
+    {
+      "global": 2,
+      "pools": {
+        "ocr.default": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "ready_ids": {
+        "ocr.default": [
+          193
+        ],
+        "document.unlimited-ocr-2": [
+          195
+        ]
+      }
+    }
+  ],
+  "observer_errors": [],
+  "status": "passed",
+  "idempotency_verified": true,
+  "unique_total_receipts": 8,
+  "successful_async_tasks": 6,
+  "document_slots_verified": 1,
+  "sync_document_intent_overlap_seconds": 0.732,
+  "second_document_wait_seconds": 26.184,
+  "final_admission": "enforce",
+  "receipt_units": {
+    "successful_images": 5,
+    "successful_pages": 9
+  },
+  "native_routes": {
+    "ocr.default": "maas-ocr",
+    "document.unlimited-ocr-2": "unlimited-ocr-2-nfs"
+  },
+  "temporary_inference_key_revoked": true,
+  "isolated_processes_and_database_stopped": true,
+  "existing_catalogs_models_routes_and_instances_same": true,
+  "first_run": {
+    "baseline_rows": [
+      {
+        "label": "baseline-sync",
+        "model": "ocr.default",
+        "receipt_unit": "successful_images",
+        "units": 1,
+        "seconds": 1.085
+      },
+      {
+        "label": "baseline-image",
+        "model": "ocr.default",
+        "receipt_unit": "successful_images",
+        "units": 1,
+        "seconds": 1.267
+      },
+      {
+        "label": "baseline-document",
+        "model": "document.unlimited-ocr-2",
+        "receipt_unit": "successful_pages",
+        "units": 3,
+        "seconds": 25.826
+      }
+    ],
+    "mixed_traffic_sent": false,
+    "observed_global_slots": 0,
+    "fix_commit": "9c4a6e5"
+  }
+}
