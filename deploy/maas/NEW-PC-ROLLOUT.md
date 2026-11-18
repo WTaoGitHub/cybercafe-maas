@@ -28,7 +28,7 @@
 
 ### 方案 C 固定 HTTP 消费者入口
 
-新 PC 的业务消费者入口为 `http://maas-service:18831`。下游可保留自己的 Compose 网络，通过新 PC 固定私网地址上的 Nginx 访问回环 MaaS API。使用新控制端登记的服务凭据。宿主机程序继续使用原有回环 HTTPS `127.0.0.1:18832`。
+新 PC 唯一的 MaaS 业务入口为 `http://maas-service:18831`。下游可保留自己的 Compose 网络，通过新 PC 固定私网地址上的 Nginx 访问回环 MaaS API，使用登记的服务凭据调用同步 OCR 和异步任务。回环 HTTPS `127.0.0.1:18832` 专供运维。文档试点和迁移监听已退役，旧任务库转为归档。[单入口切换记录](../../results/maas-cutover-apply-20261118/REPORT.md#统一业务入口)
 
 入口由 `maas-consumer-private.service` 管理，镜像配置、地址、生成的 Nginx 配置和刷新脚本均位于 `/srv/cybercafe-maas/control/consumer-private/`。宿主机 `/etc/hosts` 提供名称。方案 A 的网关监听与防火墙表已移除，旧部署配置已备份。
 
