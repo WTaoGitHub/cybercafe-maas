@@ -1,0 +1,36 @@
+{
+  "model": "unlimited-ocr-2",
+  "model_revision": "0480966938291445591f69f08a13b041c073a96a",
+  "expected_manifest": "../20261116-p1-build/model-manifest.json",
+  "files": 19,
+  "total_bytes": 6699209288,
+  "published_at": "2026-11-17T19:34:52.302531+08:00",
+  "source": {
+    "role": "original-model-worker",
+    "path": "/srv/maas/models/unlimited-ocr-2-0480966",
+    "all_files_size_and_sha256_match": true
+  },
+  "destination": {
+    "role": "new-pc-nfs-server",
+    "path": "/root/maas/data/modelsWeights/unlimited-ocr-2-0480966",
+    "all_files_size_and_sha256_match": true,
+    "directory_mode": "0755",
+    "file_mode": "0644",
+    "existing_version_overwritten": false
+  },
+  "nfs_client": {
+    "role": "user-designated-new-worker",
+    "path": "/srv/maas/models/unlimited-ocr-2-0480966",
+    "filesystem": "nfs4",
+    "read_only": true,
+    "source_matches_preflight": true,
+    "all_files_size_and_sha256_match": true
+  },
+  "scope": {
+    "existing_model_deployment_changed": false,
+    "new_model_instance_created": false,
+    "nfs_export_changed": false,
+    "inference_test_performed": false,
+    "vm_reboot_performed": false
+  }
+}
