@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import hmac
 import json
+import logging
 import os
 from pathlib import Path
 from secrets import token_hex
@@ -64,9 +65,23 @@ def private_root(path):
 
 
 class WorkerStartBroker:
-    def __init__(self, root, native):
+    def __init__(self, root, native, shutdown_key_file=None):
         self.root = private_root(root)
         self.native = native
+        self.shutdown_key_file = shutdown_key_file or os.getenv('MAAS_BOOTSTRAP_SHUTDOWN_EVENT_KEY_FILE')
+
+    def shutdown_credential(self, permit, boot_id):
+        if not self.shutdown_key_file or boot_id is None:
+            return permit
+        try:
+            from .shutdown_auth import issue
+            scope = {k: permit[k] for k in ('cluster_id', 'worker_id', 'session_id')}
+            scope.update(gpu_uuid=permit['external_id'], boot_id=boot_id)
+            return {**permit, 'shutdown_event_credential': issue(self.shutdown_key_file, scope)}
+        except Exception:
+            # Optional reporting cannot turn a valid native permit into a startup failure.
+            logging.getLogger(__name__).warning('shutdown_event_credential_unavailable')
+            return permit
 
     def automatic(self, grant, body, releases):
         if not isinstance(body, dict) or set(body) != {'cluster_id','gpu_uuid','image_id','config_revision','boot_id'}:
@@ -104,7 +119,7 @@ class WorkerStartBroker:
                 atomic_json(state.root/'intent.json', intent)
             elif intent['binding'] != binding:
                 raise StartDenied(409, 'WORKER_START_BOOT_CONFLICT')
-            return self.issue(state, binding, intent['session_id'])
+            return self.shutdown_credential(self.issue(state, binding, intent['session_id']), boot)
 
     def start(self, authorization, body, releases):
         token = (authorization or '').removeprefix('Bearer ')
@@ -122,13 +137,19 @@ class WorkerStartBroker:
             if grant['expires_at'] <= time.time():
                 raise StartDenied(403, 'WORKER_START_GRANT_EXPIRED')
             expected = {key:grant[key] for key in ('cluster_id','gpu_uuid','image_id','config_revision')}
-            if not isinstance(body, dict) or not positive_id(body.get('cluster_id')) or body != expected:
+            if (not isinstance(body, dict) or not positive_id(body.get('cluster_id'))
+                    or {k:v for k,v in body.items() if k != 'boot_id'} != expected):
                 raise StartDenied(403, 'WORKER_START_SCOPE_MISMATCH')
+            boot = body.get('boot_id')
+            if 'boot_id' in body:
+                try: boot = str(UUID(boot))
+                except (ValueError, TypeError, AttributeError):
+                    raise StartDenied(400, 'WORKER_START_REQUEST_INVALID') from None
             manifest = releases.release(grant, grant['config_revision'], grant['image_id'])['manifest']
             if (manifest.get('worker_name_policy') != DISKLESS_POLICY
                     or grant['image_id'] not in manifest['compatible_image_ids']):
                 raise StartDenied(409, 'WORKER_START_RELEASE_MISMATCH')
-            return self.issue(state, grant, session_id)
+            return self.shutdown_credential(self.issue(state, grant, session_id), boot)
 
     def issue(self, state, grant, session_id):
         cluster, gpu = grant['cluster_id'], grant['gpu_uuid']

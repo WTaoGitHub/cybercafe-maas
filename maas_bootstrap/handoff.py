@@ -75,6 +75,8 @@ class WorkerStartFetcher:
             if not match:
                 raise BootstrapError('WORKER_START_GRANT_INVALID')
             session_id = match[1]
+            if settings.data.get('shutdown_events'):
+                body['boot_id'] = read_file('/proc/sys/kernel/random/boot_id').decode().strip()
         request = urllib.request.Request(url, data=canonical(body), headers={
             'Authorization':'Bearer ' + grant, 'Content-Type':'application/json'}, method='POST')
         try:
