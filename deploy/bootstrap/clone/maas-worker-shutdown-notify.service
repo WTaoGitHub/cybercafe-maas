@@ -1,0 +1,17 @@
+[Unit]
+Description=Send one bounded worker shutdown event
+After=network.target docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=PYTHONPATH=/opt/maas/lib
+ExecStart=/usr/bin/true
+ExecStop=-/usr/bin/python3 -m maas_bootstrap.shutdown_events
+TimeoutStopSec=1s
+TimeoutStopFailureMode=kill
+KillMode=control-group
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

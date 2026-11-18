@@ -11,14 +11,24 @@ from .handoff import gpu_uuid, positive_id
 PREFIX = b'maas-worker-shutdown-v1\0'
 
 
-def issue(key_file, binding):
-    if set(binding) != {'cluster_id', 'worker_id', 'gpu_uuid', 'boot_id', 'session_id'}:
+def validate_scope(binding):
+    if not isinstance(binding, dict) or set(binding) != {'cluster_id', 'worker_id', 'gpu_uuid', 'boot_id', 'session_id'}:
         raise BootstrapError('SHUTDOWN_EVENT_SCOPE_INVALID')
     try:
         if not all(positive_id(binding[k]) for k in ('cluster_id', 'worker_id')):
             raise ValueError()
         scope = dict(binding, gpu_uuid=gpu_uuid(binding['gpu_uuid']),
                      boot_id=str(UUID(binding['boot_id'])), session_id=str(UUID(binding['session_id'])))
+        if scope['cluster_id'] > 2147483647 or scope['worker_id'] > 9223372036854775807:
+            raise ValueError()
+        return scope
+    except (ValueError, TypeError, AttributeError):
+        raise BootstrapError('SHUTDOWN_EVENT_SCOPE_INVALID') from None
+
+
+def issue(key_file, binding):
+    scope = validate_scope(binding)
+    try:
         raw = read_file(key_file, secret=True).decode().strip()
         if not re.fullmatch('[0-9a-f]{64}', raw):
             raise ValueError()
