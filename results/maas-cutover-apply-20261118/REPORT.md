@@ -18,3 +18,9 @@
 | 执行与访问控制 | 一套执行器运行，两库均无 `UNKNOWN`，新入口拒绝无认证及白名单之外的请求 |
 
 切换保留两库及文件卷，实际下游验证使用容器内的 curl。回退需要先冻结统一库的新文档受理并排空文档任务，导出这次切换后在统一库受理的键，映射回旧项目后导入旧库，再恢复旧库执行器和文档入口的写权限。[实测结果](VERIFICATION.json) · [切换与回退手册](../../deploy/maas/TASK-CUTOVER.md)
+
+## 旧 GPUStack 部署退役
+
+2026-11-18 删除使用 worker 本地权重的 `unlimited-ocr-2` 部署（模型 11）。GPUStack 实例记录与 worker 6 的推理容器均已移除。原权重仍在 worker 本地，同名 GPUStack 路由当前没有目标。
+
+历史 MaaS 入口的模型授权检查已改用 `unlimited-ocr-2-nfs`。删除后以原请求和原键重试，历史入口返回 `200`、原任务 ID 和原收据。实际下游容器在统一入口提交一页 PDF，NFS 部署一次成功并生成一页收据。GPUStack 读回 NFS 部署为 1/1 Ready，PP-OCRv4 为 2/2 Ready。
