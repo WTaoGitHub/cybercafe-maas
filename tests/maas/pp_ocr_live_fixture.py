@@ -3,6 +3,7 @@
 The fixture requires the real execution guard and delays only the finish receipt.
 Use it with synthetic requests on dedicated, guarded test endpoints.
 """
+import argparse
 from pathlib import Path
 import sys
 
@@ -47,6 +48,78 @@ def _trial_execute(attempt, array):
     return source.replace(original, 'result, _ = _trial_execute(attempt, array)')
 
 
+def instrument_gateway(source):
+    """Inject a 503 after the grant while the real GPU completes independently."""
+    marker = 'app = FastAPI()'
+    routes = '''
+import hashlib as _trial_hashlib
+from collections import defaultdict as _TrialEvents
+from concurrent.futures import ThreadPoolExecutor as _TrialPool
+
+if guard is None:
+    raise RuntimeError('The gateway trial requires the real execution guard')
+_gateway_events = _TrialEvents(list)
+_gateway_lock = threading.Lock()
+_gateway_pool = _TrialPool(max_workers=1)
+
+
+def _gateway_event(label, phase, attempt):
+    with _gateway_lock:
+        _gateway_events[label].append({
+            'phase': phase, 'marker_sha256': _trial_hashlib.sha256(attempt.encode()).hexdigest()})
+
+
+@app.get('/probe/stats')
+def _gateway_stats():
+    with _gateway_lock:
+        return {label: list(entries) for label, entries in _gateway_events.items()}
+
+
+def _gateway_execute(label, encoded, attempt):
+    try:
+        result = recognize(encoded, attempt, gateway_label=label)
+        if not result['text']:
+            raise RuntimeError('Empty trial OCR result')
+        # Keep the disconnect window observable after real CUDA execution returns.
+        time.sleep(8)
+        guard.report_finished(attempt)
+        _gateway_event(label, 'finish', attempt)
+    except Exception:
+        _gateway_event(label, 'incomplete', attempt)
+'''
+    assert source.count(marker) == 1
+    source = source.replace(marker, marker + '\n' + routes)
+    replacements = {
+        'def recognize(encoded, attempt):': 'def recognize(encoded, attempt, gateway_label=None):',
+        '        result, _ = guard.run(attempt, engine, array) if guard else engine(array)':
+            '''        if gateway_label is None:
+            result, _ = guard.run(attempt, engine, array)
+        else:
+            _gateway_event(gateway_label, 'engine_enter', attempt)
+            result, _ = engine(array)
+            _gateway_event(gateway_label, 'engine_return', attempt)''',
+        '    result = recognize(encoded, attempt)':
+            '''    label = body['messages'][0].get('content')
+    if not isinstance(label, str) or not label.startswith('test_agent_retry_') or len(label) > 96:
+        raise HTTPException(400, 'Only marked synthetic requests are accepted')
+    with _gateway_lock:
+        if sum(map(len, _gateway_events.values())) >= 200:
+            raise HTTPException(429, 'Trial storage ceiling reached')
+    _gateway_event(label, 'delivery', attempt)
+    try:
+        guard.report(attempt, finished=False)
+    except HTTPException as exc:
+        _gateway_event(label, f'denied_{exc.status_code}', attempt)
+        raise
+    _gateway_pool.submit(_gateway_execute, label, encoded, attempt)
+    raise HTTPException(503, 'Injected response after execution grant')''',
+    }
+    for before, after in replacements.items():
+        assert source.count(before) == 1
+        source = source.replace(before, after)
+    return source
+
+
 def verify_events(record, winner):
     assert len(record) == 2 and winner in record
     for host,entries in record.items():
@@ -57,5 +130,9 @@ def verify_events(record, winner):
             assert sum(x['phase']=='finish_callback' and x['ok'] for x in entries)==1
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--gateway', action='store_true')
+    args = parser.parse_args()
     server = Path(__file__).resolve().parents[2] / 'gpu-ocr' / 'server.py'
-    sys.stdout.write(instrument(server.read_text()))
+    generate = instrument_gateway if args.gateway else instrument
+    sys.stdout.write(generate(server.read_text()))

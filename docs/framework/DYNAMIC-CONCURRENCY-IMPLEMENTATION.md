@@ -166,6 +166,19 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 本地相关回归 143 项通过，2 项按环境跳过。固定镜像内核对最终启动配置，通过 HTTP 单副本配置，拒绝额外 gRPC 监听。试验容器及端口、探针数据和凭据均已清理，原 API、私有 TLS 入口和静态准入配置已恢复，健康检查为 `200`，`UNKNOWN=0`。真实网关的重试 token 透传和逐 GPU 隔离仍是正式启用前的验收项。
 
+### Higress 重试与逐 GPU 路由验收
+
+2026-11-19 在当前 GPUStack v2.2.3 上，用两个各固定到一张实体 GPU 的临时原生模型共享一条私有模型路由。生效的 Envoy 配置有两个目标集群和两次重试。三个正常 POST 各到达一次。三个始终返回 503 的 POST 各到达三次，九次均携带原 token。两张 GPU 都被选中过，每个 POST 的后续重试均停留在首次选中的实例。 [原生路由生成逻辑](https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/gateway/utils.py#L609)
+
+- 只从试验路由移除一张 GPU 的目标，保留两个实例运行。等到 Envoy 配置只剩一个目标后，正常 POST 的一次调用、503 POST 的三次调用全部到达保留的 GPU。随后恢复试验路由的两个目标。
+- 切换到受保护的 PP-OCRv4 实例。首个 POST 在登记执行权后注入 503，同一 HTTP 请求的重试回到原 GPU，收到 409。经同一 Higress 路由再次提交同一 token，另一张 GPU 收到请求，并在原活动为 `UNKNOWN` 时返回 409。两张 GPU 的 CUDA 调用次数为 1 和 0。可信终态提交后活动转为 `COMPLETED`，占用从 1 降到 0，原任务保留失败状态。
+
+复跑时用[原生标识探针](../../tests/maas/native_retry_fixture.py)或 `python tests/maas/pp_ocr_live_fixture.py --gateway` 生成的[受保护 PP-OCRv4 入口](../../tests/maas/pp_ocr_live_fixture.py)，按 GPU 固定两个试验实例，通过限权路由发送带 `test_agent_retry_` 前缀的合成请求。探针只记录 token 的 SHA-256；用两个实例的 `/probe/stats` 及现有任务账本核对到达、拒绝和最终归还。相关 PostgreSQL 回归 63 项通过。
+
+验证范围为原生小请求的 503 重试、PP-OCRv4 执行权和人工收窄目标后的实际落点。MaaS 侧根据 `UNKNOWN` 自动排除 GPU、在其他 GPU 继续派发，以及大文档和其他故障类型的实际网关行为仍需验收。
+
+两个试验副本、监听端口、私有路由、凭据、一条 MaaS 探针和 GPUStack 的 11 条用量明细及 2 条汇总均已清理。Envoy 无试验路由，原 API 与私有 TLS 入口已恢复，MaaS 健康检查为 `200`，`UNKNOWN=0`。三个现有模型的就绪数分别为 `2/2`、`1/1`、`1/1`。
+
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |
 | 1. 绑定、计算与只观测模式 | 配置、容量快照迁移、observer、已有运维指标。先跑计算逻辑，再接原生读取。 | 同池别名归一，跨池资源不重复；验证分批掉线、归零、恢复、乱序、订阅断开、快照过期和比例取整。仅输出对照数据，观察到的可用实例可追溯到原生证据。 |
