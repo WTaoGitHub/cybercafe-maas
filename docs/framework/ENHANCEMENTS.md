@@ -860,6 +860,13 @@ PP-OCRv5 server调整为第二轮备选：真实拍照样本出现明确需求�
 - 历史会话对invoice_sample.pdf原始内容的实际请求中，/ocr返回422 IMAGE_INVALID，Chat返回400 UPSTREAM_REJECTED，artifact上传返回415 MEDIA_TYPE。当时图片入口不接收PDF；2026-11-16新增独立文档入口见M2交付。这些历史结果不能用于推断底层模型的页面识别质量。后续保留原始请求/响应和文件摘要作为正式验收证据。
 - [Unlimited-OCR-2官方模型卡](https://huggingface.co/baidu/Unlimited-OCR-2)及[仓库](https://github.com/baidu/Unlimited-OCR)提供定制SGLang wheel部署路径，PDF示例先渲染为页面图片；初始文档调研不证明普通SGLang镜像兼容，本轮固定定制wheel、驱动及worker的实测见M1/M2交付。部署目标须按最新登记、可用GPU及独立预算选择；001现允许按普通worker注册，不因旧控制端角色阻止。后续实验仍须只读核对实际worker、端口及副本，不能直接沿用旧状态。
 
+### 单卡 OCR 显存与共卡验证（2026-11-19，待讨论）
+
+1. **双 OvisOCR3 副本。** 在 16 GB RTX 4080 SUPER 上，以当前 `--gpu-memory-utilization=0.50` 为基线，分别验证两个副本都设为 `0.40`、都设为 `0.45` 的效果。记录启动、双路同时推理及其中一个容器重建时的整卡和单进程显存峰值，并核对 OCR 结果完整性及尾延迟。[OvisOCR3 单副本基线](../../results/ovisocr3/20261118-deploy/REPORT.md#运行profile与实测)
+2. **Unlimited-OCR-2 与通用 OCR 共卡。** 验证单副本的观测显存峰值是否满足 Unlimited-OCR-2 **≤12 GiB**、PP-OCRv4 **≤3.5 GiB**、PP-OCRv6 small **≤3.5 GiB**。先测各自启动及推理，再分别验证 Unlimited-OCR-2 + PP-OCRv4、Unlimited-OCR-2 + PP-OCRv6 small 在多页 PDF 与大图 OCR 同时运行时的整卡峰值、OOM 和尾延迟。[PP-OCR 显存对照](../../results/ocr-model-v3/REPORT.md#显存与模型文件) · [PP-OCRv4 共卡启动记录](../../results/maas-nfs-image-marker-20261119/REPORT.md)
+
+显存验收使用实测峰值，同时记录 GPUStack 显存申报和 Worker 的可分配显存。本轮状态为待讨论，测试范围及最终参数留待后续确定。[Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)
+
 ### 后续任务与验收
 
 1. 收集真实业务样本并固定标注和留出集；确定文字、车牌、金额/税号/日期等关键字段、表格与跨页结构的合格标准和延迟上限，按上述三类首轮名单开展比较。
