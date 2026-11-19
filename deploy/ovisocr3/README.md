@@ -10,7 +10,9 @@ Create a private build context containing this `Dockerfile`, `entrypoint.py`, an
 
 Fill the Registry, cluster and owner placeholders in [gpustack-template.json](gpustack-template.json), and verify the pinned runtime digest. Keep `worker_selector={}` and `gpu_selector=null`; GPUStack chooses placement. The 8GiB claim corresponds to the initial 0.50 GPU budget, not measured minimum memory. The initial profile uses BF16, one image/request, concurrency one, 16K context and at most 1440² pixels. Send at most 4096 output tokens for initial short-page requests.
 
-The shared guard prevents vLLM from loading until the new inference container has at most 16GiB RAM and 4 CPU. After scheduling, inspect the actual container's model/image/GPU assignment and read-only NFS source, apply `docker update --memory 16g --memory-swap 16g --cpus 4 <verified-container-id>`, and read back cgroup limits. This operation observes the scheduler's choice; it does not set a worker or GPU selector. The configured shared memory is 4GiB. Automatic error restart stays disabled. Replacement containers require renewed cap verification; unattended recovery is not implemented.
+The GPUStack v2.2.3 Docker worker installs the [creation-time limits hook](../../maas_bootstrap/worker_limits.py) through the MaaS bootstrap bundle. The hook matches this exact serving image digest and its guard entrypoint. It gives each new OvisOCR3 serving container 16 GiB RAM, a four-CPU quota, and zero swap. GPUStack configures shared memory at 4 GiB. The guard reads the memory and CPU cgroups before launching vLLM. This also applies when GPUStack schedules a replacement.
+
+Confirm that eligible workers have the hook before scaling up. Verify the actual container assignment, read-only NFS mount, Docker `HostConfig` and cgroups. `Memory` and `MemorySwap` should both be `17179869184`, `NanoCpus` should be `4000000000`, and `memory.swap.max` should be `0`. Automatic error restart stays disabled. When upgrading either pinned image, validate the creation path with the new digest before deployment.
 
 ## Existing workers with a separate NFS mount
 

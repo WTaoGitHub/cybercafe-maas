@@ -49,6 +49,7 @@ settings示例包含试点公开地址及秘密文件路径，没有实际码。
 
 1. x86_64 Ubuntu、Python3和`cryptography==41.0.7`（优先复用Ubuntu24.04已核对的包）；Docker、NVIDIA驱动和Container Toolkit已配置可用。
 2. 正式manifest里的GPUStack v2.2.3固定摘要镜像已预缓存；客户端不会在线自动pull，也不会自动修改驱动、Docker或Toolkit。`docker image inspect`必须能匹配RepoDigest。
+   该固定镜像创建的 worker 在启动前安装 [OvisOCR3 限额补丁](../../../maas_bootstrap/worker_limits.py)，核对 Docker 运行时代码摘要。它只为固定 OvisOCR3 推理镜像的主容器设置 CPU、内存和 swap 限额。升级前须复验 [OvisOCR3 容器创建配置](../../ovisocr3/README.md#build-and-configure)。
 3. 原生状态目录、E5实例状态目录和Docker容器为空；缓存镜像允许保留。不得封入已注册token/UUID、固定worker名称、运行过的E5 identity.json。
 4. 供应商完成模板generalize及首启身份生成契约：空/`uninitialized` machine-id，克隆首次生成不同machine-id、SSH主机密钥，保留管理员公钥授权；已有SSH主机密钥会阻止本工具封版。工具不删除这些材料，也不提供批量清理命令。
 5. 已有CyberCafe/gpustack开机服务与新引导的责任边界经核对，避免两个worker自动启动。工具只拒绝已知冲突单元，**不能发现所有第三方启动钩子**，需检查供应商机制。

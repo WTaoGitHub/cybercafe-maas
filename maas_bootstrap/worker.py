@@ -3,7 +3,7 @@ import hashlib,json,os,platform,secrets,socket,stat,subprocess,time,urllib.reque
 from pathlib import Path
 from .client import (BootstrapError,LocalState,HTTPSConfigFetcher,ReleaseVerifier,atomic_json,atomic_bytes,
                      read_file,NoRedirect,DISKLESS_POLICY,https_opener)
-from . import storage,registry,handoff
+from . import storage,registry,handoff,worker_limits
 
 NAME='maas-gpustack-worker'
 LABEL='com.cybercafe.maas.bootstrap'
@@ -157,7 +157,12 @@ class NativeDockerWorker:
             args+=['--volume',mount['source']+':'+mount['target']+('' if mount['rw'] else ':ro')]
         run(args+[image])
 
-    def start(self):run(['docker','start',NAME])
+    def start(self):
+        try:
+            worker_limits.install_before_start(NAME)
+        except (ValueError, OSError, subprocess.SubprocessError) as error:
+            raise BootstrapError('WORKER_RUNTIME_LIMITS_INSTALL_FAILED') from error
+        run(['docker','start',NAME])
 
     def registered(self,settings,envelope,identity):
         data=Path(settings.data['worker_data_dir'])

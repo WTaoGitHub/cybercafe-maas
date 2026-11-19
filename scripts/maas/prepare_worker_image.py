@@ -98,7 +98,7 @@ def build(root,settings_path):
         'etc/maas/release-signing.pub':(pub,0o644),
     }
     if shutdown_cert is not None:files['etc/maas/shutdown-events-ca.crt']=(shutdown_cert,0o644)
-    for name in ('__init__.py','client.py','storage.py','nfs.py','registry.py','handoff.py','worker.py','cli.py','startup.py','clone_boundary.py','shutdown_auth.py','shutdown_events.py'):
+    for name in ('__init__.py','client.py','storage.py','nfs.py','registry.py','handoff.py','worker.py','worker_limits.py','cli.py','startup.py','clone_boundary.py','shutdown_auth.py','shutdown_events.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),
