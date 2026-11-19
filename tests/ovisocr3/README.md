@@ -15,3 +15,15 @@ PYTHONDONTWRITEBYTECODE=1 python tests/ovisocr3/make_fixture.py
 ```
 
 Actual API probes must use an authenticated route, bounded timeouts and no automatic retries. Save temporary requests/responses in the task's cleanup directory, not here. The runtime is intentionally retained when it is the requested deployment.
+
+## Same-GPU capacity check
+
+`fixtures/service-report-dense.png` is a synthetic 1440×1440 text page. It has no production data and includes `128` and `12 minutes`. The [same-card check](../../scripts/maas/runtime/verify_shared_gpu.py) takes the two running instance endpoints from the native inventory. Run it through the authorized control-side network with `MAAS_GPUSTACK_URL` and `E17_GPUSTACK_KEY_FILE` set to the existing read-only GPUStack settings. The script uses the verified instance endpoints to measure overlap, fresh worker VRAM metrics, and OCR results without creating MaaS tasks. An invocation without `--execute` is a dry run.
+
+```sh
+python -B scripts/maas/runtime/verify_shared_gpu.py \
+  --image tests/ovisocr3/fixtures/service-report-dense.png \
+  --prompt-file "$OVIS_PLAIN_OCR_PROMPT_FILE" --rounds 3 --execute
+```
+
+`OVIS_PLAIN_OCR_PROMPT_FILE` should point to `prompts/plain_ocr.txt` from the deployed model package. The workload starts with one baseline call per model and allows one simultaneous call per model in each pair. Run on the current test system when the target instances are idle.
