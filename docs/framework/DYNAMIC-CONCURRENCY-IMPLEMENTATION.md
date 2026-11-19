@@ -119,6 +119,12 @@ MaaS 在同步和异步的发送意图中保存是否启用执行端保护，再
 - 本地使用一次性 PostgreSQL 和两个不同 GPU 身份的模拟副本，覆盖双副本争抢、同步异步共用机制、断连后回执、回执重复、伪造凭据、错误路由、迟到或过期请求以及引擎异常。复跑使用 `MAAS_TEST_DATABASE_URL` 指向专用 `_test` 数据库并执行 `python -m pytest -q tests/maas/test_pp_ocr_execution_integration.py`。 [回归用例](../../tests/maas/test_pp_ocr_execution_integration.py)
 - 2026-11-19 现场 Envoy 只读配置确认 PP-OCR 路由的 `num_retries=2`。用于建立临时探针的 GPUStack 管理登录先返回 404，改用实际入口后返回 401，现场停止在只读核对。现场验收需先通过受权入口用合成请求验证 Higress 重试保持同一个标识，再验证两台实际 GPU 副本的单次执行、落点、晚到回执及 RTT 开销。上线和回退均先暂停与排空，保留账本迁移及原 `UNKNOWN` 证据。
 
+后续用现有运维凭据恢复了 GPUStack 管理访问。临时 provider 路由使用现有 Higress，沿用三模型现场的静态模式。容器内能够直连探针监听器，经过临时模型路由的 503 请求未到达该监听器。将探针移入网关容器后仍未取得三次同 token 到达的证据，按排障上限停止。已删除三轮探针的临时 provider、路由和密钥，精确清理 25 条合成用量明细和 1 条汇总，复查测试记录为零，现有 MaaS 健康检查通过。PP-OCRv4 双 GPU 验收仍待完成。
+
+复用[网关标识探针](../../tests/maas/probe_gpustack_retry_marker.py)时，通过 `--gateway` 和 `--listen-host` 使用测试网关及其可达的私有监听地址，传入已有私有 `--admin-password-file` 和唯一的 `--fixture test_agent_retry_<12位十六进制>`。探针退出时核对临时 provider、路由和密钥是否删除。现场 GPUStack 会另外保留用量，待指标写入后按此标识精确清理明细和汇总。探针在本地模拟网关验证了三次相同标识、标识丢失以及普通和分块请求体两种传输。
+
+扩展顺序为 OvisOCR3、Unlimited-OCR-2，先以 PP-OCRv4 实机结果核对共用账本和回执时机。Unlimited-OCR-2 当前由 MaaS 把渲染出的所有页面放进一次 Chat Completions 调用，同一文档可以沿用一个派发 token。SGLang 的结束回执须覆盖整次调用内的页面处理。 [文档请求打包](../../maas_platform/document_ocr.py)
+
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |
 | 1. 绑定、计算与只观测模式 | 配置、容量快照迁移、observer、已有运维指标。先跑计算逻辑，再接原生读取。 | 同池别名归一，跨池资源不重复；验证分批掉线、归零、恢复、乱序、订阅断开、快照过期和比例取整。仅输出对照数据，观察到的可用实例可追溯到原生证据。 |
