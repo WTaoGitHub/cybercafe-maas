@@ -99,8 +99,8 @@ class Settings:
             if model['driver'] == 'gpustack.document_ocr':
                 adapter.validate_model(model)
             if 'execution_guard' in model and (type(model['execution_guard']) is not bool or
-                    (model['execution_guard'] and model['driver'] != 'gpustack.ocr')):
-                raise ValueError('Execution guard is supported only by the PP-OCR connector')
+                    (model['execution_guard'] and model['driver'] not in ('gpustack.ocr', 'gpustack.ovisocr3'))):
+                raise ValueError('Execution guard requires a supported OCR connector')
             if model.get('execution_guard'):
                 guarded_routes.add(model['upstream_model'])
         if any(model.get('upstream_model') in guarded_routes and not model.get('execution_guard')

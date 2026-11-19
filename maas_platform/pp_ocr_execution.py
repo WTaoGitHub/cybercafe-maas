@@ -1,4 +1,4 @@
-"""Worker-authenticated start and finish for the guarded PP-OCRv4 route."""
+"""Worker-authenticated start and finish for guarded OCR routes."""
 import hmac
 import json
 import re

@@ -38,12 +38,12 @@ class ExecutionGuard:
         self.open = build_opener(ProxyHandler({}), HTTPSHandler(context=context), NoRedirect()).open
 
     @classmethod
-    def from_env(cls, gpu_uuid):
-        path = Path(os.environ['MAAS_PP_OCR_EXECUTION_KEY_FILE'])
+    def from_env(cls, gpu_uuid, prefix='MAAS_PP_OCR_EXECUTION_'):
+        path = Path(os.environ[prefix+'KEY_FILE'])
         if not path.is_file() or stat.S_IMODE(path.stat().st_mode) & 0o077:
             raise ValueError('Worker execution credential must be a private file')
-        return cls(os.environ['MAAS_PP_OCR_EXECUTION_ORIGIN'], path.read_text().strip(), gpu_uuid,
-                   os.environ['MAAS_PP_OCR_EXECUTION_ROUTE'], os.getenv('MAAS_PP_OCR_EXECUTION_CA_FILE'))
+        return cls(os.environ[prefix+'ORIGIN'], path.read_text().strip(), gpu_uuid,
+                   os.environ[prefix+'ROUTE'], os.getenv(prefix+'CA_FILE'))
 
     def report(self, attempt, *, finished):
         if not re.fullmatch(r'(task|sync)\.[0-9a-f]{32}', attempt):
@@ -62,14 +62,17 @@ class ExecutionGuard:
             pass
         raise HTTPException(503, 'Execution authority unavailable')
 
-    def run(self, attempt, engine, image):
-        self.report(attempt, finished=False)
-        result = engine(image)
-        # ONNX Run returned host output. An engine exception leaves the grant unresolved.
+    def report_finished(self, attempt):
         try:
             self.report(attempt, finished=True)
         except HTTPException as exc:
             if exc.status_code != 503:
                 raise
             self.report(attempt, finished=True)
+
+    def run(self, attempt, engine, image):
+        self.report(attempt, finished=False)
+        result = engine(image)
+        # ONNX Run returned host output. An engine exception leaves the grant unresolved.
+        self.report_finished(attempt)
         return result

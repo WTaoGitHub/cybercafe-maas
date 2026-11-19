@@ -6,13 +6,19 @@ The model package includes all 37 upstream files, including 18 task prompts. Dow
 
 ## Build and configure
 
-Create a private build context containing this `Dockerfile`, `entrypoint.py`, and the unchanged shared [resource_guard.py](../unlimited-ocr-2/resource_guard.py). Pass `BASE_IMAGE` as a verified Registry reference with the fixed base manifest digest. The derived image only adds the startup guard; it does not install or upgrade inference dependencies. Keep credentials outside the build context.
+Create a private build context containing this `Dockerfile`, `entrypoint.py`, `vllm_guard.py`, `ovis_scheduler.py`, the shared [resource_guard.py](../unlimited-ocr-2/resource_guard.py), and the shared [execution_guard.py](../../gpu-ocr/execution_guard.py). Pass `BASE_IMAGE` as a verified Registry reference with the fixed base manifest digest. The derived image adds the startup checks and optional MaaS execution guard without changing inference dependencies. Keep credentials outside the build context.
 
 Fill the Registry, cluster and owner placeholders in [gpustack-template.json](gpustack-template.json), and verify the pinned runtime digest. Keep `worker_selector={}` and `gpu_selector=null`; GPUStack chooses placement. The 8GiB claim corresponds to the initial 0.50 GPU budget, not measured minimum memory. The initial profile uses BF16, one image/request, concurrency one, 16K context and at most 1440² pixels. Send at most 4096 output tokens for initial short-page requests.
 
 The GPUStack v2.2.3 Docker worker installs the [creation-time limits hook](../../maas_bootstrap/worker_limits.py) through the MaaS bootstrap bundle. The hook matches this exact serving image digest and its guard entrypoint. It gives each new OvisOCR3 serving container 16 GiB RAM, a four-CPU quota, and zero swap. GPUStack configures shared memory at 4 GiB. The guard reads the memory and CPU cgroups before launching vLLM. This also applies when GPUStack schedules a replacement.
 
 Confirm that eligible workers have the hook before scaling up. Verify the actual container assignment, read-only NFS mount, Docker `HostConfig` and cgroups. `Memory` and `MemorySwap` should both be `17179869184`, `NanoCpus` should be `4000000000`, and `memory.swap.max` should be `0`. Automatic error restart stays disabled. When upgrading either pinned image, validate the creation path with the new digest before deployment.
+
+## MaaS execution guard pilot
+
+Set `MAAS_OVIS_EXECUTION_ORIGIN` to the private HTTPS authority, `MAAS_OVIS_EXECUTION_KEY_FILE` to the per-GPU credential file, and `MAAS_OVIS_EXECUTION_ROUTE` to the guarded MaaS upstream route. Use `MAAS_OVIS_EXECUTION_CA_FILE` for a private CA. The authority uses the existing `MAAS_PP_OCR_WORKER_KEYS_FILE` and activity tables. Enable `execution_guard` in the catalog only after every target behind the route runs the guarded profile. The existing template remains opt-in.
+
+The guarded profile accepts one non-streaming completion per MaaS task attempt. It uses one GPU with serial scheduling on the pinned vLLM 0.22.1 runtime. A scheduler-terminal request ID from EngineCore drives the finish callback, including after client disconnect. Output-layer completion and abort enqueueing can occur before the EngineCore terminal event. A missing terminal event or failed receipt keeps the existing `UNKNOWN` protection. [vLLM output handling](https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/v1/engine/output_processor.py) · [vLLM EngineCore scheduling](https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/v1/engine/core.py)
 
 ## Existing workers with a separate NFS mount
 
@@ -31,7 +37,7 @@ Before removing an unused model mount, stop and remove its model deployment thro
 The launcher check reuses the project's existing pytest environment:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/ovisocr3/test_entrypoint.py -q -p no:cacheprovider
+PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/ovisocr3/test_entrypoint.py tests/ovisocr3/test_execution_guard.py -q -p no:cacheprovider
 ```
 
 See [deployment research](../../docs/reports/ovisocr3-deployment-20261118.md) and [Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11).

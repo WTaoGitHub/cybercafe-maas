@@ -6,21 +6,35 @@ import httpx
 import pytest
 
 from maas_platform.ovis_ocr import PLAIN_OCR_PROMPT
+from maas_platform.pp_ocr_execution import ATTEMPT_HEADER, PATH
 from maas_platform.worker import Worker
 from test_integration import env, headers
 
 
-@pytest.mark.parametrize('finish_reason', ['stop', 'length'])
-def test_ovis_plain_text_task_and_receipt(env, monkeypatch, finish_reason):
+@pytest.mark.parametrize('finish_reason, guarded', [('stop', False), ('length', False), ('stop', True), ('disconnect', True)])
+def test_ovis_plain_text_task_and_receipt(env, monkeypatch, tmp_path, finish_reason, guarded):
     client, service, settings, auth, _ = env
     catalog = settings.catalog()
     catalog.update(json.loads(Path('deploy/maas/catalog.ovisocr3.example.json').read_text()))
+    if guarded:
+        catalog['ocr.ovisocr3']['execution_guard'] = True
+    gpu = 'GPU-11111111-1111-1111-1111-111111111111'
+    worker_key = '2' * 64
+    if guarded:
+        settings.pp_ocr_worker_keys_file = tmp_path / 'test_agent_worker_keys.json'
+        settings.pp_ocr_worker_keys_file.write_text(json.dumps({gpu:worker_key}))
+        settings.pp_ocr_worker_keys_file.chmod(0o600)
     settings.catalog_file.write_text(json.dumps(catalog))
     bindings = json.loads(settings.bindings_file.read_text())
     bindings['credentials'][0]['models'].append('ocr.ovisocr3')
     settings.bindings_file.write_text(json.dumps(bindings))
     calls = []
     original = httpx.AsyncClient
+    events = []
+
+    def callback(event, finished):
+        assert client.post(PATH, json={**event, 'finished':finished},
+                           headers={'Authorization':'Bearer '+worker_key}).status_code == 204
 
     def infer(request):
         body = json.loads(request.content)
@@ -30,6 +44,16 @@ def test_ovis_plain_text_task_and_receipt(env, monkeypatch, finish_reason):
         assert image['image_url']['url'].startswith('data:image/png;base64,')
         assert prompt == {'type': 'text', 'text': PLAIN_OCR_PROMPT}
         calls.append(body)
+        if guarded:
+            event = {'attempt':request.headers[ATTEMPT_HEADER], 'gpu_uuid':gpu, 'instance':'3'*32, 'route':'ovisocr3'}
+            assert event['attempt'].startswith('task.')
+            events.append(event)
+            callback(event, False)
+            if finish_reason == 'disconnect':
+                raise httpx.ReadError('test_agent_disconnect', request=request)
+            callback(event, True)
+        else:
+            assert ATTEMPT_HEADER not in request.headers
         return httpx.Response(200, json={'choices': [{'finish_reason': finish_reason, 'message': {'content': '128\n12 minutes'}}],
                                          'usage': {'prompt_tokens': 8, 'completion_tokens': 4, 'total_tokens': 12}})
 
@@ -45,6 +69,13 @@ def test_ovis_plain_text_task_and_receipt(env, monkeypatch, finish_reason):
     ident = response.json()['id']
     identity = auth.authenticate('gpustack_registered_a')
     row = service.get(identity, ident)
+    if finish_reason == 'disconnect':
+        assert row['state'] == 'FAILED' and row['error_code'] == 'UNKNOWN_BACKEND_ACTIVITY'
+        assert service.metrics()['unknown_backend_activity'] == 1
+        callback(events[0], True)
+        assert service.metrics()['unknown_backend_activity'] == 0
+        assert service.get(identity, ident)['usage'] is None
+        return
     assert service.metrics()['unknown_backend_activity'] == 0
     if finish_reason == 'length':
         assert row['state'] == 'FAILED' and row['error_code'] == 'OUTPUT_INVALID' and row['usage'] is None

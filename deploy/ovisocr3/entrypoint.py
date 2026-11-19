@@ -11,6 +11,11 @@ def main():
         raise SystemExit('Pass the fixed vLLM model path and server arguments')
     caps = wait_for_limits()
     print(json.dumps({'ovisocr3_resource_caps_verified': caps}), flush=True)
+    if any(name.startswith('MAAS_OVIS_EXECUTION_') for name in os.environ):
+        from vllm_guard import serve
+
+        serve(sys.argv[1:])
+        return
     # shortcut: each replacement container needs caps; add runner support before unattended recovery.
     os.execvp('vllm', ['vllm', 'serve', *sys.argv[1:]])
 
