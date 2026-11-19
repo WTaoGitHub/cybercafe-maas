@@ -51,6 +51,8 @@ def status(db):
         budget['global'].update(limits(0, 0))
         for pool in budget['pools'].values():
             pool.update(limits(0, 0), reason='expired', ready_ids=[], pending_ids=[])
+            if 'replica_routes' in pool:
+                pool['replica_routes'] = {}
     row.update(observed_at=float(row['observed_at']), expires_at=float(row['expires_at']))
     return {'mode': 'observe', 'state': 'fresh' if fresh else 'expired', **row, **budget}
 

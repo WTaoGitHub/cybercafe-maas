@@ -21,6 +21,10 @@ class SyncIngress:
         self.input_slots=BoundedSemaphore(getattr(service.settings, 'max_running', 1))
 
     def begin(self,who,name,runtime,probe=False,expected_model=None):
+        token, _ = self.begin_dispatch(who, name, runtime, probe, expected_model)
+        return token
+
+    def begin_dispatch(self, who, name, runtime, probe=False, expected_model=None):
         with self.service.db.transaction() as c:
             maintenance=c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
             self.service.expire_sync(c)
@@ -33,21 +37,28 @@ class SyncIngress:
             revision = maintenance['capacity_policy_hash']
             admission = Admission(c, self.service.settings, revision, include_preparing=False) if revision else None
             pool_id = admission.pool_ids.get(name) if admission else None
-            if not blocks(unresolved(c), name, route, pool_id):
+            unknown = unresolved(c)
+            gpu = None
+            if admission:
+                route, gpu, reason = admission.dispatch(name, route, unknown)
+            else:
+                reason = 'BACKEND_QUARANTINED' if blocks(unknown, name, route, None) else None
+            if reason != 'BACKEND_QUARANTINED':
                 if admission:
                     if not admission.pool(name).get('total') or not admission.fresh(c):
                         raise unavailable()
-                    allowed = admission.allows(name, who.project, asynchronous=False)
+                    allowed = reason is None and admission.allows(name, who.project, asynchronous=False)
                 else:
                     slots=c.execute("SELECT count(*) total,count(*) FILTER (WHERE project=%s) own FROM inference_slots",(who.project,)).fetchone()
                     allowed = slots['total'] < self.service.settings.max_running and slots['own'] < self.service.settings.max_project_running
                 if not allowed:
                     raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
                 token=uuid.uuid4().hex
-                c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,is_probe,dispatch_route,dispatch_pool_id,execution_guard)
-                    VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s,%s,%s,%s)""",
-                    (token,who.project,name,runtime,probe,route,pool_id,model.get('execution_guard',False)))
-                return token
+                c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,is_probe,dispatch_route,dispatch_pool_id,
+                    execution_guard,dispatch_gpu_uuid)
+                    VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s,%s,%s,%s,%s)""",
+                    (token,who.project,name,runtime,probe,route,pool_id,model.get('execution_guard',False),gpu))
+                return token, route
         raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks this inference scope',503)
 
     def finish(self,token,confirmed,successful=False,metering=None):
@@ -78,12 +89,12 @@ class SyncIngress:
                 raise ServiceError('SYNC_CAPACITY','Synchronous input preparation is full',429,True)
             try:
                 body = await self.prepare(prepare_input)
-                token = await run_in_threadpool(self.begin, who, name, runtime, probe, model)
+                token, route = await run_in_threadpool(self.begin_dispatch, who, name, runtime, probe, model)
             finally:
                 self.input_slots.release()
             prepare_input = None
         else:
-            token=await run_in_threadpool(self.begin,who,name,runtime+(10 if prepare_input else 0),probe,model)
+            token,route=await run_in_threadpool(self.begin_dispatch,who,name,runtime+(10 if prepare_input else 0),probe,model)
         confirmed=True;successful=False;metering=None
         guarded=model.get('execution_guard',False)
         headers={'Authorization':'Bearer '+key,'Accept-Encoding':'identity'}
@@ -96,7 +107,7 @@ class SyncIngress:
             async with asyncio.timeout(runtime):
                 async with self.client_factory(trust_env=False,follow_redirects=False,timeout=httpx.Timeout(runtime,connect=min(5,runtime))) as client:
                     async with client.stream('POST',self.service.settings.gpustack_url+'/v1/chat/completions',
-                        headers=headers,json={**body,'model':model['upstream_model']}) as response:
+                        headers=headers,json={**body,'model':route}) as response:
                         if response.headers.get('content-encoding','identity')!='identity':
                             raise ServiceError('OUTPUT_ENCODING','Compressed responses are unsupported',502)
                         raw=bytearray()

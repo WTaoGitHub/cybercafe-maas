@@ -8,6 +8,7 @@ from fastapi import APIRouter, Header, Response
 from pydantic import BaseModel, StringConstraints
 
 from .errors import ServiceError
+from .quarantine import blocks, unresolved
 
 PATH = '/maas/internal/pp-ocr-execution'
 ATTEMPT_HEADER = 'X-MaaS-Execution-Attempt'
@@ -57,12 +58,15 @@ def router(db, settings):
                     resolution_reason=CASE WHEN state='UNKNOWN' THEN 'GPU confirmed execution ended' ELSE resolution_reason END
                     WHERE token=%s AND gpu_finished_at IS NULL''', (end_activity, token))
                 return Response(status_code=204)
-            if row and not body.finished and row['state'] == 'DISPATCHING' and row['gpu_uuid'] is None:
+            if (row and not body.finished and row['state'] == 'DISPATCHING' and row['gpu_uuid'] is None
+                    and row['dispatch_gpu_uuid'] in (None, body.gpu_uuid)):
                 # Recheck the original dispatch window. A delayed gateway retry cannot start expired work.
-                active = ("SELECT 1 FROM tasks WHERE token=%s AND state='RUNNING' "
+                active = ("SELECT model FROM tasks WHERE token=%s AND state='RUNNING' "
                           "AND deadline>clock_timestamp() AND lease_until>clock_timestamp()" if kind == 'task'
-                          else 'SELECT 1 FROM sync_activity WHERE token=%s AND deadline>clock_timestamp()')
-                if conn.execute(active, (token,)).fetchone():
+                          else 'SELECT model FROM sync_activity WHERE token=%s AND deadline>clock_timestamp()')
+                eligible = conn.execute(active, (token,)).fetchone()
+                if eligible and (not row['dispatch_gpu_uuid'] or not blocks(
+                        unresolved(conn), eligible['model'], body.route, row['dispatch_pool_id'], body.gpu_uuid)):
                     conn.execute(f'UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s WHERE token=%s',
                                  (body.gpu_uuid, body.instance, token))
                     return Response(status_code=204)

@@ -76,7 +76,13 @@ class OCRAdapter:
 
     async def execute_async(self, ctx, client=None, draining=None):
         body, metadata = await asyncio.to_thread(self._prepare, ctx)
-        key, deadline = await asyncio.to_thread(self._authorize, ctx, draining)
+        key, deadline, route = await asyncio.to_thread(self._authorize, ctx, draining)
+        if route and route != ctx.model['upstream_model']:
+            # All OCR adapters serialize the model field first. Preserve the rendered document bytes.
+            prefix = json.dumps({'model': ctx.model['upstream_model']}).encode()[:-1] + b','
+            if not body.startswith(prefix):
+                raise ServiceError('INVALID_DISPATCH_BODY', 'Unable to bind the prepared inference request')
+            body = b''.join((json.dumps({'model': route}).encode()[:-1], b',', memoryview(body)[len(prefix):]))
         raw = await self._infer(ctx, key, body, max(0, deadline-time.monotonic()), client=client)
         return await asyncio.to_thread(self._decode, ctx, raw, metadata)
 
@@ -101,10 +107,10 @@ class OCRAdapter:
         if deadline <= now:
             raise ServiceError('RUNTIME_EXCEEDED', 'No inference time remains')
         if draining is None:
-            ctx.service.begin_backend(ctx.task)
+            route = ctx.service.begin_backend(ctx.task)
         else:
-            ctx.service.begin_backend(ctx.task, draining=draining)
-        return key, deadline
+            route = ctx.service.begin_backend(ctx.task, draining=draining)
+        return key, deadline, route
 
     def _decode(self, ctx, raw, metadata):
         ctx.check()
@@ -131,8 +137,9 @@ class OCRAdapter:
         timeout = httpx.Timeout(max(.001,budget), connect=min(5,max(.001,budget)))
         headers = {'Authorization': 'Bearer '+key, 'Accept-Encoding': 'identity', 'Content-Type': 'application/json'}
         guarded = ctx.model.get('execution_guard', False)
+        kind = getattr(ctx, 'attempt_kind', 'task')
         if guarded:
-            headers[ATTEMPT_HEADER] = 'task.' + ctx.task['token']
+            headers[ATTEMPT_HEADER] = kind + '.' + ctx.task['token']
         try:
             async with asyncio.timeout(max(0, budget)):
                 # Higress can try multiple backends. MaaS sends once and records the outcome.
@@ -147,10 +154,10 @@ class OCRAdapter:
                         raw.extend(chunk)
                     status = response.status_code
         except (httpx.HTTPError, TimeoutError):
-            if guarded and await asyncio.to_thread(finished, ctx.service.db, 'task', ctx.task['token']):
+            if guarded and await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
                 raise ServiceError('BACKEND_RESULT_UNAVAILABLE', 'GPU finished but its response was unavailable') from None
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined') from None
-        if guarded and not await asyncio.to_thread(finished, ctx.service.db, 'task', ctx.task['token']):
+        if guarded and not await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'GPU completion is unconfirmed')
         if status not in (200,400,401,403,404,413,415,422):
             if guarded:

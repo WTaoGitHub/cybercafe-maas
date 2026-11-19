@@ -232,8 +232,8 @@ class TaskService:
                 pairs = c.execute(f'SELECT DISTINCT project, model FROM tasks WHERE {ready}').fetchall()
                 eligible = [(r['project'], r['model']) for r in pairs
                             if admission.allows(r['model'], r['project'], asynchronous=True)
-                            and not blocks(unknown, r['model'], catalog.get(r['model'], {}).get('upstream_model'),
-                                           admission.pool_ids.get(r['model']))]
+                            and admission.dispatch(r['model'],
+                                catalog.get(r['model'], {}).get('upstream_model', ''), unknown)[2] is None]
                 if not eligible:
                     return None
                 projects, models = zip(*eligible)
@@ -274,30 +274,32 @@ class TaskService:
             if fingerprint(model) != row['model_fingerprint']:
                 raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed')
             route = model.get('upstream_model') or ''
-            pool_id = None
+            pool_id = gpu = None
             revision = maintenance['capacity_policy_hash']
             allowed = row['timely'] and row['state'] == 'RUNNING'
+            unknown = unresolved(c)
+            reason = 'BACKEND_QUARANTINED' if blocks(unknown, row['model'], route, None) else None
             if revision and allowed:
                 try:
                     admission = Admission(c, self.settings, revision, include_preparing=False)
                     pool_id = admission.pool_ids.get(row['model'])
                     allowed = admission.allows(row['model'], row['project'], asynchronous=True) and admission.fresh(c)
+                    route, gpu, reason = admission.dispatch(row['model'], route, unknown)
                 except ServiceError as exc:
                     if exc.code != 'CAPACITY_UNAVAILABLE':
                         raise
                     allowed = False
-            quarantined = blocks(unresolved(c), row['model'], route, pool_id)
             if draining is not None and draining():
                 raise ServiceError('EXECUTOR_DRAINING', 'Executor is draining', 503)
-            if allowed and not quarantined:
-                inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id,execution_guard)
-                    SELECT token,id,'DISPATCHING',%s,%s,%s FROM tasks WHERE id=%s
+            if allowed and reason is None:
+                inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id,
+                    execution_guard,dispatch_gpu_uuid)
+                    SELECT token,id,'DISPATCHING',%s,%s,%s,%s FROM tasks WHERE id=%s
                     AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''',
-                    (route, pool_id, model.get('execution_guard', False), task['id'])).rowcount
+                    (route, pool_id, model.get('execution_guard', False), gpu, task['id'])).rowcount
                 if inserted:
-                    return
-            reason = 'BACKEND_QUARANTINED' if quarantined else 'CAPACITY_REDUCED'
-            if not (revision or quarantined) or not self._defer(c, row, reason):
+                    return route
+            if not (revision or reason) or not self._defer(c, row, reason or 'CAPACITY_REDUCED'):
                 raise ServiceError('INTERRUPTED', 'Attempt is no longer eligible for dispatch')
         raise ServiceError('DISPATCH_DEFERRED', 'Unsent dispatch has been deferred', 503, True)
 

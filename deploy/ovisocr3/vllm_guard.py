@@ -83,8 +83,8 @@ class OvisExecutionMiddleware(BaseHTTPMiddleware):
         if request.url.path != '/v1/chat/completions' or request.method != 'POST':
             return JSONResponse({'detail': 'Endpoint unavailable on guarded OCR service'}, status_code=404)
         tokens = request.headers.getlist(ATTEMPT_HEADER)
-        if len(tokens) != 1 or not re.fullmatch(r'task\.[0-9a-f]{32}', tokens[0]):
-            return JSONResponse({'detail': 'A MaaS task attempt is required'}, status_code=403)
+        if len(tokens) != 1 or not re.fullmatch(r'(task|sync)\.[0-9a-f]{32}', tokens[0]):
+            return JSONResponse({'detail': 'A MaaS execution attempt is required'}, status_code=403)
         try:
             body = await request.json()
         except ValueError:

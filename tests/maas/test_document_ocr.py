@@ -65,7 +65,7 @@ def test_complete_windows_and_blank_pages():
 
 def context(data):
     service = SimpleNamespace(settings=SimpleNamespace(gpustack_url='http://gateway.test', max_output_bytes=20 * 1024**2),
-        auth=SimpleNamespace(key_for=lambda _: 'fixture-key'), begin_backend=Mock(), complete_backend=Mock())
+        auth=SimpleNamespace(key_for=lambda _: 'fixture-key'), begin_backend=Mock(return_value=None), complete_backend=Mock())
     task = {'parameters': {'dpi': 150}, 'deadline': datetime.now(timezone.utc) + timedelta(seconds=60)}
     return SimpleNamespace(task=task, service=service, model=model(), identity=None, deadline=time.monotonic() + 30,
         check=lambda: None, read_input=lambda: (data, 'image/png'))

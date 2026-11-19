@@ -14,21 +14,25 @@ def probe_async_ocr(service, ingress, who, name, model, data, media):
     from .adapters import adapter_for, ExecutionContext
     service.auth.authorize(who, name, model)
     state = {'token': None, 'confirmed': False}
-    def begin(_):
-        state['token'] = ingress.begin(who, name, model['max_runtime_s'], probe=True, expected_model=model)
+    def begin(task):
+        token, route = ingress.begin_dispatch(who, name, model['max_runtime_s'], probe=True, expected_model=model)
+        task['token'] = state['token'] = token
+        return route
     def complete(_):
         state['confirmed'] = True
-    proxy = SimpleNamespace(settings=service.settings, auth=service.auth,
+    proxy = SimpleNamespace(settings=service.settings, auth=service.auth, db=service.db,
         cancelled=lambda _: False, read_task_input=lambda _: (data, media),
         begin_backend=begin, complete_backend=complete)
     document = model['driver'] == 'gpustack.document_ocr'
     task = {'parameters': {'dpi': 150} if document else {},
             'deadline': datetime.now(timezone.utc) + timedelta(seconds=model['max_runtime_s'])}
-    ctx = ExecutionContext(task, proxy, threading.Event(), time.monotonic() + model['max_runtime_s'], model, who)
+    ctx = ExecutionContext(task, proxy, threading.Event(), time.monotonic() + model['max_runtime_s'], model, who,
+                           attempt_kind='sync')
     successful = False
     try:
         output = adapter_for(model['driver']).execute(ctx)
         successful = True
+        state['confirmed'] = True
         facts = {'pages': output['page_count']} if document else {'text_chars': len(output['text'])}
         return {'model': name, 'revision': model['revision'], **facts}
     finally:

@@ -5,6 +5,7 @@ import json
 from .capacity import Policy, catalog_routes, policy_hash
 from .config import private_text
 from .errors import ServiceError
+from .quarantine import blocks
 
 
 def unavailable():
@@ -48,21 +49,27 @@ class Admission:
         if revision != local_revision:
             raise unavailable()
         self.pool_ids = {name: policy.pools[key].model_id for name, key in self.aliases.items()}
+        self.pools = policy.pools
         self.revision = revision
         self.budget = read_budget(c, revision)
         self.project_limit = settings.max_project_running
         self.claimed = Counter()
         self.asynchronous = Counter()
         self.project = Counter()
+        self.gpu = Counter()
         if not self.budget:
             return
-        rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous FROM inference_slots
+        rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous,dispatch_gpu_uuid,dispatch_pool_id
+                            FROM inference_slots
                             WHERE NOT backend_finished AND (%s OR dispatched)
-                            GROUP BY model,project,asynchronous''', (include_preparing,)).fetchall()
+                            GROUP BY model,project,asynchronous,dispatch_gpu_uuid,dispatch_pool_id''',
+                         (include_preparing,)).fetchall()
         for row in rows:
             key, n = self.aliases.get(row['model']), row['n']
             self.project[row['project']] += n
             self.claimed[key] += n
+            if row['dispatch_gpu_uuid']:
+                self.gpu[row['dispatch_pool_id'], row['dispatch_gpu_uuid']] += n
             if row['asynchronous']:
                 self.asynchronous[key] += n
         self.total, self.async_total = self.claimed.total(), self.asynchronous.total()
@@ -73,6 +80,23 @@ class Admission:
     def fresh(self, c):
         return bool(self.budget and c.execute('''SELECT 1 FROM capacity_snapshot WHERE id=1
             AND policy_hash=%s AND expires_at>clock_timestamp()''', (self.revision,)).fetchone())
+
+    def dispatch(self, model, route, unknown):
+        """Pick a fresh, admissible destination. The caller persists the pair before sending."""
+        pool = self.pools.get(self.aliases.get(model))
+        pool_id = self.pool_ids.get(model)
+        if not pool or not pool.replica_routes:
+            return (None, None, 'BACKEND_QUARANTINED') if blocks(unknown, model, route, pool_id) else (route, None, None)
+        observed = self.pool(model).get('replica_routes', {})
+        candidates = [(name, pin.gpu_uuid) for name, pin in pool.replica_routes.items()
+                      if observed.get(name) == pin.gpu_uuid]
+        free = [(self.gpu[pool_id, gpu], name, gpu) for name, gpu in candidates
+                if not blocks(unknown, model, name, pool_id, gpu)]
+        if free:
+            load, name, gpu = min(free)
+            if load < pool.slots_per_replica:
+                return name, gpu, None
+        return None, None, 'BACKEND_QUARANTINED' if candidates and not free else 'CAPACITY_REDUCED'
 
     def allows(self, model, project, *, asynchronous):
         pool = self.pool(model)

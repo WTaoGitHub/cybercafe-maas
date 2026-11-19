@@ -51,7 +51,7 @@ class DocumentExecution:
                 raise HTTPException(422, 'Guarded OCR requires one non-streaming document without a user session')
             token = raw_request.headers.get(ATTEMPT_HEADER)
             if token is None or token != self.token:
-                raise HTTPException(403, 'A MaaS task attempt is required')
+                raise HTTPException(403, 'A MaaS execution attempt is required')
 
             await asyncio.to_thread(self.authority.report, token, finished=False)
             self.unconfirmed = True
@@ -90,8 +90,8 @@ class DocumentExecutionMiddleware:
             detail, status = 'Endpoint unavailable on guarded OCR service', 404
         else:
             tokens = Headers(scope=scope).getlist(ATTEMPT_HEADER)
-            if len(tokens) != 1 or not re.fullmatch(r'task\.[0-9a-f]{32}', tokens[0]):
-                detail, status = 'A MaaS task attempt is required', 403
+            if len(tokens) != 1 or not re.fullmatch(r'(task|sync)\.[0-9a-f]{32}', tokens[0]):
+                detail, status = 'A MaaS execution attempt is required', 403
             elif tokens[0] == execution.token:
                 detail, status = 'Execution already in progress', 409
             elif execution.pending is not None or execution.unconfirmed:

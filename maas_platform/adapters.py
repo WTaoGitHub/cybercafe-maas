@@ -37,6 +37,7 @@ class ExecutionContext:
     identity: object = None
     metering_tokens: dict | None = None
     metering_pages: int | None = None
+    attempt_kind: str = 'task'
 
     def check(self):
         if time.monotonic() >= self.deadline:
