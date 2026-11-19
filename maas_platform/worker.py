@@ -109,7 +109,7 @@ class Worker:
         output = {'outputs': outputs, 'model_revision': task['revision'],
                   'attempt': task['attempts'], 'usage': {'unit': 'task', 'quantity': 1}}
         metering = None
-        if model['driver'] in ('gpustack.ocr', 'gpustack.document_ocr'):
+        if model['driver'] in ('gpustack.ocr', 'gpustack.document_ocr', 'gpustack.ovisocr3'):
             from .metering import receipt
             kwargs = {}
             if model['driver'] == 'gpustack.document_ocr':

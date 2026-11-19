@@ -164,6 +164,8 @@ def create_app(settings=None, auth=None):
         result = {'model':name,'revision':model['revision'],'execution_modes':['async'],'max_runtime_s':model['max_runtime_s'],'input_schema':adapter.input_schema.model_json_schema(),'parameters_schema':adapter.parameter_schema.model_json_schema()}
         if model['driver'] == 'gpustack.document_ocr':
             result.update(input_limits=adapter.input_limits, output_schema_version='unlimited-ocr-2.document.v1', usage_types=['pages'])
+        elif model['driver'] == 'gpustack.ovisocr3':
+            result.update(output_schema_version='ovisocr3.plain-text.v1', usage_types=['images', 'tokens'])
         return result
 
     return app

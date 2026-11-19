@@ -93,9 +93,10 @@ class DigestAdapter(LocalAdapter):
 
 from .ocr_connector import OCRAdapter
 from .document_ocr import DocumentOCRAdapter
+from .ovis_ocr import OvisOCRAdapter
 
 _REGISTRY = {'mock': EchoAdapter(), 'local.sha256': DigestAdapter(), 'gpustack.ocr': OCRAdapter(),
-             'gpustack.document_ocr': DocumentOCRAdapter()}
+             'gpustack.document_ocr': DocumentOCRAdapter(), 'gpustack.ovisocr3': OvisOCRAdapter()}
 
 
 def adapter_for(driver):

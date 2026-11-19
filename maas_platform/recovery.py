@@ -10,7 +10,7 @@ from .ocr_connector import OCRResult
 from .sync_ingress import SyncIngress
 
 
-def probe_document(service, ingress, who, name, model, data, media):
+def probe_async_ocr(service, ingress, who, name, model, data, media):
     from .adapters import adapter_for, ExecutionContext
     service.auth.authorize(who, name, model)
     state = {'token': None, 'confirmed': False}
@@ -21,13 +21,16 @@ def probe_document(service, ingress, who, name, model, data, media):
     proxy = SimpleNamespace(settings=service.settings, auth=service.auth,
         cancelled=lambda _: False, read_task_input=lambda _: (data, media),
         begin_backend=begin, complete_backend=complete)
-    task = {'parameters': {'dpi': 150}, 'deadline': datetime.now(timezone.utc) + timedelta(seconds=model['max_runtime_s'])}
+    document = model['driver'] == 'gpustack.document_ocr'
+    task = {'parameters': {'dpi': 150} if document else {},
+            'deadline': datetime.now(timezone.utc) + timedelta(seconds=model['max_runtime_s'])}
     ctx = ExecutionContext(task, proxy, threading.Event(), time.monotonic() + model['max_runtime_s'], model, who)
     successful = False
     try:
         output = adapter_for(model['driver']).execute(ctx)
         successful = True
-        return {'model': name, 'revision': model['revision'], 'pages': output['page_count']}
+        facts = {'pages': output['page_count']} if document else {'text_chars': len(output['text'])}
+        return {'model': name, 'revision': model['revision'], **facts}
     finally:
         if state['token'] is not None:
             ingress.finish(state['token'], state['confirmed'], successful)
@@ -46,8 +49,8 @@ def probe_registered_models(service,credential_id,image_path):
     if not media or len(data)>service.settings.max_input_bytes:raise ValueError('Probe must be a bounded PNG/JPEG file')
     outputs=[];ingress=SyncIngress(service)
     for name,model in models.items():
-        if model['driver']=='gpustack.document_ocr':
-            outputs.append(probe_document(service,ingress,who,name,model,data,media))
+        if model['driver'] in ('gpustack.document_ocr', 'gpustack.ovisocr3'):
+            outputs.append(probe_async_ocr(service,ingress,who,name,model,data,media))
             continue
         if model['driver']!='gpustack.ocr':
             raise ServiceError('RECOVERY_UNSUPPORTED','Register a recovery probe for each network connector',409)

@@ -80,12 +80,16 @@ class OCRAdapter:
         return await asyncio.to_thread(self._decode, ctx, raw, metadata)
 
     def _prepare(self, ctx):
+        body = {'model': ctx.model['upstream_model'], 'stream': False, 'messages': [{'role':'user','content':[
+            self._image_part(ctx)]}]}
+        return json.dumps(body).encode(), None
+
+    @staticmethod
+    def _image_part(ctx):
         data, media = ctx.read_input()
         if media not in ('image/png', 'image/jpeg'):
             raise ServiceError('MEDIA_TYPE', 'OCR requires an uploaded PNG or JPEG', 415)
-        body = {'model': ctx.model['upstream_model'], 'stream': False, 'messages': [{'role':'user','content':[
-            {'type':'image_url','image_url':{'url':'data:'+media+';base64,'+base64.b64encode(data).decode()}}]}]}
-        return json.dumps(body).encode(), None
+        return {'type':'image_url','image_url':{'url':'data:'+media+';base64,'+base64.b64encode(data).decode()}}
 
     @staticmethod
     def _authorize(ctx, draining):

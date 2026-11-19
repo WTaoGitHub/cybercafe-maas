@@ -8,12 +8,13 @@
 | --- | --- | --- |
 | PP-OCRv4 兼容服务 | `gpustack.ocr` | 支持原同步 Chat 入口和异步任务；成功按图片计量 |
 | 已固定版本的 Unlimited-OCR-2 文档服务 | `gpustack.document_ocr` | 异步 PDF/图片 artifact；成功按页计量；token 用量保持 unavailable |
+| OvisOCR3 普通文本识别 | `gpustack.ovisocr3` | 异步单张 PNG 或 JPEG artifact；结果为 `text`；成功按图片计量，token 取上游返回值 |
 
 ## 接入步骤
 
 1. 在 GPUStack 验证固定部署版本、健康副本、有效路由名称及调用凭据的上游权限。用最小真实样本验证输入、返回格式和结果边界。MaaS 通过同一个配置的 GPUStack 网关访问这些路由。
 2. 在 `MAAS_CATALOG_FILE` 的 JSON 对象中，以唯一逻辑模型名为键，登记 `driver`、`upstream_model`、`revision`、`max_runtime_s`。图片和文档可分别复用 [图片目录示例](catalog.ocr.example.json) 与 [文档目录示例](catalog.document.example.json)。共库时合并两份对象的条目并核对逻辑名称没有重复。文档条目还需要模型、运行镜像摘要、后处理器和渲染 profile 四项固定值，API 与执行器均需安装对应 PDFium 依赖。若使用已验收的 NFS 副本，先核对它仍运行这些固定版本，再将候选条目的 `upstream_model` 指向 `unlimited-ocr-2-nfs`。
-3. 在 `MAAS_BINDINGS_FILE` 的对应 credential `models` 清单中显式授权逻辑名，保留 `credential_id` 对应的项目归属。核对 MaaS 本地授权与 GPUStack 路由权限。API 与执行器读取相同版本的目录及绑定，发布前用候选进程检查文件权限、JSON、版本和依赖。目录条目全量校验，文档依赖缺失也会影响读取其他模型配置。同一逻辑名的配置变更先排空依赖旧定义的任务，再发布新 `revision`。需要并行过渡时使用不同逻辑名。执行器会核对提交时保存的模型指纹，不能通过覆盖条目将排队任务改发给新路由。
+3. 在 `MAAS_BINDINGS_FILE` 的对应 credential `models` 清单中显式授权逻辑名，保留 `credential_id` 对应的项目归属。核对 MaaS 本地授权与 GPUStack 路由权限。API 与执行器读取相同版本的目录及绑定，发布前用候选进程检查文件权限、JSON、版本和依赖。目录条目全量校验，文档依赖缺失也会影响读取其他模型配置。同一逻辑名的配置变更先排空依赖旧定义的任务，再发布新 `revision`。需要并行过渡时使用不同逻辑名。执行器会核对提交时保存的模型指纹，不能通过覆盖条目将排队任务改发给新路由。OvisOCR3 使用[目录示例](catalog.ovisocr3.example.json)，通过 `/maas/v1/tasks` 提交，原模型卡片的 `gpustack.ocr` 入口保持自身的结果协议。
 4. 按已验证吞吐设置容量。静态模式使用库级和项目级上限。旧 M2 通过独立库的静态上限将文档并发限制为 1，共库提高全局上限后须另行保证文档模型仍受该限制。动态模式在同一份 `MAAS_CAPACITY_POLICY_FILE` 中覆盖所有有上游的条目，填写真正的 cluster/model/route/owner ID、许可的 GPU 型号、每副本并发、池硬上限和队列上限。共享同一部署的名称归同一池。策略变化先观测，再按暂停、排空、发出匹配的新鲜预算、应用策略、探针和恢复的流程生效。细节见 [容量配置与启停](README.md#隔离环境启用动态准入)及 [Issue #60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)。
 5. 验证逻辑名的 capabilities、凭据授权和一次真实推理。图片检查 `/gpustack/v1/chat/completions`、异步 `/maas/v1/ocr` 或 `/maas/v1/tasks` 和图片收据；文档检查上传、异步任务、结果 artifact 与页收据。确认只生成预期的一份收据。恢复探针使用独立受控凭据，须取得目录内全部网络模型的本地和上游权限。
 
@@ -27,6 +28,8 @@ MAAS_TEST_DATABASE_URL='<独立 PostgreSQL 测试库 URL>' \
 ```
 
 用同一 API 和执行器验证 `ocr.default` 同步/异步与图片收据、`document.unlimited-ocr-2` 两页 PDF 异步、下载和页收据。只调整目录和权限，新增复用 `gpustack.ocr` 的 `ocr.config-test`，核对新路由、同步/异步和未获授权时的拒绝。动态试验为三个模型配置池，检查文档单槽和全局同步/异步共享上限。局部隔离候选另模拟文档上游返回不确定结果，验证其他模型的派发、历史读取、证据确认后的恢复和无重放。
+
+同一测试库可用 `python -m pytest tests/maas/test_ovis_ocr_integration.py -q` 验证 OvisOCR3 的纯文本结果、一次计量，以及截断响应进入结果失败并保留已确认的后端终态。
 
 2026-11-18 使用 PostgreSQL 16.16 验证了以上三个场景。包含目录、原同步和异步链路、计量、文档及容量的相关回归为 **147 通过、1 跳过**。广泛回归排除会残留 OCR mock 的旧 HTTP 实验后为 900 通过、2 跳过、5 失败。余下失败来自旧 `/ocr` 压测调用和网络边界断言。分别见 [HTTP 实验 #63](https://github.com/WTaoGitHub/cybercafe-maas/issues/63)、[入口命名 #25](https://github.com/WTaoGitHub/cybercafe-maas/issues/25) 和 [网络边界 #55](https://github.com/WTaoGitHub/cybercafe-maas/issues/55)。
 
