@@ -166,6 +166,19 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 本地相关回归 143 项通过，2 项按环境跳过。固定镜像内核对最终启动配置，通过 HTTP 单副本配置，拒绝额外 gRPC 监听。试验容器及端口、探针数据和凭据均已清理，原 API、私有 TLS 入口和静态准入配置已恢复，健康检查为 `200`，`UNKNOWN=0`。真实网关的重试 token 透传和逐 GPU 隔离仍是正式启用前的验收项。
 
+#### Unlimited-OCR-2 双 GPU 定向实机验收
+
+2026-11-19 在 worker 6 和 worker 8 的两张 RTX 4080 SUPER 上各启动一个受保护副本，使用同一固定 M1 镜像、每副本独立的 GPU 凭据和现有 MaaS 任务库。先启动 worker 6。它就绪后，暂停副本调节和新的 MaaS 派发，临时将 PP-OCRv4 与 worker 8 的原 Unlimited-OCR-2 部署降到 0，再启动 worker 8 的试验副本。
+
+| 用例 | 现场结果 |
+| --- | --- |
+| 同一 token 并发发往两张 GPU | worker 6 返回 `200`，四页 PDF 完成两个窗口。worker 8 返回 `409`。账本记录 worker 6 获权，可信终态提交后占用归零。 |
+| worker 8 获权后客户端断连，再发往 worker 6 | worker 6 的重放和终态回执均返回 `409`。活动在 `UNKNOWN` 期间占用 1，worker 8 完成两个窗口并确认调度器资源归还后，活动转为 `COMPLETED`，占用降为 0，原任务保留结果不可用的失败状态。 |
+
+两条探针均直连试验副本。两个副本的日志各记录一份完成的四页文档和一次重复请求拒绝。复跑时向[双 GPU 验收工具](../../tests/maas/uocr_dual_live_fixture.py)提供两个启用保护的端点、经文档适配器生成的四页合成 PDF 请求、受控账本操作和外部 GPU 回执拒绝检查。相关本地 PostgreSQL 和文档回归 37 项通过。Unlimited-OCR-2 多页文档经 Higress 的实际重试、断连和超时仍待验收。
+
+试验容器、端口、凭据、两条探针任务和 worker 6 临时拉取的镜像均已清理。原 Unlimited-OCR-2 副本恢复为 worker 8 的 `1/1 Ready`，并核对其 16 GiB 和 4 CPU 限额。PP-OCRv4 恢复 `2/2 Ready`，GPUStack 将副本放在 worker 6 和 worker 7，两条健康检查均为 `200`。MaaS 在 354 秒后恢复新派发，原 API、私有入口和调节器 Apply 状态已恢复，`UNKNOWN=0`。
+
 ### Higress 重试与逐 GPU 路由验收
 
 2026-11-19 在当前 GPUStack v2.2.3 上，用两个各固定到一张实体 GPU 的临时原生模型共享一条私有模型路由。生效的 Envoy 配置有两个目标集群和两次重试。三个正常 POST 各到达一次。三个始终返回 503 的 POST 各到达三次，九次均携带原 token。两张 GPU 都被选中过，每个 POST 的后续重试均停留在首次选中的实例。 [原生路由生成逻辑](https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/gateway/utils.py#L609)
