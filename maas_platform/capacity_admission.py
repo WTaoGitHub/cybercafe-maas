@@ -57,7 +57,8 @@ class Admission:
         if not self.budget:
             return
         rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous FROM inference_slots
-                            WHERE %s OR dispatched GROUP BY model,project,asynchronous''', (include_preparing,)).fetchall()
+                            WHERE NOT backend_finished AND (%s OR dispatched)
+                            GROUP BY model,project,asynchronous''', (include_preparing,)).fetchall()
         for row in rows:
             key, n = self.aliases.get(row['model']), row['n']
             self.project[row['project']] += n

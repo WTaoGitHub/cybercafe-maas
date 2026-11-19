@@ -18,9 +18,10 @@ from test_multi_executor_integration import group
 
 
 @pytest.fixture
-def dynamic(env, tmp_path):
+def dynamic(env, tmp_path, request):
     client, service, settings, auth, _ = env
-    settings.max_running = settings.max_project_running = 8
+    ceiling = getattr(request, 'param', 8)
+    settings.max_running = settings.max_project_running = ceiling
     settings.max_queued = settings.max_project_queued = 25
     settings.capacity_policy_file = tmp_path/'capacity-policy.json'
     model = {'driver': 'mock', 'revision': '1', 'max_runtime_s': 30}
@@ -34,8 +35,8 @@ def dynamic(env, tmp_path):
         row['models'].extend(['mock.alias', 'mock.other'])
     settings.bindings_file.write_text(json.dumps(bindings))
     common = {'cluster_id': 1, 'owner_principal_id': 1, 'gpu_names': ['example'],
-              'slots_per_replica': 1, 'hard_limit': 8, 'gateway_verified': True}
-    settings.capacity_policy_file.write_text(json.dumps({'global_limit': 8, 'sync_percent': 25, 'pools': {
+              'slots_per_replica': 1, 'hard_limit': ceiling, 'gateway_verified': True}
+    settings.capacity_policy_file.write_text(json.dumps({'global_limit': ceiling, 'sync_percent': 25, 'pools': {
         'a': {**common, 'model_id': 1, 'routes': {'mock.echo': 1, 'mock.alias': 3}, 'queue_limit': 12, 'sync_percent': 25},
         'b': {**common, 'model_id': 2, 'routes': {'mock.other': 2}, 'queue_limit': 2},
     }}))
@@ -46,7 +47,7 @@ def dynamic(env, tmp_path):
         async def write():
             async with await psycopg.AsyncConnection.connect(settings.database_url, autocommit=True, row_factory=dict_row) as c:
                 observed = (await (await c.execute('SELECT clock_timestamp() at')).fetchone())['at']
-                return await publish(c, revision, observed, {'global': limits(min(8, a+b), 25),
+                return await publish(c, revision, observed, {'global': limits(min(ceiling, a+b), 25),
                                      'pools': {'a': limits(a, 25), 'b': limits(b, 0)}})
         assert asyncio.run(write())
 
@@ -82,6 +83,82 @@ def test_sync_uses_all_eight_and_concurrent_async_reserves_only_six(dynamic):
         ingress.begin(identity, 'mock.echo', 30)
     assert full.value.code == 'SYNC_CAPACITY'
     assert service.claim() is None
+
+
+def test_backend_completion_releases_slot_before_result_commit(dynamic):
+    client, service, _, identity, set_capacity = dynamic
+    set_capacity(2, 0)
+    first_id = submit(client, 'test_agent_first').json()['id']
+    second_id = submit(client, 'test_agent_second').json()['id']
+    first = service.claim()
+    assert first['id'] == first_id
+    service.begin_backend(first)
+    ingress = SyncIngress(service)
+    ingress.begin(identity, 'mock.alias', 30)
+
+    service.complete_backend({**first, 'id': second_id})
+    assert service.claim() is None
+    service.complete_backend(first)
+    service.complete_backend(first)
+    assert service.get(identity, first_id)['state'] == 'RUNNING'
+    second = service.claim()
+    assert second['id'] == second_id
+    service.begin_backend(second)
+    with pytest.raises(ServiceError) as full:
+        ingress.begin(identity, 'mock.alias', 30)
+    assert full.value.code == 'SYNC_CAPACITY'
+    assert service.finish(first, output={'ok': True})
+    assert not service.finish(first, output={'duplicate': True})
+    assert service.metrics()['successful_tasks'] == 1
+
+
+@pytest.mark.parametrize('dynamic', [100], indirect=True)
+def test_confirmed_shrink_stops_new_grants_while_unknowns_keep_occupancy(dynamic):
+    client, service, _, identity, set_capacity = dynamic
+    set_capacity(60, 40)
+    unknown = []
+    for i in range(40):
+        assert submit(client, f'test_agent_unknown_{i}', max_attempts=1).status_code == 202
+        attempt = service.claim()
+        service.begin_backend(attempt)
+        unknown.append(attempt)
+    ingress = SyncIngress(service)
+    running = [ingress.begin(identity, 'mock.other', 60) for _ in range(40)]
+    assert submit(client, 'test_agent_preparing', model='mock.other').status_code == 202
+    # Use the other pool's spare local capacity to prepare a task before the shrink.
+    set_capacity(59, 41)
+    preparing = service.claim()
+
+    with service.db.transaction() as c:
+        c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE model='mock.echo'")
+    assert service.recover() == 40
+    with ThreadPoolExecutor(max_workers=2) as workers:
+        downgrade = workers.submit(set_capacity, 5, 45)
+        finish = workers.submit(ingress.finish, running[0], True)
+        downgrade.result(timeout=10)
+        finish.result(timeout=10)
+    with pytest.raises(ServiceError) as deferred:
+        service.begin_backend(preparing)
+    assert deferred.value.code == 'DISPATCH_DEFERRED'
+    assert service.claim() is None
+    assert service.metrics()['unknown_backend_activity'] == 40
+
+    for token in running[1:30]:
+        ingress.finish(token, True)
+    with pytest.raises(ServiceError) as full:
+        ingress.begin(identity, 'mock.other', 30)
+    assert full.value.code == 'SYNC_CAPACITY'
+    ingress.finish(running[30], True)
+    assert ingress.begin(identity, 'mock.other', 30)
+    assert service.claim() is None
+
+    for attempt in unknown[:4]:
+        service.complete_backend(attempt)
+    assert service.metrics()['unknown_backend_activity'] == 36
+    with service.db.transaction() as c:
+        c.execute("UPDATE tasks SET next_run=clock_timestamp() WHERE state='QUEUED'")
+    assert service.claim()['id'] == preparing['id']
+    assert all(service.get(identity, attempt['id'])['state'] == 'FAILED' for attempt in unknown)
 
 
 def test_downgrade_revalidates_preparing_tasks_without_replaying_intents(dynamic):
