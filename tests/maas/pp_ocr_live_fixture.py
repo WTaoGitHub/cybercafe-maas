@@ -48,11 +48,14 @@ def _trial_execute(attempt, array):
     return source.replace(original, 'result, _ = _trial_execute(attempt, array)')
 
 
-def instrument_gateway(source):
+def instrument_gateway(source, *, finish_delay=8):
     """Inject a 503 after the grant while the real GPU completes independently."""
+    if type(finish_delay) is not int or not 1 <= finish_delay <= 30:
+        raise ValueError('Finish delay must be an integer from 1 to 30 seconds')
     marker = 'app = FastAPI()'
     routes = '''
 import hashlib as _trial_hashlib
+import json as _trial_json
 from collections import defaultdict as _TrialEvents
 from concurrent.futures import ThreadPoolExecutor as _TrialPool
 
@@ -81,13 +84,14 @@ def _gateway_execute(label, encoded, attempt):
         if not result['text']:
             raise RuntimeError('Empty trial OCR result')
         # Keep the disconnect window observable after real CUDA execution returns.
-        time.sleep(8)
+        time.sleep(__TRIAL_FINISH_DELAY__)
         guard.report_finished(attempt)
         _gateway_event(label, 'finish', attempt)
     except Exception:
         _gateway_event(label, 'incomplete', attempt)
 '''
     assert source.count(marker) == 1
+    routes = routes.replace('__TRIAL_FINISH_DELAY__', str(finish_delay))
     source = source.replace(marker, marker + '\n' + routes)
     replacements = {
         'def recognize(encoded, attempt):': 'def recognize(encoded, attempt, gateway_label=None):',
@@ -106,6 +110,10 @@ def _gateway_execute(label, encoded, attempt):
         if sum(map(len, _gateway_events.values())) >= 200:
             raise HTTPException(429, 'Trial storage ceiling reached')
     _gateway_event(label, 'delivery', attempt)
+    if label.endswith('_normal'):
+        result = recognize(encoded, attempt)
+        _gateway_event(label, 'normal_finished', attempt)
+        return {'choices': [{'message': {'content': _trial_json.dumps(result)}, 'finish_reason': 'stop'}]}
     try:
         guard.report(attempt, finished=False)
     except HTTPException as exc:
@@ -132,7 +140,8 @@ def verify_events(record, winner):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--gateway', action='store_true')
+    parser.add_argument('--finish-delay', type=int, default=8, help='Seconds before reporting the gateway fault terminal')
     args = parser.parse_args()
-    server = Path(__file__).resolve().parents[2] / 'gpu-ocr' / 'server.py'
-    generate = instrument_gateway if args.gateway else instrument
-    sys.stdout.write(generate(server.read_text()))
+    source = (Path(__file__).resolve().parents[2] / 'gpu-ocr' / 'server.py').read_text()
+    code = instrument_gateway(source, finish_delay=args.finish_delay) if args.gateway else instrument(source)
+    sys.stdout.write(code)

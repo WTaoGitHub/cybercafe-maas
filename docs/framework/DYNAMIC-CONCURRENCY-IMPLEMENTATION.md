@@ -1,6 +1,6 @@
 # MaaS 动态模型并发：设计与实施方案
 
-2026-11-19。跟踪 [Issue #60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)，决策来源见[讨论记录](DYNAMIC-CONCURRENCY-DISCUSSION.md)。容量观测、共享准入和动态模式按后端终态归还额度已实现。逐资源隔离和规模试点的剩余工作见各阶段。表中运行参数均为试点候选。
+2026-11-19。跟踪 [Issue #60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)，决策来源见[讨论记录](DYNAMIC-CONCURRENCY-DISCUSSION.md)。容量观测、共享准入和可信终态归还已实现。PP-OCRv4 已通过逐 GPU 隔离的实际网关验收。受保护模型的小流量启用和运行参数验收仍待完成。
 
 ## 1. 交付目标
 
@@ -211,7 +211,19 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 迁移 `016` 增加预定 GPU UUID，复用原同步和异步活动账本。已登记的 GPU 就绪并通过稳定观测后进入预算。同步准入和异步发送前复核从同一预算选择负载较低的可用 GPU。持有 `UNKNOWN` 的 GPU 暂停新派发，同卡其他模型一起受保护。确切落点未经认证时仍走保守准入，原占用只有收到可信终态后才归还。
 
-可销毁 PostgreSQL 回归覆盖两个 GPU 身份、同步和异步交叉派发、未获权时的保守范围、同卡跨池隔离、项目额度约束、错误 GPU 拒绝、回退目标变化及迟到终态恢复。复跑 `MAAS_TEST_DATABASE_URL=... python -m pytest -q tests/maas/test_gpu_isolation_integration.py`。真实 Higress 和 GPU 的自动避卡验收是启用门槛。
+可销毁 PostgreSQL 回归覆盖两个 GPU 身份、同步和异步交叉派发、未获权时的保守范围、同卡跨池隔离、项目额度约束、错误 GPU 拒绝、回退目标变化及迟到终态恢复。相关回归为 252 项通过、1 项按环境跳过。专项复跑使用 `MAAS_TEST_DATABASE_URL=... python -m pytest -q tests/maas/test_gpu_isolation_integration.py`。
+
+2026-11-19 在原测试 MaaS、原 PostgreSQL 和真实 Higress 上，以 worker 6 与 worker 7 的两条临时单卡路由验收。两次 GPUStack 原生观测确认部署、路由与 GPU 绑定。Envoy 生效配置中，两条路由各只有一个目标且目标互异。首轮发现回执 API 文件遗漏并返回 404，补齐后重新运行以下用例。
+
+| 步骤 | 实际落点及账本 |
+| --- | --- |
+| worker 6 取得执行权后注入 503 | Higress 重试仍到 worker 6，回执保护返回 409。实际 CUDA 推理一次。MaaS 记录该 GPU 为 `UNKNOWN`，继续占用 1 个额度。 |
+| 原请求仍为 `UNKNOWN` 时提交下一笔合成图 | MaaS 自动选择 worker 7，返回 200 和预期 OCR 文本。在第一笔结束前核对了两个独立的实际 GPU UUID。 |
+| worker 6 提交迟到的可信终态，再提交一笔图 | 原活动转为 `COMPLETED` 并释放额度。新请求返回 200，实际到达 worker 6，最终在途占用为 0。 |
+
+实机验证经维护探针调用共享同步准入，异步交叉及同卡跨池隔离由 PostgreSQL 回归覆盖。复用 `python tests/maas/pp_ocr_live_fixture.py --gateway --finish-delay 15` 可生成试验启动入口。使用具有各固定路由权限的探针凭据，以 `test_agent_retry_` 开头的场景名模拟 503，以 `_normal` 结尾的场景名验证正常推理。按先故障、后健康请求、等待原回执、再次发放的顺序核对路由落点和账本。
+
+两个临时副本、路由、凭据和端口已移除，4 条探针活动、4 条 GPUStack 用量明细和 2 条汇总已清理。原 API、私有入口、静态派发和原只观测预算 `2/1/1` 已恢复。保留兼容迁移 `016`，MaaS 健康检查为 200，`UNKNOWN=0`。PP-OCRv4、Unlimited-OCR-2、OvisOCR3 原服务仍分别为 `2/2`、`1/1`、`1/1 Ready`。正式切换需先为日常入口部署受保护的固定单卡路由、验证既有凭据的访问及回退路径，再以 Q25 采集常态和容量骤减的混合负载指标。
 
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |
