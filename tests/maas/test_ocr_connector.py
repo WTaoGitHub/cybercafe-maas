@@ -83,7 +83,7 @@ def test_slow_trickling_response_obeys_absolute_deadline(monkeypatch):
     original=httpx.AsyncClient
     monkeypatch.setattr('maas_platform.ocr_connector.httpx.AsyncClient',lambda **kw:original(
         transport=httpx.MockTransport(lambda request:httpx.Response(200,stream=Trickling())),**kw))
-    ctx=SimpleNamespace(deadline=time.monotonic()+.1,service=SimpleNamespace(
+    ctx=SimpleNamespace(deadline=time.monotonic()+.1,model={},service=SimpleNamespace(
         settings=SimpleNamespace(gpustack_url='http://gateway.test',max_output_bytes=10000),
         complete_backend=lambda _:pytest.fail('Incomplete stream cannot prove completion')))
     started=time.monotonic()

@@ -39,6 +39,7 @@ class Settings:
     capacity_policy_file: Path | None = None
     shutdown_event_key_file: Path | None = None
     executor_slots: int = 1
+    pp_ocr_worker_keys_file: Path | None = None
 
     @classmethod
     def from_env(cls):
@@ -47,6 +48,8 @@ class Settings:
             values['capacity_policy_file'] = Path(policy)
         if key := os.getenv('MAAS_SHUTDOWN_EVENT_KEY_FILE'):
             values['shutdown_event_key_file'] = Path(key)
+        if keys := os.getenv('MAAS_PP_OCR_WORKER_KEYS_FILE'):
+            values['pp_ocr_worker_keys_file'] = Path(keys)
         integers = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
                     'max_running','max_project_running','lease_seconds','result_ttl_seconds',
                     'input_ttl_seconds','min_free_bytes','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size',
@@ -84,6 +87,7 @@ class Settings:
 
     def catalog(self):
         data = json.loads(self.catalog_file.read_text())
+        guarded_routes = set()
         for name, model in data.items():
             adapter = adapter_for(model['driver'])
             if adapter.requires_upstream and any(not isinstance(model.get(key),str) or not model[key] for key in ('upstream_model',)):
@@ -94,4 +98,12 @@ class Settings:
                 raise ValueError('Each model requires a revision and runtime limit')
             if model['driver'] == 'gpustack.document_ocr':
                 adapter.validate_model(model)
+            if 'execution_guard' in model and (type(model['execution_guard']) is not bool or
+                    (model['execution_guard'] and model['driver'] != 'gpustack.ocr')):
+                raise ValueError('Execution guard is supported only by the PP-OCR connector')
+            if model.get('execution_guard'):
+                guarded_routes.add(model['upstream_model'])
+        if any(model.get('upstream_model') in guarded_routes and not model.get('execution_guard')
+               for model in data.values()):
+            raise ValueError('Every MaaS alias on a guarded route must use the execution guard')
         return data

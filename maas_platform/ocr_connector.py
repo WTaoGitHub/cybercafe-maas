@@ -8,6 +8,7 @@ import time
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, AliasChoices, StrictBool
 from .errors import ServiceError
+from .pp_ocr_execution import ATTEMPT_HEADER, finished
 
 
 class ImageReference(BaseModel):
@@ -129,6 +130,9 @@ class OCRAdapter:
                 return await self._infer(ctx, key, body, budget-(time.monotonic()-started), client=private_client)
         timeout = httpx.Timeout(max(.001,budget), connect=min(5,max(.001,budget)))
         headers = {'Authorization': 'Bearer '+key, 'Accept-Encoding': 'identity', 'Content-Type': 'application/json'}
+        guarded = ctx.model.get('execution_guard', False)
+        if guarded:
+            headers[ATTEMPT_HEADER] = 'task.' + ctx.task['token']
         try:
             async with asyncio.timeout(max(0, budget)):
                 # Higress can try multiple backends. MaaS sends once and records the outcome.
@@ -143,10 +147,17 @@ class OCRAdapter:
                         raw.extend(chunk)
                     status = response.status_code
         except (httpx.HTTPError, TimeoutError):
+            if guarded and await asyncio.to_thread(finished, ctx.service.db, 'task', ctx.task['token']):
+                raise ServiceError('BACKEND_RESULT_UNAVAILABLE', 'GPU finished but its response was unavailable') from None
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined') from None
+        if guarded and not await asyncio.to_thread(finished, ctx.service.db, 'task', ctx.task['token']):
+            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'GPU completion is unconfirmed')
         if status not in (200,400,401,403,404,413,415,422):
+            if guarded:
+                raise ServiceError('BACKEND_RESULT_UNAVAILABLE', 'GPU finished but its response was unavailable')
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Gateway completion is unconfirmed')
-        await asyncio.to_thread(ctx.service.complete_backend, ctx.task)
+        if not guarded:
+            await asyncio.to_thread(ctx.service.complete_backend, ctx.task)
         if status != 200:
             raise ServiceError('UPSTREAM_REJECTED', 'Inference request rejected', 422)
         return raw

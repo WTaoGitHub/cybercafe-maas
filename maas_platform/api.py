@@ -19,6 +19,7 @@ from .gpu_time_web import router as gpu_time_router
 from .gpu_daily import router as gpu_daily_router
 from .replica_control_web import router as replica_control_router
 from .shutdown_events import router as shutdown_router, periodic_cleanup as shutdown_cleanup
+from .pp_ocr_execution import router as pp_ocr_execution_router
 
 
 def create_app(settings=None, auth=None):
@@ -39,6 +40,7 @@ def create_app(settings=None, auth=None):
     app.include_router(gpu_daily_router(service.db))
     app.include_router(replica_control_router(), include_in_schema=False)
     app.include_router(shutdown_router(service.db, settings.shutdown_event_key_file))
+    app.include_router(pp_ocr_execution_router(service.db, settings))
     app.state.service = service
     app.state.sync_ingress=SyncIngress(service)
     app.add_middleware(JsonBodyLimit,sync_limit=settings.max_input_bytes*2,task_limit=max(65536,settings.max_input_bytes*2))
@@ -130,6 +132,7 @@ def create_app(settings=None, auth=None):
             code = code or 'TASK_FAILED'
             message = {
                 'UNKNOWN_BACKEND_ACTIVITY': 'The outcome of the backend execution could not be confirmed.',
+                'BACKEND_RESULT_UNAVAILABLE': 'GPU execution ended, but its response could not be delivered.',
                 'DEADLINE_EXCEEDED': 'The task exceeded its deadline.',
                 'MODEL_REVISION_CHANGED': 'The registered model configuration changed before execution.',
                 'RESULT_NOT_COMMITTED': 'Execution completed but the result could not be committed.',

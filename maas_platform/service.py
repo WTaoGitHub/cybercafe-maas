@@ -290,9 +290,10 @@ class TaskService:
             if draining is not None and draining():
                 raise ServiceError('EXECUTOR_DRAINING', 'Executor is draining', 503)
             if allowed and not quarantined:
-                inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id)
-                    SELECT token,id,'DISPATCHING',%s,%s FROM tasks WHERE id=%s
-                    AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''', (route, pool_id, task['id'])).rowcount
+                inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id,execution_guard)
+                    SELECT token,id,'DISPATCHING',%s,%s,%s FROM tasks WHERE id=%s
+                    AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''',
+                    (route, pool_id, model.get('execution_guard', False), task['id'])).rowcount
                 if inserted:
                     return
             reason = 'BACKEND_QUARANTINED' if quarantined else 'CAPACITY_REDUCED'
@@ -311,7 +312,7 @@ class TaskService:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             c.execute("""UPDATE backend_activity SET state='COMPLETED',updated_at=now(),
                       resolution_reason=CASE WHEN state='UNKNOWN' THEN 'Transport confirmed completion' ELSE resolution_reason END
-                      WHERE token=%s AND task_id=%s AND state IN ('DISPATCHING','UNKNOWN')""", (task['token'], task['id']))
+                      WHERE token=%s AND task_id=%s AND NOT execution_guard AND state IN ('DISPATCHING','UNKNOWN')""", (task['token'], task['id']))
 
     def defer_dispatch(self, task, reason='MAINTENANCE_PAUSED'):
         """Return an unsent attempt to the queue without spending an execution retry."""
@@ -461,7 +462,8 @@ class TaskService:
 
     @staticmethod
     def expire_sync(c):
-        c.execute("UPDATE sync_activity SET state='UNKNOWN',updated_at=now() WHERE state='DISPATCHING' AND deadline<=clock_timestamp()")
+        c.execute("""UPDATE sync_activity SET state=CASE WHEN gpu_finished_at IS NULL THEN 'UNKNOWN' ELSE 'COMPLETED' END,
+                     updated_at=now() WHERE state='DISPATCHING' AND deadline<=clock_timestamp()""")
 
     @staticmethod
     def has_unknown(c):
@@ -473,5 +475,5 @@ class TaskService:
             events = c.execute('SELECT count(*) AS n FROM task_usage_events').fetchone()['n']
             paused = c.execute('SELECT paused FROM maintenance WHERE id=1').fetchone()['paused']
             unknown = c.execute("SELECT count(*) n FROM backend_activity WHERE state='UNKNOWN'").fetchone()['n']
-            sync_unknown = c.execute("SELECT count(*) n FROM sync_activity WHERE state='UNKNOWN' OR (state='DISPATCHING' AND deadline<=now())").fetchone()['n']
+            sync_unknown = c.execute("SELECT count(*) n FROM sync_activity WHERE state='UNKNOWN' OR (state='DISPATCHING' AND deadline<=now() AND gpu_finished_at IS NULL)").fetchone()['n']
         return {'tasks': {r['state']:r['n'] for r in rows}, 'successful_tasks': events, 'dispatch_paused': paused, 'unknown_backend_activity': unknown, 'unknown_sync_activity':sync_unknown}

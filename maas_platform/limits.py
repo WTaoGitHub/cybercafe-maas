@@ -21,7 +21,7 @@ class JsonBodyLimit:
             if event['type']=='http.disconnect':return
             body.extend(event.get('body',b''))
             limit=self.sync_limit if scope.get('path') in ('/gpustack/v1/chat/completions','/maas/v1/ocr') else self.task_limit if scope.get('path')=='/maas/v1/tasks' else self.limit
-            if scope.get('path') == '/maas/internal/worker-shutdown-events':
+            if scope.get('path') in ('/maas/internal/worker-shutdown-events','/maas/internal/pp-ocr-execution'):
                 limit = min(limit, 4096)
             if len(body)>limit:
                 await too_large();return

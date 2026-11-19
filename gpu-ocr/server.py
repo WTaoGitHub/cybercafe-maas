@@ -9,10 +9,11 @@ import time
 import uuid
 
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import StreamingResponse
 from ocr_protocol import completion_events
 from direction_guard import GuardClassifier, GuardRecognizer
+from execution_guard import ATTEMPT_HEADER, ExecutionGuard
 from PIL import Image
 from rapidocr_onnxruntime import RapidOCR
 import uvicorn
@@ -22,8 +23,12 @@ parser.add_argument('--port', type=int, default=18820)
 parser.add_argument('--host', default='0.0.0.0')
 parser.add_argument('--model', default='rapidocr-gpu')
 args = parser.parse_args()
-node_name = os.getenv('NODE_NAME') or subprocess.check_output(
-    ['nvidia-smi', '--query-gpu=uuid', '--format=csv,noheader'], text=True).strip()
+def visible_gpu():
+    return subprocess.check_output(['nvidia-smi', '--query-gpu=uuid', '--format=csv,noheader'], text=True).strip()
+
+
+guard = ExecutionGuard.from_env(visible_gpu()) if any(name.startswith('MAAS_PP_OCR_EXECUTION_') for name in os.environ) else None
+node_name = os.getenv('NODE_NAME') or (guard.identity['gpu_uuid'] if guard else visible_gpu())
 engine = RapidOCR(det_use_cuda=True, cls_use_cuda=True, rec_use_cuda=True,
                   intra_op_num_threads=2, inter_op_num_threads=2)
 providers = {}
@@ -43,13 +48,14 @@ lock = threading.Lock()
 
 @app.get('/health')
 def health():
-    return {'ok': True, 'node': node_name, 'providers': providers, 'direction_policy': 'guarded', 'version': '0.3'}
+    return {'ok': True, 'node': node_name, 'providers': providers, 'direction_policy': 'guarded',
+            'version': '0.3', 'execution_guard': guard is not None}
 
 @app.get('/v1/models')
 def models():
     return {'object': 'list', 'data': [{'id': args.model, 'object': 'model', 'owned_by': 'cybercafe'}]}
 
-def recognize(encoded):
+def recognize(encoded, attempt):
     try:
         raw = base64.b64decode(encoded.split(',', 1)[-1], validate=True)
         if len(raw) > 10 * 1024 * 1024:
@@ -64,18 +70,18 @@ def recognize(encoded):
     with lock:
         guard_classifier.angles = []
         guard_recognizer.stats = {}
-        result, _ = engine(array)
+        result, _ = guard.run(attempt, engine, array) if guard else engine(array)
     lines = [{'box': box, 'text': text, 'score': float(score)} for box, text, score in (result or [])]
     return {'text': '\n'.join(x['text'] for x in lines), 'lines': lines,
             'elapsed_ms': round((time.perf_counter()-start)*1000, 2),
             'node': node_name}
 
 @app.post('/ocr')
-def ocr(body: dict):
-    return recognize(body.get('image_base64', ''))
+def ocr(body: dict, attempt: str = Header('', alias=ATTEMPT_HEADER)):
+    return recognize(body.get('image_base64', ''), attempt)
 
 @app.post('/v1/chat/completions')
-def chat(body: dict):
+def chat(body: dict, attempt: str = Header('', alias=ATTEMPT_HEADER)):
     encoded = None
     for message in body.get('messages', []):
         content = message.get('content')
@@ -86,7 +92,7 @@ def chat(body: dict):
     if not encoded or not encoded.startswith('data:image/'):
         raise HTTPException(400, 'supply a base64 image data URL')
     import json
-    result = recognize(encoded)
+    result = recognize(encoded, attempt)
     completion_id = 'ocr-'+uuid.uuid4().hex
     created = int(time.time())
     model = body.get('model', args.model)

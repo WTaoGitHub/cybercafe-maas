@@ -109,6 +109,16 @@ GPUStack 拓扑、PP-OCRv4 健康响应中的 GPU 标识，以及 OvisOCR3 实�
 
 **阶段 4a 中断在网关证据门槛。** 首轮按 Ingress 名称和路径查找未匹配，第二轮按实际 `x-higress-llm-model` 匹配规则定位到三条生效路由。它们均配置 `error,timeout,http_503,http_502,non_idempotent` 重试及 `proxy-next-upstream-tries=2`。固定版本的模型路由管理接口没有逐路由关闭该重试规则的选项。依据逐资源隔离的派发证据要求，本轮停在只读核对，尚未注入断连或启用逐资源放行。 [逐资源隔离设计](E1-DESIGN.md#候选推理传输) · [固定版本网关约束](GPUSTACK-V2.2.3-SCOPE.md#5-一个新的源码发现网关可能重试非幂等推理)
 
+### PP-OCRv4 执行端幂等试点
+
+MaaS 在同步和异步的发送意图中保存是否启用执行端保护，再通过 `X-MaaS-Execution-Attempt` 发送原尝试标识。两个 OCR 副本竞争同一份 PostgreSQL 记录。只有在 GPU 引擎调用前写入实际 GPU UUID 及当前进程标识并收到提交确认的副本可以启动推理。原进程在引擎返回后确认结束，重复回执接受但只更新一次。网关断连且收到结束回执时自动释放占用，结果丢失仍按失败处理。没有可信回执的中断保持 `UNKNOWN`，无自动接管、超时强制归还或结果重放。
+
+- 在现有私有 worker TLS 入口增加精确 POST 路径 `/maas/internal/pp-ocr-execution`，复用来源限制、4 KiB 请求上限和关闭代理重试的配置。MaaS 配置 `MAAS_PP_OCR_WORKER_KEYS_FILE` 指向私有 JSON 文件，键为 GPU UUID，值为该 GPU 独立的 64 位小写十六进制随机凭据。现有注册、消费者和关机事件凭据各自独立。
+- GPUStack 路由的每个目标都须运行带执行端保护的镜像。副本配置 `MAAS_PP_OCR_EXECUTION_ORIGIN`、`MAAS_PP_OCR_EXECUTION_KEY_FILE` 和 `MAAS_PP_OCR_EXECUTION_ROUTE`。HTTPS 使用系统信任库，也可通过 `MAAS_PP_OCR_EXECUTION_CA_FILE` 指定私有 CA。凭据以私有文件挂载。保护中的副本要求只看到一张 GPU，`/health` 的 `execution_guard` 可用于核对镜像配置。MaaS 目录中仅为这条已核对的 PP-OCR 路由启用 `execution_guard`，同路由的别名一并设置。禁止旧镜像混入启用保护的路由。
+- 要核对断连落点，按 `task.` 或 `sync.` 的前缀定位 `backend_activity` 或 `sync_activity`，用前缀后的 token 查询 `dispatch_route`、`gpu_uuid`、`gpu_instance` 和 `gpu_finished_at`。同步占用在动态模式可依据回执提前释放，原入口仍负责结果和计量。其他模型仍使用现有路径。知道执行落在哪张卡之后，逐 GPU 放行还须证明下一次派发能避开隔离 GPU。
+- 本地使用一次性 PostgreSQL 和两个不同 GPU 身份的模拟副本，覆盖双副本争抢、同步异步共用机制、断连后回执、回执重复、伪造凭据、错误路由、迟到或过期请求以及引擎异常。复跑使用 `MAAS_TEST_DATABASE_URL` 指向专用 `_test` 数据库并执行 `python -m pytest -q tests/maas/test_pp_ocr_execution_integration.py`。 [回归用例](../../tests/maas/test_pp_ocr_execution_integration.py)
+- 2026-11-19 现场 Envoy 只读配置确认 PP-OCR 路由的 `num_retries=2`。用于建立临时探针的 GPUStack 管理登录先返回 404，改用实际入口后返回 401，现场停止在只读核对。现场验收需先通过受权入口用合成请求验证 Higress 重试保持同一个标识，再验证两台实际 GPU 副本的单次执行、落点、晚到回执及 RTT 开销。上线和回退均先暂停与排空，保留账本迁移及原 `UNKNOWN` 证据。
+
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |
 | 1. 绑定、计算与只观测模式 | 配置、容量快照迁移、observer、已有运维指标。先跑计算逻辑，再接原生读取。 | 同池别名归一，跨池资源不重复；验证分批掉线、归零、恢复、乱序、订阅断开、快照过期和比例取整。仅输出对照数据，观察到的可用实例可追溯到原生证据。 |
