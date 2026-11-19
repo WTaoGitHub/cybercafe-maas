@@ -4,6 +4,8 @@
 
 一套支持文档依赖的 MaaS API、同版本执行器和一个 PostgreSQL 任务库可以使用同一份模型目录承载图片与文档 OCR。模型在 GPUStack 部署后，优先从现有适配器中选择。输入预处理、推理协议、结果解析或计量语义有实际差异时，再为对应协议开发可复用适配器。
 
+2026-11-19 当前测试环境已在同一入口、同一执行器和同一任务库验证 PP-OCRv4、Unlimited-OCR-2 NFS 与 OvisOCR3。三笔标记任务分别取得一份收据，验证产物和记录均已清理。 [三模型实机记录](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#5-开发顺序与完成条件)
+
 | 兼容范围 | 目录 driver | 请求及计量 |
 | --- | --- | --- |
 | PP-OCRv4 兼容服务 | `gpustack.ocr` | 支持原同步 Chat 入口和异步任务；成功按图片计量 |
@@ -33,9 +35,9 @@ MAAS_TEST_DATABASE_URL='<独立 PostgreSQL 测试库 URL>' \
 
 2026-11-18 使用 PostgreSQL 16.16 验证了以上三个场景。包含目录、原同步和异步链路、计量、文档及容量的相关回归为 **147 通过、1 跳过**。广泛回归排除会残留 OCR mock 的旧 HTTP 实验后为 900 通过、2 跳过、5 失败。余下失败来自旧 `/ocr` 压测调用和网络边界断言。分别见 [HTTP 实验 #63](https://github.com/WTaoGitHub/cybercafe-maas/issues/63)、[入口命名 #25](https://github.com/WTaoGitHub/cybercafe-maas/issues/25) 和 [网络边界 #55](https://github.com/WTaoGitHub/cybercafe-maas/issues/55)。
 
-## 正式迁移前需决定的事项
+## 2026-11-18 迁移前的事项
 
-目前 `ocr.default` 由原 API 写入 `maas`，文档试点写入 `maas_document_m2`。建议先在隔离环境恢复一致的数据库和 artifact 备份，选择保留 `maas` 为共同任务库的候选方案。正式切换需另行确认下列事项。
+迁移前 `ocr.default` 由原 API 写入 `maas`，文档试点写入 `maas_document_m2`。当时的方案是先验证数据库和 artifact 备份的一致性，再选择 `maas` 作为共同任务库。以下是迁移验收使用的检查项。
 
 | 事项 | 建议与验收 |
 | --- | --- |
