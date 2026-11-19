@@ -11,10 +11,12 @@ from test_document_ocr import model
 NAME = 'document.unlimited-ocr-2'
 
 
-def setup(env, monkeypatch, *, status=200, incomplete=False):
+def setup(env, monkeypatch, *, status=200, incomplete=False, guard=None):
     client, service, settings, auth, revoked = env
     settings.max_running = settings.max_project_running = 1
     catalog = json.loads(settings.catalog_file.read_text());catalog[NAME] = model()
+    if guard is not None:
+        catalog[NAME]['execution_guard'] = True
     settings.catalog_file.write_text(json.dumps(catalog))
     bindings = json.loads(settings.bindings_file.read_text())
     for row in bindings['credentials']:
@@ -23,6 +25,8 @@ def setup(env, monkeypatch, *, status=200, incomplete=False):
     factory, calls = httpx.AsyncClient, []
     def reply(request):
         body = json.loads(request.content);calls.append(body)
+        if guard is not None:
+            guard(request, catalog[NAME]['upstream_model'])
         count = sum(p['type'] == 'image_url' for p in body['messages'][0]['content'])
         text = ''.join(f'<PAGE><BLOCK>text[0,0,1000,500]<FORK>Reference {i+1}\n' for i in range(count))
         return httpx.Response(status, json={'choices': [{'finish_reason': 'length' if incomplete else 'stop',
@@ -41,6 +45,39 @@ def upload(client, data=None, media='application/pdf', key='a'):
 def submit(client, artifact, *, key='a', idem='document-1', **fields):
     return client.post('/maas/v1/tasks', headers=headers(key, idem),
         json={'model': NAME, 'input': {'document': {'artifact_id': artifact}}, **fields})
+
+
+def test_document_execution_guard_uses_one_attempt_for_multiple_windows(env, monkeypatch, tmp_path):
+    from maas_platform.pp_ocr_execution import ATTEMPT_HEADER, PATH as CALLBACK
+
+    gpu, key = 'GPU-12345678-1234-1234-1234-123456789abc', 'e' * 64
+    attempts = []
+
+    def guard(request, route):
+        attempt = request.headers[ATTEMPT_HEADER]
+        attempts.append(attempt)
+        assert attempt.startswith('task.')
+        event = dict(gpu_uuid=gpu, instance='f' * 32, route=route, attempt=attempt)
+        for finished, expected in [(False, 204), (False, 409), (True, 204)]:
+            assert client.post(CALLBACK, headers={'Authorization': 'Bearer ' + key},
+                               json={**event, 'finished': finished}).status_code == expected
+
+    client, service, settings, calls = setup(env, monkeypatch, guard=guard)
+    keys = tmp_path / 'test_agent_uocr_keys'
+    keys.write_text(json.dumps({gpu: key}))
+    keys.chmod(0o600)
+    settings.pp_ocr_worker_keys_file = keys
+    artifact = upload(client, pdf(4)).json()['id']
+    accepted = submit(client, artifact, idem='test_agent_uocr_four_pages')
+    assert accepted.status_code == 202
+    assert Worker(service).run_once()
+    detail = client.get(accepted.headers['location'], headers=headers()).json()
+    assert detail['status'] == 'SUCCEEDED' and detail['usage'] == {'successful_pages': 4}
+    assert len(calls) == len(attempts) == 1
+    with service.db.transaction() as conn:
+        assert conn.execute('SELECT state, gpu_uuid FROM backend_activity').fetchone() == {
+            'state': 'COMPLETED', 'gpu_uuid': gpu}
+        assert conn.execute('SELECT count(*) n FROM inference_slots').fetchone()['n'] == 0
 
 
 def test_existing_api_pdf_task_pages_idempotency_isolation_and_gc(env, monkeypatch):

@@ -46,3 +46,13 @@ curl --silent --show-error --fail-with-body --noproxy '*' \
 curl 不配置自动重试。退出码0只说明HTTP/传输成功，仍须核对唯一 choice 的 `finish_reason=stop`、页标记数和内容完整性；`trusted_client.py` 的直接发送方式会检查完成原因、非空文本及页标记数。请求和输出包含文档内容，放在私有目录。
 
 客户端限制1–11页，验证 JSON 完成、stop 和页标记数，并保留成功解析的原始文本；这不是质量验收或生产 PDF 入口。发送请求后的总期限为900秒（不含本地图片读取和编码），断连或超时不证明服务端停止：应先核对后端活动，不能自动重放。用户指定的 All models 权限保留，服务端处理器约束独立于 Key 的模型范围；客户端约束不能替代服务端校验。
+
+## MaaS 文档执行保护试点
+
+在固定 M1 镜像中，把本目录的 `resource_guard.py`、`uocr_execution.py` 及[共用回执客户端](../../gpu-ocr/execution_guard.py)以只读文件挂载到 `/opt/maas/`。沿用原入口和容器限额。启动时核对 SGLang 的 Chat、调度器和 tokenizer 源码摘要。守卫要求每副本只见一张 GPU、只处理一份文档，保留窗口间 KV 复用，关闭窗口预取、重叠调度和启动时的自动推理。
+
+配置 `MAAS_UOCR_EXECUTION_ORIGIN`、`MAAS_UOCR_EXECUTION_ROUTE`、`MAAS_UOCR_EXECUTION_KEY_FILE`，需要私有 CA 时配置 `MAAS_UOCR_EXECUTION_CA_FILE`。凭据通过私有只读文件挂载，并登记到现有 MaaS 的 `MAAS_PP_OCR_WORKER_KEYS_FILE`。受保护端只接受带 MaaS 尝试 token 的非流式文档调用。同路由的所有 GPUStack 目标和 MaaS 别名部署并验证后，才可开启目录里的 `execution_guard`。
+
+GPU 进程在启动第一页前领取整份文档的执行权。已领取的文档在调用方断连后继续运行。所有窗口结束并发出文档 KV 释放指令后，再通过同一 IPC 通道询问调度器。调度队列、请求槽和 KV 池都已回收，并完成 CUDA 同步后，才提交终态。MaaS 收不到回执时保留 `UNKNOWN`。调度器未确认回收时，当前实例暂停接收新请求，需核实后恢复。
+
+用 `python -m pytest tests/maas/test_uocr_execution.py` 回归执行权、窗口和调度器确认，用[现有任务库测试](../../tests/maas/test_document_tasks_integration.py)验证四页文档只派发一次并正确记账。

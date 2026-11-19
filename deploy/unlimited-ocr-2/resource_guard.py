@@ -39,6 +39,11 @@ def main():
     # shortcut: apply caps to each new trial container; integrate runner limits before unattended recovery.
     value = wait_for_limits()
     print(json.dumps({'trial_resource_caps_verified': value}), flush=True)
+    if any(name.startswith('MAAS_UOCR_EXECUTION_') for name in os.environ):
+        from uocr_execution import serve
+
+        serve(sys.argv[1:])
+        return
     os.execv(sys.executable, [sys.executable, '-m', 'sglang.launch_server', *sys.argv[1:]])
 
 
