@@ -87,6 +87,6 @@ def test_slow_trickling_response_obeys_absolute_deadline(monkeypatch):
         settings=SimpleNamespace(gpustack_url='http://gateway.test',max_output_bytes=10000),
         complete_backend=lambda _:pytest.fail('Incomplete stream cannot prove completion')))
     started=time.monotonic()
-    with pytest.raises(ServiceError) as exc:asyncio.run(OCRAdapter()._infer(ctx,'key',{},.1))
+    with pytest.raises(ServiceError) as exc:asyncio.run(OCRAdapter()._infer(ctx,'key',b'{}',.1))
     assert exc.value.code=='UNKNOWN_BACKEND_ACTIVITY'
     assert time.monotonic()-started<1 and closed

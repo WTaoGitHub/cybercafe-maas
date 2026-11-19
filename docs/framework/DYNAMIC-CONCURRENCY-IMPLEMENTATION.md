@@ -61,7 +61,7 @@ MaaS 自动发现各模型实际可服务的副本变化，更新模型和全局
 
 ## 4. 执行器改造
 
-保留 Python。每个执行器进程有一个常驻 `asyncio` 事件循环，按本地槽位调度最多指定数量的活跃任务。领取一笔后即开始准备，复核通过后发送。同一进程可以调度多笔远端 I/O，槽位贯穿准备、发送和结果持久化。使用进程内共享且有界的 HTTPX 连接池，逐请求显式传递凭据，保持 Cookie 隔离、现有超时和无自动重放。连接池用法见 [HTTPX 异步客户端文档](https://www.python-httpx.org/async/#opening-and-closing-clients)。
+每个 Python 执行器进程运行一个常驻 `asyncio` 事件循环。`MAAS_EXECUTOR_SLOTS` 设置本地活跃任务上限，默认 1，与 `MAAS_EXECUTOR_REPLICAS` 分别配置。领取一笔后即开始准备，复核通过后发送。槽位贯穿准备、发送和结果持久化。进程内共享有界 HTTPX 连接池，逐请求传递凭据，拒收 Cookie，沿用现有超时和单次发送规则。连接池用法见 [HTTPX 异步客户端文档](https://www.python-httpx.org/async/#opening-and-closing-clients)。
 
 对 [OCR](../../maas_platform/ocr_connector.py) 拆开输入准备、推理和结果校验。同步的数据库及文件调用进有界处理池，文件和文档重处理另外限制并发及缓冲体积。复用[文档 OCR](../../maas_platform/document_ocr.py)适配器的执行和计量约束，保留受限处理路径，文档或本地适配器通过回归后再扩大其并发。每进程集中续租，按 token 和租约状态防止过期任务被续活，并监控数据库池等待。周期恢复独立于逐笔领取。
 
@@ -74,6 +74,8 @@ MaaS 自动发现各模型实际可服务的副本变化，更新模型和全局
 阶段 2 的共享准入已接入。任务库中的模式和策略摘要统一约束 API 与执行器。默认继续使用静态限额，切换在暂停且排空后通过私有 CLI 执行。隔离 PostgreSQL 已覆盖同步占满 8、并发执行器最多领取 6、发送前降额归队和回退。共库小规模联调验证了不同 GPU 上两条模型路径的并发，逐资源故障隔离与负载验证待试点。见 [#60 联调记录](https://github.com/WTaoGitHub/cybercafe-maas/issues/60#issuecomment-6972583307)。
 
 阶段 2a 已通过隔离 PostgreSQL 验证。额度在可信终态提交后可立即复用，重复或错配的终态不能多释放。已覆盖 100→50 与 40 个 `UNKNOWN` 的收敛过程、预算发布与同步释放竞态、迟到响应和原任务无自动重放。
+
+阶段 3 已通过隔离 PostgreSQL 和模拟 GPUStack 验证。单进程双槽下，首笔立即发出，两个推理可同时在途并批量续租，第三笔等槽位释放后发出。共享客户端逐请求使用各自凭据。退出时已发送任务完成并计量一次，未发送任务归队或继续排队。复跑命令为 `MAAS_TEST_DATABASE_URL=... python -m pytest tests/maas/test_async_executor_integration.py -q`，数据库名须以 `_test` 结尾且专供本次验证。
 
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |

@@ -1,12 +1,9 @@
 """Single-send Unlimited-OCR-2 document adapter using the existing task lifecycle."""
-import asyncio
 import base64
-from datetime import datetime, timezone
 import importlib.metadata
 import hashlib
 import json
 from pathlib import Path
-import time
 from pydantic import BaseModel, ConfigDict, Field
 from .document_output import POSTPROCESSOR_REVISION, POSTPROCESSOR_SHA256
 from .documents import prepare_document, parse_document
@@ -55,7 +52,7 @@ class DocumentOCRAdapter(OCRAdapter):
         if hashlib.sha256(Path(__file__).with_name('_unlimited_postprocess.py').read_bytes()).hexdigest() != POSTPROCESSOR_SHA256:
             raise ValueError('Document postprocessor differs from the approved source')
 
-    def execute(self, ctx):
+    def _prepare(self, ctx):
         data, media = ctx.read_input()
         with prepare_document(data, media, ctx.task['parameters']['dpi'], ctx.check) as (root, metadata):
             content, pages = [], []
@@ -73,16 +70,12 @@ class DocumentOCRAdapter(OCRAdapter):
             'custom_logit_processor': 'maas.unlimited-ocr-2.ngram.v1',
             'custom_params': {'ngram_size': 35, 'window_size': 1024 if count > 1 else 128,
                              'page_token_id': 128827, 'eos_token_id': 1, 'max_page_tokens': 20000}}
-        if len(json.dumps(body).encode()) > 96 * 1024**2:
+        encoded = json.dumps(body).encode()
+        if len(encoded) > 96 * 1024**2:
             raise ServiceError('DOCUMENT_RENDER_SIZE', 'Rendered document request exceeds its budget', 413)
-        ctx.check()
-        key = ctx.service.auth.key_for(ctx.identity)
-        remaining = min(ctx.deadline - time.monotonic(),
-                        (ctx.task['deadline'] - datetime.now(timezone.utc)).total_seconds())
-        if remaining <= 0:
-            raise ServiceError('RUNTIME_EXCEEDED', 'No inference time remains')
-        ctx.service.begin_backend(ctx.task)
-        raw = asyncio.run(self._infer(ctx, key, body, remaining))
+        return encoded, pages
+
+    def _decode(self, ctx, raw, pages):
         ctx.check()
         try:
             envelope = json.loads(raw)

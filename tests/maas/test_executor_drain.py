@@ -6,6 +6,7 @@ from maas_platform.worker import Worker
 class Service:
     def __init__(self,event):
         self.event=event;self.claimed=0;self.recovered=0;self.deferred=[]
+        self.settings=SimpleNamespace(heartbeat_seconds=1)
     def recover(self):self.recovered+=1
     def claim(self):self.claimed+=1;return {'id':'task_test','attempts':1}
     def defer_dispatch(self,task,reason):self.deferred.append((task['id'],reason));return True

@@ -38,6 +38,7 @@ class Settings:
     min_free_bytes: int = 2 * 1024 * 1024 * 1024
     capacity_policy_file: Path | None = None
     shutdown_event_key_file: Path | None = None
+    executor_slots: int = 1
 
     @classmethod
     def from_env(cls):
@@ -49,7 +50,7 @@ class Settings:
         integers = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
                     'max_running','max_project_running','lease_seconds','result_ttl_seconds',
                     'input_ttl_seconds','min_free_bytes','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size',
-                    'cleanup_time_budget_ms','cleanup_interval_seconds')
+                    'cleanup_time_budget_ms','cleanup_interval_seconds','executor_slots')
         for name in integers:
             value = os.getenv('MAAS_' + name.upper())
             if value is not None:
@@ -69,7 +70,7 @@ class Settings:
     def __post_init__(self):
         positive = ('max_input_bytes','max_output_bytes','max_queued','max_project_queued',
                     'max_running','max_project_running','lease_seconds','result_ttl_seconds','input_ttl_seconds','max_storage_bytes','max_project_storage_bytes','orphan_grace_seconds','cleanup_batch_size',
-                    'cleanup_time_budget_ms','cleanup_interval_seconds')
+                    'cleanup_time_budget_ms','cleanup_interval_seconds','executor_slots')
         if any(not isinstance(getattr(self,name),int) or getattr(self,name)<=0 for name in positive):
             raise ValueError('Limits and retention periods must be positive integers')
         if not math.isfinite(self.heartbeat_seconds) or not 0<self.heartbeat_seconds<self.lease_seconds/2:

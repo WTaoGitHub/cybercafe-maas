@@ -259,7 +259,7 @@ class TaskService:
             c.execute("INSERT INTO task_attempts(token,task_id,attempt,state) VALUES(%s,%s,%s,'RUNNING')", (token, row['id'], row['attempts']))
             return row
 
-    def begin_backend(self, task):
+    def begin_backend(self, task, draining=None):
         """Persist intent before sending bytes; an uncertain commit never permits a send."""
         with self.db.transaction() as c:
             maintenance = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
@@ -287,6 +287,8 @@ class TaskService:
                         raise
                     allowed = False
             quarantined = blocks(unresolved(c), row['model'], route, pool_id)
+            if draining is not None and draining():
+                raise ServiceError('EXECUTOR_DRAINING', 'Executor is draining', 503)
             if allowed and not quarantined:
                 inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id)
                     SELECT token,id,'DISPATCHING',%s,%s FROM tasks WHERE id=%s
@@ -360,8 +362,18 @@ class TaskService:
             return bool(c.execute("UPDATE backend_activity SET state='RESOLVED',resolution_reason=%s,updated_at=now() WHERE token=%s AND state='UNKNOWN' RETURNING token", (reason,token)).fetchone())
 
     def heartbeat(self, task):
+        return bool(self.heartbeat_many((task,)))
+
+    def heartbeat_many(self, tasks):
+        if not tasks:
+            return 0
+        ids, tokens = zip(*[(task['id'], task['token']) for task in tasks])
         with self.db.transaction() as c:
-            return bool(c.execute("UPDATE tasks SET lease_until=now()+%s*interval '1 second' WHERE id=%s AND token=%s AND state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until>now() RETURNING id", (self.settings.lease_seconds, task['id'], task['token'])).fetchone())
+            return c.execute('''UPDATE tasks t SET lease_until=clock_timestamp()+%s*interval '1 second'
+                FROM unnest(%s::text[], %s::text[]) AS a(id, token)
+                WHERE t.id=a.id AND t.token=a.token AND t.state IN ('RUNNING','CANCEL_REQUESTED')
+                  AND t.lease_until>clock_timestamp()''',
+                (self.settings.lease_seconds, list(ids), list(tokens))).rowcount
 
     def cancelled(self, task):
         with self.db.transaction() as c:

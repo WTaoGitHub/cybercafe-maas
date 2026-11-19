@@ -1,7 +1,8 @@
-"""Synchronous OCR over the authenticated GPUStack gateway, one client send only."""
+"""OCR over the authenticated GPUStack gateway, one client send only."""
 import asyncio
 import base64
 from datetime import datetime, timezone
+from http.cookiejar import CookieJar, DefaultCookiePolicy
 import json
 import time
 import httpx
@@ -47,6 +48,15 @@ class OCRResult(BaseModel):
     node: str
 
 
+class RejectCookies(DefaultCookiePolicy):
+    def set_ok(self, cookie, request):
+        return False
+
+
+def inference_client(slots=1):
+    limits = httpx.Limits(max_connections=slots, max_keepalive_connections=slots)
+    return httpx.AsyncClient(trust_env=False, follow_redirects=False, limits=limits,
+                             cookies=CookieJar(policy=RejectCookies()))
 
 
 class OCRAdapter:
@@ -61,23 +71,37 @@ class OCRAdapter:
         return inp, params, inp['image'].get('artifact_id')
 
     def execute(self, ctx):
-        model = ctx.model
+        return asyncio.run(self.execute_async(ctx))
+
+    async def execute_async(self, ctx, client=None, draining=None):
+        body, metadata = await asyncio.to_thread(self._prepare, ctx)
+        key, deadline = await asyncio.to_thread(self._authorize, ctx, draining)
+        raw = await self._infer(ctx, key, body, max(0, deadline-time.monotonic()), client=client)
+        return await asyncio.to_thread(self._decode, ctx, raw, metadata)
+
+    def _prepare(self, ctx):
         data, media = ctx.read_input()
         if media not in ('image/png', 'image/jpeg'):
             raise ServiceError('MEDIA_TYPE', 'OCR requires an uploaded PNG or JPEG', 415)
+        body = {'model': ctx.model['upstream_model'], 'stream': False, 'messages': [{'role':'user','content':[
+            {'type':'image_url','image_url':{'url':'data:'+media+';base64,'+base64.b64encode(data).decode()}}]}]}
+        return json.dumps(body).encode(), None
+
+    @staticmethod
+    def _authorize(ctx, draining):
         key = ctx.service.auth.key_for(ctx.identity)
         ctx.check()
-        remaining = min(ctx.deadline-time.monotonic(),
-                        (ctx.task['deadline']-datetime.now(timezone.utc)).total_seconds())
-        if remaining <= 0:
+        now = time.monotonic()
+        deadline = min(ctx.deadline, now + (ctx.task['deadline']-datetime.now(timezone.utc)).total_seconds())
+        if deadline <= now:
             raise ServiceError('RUNTIME_EXCEEDED', 'No inference time remains')
-        body = {'model': model['upstream_model'], 'stream': False, 'messages': [{'role':'user','content':[
-            {'type':'image_url','image_url':{'url':'data:'+media+';base64,'+base64.b64encode(data).decode()}}]}]}
-        # No redirects, proxy environment, cookie jar or client-side transport retries.
-        # Higress may still try up to three backends; no application replay after send.
-        network_deadline = time.monotonic()+remaining
-        ctx.service.begin_backend(ctx.task)
-        raw = asyncio.run(self._infer(ctx, key, body, max(0,network_deadline-time.monotonic())))
+        if draining is None:
+            ctx.service.begin_backend(ctx.task)
+        else:
+            ctx.service.begin_backend(ctx.task, draining=draining)
+        return key, deadline
+
+    def _decode(self, ctx, raw, metadata):
         ctx.check()
         try:
             envelope = json.loads(raw)
@@ -92,27 +116,33 @@ class OCRAdapter:
         except (ValueError, KeyError, IndexError, TypeError, ValidationError):
             raise ServiceError('OUTPUT_INVALID', 'OCR response does not match the approved schema') from None
 
-    async def _infer(self, ctx, key, body, remaining):
+    async def _infer(self, ctx, key, body, remaining, client=None):
         # asyncio.timeout is a wall-clock deadline, including slow/trickling bodies.
         budget = min(remaining, ctx.deadline-time.monotonic())
+        if client is None:
+            started = time.monotonic()
+            async with inference_client() as private_client:
+                return await self._infer(ctx, key, body, budget-(time.monotonic()-started), client=private_client)
+        timeout = httpx.Timeout(max(.001,budget), connect=min(5,max(.001,budget)))
+        headers = {'Authorization': 'Bearer '+key, 'Accept-Encoding': 'identity', 'Content-Type': 'application/json'}
         try:
             async with asyncio.timeout(max(0, budget)):
-                async with httpx.AsyncClient(timeout=httpx.Timeout(max(.001,budget), connect=min(5,max(.001,budget))),
-                                             trust_env=False, follow_redirects=False) as client:
-                    async with client.stream('POST', ctx.service.settings.gpustack_url+'/v1/chat/completions',
-                                             headers={'Authorization':'Bearer '+key,'Accept-Encoding':'identity'}, json=body) as response:
-                        if response.headers.get('content-encoding','identity') != 'identity':
-                            raise ServiceError('OUTPUT_ENCODING', 'Compressed inference responses are unsupported')
-                        raw = bytearray()
-                        async for chunk in response.aiter_bytes():
-                            if len(raw)+len(chunk)>ctx.service.settings.max_output_bytes:
-                                raise ServiceError('OUTPUT_SIZE', 'Inference response exceeds configured limit')
-                            raw.extend(chunk)
-                        if response.status_code not in (200,400,401,403,404,413,415,422):
-                            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Gateway completion is unconfirmed')
-                        ctx.service.complete_backend(ctx.task)
-                        if response.status_code != 200:
-                            raise ServiceError('UPSTREAM_REJECTED', 'Inference request rejected', 422)
-                        return raw
+                # Higress can try multiple backends. MaaS sends once and records the outcome.
+                async with client.stream('POST', ctx.service.settings.gpustack_url+'/v1/chat/completions',
+                                         headers=headers, content=body, timeout=timeout) as response:
+                    if response.headers.get('content-encoding','identity') != 'identity':
+                        raise ServiceError('OUTPUT_ENCODING', 'Compressed inference responses are unsupported')
+                    raw = bytearray()
+                    async for chunk in response.aiter_bytes():
+                        if len(raw)+len(chunk)>ctx.service.settings.max_output_bytes:
+                            raise ServiceError('OUTPUT_SIZE', 'Inference response exceeds configured limit')
+                        raw.extend(chunk)
+                    status = response.status_code
         except (httpx.HTTPError, TimeoutError):
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined') from None
+        if status not in (200,400,401,403,404,413,415,422):
+            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Gateway completion is unconfirmed')
+        await asyncio.to_thread(ctx.service.complete_backend, ctx.task)
+        if status != 200:
+            raise ServiceError('UPSTREAM_REJECTED', 'Inference request rejected', 422)
+        return raw
