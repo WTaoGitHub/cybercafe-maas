@@ -127,7 +127,7 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 沿用同一任务库、路由、容量观察器、API 和执行器。为每个模型在 GPUStack 自定义后端中增加版本，以固定镜像摘要作为该版本的镜像。部署显式选择新增版本，保留原版本用于回退。模型级镜像覆盖在副本重建后曾丢失。发布后实际将模型缩至零并恢复，核对 GPUStack 后端版本、worker 上运行的镜像和 MaaS 收到的 GPU 终态。 [现场故障 #67](https://github.com/WTaoGitHub/cybercafe-maas/issues/67)
 
-在通过联合容量验证、具备执行回执凭据的 worker 上登记调度标签。深度学习后端分别核对显存余量，按通过验证的 GPU 布局配置容量策略。现有调节器继续写入同一个原生部署 ID。只有确认就绪、可路由且符合策略的副本获得额度。 [PP-OCRv4 调度记录 #66](https://github.com/WTaoGitHub/cybercafe-maas/issues/66)
+深度学习后端分别核对显存余量，按通过验证的 GPU 布局配置容量策略。现有调节器继续写入同一个原生部署 ID。只有确认就绪、可路由且符合策略的副本获得额度。此前 PP-OCRv4 试验使用的 worker 调度标签已撤销。 [历史调度记录 #66](https://github.com/WTaoGitHub/cybercafe-maas/issues/66)
 
 ### 三模型副本权重准备（2026-11-20）
 
@@ -135,7 +135,9 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 权重用于选择资源约束下的整数分配，不要求精确倍数或固定启动顺序；1/2/5可作为合适结果。三台空闲16GB卡、现有PP安全选择器的只读假设预演为1/2/5，这不是三台实际Ready或真实GPU混跑证据。实际目标还受逐卡已有占用、选择器、保留显存和未就绪实例约束。资源不足时不能为凑比例超配或降低服务保护下限。
 
-本轮将三部署纳入同一调节器，保持**Apply且全局暂停**，不恢复自动动作。Unlimited移除固定worker/GPU绑定，PP保留`maas-capacity-pp-ready`准入标签；不清标签绕过已有执行回执及共享布局保护。改变写授权需重建同镜像E17，API和worker保持；实际E17的独立发布文件由控制端活动版本台账的`replica_regulator.compose_file`记录，不能用历史合并Compose回退当前API。
+三套部署使用同一调节器，当前为 **Apply 且全局暂停**。生产模拟允许任意 worker 上下线，三套部署的 `worker_selector` 和 `gpu_selector` 均为空，由 GPUStack 在可用资源中调度。已移除 worker 6、7 的 `maas-capacity-pp-ready` 标签，系统身份标签仍可用于识别节点。GPUStack API 回读确认 Unlimited、Ovis、PP 的目标/Ready 副本仍为 0/0、2/2、2/2，实例所在 worker 一致，调节器无未确认写入。执行回执及已验证共享布局要求继续生效。
+
+改变写授权需重建同镜像 E17。实际 E17 的独立发布文件由控制端活动版本台账的 `replica_regulator.compose_file` 记录。使用该发布文件可保留当前 MaaS API 版本。
 
 正式试验前先冻结受理并排空，在worker仍在线时将三部署归零、确认实际推理容器退出；不能只停worker来认定GPU空闲。worker下线后确认可调度GPU为零、模型目标仍为零及无未确认写入，再显式恢复调节器，随后由管理员准备允许的三台worker上线。必须核对最终Ready和真实推理，未验证的同卡模型组合不会自动加入MaaS准入白名单。本操作不授权对受保护VM整机重启。
 

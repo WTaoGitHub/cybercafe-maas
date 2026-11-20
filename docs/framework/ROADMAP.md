@@ -1,6 +1,6 @@
 # 统一模型服务路线图 v0.2
 
-> **2026-11-20 加权纳管前置完成，实测未开始**：Unlimited/Ovis/PP三个真实部署以权重1:2:4纳管，允许1/2/5等资源约束下的整数结果；各保底1、运行时与策略安全边界各32，不将1/2/4设为上限。当前Apply但全局暂停，绑定解除及授权一致性检查通过，未触发副本调节。后续先完成排空/归零和零worker确认，再验证三worker上线后的目标/Ready/真实推理；保留PP准入标签和未验证共享布局的拦截。[配置与操作](../../deploy/maas/README.md#三模型副本权重准备2026-11-20) · [证据](../../results/maas-replica-weights-20261120/validation.json) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
+> **2026-11-20 加权纳管前置完成，实测未开始**：Unlimited/Ovis/PP三个真实部署以权重1:2:4纳管，允许1/2/5等资源约束下的整数结果；各保底1、运行时与策略安全边界各32，不将1/2/4设为上限。当前Apply但全局暂停，绑定解除及授权一致性检查通过，未触发副本调节。后续先完成排空/归零和零worker确认，再验证三worker上线后的目标/Ready/真实推理；三套部署的 worker/GPU 选择器均为空。已撤销 PP 试验标签，未验证共享布局仍受容量准入限制。[配置与操作](../../deploy/maas/README.md#三模型副本权重准备2026-11-20) · [前期配置证据](../../results/maas-replica-weights-20261120/validation.json) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
 > **2026-11-13 单节点冷/热闭环已通过并收尾**：新001/worker7上，固定镜像/同GPU与启动ID/相同图片，调节器自动0→1各一次；Apply→Ready冷89.48秒、热12.40秒，单对约缩短86.1%，不作为稳定性能/SLA。冷/热各真实MaaS任务成功，结果下载一致、一次尝试/事件/收据、成功图片1、响应node匹配GPU UUID，UNKNOWN0；正式API另一次回归通过。Docker捕获冷轮目标及辅助镜像pull、热轮无目标pull，实际字节/纯下载解压未测。210本地通过/3条件跳过，固定运行镜像9项模拟保护测试通过。试点归零恢复选择器、临时key/路由清理、独立API/执行器/两控制进程/有界事件记录均已停，意图与旧未知journal保留；正式2/2（实例5、181）、gen15/启动上限1、原配置/核心容器与E17日报保持，003/worker6仍冷。证据已私有归档Mac并核验；总75分钟预算未延长，无遗留负载。双全冷并行对照、重复分布和稳定观察/回退交接等仍待，未自动晋级上限2。[报告](../../results/maas-replica-cold-warm-20261113/REPORT.md) · [HTML](../../results/maas-replica-cold-warm-20261113/REPORT.html) · [Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。
 
