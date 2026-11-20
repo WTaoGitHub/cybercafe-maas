@@ -16,9 +16,12 @@ RENDER_SLOT = threading.BoundedSemaphore(1)
 
 @contextmanager
 def _process(data, media, dpi, check, mode):
-    if not RENDER_SLOT.acquire(blocking=False):
-        raise ServiceError('DOCUMENT_PREPROCESS_CAPACITY', 'Document preprocessing is busy', 429, True)
+    while not RENDER_SLOT.acquire(timeout=0 if mode == 'inspect' else .1):
+        if mode == 'inspect':
+            raise ServiceError('DOCUMENT_PREPROCESS_CAPACITY', 'Document preprocessing is busy', 429, True)
+        check()
     try:
+        check()
         with tempfile.TemporaryDirectory(prefix='maas-document-') as directory:
             root = Path(directory)
             source = root / 'input'

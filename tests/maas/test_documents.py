@@ -1,9 +1,11 @@
+from concurrent.futures import ThreadPoolExecutor
 import io
 from pathlib import Path
 import tempfile
+from threading import Event
 import pytest
 from PIL import Image
-from maas_platform.documents import prepare_document, validate_pdf
+from maas_platform.documents import RENDER_SLOT, prepare_document, validate_pdf
 from maas_platform.errors import ServiceError
 
 pdfium = pytest.importorskip('pypdfium2', reason='Install requirements-document.txt for PDF tests')
@@ -66,13 +68,36 @@ def test_pixels_checked_before_render(data, dpi):
 
 def test_cancellation_kills_preprocess_and_cleans_files(tmp_path, monkeypatch):
     monkeypatch.setattr(tempfile, 'tempdir', str(tmp_path))
+    checked = False
     def cancelled():
-        raise ServiceError('INTERRUPTED', 'cancelled')
+        nonlocal checked
+        if checked:
+            raise ServiceError('INTERRUPTED', 'cancelled')
+        checked = True
     with pytest.raises(ServiceError) as error:
         with prepare_document(pdf(10), 'application/pdf', check=cancelled):
             pytest.fail('cancelled work completed')
     assert error.value.code == 'INTERRUPTED'
     assert not list(tmp_path.iterdir())
+
+
+def test_task_waits_for_busy_document_slot_and_upload_still_fails_fast():
+    data = pdf()
+    waiting = Event()
+
+    def render():
+        with prepare_document(data, 'application/pdf', check=waiting.set) as (_, metadata):
+            return metadata['page_count']
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        with RENDER_SLOT:
+            future = executor.submit(render)
+            assert waiting.wait(2)
+            assert not future.done()
+            with pytest.raises(ServiceError) as error:
+                validate_pdf(data)
+            assert error.value.code == 'DOCUMENT_PREPROCESS_CAPACITY'
+        assert future.result(timeout=5) == 1
 
 
 def test_image_orientation_and_media_validation():
