@@ -10,6 +10,12 @@ MaaS 在发送推理前记录派发 token、逻辑模型和实际配置的上游
 
 同步在该范围返回 `503 BACKEND_QUARANTINED`。异步队列跳过该范围。若任务已领取但尚未发送，二次检查会将其放回队列，保留原任务、期限和执行重试预算。其他范围可使用剩余容量。未知执行仍占一份全局及项目额度，已被计入活跃任务的相同 attempt 只计一次；没有剩余额度时其他模型也会等候。全局维护暂停和排空的行为沿用原有契约。
 
+### PP-OCRv4 执行保护镜像
+
+在只含 `server.py`、`execution_guard.py` 和 [Dockerfile.execution-guard](../../gpu-ocr/Dockerfile.execution-guard) 的构建上下文中，以固定基础镜像的完整引用作为 `BASE_IMAGE`。已验证的基础镜像摘要为 `sha256:9ec6c93fd35ecf2bfd1a9d842cf7afab4276cff6475e5afe8d56f43acbdca9d9`，发布的受保护镜像索引摘要为 `sha256:4a1ba7fa63408f475bcee4e1a7927b165c1ed5333e7cb27c3283e47f22a3a99c`。GPUStack 沿用 `python3 /app/server.py` 入口，按实际部署配置 `MAAS_PP_OCR_EXECUTION_ORIGIN`、`MAAS_PP_OCR_EXECUTION_ROUTE`、`MAAS_PP_OCR_EXECUTION_KEY_FILE` 和 `MAAS_PP_OCR_EXECUTION_CA_FILE`。GPU 凭据经只读路径提供给推理进程。
+
+保留同一 GPUStack 部署和网关路由时，池预算可随其中合格副本数自动变化。先在全部可达副本验证回执再启用目录保护。共享路由的 `UNKNOWN` 按模型池隔离。需逐 GPU 隔离时使用下文的固定路由配置。
+
 ## 逐 GPU 隔离候选
 
 动态模式下，容量池可使用 `replica_routes` 将实际网关路由名映射到固定 GPU 的单副本部署。下面是加入一个池的字段示例。池的 `model_id` 为其中一个部署，`routes` 仍保存客户端逻辑名称到目录默认路由 ID 的映射。
