@@ -867,7 +867,7 @@ PP-OCRv5 server调整为第二轮备选：真实拍照样本出现明确需求�
 
 显存验收使用实测峰值，同时记录 GPUStack 显存申报和 Worker 的可分配显存。本轮状态为待讨论，测试范围及最终参数留待后续确定。[Issue #11](https://github.com/WTaoGitHub/cybercafe-maas/issues/11)
 
-> **2026-11-20 双 OvisOCR3 副本试配。** 基于此前 32% 显存预算通过普通 OCR 的实机记录，增加 16 GiB 单卡双副本候选。每副本 GPUStack 申报 6 GiB，两个副本显式固定到一张卡。主备管理通道超时，现场部署及双路推理验收待完成。[配置与验收步骤](../../deploy/ovisocr3/README.md#two-replicas-on-one-16-gib-rtx-4080)
+> **2026-11-20 双 OvisOCR3 副本部署。** 每副本 GPUStack 申报 6 GiB，vLLM 显存比例设为 0.32，GPUStack 自动放置。单张 RTX 4080 SUPER 上两个隔离副本通过两轮双路 OCR，整卡观测峰值为 11,054 MiB。日常部署已跨 worker 达到 2/2 Ready，两个实例及原鉴权路由通过 OCR 和 GPU 完成回执校验，MaaS 已恢复提交，当前有效额度为 1。该 GPU 的 MaaS 共卡准入目前仅覆盖一份 PP-OCRv4 加一份 OvisOCR3。[配置与验收步骤](../../deploy/ovisocr3/README.md#two-replicas-with-automatic-placement-on-16-gib-gpus)
 
 ### 后续任务与验收
 
