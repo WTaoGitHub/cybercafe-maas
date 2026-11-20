@@ -67,8 +67,8 @@ class OCRAdapter:
     parameter_schema = OCRParameters
 
     def validate(self, payload, parameters):
-        inp = OCRInput.model_validate(payload).model_dump()
-        params = OCRParameters.model_validate(parameters).model_dump(exclude_defaults=True)
+        inp = self.input_schema.model_validate(payload).model_dump()
+        params = self.parameter_schema.model_validate(parameters).model_dump(exclude_defaults=True)
         return inp, params, inp['image'].get('artifact_id')
 
     def execute(self, ctx):

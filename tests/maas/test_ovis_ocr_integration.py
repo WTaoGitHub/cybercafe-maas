@@ -11,6 +11,22 @@ from maas_platform.worker import Worker
 from test_integration import env, headers
 
 
+def test_ovis_rejects_inline_input_at_submission(env):
+    client, service, settings, _, _ = env
+    catalog = settings.catalog()
+    catalog.update(json.loads(Path('deploy/maas/catalog.ovisocr3.example.json').read_text()))
+    settings.catalog_file.write_text(json.dumps(catalog))
+    bindings = json.loads(settings.bindings_file.read_text())
+    bindings['credentials'][0]['models'].append('ocr.ovisocr3')
+    settings.bindings_file.write_text(json.dumps(bindings))
+
+    response = client.post('/maas/v1/tasks', headers=headers(idem='test_agent_ovis_inline'),
+                           json={'model': 'ocr.ovisocr3', 'input': {'image': {'image_base64': 'AA=='}}})
+    assert response.status_code == 422 and response.json()['error']['code'] == 'INPUT_INVALID'
+    with service.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM tasks').fetchone()['n'] == 0
+
+
 @pytest.mark.parametrize('finish_reason, guarded', [('stop', False), ('length', False), ('stop', True), ('disconnect', True)])
 def test_ovis_plain_text_task_and_receipt(env, monkeypatch, tmp_path, finish_reason, guarded):
     client, service, settings, auth, _ = env
