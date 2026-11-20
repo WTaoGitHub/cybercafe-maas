@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "prepared": true,
+  "test_executed": false,
+  "models": [
+    {
+      "deployment_id": 13,
+      "deployment_name": "unlimited-ocr-2-nfs",
+      "weight": 1,
+      "minimum": 1,
+      "safety_maximum": 32,
+      "current_target": 0,
+      "current_ready": 0,
+      "claim_bytes": 12884901888
+    },
+    {
+      "deployment_id": 14,
+      "deployment_name": "ovisocr3",
+      "weight": 2,
+      "minimum": 1,
+      "safety_maximum": 32,
+      "current_target": 2,
+      "current_ready": 2,
+      "claim_bytes": 6442450944
+    },
+    {
+      "deployment_id": 1,
+      "deployment_name": "maas-ocr",
+      "weight": 4,
+      "minimum": 1,
+      "safety_maximum": 32,
+      "current_target": 2,
+      "current_ready": 2,
+      "claim_bytes": 3758096384
+    }
+  ],
+  "policy_revision": 8,
+  "ownership_generation": 28,
+  "mode": "apply",
+  "paused": true,
+  "execution_state": "controller_paused",
+  "startup_parallel_enabled": false,
+  "subscription_connected": true,
+  "runtime_authorization_caps": {
+    "1": 32,
+    "13": 32,
+    "14": 32
+  },
+  "unlimited_fixed_gpu_selector_removed": true,
+  "unlimited_fixed_worker_selector_removed": true,
+  "pp_security_selector_preserved": true,
+  "readiness_before_after_preserved": true,
+  "instance_ids_preserved": true,
+  "worker_states_and_labels_preserved": true,
+  "api_db_gpustack_containers_unchanged": true,
+  "e17_replaced_same_image": true,
+  "e17_mounts_and_other_environment_preserved": true,
+  "e17_old_container_removed": true,
+  "native_model_replica_updates": 0,
+  "worker_actions": 0,
+  "inference_requests": 0,
+  "test_database_data_created": false,
+  "unknown": 0,
+  "operator_status_http": 200,
+  "health_http": 200,
+  "ready_worker_ids": [
+    8,
+    7
+  ],
+  "offline_worker_ids": [
+    6,
+    5,
+    4
+  ],
+  "hypothetical_preview": {
+    "not_live_capacity_evidence": true,
+    "hypothetical_three_ready_empty_workers": [
+      6,
+      7,
+      8
+    ],
+    "weights_in_unlimited_ovis_pp_order": [
+      1,
+      2,
+      4
+    ],
+    "planned_counts_in_same_order": [
+      1,
+      2,
+      5
+    ],
+    "claim_gib_in_same_order": [
+      12,
+      6,
+      3.5
+    ],
+    "original_pp_admission_selector_preserved": true,
+    "shared_layout_runtime_validation_not_done": true
+  },
+  "three_actual_worker_startup_validation": "NOT_RUN",
+  "runtime_shared_layouts_extended": false,
+  "runtime_packing_and_cpu_ram_validation": "NOT_RUN",
+  "operator_rollback_backup_on_mac": true,
+  "canonical_e17_only_compose_published": true,
+  "old_combined_api_compose_used": false,
+  "temporary_cleanup_verified": true,
+  "at": 1795162867.302729,
+  "cleanup": {
+    "temporary_processes_containers_listeners_created": false,
+    "remote_temporary_directory_removed": true,
+    "local_temporary_directory_removed": true,
+    "test_database_cache_queue_data_created": false,
+    "intended_formal_configuration_retained": true,
+    "previous_e17_container_removed": true,
+    "reusable_policy_example": "deploy/maas/replica-policy-three-ocr.example.json",
+    "one_use_scripts_retained": false,
+    "private_configuration_rollback_record_retained": true
+  }
+}

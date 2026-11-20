@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "revision": 1,
+  "scope": {"cluster_id": 1, "owner_principal_id": 1},
+  "models": {
+    "13": {"priority": 1, "weight": 1, "min_replicas": 1, "max_replicas": 32},
+    "14": {"priority": 1, "weight": 2, "min_replicas": 1, "max_replicas": 32},
+    "1": {"priority": 1, "weight": 4, "min_replicas": 1, "max_replicas": 32}
+  },
+  "execution": {
+    "mode": "observe",
+    "scale_up_batch_max": 1,
+    "scale_down_batch_max": 1,
+    "max_inflight_global": 2,
+    "max_inflight_per_cluster": 2
+  },
+  "reconcile": {"interval_s": 30, "stability_s": 10},
+  "startup": {"parallel_startup": false},
+  "pressure": {"mode": "disabled"}
+}

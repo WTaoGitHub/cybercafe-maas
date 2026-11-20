@@ -129,6 +129,18 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 在通过联合容量验证、具备执行回执凭据的 worker 上登记调度标签。深度学习后端分别核对显存余量，按通过验证的 GPU 布局配置容量策略。现有调节器继续写入同一个原生部署 ID。只有确认就绪、可路由且符合策略的副本获得额度。 [PP-OCRv4 调度记录 #66](https://github.com/WTaoGitHub/cybercafe-maas/issues/66)
 
+### 三模型副本权重准备（2026-11-20）
+
+[三模型策略示例](replica-policy-three-ocr.example.json)对应当前测试部署ID：Unlimited-OCR-2为13、OvisOCR3为14、PP-OCRv4为1；其他环境先核对ID、集群及归属，不能直接套用。示例默认Observe。权重为1:2:4、同优先级、最小副本各1；`max_replicas=32`是当前实现的每模型安全硬边界，运行时写授权也须覆盖相同范围，不能把它当目标数量或使用1/2/4封顶。当前资源声明分别为12、6、3.5GiB，由每轮原生部署读取，不在策略重复维护。
+
+权重用于选择资源约束下的整数分配，不要求精确倍数或固定启动顺序；1/2/5可作为合适结果。三台空闲16GB卡、现有PP安全选择器的只读假设预演为1/2/5，这不是三台实际Ready或真实GPU混跑证据。实际目标还受逐卡已有占用、选择器、保留显存和未就绪实例约束。资源不足时不能为凑比例超配或降低服务保护下限。
+
+本轮将三部署纳入同一调节器，保持**Apply且全局暂停**，不恢复自动动作。Unlimited移除固定worker/GPU绑定，PP保留`maas-capacity-pp-ready`准入标签；不清标签绕过已有执行回执及共享布局保护。改变写授权需重建同镜像E17，API和worker保持；实际E17的独立发布文件由控制端活动版本台账的`replica_regulator.compose_file`记录，不能用历史合并Compose回退当前API。
+
+正式试验前先冻结受理并排空，在worker仍在线时将三部署归零、确认实际推理容器退出；不能只停worker来认定GPU空闲。worker下线后确认可调度GPU为零、模型目标仍为零及无未确认写入，再显式恢复调节器，随后由管理员准备允许的三台worker上线。必须核对最终Ready和真实推理，未验证的同卡模型组合不会自动加入MaaS准入白名单。本操作不授权对受保护VM整机重启。
+
+沿用[Issue #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)。本段仅为配置准备与运行顺序，不代表三worker加权实测已完成。
+
 ## 验证
 
 ```sh
