@@ -35,3 +35,5 @@
 `UOCR2-INC-021`（2026-11-17）：本地服务小规模检查的预检误将`managed_requests_drained`作为开放服务的空闲条件；该字段本来要求维护暂停，现场实际开放且无活动。主代理一次修正为检查未暂停及活动为空后通过，无服务配置修改或GPU重跑。见[检查报告](../../results/unlimited-ocr-2/20261117-service-smoke/REPORT.md)。
 
 `UOCR2-INC-022`（2026-11-17）：样本下载辅助脚本误用缺Pillow的系统Python，首个GPU请求前失败。主代理一次改用现成依赖环境，下载、PDF封装和渲染检查完成，未安装新依赖；随后8任务/18页服务检查通过。见[检查报告](../../results/unlimited-ocr-2/20261117-service-smoke/REPORT.md)。
+
+`UOCR2-INC-023`（2026-11-20）：无 worker/GPU 选择器的双 worker 加权试验中，部署 13 在 worker 7 上进入 ERROR，原生错误为 `Path does not exist: /srv/maas/models/unlimited-ocr-2-0480966`。串行扩容等待这个副本，OvisOCR3 未启动。现场已恢复原副本数和派发；故障未重试，目录挂载与可见性待逐层验证。 [实测报告](../../results/maas-replica-two-workers-20261120/REPORT.md) · [Issue #69](https://github.com/WTaoGitHub/cybercafe-maas/issues/69)
