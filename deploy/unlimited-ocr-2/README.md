@@ -49,7 +49,9 @@ curl 不配置自动重试。退出码0只说明HTTP/传输成功，仍须核对
 
 ## MaaS 文档执行保护试点
 
-在固定 M1 镜像中，把本目录的 `resource_guard.py`、`uocr_execution.py` 及[共用回执客户端](../../gpu-ocr/execution_guard.py)以只读文件挂载到 `/opt/maas/`。沿用原入口和容器限额。启动时核对 SGLang 的 Chat、调度器和 tokenizer 源码摘要。守卫要求每副本只见一张 GPU、只处理一份文档，保留窗口间 KV 复用，关闭窗口预取、重叠调度和启动时的自动推理。
+日常路由使用 [Dockerfile.execution-guard](Dockerfile.execution-guard)。在私有构建上下文中放入该 Dockerfile、本目录的 `resource_guard.py`、`uocr_execution.py` 及[共用回执客户端](../../gpu-ocr/execution_guard.py)，以固定 M1 镜像 `sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6` 的完整地址作为 `BASE_IMAGE`。已验收的派生镜像摘要为 `sha256:9139bd41a0476782acee4be89363a5c1188c9910ed9211ce84d06920ac582615`。沿用原入口，创建时应用容器限额。
+
+启动时核对 SGLang 的 Chat、调度器和 tokenizer 源码摘要。守卫要求每副本只见一张 GPU、只处理一份文档，保留窗口间 KV 复用，关闭窗口预取、重叠调度和启动时的自动推理。
 
 配置 `MAAS_UOCR_EXECUTION_ORIGIN`、`MAAS_UOCR_EXECUTION_ROUTE`、`MAAS_UOCR_EXECUTION_KEY_FILE`，需要私有 CA 时配置 `MAAS_UOCR_EXECUTION_CA_FILE`。凭据通过私有只读文件挂载，并登记到现有 MaaS 的 `MAAS_PP_OCR_WORKER_KEYS_FILE`。受保护端只接受带 MaaS 尝试 token 的非流式文档调用。同路由的所有 GPUStack 目标和 MaaS 别名部署并验证后，才可开启目录里的 `execution_guard`。
 

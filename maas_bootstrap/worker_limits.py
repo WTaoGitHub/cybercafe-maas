@@ -27,15 +27,23 @@ OVIS_INSERTION = b'''            if (
                 )
 
 '''
-INSERTION = OVIS_INSERTION + OVIS_INSERTION.replace(
+UNLIMITED_INSERTION = OVIS_INSERTION.replace(
     b"34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20",
     b"0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6",
 ).replace(b"/opt/maas/ovisocr3_entrypoint.py", b"/opt/maas/resource_guard.py")
+BASE_INSERTION = OVIS_INSERTION + UNLIMITED_INSERTION
+INSERTION = BASE_INSERTION + OVIS_INSERTION.replace(
+    b"34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20",
+    b"9e8e8270b98c3e9500926e65854747df6c5fd77c602897cf9eeac34f2101de42",
+) + UNLIMITED_INSERTION.replace(
+    b"0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6",
+    b"9139bd41a0476782acee4be89363a5c1188c9910ed9211ce84d06920ac582615",
+)
 
 
 def runtime_source(current: bytes, *, enabled: bool = True) -> bytes:
     original = current
-    for insertion in (INSERTION, OVIS_INSERTION):
+    for insertion in (INSERTION, BASE_INSERTION, OVIS_INSERTION):
         if insertion + ANCHOR in current:
             original = current.replace(insertion + ANCHOR, ANCHOR, 1)
             break

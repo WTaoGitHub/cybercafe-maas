@@ -251,7 +251,20 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 日常 Unlimited-OCR-2 在冻结新文档提交、任务库排空及引擎三次空闲检查后，通过 GPUStack 替换单个推理实例。新实例在第一次检查时已有资源限额。Docker 事件包含 `create` 和 `start`，没有 `update`。容器内 `memory.max=17179869184`、`cpu.max=400000 100000`、`memory.swap.max=0`，共享内存为 4 GiB。启动守卫通过，部署恢复 `1/1 Ready`，原 Higress 路由目标为 `active`。既有凭据鉴权与一页真实引擎推理均返回 200，之后恢复文档任务受理。Bootstrap 和相关启动守卫回归 298 项通过。
 
-此轮关闭 [UOCR2-INC-005](UNLIMITED-OCR-2-INCIDENTS.md) 在上述固定版本在线 worker 上的阻塞。离线 worker 及旧母版待随新版 bootstrap 更新。下一步补齐 OvisOCR3 和 Unlimited-OCR-2 日常路由上的执行保护及回退验收。
+此轮关闭 [UOCR2-INC-005](UNLIMITED-OCR-2-INCIDENTS.md) 在上述固定版本在线 worker 上的阻塞。离线 worker 及旧母版待随新版 bootstrap 更新。
+
+### OvisOCR3 与 Unlimited-OCR-2 日常路由的执行保护及回退
+
+2026-11-20 在现有 MaaS、Higress、GPUStack 和同一 PostgreSQL 任务库中，保留两条日常路由及原模型标识。冻结新受理、排空占用后，OvisOCR3 在 worker 6、Unlimited-OCR-2 在 worker 8 分别启用受保护的固定镜像，再开启 MaaS 目录的执行保护。两个容器启动后均核对 Docker 与 cgroup，实际生效为 4 CPU、16 GiB 容器内存、零 swap 和 4 GiB 共享内存。对应镜像和创建限额规则由 [OvisOCR3 部署说明](../../deploy/ovisocr3/README.md)、[Unlimited-OCR-2 部署说明](../../deploy/unlimited-ocr-2/README.md) 与 [worker bootstrap](../../maas_bootstrap/worker_limits.py) 固定。
+
+| 日常路由 | 真实 MaaS 异步探针 | 经 Higress 的执行保护 |
+| --- | --- | --- |
+| OvisOCR3 | 一张合成图片，成功产出 OCR 文本。一次执行、一次可信 GPU 终态、一条计量记录。 | 缺 token 返回 `403`，重放已完成的 token 返回 `409`。 |
+| Unlimited-OCR-2 | 四页合成 PDF，成功产出完整文档。一次执行、一次可信 GPU 终态、一条计量记录。 | 缺 token 返回 `403`，重放已完成的 token 返回 `409`。 |
+
+回退并行恢复两模型时，GPUStack 将 OvisOCR3 与 Unlimited-OCR-2 调度到同一张卡。OvisOCR3 启动时可用显存为 5.69 GiB，低于 vLLM 所需的 7.79 GiB。保留已就绪的 Unlimited-OCR-2，再按原自动调度配置重建 OvisOCR3。OvisOCR3 在 worker 7 就绪。下一次回退分步恢复，先确认 Unlimited-OCR-2 就绪，再启动 OvisOCR3 并核对实际显存。调度复现和根因跟踪见 [OVIS-INC-001](https://github.com/WTaoGitHub/cybercafe-maas/issues/65)。
+
+两条原路由在回退后再次通过真实推理。PP-OCRv4 为 `2/2 Ready`，OvisOCR3 和 Unlimited-OCR-2 各为 `1/1 Ready`，原常驻 MaaS 已恢复静态准入，健康检查 `200`，`UNKNOWN=0`。临时实例、端口、凭据、4 条探针任务、6 条同步活动、8 个文件产物、14 条 GPUStack 用量明细及 3 条汇总已清理。保留已验收发布镜像与三台在线 worker 的创建限额更新。相关本地回归 300 项通过。此次测试覆盖日常路由的执行保护与回退，三模型常态动态准入和持续混合负载待完成。
 
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |

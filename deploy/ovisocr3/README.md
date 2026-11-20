@@ -16,6 +16,8 @@ Confirm that eligible workers have the hook before scaling up. Verify the actual
 
 ## MaaS execution guard pilot
 
+For the daily route pilot, build this directory's Dockerfile on the previously deployed OvisOCR3 manifest `sha256:34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20`. The verified execution guard release is `sha256:9e8e8270b98c3e9500926e65854747df6c5fd77c602897cf9eeac34f2101de42`. Use the full registry reference with the digest and verify that the worker's creation hook recognizes it.
+
 Set `MAAS_OVIS_EXECUTION_ORIGIN` to the private HTTPS authority, `MAAS_OVIS_EXECUTION_KEY_FILE` to the per-GPU credential file, and `MAAS_OVIS_EXECUTION_ROUTE` to the guarded MaaS upstream route. Use `MAAS_OVIS_EXECUTION_CA_FILE` for a private CA. The authority uses the existing `MAAS_PP_OCR_WORKER_KEYS_FILE` and activity tables. Enable `execution_guard` in the catalog only after every target behind the route runs the guarded profile. The existing template remains opt-in.
 
 The guarded profile accepts one non-streaming completion per MaaS task attempt. It uses one GPU with serial scheduling on the pinned vLLM 0.22.1 runtime. A scheduler-terminal request ID from EngineCore drives the finish callback, including after client disconnect. Output-layer completion and abort enqueueing can occur before the EngineCore terminal event. A missing terminal event or failed receipt keeps the existing `UNKNOWN` protection. [vLLM output handling](https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/v1/engine/output_processor.py) · [vLLM EngineCore scheduling](https://github.com/vllm-project/vllm/blob/v0.22.1/vllm/v1/engine/core.py)
