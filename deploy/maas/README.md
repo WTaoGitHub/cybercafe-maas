@@ -123,6 +123,12 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 回退时暂停并排空，再执行 `capacity-static`，用原静态限额和探针恢复。两个命令都要求已暂停、无在途及 `UNKNOWN`。配置、任务、预算和计量仍可保留检查。在动态模式下，可能归队的已领取任务保留等待位，以免降额后归队突破队列硬上限。
 
+### 现有测试控制端的常态发布
+
+沿用同一任务库、路由、容量观察器、API 和执行器。为每个模型在 GPUStack 自定义后端中增加版本，以固定镜像摘要作为该版本的镜像。部署显式选择新增版本，保留原版本用于回退。模型级镜像覆盖在副本重建后曾丢失。发布后实际将模型缩至零并恢复，核对 GPUStack 后端版本、worker 上运行的镜像和 MaaS 收到的 GPU 终态。 [现场故障 #67](https://github.com/WTaoGitHub/cybercafe-maas/issues/67)
+
+在通过联合容量验证、具备执行回执凭据的 worker 上登记调度标签。深度学习后端分别核对显存余量，按通过验证的 GPU 布局配置容量策略。现有调节器继续写入同一个原生部署 ID。只有确认就绪、可路由且符合策略的副本获得额度。 [PP-OCRv4 调度记录 #66](https://github.com/WTaoGitHub/cybercafe-maas/issues/66)
+
 ## 验证
 
 ```sh
