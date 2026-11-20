@@ -12,11 +12,11 @@
 
 P2 初始化发现 Triton 编译需要 Python 开发头文件。`Dockerfile.python-headers` 在已验证候选镜像上单独追加 `python3-dev`；构建时以 `PARENT_IMAGE` 传入固定父镜像 digest 或已核验 image ID。隔离 GPU 容器中的最小 Triton JIT 算子已验证，完整模型 warmup 和真实解析仍需再次验证。
 
-GPUStack v2.2.3 的试点部署使用 `Dockerfile.resource-guard` 从已验证的头文件修复镜像追加启动守卫；构建参数 `PARENT_IMAGE` 必须固定 digest。后端 entrypoint 同样设为 `python3 /opt/maas/resource_guard.py`，其余 SGLang 参数沿用已验证配置。守卫最多等待120秒，只有自己的 cgroup v2 `memory.max` 不超过16 GiB、CPU quota 不超过4 CPU时才执行 SGLang，缺失或无限额时超时退出。守卫的轻量 Python 等待过程发生在设置限额之前；限额保障覆盖模型启动、加载和推理，GPUStack 没有原生提供容器创建时的这两个参数。
+GPUStack v2.2.3 部署使用 `Dockerfile.resource-guard` 从已验证的头文件修复镜像追加启动守卫。构建参数 `PARENT_IMAGE` 和运行镜像均固定 digest。后端入口设为 `python3 /opt/maas/resource_guard.py`。固定版本 worker 通过 [MaaS bootstrap 的创建限额补丁](../../maas_bootstrap/worker_limits.py)，在 Docker 创建主推理容器时为匹配的镜像摘要和入口施加 16 GiB 内存、4 CPU 和零 swap。SGLang 启动守卫继续核对 cgroup v2 的内存与 CPU 上限，限额缺失时最多等待 120 秒后退出。
 
-每次创建新试点实例，先依据最新 instance ID/name、model ID、worker 身份、runtime workload/component 标签、镜像和挂载核对唯一容器，再由受控宿主执行 `docker update --memory 16g --memory-swap 16g --cpus 4 "$TRIAL_CONTAINER_ID"`。读回 Docker 配置、容器 cgroup 与守卫日志后才等待引擎健康；其他容器不在操作范围。独立无GPU测试已确认：无限额时守卫等待，设置16 GiB/4 CPU后才执行 SGLang `--help`。本地回归为 `python3 deploy/unlimited-ocr-2/test_resource_guard.py`。
+扩大部署前核对所有候选 worker 的补丁状态。验收新容器时核对实例归属、Docker `Memory=MemorySwap=17179869184`、`NanoCpus=4000000000`、`ShmSize=4294967296`，以及容器内 `memory.max`、`cpu.max`、`memory.swap.max=0`。Docker 事件应包含 `create` 和 `start`，守卫日志应确认通过。升级 worker 或推理镜像摘要后重新验收。启动守卫本地回归为 `python3 deploy/unlimited-ocr-2/test_resource_guard.py`。
 
-每个新容器都需要上述受控操作；试点保持 `restart_on_error=False`，不提供无人值守的新容器恢复。重新创建/替换实例时重复核对和设置，不能仅复用旧容器的限额证据。进入无人值守发布前须接入经验证的 runner 原生限额或自动执行闭环。
+保留 `restart_on_error=False`。GPUStack 创建或替换同一部署的容器时均使用该创建规则。处理未安装补丁的旧 worker 时，可在确认唯一容器的标签、镜像和挂载后按原流程手工设置限额，并让该 worker 完成受控升级。
 
 构建运行镜像需依次执行两个阶段：先用 `Dockerfile` 和固定基础摘要构建候选，再用 `Dockerfile.python-headers`、以该候选的不可变 digest 或已核验 image ID 作为 `PARENT_IMAGE` 构建头文件层。不要直接部署第一阶段镜像；P2 运行使用第二阶段镜像。
 

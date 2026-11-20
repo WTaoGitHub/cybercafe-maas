@@ -13,16 +13,20 @@ class Profiles(Enum):
     INIT = "init"
 
 
-def test_ovisocr3_creation_options_do_not_change_other_containers():
-    pinned = "registry.example/maas/ovisocr3-vllm@sha256:34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20"
-    guarded = ["python3", "/opt/maas/ovisocr3_entrypoint.py"]
+def test_creation_limits_match_only_the_two_guarded_ocr_images():
+    ovis = "registry.example/maas/ovisocr3-vllm@sha256:34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20"
+    unlimited = "registry.example/maas/unlimited-ocr-2@sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6"
+    ovis_guard = ["python3", "/opt/maas/ovisocr3_entrypoint.py"]
+    unlimited_guard = ["python3", "/opt/maas/resource_guard.py"]
     code = compile(dedent(worker_limits.INSERTION.decode()), "<limits>", "exec")
     for image, command, profile, name, applies in (
-        (pinned, guarded, Profiles.RUN, "default", True),
-        (pinned, guarded, Profiles.INIT, "default", False),
-        (pinned, guarded, Profiles.RUN, "auxiliary", False),
-        (pinned, ["vllm", "serve"], Profiles.RUN, "default", False),
-        ("registry.example/maas/pp-ocr:latest", guarded, Profiles.RUN, "default", False),
+        (ovis, ovis_guard, Profiles.RUN, "default", True),
+        (unlimited, unlimited_guard, Profiles.RUN, "default", True),
+        (unlimited, unlimited_guard, Profiles.INIT, "default", False),
+        (unlimited, unlimited_guard, Profiles.RUN, "auxiliary", False),
+        (ovis, unlimited_guard, Profiles.RUN, "default", False),
+        (unlimited, ovis_guard, Profiles.RUN, "default", False),
+        ("registry.example/maas/pp-ocr:latest", unlimited_guard, Profiles.RUN, "default", False),
     ):
         options = {"entrypoint": command, "shm_size": 4 * 1024**3}
         expected = options.copy()
@@ -39,6 +43,8 @@ def test_patch_is_idempotent_reversible_and_pinned(monkeypatch):
     monkeypatch.setattr(worker_limits, "ORIGINAL_SHA256", hashlib.sha256(original).hexdigest())
     patched = worker_limits.runtime_source(original)
     compile(patched, "<runtime>", "exec")
+    ovis_only = original.replace(worker_limits.ANCHOR, worker_limits.OVIS_INSERTION + worker_limits.ANCHOR)
+    assert worker_limits.runtime_source(ovis_only) == patched
     assert worker_limits.runtime_source(patched) == patched
     assert worker_limits.runtime_source(patched, enabled=False) == original
     with pytest.raises(ValueError, match="Unrecognized"):

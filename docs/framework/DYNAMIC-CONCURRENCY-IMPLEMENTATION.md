@@ -243,7 +243,15 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 试点结束后清理 42 条异步任务、43 条同步活动、80 个文件产物、83 条 GPUStack 用量明细和 4 条用量汇总。临时路由、ACL 和凭据已移除，原模型、MaaS 静态配置和副本调节器已恢复，健康检查为 200，`UNKNOWN=0`。
 
-正式启用前需为 Unlimited-OCR-2 验证新实例自动接续原限额，再补齐 OvisOCR3 和 Unlimited-OCR-2 日常路由上的执行保护及回退验收。当前试点仅 PP-OCRv4 使用受保护的固定单卡路由，三个模型均已通过日常入口的受控动态准入。Q25 结果作为现有小流量配置依据，长时和更高负载另行验收。
+当前试点仅 PP-OCRv4 使用受保护的固定单卡路由，三个模型均已通过日常入口的受控动态准入。Q25 结果作为现有小流量配置依据，长时和更高负载另行验收。
+
+### Unlimited-OCR-2 容器替换自动接续限额
+
+2026-11-20 扩展现有 OvisOCR3 创建限额规则。GPUStack Docker worker 核对固定运行时源码摘要，按推理镜像摘要与启动守卫入口匹配主容器，在创建请求中写入 16 GiB、4 CPU 和零 swap。worker 6、7、8 的运行时与本机 bootstrap 已安装同一规则，原 worker 容器和 VM 保持运行。用一个未启动的临时 worker 容器验证了 bootstrap 安装与重复安装，随后清理该容器。
+
+日常 Unlimited-OCR-2 在冻结新文档提交、任务库排空及引擎三次空闲检查后，通过 GPUStack 替换单个推理实例。新实例在第一次检查时已有资源限额。Docker 事件包含 `create` 和 `start`，没有 `update`。容器内 `memory.max=17179869184`、`cpu.max=400000 100000`、`memory.swap.max=0`，共享内存为 4 GiB。启动守卫通过，部署恢复 `1/1 Ready`，原 Higress 路由目标为 `active`。既有凭据鉴权与一页真实引擎推理均返回 200，之后恢复文档任务受理。Bootstrap 和相关启动守卫回归 298 项通过。
+
+此轮关闭 [UOCR2-INC-005](UNLIMITED-OCR-2-INCIDENTS.md) 在上述固定版本在线 worker 上的阻塞。离线 worker 及旧母版待随新版 bootstrap 更新。下一步补齐 OvisOCR3 和 Unlimited-OCR-2 日常路由上的执行保护及回退验收。
 
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |

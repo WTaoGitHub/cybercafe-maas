@@ -12,7 +12,7 @@
 | E02 | `UOCR2-INC-002` | legacy Docker builder 不支持部分命令参数 | 已纠正参数，见[首轮记录](../../results/unlimited-ocr-2/20261116-p1/REPORT.md) |
 | E03 | `UOCR2-INC-003` | 固定 CUDA 基础镜像获取受阻 | 首轮按上限停止，后经用户授权重试解决，见[交付证据](../../results/unlimited-ocr-2/20261116-base-image/REPORT.md) |
 | E04 | `UOCR2-INC-004` | 缺少 Python 开发头文件，Triton warmup 编译失败 | 修复后 GPU JIT、模型 warmup 和真实解析通过，见[P2](../../results/unlimited-ocr-2/20261116-p2/REPORT.md) |
-| E05 | `UOCR2-INC-005` | GPUStack 自定义后端缺少 CPU/RAM 硬限额入口 | 2026-11-20 日常副本换容器后复现。精确替换并施加原 16 GiB、4 CPU 和禁用 swap 后，恢复 `1/1 Ready`，MaaS 文档探针和混跑通过。无人值守恢复仍待验证。见[动态并发实机记录](DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#日常入口的真实副本降额与-q25-验收)及[运行限额](../../results/unlimited-ocr-2/20261116-p3-image-authority/REPORT.md) |
+| E05 | `UOCR2-INC-005` | GPUStack 自定义后端缺少 CPU/RAM 硬限额入口 | 2026-11-20 已在三台 Ready worker 安装创建限额规则。日常 Unlimited-OCR-2 实际换容器后自动取得 16 GiB、4 CPU、零 swap，启动守卫、就绪及一页文档推理均通过。该规则随新版 bootstrap 安装。见[替换验收](DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#unlimited-ocr-2-容器替换自动接续限额) |
 | E06 | `UOCR2-INC-006` | 权限核验辅助脚本报错及授权范围确认 | 核验完成；用户指定的 All models 保留，见[当时快照](../../results/unlimited-ocr-2/20261116-p3-auth/REPORT.md)和[最终状态](../../results/unlimited-ocr-2/20261116-uocr2-inc-008-stop/REPORT.md) |
 | E07 | `UOCR2-INC-007` | 后端镜像 registry 地址不适用于 worker | 更正后实际 GPUStack 拉取、启动通过，见[镜像地址证据](../../results/unlimited-ocr-2/20261116-p3-image-authority/REPORT.md) |
 | E08 | `UOCR2-INC-008` | Higress 非幂等请求重试及不重放验证未完成 | 历史两次禁重试覆盖未通过，见[停止检查点](../../results/unlimited-ocr-2/20261116-uocr2-inc-008-stop/REPORT.md)；经用户重新授权，本轮按既有P0契约实测受限策略并完成[M1](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)，未进行第三次覆盖 |

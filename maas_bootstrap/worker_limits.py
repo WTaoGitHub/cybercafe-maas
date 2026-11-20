@@ -1,4 +1,4 @@
-"""Install the OvisOCR3 creation limits on the pinned GPUStack Docker worker."""
+"""Install OCR serving container limits on the pinned GPUStack Docker worker."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ SOURCE = PurePosixPath("/usr/local/lib/python3.11/dist-packages/gpustack_runtime
 ORIGINAL_SHA256 = "49ffc5e4b39f8956bde2ffca9543da911a4054ea6efc52f9850f577333ee997f"
 ANCHOR = b"            # Create the container.\n"
 # shortcut: match the validated worker and serving image digests until upstream exposes hard limits.
-INSERTION = b'''            if (
+OVIS_INSERTION = b'''            if (
                 c.profile == ContainerProfileEnum.RUN
                 and c.name == "default"
                 and c.image.endswith("@sha256:34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20")
@@ -27,10 +27,18 @@ INSERTION = b'''            if (
                 )
 
 '''
+INSERTION = OVIS_INSERTION + OVIS_INSERTION.replace(
+    b"34ab50787af81b270477f49457ea8f8162eec231f7266ce9d6552c19a39e6b20",
+    b"0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6",
+).replace(b"/opt/maas/ovisocr3_entrypoint.py", b"/opt/maas/resource_guard.py")
 
 
 def runtime_source(current: bytes, *, enabled: bool = True) -> bytes:
-    original = current.replace(INSERTION + ANCHOR, ANCHOR, 1)
+    original = current
+    for insertion in (INSERTION, OVIS_INSERTION):
+        if insertion + ANCHOR in current:
+            original = current.replace(insertion + ANCHOR, ANCHOR, 1)
+            break
     if hashlib.sha256(original).hexdigest() != ORIGINAL_SHA256 or original.count(ANCHOR) != 1:
         raise ValueError("Unrecognized GPUStack Docker runtime source")
     return original.replace(ANCHOR, INSERTION + ANCHOR) if enabled else original
