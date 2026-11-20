@@ -9,7 +9,7 @@ import httpx
 import pytest
 from PIL import Image
 from pydantic import ValidationError
-from maas_platform.document_ocr import DocumentOCRAdapter
+from maas_platform.document_ocr import DocumentOCRAdapter, GUARDED_RUNTIME_DIGEST
 from maas_platform.document_output import parse_document_output
 from maas_platform.errors import ServiceError
 
@@ -114,3 +114,12 @@ def test_untrusted_options_and_catalog_drift_rejected():
     with pytest.raises(ValueError):
         adapter.validate_model({**model(), 'runtime_image_digest': 'different'})
     adapter.validate_model(model())
+
+
+def test_guarded_catalog_accepts_guarded_image_and_legacy_mount():
+    adapter = DocumentOCRAdapter()
+    derived = {**model(), 'runtime_image_digest': GUARDED_RUNTIME_DIGEST}
+    with pytest.raises(ValueError):
+        adapter.validate_model(derived)
+    adapter.validate_model({**derived, 'execution_guard': True})
+    adapter.validate_model({**model(), 'execution_guard': True})

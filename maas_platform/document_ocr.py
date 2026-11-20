@@ -12,6 +12,7 @@ from .ocr_connector import ImageReference, OCRAdapter
 
 MODEL_REVISION = '0480966938291445591f69f08a13b041c073a96a'
 RUNTIME_DIGEST = 'sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6'
+GUARDED_RUNTIME_DIGEST = 'sha256:9139bd41a0476782acee4be89363a5c1188c9910ed9211ce84d06920ac582615'
 PROFILE = 'pdfium5.15.2-pages10-pixels50m-json-v1'
 
 
@@ -39,9 +40,12 @@ class DocumentOCRAdapter(OCRAdapter):
         return inp, params, inp['document']['artifact_id']
 
     def validate_model(self, model):
-        required = {'model_revision': MODEL_REVISION, 'runtime_image_digest': RUNTIME_DIGEST,
+        required = {'model_revision': MODEL_REVISION,
                     'postprocessor_revision': POSTPROCESSOR_REVISION, 'document_profile': PROFILE}
-        if any(model.get(k) != v for k, v in required.items()) or model['max_runtime_s'] > 600:
+        # Older pilots add the guard to the base image with read-only file mounts.
+        approved_runtimes = (RUNTIME_DIGEST, GUARDED_RUNTIME_DIGEST) if model.get('execution_guard') is True else (RUNTIME_DIGEST,)
+        if (any(model.get(k) != v for k, v in required.items())
+                or model.get('runtime_image_digest') not in approved_runtimes or model['max_runtime_s'] > 600):
             raise ValueError('Document catalog must pin the approved model, runtime, postprocessor and profile')
         try:
             version = importlib.metadata.version('pypdfium2')
