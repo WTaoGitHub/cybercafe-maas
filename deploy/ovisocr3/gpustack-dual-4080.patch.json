@@ -1,0 +1,11 @@
+{
+  "replicas": 2,
+  "gpu_selector": {
+    "gpu_ids": ["<VERIFIED_WORKER_NAME>:cuda:<GPU_INDEX>"],
+    "gpus_per_replica": 1
+  },
+  "backend_parameters": ["--gpu-memory-utilization=0.32"],
+  "env": {
+    "GPUSTACK_MODEL_VRAM_CLAIM": "6442450944"
+  }
+}
