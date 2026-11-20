@@ -1,6 +1,6 @@
 # worker 关机事件：设计与开发实施方案
 
-2026-11-18 · **MaaS 接收端、Bootstrap 签发端和母版客户端已部署并验证；新快照及真实关机验收待办** · [现场部署记录](../../results/maas-worker-shutdown-events-20261118/DEPLOYMENT.md) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+2026-11-20 · **已部署服务端和母版，XZ-31-003 的一次实际关机通知已入库** · [现场部署记录](../../results/maas-worker-shutdown-events-20261118/DEPLOYMENT.md) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
 SD01 验证：节点范围签发/验签、消息校验、人工/自动引导兼容共 57 项通过。
 
@@ -204,4 +204,4 @@ WantedBy=multi-user.target
 5. **回退**：先停用客户端通知单元，再关闭接收入口及可选签发配置；正常运行中的单元停止因无 poweroff/halt 作业不得发出伪事件。保留事件表和服务端清理，原记录满 48 小时后自动删除。若必须回退到不含清理代码的旧 API 镜像，先用候选镜像的私有清理命令安排按分钟清理，直至表空，再撤去临时清理；不以回退为由提前删除未到期记录或无限保留。
 6. **交接材料**：给出源码/镜像提交、迁移号、两端启用配置结构、单元状态、凭据权限检查、测试计数、清理批次/删除数量与回退步骤。报告仅保留脱敏摘要；不提交真实地址、bearer、密钥或私有日志。
 
-代码与本地交付材料已按 SD01–SD05 完成。现场部署已验证候选 API 镜像、Nginx 配置、私有 HTTPS 入口和母版的文件与单元设置。供应商管理工具实际关机路径、关机作业可见性、网络停止顺序和停止耗时待独立 Ubuntu 环境验收。XZ-31-001/002 不用于补验。见[现场部署记录](../../results/maas-worker-shutdown-events-20261118/DEPLOYMENT.md)。
+现场部署已验证候选 API 镜像、Nginx 配置、私有 HTTPS 入口和母版的文件与单元设置。2026-11-20 对 XZ-31-003 本次启动单独补装后，用户关机产生一条真实事件，MaaS 已确认入库及 48 小时到期时间。新快照自动领证、供应商工具关机入口和真实故障下的停止耗时仍待验收。XZ-31-001/002 不用于补验。见[现场部署记录](../../results/maas-worker-shutdown-events-20261118/DEPLOYMENT.md)。
