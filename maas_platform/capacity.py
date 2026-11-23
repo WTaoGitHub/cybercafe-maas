@@ -29,7 +29,7 @@ class Pool(BaseModel):
     routes: dict[Name, PositiveInt] = Field(min_length=1)
     gpu_names: list[Annotated[str, StringConstraints(min_length=1)]] = Field(min_length=1)
     slots_per_replica: PositiveInt
-    hard_limit: PositiveInt
+    hard_limit: PositiveInt | None = None
     queue_limit: PositiveInt
     sync_percent: Percent = 0
     gateway_verified: bool = False
@@ -49,7 +49,7 @@ class Pool(BaseModel):
 
 class Policy(BaseModel):
     model_config = ConfigDict(extra='forbid', strict=True)
-    global_limit: PositiveInt
+    global_limit: PositiveInt | None = None
     sync_percent: Percent
     pools: dict[Name, Pool] = Field(min_length=1)
     # Each layout is an exact, jointly tested set of replicas on one GPU model.
@@ -298,12 +298,17 @@ class Capacity:
                     ready.append(ident)
                 else:
                     pending[marker] = observed if first is None else first
-            pools[key] = dict(limits(min(pool.hard_limit, len(ready) * pool.slots_per_replica), pool.sync_percent),
+            total = len(ready) * pool.slots_per_replica
+            if pool.hard_limit is not None:
+                total = min(pool.hard_limit, total)
+            pools[key] = dict(limits(total, pool.sync_percent),
                               aliases=sorted(pool.routes), model_id=pool.model_id, queue_limit=pool.queue_limit,
                               ready_ids=sorted(ready), pending_ids=sorted(candidates[key].keys() - set(ready)),
                               reason='ready' if ready else 'stabilizing' if candidates[key] else reasons[key])
             if pool.replica_routes:
                 pools[key]['replica_routes'] = {candidates[key][ident][-1]: candidates[key][ident][1] for ident in ready}
         self.active, self.pending = active, pending
-        total = min(self.policy.global_limit, sum(pool['total'] for pool in pools.values()))
+        total = sum(pool['total'] for pool in pools.values())
+        if self.policy.global_limit is not None:
+            total = min(self.policy.global_limit, total)
         return {'global': limits(total, self.policy.sync_percent), 'pools': pools}

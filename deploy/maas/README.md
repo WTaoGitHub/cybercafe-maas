@@ -93,11 +93,10 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 在隔离环境把 `compose.capacity-observe.yaml` 叠加到 `compose.yaml`，沿用现有 `observer` 服务。私有环境变量 `MAAS_CAPACITY_POLICY_PATH` 与 `MAAS_CAPACITY_GPUSTACK_KEY_PATH` 分别指向权限为 `0600` 的策略和只读 GPUStack 凭据。observer 读取原生列表和事件，向现有任务库发布带有效期的观测预算，并写出私有 `.observability/capacity.json`。使用 `expires_at` 判断文件中的预算是否仍有效。现有同步和异步入口继续使用原静态额度。
 
-以下是任意单模型的配置形状。其中逻辑模型名在 catalog 注册，部署、集群、归属、路由 ID 及 GPU 名称用隔离环境的原生值。新增模型可按相同结构增加池。多个逻辑名共用一个部署时加入同一个 `routes` 字典。
+以下是一个自动容量池的配置。其中逻辑模型名在 catalog 注册，部署、集群、归属、路由 ID 及 GPU 名称用本环境的原生值。新增模型可按相同结构增加池。多个逻辑名共用一个部署时加入同一个 `routes` 字典。
 
 ```json
 {
-  "global_limit": 8,
   "sync_percent": 25,
   "shared_gpu_vram_budgets": {"GPUStack 返回的已验证 GPU 名称": 16106127360},
   "pools": {
@@ -109,7 +108,6 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
       "gpu_names": ["GPUStack 返回的已验证 GPU 名称"],
       "slots_per_replica": 1,
       "shared_gpu_vram_bytes": 6442450944,
-      "hard_limit": 4,
       "queue_limit": 25,
       "gateway_verified": false
     }
@@ -118,6 +116,10 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 ```
 
 通过隔离试点确认路由、就绪判据及单副本并发后，才将对应池的 `gateway_verified` 设为 `true`。当前原生判定支持同一 GPUStack 来源内的单部署路由及单卡副本。
+
+省略 `global_limit` 后，全局与单项目执行上限随就绪容量自动计算。省略池的 `hard_limit` 后，该池按合格副本与单副本安全并发计额。已有数值字段继续作为显式上限。迁移现有封顶策略时，在暂停排空后让 API、所有执行器和观察器加载同一版无封顶策略，等待新快照并重新执行 `capacity-enforce`。之后 worker 潮汐使用同一份配置。
+
+自动模式的执行器复用固定进程和现有阻塞线程预算。其并行远端请求数受实时异步预算和进程本地资源共同约束。执行器记录 `executor_automatic_capacity` 和 `executor_local_limit_reached`，并报告内存余量、文件描述符或缺少本地内存度量时的限制来源。同步入口也有独立的本地处理额度，达到时返回带限制来源的 `SYNC_CONTROLLER_CAPACITY`。
 
 自动放置场景可在顶层启用 `shared_gpu_vram_budgets`，用 GPUStack 报告的 GPU 名称映射每卡已验收的推理显存预算上限（字节）。各模型池填写 `shared_gpu_vram_bytes`，记录按配置中的 `slots_per_replica` 和受控推理参数实测的单副本显存上界（字节）。示例使用每卡 15 GiB、每副本 6 GiB。每张卡的可用预算取策略上限和原生总显存扣除系统预留后的较小值。每个已落位实例按实测上界和 GPUStack 已分配显存的较大值计入占用，启动中的实例也计入。上界或原生显存证据缺失、同卡存在未登记工作负载或总量超预算时，相关 GPU 暂停计额。聚合路由可能派发到被排除的 GPU，对应模型池也暂停派发，显示 `gpu_budget_unverified`。固定路由可继续使用其他已核对的 GPU。
 

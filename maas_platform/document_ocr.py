@@ -14,6 +14,7 @@ MODEL_REVISION = '0480966938291445591f69f08a13b041c073a96a'
 RUNTIME_DIGEST = 'sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6'
 GUARDED_RUNTIME_DIGEST = 'sha256:9139bd41a0476782acee4be89363a5c1188c9910ed9211ce84d06920ac582615'
 PROFILE = 'pdfium5.15.2-pages10-pixels50m-json-v1'
+MAX_RENDERED_REQUEST_BYTES = 96 * 1024**2
 
 
 class DocumentInput(BaseModel):
@@ -75,7 +76,7 @@ class DocumentOCRAdapter(OCRAdapter):
             'custom_params': {'ngram_size': 35, 'window_size': 1024 if count > 1 else 128,
                              'page_token_id': 128827, 'eos_token_id': 1, 'max_page_tokens': 20000}}
         encoded = json.dumps(body).encode()
-        if len(encoded) > 96 * 1024**2:
+        if len(encoded) > MAX_RENDERED_REQUEST_BYTES:
             raise ServiceError('DOCUMENT_RENDER_SIZE', 'Rendered document request exceeds its budget', 413)
         return encoded, pages
 

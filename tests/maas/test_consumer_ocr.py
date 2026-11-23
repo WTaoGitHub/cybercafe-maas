@@ -117,7 +117,7 @@ class FakeService:
 class Ingress(SyncIngress):
     def __init__(self,handler):
         super().__init__(FakeService(),lambda **kw:httpx.AsyncClient(transport=httpx.MockTransport(handler),**kw));self.finishes=[]
-    def begin(self,*a):return 'token'
+    def begin_dispatch(self,*a):return 'token','real-ocr'
     def finish(self,*args,**kwargs):self.finishes.append(args)
 
 

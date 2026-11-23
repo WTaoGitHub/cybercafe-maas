@@ -212,7 +212,7 @@ class TaskService:
                 raise ServiceError('ARTIFACT_CORRUPT','Input integrity check failed',503)
             return data,row['media_type']
 
-    def claim(self):
+    def claim(self, *, legacy_slot=True, automatic_slot=True):
         with self.db.transaction() as c:
             maintenance = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
             revision = maintenance['capacity_policy_hash']
@@ -226,7 +226,7 @@ class TaskService:
             catalog = self.settings.catalog() if unknown else {}
             if revision:
                 admission = Admission(c, self.settings, revision, include_preparing=True)
-                if not admission.budget:
+                if not admission.budget or not (automatic_slot if admission.automatic else legacy_slot):
                     return None
                 ready = "state IN ('QUEUED','RETRY_WAIT') AND next_run<=clock_timestamp() AND deadline>clock_timestamp()"
                 pairs = c.execute(f'SELECT DISTINCT project, model FROM tasks WHERE {ready}').fetchall()
@@ -243,6 +243,8 @@ class TaskService:
                 if not admission.fresh(c):
                     return None
             else:
+                if not legacy_slot:
+                    return None
                 self.expire_queued(c)
                 running = c.execute('SELECT count(*) AS n FROM inference_slots').fetchone()['n']
                 if running >= self.settings.max_running: return None

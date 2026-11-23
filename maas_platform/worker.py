@@ -9,7 +9,10 @@ import time
 import uuid
 from .auth import AuthConnector
 from .adapters import adapter_for, ExecutionContext
+from .capacity_admission import follows_ready_capacity
 from .config import Settings
+from .controller_capacity import local_slots
+from .document_ocr import MAX_RENDERED_REQUEST_BYTES
 from .errors import ServiceError
 from .ocr_connector import inference_client
 from .service import TaskService, fingerprint
@@ -121,17 +124,34 @@ class Worker:
             output['metering'] = metering
         return self.service.finish(task, output=output, metering=metering)
 
-    async def _lane(self, client):
-        while not self.draining():
-            try:
-                task = await asyncio.to_thread(self.service.claim)
+    async def _dispatch(self, client, slots, automatic_limit):
+        pending = set()
+        reported = False
+        async with asyncio.TaskGroup() as requests:
+            while not self.draining():
+                active = len(pending)
+                legacy_room = active < slots
+                automatic_room = automatic_limit is not None and active < automatic_limit[0]
+                if automatic_limit is not None and not automatic_room and not reported:
+                    log.warning('executor_local_limit_reached executor=%s slots=%s basis=%s',
+                                self.executor_id, *automatic_limit)
+                    reported = True
+                if not (legacy_room or automatic_room):
+                    await asyncio.wait(pending, timeout=.5, return_when=asyncio.FIRST_COMPLETED)
+                    continue
+                try:
+                    task = await asyncio.to_thread(self.service.claim, legacy_slot=legacy_room,
+                                                   automatic_slot=automatic_room or automatic_limit is None)
+                except Exception:
+                    log.error('worker_loop_unavailable executor=%s', self.executor_id)
+                    await asyncio.sleep(2)
+                    continue
                 if task:
-                    await self._execute(task, client)
+                    request = requests.create_task(self._execute(task, client))
+                    pending.add(request)
+                    request.add_done_callback(pending.discard)
                 else:
                     await asyncio.sleep(.5)
-            except Exception:
-                log.error('worker_loop_unavailable executor=%s', self.executor_id)
-                await asyncio.sleep(2)
 
     async def _maintain(self, done):
         cleanup = PeriodicArtifactCleanup(self.service)
@@ -147,17 +167,24 @@ class Worker:
             await asyncio.to_thread(cleanup.close)
 
     async def serve(self, slots):
-        # One offload per lane, plus capacity for lease renewal and maintenance.
+        # Bound blocking work independently from remote requests awaiting responses.
         asyncio.get_running_loop().set_default_executor(ThreadPoolExecutor(max_workers=slots+2))
+        settings = self.service.settings
+        automatic_limit = None
+        connection_limit = slots
+        if follows_ready_capacity(settings):
+            buffer = 2 * (max(settings.max_input_bytes, MAX_RENDERED_REQUEST_BYTES) + settings.max_output_bytes)
+            automatic_limit = local_slots(buffer, slots)
+            connection_limit = max(slots, automatic_limit[0])
+            log.info('executor_automatic_capacity executor=%s slots=%s basis=%s',
+                     self.executor_id, *automatic_limit)
         done = asyncio.Event()
-        async with inference_client(slots) as client:
+        async with inference_client(connection_limit) as client:
             async with asyncio.TaskGroup() as background:
                 background.create_task(self._renew(done))
                 background.create_task(self._maintain(done))
                 try:
-                    async with asyncio.TaskGroup() as lanes:
-                        for _ in range(slots):
-                            lanes.create_task(self._lane(client))
+                    await self._dispatch(client, slots, automatic_limit)
                 finally:
                     done.set()
 
@@ -171,7 +198,7 @@ def main():
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_: stop.set())
     worker = Worker(service, stop_claiming=stop)
-    log.info('executor_started executor=%s pid=%s slots=%s global_limit=%s project_limit=%s',
+    log.info('executor_started executor=%s pid=%s legacy_slots=%s legacy_global_limit=%s legacy_project_limit=%s',
              worker.executor_id, os.getpid(), settings.executor_slots, settings.max_running, settings.max_project_running)
     try:
         asyncio.run(worker.serve(settings.executor_slots))

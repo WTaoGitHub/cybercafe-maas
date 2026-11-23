@@ -8,7 +8,8 @@ from threading import BoundedSemaphore
 import httpx
 from fastapi.responses import Response
 from starlette.concurrency import run_in_threadpool
-from .capacity_admission import Admission, unavailable
+from .capacity_admission import Admission, follows_ready_capacity, unavailable
+from .controller_capacity import local_slots
 from .errors import ServiceError
 from .pp_ocr_execution import ATTEMPT_HEADER, finished
 from .quarantine import blocks, unresolved
@@ -18,7 +19,14 @@ class SyncIngress:
     def __init__(self,service,client_factory=None):
         self.service=service
         self.client_factory=client_factory or httpx.AsyncClient
-        self.input_slots=BoundedSemaphore(getattr(service.settings, 'max_running', 1))
+        settings = service.settings
+        slots = getattr(settings, 'max_running', 1)
+        self.request_slots = None
+        if getattr(settings, 'capacity_policy_file', None) and follows_ready_capacity(settings):
+            maximum, self.request_capacity_basis = local_slots(
+                4 * settings.max_input_bytes + 2 * settings.max_output_bytes, slots)
+            self.request_slots = BoundedSemaphore(maximum)
+        self.input_slots = BoundedSemaphore(slots)
 
     def begin(self,who,name,runtime,probe=False,expected_model=None):
         token, _ = self.begin_dispatch(who, name, runtime, probe, expected_model)
@@ -76,6 +84,18 @@ class SyncIngress:
                     persist(c,row['project'],metering)
 
     async def infer(self,who,body,probe=False,prepare_input=None,map_output=None):
+        slots = self.request_slots
+        if slots is None:
+            return await self._infer(who, body, probe, prepare_input, map_output)
+        if not slots.acquire(blocking=False):
+            raise ServiceError('SYNC_CONTROLLER_CAPACITY',
+                               f'Synchronous controller capacity is full ({self.request_capacity_basis})',429,True)
+        try:
+            return await self._infer(who, body, probe, prepare_input, map_output)
+        finally:
+            slots.release()
+
+    async def _infer(self,who,body,probe,prepare_input,map_output):
         if not isinstance(body,dict) or not isinstance(body.get('model'),str) or body.get('stream',False) is not False:
             raise ServiceError('SYNC_INPUT','Use a registered logical model and stream=false',422)
         name=body['model'];model=self.service.model(name)
@@ -85,13 +105,15 @@ class SyncIngress:
         key=self.service.auth.key_for(who)
         runtime=min(model['max_runtime_s'],120)
         if prepare_input and getattr(self.service.settings, 'capacity_policy_file', None):
-            if not self.input_slots.acquire(blocking=False):
+            input_slots = self.input_slots if self.request_slots is None else None
+            if input_slots is not None and not input_slots.acquire(blocking=False):
                 raise ServiceError('SYNC_CAPACITY','Synchronous input preparation is full',429,True)
             try:
                 body = await self.prepare(prepare_input)
                 token, route = await run_in_threadpool(self.begin_dispatch, who, name, runtime, probe, model)
             finally:
-                self.input_slots.release()
+                if input_slots is not None:
+                    input_slots.release()
             prepare_input = None
         else:
             token,route=await run_in_threadpool(self.begin_dispatch,who,name,runtime+(10 if prepare_input else 0),probe,model)
