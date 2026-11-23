@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-23 无预设峰值的自动并发策略已发布**。API、执行器和观察器运行 `capacity-auto-bf2722c`，三个模型池和全局均按实际就绪容量计算。三台 Ready worker 带来 PP/Ovis/Unlimited 5/2/1 个就绪副本，MaaS 总量／同步预留／异步上限为 8／2／6。三个真实推理探针均取得可信 GPU 终态，普通接单已恢复，调节器仍在 Apply。发布时单执行器的本地异步槽位为 11，API 本地同步处理估算为 33。11 月 24 日在同一配置下进行 3→10→3 正式测试，逐档核对预算及实际派发。 [发布和验收口径](DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#无预设高峰上限的-3-10-3-回归) · [Issue #60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)
+
 > **2026-11-23 MaaS 普通派发已恢复，日常 API 验收通过**。三条维护探针通过后写入 `verified-resume`，维护 generation 为 129。通过新 PC 的 MaaS 应用入口验证 `POST /gpustack/v1/chat/completions`，PP-OCRv4 返回 46 行，`X-Usage-ID` 查询确认成功图片 1，token 状态 `unavailable`（`UPSTREAM_USAGE_ABSENT`）。OvisOCR3 通过上传图片、`artifact_id` 提交、查询任务及下载结果的标准流程一次成功，结果为 4,199 个字符，计量为成功图片 1、输入 token 1,130、输出 token 1,137，任务和计量查询与结果文件一致。输入、输出、测试任务、凭据和计量均已清理，测试残留和 `UNKNOWN` 为零，动态额度仍为 8／2／6（总量／同步预留／异步上限）。 [API 契约](../api/OPENAPI.md) · [换快照验收](../../deploy/bootstrap/clone/NFS.md#2026-11-23-三台新快照克隆与模型恢复验收)
 
 > **2026-11-23 三台 worker 全量换快照验收通过**。3→2→0→1→3 实测结束，三台新克隆 11/12/13 均自动读取签名 NFS 发布、按需挂载、注册 Ready，文件摘要均通过。调节器恢复 Unlimited/Ovis/PP 为 1/1、2/2、5/5 Ready/目标，动态总额度 8，同步预留 2、异步上限 6。三条私有推理探针均有可信 GPU 终态，测试凭据、记录和用量已清理。MaaS 普通派发保持暂停，排队、在途和 UNKNOWN 均为零。 [全量换快照验收](../../deploy/bootstrap/clone/NFS.md#2026-11-23-三台新快照克隆与模型恢复验收) · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) · [Issue #70](https://github.com/WTaoGitHub/cybercafe-maas/issues/70)
