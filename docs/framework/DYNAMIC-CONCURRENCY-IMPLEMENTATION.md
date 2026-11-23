@@ -352,6 +352,27 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 下一步为聚合路由增加在途感知，优先使用已就绪且有空余执行槽的副本，同时保留 GPUStack 自动放置。完成后用长时混合负载验证队列、尾延迟和 8 路并发能否持续利用。本轮已恢复原动态策略、硬上限和暂停状态，健康检查为 200，`UNKNOWN=0`。试验凭据、任务、用量、临时追踪文件和挂载均已清理。 [CAPACITY-INC-005 / Issue #60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)
 
+### 2026-11-23 PP 空闲副本优先的长时对照
+
+在现有 GPUStack 2.2.3 与内置 Higress 上，为 PP 原生聚合路由增加 [Envoy 在途感知同步器](../../scripts/maas/runtime/reconcile_gateway_capacity.py)。端点跟随 GPUStack 维护的 Ingress 和 McpBridge，由 Envoy 进行健康检查及 `LEAST_REQUEST` 选路。仍为三台 Ready worker，三套模型无 worker 或 GPU 选择器，副本为 `1/2/5`。候选阶段生效配置经核对有五个健康端点、17 条 PP 路由变体指向该集群，其他路由配置一致。 [Envoy 1.27 最少请求策略](https://www.envoyproxy.io/docs/envoy/v1.27.7/api-v3/config/cluster/v3/cluster.proto#config-cluster-v3-cluster-leastrequestlbconfig)
+
+权重基线与空闲优先各使用 180 秒闭环负载，输入沿用合成大图和八页 PDF。每组使用 2 个同步 PP 客户端及 5 个 PP、3 个 Ovis、2 个 Unlimited 异步客户端。两组共用同样的 `8/2/6` 配置，PP 池 5 路总额度中预留 2 路给同步。同步延迟和 GPU 占用统计取每组开始后 10 至 180 秒的样本。
+
+| 实测指标 | 原加权路由 | PP 空闲优先 |
+| --- | ---: | ---: |
+| PP 同步 P95 | 2,056.7 ms | 1,001.8 ms |
+| PP 异步排队 P95 | 1,202.4 ms | 874.7 ms |
+| PP 异步端到端 P95 | 2,840.1 ms | 1,857.9 ms |
+| 平均 GPU 在途副本 | 4.95 | 5.75 |
+| 8 个不同 GPU 副本同时在途采样 | 3 / 2,224 | 155 / 2,222 |
+| 同时授权 6 异步和 2 同步采样 | 1,378 / 2,224 | 1,311 / 2,222 |
+| 异步成功数 | 460 | 588 |
+| 同步成功数 | 294 | 388 |
+
+两组所有接收请求均成功并完成计量，同步无拒绝，异步峰值均为 6。候选阶段的 8 路 GPU 满载占 **7.0%** 的稳态样本。Ovis 和 Unlimited 的 P95 本轮均未下降。候选阶段附加的 10 秒按副本采样中，Ovis 在 99 个样本中的 84 个观测到两笔请求同落一个副本，PP 未观测到同副本重叠。继续验证把同一选路机制应用于 Ovis，并拆分大文档准备和 GPU 等待造成的空档。
+
+首次回退核对发现内置 Kubernetes API 的资源缺 UID。已补上基于本次运行标识的资源归属检查，在该环境实测删除候选过滤器并恢复原权重路由。测试结束恢复原配置与业务暂停，健康检查 200，`UNKNOWN=0`。已清理测试身份、任务、用量和临时文件。 [CAPACITY-INC-005 / Issue #60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)
+
 | 阶段 | 变更面 | 通过条件 |
 | --- | --- | --- |
 | 1. 绑定、计算与只观测模式 | 配置、容量快照迁移、observer、已有运维指标。先跑计算逻辑，再接原生读取。 | 同池别名归一，跨池资源不重复；验证分批掉线、归零、恢复、乱序、订阅断开、快照过期和比例取整。仅输出对照数据，观察到的可用实例可追溯到原生证据。 |
