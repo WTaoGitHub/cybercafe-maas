@@ -46,6 +46,8 @@ def filter_body(namespace, route_id, addresses):
         'name': name,
         'type': 'STATIC',
         'connect_timeout': '2s',
+        # The direct OCR servers can close idle HTTP/1 connections before Envoy reuses them.
+        'max_requests_per_connection': 1,
         'lb_policy': 'LEAST_REQUEST',
         'least_request_lb_config': {'choice_count': 32},
         'common_lb_config': {'healthy_panic_threshold': {'value': 0}},

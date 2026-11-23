@@ -37,6 +37,7 @@ def test_envoy_filter_keeps_the_native_route_match_and_rewrite():
     cluster_patch, route_patch = filter_body('higress-system', 3, [('10.0.0.1', 1234)])['spec']['configPatches']
     cluster = cluster_patch['patch']['value']
     assert cluster['lb_policy'] == 'LEAST_REQUEST'
+    assert cluster['max_requests_per_connection'] == 1
     assert cluster['common_lb_config']['healthy_panic_threshold']['value'] == 0
     assert cluster['health_checks'][0]['http_health_check']['path'] == '/health'
     assert route_patch['match']['routeConfiguration']['vhost']['route']['name'] == 'ai-route-route-3.internal'

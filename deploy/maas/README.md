@@ -123,20 +123,22 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 
 启用预算前，以代表性共卡负载验证显存余量和延迟，将这些结果用作模型档案及 GPU 预算。每个 GPU 型号的预算校验适用于该型号的所有落点，并优先于旧配置的 `shared_gpu_layouts`。未启用此字段的型号沿用已验收精确布局。详见[设计与实施方案](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md)。
 
-### PP-OCRv4 聚合路由优先空闲副本
+### 聚合路由优先空闲副本
 
-在 GPUStack 2.2.3 的内置 Higress 容器中运行 [路由同步器](../../scripts/maas/runtime/reconcile_gateway_capacity.py)。用实际的 GPUStack 路由 ID、模型部署 ID 和上游模型名替换环境变量。
+在 GPUStack 2.2.3 的内置 Higress 容器中运行 [路由同步器](../../scripts/maas/runtime/reconcile_gateway_capacity.py)。PP-OCRv4 和 OvisOCR3 各使用自己的 GPUStack 路由 ID、模型部署 ID 和上游模型名。
 
 ```sh
 python reconcile_gateway_capacity.py \
-  --route-id "$PP_ROUTE_ID" --model-id "$PP_MODEL_ID" --model-name "$PP_UPSTREAM_MODEL"
+  --route-id "$MODEL_ROUTE_ID" --model-id "$MODEL_ID" --model-name "$UPSTREAM_MODEL"
 ```
 
-同步器跟随 GPUStack 维护的 Ingress 及 McpBridge 注册表，把同一模型的直连 HTTP 实例汇入一个 Envoy 集群。Envoy 对实例做 `/health` 检查，并优先选择在途请求更少的健康端点。相同 worker 上的不同实例按各自端口处理。原聚合入口仍使用 GPUStack 鉴权和 MaaS 执行回执。模型放置和端点增删继续由 GPUStack 管理。
+同步器跟随 GPUStack 维护的 Ingress 及 McpBridge 注册表，把同一模型的直连 HTTP 实例汇入一个 Envoy 集群。Envoy 对实例做 `/health` 检查，并优先选择在途请求更少的健康端点。上游 HTTP/1 连接每次承载一个请求，避免重用已被模型服务关闭的连接。相同 worker 上的不同实例按各自端口处理。原聚合入口仍使用 GPUStack 鉴权和 MaaS 执行回执。模型放置和端点增删继续由 GPUStack 管理。
 
 一个路由运行一个同步器。启用后从 Envoy 生效配置核对目标集群、健康实例数和其他路由。维护窗口内用 SIGTERM 退出同步器，待它删除自己的 EnvoyFilter 后确认 native 权重路由恢复。异常退出时先核验进程和资源归属，再清理该路由的 `maas-least-inflight-<route-id>` 过滤器。当前支持已由 GPUStack 注册的私网 IPv4 直连实例。Envoy 的在途请求数用于选路，MaaS 动态准入负责同步预留、异步上限与账本。
 
 长时对照使用[合成大输入](../../tests/maas/make_peak_capacity_fixture.py)和[混合负载脚本](../../tests/maas/benchmark_peak_gateway.py)。脚本在仅绑定试验身份的测试 API 容器中运行，导入路径指向 MaaS 安装目录。先在暂停且排空的任务库配置 `8/2/6`，PP 池设 5 路总额度并预留 2 路同步。依次运行 `baseline` 和 `least_inflight` 两个阶段，每阶段默认 180 秒。脚本结束后暂停派发。切换阶段前排空并清理上一阶段的测试数据，最后恢复原配置。
+
+比较 OvisOCR3 时，两组都启用 PP 的路由同步器，候选组再启用 Ovis 的同步器。脚本同步采样各模型尚未被不同 GPU 副本占用的槽位。文档拿到 GPU 执行权之前，按排队、领取后准备、已派发待回执等状态计数。待回执包含请求传输和后端入队时间。收到 GPU 终态后仍在写结果的时间单独计入收尾。
 
 ### 隔离环境启用动态准入
 

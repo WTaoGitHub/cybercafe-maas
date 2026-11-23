@@ -138,6 +138,8 @@ def measures(rows):
    for model in (pp,ovis,doc) if (v:=[x for x in rows if x['model']==model])}
 samples=collections.Counter()
 peak_by_model=collections.Counter()
+idle_by_model = collections.Counter()
+document_stages = collections.Counter()
 peak_per_replica=0
 report('steady_start',seconds=duration,pool_limits=[3,2,1],sync_clients=2)
 t0=time.monotonic()
@@ -155,15 +157,23 @@ try:
        UNION ALL
        SELECT s.model,false,s.gpu_instance FROM sync_activity s WHERE s.project=%s AND NOT s.is_probe AND s.state='DISPATCHING' AND s.gpu_finished_at IS NULL
      ) x) AS running,
+     (SELECT coalesce(min(CASE
+         WHEN b.state='DISPATCHING' AND b.gpu_finished_at IS NULL AND b.gpu_instance IS NOT NULL THEN 1
+         WHEN b.state='DISPATCHING' AND b.gpu_finished_at IS NULL THEN 2
+         WHEN t.state='RUNNING' AND b.token IS NULL THEN 3
+         WHEN t.state='RUNNING' THEN 4
+         ELSE 5 END),6)
+      FROM tasks t LEFT JOIN backend_activity b ON b.token=t.token
+      WHERE t.project=%s AND t.model=%s AND t.state IN ('RUNNING','QUEUED','RETRY_WAIT')) AS document_stage,
      (SELECT count(*) FROM sync_activity WHERE project=%s AND state='UNKNOWN')+
      (SELECT count(*) FROM backend_activity b JOIN tasks t ON t.id=b.task_id WHERE t.project=%s AND b.state='UNKNOWN') AS unknown
-   """,(project,project,pp,project,project,project,project)).fetchone()
+   """,(project,project,pp,project,project,project,doc,project,project)).fetchone()
    now=time.monotonic()
    r=row['running']
    a=sum(x['async'] for x in r)
    s=len(r)-a
    by_model=collections.Counter(x['model'] for x in r)
-   if row['unknown'] or row['reserved']>6 or len(r)>8 or a>6 or by_model[pp]>5 or by_model[ovis]>2 or by_model[doc]>1:
+   if (row['unknown'] or row['reserved']>6 or len(r)>8 or a>6 or by_model[pp]>5 or by_model[ovis]>2 or by_model[doc]>1) and not stop.is_set():
     errors.append('Capacity violation or UNKNOWN')
     stop.set()
    if useful_after<=now<deadline:
@@ -182,6 +192,9 @@ try:
     samples['sync_reserve_with_backlog']+=int(a==6 and s in (1,2) and row['queued']>0)
     by_model_gpu=collections.Counter(model for model,_ in instances)
     for name,count in by_model_gpu.items():peak_by_model[name]=max(peak_by_model[name],count)
+    idle_by_model.update({name: max(0, limit - by_model_gpu[name]) for name, limit in ((pp, 5), (ovis, 2), (doc, 1))})
+    stage = ('gpu', 'awaiting_gpu_claim', 'preparing', 'finalizing', 'queued', 'idle')[row['document_stage'] - 1]
+    document_stages[stage] += 1
    if now>=next_status:
     report('progress',elapsed=int(now-t0),samples=samples['observations'],gpu_peak=samples['peak_gpu'],sync_ok=len(sync_times),submitted=dict(submitted),errors=errors[:3])
     next_status=now+20
@@ -189,6 +202,7 @@ try:
   for f in futures:f.result()
   rows=c.execute("""SELECT t.model,t.state,
     extract(epoch FROM a.started_at-t.created_at)::float*1000 AS queue_ms,
+    extract(epoch FROM b.created_at-a.started_at)::float*1000 AS preparation_ms,
     extract(epoch FROM t.updated_at-t.created_at)::float*1000 AS total_ms,
     b.gpu_finished_at IS NOT NULL AND t.attempts=1 AND u.task_id IS NOT NULL AS verified
     FROM tasks t LEFT JOIN task_attempts a ON a.task_id=t.id AND a.attempt=1
@@ -200,6 +214,8 @@ try:
     async_success=sum(r['state']=='SUCCEEDED' and r['verified'] for r in rows),async_total=len(rows),
     sync_success=len(sync_times),sync_receipts=sync_receipts,sync_p95_ms=percentile(sync_window),sync_sample_size=len(sync_window),
     async_metrics=measures([r for r in rows if r['verified'] and r['state']=='SUCCEEDED']),
+    idle_slot_samples=dict(idle_by_model),document_stage_samples=dict(document_stages),
+    document_preparation_p95_ms=percentile([r['preparation_ms'] for r in rows if r['model']==doc and r['verified']]),
     sync_rejections=dict(sync_rejections),errors=errors)
   if errors or len(sync_times)!=sync_receipts or not rows or not sync_window or not all(r['state']=='SUCCEEDED' and r['verified'] for r in rows):
    raise RuntimeError('Benchmark phase failed')
