@@ -1,4 +1,5 @@
 """Real disposable PostgreSQL, real API validation, explicitly mocked inference."""
+import asyncio
 import hashlib
 import json
 from pathlib import Path
@@ -51,10 +52,12 @@ def test_sync_capacity_rejection_creates_no_new_usage(env,monkeypatch,tmp_path):
 def test_mixed_saturated_queue_and_sync_usage_share_real_project_slots(env,monkeypatch,tmp_path):
     client,s,settings,cfg,obs,lines=setup(env,monkeypatch,tmp_path)
     settings.max_running=settings.max_project_running=4
-    def fake_execute(self,ctx):
-        time.sleep(.1)
-        return {'text':'hello','lines':lines,'elapsed_ms':100,'node':'mock-only'}
-    monkeypatch.setattr('maas_platform.ocr_connector.OCRAdapter.execute',fake_execute)
+    async def async_upstream(request):
+        await asyncio.sleep(.1)
+        result = {'text':'hello','lines':lines,'elapsed_ms':100,'node':'mock-only'}
+        return httpx.Response(200,json={'choices':[{'message':{'content':json.dumps(result)}}]})
+    monkeypatch.setattr('maas_platform.ocr_connector.inference_client',
+                        lambda **kw:httpx.AsyncClient(transport=httpx.MockTransport(async_upstream),**kw))
     artifact=client.post('/maas/v1/artifacts',content=png(),headers={'Content-Type':'image/png'}).json()['id']
     fixtures=[{'input':{'image':{'artifact_id':artifact}},'sha256':hashlib.sha256(png()).hexdigest(),
         'expected_text_sha256':hashlib.sha256(b'hello').hexdigest()}]

@@ -1,6 +1,6 @@
 # OpenAPI / Swagger接口文档
 
-> **2026-11-03 代码契约待部署**。OpenAPI 中的 `POST /maas/v1/ocr` 已改为异步提交，可选传入 `Idempotency-Key`，返回 202 或幂等复用 200。下文现网同步说明适用于切换前。详见[消费者接口](CONSUMER-OCR.md)。
+> **当前接口契约**。同步使用 `POST /gpustack/v1/chat/completions`。`POST /maas/v1/ocr` 用于异步提交，可选传入 `Idempotency-Key`，返回 202 或幂等复用 200。旧 `POST /ocr` 已退役。 [消费者接口](CONSUMER-OCR.md)
 
 > **2026-11-02现网已发布**：11个操作均已部署，新图片字段与远程URL、E16计量查询已完成真实OCR验收。当前PP-OCRv4 tokens为null/unavailable；Responses中的真实示例已脱敏，历史ID不可复用。
 
@@ -12,7 +12,7 @@
 
 1. 导入openapi.json；选择HTTP或HTTPS服务器，替换host/port为运维提供的可达入口。
 2. 在Authorize中输入已登记推理key，不能使用管理key代替。不把真实key保存进文档。
-3. 同步推荐`/ocr`；异步仍为上传原始图片字节→保存artifact ID→带Idempotency-Key提交任务→查询→下载结果。
+3. 同步使用 `/gpustack/v1/chat/completions` 并在 `messages` 中提供图片。异步可调用 `/maas/v1/ocr`，也可上传图片后用 artifact ID 提交任务、查询和下载结果。
 4. “Try it out”需要浏览器能访问目标地址、证书受信且跨域策略允许。当前入口未配置通用CORS，浏览器调用失败不等于curl不可用；本次不改变CORS、监听或服务器路由。实际调用可按[API手册](README.md)使用curl/Python。
 
 当前未暴露Swagger UI、`/openapi.json`、`/healthz`或`/v1/models`客户路径；不能把文档文件路径当成服务器API。内部FastAPI自动schema未补全所有动态返回，不作为此客户文档替代。三种图片输入及E16计量已于2026-11-02部署；多模型/批次接口不包含在内。

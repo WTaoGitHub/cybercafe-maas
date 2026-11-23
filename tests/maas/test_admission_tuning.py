@@ -7,6 +7,7 @@ import threading
 from types import SimpleNamespace
 import httpx
 import pytest
+from test_consumer_ocr import png, response
 from maas_bench import matrix
 from maas_bench.backend import TaskBackend
 from maas_bench.sync_load import SyncTraffic
@@ -44,7 +45,7 @@ def test_mixed_observation_allows_only_same_project_sync_traffic():
 
 
 def test_sync_side_traffic_validates_text_and_once_usage_without_replay(tmp_path):
-    image=tmp_path/'input.png';image.write_bytes(b'prepared-test-input')
+    image=tmp_path/'input.png';image.write_bytes(png())
     manifest=tmp_path/'manifest.json';manifest.write_text(json.dumps([{'id':'one','file':image.name,'sha256':hashlib.sha256(image.read_bytes()).hexdigest()}]))
     quality=tmp_path/'quality.json';quality.write_text(json.dumps({'items':{'one':{'text_sha256':hashlib.sha256(b'hello').hexdigest()}}}))
     rows=[]
@@ -52,10 +53,14 @@ def test_sync_side_traffic_validates_text_and_once_usage_without_replay(tmp_path
         connection=SimpleNamespace(execute=lambda *_:SimpleNamespace(fetchall=lambda:list(rows))))
     config={'sync_rate':2,'raw_manifest_file':str(manifest),'expected_text_file':str(quality),'logical_model':'ocr.default'}
     errors=[];events=[];traffic=SyncTraffic(config,obs,errors.append,events.append);traffic.before=set()
-    def response(req):
+    def upstream(req):
+        assert req.url.path == '/gpustack/v1/chat/completions'
+        body = json.loads(req.content)
+        assert body['model'] == 'ocr.default' and body['stream'] is False
+        assert body['messages'][0]['content'][0]['image_url']['url'].startswith('data:image/png;base64,')
         rows.append({'token':str(len(rows)),'state':'COMPLETED','outcome':'SUCCEEDED','events':1})
-        return httpx.Response(200,json={'lines':[{'text':'hello'}]})
-    with httpx.Client(base_url='http://test',transport=httpx.MockTransport(response)) as client:
+        return httpx.Response(200,content=response([{'text':'hello'}]))
+    with httpx.Client(base_url='http://test',transport=httpx.MockTransport(upstream)) as client:
         value=traffic._one(client,0,0)
         assert value['http_status']==200
     assert traffic.stop()['usage_events']==1 and not errors

@@ -8,7 +8,15 @@ import threading
 import time
 import uuid
 import httpx
+from maas_platform.consumer_ocr import consumer_output, validate_image
 from .snapshot import read_secret
+
+
+def sync_ocr_body(model, raw):
+    url = f'data:{validate_image(raw)};base64,{base64.b64encode(raw).decode()}'
+    return {'model': model, 'stream': False, 'messages': [
+        {'role': 'user', 'content': [{'type': 'image_url', 'image_url': {'url': url}}]},
+    ]}
 
 
 class SyncTraffic:
@@ -22,7 +30,7 @@ class SyncTraffic:
         for item in manifest:
             raw=(manifest_file.parent/item['file']).read_bytes()
             if hashlib.sha256(raw).hexdigest()!=item['sha256']:raise ValueError('Sync image changed')
-            self.inputs.append({'id':item['id'],'body':{'model':config['logical_model'],'image_base64':base64.b64encode(raw).decode()},
+            self.inputs.append({'id':item['id'],'body':sync_ocr_body(config['logical_model'],raw),
                 'text_sha256':quality[item['id']]['text_sha256']})
         self.thread=threading.Thread(target=self._run,name='sync-side-traffic')
 
@@ -58,9 +66,9 @@ class SyncTraffic:
         began=time.time();monotonic=time.monotonic()
         self.emit({'kind':'sync_intent','request_id':rid,'sequence':sequence,'image':item['id'],'at_epoch':began})
         try:
-            r=client.post('/ocr',json=item['body'],headers={'X-Request-ID':rid})
+            r=client.post('/gpustack/v1/chat/completions',json=item['body'],headers={'X-Request-ID':rid})
             if r.status_code==200:
-                lines=r.json()['lines'];text='\n'.join(line['text'] for line in lines)
+                lines=json.loads(consumer_output(r.content))['lines'];text='\n'.join(line['text'] for line in lines)
                 if hashlib.sha256(text.encode()).hexdigest()!=item['text_sha256']:raise RuntimeError('Synchronous OCR text mismatch')
             elif r.status_code==429:
                 if r.json().get('error',{}).get('code')!='SYNC_CAPACITY':raise RuntimeError('Unexpected rejection class')

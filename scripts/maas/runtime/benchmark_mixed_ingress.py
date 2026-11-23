@@ -5,10 +5,11 @@ synchronous requests. Only explicit SYNC_CAPACITY/429 is an expected rejection.
 Other failures stop new submissions; accepted tasks are observed, never replayed.
 This is a fixed-count validation, not a continuously supplied capacity result.
 """
-import argparse,base64,hashlib,json,re,ssl,sys,threading,time,urllib.error,urllib.request
+import argparse,hashlib,json,re,ssl,sys,threading,time,urllib.error,urllib.request
 from pathlib import Path
 from benchmark_executors import LIVE,FIXTURES,atomic,bounded_map,check_activity,command,sql
 from maas_bench.contracts import integer,parallel_arg
+from maas_bench.sync_load import sync_ocr_body
 
 
 def verify_counts(records,tasks,sync_rows,async_count=24,sync_count=36):
@@ -55,6 +56,7 @@ def main():
     fixture=json.loads((FIXTURES/'manifest.json').read_text())[0]
     raw=(FIXTURES/fixture['file']).read_bytes()
     if hashlib.sha256(raw).hexdigest()!=fixture['sha256']:raise RuntimeError('Fixture changed')
+    sync_body=sync_ocr_body('ocr.default',raw)
     ctx=ssl.create_default_context(cafile='/root/wtaobj/maas-private-tls/server.crt')
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPSHandler(context=ctx))
     key=(LIVE/'secrets/pilot-key').read_text().strip()
@@ -92,10 +94,10 @@ def main():
         deadline=time.monotonic()+145
         while True:
             code,row,_=request('/maas/v1/tasks/'+record['task']);assert code==200
-            if row['state'] in ('SUCCEEDED','FAILED','CANCELLED'):break
+            if row['status'] in ('SUCCEEDED','FAILED','CANCELLED'):break
             if time.monotonic()>deadline:raise RuntimeError('Accepted task observation deadline')
             time.sleep(.05)
-        assert row['state']=='SUCCEEDED' and row['attempts']==1
+        assert row['status']=='SUCCEEDED' and row['attempts']==1
         code,result,_=request('/maas/v1/artifacts/'+row['result_artifact_id']);assert code==200
         assert result['model_revision']==revision and isinstance(result['outputs']['lines'],list)
         with lock:record.update(state='SUCCEEDED',lines=len(result['outputs']['lines']),finished_at=time.time());checkpoint()
@@ -114,8 +116,10 @@ def main():
             else:
                 for i in range(args.sync_per_client):
                     record=remember('sync',(number-1)*args.sync_per_client+i)
-                    code,row,rid=request('/ocr',{'model':'ocr.default','image_base64':base64.b64encode(raw).decode()},allow_capacity=True)
-                    if code==200:assert isinstance(row['lines'],list)
+                    code,row,rid=request('/gpustack/v1/chat/completions',sync_body,allow_capacity=True)
+                    if code==200:
+                        result=json.loads(row['choices'][0]['message']['content'])
+                        assert isinstance(result['lines'],list)
                     with lock:record.update(state='SUCCEEDED' if code==200 else 'CAPACITY_REJECTED',http_status=code,request_id=rid,finished_at=time.time());checkpoint()
         except Exception:
             stop.set();raise
