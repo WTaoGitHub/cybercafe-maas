@@ -458,7 +458,7 @@ GPUStack调度预算不是CUDA实际占用，也不是强制显存硬上限；�
 
 ## E5：统一启动配置分发与GPUStack原生注册
 
-**2026-11-23 推理依赖统一交付。** 将容器资源限额、执行回执公钥证书、已批准 GPU 的执行凭据一起纳入 E5。本地实现及 303 项 bootstrap 回归通过。新增模型通过发布规则接入，新增 GPU 通过原有预登记与启动许可发放凭据。一次性通用母版更新、正式配置服务部署和真实克隆验收仍待完成。 [设计](E5-DESIGN.md#worker-推理运行时配置与凭据交付) · [Issue #70](https://github.com/WTaoGitHub/cybercafe-maas/issues/70)
+**2026-11-23 推理依赖统一交付。** 将容器资源限额、执行回执公钥证书、已批准 GPU 的执行凭据一起纳入 E5。本地实现及 303 项 bootstrap 回归通过。新增模型通过发布规则接入，新增 GPU 通过原有预登记与启动许可发放凭据。新 PC 已发布 `e5-runtime-20261123-r1`，Tower 通用引导已更新并通过真实 HTTPS 验签。等待管理员保存快照、启动独立新克隆，完成三项依赖的自动交付实测。 [部署与快照交接](E5-DESIGN.md#2026-11-23-部署与快照交接) · [Issue #70](https://github.com/WTaoGitHub/cybercafe-maas/issues/70)
 
 **2026-11-17 NFS客户端实施：** 用户指定服务端目录`/root/maas/data/modelsWeights`及按需访问，001作为无业务宿主试点但不得重启。客户端已实现启动只准备automount、首次访问才连接NFS，兼容旧本地模式；受控配置验签、只读/来源校验、幂等和有界故障处理已离线回归。新PC、001隔离试点、母版安装及005人工恢复后运行时已取证，233项回归通过；零干预首启、第二VPC和推广仍待验。容器映射、模型配置、调度和推理仍归部署业务。详[方案](MODEL-WEIGHTS-NFS.md)、[实际部署记录](../../results/maas-nfs-live-20261117/REPORT.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。
 

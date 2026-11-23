@@ -9,7 +9,14 @@
 - MaaS API 与配置服务分别以只读和读写方式挂载同一私有凭据目录。既有凭据表在上线时迁入该目录，保留原有效凭据。bootstrap 在启动新 worker 前校验许可并把凭据和证书写入本机私有状态，部署前检查运行时代码摘要。缺少必要文件、错误许可或未知运行时版本时停止本次启动。
 - 配置更新通过发布新 revision 生效。新克隆启动时读取，存量 worker 使用现有维护与重新创建流程应用新 revision，存量推理容器沿用创建时的限额。首版保持现有的 GPUStack v2.2.3 固定版本边界。
 
-验收包括签名和格式校验、同一启动重试与同卡接续、首次出现的新 GPU、两个发布 revision 对同一底包应用不同模型规则、凭据只挂入匹配的主容器，以及兼容旧发布。本地使用隔离测试目录和模拟 GPUStack/Docker；母版封版和新克隆的真实 cgroup 及执行回执验收另行开展。
+验收包括签名和格式校验、同一启动重试与同卡接续、首次出现的新 GPU、两个发布 revision 对同一底包应用不同模型规则、凭据只挂入匹配的主容器，以及兼容旧发布。本地使用隔离测试目录和模拟 GPUStack/Docker。
+
+### 2026-11-23 部署与快照交接
+
+- 新 PC 的配置服务已发布 `e5-runtime-20261123-r1`，绑定母版 `tower-e5-runtime-v2`，旧母版的签名发布继续可读。新版包含三条固定镜像与入口匹配规则。OvisOCR3、Unlimited-OCR-2 使用 4 vCPU、16 GiB 内存、禁用 swap 的档位。三种模型均有执行回执配置。
+- MaaS API 重建后健康检查通过。API 和配置服务从共享私有目录分别以只读和读写方式读取同一份五项凭据映射。部署后 Unlimited-OCR-2、OvisOCR3、PP-OCRv4 的目标与 Ready 数仍分别为 1/1、2/2、5/5，调节器维持 Apply，MaaS 派发维持暂停，执行状态 `UNKNOWN` 为 0。
+- Tower 已更新通用引导代码。安装后从实际 HTTPS 入口拉取并验签新旧两份配置，核对了 16 项文件摘要、固定 worker 镜像摘要及启动 timer。母版保护测试通过。保存快照前，Tower 无 worker 容器、启动许可或注册状态。
+- 下一步由管理员保存 Tower 快照并启动独立克隆。先观察正常启动流程读取新版及自动注册，再核对执行凭据交付与 MaaS 回读、回执证书的真实 TLS 验证、匹配模型容器的 Docker 限额与实际 cgroup。新 GPU 首次发证仍需单独取得实际启动证据。 [Issue #70](https://github.com/WTaoGitHub/cybercafe-maas/issues/70)
 
 **2026-11-17 NFS功能边界及按需访问：** 本功能只负责VPC启动时为宿主`/srv/maas/models`准备本地automount，首次访问才连接新PC的`/root/maas/data/modelsWeights`只读目录。准备过程不读远端文件，入口准备和实际读取分别验收；交付仍含母版及快照。容器映射、模型配置、调度和推理归部署业务，模型发布应用独立安排。新PC、001试点及母版安装已取证，233项回归通过；新VPC 005继承文件匹配，白名单故障及过期许可经显式恢复后NFS/worker运行时通过，原始零干预首启失败。平台快照ID按用户决定记未知，第二VPC及推广待验，见[005实际记录](../../results/maas-nfs-clone-20261117-005/REPORT.md)。详见[方案](MODEL-WEIGHTS-NFS.md)、[实施计划](MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)及[Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)。两种权重交付方式、GPU UUID身份和禁止VM重启约束保持。
 
