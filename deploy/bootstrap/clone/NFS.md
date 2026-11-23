@@ -12,6 +12,20 @@ Tower 已更新通用引导和启用开关，母版保护、固定 worker 镜像
 - 开机后第 108.321 秒准备好 automount，第 108.831 秒由 Docker 运行时首次访问触发 NFS，第 109.520 秒完成挂载。核对前已形成只读 NFSv4 挂载，使用 hard/TCP。现场运行 `storage-check` 返回 `MODEL_STORAGE_VERIFIED`，实际读取探测文件和 SHA-256 校验通过，操作标记无残留。
 - PP-OCRv4 和 Unlimited-OCR-2 各恢复一个 Ready 副本，当前单卡可用容量为 2。OvisOCR3 的一个副本因单卡资源不足处于 Pending。两个已启动模型均收到只读执行凭据和证书挂载，执行回执服务的 TLS 握手通过。Unlimited-OCR-2 的实际 cgroup 为 4 vCPU、16 GiB、swap 为零。MaaS 派发保持暂停，端到端推理与第二、第三台新克隆待验收。
 
+### 2026-11-23 三台新快照克隆与模型恢复验收
+
+整个切换期间 Ready worker 数为 3→2→0→1→3，MaaS 动态总额度依次为 8→5→0→2→8。新增两台首次开机以 worker 12、13 注册，实际 GPU UUID 与各自 GPUStack 记录一致，三台 GPU 独立，均读取并验签 `e5-nfs-signed-20261123-r1`。
+
+| Worker | automount 就绪（开机后秒） | Docker 首次访问（开机后秒） | NFS 挂载完成（开机后秒） | 主机文件校验 |
+| --- | ---: | ---: | ---: | --- |
+| 11 | 108.321 | 108.831 | 109.520 | 通过 |
+| 12 | 103.414 | 103.844 | 104.639 | 通过 |
+| 13 | 104.298 | 104.791 | 105.508 | 通过 |
+
+三台均为只读 NFSv4、hard/TCP，`storage-check` 实际读取和 SHA-256 通过，执行凭据与证书文件已自动交付，回执服务 TLS 握手通过。Unlimited-OCR-2 和两台上的 OvisOCR3 实测 cgroup 为 4 vCPU、16 GiB、零 swap。
+
+调节器保持 Apply。Unlimited-OCR-2、OvisOCR3、PP-OCRv4 最终 Ready/目标分别为 1/1、2/2、5/5。三条私有 MaaS 维护探针通过，分别得到单页结果、4,199 个字符和 46 行，均有可信 GPU 终态。普通派发保持暂停，公共同步入口与异步队列未发送测试任务。专用凭据已撤销，三笔探针记录及专用凭据对应的 GPUStack 用量已清理。收尾回读总额度 8、同步预留 2、异步上限 6，Pending、排队、在途和 UNKNOWN 均为零。
+
 以下原版现场记录适用于旧快照。
 
 客户端实现、233项回归、新PC只读NFS、001隔离试点和母版安装已完成，见[部署记录](../../../results/maas-nfs-live-20261117/REPORT.md)。新VPC 005继承文件全部匹配，首次启动因白名单缺失失败；精确放行和显式恢复后NFS/worker运行时通过，见[005记录](../../../results/maas-nfs-clone-20261117-005/REPORT.md)。平台快照ID按用户决定记录未知，零干预完整首启及推广仍待验。默认服务端目录按用户指定为`/root/maas/data/modelsWeights`，宿主入口为`/srv/maas/models`。本功能不配置模型服务容器。
