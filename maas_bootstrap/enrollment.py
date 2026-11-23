@@ -17,6 +17,7 @@ from uuid import UUID, uuid4
 
 from .client import BootstrapError, DISKLESS_POLICY, LocalState, MAX_BYTES, NoRedirect, SAFE_REVISION
 from .client import atomic_json, canonical, read_file
+from .execution import CredentialStore, configuration
 from .handoff import BOOT_GRANT, check_binding, check_permit, gpu_uuid, positive_id
 
 
@@ -65,10 +66,21 @@ def private_root(path):
 
 
 class WorkerStartBroker:
-    def __init__(self, root, native, shutdown_key_file=None):
+    def __init__(self, root, native, shutdown_key_file=None, execution_keys_dir=None):
         self.root = private_root(root)
         self.native = native
         self.shutdown_key_file = shutdown_key_file or os.getenv('MAAS_BOOTSTRAP_SHUTDOWN_EVENT_KEY_FILE')
+        self.execution_keys = CredentialStore(execution_keys_dir) if execution_keys_dir else None
+
+    def approved_permit(self, state, grant, session_id, manifest, boot):
+        runtime = configuration(manifest)
+        needs_key = runtime is not None and 'execution' in runtime
+        if needs_key and self.execution_keys is None:
+            raise BootstrapError('EXECUTION_CREDENTIAL_STORE_UNAVAILABLE')
+        permit = self.issue(state, grant, session_id)
+        if needs_key:
+            permit = {**permit, 'execution_key': self.execution_keys.issue(permit['external_id'])}
+        return self.shutdown_credential(permit, boot)
 
     def shutdown_credential(self, permit, boot_id):
         if not self.shutdown_key_file or boot_id is None:
@@ -119,7 +131,7 @@ class WorkerStartBroker:
                 atomic_json(state.root/'intent.json', intent)
             elif intent['binding'] != binding:
                 raise StartDenied(409, 'WORKER_START_BOOT_CONFLICT')
-            return self.shutdown_credential(self.issue(state, binding, intent['session_id']), boot)
+            return self.approved_permit(state, binding, intent['session_id'], manifest, boot)
 
     def start(self, authorization, body, releases):
         token = (authorization or '').removeprefix('Bearer ')
@@ -149,7 +161,7 @@ class WorkerStartBroker:
             if (manifest.get('worker_name_policy') != DISKLESS_POLICY
                     or grant['image_id'] not in manifest['compatible_image_ids']):
                 raise StartDenied(409, 'WORKER_START_RELEASE_MISMATCH')
-            return self.shutdown_credential(self.issue(state, grant, session_id), boot)
+            return self.approved_permit(state, grant, session_id, manifest, boot)
 
     def issue(self, state, grant, session_id):
         cluster, gpu = grant['cluster_id'], grant['gpu_uuid']

@@ -3,7 +3,7 @@ import hashlib,json,os,platform,secrets,socket,stat,subprocess,time,urllib.reque
 from pathlib import Path
 from .client import (BootstrapError,LocalState,HTTPSConfigFetcher,ReleaseVerifier,atomic_json,atomic_bytes,
                      read_file,NoRedirect,DISKLESS_POLICY,https_opener)
-from . import storage,registry,handoff,worker_limits
+from . import execution,storage,registry,handoff,worker_limits
 
 NAME='maas-gpustack-worker'
 LABEL='com.cybercafe.maas.bootstrap'
@@ -157,9 +157,14 @@ class NativeDockerWorker:
             args+=['--volume',mount['source']+':'+mount['target']+('' if mount['rw'] else ':ro')]
         run(args+[image])
 
-    def start(self):
+    def start(self, settings=None, manifest=None):
         try:
-            worker_limits.install_before_start(NAME)
+            config = manifest.get('worker_runtime') if manifest else None
+            if config is None:
+                worker_limits.install_before_start(NAME)
+            else:
+                directory = execution.local_directory(settings) if 'execution' in config else None
+                worker_limits.install_before_start(NAME, config=config, execution_directory=directory)
         except (ValueError, OSError, subprocess.SubprocessError) as error:
             raise BootstrapError('WORKER_RUNTIME_LIMITS_INSTALL_FAILED') from error
         run(['docker','start',NAME])
@@ -272,6 +277,13 @@ def private_native_directory(settings):
     return data
 
 
+def start_worker(runtime, settings, manifest):
+    if 'worker_runtime' in manifest:
+        runtime.start(settings, manifest)
+    else:
+        runtime.start()
+
+
 def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,permit_fetcher):
     gpu=handoff.gpu_uuid(gpu)
     runtime.check_diskless_storage(settings)
@@ -289,7 +301,9 @@ def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,p
         if (not stored or not stored.get('session_id') or current.get('session_id')!=stored['session_id']
                 or read_file(external,secret=True)!=gpu.encode()):
             raise BootstrapError('LOCAL_IDENTITY_INVALID')
-        if current['running']:return stored,None
+        if current['running']:
+            execution.prepare(settings,envelope['manifest'])
+            return stored,None
         if current['status']!='created':raise BootstrapError('HANDOFF_REPROVISION_REQUIRED')
     if any(path!=external for path in data.iterdir()) or (not stored and (external.exists() or external.is_symlink())):
         raise BootstrapError('HANDOFF_REPROVISION_REQUIRED')
@@ -303,6 +317,7 @@ def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,p
               'worker_name_policy':DISKLESS_POLICY,'session_id':result['session_id'],
               'fingerprint':metadata['fingerprint'],'permit_sha256':handoff.permit_fingerprint(token)}
     if stored is not None and stored!=identity:raise BootstrapError('LOCAL_IDENTITY_INVALID')
+    execution.prepare(settings,envelope['manifest'],result)
     if not current:
         atomic_json(state.root/'identity.json',identity)
         if not external.exists():atomic_bytes(external,gpu.encode())
@@ -315,7 +330,7 @@ def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,p
     # The native worker consumes the permit on first start. A created container
     # can retry Docker start, while exited containers require a new session.
     handoff.check_permit(result,cluster,gpu,identity['session_id'],identity['worker_id'])
-    runtime.start()
+    start_worker(runtime,settings,envelope['manifest'])
     return identity,result.get('shutdown_event_credential')
 
 
@@ -350,9 +365,9 @@ def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper
                     env=target.parent/'worker.env';write_env(env,envelope,identity)
                     runtime.create(settings,envelope,metadata,identity,env)
                     # Recover a start failure using this owned container, not another docker create.
-                    runtime.start()
+                    start_worker(runtime,settings,envelope['manifest'])
                 elif not current['running']:
-                    runtime.start()
+                    start_worker(runtime,settings,envelope['manifest'])
             deadline=time.monotonic()+timeout
             while True:
                 registration=runtime.registered(settings,envelope,identity)

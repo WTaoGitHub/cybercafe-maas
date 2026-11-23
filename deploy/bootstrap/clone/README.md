@@ -59,6 +59,38 @@ settings示例包含试点公开地址及秘密文件路径，没有实际码。
 
 ## 配置发布与回退
 
+### 推理资源档位与执行回执
+
+新母版安装 `execution.py`、`worker_limits.py` 和当前启动程序。新模型、固定镜像版本、限额和回执服务公钥证书由签名 manifest 的 `worker_runtime` 发布。使用新版母版的 `image_id` 独立发布，旧客户端继续读取其兼容版本。下面的 JSON 是 manifest 的一个字段，示例摘要和入口需替换为部署实际值，证书需填完整 PEM。
+
+```json
+{
+  "profiles": {
+    "ocr-standard": {"cpu_millis": 4000, "memory_mib": 16384}
+  },
+  "images": [
+    {
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "entrypoint": ["python3", "/opt/model/entrypoint.py"],
+      "profile": "ocr-standard",
+      "execution_env_prefix": "MAAS_EXAMPLE_OCR_EXECUTION_"
+    }
+  ],
+  "execution": {
+    "origin": "https://receipts.example.invalid",
+    "ca_pem": "<回执入口公钥证书或 CA 的 PEM>"
+  }
+}
+```
+
+档位同时设置内存上限和等量的 Docker memory+swap 上限，对应禁用 swap。每条规则可声明档位、执行回执或者两者；只配置限额时省略 `execution_env_prefix` 和 `execution`。镜像须使用完整摘要引用，启动入口匹配 Docker 实际 entrypoint。受保护的模型沿用现有 `<prefix>ROUTE`，创建时自动设置 `ORIGIN`、`KEY_FILE`、`CA_FILE`，仅给匹配的推理主容器挂载只读文件。
+
+在启用发证的配置服务容器中设置 `MAAS_BOOTSTRAP_EXECUTION_KEYS_DIR`，指向与 MaaS API 共享的私有目录。目录权限为 `0700`，由配置服务和 MaaS API 的共同运行 UID 持有；配置服务挂读写，MaaS API 挂只读。若已有现场凭据，在启用新发布前将原映射完整迁入该目录的 `worker-keys.json`（`0600`），再将 MaaS API 的 `MAAS_PP_OCR_WORKER_KEYS_FILE` 指向容器内此文件。例如把共享目录放在现有 `MAAS_SECRET_DIR` 的 `e5-execution` 子目录，API 使用 `/run/secrets/e5-execution/worker-keys.json`。两端挂载目录，服务端才能原子替换映射并让 API 读到新文件。
+
+获批的开机会按 GPU 取回一项执行凭据。客户端写入 bootstrap 私有状态目录，推理容器通过只读 bind 读取，公布的 manifest 只携带证书和策略。现有批准流程仍负责 GPU 和开机会话接续；自动模式沿用该网络与批次认证范围。轮换既有执行凭据及硬件身份验证另行管理。
+
+发布顺序为先发布兼容新版母版的配置和凭据存储，随后验收新克隆。后续改模型规则或证书使用原配置发布命令提交新 revision。新克隆自动读取；存量 worker 仍按现有维护流程替换后应用新 revision。
+
 `maas_bootstrap.publisher`只在配置服务器受控操作环境执行，不对外提供写API。需要当前客户端范围settings、公开manifest JSON、600权限的registration JSON（cluster_id和token）、只留operator的Ed25519私钥。先把本仓库该模块安装到受控Python路径；本轮未将新发布CLI部署到001。
 
 ```sh

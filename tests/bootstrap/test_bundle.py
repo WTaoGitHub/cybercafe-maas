@@ -43,6 +43,7 @@ def test_bundle_manifest_rejects_path_escape_and_extra_members(tmp_path):
 def test_public_bundle_includes_notification_runtime_and_unit():
     sources=module('build_worker_bundle').SOURCES
     for path in ('maas_bootstrap/shutdown_auth.py','maas_bootstrap/shutdown_events.py',
+                 'maas_bootstrap/execution.py','maas_bootstrap/worker_limits.py',
                  'deploy/bootstrap/clone/maas-worker-shutdown-notify.service',
                  'deploy/bootstrap/clone/shutdown-events.example.json','deploy/bootstrap/shutdown-events.env.example'):
         assert path in sources and (REPO/path).is_file()
