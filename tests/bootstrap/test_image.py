@@ -43,14 +43,17 @@ def test_offline_image_contains_only_template_configuration(setup,tmp_path):
     with pytest.raises(BootstrapError,match='IMAGE_DESTINATION_EXISTS'):image.build(root,cfg)
 
 
-def test_offline_image_preserves_nfs_policy_without_mounting_or_adding_instance_state(setup, tmp_path):
+@pytest.mark.parametrize('release_mode', [False, True])
+def test_offline_image_preserves_nfs_policy_without_mounting_or_adding_instance_state(setup, tmp_path, release_mode):
     from test_nfs import CONFIG
     root, cfg = inputs(setup, tmp_path)
     data = json.loads(cfg.read_text())
-    data['model_nfs'] = CONFIG
+    policy = {'model_nfs_from_release': True} if release_mode else {'model_nfs': CONFIG}
+    data.update(policy)
     atomic_json(cfg, data)
     result = image.build(root, cfg)
-    assert json.loads((root/'etc/maas/bootstrap.json').read_text())['model_nfs'] == CONFIG
+    written = json.loads((root/'etc/maas/bootstrap.json').read_text())
+    assert {k: v for k, v in written.items() if k.startswith('model_nfs')} == policy
     assert (root/'opt/maas/lib/maas_bootstrap/nfs.py').is_file()
     assert any('nfs-common' in text for text in result['required_before_sealing'])
     assert not result['state_included'] and not result['worker_started']

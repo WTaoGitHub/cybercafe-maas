@@ -45,11 +45,16 @@ def configuration(data):
     return cfg
 
 
-def validate_release(settings, manifest):
+def validate_release(settings, manifest=None):
     local = configuration(settings.data)
-    published = configuration(manifest)
-    if local != published:
+    published = configuration(manifest) if manifest is not None else None
+    if settings.data.get('model_nfs_from_release'):
+        if published is None:
+            raise BootstrapError('NFS_CONFIG_REQUIRED')
+        return published
+    if manifest is not None and local != published:
         raise BootstrapError('NFS_CONFIG_MISMATCH')
+    return local
 
 
 def mounted(target, source):
@@ -122,8 +127,7 @@ def run(settings, args, failure):
     return output.strip()
 
 
-def prepare(settings, create=False):
-    cfg = configuration(settings.data)
+def prepare(settings, cfg, *, create=False):
     if cfg is None:
         raise BootstrapError('NFS_NOT_CONFIGURED')
     from .worker import guard_clone_host
@@ -163,9 +167,9 @@ def prepare(settings, create=False):
     return {'storage_mode': 'nfs', 'nfs_source': cfg['source'], 'nfs_state': state, 'probe_verified': False}
 
 
-def verify(settings):
-    prepare(settings)
-    cfg = configuration(settings.data)
+def verify(settings, *, manifest=None):
+    cfg = validate_release(settings, manifest)
+    prepare(settings, cfg)
     target = Path(settings.data['model_root'])
     run(settings, [sys.executable, '-m', 'maas_bootstrap.nfs', 'probe', str(target),
                    cfg['source'], cfg['probe_file'], cfg['probe_sha256']], 'NFS_PROBE_FAILED')

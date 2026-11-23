@@ -102,6 +102,9 @@ class LocalSettings:
                 raise ValueError()
             from .nfs import configuration
             configuration(d)
+            nfs_from_release = d.get('model_nfs_from_release', False)
+            if type(nfs_from_release) is not bool or (nfs_from_release and 'model_nfs' in d):
+                raise ValueError()
             from .storage import paths
             d['model_root'],d['model_cache_dir']=map(str,paths(d))
             allowed=d.get('allowed_registry_endpoints',[])

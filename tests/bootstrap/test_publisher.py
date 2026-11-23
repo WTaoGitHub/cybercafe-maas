@@ -90,6 +90,34 @@ def test_nfs_cannot_replace_default_configuration_by_omitting_image_scope(setup,
     assert (p.root/'active.json').read_bytes() == original
 
 
+def test_new_snapshot_can_change_signed_nfs_without_changing_old_release(setup, tmp_path):
+    from test_nfs import CONFIG
+    p, envelope = publisher(setup, tmp_path)
+    atomic_json(p.root/'policy.json', {'schema_version':1, 'allowed_cidrs':['127.0.0.1/32'],
+        'grants':[{'site_id':'lab', 'batch_id':'pilot', 'cluster_id':3, 'enabled':True,
+                   'code_sha256':hashlib.sha256(CODE.encode()).hexdigest()}]})
+    old_settings = p.settings
+    old_settings.data['model_nfs'] = CONFIG
+    old_manifest = dict(envelope['manifest'], model_nfs=CONFIG)
+    p.publish(old_manifest, envelope['registration'], image_id='tower-v1')
+    api = client(p.root, '127.0.0.1')
+    old = get(api).json()
+    path = tmp_path/'new-settings.json'
+    data = dict(old_settings.data, image_id='tower-nfs-signed', model_nfs_from_release=True)
+    del data['model_nfs']
+    atomic_json(path, data)
+    p.settings = LocalSettings(path)
+    for revision, source in [('r2', CONFIG['source']), ('r3', 'new.example.invalid:/weights')]:
+        new = dict(old_manifest, config_revision=revision, compatible_image_ids=['tower-nfs-signed'],
+                   model_nfs=dict(CONFIG, source=source))
+        p.publish(new, envelope['registration'], image_id='tower-nfs-signed')
+        release = get(api, image='tower-nfs-signed').json()
+        assert ReleaseVerifier().verify(p.settings, release)['revision'] == revision
+        assert release['manifest']['model_nfs']['source'] == source
+        assert get(api).json() == old
+        assert ReleaseVerifier().verify(old_settings, old)['revision'] == 'r1'
+
+
 @pytest.mark.parametrize('explicit_cluster', [None, 3])
 @pytest.mark.parametrize('diskless', [False, True])
 def test_published_cluster_defaults_to_settings_and_is_served(setup, tmp_path, explicit_cluster, diskless):

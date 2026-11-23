@@ -35,6 +35,16 @@ def configured(setup, monkeypatch, tmp_path):
     return settings, sign, info
 
 
+@pytest.fixture
+def from_release(configured, tmp_path):
+    settings, sign, info = configured
+    data = dict(settings.data, model_nfs_from_release=True)
+    del data['model_nfs']
+    path = tmp_path / 'nfs-settings.json'
+    atomic_json(path, data)
+    return LocalSettings(path), sign, info
+
+
 def mounted_line(settings, *, source=CONFIG['source'], kind='nfs4', flags='ro,relatime', options='ro,hard,proto=tcp'):
     point = settings.data['model_root'].replace(' ', '\\040')
     return f'31 1 0:42 / {point} {flags} shared:1 - {kind} {source} {options}\n'
@@ -86,6 +96,85 @@ def test_signed_release_must_match_local_nfs_policy(configured):
     del settings.data['model_nfs']
     with pytest.raises(BootstrapError, match='NFS_CONFIG_MISMATCH'):
         worker.ReleaseVerifier().verify(settings, sign(manifest))
+
+
+@pytest.mark.parametrize('extra', [{'model_nfs': CONFIG}, {'model_nfs_from_release': 'true'},
+                                  {'model_nfs_from_release': 1}])
+def test_nfs_release_mode_requires_unambiguous_local_opt_in(setup, tmp_path, extra):
+    settings, _ = setup
+    path = tmp_path / 'release-settings.json'
+    atomic_json(path, {**settings.data, 'model_nfs_from_release': True, **extra})
+    with pytest.raises(BootstrapError, match='LOCAL_CONFIG_INVALID'):
+        LocalSettings(path)
+
+
+def test_release_nfs_requires_valid_policy_before_storage(from_release, monkeypatch):
+    settings, sign, _ = from_release
+    monkeypatch.setattr(nfs, 'run', lambda *a: pytest.fail('Invalid policy cannot touch a mount'))
+    runtime = FakeWorker()
+    extra_options = dict(CONFIG, options='rw')
+    manifest = {**sign()['manifest'], 'model_nfs': CONFIG}
+    tampered = sign(manifest)
+    tampered['manifest']['model_nfs']['source'] = 'other:/models'
+    for envelope, error in [(sign(), 'NFS_CONFIG_REQUIRED'),
+                            (sign(dict(manifest, model_nfs=extra_options)), 'RELEASE_VERIFICATION_FAILED'),
+                            (tampered, 'RELEASE_VERIFICATION_FAILED')]:
+        with pytest.raises(BootstrapError, match=error):
+            worker.apply(settings, fetcher=Fetcher(envelope), backend=runtime)
+    with pytest.raises(BootstrapError, match='NFS_CONFIG_REQUIRED'):
+        storage.prepare(settings)
+    assert not Path(settings.data['model_root']).exists()
+    assert runtime.creates == runtime.starts == 0
+
+
+def test_signed_nfs_boot_prepares_and_storage_check_probes_current_release(from_release, monkeypatch, capsys):
+    from maas_bootstrap import client
+    settings, sign, info = from_release
+    root = Path(settings.data['model_root'])
+    probe_content = b'new storage export\n'
+    profile = dict(CONFIG, source='nfs.example.invalid:/new-export', probe_file='new-probe.txt',
+                   probe_sha256=hashlib.sha256(probe_content).hexdigest())
+    manifest = {**sign()['manifest'], 'model_nfs': profile}
+    fetcher = Fetcher(sign(manifest))
+    calls = []
+
+    def command(local, args, failure):
+        if args[0] == 'systemd-escape':
+            return 'srv-maas-models.mount'
+        if args[0] == 'systemd-mount':
+            assert '--automount=yes' in args and '--options=' + nfs.OPTIONS in args
+            assert args[-2:] == [profile['source'], str(root)]
+            calls.append('automount')
+            info.write_text(automount_line(local))
+        elif args[0] == 'systemctl':
+            return unit_properties(local, args[2]).replace(CONFIG['source'], profile['source'])
+        elif args[3] == 'target':
+            nfs.check_target(root)
+        elif args[3] == 'probe':
+            calls.append('probe')
+            assert args[-4:] == [str(root), profile['source'], profile['probe_file'], profile['probe_sha256']]
+            info.write_text(automount_line(local) + mounted_line(local, source=profile['source']))
+            (root / profile['probe_file']).write_bytes(probe_content)
+            nfs.check_probe(root, *args[-3:])
+        else:
+            pytest.fail('Unexpected mount operation')
+
+    monkeypatch.setattr(nfs, 'run', command)
+    monkeypatch.setattr(client, 'HTTPSConfigFetcher', lambda: fetcher)
+    assert worker.apply(settings, trigger='boot', fetcher=fetcher, backend=FakeWorker())['code'] == 'APPLIED'
+    assert calls == ['automount']
+    config = root.parent / 'nfs-settings.json'
+    assert cli.main(['--config', str(config), 'storage-prepare']) == 0
+    assert json.loads(capsys.readouterr().out)['probe_verified'] is False
+    assert calls == ['automount']
+    assert cli.main(['--config', str(config), 'storage-check']) == 0
+    assert json.loads(capsys.readouterr().out)['probe_verified'] is True
+    assert calls == ['automount', 'probe'] and fetcher.calls == 3
+
+    fetcher.e = sign(dict(manifest, config_revision='r2', model_nfs=CONFIG))
+    assert cli.main(['--config', str(config), 'storage-check']) == 1
+    assert json.loads(capsys.readouterr().out)['code'] == 'NFS_MOUNT_MISMATCH'
+    assert calls == ['automount', 'probe']
 
 
 @pytest.mark.parametrize('change', [
@@ -230,8 +319,9 @@ def test_probe_checks_content_and_refuses_special_files(configured, kind):
         nfs.check_probe(root, CONFIG['source'], CONFIG['probe_file'], CONFIG['probe_sha256'])
 
 
-def test_nfs_root_is_not_resolved_in_parent_process(configured, monkeypatch):
-    settings, _, _ = configured
+@pytest.mark.parametrize('mode', ['configured', 'from_release'])
+def test_nfs_root_is_not_resolved_in_parent_process(request, mode, monkeypatch):
+    settings, _, _ = request.getfixturevalue(mode)
     original = Path.resolve
     def resolve(path, *args, **kwargs):
         if path == Path(settings.data['model_root']):
@@ -272,7 +362,7 @@ def test_real_child_failure_is_bounded_and_does_not_keep_pending_fence(configure
 def test_apply_checks_nfs_before_environment_identity_or_permit(configured, monkeypatch):
     settings, sign, _ = configured
     runtime = FakeWorker()
-    def fail(*args): raise BootstrapError('NFS_NOT_MOUNTED')
+    def fail(*args, **kwargs): raise BootstrapError('NFS_NOT_MOUNTED')
     monkeypatch.setattr(storage, 'prepare', fail)
     runtime.check_environment = lambda *a: pytest.fail('NFS must be ready first')
     manifest = {**sign()['manifest'], 'model_nfs': CONFIG}
@@ -288,12 +378,12 @@ def test_storage_prepare_cli_verifies_signature_and_never_enrolls(configured, mo
     manifest = {**sign()['manifest'], 'model_nfs': CONFIG}
     from maas_bootstrap import client
     monkeypatch.setattr(client, 'HTTPSConfigFetcher', lambda: Fetcher(sign(manifest)))
-    monkeypatch.setattr(storage, 'prepare', lambda s: {'storage_mode': 'nfs'})
+    monkeypatch.setattr(storage, 'prepare', lambda s, *, manifest: {'storage_mode': 'nfs'})
     monkeypatch.setattr(worker, 'apply', lambda *a, **k: pytest.fail('Host-only command cannot enroll'))
     config = Path(settings.data['state_dir']).parent / 'nfs-settings.json'
     assert cli.main(['--config', str(config), 'storage-prepare']) == 0
     assert json.loads(capsys.readouterr().out)['code'] == 'MODEL_STORAGE_PREPARED'
     monkeypatch.setattr(client, 'HTTPSConfigFetcher', lambda: Fetcher(sign()))
-    monkeypatch.setattr(storage, 'prepare', lambda s: pytest.fail('Unsigned NFS cannot mount'))
+    monkeypatch.setattr(storage, 'prepare', lambda *a, **k: pytest.fail('Unsigned NFS cannot mount'))
     assert cli.main(['--config', str(config), 'storage-prepare']) == 1
     assert json.loads(capsys.readouterr().out)['code'] == 'NFS_CONFIG_MISMATCH'

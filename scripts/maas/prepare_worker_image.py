@@ -79,6 +79,7 @@ def build(root,settings_path):
         'site_id','batch_id','cluster_id','image_id','architecture','allowed_server_urls','cloud_backup')}
     if 'allowed_registry_endpoints' in settings.data:cfg['allowed_registry_endpoints']=settings.data['allowed_registry_endpoints']
     if 'model_nfs' in settings.data:cfg['model_nfs']=settings.data['model_nfs']
+    if settings.data.get('model_nfs_from_release'):cfg['model_nfs_from_release']=True
     if diskless:cfg['worker_start_grant_file']=settings.data['worker_start_grant_file']
     if settings.data.get('worker_start_automatic'):cfg['worker_start_automatic']=True
     cfg.update(shared_code_file='/etc/maas/shared-code',tls_certificate_file='/etc/maas/server.crt',
@@ -144,6 +145,8 @@ def build(root,settings_path):
                 'dedicated public model root and cache prepared by bootstrap; native identity volume excluded']}
     if 'model_nfs' in cfg:
         result['required_before_sealing'].append('nfs-common installed; signed model_nfs matches local policy; independent host NFS pilot passed')
+    if cfg.get('model_nfs_from_release'):
+        result['required_before_sealing'].append('nfs-common installed; signed model_nfs published for this image; independent host NFS pilot passed')
     p=safe_target(root,manifest);p.write_text(json.dumps(result,indent=2)+'\n');p.chmod(0o644)
     return result
 

@@ -127,7 +127,7 @@ python3 -m maas_bootstrap.publisher \
 客户端已手动部署到tower，固定镜像已缓存；旧agent/provision disabled/inactive，E5开机单元enabled/inactive，母版不注册worker。发布CLI仍未在001线上演练，封版/真实新克隆验收待完成。后续以[实际部署手册](MANUAL-TOWER-DEPLOYMENT.md)为准；其第15节记录本次证据，不把本文早期未部署状态作为现状。
 # 独立模型存储启动契约 model-storage-v1
 
-2026-11-17补充：[宿主NFS按需挂载](NFS.md)已实现客户端及离线验证，真实环境待验。显式配置`model_nfs`的节点在启动时准备本地automount，首次目录访问才尝试连接远端；启动不试读权重。默认服务端目录为`/root/maas/data/modelsWeights`。下述本地marker准备只用于未配置NFS的原有模式，NFS模式不向共享目录写marker，也不扩展推理容器配置。
+[宿主 NFS 按需挂载](NFS.md)支持在新母版上设置 `model_nfs_from_release: true`，由签名 `model_nfs` 下发远端地址、导出路径和校验信息。旧 NFS 快照继续对比本机与签名发布的 `model_nfs`。两种 NFS 模式都会在启动时准备本地 automount，首次目录访问才连接远端。下述本地 marker 适用于原本使用本地目录的节点。
 
 客户端默认创建/srv/maas/models只读发布目录和/srv/maas/model-cache可写缓存，通过明确bind传给原生worker；配置可用model_root/model_cache_dir指定独立规范路径。二者不得覆盖/包含原生身份目录、bootstrap秘密、对方目录或宽泛系统根目录，不跟随symlink。image-contained/model内只预置公开marker，实际OCR权重仍在推理镜像中。
 

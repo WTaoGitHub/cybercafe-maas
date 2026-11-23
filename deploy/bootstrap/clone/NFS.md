@@ -1,6 +1,8 @@
 # 宿主NFS按需挂载交接
 
-2026-11-17 · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) · [实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)
+2026-11-23 · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) · [实施计划](../../../docs/framework/MODEL-WEIGHTS-NFS-IMPLEMENTATION.md)
+
+签名下发模式已通过 311 项本地 bootstrap 回归，包含新旧发布并存验证。配置服务部署、新母版制作和独立克隆实挂待验收。以下原版现场记录适用于旧快照。
 
 客户端实现、233项回归、新PC只读NFS、001隔离试点和母版安装已完成，见[部署记录](../../../results/maas-nfs-live-20261117/REPORT.md)。新VPC 005继承文件全部匹配，首次启动因白名单缺失失败；精确放行和显式恢复后NFS/worker运行时通过，见[005记录](../../../results/maas-nfs-clone-20261117-005/REPORT.md)。平台快照ID按用户决定记录未知，零干预完整首启及推广仍待验。默认服务端目录按用户指定为`/root/maas/data/modelsWeights`，宿主入口为`/srv/maas/models`。本功能不配置模型服务容器。
 
@@ -12,7 +14,11 @@
 
 本次[服务端配置](../nfs-server/README.md)将该模型目录设为NFSv4根，客户端source使用`<新PC地址>:/`；示例已按此更新。物理目录仍是`/root/maas/data/modelsWeights`，不会为了遍历它而放开`/root`权限。
 
-将[配置示例](model-nfs.example.json)作为`model_nfs`字段，分别加入本机root-only的`bootstrap.json`与对应的签名release manifest；两处必须完全一致。示例地址为文档保留地址，须替换为实际NFS地址。不能仅修改本机而绕过签名，也不能给未配置NFS的节点直接发布启用NFS的release；兼容image_id与发布范围须对应。未配置该字段的节点保留原本地存储流程。
+### NFS 配置的两种交付方式
+
+新母版在本机 `bootstrap.json` 中设置 `"model_nfs_from_release": true`，保留 `model_root`、`model_cache_dir` 和已有信任材料。本机省略 `model_nfs`。管理员仅在 E5 签名 manifest 中以 `model_nfs` 字段发布[配置示例](model-nfs.example.json)中的数据。`source` 包含远端主机及 NFS 导出路径，`probe_file` 与 `probe_sha256` 用于显式读取验证。准备阶段使用本机固定的只读选项及按需挂载逻辑。缺少该字段、验签失败或发现现有挂载来源不符时，引导停止并保留现场。
+
+旧快照继续读取各自的已有发布。采用旧 NFS 配置的快照仍要求本机 `model_nfs` 与签名发布完全一致。原本使用本地模型目录的快照继续使用本地目录。新版母版使用新的 `image_id`，发布时只切换该 ID 的指针。迁移 NFS 时，通过新 revision 更新该母版所用的来源和校验信息，新启动的克隆可继续使用同一份母版。运行中的 worker 和现有挂载需要按原维护流程处理。
 
 NFS母版使用独立逻辑`image_id`。配置发布器的`publish --image-id <该ID>`将新版本激活到`images/<该ID>.json`，manifest的`compatible_image_ids`须仅包含该ID；NFS发布不允许省略此参数来覆盖默认`active.json`。配置读取、精确revision读取和自动/人工worker许可均按同一image_id选择版本。旧节点继续默认发布，GPU UUID预登记/发证不变；回退同样使用`rollback --image-id <该ID>`。发布文件不可覆盖，回退创建新revision。
 
@@ -41,7 +47,9 @@ NFS母版使用独立逻辑`image_id`。配置发布器的`publish --image-id <�
 
 `storage-prepare`先验签再准备入口，返回`MODEL_STORAGE_PREPARED`、`nfs_state=automount`、`probe_verified=false`。此时应采集systemd/mountinfo与NFS连接计数，证明未访问远端；不能把已准备写成可读取。
 
-`storage-check`是显式的首次访问，会触发挂载，核对真实来源、类型、ro及测试文件摘要，成功后返回`MODEL_STORAGE_VERIFIED`、`nfs_state=mounted`、`probe_verified=true`。禁止把该命令加进启动准备或定时巡检来破坏按需行为。独立export还须分别验证服务端拒写、不可达和错误来源，不对已发布模型执行写入测试。
+`storage-check`是显式的首次访问，会触发挂载，核对真实来源、类型、ro及测试文件摘要，成功后返回`MODEL_STORAGE_VERIFIED`、`nfs_state=mounted`、`probe_verified=true`。在新模式下，本命令先拉取和验证当前签名发布，要求配置服务可达，并按该发布核对已有挂载；旧模式沿用本机配置。禁止把该命令加进启动准备或定时巡检来破坏按需行为。独立export还须分别验证服务端拒写、不可达和错误来源，不对已发布模型执行写入测试。
+
+本地回归从仓库根目录运行 `python -m pytest tests/bootstrap`。NFS 用例模拟 systemd 与挂载元数据，覆盖配置验签、启动阶段仅准备入口、显式摘要校验和已有挂载拒绝换源。发布用例核对新旧镜像同时读取各自的签名发布。离线构建用例核对新母版只保留启用开关和本地路径。
 
 客户端子进程操作20秒超时后保留本机私有`state_dir/nfs-operation.json`，下一次准备明确失败。该文件也保护父进程被中断时的现场；不得定时清理。先检查记录中的PID、systemd单元和实际挂载，确认无未完成操作，再由管理员解除记录及失败状态。禁止依赖强制卸载或VM重启恢复。
 

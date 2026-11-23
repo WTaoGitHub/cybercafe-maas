@@ -24,13 +24,18 @@ def main(argv=None):
             from .worker import guard_clone_host
             if a.action=='storage-prepare':guard_clone_host()
             with LocalState(settings.data['state_dir']).lock():
-                if a.action=='storage-prepare':
+                manifest = None
+                if a.action=='storage-prepare' or settings.data.get('model_nfs_from_release'):
                     envelope=HTTPSConfigFetcher().fetch(settings)
                     ReleaseVerifier().verify(settings,envelope)
-                result=storage.prepare(settings) if a.action=='storage-prepare' else storage.status(settings)
-                if a.action=='storage-check' and 'model_nfs' in settings.data:
+                    manifest = envelope['manifest']
+                if a.action=='storage-prepare':
+                    result=storage.prepare(settings,manifest=manifest)
+                else:
+                    result=storage.status(settings,manifest=manifest)
+                if a.action=='storage-check' and result.get('storage_mode')=='nfs':
                     from .nfs import verify
-                    result.update(verify(settings))
+                    result.update(verify(settings,manifest=manifest))
                 result={'code':'MODEL_STORAGE_PREPARED' if a.action=='storage-prepare' else 'MODEL_STORAGE_VERIFIED',**result}
         elif a.action=='prepare':result=prepare(settings)
         elif a.action in ('boot','boot-check'):

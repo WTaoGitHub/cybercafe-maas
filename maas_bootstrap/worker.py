@@ -72,7 +72,7 @@ class NativeDockerWorker:
         spec=self.desired_layout(settings,envelope)
         if current:
             if current.get('layout')!=spec:raise BootstrapError('NEEDS_MAINTENANCE')
-            storage.status(settings)
+            storage.status(settings,manifest=envelope['manifest'])
             registry.status(settings,envelope)
         return {'layout_version':spec['version'],'layout_sha256':spec['sha256']}
 
@@ -139,7 +139,7 @@ class NativeDockerWorker:
 
     def create(self,settings,envelope,metadata,identity,env_file):
         private_native_directory(settings)
-        storage.prepare(settings)
+        storage.prepare(settings,manifest=envelope['manifest'])
         registry.prepare(settings,envelope)
         layout=self.desired_layout(settings,envelope)
         # Keep restart=no so daemon/host startup cannot bypass the next bootstrap configuration check.
@@ -351,8 +351,8 @@ def apply(settings,trigger='manual',fetcher=None,backend=None,timeout=30,sleeper
                 # Includes stopped containers: require operator maintenance/removal, never rm implicitly.
                 raise BootstrapError('NEEDS_MAINTENANCE')
             layout_info=runtime.validate_layout(settings,envelope,current) or {}
-            if 'model_nfs' in settings.data:
-                storage.prepare(settings)
+            if 'model_nfs' in envelope['manifest']:
+                storage.prepare(settings,manifest=envelope['manifest'])
             gpu=runtime.check_environment(settings,envelope)
             target=state.prepare(envelope,metadata)
             shutdown_credential=None

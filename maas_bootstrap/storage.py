@@ -1,6 +1,7 @@
 """Public model storage, separate from native identity and bootstrap secrets."""
 import json,os,stat
 from pathlib import Path
+from . import nfs
 from .client import BootstrapError,atomic_json,read_file
 
 DEFAULT_MODELS='/srv/maas/models'
@@ -28,7 +29,7 @@ def paths(data):
         if any(root==p or root in p.parents for root in result):raise ValueError('Storage contains bootstrap trust/credentials')
     for index,p in enumerate(result):
         # Never resolve the remote root here: this would trigger an automount or stall on NFS.
-        if not (index==0 and 'model_nfs' in data) and p.resolve()!=p:
+        if not (index==0 and ('model_nfs' in data or data.get('model_nfs_from_release'))) and p.resolve()!=p:
             raise ValueError('Storage path must be canonical without symlinks')
     return tuple(result)
 
@@ -42,12 +43,12 @@ def directory(path,create=False):
         raise BootstrapError('MODEL_STORAGE_UNTRUSTED')
 
 
-def prepare(settings):
+def prepare(settings, *, manifest=None):
     try:models,cache=paths(settings.data)
     except ValueError:raise BootstrapError('MODEL_STORAGE_UNTRUSTED') from None
-    if 'model_nfs' in settings.data:
-        from . import nfs
-        result=nfs.prepare(settings,create=True)
+    nfs_config = nfs.validate_release(settings, manifest)
+    if nfs_config is not None:
+        result=nfs.prepare(settings,nfs_config,create=True)
         directory(cache,create=True)
         return {'model_root':str(models),'model_cache_dir':str(cache),
                 'published_models_readonly':True,'cache_writable':True,**result}
@@ -61,12 +62,12 @@ def prepare(settings):
     return status(settings)
 
 
-def status(settings):
+def status(settings, *, manifest=None):
     try:models,cache=paths(settings.data)
     except ValueError:raise BootstrapError('MODEL_STORAGE_UNTRUSTED') from None
-    if 'model_nfs' in settings.data:
-        from . import nfs
-        result=nfs.prepare(settings)
+    nfs_config = nfs.validate_release(settings, manifest)
+    if nfs_config is not None:
+        result=nfs.prepare(settings,nfs_config)
         directory(cache)
         return {'model_root':str(models),'model_cache_dir':str(cache),
                 'published_models_readonly':True,'cache_writable':True,**result}
