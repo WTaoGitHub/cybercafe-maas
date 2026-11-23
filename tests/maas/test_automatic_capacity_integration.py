@@ -17,15 +17,18 @@ from test_capacity import evaluate, topology
 from test_integration import env, headers, submit
 
 
-def test_local_slots_reports_memory_or_descriptor_limit(monkeypatch):
+@pytest.mark.parametrize('meminfo', ['MemFree: 2097152 kB\nMemAvailable: 16777216 kB', None])
+def test_local_slots_reports_memory_or_descriptor_limit(monkeypatch, meminfo):
     from maas_platform import controller_capacity as controller
 
     mib = 1024**2
     monkeypatch.setattr(controller.os, 'sysconf', lambda name: {
-        'SC_AVPHYS_PAGES': 4194304, 'SC_PAGE_SIZE': 4096}[name])
+        'SC_AVPHYS_PAGES': 524288 if meminfo else 4194304, 'SC_PAGE_SIZE': 4096}[name])
     monkeypatch.setattr(controller.resource, 'getrlimit', lambda _: (4096, 4096))
 
     def memory(path):
+        if path.name == 'meminfo' and meminfo:
+            return meminfo
         if path.name == 'memory.max':
             return str(8192 * mib)
         if path.name == 'memory.current':

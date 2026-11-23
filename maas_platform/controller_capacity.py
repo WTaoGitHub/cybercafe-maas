@@ -4,14 +4,28 @@ from pathlib import Path
 import resource
 
 
-def local_slots(bytes_per_request, fallback):
-    memory = []
+def host_available_memory():
     try:
-        available = os.sysconf('SC_AVPHYS_PAGES') * os.sysconf('SC_PAGE_SIZE')
-        if available > 0:
-            memory.append(available)
+        for line in Path('/proc/meminfo').read_text().splitlines():
+            key, _, value = line.partition(':')
+            if key == 'MemAvailable':
+                amount, unit = value.split()
+                kibibytes = int(amount)
+                if unit == 'kB' and kibibytes >= 0:
+                    return kibibytes * 1024
+                break
     except (OSError, ValueError):
         pass
+    try:
+        available = os.sysconf('SC_AVPHYS_PAGES') * os.sysconf('SC_PAGE_SIZE')
+        return available if available >= 0 else None
+    except (OSError, ValueError):
+        return None
+
+
+def local_slots(bytes_per_request, fallback):
+    available = host_available_memory()
+    memory = [] if available is None else [available]
     for limit, used in (
         ('/sys/fs/cgroup/memory.max', '/sys/fs/cgroup/memory.current'),
         ('/sys/fs/cgroup/memory/memory.limit_in_bytes', '/sys/fs/cgroup/memory/memory.usage_in_bytes'),
