@@ -4,7 +4,15 @@
 
 签名下发模式已通过 311 项本地 bootstrap 回归，包含新旧发布并存验证。2026-11-23，新 PC 已部署配置服务源码 `8aa8edc`，发布 `e5-nfs-signed-20261123-r1`，仅关联镜像 `tower-e5-nfs-signed-v3`。三个旧发布的指针和内容逐字节保持一致，Tower 实际 HTTPS 拉取并验签新版及两个旧 NFS 发布均通过。
 
-Tower 已更新通用引导和启用开关，母版保护、固定 worker 镜像和定时启动配置通过核对。Tower 无 worker 容器、注册状态和 NFS 挂载。新 PC 已直接核验现有只读导出及探测文件摘要与新发布一致。待管理员保存快照并启动一台独立克隆，先从启动日志和挂载元数据确认 NFS 来源及首次访问顺序，再执行 `storage-check` 验证实际挂载和文件摘要。Docker 的路径检查也可能触发首次挂载。以下原版现场记录适用于旧快照。
+Tower 已更新通用引导和启用开关，母版保护、固定 worker 镜像和定时启动配置通过核对。Tower 无 worker 容器、注册状态和 NFS 挂载。新 PC 已直接核验现有只读导出及探测文件摘要与新发布一致。
+
+### 2026-11-23 首台新快照克隆实测
+
+- 管理员关闭原有三台 worker，确认 Ready worker 和 MaaS 可用容量均为零后启动首台新克隆。克隆的引导文件摘要匹配，启用了签名 NFS 模式，本机配置无 `model_nfs`。开机首次执行自动验签 `e5-nfs-signed-20261123-r1` 并将 worker 11 注册成 Ready，GPU UUID 与宿主一致。
+- 开机后第 108.321 秒准备好 automount，第 108.831 秒由 Docker 运行时首次访问触发 NFS，第 109.520 秒完成挂载。核对前已形成只读 NFSv4 挂载，使用 hard/TCP。现场运行 `storage-check` 返回 `MODEL_STORAGE_VERIFIED`，实际读取探测文件和 SHA-256 校验通过，操作标记无残留。
+- PP-OCRv4 和 Unlimited-OCR-2 各恢复一个 Ready 副本，当前单卡可用容量为 2。OvisOCR3 的一个副本因单卡资源不足处于 Pending。两个已启动模型均收到只读执行凭据和证书挂载，执行回执服务的 TLS 握手通过。Unlimited-OCR-2 的实际 cgroup 为 4 vCPU、16 GiB、swap 为零。MaaS 派发保持暂停，端到端推理与第二、第三台新克隆待验收。
+
+以下原版现场记录适用于旧快照。
 
 客户端实现、233项回归、新PC只读NFS、001隔离试点和母版安装已完成，见[部署记录](../../../results/maas-nfs-live-20261117/REPORT.md)。新VPC 005继承文件全部匹配，首次启动因白名单缺失失败；精确放行和显式恢复后NFS/worker运行时通过，见[005记录](../../../results/maas-nfs-clone-20261117-005/REPORT.md)。平台快照ID按用户决定记录未知，零干预完整首启及推广仍待验。默认服务端目录按用户指定为`/root/maas/data/modelsWeights`，宿主入口为`/srv/maas/models`。本功能不配置模型服务容器。
 
