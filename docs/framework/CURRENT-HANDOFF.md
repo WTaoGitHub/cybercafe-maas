@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-23 MaaS 逐卡动态预算已常态发布**。测试控制端 API、执行器和观察器运行 `capacity-vram-c542db4`，单执行器 8 槽位。PP-OCRv4、OvisOCR3、Unlimited-OCR-2 有效额度为 5/2/1，全局为 8，同步预留 2，异步上限 6。GPUStack worker 维护与恢复实测全局 8→6→8。低位时文档任务继续排队、Ovis 异步正常完成，恢复后原文档任务自动派发并完成。业务派发保持暂停，副本调节器处于 Apply，队列、在途与 UNKNOWN 均为零。重建应用时使用控制端活动版本台账的 `capacity_admission.compose_files` 完整顺序。 [发布与验收](DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#2026-11-23-逐卡预算常态发布与-worker-暂离验收) · [Issue #60](https://github.com/WTaoGitHub/cybercafe-maas/issues/60)
+
 > **2026-11-23 NFS 签名下发配置和 Tower 已就绪**。新 PC 已发布 `e5-nfs-signed-20261123-r1`，Tower 镜像标识为 `tower-e5-nfs-signed-v3`。从 Tower 实际拉取并验签新版和两个旧 NFS 发布，三个旧发布的指针和内容均保持。母版仍无 worker 或 NFS 挂载。当前等待管理员保存快照并启动独立克隆，再验证引导读取、按需挂载和 `storage-check` 校验。GPUStack 目标与 Ready 副本为 1/1、2/2、5/5，MaaS 派发暂停，调节器运行在 Apply。 [NFS 交接](../../deploy/bootstrap/clone/NFS.md) · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)
 
 > **2026-11-23 E5 配置服务与母版已就绪**。新 PC 已发布 `e5-runtime-20261123-r1`，Tower 镜像标识为 `tower-e5-runtime-v2`，实际 HTTPS 拉取和验签通过。旧快照仍能读取原版配置。下一步由管理员保存快照、启动独立克隆，再验收模型容器限额、执行凭据、执行回执证书的自动交付。GPUStack 目标与 Ready 副本仍为 1/1、2/2、5/5，MaaS 派发保持暂停，调节器保持 Apply。 [部署与快照交接](E5-DESIGN.md#2026-11-23-部署与快照交接) · [Issue #70](https://github.com/WTaoGitHub/cybercafe-maas/issues/70)
