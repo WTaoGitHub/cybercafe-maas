@@ -1,20 +1,18 @@
 """GPU-only OCR probe with OpenAI-compatible transport for GPUStack."""
 import argparse
 import base64
-import io
 import os
 import subprocess
 import threading
 import time
 import uuid
 
-import numpy as np
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import StreamingResponse
 from ocr_protocol import completion_events
 from direction_guard import GuardClassifier, GuardRecognizer
 from execution_guard import ATTEMPT_HEADER, ExecutionGuard
-from PIL import Image
+from image_decode import decode_bgr
 from rapidocr_onnxruntime import RapidOCR
 import uvicorn
 
@@ -60,10 +58,7 @@ def recognize(encoded, attempt):
         raw = base64.b64decode(encoded.split(',', 1)[-1], validate=True)
         if len(raw) > 10 * 1024 * 1024:
             raise ValueError('image exceeds 10MB')
-        image = Image.open(io.BytesIO(raw))
-        if image.width * image.height > 20_000_000:
-            raise ValueError('image exceeds 20 megapixels')
-        array = np.asarray(image.convert('RGB'))[:, :, ::-1].copy()
+        array = decode_bgr(raw)
     except Exception as exc:
         raise HTTPException(400, str(exc))
     start = time.perf_counter()

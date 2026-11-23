@@ -1,3 +1,3 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
-COPY server.py execution_guard.py /app/
+COPY server.py execution_guard.py image_decode.py /app/
