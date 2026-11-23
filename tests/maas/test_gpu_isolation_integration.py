@@ -31,17 +31,18 @@ def pinned(guarded, tmp_path):
     settings.catalog_file.write_text(json.dumps(catalog))
 
     raw, _, native = topology(2)
-    workers, models, _, routes, _ = native
+    workers, models, instances, routes, _ = native
     a, _ = raw['pools'].values()
-    a.update(hard_limit=2, routes={name: 1}, replica_routes={})
-    raw.update(global_limit=2, sync_percent=0, pools={'ocr': a})
+    a.update(hard_limit=2, routes={name: 1}, replica_routes={}, shared_gpu_vram_bytes=5)
+    raw.update(global_limit=2, sync_percent=0, pools={'ocr': a}, shared_gpu_vram_budgets={'gpu-type': 12})
     for index, replica in enumerate(replicas, 1):
         route = ('test_agent_ocr_a', 'test_agent_ocr_b')[index - 1]
         gpu = replica.identity['gpu_uuid']
         replica.identity['route'] = route
         routes[index]['name'] = route
-        workers[index].update(name=gpu)
-        workers[index]['status']['gpu_devices'][0].update(uuid=gpu, type='cuda')
+        workers[index].update(name=gpu, system_reserved={'vram': 2})
+        workers[index]['status']['gpu_devices'][0].update(uuid=gpu, type='cuda', memory={'total': 16})
+        instances[index]['computed_resource_claim'] = {'vram': {'0': 5}}
         models[index].update(replicas=1, gpu_selector={'gpu_ids': [f'{gpu}:cuda:0'], 'gpus_per_replica': 1})
         a['replica_routes'][route] = {'route_id': index, 'model_id': index, 'gpu_uuid': gpu}
     settings.capacity_policy_file = tmp_path / 'test_agent_pinned_capacity.json'
@@ -135,6 +136,14 @@ def test_only_authenticated_gpu_scope_can_leave_a_peer_available(pinned, monkeyp
 def test_changed_gateway_target_revokes_only_its_pinned_route(pinned):
     _, _, (first, _), capacity, policy, catalog, native = pinned
     native[4][2]['fallback_status_codes'] = [503]
+    budget = evaluate(capacity, policy, catalog, native, 7)
+    assert budget['global']['total'] == 1
+    assert budget['pools']['ocr']['replica_routes'] == {first.identity['route']: first.identity['gpu_uuid']}
+
+
+def test_over_budget_gpu_revokes_only_its_pinned_route(pinned):
+    _, _, (first, _), capacity, policy, catalog, native = pinned
+    native[2][2]['computed_resource_claim']['vram']['0'] = 13
     budget = evaluate(capacity, policy, catalog, native, 7)
     assert budget['global']['total'] == 1
     assert budget['pools']['ocr']['replica_routes'] == {first.identity['route']: first.identity['gpu_uuid']}

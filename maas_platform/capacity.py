@@ -6,6 +6,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints, model_validator
 
+from .replica_resources import positive_bytes
+
 
 Name = Annotated[str, StringConstraints(min_length=1, max_length=128, pattern=r'^\S+$')]
 Percent = Annotated[int, Field(ge=0, le=100)]
@@ -32,6 +34,7 @@ class Pool(BaseModel):
     sync_percent: Percent = 0
     gateway_verified: bool = False
     replica_routes: dict[Name, ReplicaRoute] = Field(default_factory=dict)
+    shared_gpu_vram_bytes: PositiveInt | None = None
 
     @model_validator(mode='after')
     def unique_pins(self):
@@ -51,6 +54,7 @@ class Policy(BaseModel):
     pools: dict[Name, Pool] = Field(min_length=1)
     # Each layout is an exact, jointly tested set of replicas on one GPU model.
     shared_gpu_layouts: dict[str, list[dict[Name, PositiveInt]]] = Field(default_factory=dict)
+    shared_gpu_vram_budgets: dict[str, PositiveInt] = Field(default_factory=dict)
 
     @model_validator(mode='after')
     def unique_bindings(self):
@@ -94,9 +98,13 @@ def catalog_routes(policy, catalog):
 
 def policy_hash(policy, names, source):
     encoded = policy.model_dump()
+    if not encoded['shared_gpu_vram_budgets']:
+        del encoded['shared_gpu_vram_budgets']
     for pool in encoded['pools'].values():
         if not pool['replica_routes']:
             del pool['replica_routes']
+        if pool['shared_gpu_vram_bytes'] is None:
+            del pool['shared_gpu_vram_bytes']
     return sha256(json.dumps([encoded, names, source], sort_keys=True).encode()).hexdigest()
 
 
@@ -118,6 +126,33 @@ def route_state(route_id, model_id, pool, names, routes, by_route):
     if target.get('state') != 'active' or target.get('weight', 0) <= 0:
         return 'route_unavailable'
     return 'no_eligible_replica'
+
+
+def fits_gpu_vram(policy, gpu, worker, occupants):
+    """Check the full workload on the card, including instances still starting."""
+    name, index = gpu['name'], gpu['index']
+    memory, reserved = gpu.get('memory'), worker.get('system_reserved')
+    try:
+        available = positive_bytes(memory['total'])
+        reserve = reserved['vram']
+        if type(reserve) is not int or reserve < 0:
+            return False
+        budget = min(policy.shared_gpu_vram_budgets[name], available - reserve)
+        allocated = 0
+        for key, instance in occupants:
+            pool = policy.pools.get(key)
+            if (not pool or not pool.shared_gpu_vram_bytes or name not in pool.gpu_names
+                    or instance.get('gpu_indexes') != [index]
+                    or (instance.get('distributed_servers') or {}).get('subordinate_workers')):
+                return False
+            claims = instance['computed_resource_claim']['vram']
+            if not isinstance(claims, dict) or len(claims) != 1:
+                return False
+            allocated += max(pool.shared_gpu_vram_bytes,
+                             positive_bytes(claims.get(str(index), claims.get(index))))
+        return allocated <= budget
+    except (KeyError, TypeError, ValueError):
+        return False
 
 
 def ready_candidates(policy, names, workers, models, instances, routes, targets):
@@ -144,7 +179,7 @@ def ready_candidates(policy, names, workers, models, instances, routes, targets)
                 devices[location] = gpu
                 identities[uuid] += 1
 
-    occupants = defaultdict(Counter)
+    occupants = defaultdict(list)
     replicas = Counter()
     placements = {}
     for ident, instance in instances.items():
@@ -153,11 +188,11 @@ def ready_candidates(policy, names, workers, models, instances, routes, targets)
         keys = [(instance.get('worker_id'), index) for index in indexes]
         for key in keys:
             # Count other deployments and starting instances as potential co-tenants.
-            occupants[key][by_model.get(instance['model_id'])] += 1
+            occupants[key].append((by_model.get(instance['model_id']), instance))
         peers = (instance.get('distributed_servers') or {}).get('subordinate_workers') or []
         for peer in peers:
             for index in peer.get('gpu_indexes') or []:
-                occupants[peer.get('worker_id'), index][None] += 1
+                occupants[peer.get('worker_id'), index].append((None, peer))
         if len(keys) == 1 and not peers and instance['state'] == 'running':
             placements[ident] = keys[0]
 
@@ -178,6 +213,7 @@ def ready_candidates(policy, names, workers, models, instances, routes, targets)
                 ('route_unavailable', 'route_unavailable' in states),
             ) if applies), 'no_eligible_replica')
 
+    card_fits, blocked_routes = {}, set()
     for ident, location in placements.items():
         instance = instances[ident]
         key = by_model.get(instance['model_id'])
@@ -190,8 +226,17 @@ def ready_candidates(policy, names, workers, models, instances, routes, targets)
                 or not gpu or gpu.get('name') not in policy.pools[key].gpu_names
                 or locations[location] != 1 or identities[gpu['uuid']] != 1):
             continue
-        layout = occupants[location]
-        if sum(layout.values()) > 1 and layout not in policy.shared_gpu_layouts.get(gpu.get('name'), []):
+        assigned = occupants[location]
+        name = gpu['name']
+        if name in policy.shared_gpu_vram_budgets:
+            if location not in card_fits:
+                card_fits[location] = fits_gpu_vram(policy, gpu, worker, assigned)
+            if not card_fits[location]:
+                # A pooled route can still reach this instance on the rejected card.
+                if not policy.pools[key].replica_routes:
+                    blocked_routes.add(key)
+                continue
+        elif len(assigned) > 1 and Counter(pool for pool, _ in assigned) not in policy.shared_gpu_layouts.get(name, []):
             continue
         binding = (location[0], gpu['uuid'], instance.get('created_at'),
                    instance.get('last_restart_time'), instance.get('restart_count'))
@@ -216,6 +261,9 @@ def ready_candidates(policy, names, workers, models, instances, routes, targets)
                 continue
             binding += (route,)
         candidates[key][ident] = binding
+    for key in blocked_routes:
+        candidates[key].clear()
+        reasons[key] = 'gpu_budget_unverified'
     return candidates, reasons
 
 

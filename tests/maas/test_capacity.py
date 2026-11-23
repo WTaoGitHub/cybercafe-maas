@@ -1,5 +1,6 @@
 import asyncio
 from datetime import timedelta
+from hashlib import sha256
 import json
 from threading import Event
 
@@ -94,6 +95,93 @@ def test_only_verified_routes_and_joint_gpu_layouts_add_capacity():
     assert reasons == {'arbitrary-model-1': 'route_unavailable', 'arbitrary-model-2': 'binding_unverified'}
 
 
+def test_gpu_vram_budgets_follow_three_worker_tide():
+    raw, catalog, native = topology(3)
+    workers, _, instances, _, _ = native
+    gib = 1024**3
+    pp_vram = 7 * gib // 2
+    raw['shared_gpu_vram_budgets'] = {'gpu-type': 16 * gib}
+    footprints = {1: 12 * gib, 2: 6 * gib, 3: pp_vram}
+    for model, size in footprints.items():
+        raw['pools'][f'arbitrary-model-{model}']['shared_gpu_vram_bytes'] = size
+    for w in workers.values():
+        w['system_reserved'] = {'vram': gib // 4}
+        w['status']['gpu_devices'][0]['memory'] = {'total': 16 * gib}
+    for ident, (model, worker) in enumerate(
+            [(1, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 2), (3, 3), (3, 3)], start=1):
+        instances[ident] = {'id': ident, 'model_id': model, 'worker_id': worker,
+                            'state': 'running', 'gpu_indexes': [0],
+                            'computed_resource_claim': {'vram': {'0': footprints[model]}}}
+    policy = Policy.model_validate(raw)
+    observation = Capacity(policy, settle=5, ttl=30)
+    read = lambda at: evaluate(observation, policy, catalog, native, at)
+    assert read(1)['global']['total'] == 0
+    high = read(6)
+    assert high['global'] == limits(8, 25)
+    assert [pool['total'] for pool in high['pools'].values()] == [1, 2, 5]
+    workers[1]['unreachable'] = True
+    low = read(7)
+    assert low['global']['total'] == 6
+    assert [pool['total'] for pool in low['pools'].values()] == [0, 2, 4]
+    workers[1]['unreachable'] = False
+    assert read(8)['global']['total'] == 6
+    assert read(13)['global']['total'] == 8
+
+
+@pytest.mark.parametrize('case', [
+    'starting', 'missing_claim', 'missing_profile', 'unmanaged', 'low_physical_vram', 'larger_native_claim',
+])
+def test_rejected_gpu_blocks_aggregated_routes_even_with_other_healthy_replicas(case):
+    raw, catalog, native = topology(3)
+    workers, _, instances, _, _ = native
+    # The old exact combination cannot override the per-card budget.
+    raw['shared_gpu_layouts'] = {'gpu-type': [{'arbitrary-model-1': 1, 'arbitrary-model-2': 1}]}
+    raw['shared_gpu_vram_budgets'] = {'gpu-type': 12}
+    for pool in raw['pools'].values():
+        pool['shared_gpu_vram_bytes'] = 5
+    for w in workers.values():
+        w['system_reserved'] = {'vram': 2}
+        w['status']['gpu_devices'][0]['memory'] = {'total': 16}
+    for instance in instances.values():
+        instance['computed_resource_claim'] = {'vram': {'0': 5}}
+    instances[2]['worker_id'] = 1
+    instances[4] = {**instances[1], 'id': 4, 'worker_id': 2}
+    if case == 'starting':
+        instances[5] = {**instances[1], 'id': 5, 'state': 'starting',
+                        'computed_resource_claim': {'vram': {'0': 1}}}
+    elif case == 'missing_claim':
+        del instances[2]['computed_resource_claim']
+    elif case == 'missing_profile':
+        del raw['pools']['arbitrary-model-2']['shared_gpu_vram_bytes']
+    elif case == 'unmanaged':
+        instances[5] = {**instances[1], 'id': 5, 'model_id': 99}
+    elif case == 'low_physical_vram':
+        workers[1]['status']['gpu_devices'][0]['memory']['total'] = 11
+    else:
+        instances[2]['computed_resource_claim']['vram']['0'] = 8
+    policy = Policy.model_validate(raw)
+    candidates, reasons = ready_candidates(policy, catalog_routes(policy, catalog), *native)
+    assert candidates['arbitrary-model-1'] == {}
+    assert candidates['arbitrary-model-2'] == {}
+    assert reasons['arbitrary-model-1'] == reasons['arbitrary-model-2'] == 'gpu_budget_unverified'
+    assert set(candidates['arbitrary-model-3']) == {3}
+
+
+def test_gpu_budget_revision_preserves_legacy_configuration_identity():
+    raw, catalog, _ = topology(1)
+    policy = Policy.model_validate(raw)
+    names = catalog_routes(policy, catalog)
+    legacy = policy.model_dump()
+    del legacy['shared_gpu_vram_budgets']
+    for pool in legacy['pools'].values():
+        del pool['replica_routes'], pool['shared_gpu_vram_bytes']
+    source = 'http://mock/v2/'
+    expected = sha256(json.dumps([legacy, names, source], sort_keys=True).encode()).hexdigest()
+    assert policy_hash(policy, names, source) == expected
+    raw['shared_gpu_vram_budgets'] = {'gpu-type': 16}
+    assert policy_hash(Policy.model_validate(raw), names, source) != expected
+
+
 @pytest.mark.parametrize('peers', [None, [], [{'worker_id': 2, 'gpu_indexes': [0]}]])
 def test_delegated_metadata_without_subordinates_is_single_worker(peers):
     raw, catalog, native = topology(1)
@@ -125,6 +213,10 @@ def test_native_read_rejects_incomplete_pages_and_filters_heartbeat_noise():
     worker = native[0][1]
     assert event_identity('workers', worker) == event_identity('workers', {**worker, 'heartbeat_time': 'new'})
     assert event_identity('workers', worker) != event_identity('workers', {**worker, 'state': 'not_ready'})
+    assert event_identity('workers', worker) != event_identity('workers', {**worker, 'system_reserved': {'vram': 1}})
+    instance = native[2][1]
+    assert event_identity('model-instances', instance) != event_identity(
+        'model-instances', {**instance, 'computed_resource_claim': {'vram': {'0': 1}}})
 
 
 def test_publication_uses_real_postgres_lock_and_expires(env):

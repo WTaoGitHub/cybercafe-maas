@@ -61,10 +61,13 @@ def event_identity(kind, row):
     if kind == 'workers':
         devices = (row.get('status') or {}).get('gpu_devices') or []
         return (row.get('state'), row.get('unreachable'), row.get('maintenance'), row.get('cluster_id'),
-                [(gpu.get('index'), gpu.get('uuid'), gpu.get('name')) for gpu in devices])
+                row.get('system_reserved'),
+                [(gpu.get('index'), gpu.get('uuid'), gpu.get('name'), (gpu.get('memory') or {}).get('total'))
+                 for gpu in devices])
     if kind == 'model-instances':
         return tuple(row.get(key) for key in ('state', 'model_id', 'worker_id', 'gpu_indexes',
-                                               'distributed_servers', 'last_restart_time', 'restart_count'))
+                                               'distributed_servers', 'last_restart_time', 'restart_count',
+                                               'computed_resource_claim'))
     return row  # Route changes are infrequent and include target/backend eligibility changes.
 
 

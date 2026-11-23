@@ -99,6 +99,7 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 {
   "global_limit": 8,
   "sync_percent": 25,
+  "shared_gpu_vram_budgets": {"GPUStack 返回的已验证 GPU 名称": 16106127360},
   "pools": {
     "example-pool": {
       "cluster_id": 1,
@@ -107,6 +108,7 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
       "routes": {"example.model": 4},
       "gpu_names": ["GPUStack 返回的已验证 GPU 名称"],
       "slots_per_replica": 1,
+      "shared_gpu_vram_bytes": 6442450944,
       "hard_limit": 4,
       "queue_limit": 25,
       "gateway_verified": false
@@ -115,7 +117,11 @@ docker compose --env-file deploy/maas/.env -f deploy/maas/compose.yaml exec api 
 }
 ```
 
-通过隔离试点确认路由、就绪判据及单副本并发后，才将对应池的 `gateway_verified` 设为 `true`。当前原生判定支持同一 GPUStack 来源内的单部署路由及单卡副本。共同占用一张卡时，可在 `shared_gpu_layouts` 中以 GPU 名称配置已联合验证的精确布局，例如 `{"已验证GPU名称": [{"example-pool": 2}]}`。未验证的布局不计入可用预算。详见[设计与实施方案](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md)。
+通过隔离试点确认路由、就绪判据及单副本并发后，才将对应池的 `gateway_verified` 设为 `true`。当前原生判定支持同一 GPUStack 来源内的单部署路由及单卡副本。
+
+自动放置场景可在顶层启用 `shared_gpu_vram_budgets`，用 GPUStack 报告的 GPU 名称映射每卡已验收的推理显存预算上限（字节）。各模型池填写 `shared_gpu_vram_bytes`，记录按配置中的 `slots_per_replica` 和受控推理参数实测的单副本显存上界（字节）。示例使用每卡 15 GiB、每副本 6 GiB。每张卡的可用预算取策略上限和原生总显存扣除系统预留后的较小值。每个已落位实例按实测上界和 GPUStack 已分配显存的较大值计入占用，启动中的实例也计入。上界或原生显存证据缺失、同卡存在未登记工作负载或总量超预算时，相关 GPU 暂停计额。聚合路由可能派发到被排除的 GPU，对应模型池也暂停派发，显示 `gpu_budget_unverified`。固定路由可继续使用其他已核对的 GPU。
+
+启用预算前，以代表性共卡负载验证显存余量和延迟，将这些结果用作模型档案及 GPU 预算。每个 GPU 型号的预算校验适用于该型号的所有落点，并优先于旧配置的 `shared_gpu_layouts`。未启用此字段的型号沿用已验收精确布局。详见[设计与实施方案](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md)。
 
 ### 隔离环境启用动态准入
 
