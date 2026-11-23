@@ -1,5 +1,7 @@
 # 当前状态与接力入口
 
+> **2026-11-23 NFS 签名下发配置和 Tower 已就绪**。新 PC 已发布 `e5-nfs-signed-20261123-r1`，Tower 镜像标识为 `tower-e5-nfs-signed-v3`。从 Tower 实际拉取并验签新版和两个旧 NFS 发布，三个旧发布的指针和内容均保持。母版仍无 worker 或 NFS 挂载。当前等待管理员保存快照并启动独立克隆，再验证引导读取、按需挂载和 `storage-check` 校验。GPUStack 目标与 Ready 副本为 1/1、2/2、5/5，MaaS 派发暂停，调节器运行在 Apply。 [NFS 交接](../../deploy/bootstrap/clone/NFS.md) · [Issue #6](https://github.com/WTaoGitHub/cybercafe-maas/issues/6)
+
 > **2026-11-23 E5 配置服务与母版已就绪**。新 PC 已发布 `e5-runtime-20261123-r1`，Tower 镜像标识为 `tower-e5-runtime-v2`，实际 HTTPS 拉取和验签通过。旧快照仍能读取原版配置。下一步由管理员保存快照、启动独立克隆，再验收模型容器限额、执行凭据、执行回执证书的自动交付。GPUStack 目标与 Ready 副本仍为 1/1、2/2、5/5，MaaS 派发保持暂停，调节器保持 Apply。 [部署与快照交接](E5-DESIGN.md#2026-11-23-部署与快照交接) · [Issue #70](https://github.com/WTaoGitHub/cybercafe-maas/issues/70)
 
 > **2026-11-20 三台 VPC 现场修复后自动扩容通过**。从零容量启用 Apply 后，PP 首个实例因缺执行凭据启动失败。当前三个 worker 已补齐各 GPU 的凭据和配套证书，并热补 OvisOCR3/Unlimited-OCR-2 创建限额规则。PP 原生重试恢复后，调节器自动扩至 Unlimited/Ovis/PP 的 1/2/5，八实例 Ready 且健康检查通过。当前调节器运行在 Apply，MaaS 派发继续暂停，实际两种共卡组合尚未进入容量准入策略，三个池额度均为 0。母版未集成自动凭据交付和后端限额模块。 [实测报告](../../results/maas-replica-three-vpcs-20261120/REPORT.md) · [Issue #70](https://github.com/WTaoGitHub/cybercafe-maas/issues/70)
