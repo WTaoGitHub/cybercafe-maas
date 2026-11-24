@@ -127,6 +127,82 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.rows['model-instances'][ident].update(
             state='starting', worker_id=worker_id, gpu_indexes=[0])
 
+    def configure_parked_error(self, parallel=False):
+        self.rows['models'] = {1: {**model(), 'replicas': 1, 'restart_on_error': False},
+                               2: {**model(), 'id': 2}}
+        self.rows['model-instances'] = {377: dict(id=377, model_id=1, state='error',
+            worker_id=4, gpu_indexes=[0], computed_resource_claim={'vram': {'0': 4}})}
+        raw = config(mode='apply')
+        raw['models']['2'] = dict(raw['models']['1'])
+        raw['startup'] = {'parallel_startup': parallel}
+        raw['reconcile']['stability_s'] = 0
+        self.policy = self.refresh_value = ControlPolicy(raw, allow_apply=True)
+        self.writer.model_caps = {1: 2, 2: 2}
+        self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 1, 2: 0})
+
+    async def test_parked_error_withholds_whole_card_and_only_other_model_can_start(self):
+        for parallel in (False, True):
+            with self.subTest(parallel=parallel):
+                self.configure_parked_error(parallel)
+                self.rows['workers'] = {4: worker(4)}
+                self.assertEqual(await self.advance(), 'idle')  # Error card still has room.
+                self.rows['workers'][5] = worker(5)
+                self.assertEqual(await self.advance(), 'confirmed')
+                self.assertEqual(self.observer.view['plan']['isolated_error_ids'], {1: [377]})
+                self.assertEqual(self.rows['models'][1]['replicas'], 1)
+                self.assertEqual(self.rows['models'][2]['replicas'], 1)
+                self.assertEqual(await self.advance(), 'idle')  # New unassigned Pending still blocks.
+                self.assign(2, 5)
+                self.rows['workers'][6] = worker(6)
+                self.assertEqual(await self.advance(), 'confirmed' if parallel else 'idle')
+
+    async def test_error_requires_known_claim_card_scope_and_no_automatic_restart(self):
+        self.rows['workers'][5] = worker(5)
+        for parallel in (False, True):
+            self.configure_parked_error(parallel)
+            original = self.rows['model-instances'][377].copy()
+            for edit in ({'worker_id': None}, {'worker_id': 9}, {'gpu_indexes': [0, 1]},
+                         {'computed_resource_claim': None}, {'deleted_at': 'now'},
+                         {'distributed_servers': {'subordinate_workers': [{'worker_id': 5}]}}):
+                self.rows['model-instances'][377] = {**original, **edit}
+                self.assertEqual(await self.advance(), 'idle')
+                self.assertEqual(self.observer.view['plan']['isolated_error_ids'], {})
+            self.rows['model-instances'][377] = original
+            for restart in (True, None):
+                self.rows['models'][1]['restart_on_error'] = restart
+                self.assertEqual(await self.advance(), 'idle')
+        self.assertFalse(self.writes)
+
+    async def test_error_recovery_at_final_read_invalidates_exemption(self):
+        self.configure_parked_error()
+        self.rows['workers'][5] = worker(5)
+        await self.observer.tick(None, self.listing, self.policy, subscribed=False)
+        self.assertEqual(self.observer.view['plan']['startup_order'], [2])
+        self.rows['model-instances'][377]['state'] = 'starting'
+        self.assertEqual(await self.writer.reconcile(self.policy, self.observer, refresh=lambda: self.policy),
+                         'native_snapshot_changed')
+        self.assertEqual(await self.advance(), 'idle')
+        self.rows['model-instances'][377]['state'] = 'running'
+        self.rows['models'][1]['ready_replicas'] = 1
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual(self.observer.view['plan']['isolated_error_ids'], {})
+
+    async def test_other_start_in_failed_deployment_and_unknown_write_keep_their_guards(self):
+        self.configure_parked_error()
+        self.rows['workers'][5] = worker(5)
+        self.rows['models'][1]['replicas'] = 2
+        self.rows['model-instances'][378] = dict(id=378, model_id=1, state='starting',
+                                                worker_id=4, gpu_indexes=[0])
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual(self.observer.view['plan']['cluster_inflight'], 1)
+        self.rows['model-instances'][378]['state'] = 'running'
+        self.rows['models'][1]['ready_replicas'] = 1
+        self.outcome = 'before_commit_timeout'
+        self.assertEqual(await self.advance(), 'unresolved')
+        self.assertEqual(await self.advance(), 'unresolved')
+        self.assertEqual(len(self.writes), 1)
+        self.assertIsNotNone(self.journal.read())
+
     async def test_parallel_starts_second_card_before_first_is_running_despite_allocation_lag(self):
         self.parallel(); self.rows['workers'][5] = worker(5)
         self.assertEqual(await self.advance(), 'confirmed')

@@ -30,6 +30,12 @@ MaaS v2 调节器为每张合格 GPU 保留 `max(GPUStack 系统预留, 1 GiB, �
 
 实际上报 16376 MiB 的卡可规划 4 个各申报 3.5 GiB 的 PP-OCRv4。已有 12 GiB Unlimited 或两个 6 GiB Ovis 时，该卡无法再作为新增 PP 的容量依据。已有紧凑布局仍沿用原生缩容条件和健康副本保护。调节器写入期望副本数，GPUStack 决定落卡；其他卡具备容量时，原生调度的实际落点可能与规划不同。运行时 CUDA 峰值仍需混合负载测量。 [Issue #81](https://github.com/WTaoGitHub/cybercafe-maas/issues/81)
 
+### 一个部署已有 Error 时，其他部署怎样使用空闲卡
+
+受管模型明确关闭了 GPUStack 自动重启时，调节器检查该模型的期望数、原生实例清单和 Ready 数是否一致。若能把未删除的 Error 实例定位到本集群 Ready worker 上的一张 GPU，并核对该卡上的原生显存申报，调节器会把实例 ID 记入 `status.json` 的 `isolated_error_ids`，按部署 ID 分组。该实例继续显示 Error，所在卡整张退出新增容量预算。调节器暂停为故障模型新增副本，其他模型可按照原权重和启动上限使用其余卡。GPUStack 仍负责决定实际落卡。
+
+例如，启动上限为 1，部署 A 有两个 Running 和一个已定位的 Error。若另一张卡有空间，部署 B 可以获得一次扩容。B 的新实例处于 Pending 或启动中时占用这一个名额。自动重启已启用、落卡不明、显存申报缺失或启用了跨机分布式的 Error，仍沿用保守计数。写入前重新读取原生清单并比对指纹；状态或配置变化会使本轮规划失效。实例恢复后，下一轮会重新评估原部署。 [Issue #82](https://github.com/WTaoGitHub/cybercafe-maas/issues/82)
+
 ### 既有实例的占用预算
 
 新副本使用新声明，现有实例使用其原生 `computed_resource_claim.vram` 和 worker 已分配显存作为证据；占用预算取 worker 已分配量与实例声明总和的较大值，防止遥测滞后提前释放资源。不能仅因模型声明变化，就认为旧实例已经变大/变小或显存已经释放。

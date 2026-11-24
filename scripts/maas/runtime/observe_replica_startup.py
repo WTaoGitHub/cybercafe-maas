@@ -22,7 +22,7 @@ def fields(row, keys):
 def controller_evidence(status, model_ids, pending):
     view = fields(status, 'observed_at revision snapshot_complete eligible_worker_ids '
                   'policy_target effective_startup_limit global_inflight cluster_inflight '
-                  'startup_reservation pressure_mode execution_state writes_enabled '
+                  'startup_reservation isolated_error_ids pressure_mode execution_state writes_enabled '
                   'state reason ownership write_attempted')
     decisions = status.get('pending_control', {})
     view['pending_control'] = {

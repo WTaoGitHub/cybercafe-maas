@@ -1,5 +1,6 @@
 """Replica planning shared by the GPUStack plugin and MaaS."""
 from dataclasses import dataclass
+from collections import defaultdict
 from time import monotonic
 
 from maas_replica_policy import ARRIVAL_EVENTS, solve, summarize
@@ -85,25 +86,43 @@ def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, par
         eligible[key] = [i for i, card in enumerate(cards)
                          if card.kind == "cuda" and all(dict(card.labels).get(k) == v
                                                         for k, v in selector.items())]
+    by_model = defaultdict(list)
     running = {}
     for instance in instance_rows:
-        if instance.state == "running" and instance.gpu_indexes and all(
+        by_model[instance.model_id].append(instance)
+        if not getattr(instance, 'deleted_at', None) and instance.state == "running" and instance.gpu_indexes and all(
             (instance.worker_id, index) in indexes for index in instance.gpu_indexes
         ):
             running[instance.model_id] = running.get(instance.model_id, 0) + 1
     current = {key: model.replicas for key, model in models.items()}
     budgets = [card.free_vram for card in cards]
+    isolated = {}
+    isolated_ids = set()
+    if incremental:
+        for key, model in models.items():
+            rows = by_model[key]
+            if any(row.state == 'error' for row in rows):
+                eligible[key] = []  # Never grow a deployment with a failed instance.
+            if (getattr(model, 'restart_on_error', None) is not False or len(rows) != model.replicas
+                    or model.ready_replicas != running.get(key, 0)):
+                continue
+            for row in rows:
+                card = parked_error_card(row, indexes)
+                if card is not None:
+                    isolated.setdefault(key, []).append(row.id)
+                    isolated_ids.add(row.id)
+                    budgets[card] = 0
     reservation_reason = 'not_enabled'
     if parallel:
         budgets, reservation_reason = startup_reservations(
-            policy.cluster, cards, model_rows, instance_rows)
-    if parallel:
-        visible = {m.id: sum(row.model_id == m.id for row in instance_rows) for m in model_rows}
-        healthy = {m.id: sum(row.model_id == m.id and row.state == 'running'
-                            for row in instance_rows) for m in model_rows}
-        global_inflight = sum(max(model.replicas, visible[model.id]) -
+            policy.cluster, cards, model_rows, instance_rows, isolated_ids=isolated_ids)
+    if parallel or incremental:
+        visible = {m.id: len(by_model[m.id]) for m in model_rows}
+        healthy = {m.id: sum(row.state == 'running' and not getattr(row, 'deleted_at', None)
+                             for row in by_model[m.id]) for m in model_rows}
+        global_inflight = sum(max(model.replicas, visible[model.id]) - len(isolated.get(model.id, ())) -
                               min(model.ready_replicas, healthy[model.id]) for model in model_rows)
-        cluster_inflight = sum(max(model.replicas, visible[model.id]) - running.get(model.id, 0)
+        cluster_inflight = sum(max(model.replicas, visible[model.id]) - len(isolated.get(model.id, ())) - running.get(model.id, 0)
                                for model in model_rows if model.cluster_id == policy.cluster)
     else:
         # Preserve the schema-v1/plugin preview contract.
@@ -113,7 +132,8 @@ def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, par
     # Native pending replicas get first use of capacity. Parallel starts
     # require a known placement and withhold every card with unfinished work.
     waiting = ((parallel and reservation_reason != 'reserved') or
-               (not parallel and any(running.get(key, 0) < count for key, count in current.items())))
+               (not parallel and any(running.get(key, 0) + len(isolated.get(key, ())) < count
+                                     for key, count in current.items())))
     target = current.copy()
     details = {}
     if incremental:
@@ -126,7 +146,8 @@ def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, par
             target, order, timed_out = plan_startup_batch(
                 rules, budgets, eligible, current, slots, execution.get('solve_timeout_s', 1),
                 minimum_priorities=getattr(policy, 'minimum_start_priorities', None))
-        details = {'startup_order': order, 'startup_plan_timed_out': timed_out}
+        details = {'startup_order': order, 'startup_plan_timed_out': timed_out,
+                   'isolated_error_ids': isolated}
     elif not waiting:
         target = solve(rules, budgets, eligible, current,
                        execution.get("solve_timeout_s", 1), additive=True)
@@ -176,7 +197,32 @@ def plan_startup_batch(rules, budgets, eligible, current, slots, timeout, *, clo
     return counts, order, False
 
 
-def startup_reservations(cluster, cards, models, instances):
+def has_subordinates(row):
+    distributed = getattr(row, 'distributed_servers', None)
+    return distributed is not None and (
+        not isinstance(distributed, dict)
+        or bool(distributed.keys() - {'mode', 'download_model_files', 'subordinate_workers'})
+        or distributed.get('subordinate_workers') not in (None, []))
+
+
+def parked_error_card(row, indexes):
+    """Prove the one card to quarantine. Missing evidence keeps startup accounting conservative."""
+    if (row.state != 'error' or getattr(row, 'deleted_at', None) or has_subordinates(row)
+            or type(getattr(row, 'id', None)) is not int or type(row.worker_id) is not int
+            or not row.gpu_indexes or len(row.gpu_indexes) != 1):
+        return None
+    index = row.gpu_indexes[0]
+    claim = getattr(row, 'computed_resource_claim', None)
+    vram = claim.get('vram') if isinstance(claim, dict) else None
+    if type(index) is not int or index < 0 or not isinstance(vram, dict) or len(vram) != 1:
+        return None
+    amount = vram.get(str(index), vram.get(index))
+    if type(amount) is int and amount > 0:
+        return indexes.get((row.worker_id, index))
+    return None
+
+
+def startup_reservations(cluster, cards, models, instances, *, isolated_ids=()):
     """Reserve entire GPUs with unfinished instances; never guess a placement.
 
     Unassigned/absent/surplus instances or unsupported allocations defer all new
@@ -195,15 +241,11 @@ def startup_reservations(cluster, cards, models, instances):
             return budgets, 'instance_count_unsettled'
         for row in rows:
             allocation = row.gpu_indexes
-            distributed = getattr(row, 'distributed_servers', None)
             # v2.2.3 may serialize a default object for an ordinary single-card
             # instance. The actual subordinate inventory determines distribution.
-            has_subordinates = distributed is not None and (
-                not isinstance(distributed, dict)
-                or bool(distributed.keys() - {'mode', 'download_model_files', 'subordinate_workers'})
-                or distributed.get('subordinate_workers') not in (None, []))
-            if (getattr(row, 'deleted_at', None) or has_subordinates
-                    or row.state not in ('running', 'scheduled', 'initializing', 'downloading', 'starting')
+            if (getattr(row, 'deleted_at', None) or has_subordinates(row)
+                    or (row.state not in ('running', 'scheduled', 'initializing', 'downloading', 'starting')
+                        and getattr(row, 'id', None) not in isolated_ids)
                     or type(row.worker_id) is not int or not allocation
                     or any(type(index) is not int or index < 0 for index in allocation)
                     or len(set(allocation)) != len(allocation)

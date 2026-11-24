@@ -128,12 +128,13 @@ class NativeAdapter:
                                                        if r['state'] == 'pending' and unassigned(r)))
         identity = [(i, m.cluster_id, m.owner_id, m.binding, m.replicas, m.healthy)
                     for i, m in sorted(deployments.items())]
+        ready_counts = sorted((row['id'], row.get('ready_replicas')) for row in models)
         placement = sorted((row["id"], row["model_id"], row["state"], row["worker_id"],
                             row.get("gpu_indexes"), row.get('deleted_at'),
                             digest(row.get('distributed_servers')),
                             digest(row.get('computed_resource_claim')), resource_pending(row)) for row in instances)
         inventory = [(key, sorted(value.items())) for key, value in gpu_inventory.items()]
-        fingerprint = digest([sorted(inventory), identity, placement])
+        fingerprint = digest([sorted(inventory), identity, placement, ready_counts])
         return Snapshot(self.revision, fingerprint, deployments, gpu_inventory=dict(gpu_inventory))
 
     async def write(self, action):

@@ -282,20 +282,22 @@ class ReconcileWriter:
                 except ValueError:
                     continue
                 action = proposed; pending_contraction = contraction; break
+        isolated = plan.get('isolated_error_ids', {})
         candidates = [key for key, count in plan['current'].items() if plan['policy_target'][key] > count]
         if action is None:
             if not candidates or not plan.get('up_preview_limit'):
                 return ('native_scale_down_proof_required' if missing_proof else
                         'downscale_retry_backoff' if waiting_for_retry else
                         'scale_down_service_protected' if down and plan.get('down_preview_limit') else 'idle')
-            if (not plan.get('parallel_safe') and any(sum(snapshot.deployments[key].healthy) < count
-                                                     for key, count in plan['current'].items())):
+            if (not plan.get('parallel_safe') and any(
+                    sum(snapshot.deployments[key].healthy) + len(isolated.get(key, ())) < count
+                    for key, count in plan['current'].items())):
                 return 'deployment_changed_or_waiting'
             ident = next((key for key in plan['startup_order'] if key in candidates), None)
             if ident is None:
                 return 'startup_plan_unavailable'
             model = snapshot.deployments[ident]
-            total, local = inflight(snapshot.deployments, self.cluster)
+            total, local = inflight(snapshot.deployments, self.cluster, isolated_errors=isolated)
             if total + 1 > global_max or local + 1 > cluster_max:
                 return 'startup_budget_exhausted'
             action = Action(snapshot.revision, snapshot.fingerprint, ident, model.cluster_id,
@@ -319,7 +321,7 @@ class ReconcileWriter:
                             on_confirm=confirm, write_timeout=12, read_timeout=12)
         outcome = await executor.submit(action, floor=rules[action.model_id].auto_scale_down_min_replicas,
                                         batch_max=1, global_max=global_max, cluster_max=cluster_max,
-                                        pending_removal_proven=pending_contraction)
+                                        pending_removal_proven=pending_contraction, isolated_errors=isolated)
         if outcome in ('downscale_preflight_unavailable', 'downscale_connect_unavailable', 'downscale_control_busy'):
             failures = self.downscale_retries.get(action.model_id, (0, 0))[0] + 1
             delay = DOWNSCALE_RETRY_DELAYS[min(failures, len(DOWNSCALE_RETRY_DELAYS))-1]

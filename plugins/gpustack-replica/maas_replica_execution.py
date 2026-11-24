@@ -51,7 +51,7 @@ class Action:
     recovery_binding: str | None = None
 
 
-def inflight(deployments, cluster_id, pending=None):
+def inflight(deployments, cluster_id, pending=None, *, isolated_errors=None):
     """Conservatively count desired slots and visible instances once each."""
     global_count = cluster_count = 0
     for key, model in deployments.items():
@@ -59,6 +59,16 @@ def inflight(deployments, cluster_id, pending=None):
         if pending is not None and key == pending.model_id:
             target = max(target, pending.after)
         count = max(target, len(model.healthy)) - sum(model.healthy)
+        isolated = (isolated_errors or {}).get(key, ())
+        if isolated:
+            # Caller bound the placement, state, restart policy and VRAM proof
+            # to this exact native fingerprint before passing instance IDs.
+            unhealthy = {i for i, ok in zip(model.instance_ids, model.healthy) if not ok}
+            if (model.cluster_id != cluster_id or len(model.instance_ids) != len(model.healthy)
+                    or len(model.healthy) != model.replicas or len(set(isolated)) != len(isolated)
+                    or not unhealthy.issuperset(isolated)):
+                raise ValueError('Stale isolated Error evidence')
+            count -= len(isolated)
         global_count += count
         if model.cluster_id == cluster_id:
             cluster_count += count
@@ -67,7 +77,8 @@ def inflight(deployments, cluster_id, pending=None):
     return global_count, cluster_count
 
 
-def validate_action(snapshot, action, *, floor, batch_max, global_max, cluster_max, pending_removal_proven=False):
+def validate_action(snapshot, action, *, floor, batch_max, global_max, cluster_max,
+                    pending_removal_proven=False, isolated_errors=None):
     if any(type(value) is not int or value < 0
            for value in (floor, batch_max, global_max, cluster_max, action.after)):
         raise ValueError("Invalid execution bounds")
@@ -84,7 +95,9 @@ def validate_action(snapshot, action, *, floor, batch_max, global_max, cluster_m
     if not delta or abs(delta) > batch_max:
         raise ValueError("Action exceeds the batch bounds")
     if delta > 0:
-        total, local = inflight(snapshot.deployments, action.cluster_id)
+        if (isolated_errors or {}).get(action.model_id):
+            raise ValueError('Startup blocked for deployment with isolated Error')
+        total, local = inflight(snapshot.deployments, action.cluster_id, isolated_errors=isolated_errors)
         # Visible surplus instances may consume pressure even if the new
         # target does not increase the number of outstanding slots.
         added = max(action.after, len(model.healthy)) - max(action.before, len(model.healthy))
@@ -200,14 +213,15 @@ class Executor:
         async with self.lock:
             return await self._recover()
 
-    async def submit(self, action, *, floor, batch_max, global_max, cluster_max, pending_removal_proven=False):
+    async def submit(self, action, *, floor, batch_max, global_max, cluster_max,
+                     pending_removal_proven=False, isolated_errors=None):
         async with self.lock:
             if self.journal.read() is not None:
                 return "unresolved"
             snapshot = await asyncio.wait_for(self.read(), timeout=self.read_timeout)
             validate_action(snapshot, action, floor=floor, batch_max=batch_max,
                             global_max=global_max, cluster_max=cluster_max,
-                            pending_removal_proven=pending_removal_proven)
+                            pending_removal_proven=pending_removal_proven, isolated_errors=isolated_errors)
             self.journal.reserve(action)
             try:
                 await asyncio.wait_for(self.write(action), timeout=self.write_timeout)
