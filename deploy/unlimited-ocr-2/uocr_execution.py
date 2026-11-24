@@ -80,6 +80,14 @@ class DocumentExecutionMiddleware:
             return
         path, method = scope['path'], scope['method']
         execution = self.execution
+        if method == 'GET' and path == '/maas/guard-proof':
+            from starlette.requests import Request
+            try:
+                reply = JSONResponse(execution.authority.proof(Request(scope).query_params.get('nonce')))
+            except HTTPException as exc:
+                reply = JSONResponse({'detail': exc.detail}, status_code=exc.status_code)
+            await reply(scope, receive, send)
+            return
         if method == 'GET' and path in ('/health', '/v1/models', '/metrics', '/version'):
             if path == '/health' and execution.unconfirmed and execution.pending is None:
                 await JSONResponse({'detail': 'GPU completion is unconfirmed'}, status_code=503)(scope, receive, send)

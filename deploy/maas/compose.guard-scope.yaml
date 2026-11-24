@@ -1,0 +1,17 @@
+# Supplement the existing capacity observer. Only this read-only collector shares Higress loopback.
+services:
+  capacity-gateway-evidence:
+    image: ${MAAS_TASK_IMAGE:-cybercafe-maas-tasks:e6-r1}
+    network_mode: "container:${MAAS_GPUSTACK_CONTAINER:?set serving GPUStack container}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    command: [python, -B, -m, maas_platform.gateway_scope, --output, /run/gateway-scope/current.json]
+    volumes:
+      - ${MAAS_GATEWAY_EVIDENCE_DIR:?set directory owned by MaaS UID}:/run/gateway-scope
+  observer:
+    environment:
+      MAAS_GATEWAY_SCOPE_FILE: /run/gateway-scope/current.json
+    volumes:
+      - ${MAAS_GATEWAY_EVIDENCE_DIR:?set directory owned by MaaS UID}:/run/gateway-scope:ro

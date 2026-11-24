@@ -10,7 +10,7 @@ from .adapters import adapter_for
 from .artifact_gc import ArtifactGC
 from .metering import UsageType, select_usage
 from .capacity_admission import Admission, configuration, queue_counts, read_budget, unavailable
-from .quarantine import blocks, unresolved
+from .quarantine import save_scope, blocks, unresolved
 from .task_cutover import existing_submission
 
 ACTIVE = ('QUEUED', 'RETRY_WAIT', 'RUNNING', 'CANCEL_REQUESTED')
@@ -225,7 +225,7 @@ class TaskService:
                 return None
             catalog = self.settings.catalog() if unknown else {}
             if revision:
-                admission = Admission(c, self.settings, revision, include_preparing=True)
+                admission = Admission(c, self.settings, revision, include_preparing=True, unknown=unknown)
                 if not admission.budget or not (automatic_slot if admission.automatic else legacy_slot):
                     return None
                 ready = "state IN ('QUEUED','RETRY_WAIT') AND next_run<=clock_timestamp() AND deadline>clock_timestamp()"
@@ -276,14 +276,14 @@ class TaskService:
             if fingerprint(model) != row['model_fingerprint']:
                 raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed')
             route = model.get('upstream_model') or ''
-            pool_id = gpu = None
+            pool_id = gpu = admission = None
             revision = maintenance['capacity_policy_hash']
             allowed = row['timely'] and row['state'] == 'RUNNING'
             unknown = unresolved(c)
             reason = 'BACKEND_QUARANTINED' if blocks(unknown, row['model'], route, None) else None
             if revision and allowed:
                 try:
-                    admission = Admission(c, self.settings, revision, include_preparing=False)
+                    admission = Admission(c, self.settings, revision, include_preparing=False, unknown=unknown)
                     pool_id = admission.pool_ids.get(row['model'])
                     allowed = admission.allows(row['model'], row['project'], asynchronous=True) and admission.fresh(c)
                     route, gpu, reason = admission.dispatch(row['model'], route, unknown)
@@ -294,11 +294,12 @@ class TaskService:
             if draining is not None and draining():
                 raise ServiceError('EXECUTOR_DRAINING', 'Executor is draining', 503)
             if allowed and reason is None:
+                scope = save_scope(c, admission.pool(row['model'])) if admission else None
                 inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id,
-                    execution_guard,dispatch_gpu_uuid)
-                    SELECT token,id,'DISPATCHING',%s,%s,%s,%s FROM tasks WHERE id=%s
+                    execution_guard,dispatch_gpu_uuid,guard_scope)
+                    SELECT token,id,'DISPATCHING',%s,%s,%s,%s,%s FROM tasks WHERE id=%s
                     AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''',
-                    (route, pool_id, model.get('execution_guard', False), gpu, task['id'])).rowcount
+                    (route, pool_id, model.get('execution_guard', False), gpu, scope, task['id'])).rowcount
                 if inserted:
                     return route
             if not (revision or reason) or not self._defer(c, row, reason or 'CAPACITY_REDUCED'):
@@ -338,6 +339,29 @@ class TaskService:
         delay = 1 if reason in ('CAPACITY_REDUCED', 'BACKEND_QUARANTINED') else 0
         c.execute("UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state,code,delay,row['id']))
         return True
+
+    def activate_isolated_capacity(self):
+        """Switch only dynamic admission while proven GPU exclusions remain in force."""
+        with self.db.transaction() as c:
+            m = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
+            self.expire_sync(c)
+            unknown = unresolved(c)
+            active = c.execute("""SELECT 1 FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED')
+                UNION ALL SELECT 1 FROM sync_activity WHERE state='DISPATCHING'
+                UNION ALL SELECT 1 FROM backend_activity WHERE state='DISPATCHING' LIMIT 1""").fetchone()
+            if (m['paused'] or not m['capacity_policy_hash'] or active or not unknown
+                    or any(not r['isolated_gpu_uuid'] for r in unknown)):
+                raise ServiceError('ISOLATION_REQUIRED','Require operating dynamic mode and only located UNKNOWNs',409)
+            policy, _, revision = configuration(self.settings)
+            a = Admission(c, self.settings, revision, include_preparing=True, unknown=unknown)
+            if (not a.budget or not a.budget.get('isolated_gpus') or not a.budget['global']['total']
+                    or not all(p.gateway_verified for p in policy.pools.values()) or not a.fresh(c)):
+                raise unavailable()
+            generation = c.execute("""UPDATE maintenance SET capacity_policy_hash=%s,generation=generation+1,
+                updated_at=now() WHERE id=1 RETURNING generation""",(revision,)).fetchone()['generation']
+            c.execute("""INSERT INTO maintenance_events(generation,action,reason) VALUES
+                (%s,'capacity-isolated','Activated fresh capacity with verified physical GPU exclusions')""",(generation,))
+            return a.budget['global']
 
     def set_capacity_mode(self, enforce):
         with self.db.transaction() as c:
@@ -406,12 +430,9 @@ class TaskService:
                         or row['lease_until'] <= datetime.now(timezone.utc)):
                     return False
                 activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (task['token'],)).fetchone()
-                if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
-                    c.execute("UPDATE backend_activity SET state='UNKNOWN',updated_at=now() WHERE token=%s", (task['token'],))
-                    error = ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Remote completion is unconfirmed; dispatch quarantined')
                 state, code, result_id = 'FAILED', error.code if error else None, None
                 if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
-                    state, code = 'FAILED', 'UNKNOWN_BACKEND_ACTIVITY'
+                    code = self.close_uncertain(c, task['token'])
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): code = 'DEADLINE_EXCEEDED'
                 elif error:
@@ -434,16 +455,22 @@ class TaskService:
         finally:
             if result and not preserve_result_file: self.store.remove(result['id'])
 
+    @staticmethod
+    def close_uncertain(c, token):
+        row = c.execute("""UPDATE backend_activity SET state='UNKNOWN',updated_at=now()
+            WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING state""", (token,)).fetchone()
+        return 'EXECUTION_NOT_STARTED' if row['state'] == 'RESOLVED' else 'UNKNOWN_BACKEND_ACTIVITY'
+
     def recover(self):
         # Durable dispatch intent fences remote work; local pre-dispatch work may retry.
         with self.db.transaction() as c:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+            self.expire_sync(c)
             rows = c.execute("SELECT * FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until<=now() FOR UPDATE SKIP LOCKED").fetchall()
             for row in rows:
                 activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (row['token'],)).fetchone()
                 if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
-                    c.execute("UPDATE backend_activity SET state='UNKNOWN',updated_at=now() WHERE token=%s", (row['token'],))
-                    state, code = 'FAILED', 'UNKNOWN_BACKEND_ACTIVITY'
+                    state, code = 'FAILED', self.close_uncertain(c,row['token'])
                 elif activity and activity['state']=='COMPLETED': state, code = 'FAILED', 'RESULT_NOT_COMMITTED'
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): state, code = 'FAILED', 'DEADLINE_EXCEEDED'

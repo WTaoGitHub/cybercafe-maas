@@ -42,3 +42,17 @@ MaaS 在发送推理前记录派发 token、逻辑模型和实际配置的上游
 迁移 `012` 保留旧账本。旧版本写入的记录没有派发路由证据，若仍为 `UNKNOWN` 则保持整库隔离，直至明确解决。候选 API 与全部执行器在一次排空窗口内升级，先暂停、检查在途及不确定活动，再迁移数据库、部署进程、验证双模型探针并恢复。正式共库前还需验证旧入口过渡、现网授权及实际 GPU 布局。不能用换路由或删任务清理不确定活动。
 
 回退时保留 `012` 和活动账本，在维护窗口确认执行状态后恢复。回退到旧准入代码会恢复整库隔离规则，须在隔离环境演练进程版本切换。
+
+## 受保护聚合路由的额度回收
+
+迁移 `017_execution_scope.sql` 保留历史活动。新策略适用于单个受信 Higress 服务的 OpenAI 兼容聚合路由，GPUStack 继续自动放置实例。按模型池配置，模型名称、池数和 GPU UUID 均可变化。
+
+1. 使用**独立、不可变的强制执行保护后端版本**。固定其镜像摘要和启动入口。该路由的首次派发、重试、滚动替换和兜底都必须经过强制守卫；变更到可绕过守卫的版本前须关闭并排空该路由。单次拓扑采样无法保证以后的网关配置。无法维持此部署契约时沿用原策略。PP 使用更新后的 `Dockerfile.execution-guard` 构建，缺少执行凭据会启动失败。Ovis 与 Unlimited 的受保护入口使用同一版 `execution_guard.py`。其他兼容后端复用相同的进程身份、签名探针和执行获权／终态契约。
+2. 在原容量 Compose 配置上叠加 `compose.guard-scope.yaml`。设置与控制端代码一致的 `MAAS_TASK_IMAGE`、实际网关容器名 `MAAS_GPUSTACK_CONTAINER`，以及所有者为 MaaS UID 10001、权限 0700 的 `MAAS_GATEWAY_EVIDENCE_DIR`。采集器只读取网关命名空间的回环 Envoy 管理接口，将目的实例及其服务地址写入专用文件。observer 只读挂载此目录，需要读取原有私有 GPU 验证密钥文件，且能访问原生 worker 的服务端口。多个独立网关实例共同承载一条路由时，应先具备覆盖所有这些网关的证据；本版采集器仅覆盖指定的网关。
+3. 同步升级数据库、所有 API、执行器和观察器，再在已核验的池上设置 `guard_backend_version` 为上述版本，保留 `gateway_verified: true`，同一路由的所有目录别名均须使用 `execution_guard: true`。观察窗口核对 `guard_topology`、`route_gpus`、`ready_ids` 及模型额度。观察器逐一核对 Higress 的正权重集群及其唯一地址、GPUStack 的运行实例和原进程对随机挑战的签名。缺少证据时，该池不给额度。每次派发引用当时的进程集合，重启产生的新进程不能领取旧授权。
+4. 失联、同步到期或执行器租约到期时，共用账本在原事务里关闭未获权的可信派发，记录原因 `Execution closed before any GPU grant`。已经获权的执行继续等待原进程可信终态。若上游返回成功响应但账本没有获权记录，系统记录契约冲突，保留或重新打开隔离。原请求保留结果状态，不会因为释放容量重跑或补写成功计量。
+5. 对已获权且有完整执行范围的 `UNKNOWN`，系统根据 GPU UUID 自动隔离。对旧账，运维核对该次请求**所有可能落点**及其物理 GPU 后，可运行 `python -m maas_platform.cli isolate-sync --token <原令牌> --gpu-uuid <原卡UUID> --reason <证据引用>`。异步对应 `isolate-backend`。该操作只记录范围；进程退出、成功和计量字段保持原有含义。找不到物理卡身份或不能排除其他落点时，保留原隔离。不得根据 worker 编号或 IP 猜测 UUID。
+6. 同步和异步准入均以健康卡重新计算预算。如果 Higress 仍可能选到故障卡，该聚合路由显示 `gateway_reaches_isolated_gpu`；已验证的独立单卡路由可以跳过故障卡。网关剔除原目的地后，使用签名确认的其余聚合目标恢复接单。故障卡重新出现时重新检查，迟到或越过观测窗口的请求还须在 GPU 获权时通过原进程集合和当前隔离检查。缺少可验证路由的其他池保守停发。原占用仅在有效预算已经排除其物理范围时从动态占用计数中扣除，显式全局、模型或项目硬限额仍约束原占用。查看 `capacity.json` 的有效预算、`isolated_gpus` 和各池原因；`unknown_capacity` 分别给出未结清总笔数、由 GPU 隔离覆盖的笔数和仍单独计入占用的笔数，`drain-status` 保留未结清活动。
+7. 常规启用继续走已有维护流程。若旧动态策略仍在服务，所有剩余活动均为落点已核实的 `UNKNOWN`，可用 `capacity-enforce-isolated` 切换到有健康容量的新策略。此入口要求没有正在准备或派发的请求，并在准入锁内复核新快照。该操作不会解除全局维护暂停，设备排空／关机仍要求原有终止证据。
+
+使用独立 PostgreSQL 的验收命令为 `PYTHONPATH=.:plugins/gpustack-replica python -m pytest -q tests/maas/test_execution_scope_integration.py tests/maas/test_gateway_scope.py`。`MAAS_TEST_DATABASE_URL` 必须只指向可销毁且名称以 `_test` 结尾的数据库，集成夹具会重建 schema。[故障隔离跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)

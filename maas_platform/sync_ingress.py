@@ -11,8 +11,8 @@ from starlette.concurrency import run_in_threadpool
 from .capacity_admission import Admission, follows_ready_capacity, unavailable
 from .controller_capacity import local_slots
 from .errors import ServiceError
-from .pp_ocr_execution import ATTEMPT_HEADER, finished
-from .quarantine import blocks, unresolved
+from .pp_ocr_execution import ATTEMPT_HEADER, check_success_headers, finished
+from .quarantine import save_scope, blocks, unresolved
 
 
 class SyncIngress:
@@ -43,9 +43,9 @@ class SyncIngress:
                 raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed', 409)
             route = model.get('upstream_model') or ''
             revision = maintenance['capacity_policy_hash']
-            admission = Admission(c, self.service.settings, revision, include_preparing=False) if revision else None
-            pool_id = admission.pool_ids.get(name) if admission else None
             unknown = unresolved(c)
+            admission = Admission(c, self.service.settings, revision, include_preparing=False, unknown=unknown) if revision else None
+            pool_id = admission.pool_ids.get(name) if admission else None
             gpu = None
             if admission:
                 route, gpu, reason = admission.dispatch(name, route, unknown)
@@ -61,11 +61,12 @@ class SyncIngress:
                     allowed = slots['total'] < self.service.settings.max_running and slots['own'] < self.service.settings.max_project_running
                 if not allowed:
                     raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
+                scope = save_scope(c, admission.pool(name)) if admission else None
                 token=uuid.uuid4().hex
                 c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,is_probe,dispatch_route,dispatch_pool_id,
-                    execution_guard,dispatch_gpu_uuid)
-                    VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s,%s,%s,%s,%s)""",
-                    (token,who.project,name,runtime,probe,route,pool_id,model.get('execution_guard',False),gpu))
+                    execution_guard,dispatch_gpu_uuid,guard_scope)
+                    VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s,%s,%s,%s,%s,%s)""",
+                    (token,who.project,name,runtime,probe,route,pool_id,model.get('execution_guard',False),gpu,scope))
                 return token, route
         raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks this inference scope',503)
 
@@ -82,6 +83,7 @@ class SyncIngress:
                 if metering is not None:
                     from .metering import persist
                     persist(c,row['project'],metering)
+            return row and row['state'] == 'RESOLVED'
 
     async def infer(self,who,body,probe=False,prepare_input=None,map_output=None):
         slots = self.request_slots
@@ -130,6 +132,9 @@ class SyncIngress:
                 async with self.client_factory(trust_env=False,follow_redirects=False,timeout=httpx.Timeout(runtime,connect=min(5,runtime))) as client:
                     async with client.stream('POST',self.service.settings.gpustack_url+'/v1/chat/completions',
                         headers=headers,json={**body,'model':route}) as response:
+                        gpu_ended = False
+                        if guarded and 200 <= response.status_code < 300:
+                            gpu_ended = await run_in_threadpool(check_success_headers, self.service.db, 'sync', token)
                         if response.headers.get('content-encoding','identity')!='identity':
                             raise ServiceError('OUTPUT_ENCODING','Compressed responses are unsupported',502)
                         raw=bytearray()
@@ -138,7 +143,8 @@ class SyncIngress:
                                 raise ServiceError('OUTPUT_SIZE','Inference output exceeds limit',502)
                             raw.extend(chunk)
                         terminal_status=response.status_code in (200,400,401,403,404,413,415,422)
-                        gpu_ended = guarded and await run_in_threadpool(finished,self.service.db,'sync',token)
+                        if guarded and not gpu_ended:
+                            gpu_ended = await run_in_threadpool(finished,self.service.db,'sync',token)
                         confirmed=terminal_status and (not guarded or gpu_ended)
                         if not confirmed:
                             if gpu_ended:
@@ -165,7 +171,9 @@ class SyncIngress:
         finally:
             # A crashed process may not reach this write. Its expired DISPATCHING
             # record becomes UNKNOWN on the next admission/status inspection.
-            await run_in_threadpool(self.finish,token,confirmed,successful,metering=metering)
+            fenced = await run_in_threadpool(self.finish,token,confirmed,successful,metering=metering)
+            if fenced:
+                raise ServiceError('EXECUTION_NOT_STARTED','Request closed before any GPU obtained execution rights',503)
 
     @staticmethod
     async def prepare(prepare_input):

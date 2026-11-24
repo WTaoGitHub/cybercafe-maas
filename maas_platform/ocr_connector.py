@@ -8,7 +8,7 @@ import time
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, AliasChoices, StrictBool
 from .errors import ServiceError
-from .pp_ocr_execution import ATTEMPT_HEADER, finished
+from .pp_ocr_execution import ATTEMPT_HEADER, check_success_headers, finished
 
 
 class ImageReference(BaseModel):
@@ -140,11 +140,14 @@ class OCRAdapter:
         kind = getattr(ctx, 'attempt_kind', 'task')
         if guarded:
             headers[ATTEMPT_HEADER] = kind + '.' + ctx.task['token']
+        gpu_ended = False
         try:
             async with asyncio.timeout(max(0, budget)):
                 # Higress can try multiple backends. MaaS sends once and records the outcome.
                 async with client.stream('POST', ctx.service.settings.gpustack_url+'/v1/chat/completions',
                                          headers=headers, content=body, timeout=timeout) as response:
+                    if guarded and 200 <= response.status_code < 300:
+                        gpu_ended = await asyncio.to_thread(check_success_headers, ctx.service.db, kind, ctx.task['token'])
                     if response.headers.get('content-encoding','identity') != 'identity':
                         raise ServiceError('OUTPUT_ENCODING', 'Compressed inference responses are unsupported')
                     raw = bytearray()
@@ -157,7 +160,7 @@ class OCRAdapter:
             if guarded and await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
                 raise ServiceError('BACKEND_RESULT_UNAVAILABLE', 'GPU finished but its response was unavailable') from None
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined') from None
-        if guarded and not await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
+        if guarded and not gpu_ended and not await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'GPU completion is unconfirmed')
         if status not in (200,400,401,403,404,413,415,422):
             if guarded:

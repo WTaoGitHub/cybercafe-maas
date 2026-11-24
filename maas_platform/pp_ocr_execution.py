@@ -30,6 +30,24 @@ def finished(db, kind, token):
                                  (token,)).fetchone())
 
 
+def check_success_headers(db, kind, token):
+    """A successful upstream response before start contradicts a guard-only route."""
+    table = TABLE[kind]
+    with db.transaction() as c:
+        row = c.execute(f'''SELECT gpu_finished_at IS NOT NULL AS ended,
+            guard_scope IS NOT NULL AND gpu_uuid IS NULL AS conflict FROM {table} WHERE token=%s''',
+                        (token,)).fetchone()
+        if not row or not row['conflict']:
+            return bool(row and row['ended'])
+        c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+        c.execute(f"""UPDATE {table} SET guard_conflict=true,state='UNKNOWN',updated_at=now(),
+                 resolution_reason='Upstream success without a GPU grant'
+                 WHERE token=%s AND guard_scope IS NOT NULL AND gpu_uuid IS NULL AND
+                 (state IN ('DISPATCHING','UNKNOWN') OR
+                  (state='RESOLVED' AND resolution_reason='Execution closed before any GPU grant'))""", (token,))
+        return False
+
+
 def router(db, settings):
     routes = APIRouter()
 
@@ -48,7 +66,7 @@ def router(db, settings):
         kind, token = body.attempt.split('.', 1)
         table = TABLE[kind]
         with db.transaction() as conn:
-            conn.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+            maintenance = conn.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
             row = conn.execute(f'''SELECT * FROM {table} WHERE token=%s AND execution_guard
                 AND dispatch_route=%s FOR UPDATE''', (token, body.route)).fetchone()
             if row and body.finished and (row['gpu_uuid'], row['gpu_instance']) == (body.gpu_uuid, body.instance):
@@ -65,8 +83,23 @@ def router(db, settings):
                           "AND deadline>clock_timestamp() AND lease_until>clock_timestamp()" if kind == 'task'
                           else 'SELECT model FROM sync_activity WHERE token=%s AND deadline>clock_timestamp()')
                 eligible = conn.execute(active, (token,)).fetchone()
-                if eligible and (not row['dispatch_gpu_uuid'] or not blocks(
-                        unresolved(conn), eligible['model'], body.route, row['dispatch_pool_id'], body.gpu_uuid)):
+                scope = row['guard_scope']
+                if scope is not None:
+                    # Check original authorization and current placement, including a rolling replacement.
+                    granted = conn.execute("""SELECT 1 FROM execution_scopes s,capacity_snapshot b,
+                        LATERAL jsonb_each(b.budget->'pools') p
+                        WHERE s.id=%s AND s.processes->>%s=%s AND b.id=1
+                          AND b.policy_hash=%s AND b.expires_at>clock_timestamp()
+                          AND (p.value->>'model_id')::int=%s AND p.value->'processes'->>%s=%s""",
+                        (scope,body.instance,body.gpu_uuid,maintenance['capacity_policy_hash'],
+                         row['dispatch_pool_id'],body.instance,body.gpu_uuid)).fetchone()
+                    if not granted:
+                        raise ServiceError('EXECUTION_NOT_GRANTED','Process outside verified dispatch scope',409)
+                unknown = unresolved(conn)
+                must_check = scope is not None or row['dispatch_gpu_uuid'] is not None
+                isolated = any(r['isolated_gpu_uuid'] == body.gpu_uuid for r in unknown)
+                if eligible and not isolated and (not must_check or not blocks(
+                        unknown, eligible['model'], body.route, row['dispatch_pool_id'], body.gpu_uuid)):
                     conn.execute(f'UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s WHERE token=%s',
                                  (body.gpu_uuid, body.instance, token))
                     return Response(status_code=204)

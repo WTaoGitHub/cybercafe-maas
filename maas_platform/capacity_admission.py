@@ -2,10 +2,10 @@
 from collections import Counter
 import json
 
-from .capacity import Policy, catalog_routes, policy_hash
+from .capacity import Policy, catalog_routes, policy_hash, limits
 from .config import private_text
 from .errors import ServiceError
-from .quarantine import blocks
+from .quarantine import blocks, unresolved
 
 
 def unavailable():
@@ -43,6 +43,42 @@ def read_budget(c, revision):
     return row['budget'] if row else None
 
 
+def isolate_budget(budget, unknown):
+    """Remove quarantined hardware from every pool before applying policy caps."""
+    rules = budget.get('isolation_policy')
+    debts = [r for r in unknown if rules and r.get('isolated_gpu_uuid')]
+    budget['unknown_capacity'] = {'unresolved': len(unknown), 'covered_by_gpu_exclusion': len(debts),
+                                  'charged_as_occupancy': len(unknown) - len(debts)}
+    cards = {r['isolated_gpu_uuid'] for r in debts}
+    if not cards:
+        return set()
+    for key, pool in budget['pools'].items():
+        rule = rules['pools'][key]
+        # Only these routes fence the destination on every GPU start, including late retries.
+        overlap = 'processes' in pool and (
+            'route_gpus' not in pool or not cards.isdisjoint(pool['route_gpus']))
+        guarded = ('processes' in pool and not overlap) or 'replica_routes' in pool
+        ready = {i: gpu for i, gpu in pool['ready_gpus'].items() if guarded and gpu not in cards}
+        pool['ready_gpus'] = ready
+        pool['ready_ids'] = [i for i in pool['ready_ids'] if str(i) in ready]
+        for field in ('processes', 'replica_routes'):
+            if field in pool:
+                pool[field] = {name: gpu for name, gpu in pool[field].items() if guarded and gpu not in cards}
+        total = min(pool['total'], len(ready) * rule['slots'])
+        if rule['limit'] is not None:
+            debt = sum(r.get('dispatch_pool_id') == pool['model_id'] for r in debts)
+            total = min(total, max(0, rule['limit'] - debt))
+        pool.update(limits(total, rule['sync_percent']))
+        if not total:
+            pool['reason'] = 'gateway_reaches_isolated_gpu' if overlap else 'execution_quarantine'
+    total = sum(p['total'] for p in budget['pools'].values())
+    if rules['global_limit'] is not None:
+        total = min(total, max(0, rules['global_limit'] - len(debts)))
+    budget['global'].update(limits(min(total, budget['global']['total']), rules['sync_percent']))
+    budget['isolated_gpus'] = sorted(cards)
+    return cards
+
+
 def queue_counts(c, project, names):
     # An attempt that could return to the queue keeps its original place reserved.
     return c.execute('''SELECT count(*) AS total, count(*) FILTER (WHERE t.project=%s) AS own,
@@ -53,7 +89,7 @@ def queue_counts(c, project, names):
 
 
 class Admission:
-    def __init__(self, c, settings, revision, *, include_preparing):
+    def __init__(self, c, settings, revision, *, include_preparing, unknown=None):
         policy, self.aliases, local_revision = configuration(settings)
         if revision != local_revision:
             raise unavailable()
@@ -69,13 +105,19 @@ class Admission:
         self.gpu = Counter()
         if not self.budget:
             return
+        if unknown is None:
+            unknown = unresolved(c)
+        excluded = isolate_budget(self.budget, unknown)
+        if not self.automatic:
+            self.project.update(r['project'] for r in unknown if r.get('isolated_gpu_uuid') in excluded)
         if self.automatic:
             self.project_limit = self.budget['global']['total']
         rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous,dispatch_gpu_uuid,dispatch_pool_id
                             FROM inference_slots
                             WHERE NOT backend_finished AND (%s OR dispatched)
+                              AND (isolated_gpu_uuid IS NULL OR NOT (isolated_gpu_uuid=ANY(%s::text[])))
                             GROUP BY model,project,asynchronous,dispatch_gpu_uuid,dispatch_pool_id''',
-                         (include_preparing,)).fetchall()
+                         (include_preparing, list(excluded))).fetchall()
         for row in rows:
             key, n = self.aliases.get(row['model']), row['n']
             self.project[row['project']] += n
@@ -97,6 +139,15 @@ class Admission:
         """Pick a fresh, admissible destination. The caller persists the pair before sending."""
         pool = self.pools.get(self.aliases.get(model))
         pool_id = self.pool_ids.get(model)
+        if pool and pool.guard_backend_version:
+            processes = self.pool(model).get('processes', {})
+            other = [r for r in unknown if not r.get('isolated_gpu_uuid')]
+            if blocks(other, model, route, pool_id):
+                return None, None, 'BACKEND_QUARANTINED'
+            if not processes:
+                return None, None, ('BACKEND_QUARANTINED' if self.pool(model).get('reason') in
+                                    ('execution_quarantine', 'gateway_reaches_isolated_gpu') else 'CAPACITY_REDUCED')
+            return route, None, None
         if not pool or not pool.replica_routes:
             return (None, None, 'BACKEND_QUARANTINED') if blocks(unknown, model, route, pool_id) else (route, None, None)
         observed = self.pool(model).get('replica_routes', {})

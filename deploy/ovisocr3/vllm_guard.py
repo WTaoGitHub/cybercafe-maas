@@ -78,6 +78,11 @@ class OvisExecutionMiddleware(BaseHTTPMiddleware):
         self.guard = ExecutionGuard.from_env(gpu, ENV_PREFIX)
 
     async def dispatch(self, request: Request, call_next):
+        if request.url.path == '/maas/guard-proof' and request.method == 'GET':
+            try:
+                return JSONResponse(self.guard.proof(request.query_params.get('nonce')))
+            except HTTPException as exc:
+                return JSONResponse({'detail': exc.detail}, status_code=exc.status_code)
         if request.url.path in ('/health', '/v1/models', '/metrics', '/version') and request.method == 'GET':
             return await call_next(request)
         if request.url.path != '/v1/chat/completions' or request.method != 'POST':

@@ -32,6 +32,7 @@ class Pool(BaseModel):
     hard_limit: PositiveInt | None = None
     queue_limit: PositiveInt
     sync_percent: Percent = 0
+    guard_backend_version: Name | None = None
     gateway_verified: bool = False
     replica_routes: dict[Name, ReplicaRoute] = Field(default_factory=dict)
     shared_gpu_vram_bytes: PositiveInt | None = None
@@ -39,6 +40,8 @@ class Pool(BaseModel):
     @model_validator(mode='after')
     def unique_pins(self):
         pins = list(self.replica_routes.values())
+        if self.guard_backend_version and (not self.gateway_verified or pins):
+            raise ValueError('Guard-only aggregate requires a verified aggregate route')
         if pins and (not self.gateway_verified or self.model_id not in {pin.model_id for pin in pins}
                      or len({pin.route_id for pin in pins}) != len(pins)
                      or len({pin.model_id for pin in pins}) != len(pins)
@@ -84,9 +87,11 @@ def catalog_routes(policy, catalog):
             name = model.get('upstream_model')
             if not isinstance(name, str) or not name or names.get(route_id, name) != name:
                 raise ValueError('Capacity route is absent or inconsistent in the model catalog')
-            if pool.replica_routes and model.get('execution_guard') is not True:
+            if (pool.replica_routes or pool.guard_backend_version) and model.get('execution_guard') is not True:
                 raise ValueError('GPU isolation requires execution guards on every logical alias')
             names[route_id] = name
+        if pool.guard_backend_version and len({names[r] for r in pool.routes.values()}) != 1:
+            raise ValueError('Guard-only aliases must use the same upstream route')
     for pool in policy.pools.values():
         for name, pin in pool.replica_routes.items():
             if names.get(pin.route_id, name) != name or any(
@@ -101,6 +106,8 @@ def policy_hash(policy, names, source):
     if not encoded['shared_gpu_vram_budgets']:
         del encoded['shared_gpu_vram_budgets']
     for pool in encoded['pools'].values():
+        if pool['guard_backend_version'] is None:
+            del pool['guard_backend_version']
         if not pool['replica_routes']:
             del pool['replica_routes']
         if pool['shared_gpu_vram_bytes'] is None:
@@ -279,7 +286,7 @@ class Capacity:
     def interrupted(self):
         self.pending.clear()
 
-    def update(self, observed, candidates, reasons):
+    def update(self, observed, candidates, reasons, proofs=None):
         if self.observed is not None:
             if observed <= self.observed:
                 raise ValueError('Out-of-order capacity observation')
@@ -290,6 +297,10 @@ class Capacity:
         active, pending, pools = set(), {}, {}
         for key, pool in self.policy.pools.items():
             ready = []
+            if pool.guard_backend_version and (not proofs or not proofs.get(key)
+                                               or candidates[key].keys() != proofs[key].keys()):
+                candidates[key] = {}
+                reasons[key] = 'guard_unverified'
             for ident, binding in candidates[key].items():
                 marker = (key, ident, binding)
                 first = self.pending.get(marker)
@@ -305,10 +316,23 @@ class Capacity:
                               aliases=sorted(pool.routes), model_id=pool.model_id, queue_limit=pool.queue_limit,
                               ready_ids=sorted(ready), pending_ids=sorted(candidates[key].keys() - set(ready)),
                               reason='ready' if ready else 'stabilizing' if candidates[key] else reasons[key])
+            pools[key]['ready_gpus'] = {str(i): candidates[key][i][1] for i in ready}
+            if pool.guard_backend_version:
+                # Include reachable processes still in the stabilization window.
+                pools[key]['route_gpus'] = sorted({candidates[key][i][1] for i in candidates[key]})
+                pools[key]['guard_topology'] = {
+                    'deployment': pool.model_id, 'version': pool.guard_backend_version,
+                    'routes': sorted(set(pool.routes.values())),
+                    'instances': {str(i): [process, candidates[key][i][1]]
+                                  for i, process in (proofs or {}).get(key, {}).items() if i in candidates[key]}}
+                pools[key]['processes'] = {proofs[key][i]: candidates[key][i][1] for i in ready}
             if pool.replica_routes:
                 pools[key]['replica_routes'] = {candidates[key][ident][-1]: candidates[key][ident][1] for ident in ready}
         self.active, self.pending = active, pending
         total = sum(pool['total'] for pool in pools.values())
         if self.policy.global_limit is not None:
             total = min(self.policy.global_limit, total)
-        return {'global': limits(total, self.policy.sync_percent), 'pools': pools}
+        return {'global': limits(total, self.policy.sync_percent), 'pools': pools,
+                'isolation_policy': {'sync_percent': self.policy.sync_percent, 'global_limit': self.policy.global_limit,
+                    'pools': {k: {'slots': p.slots_per_replica, 'limit': p.hard_limit, 'sync_percent': p.sync_percent}
+                              for k,p in self.policy.pools.items()}}}

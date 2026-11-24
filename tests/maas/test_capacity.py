@@ -174,7 +174,7 @@ def test_gpu_budget_revision_preserves_legacy_configuration_identity():
     legacy = policy.model_dump()
     del legacy['shared_gpu_vram_budgets']
     for pool in legacy['pools'].values():
-        del pool['replica_routes'], pool['shared_gpu_vram_bytes']
+        del pool['replica_routes'], pool['shared_gpu_vram_bytes'], pool['guard_backend_version']
     source = 'http://mock/v2/'
     expected = sha256(json.dumps([legacy, names, source], sort_keys=True).encode()).hexdigest()
     assert policy_hash(policy, names, source) == expected

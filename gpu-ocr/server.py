@@ -2,6 +2,7 @@
 import argparse
 import base64
 import os
+from pathlib import Path
 import subprocess
 import threading
 import time
@@ -25,7 +26,8 @@ def visible_gpu():
     return subprocess.check_output(['nvidia-smi', '--query-gpu=uuid', '--format=csv,noheader'], text=True).strip()
 
 
-guard = ExecutionGuard.from_env(visible_gpu()) if any(name.startswith('MAAS_PP_OCR_EXECUTION_') for name in os.environ) else None
+mandatory_guard = Path(__file__).with_name('.maas-required-guard').exists()
+guard = ExecutionGuard.from_env(visible_gpu()) if mandatory_guard or any(name.startswith('MAAS_PP_OCR_EXECUTION_') for name in os.environ) else None
 node_name = os.getenv('NODE_NAME') or (guard.identity['gpu_uuid'] if guard else visible_gpu())
 engine = RapidOCR(det_use_cuda=True, cls_use_cuda=True, rec_use_cuda=True,
                   intra_op_num_threads=2, inter_op_num_threads=2)
@@ -43,6 +45,12 @@ engine.text_cls = guard_classifier
 engine.text_rec = guard_recognizer
 app = FastAPI()
 lock = threading.Lock()
+
+@app.get('/maas/guard-proof')
+def guard_proof(nonce: str):
+    if not mandatory_guard:
+        raise HTTPException(404)
+    return guard.proof(nonce)
 
 @app.get('/health')
 def health():

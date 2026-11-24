@@ -14,6 +14,7 @@ from psycopg.types.json import Jsonb
 from .capacity import Capacity, Policy, catalog_routes, limits, policy_hash, ready_candidates
 from .config import private_text
 from .gpu_daily_watch import listing
+from .guard_topology import verify_processes
 
 
 LOG = logging.getLogger(__name__)
@@ -40,9 +41,14 @@ async def publish(conn, policy, observed, payload):
 
 def status(db):
     with db.transaction() as conn:
+        conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
         row = conn.execute('''SELECT generation, policy_hash, extract(epoch FROM observed_at) observed_at,
             extract(epoch FROM expires_at) expires_at, clock_timestamp() < expires_at fresh, budget
             FROM capacity_snapshot WHERE id=1''').fetchone()
+        if row and row['fresh']:
+            from .capacity_admission import isolate_budget
+            from .quarantine import unresolved
+            isolate_budget(row['budget'], unresolved(conn))
     if row is None:
         return {'mode': 'observe', 'state': 'waiting_for_snapshot', 'global': limits(0, 0), 'pools': {}}
     budget = row.pop('budget')
@@ -51,6 +57,11 @@ def status(db):
         budget['global'].update(limits(0, 0))
         for pool in budget['pools'].values():
             pool.update(limits(0, 0), reason='expired', ready_ids=[], pending_ids=[])
+            pool['ready_gpus'] = {}
+            if 'processes' in pool:
+                pool['processes'] = {}
+                pool['route_gpus'] = []
+                pool.pop('guard_topology', None)
             if 'replica_routes' in pool:
                 pool['replica_routes'] = {}
     row.update(observed_at=float(row['observed_at']), expires_at=float(row['expires_at']))
@@ -125,7 +136,7 @@ async def observe(settings, path, stop, report):
                         cursor = await conn.execute('SELECT pg_try_advisory_lock(%s) AS acquired', (WRITER_LOCK,))
                         if (await cursor.fetchone())['acquired']:
                             # Use this same session for publishing. Losing the writer lock invalidates the session.
-                            await sample(client, conn, settings.catalog_file, base, policy, changed, stop, report)
+                            await sample(client, conn, settings.catalog_file, base, policy, changed, stop, report, settings.pp_ocr_worker_keys_file)
                 except psycopg.Error:
                     LOG.warning('capacity_database_unavailable')
                 await asyncio.sleep(1)
@@ -135,7 +146,7 @@ async def observe(settings, path, stop, report):
             await asyncio.gather(*streams, return_exceptions=True)
 
 
-async def sample(client, conn, catalog_file, source, policy, changed, stop, report):
+async def sample(client, conn, catalog_file, source, policy, changed, stop, report, guard_keys=None):
     last_hash = None
     reported = None
     while not stop.is_set():
@@ -150,10 +161,12 @@ async def sample(client, conn, catalog_file, source, policy, changed, stop, repo
             observed = (await cursor.fetchone())['observed_at']
             native = await read_snapshot(client)
             candidates, reasons = ready_candidates(policy, names, *native)
+            proofs = await verify_processes(policy, names, native, candidates, reasons, guard_keys,
+                                            os.getenv('MAAS_GATEWAY_SCOPE_FILE'))
             # The native lists and catalog are not a transactional snapshot.
             if changed.is_set() or names != catalog_routes(policy, json.loads(catalog_file.read_text())):
                 raise ValueError('Bindings or topology changed during capacity observation')
-            budget = capacity.update(observed.timestamp(), candidates, reasons)
+            budget = capacity.update(observed.timestamp(), candidates, reasons, proofs)
         except (httpx.HTTPError, TimeoutError, OSError, ValueError, KeyError, TypeError, AttributeError):
             if last_hash is not None:
                 capacity.interrupted()

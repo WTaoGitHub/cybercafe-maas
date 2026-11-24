@@ -11,9 +11,9 @@ class Maintenance:
         self.service.expire_sync(c)
         tasks=c.execute("SELECT id,model,state FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') ORDER BY id").fetchall()
         backend=c.execute("""SELECT b.token,b.task_id,t.model,b.state,b.dispatch_route,b.dispatch_pool_id,
-            b.dispatch_gpu_uuid,b.gpu_uuid
+            b.dispatch_gpu_uuid,b.gpu_uuid,b.isolated_gpu_uuid,b.isolation_evidence,b.guard_scope,b.guard_conflict
             FROM backend_activity b JOIN tasks t ON t.id=b.task_id WHERE b.state IN ('DISPATCHING','UNKNOWN') ORDER BY b.token""").fetchall()
-        sync=c.execute("""SELECT token,model,state,dispatch_route,dispatch_pool_id,dispatch_gpu_uuid,gpu_uuid
+        sync=c.execute("""SELECT token,model,state,dispatch_route,dispatch_pool_id,dispatch_gpu_uuid,gpu_uuid,isolated_gpu_uuid,isolation_evidence,guard_scope,guard_conflict
             FROM sync_activity WHERE state IN ('DISPATCHING','UNKNOWN') ORDER BY token""").fetchall()
         return {'paused':row['paused'],'generation':row['generation'],'reason':row['reason'],
                 'active_tasks':tasks,'backend_activity':backend,'sync_activity':sync,

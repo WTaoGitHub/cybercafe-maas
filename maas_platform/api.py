@@ -131,6 +131,7 @@ def create_app(settings=None, auth=None):
         if code or status == 'FAILED':
             code = code or 'TASK_FAILED'
             message = {
+                'EXECUTION_NOT_STARTED': 'Request closed before GPU execution started.',
                 'UNKNOWN_BACKEND_ACTIVITY': 'The outcome of the backend execution could not be confirmed.',
                 'BACKEND_RESULT_UNAVAILABLE': 'GPU execution ended, but its response could not be delivered.',
                 'DEADLINE_EXCEEDED': 'The task exceeded its deadline.',

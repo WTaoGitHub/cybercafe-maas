@@ -1,4 +1,6 @@
 """Ask MaaS for exclusive authorization before entering the GPU engine."""
+import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -44,6 +46,15 @@ class ExecutionGuard:
             raise ValueError('Worker execution credential must be a private file')
         return cls(os.environ[prefix+'ORIGIN'], path.read_text().strip(), gpu_uuid,
                    os.environ[prefix+'ROUTE'], os.getenv(prefix+'CA_FILE'))
+
+    def proof(self, nonce):
+        if not isinstance(nonce, str) or not re.fullmatch('[0-9a-f]{64}', nonce):
+            raise HTTPException(400, 'Invalid challenge')
+        identity = self.identity
+        message = '\n'.join(('maas-guard-v1', nonce, identity['gpu_uuid'], identity['route'], identity['instance']))
+        secret = self.headers['Authorization'].removeprefix('Bearer ').encode()
+        return {'instance': identity['instance'],
+                'signature': hmac.new(secret, message.encode(), hashlib.sha256).hexdigest()}
 
     def report(self, attempt, *, finished):
         if not re.fullmatch(r'(task|sync)\.[0-9a-f]{32}', attempt):
