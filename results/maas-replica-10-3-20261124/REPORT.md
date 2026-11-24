@@ -20,6 +20,8 @@
 
 时间均为首次采到相应观测的时刻，典型间隔约 5 秒。GPUStack 先把失联实例记为 `Unreachable`，离线 worker 的实例清理和重调度从最后一次心跳起按原生 300 秒宽限计算。MaaS 的 180 秒从明确的资源不足 Pending 开始，按模型分别计时。 [原生清理逻辑](https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/server/worker_instance_cleaner.py) · [MaaS Pending 控制](../../maas_platform/replica_pending.py)
 
+备用跳板的独立读回和 E17 持久观察补齐了控制端时间。E17 在 14:06:02–03 记录可用 worker 为 10→9→3，剩余为 17、18、20。原生模型的 Ready 更新时间落在 14:06:03.144–.263，随后自动预算采样于 14:06:03.344，14:06:03.552 已从任务库读到代次 41077 的 8／2／6。物理关机时间缺少独立回执。14:20:15，API 返回 200，同步及异步路径使用的项目额度均为 8，队列、在途和 `UNKNOWN` 均为零。
+
 ## 验收结论
 
 | 模型 | 回落前 Ready／期望 | 回落后 Ready／期望 | 结果 |

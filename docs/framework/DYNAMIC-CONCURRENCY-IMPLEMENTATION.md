@@ -537,9 +537,7 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 在 16／8／3 个就绪副本上验证 27／7／20 自动预算。最终复测实际达到 27 路同时授权（16 同步＋11 异步）和 23 路 GPU 执行。两类异步任务持续积压时，执行器占满 11 个本地槽位。20 路预算和 7 路同步余量用当前线上策略做边界复核。最终 1,288 笔同步及 104 笔异步均完成可信终态和计量。试验期间临时给 Unlimited 和 Ovis 聚合路由启用空闲副本优先，结束后已撤回。10 台 Ready、自动额度 27／7／20 和零 `UNKNOWN` 已核对，10→3 实机验收待管理员安排。 [压测结果](../../results/maas-capacity-peak27-20261124/REPORT.md) · [CAPACITY-INC-010](https://github.com/WTaoGitHub/cybercafe-maas/issues/72)
 
-同日下午完成 10→3 的实机降额观察。14:06:03，GPUStack 在控制端可见的就绪副本降为 4／3／1，MaaS 同一秒读回总量 8、同步预留 2、异步上限 6。同步和异步路径的项目额度均降为 8。至 14:20，有效预算持续稳定，`UNKNOWN=0`。Ovis 与 Unlimited 期望副本分别收敛至 3 与 1。PP 的资源不足 Pending 被原生调度重试周期性打断，期望仍为 16，推理额度按 4 个就绪副本执行。 [缩容时间线](../../results/maas-replica-3-10-3-20261124/REPORT.md#103-现场回落) · [REPLICA-INC-002](https://github.com/WTaoGitHub/cybercafe-maas/issues/74)
-
-管理员随后关闭 7 台 worker，实机回落在首次观测到 3 台 Ready 的同轮将总额度从 27 降到 8，派发保持启用且 `UNKNOWN=0`。OvisOCR3 和 Unlimited-OCR-2 完成自动缩容，8 个健康实例均原样保留。PP-OCRv4 的 Pending 在原生周期性重调度时切回 `Analyzing`，导致 180 秒计时反复重置，期望副本仍为 16，完全收敛未通过。 [10→3 实机报告](../../results/maas-replica-10-3-20261124/REPORT.md) · [REPLICA-INC-002](https://github.com/WTaoGitHub/cybercafe-maas/issues/73)
+管理员随后关闭 7 台 worker。14:06:03，GPUStack 就绪副本降为 4／3／1，MaaS 同一秒读回总量 8、同步预留 2、异步上限 6，两个路径的项目额度均为 8。OvisOCR3 和 Unlimited-OCR-2 完成自动缩容，8 个健康实例均原样保留。PP-OCRv4 的 Pending 在原生周期性重调度时切回 `Analyzing`，导致 180 秒计时反复重置，期望副本仍为 16。至 14:20，有效预算保持新鲜，`UNKNOWN=0`。 [10→3 实机报告](../../results/maas-replica-10-3-20261124/REPORT.md) · [REPLICA-INC-002](https://github.com/WTaoGitHub/cybercafe-maas/issues/73)
 
 ### 实机试点与回退
 
