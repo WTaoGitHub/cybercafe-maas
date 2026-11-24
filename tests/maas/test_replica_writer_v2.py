@@ -543,7 +543,7 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.writer.request = unavailable
         self.assertEqual(await self.advance(), 'downscale_retry_scheduled')
         self.writer.request = self.request
-        self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['total'] = 16
+        self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['total'] = (1 << 30) + 16
         self.now += 60
         self.assertEqual(await self.advance(), 'idle')
         self.assertEqual(self.writes, [])

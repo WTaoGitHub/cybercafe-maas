@@ -36,6 +36,21 @@ class PendingTest(unittest.IsolatedAsyncioTestCase):
             result = await self.f.advance()
         return result
 
+    async def test_startup_headroom_alone_never_qualifies_existing_pending_for_contraction(self):
+        # One Pending PP fits the native budget, while a new MaaS request would not.
+        claim = 3584 << 20
+        self.f.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = str(claim)
+        self.f.set_running(2, ready=1)
+        self.f.rows['model-instances'][2]['state_message'] = 'No suitable workers.'
+        card = self.f.rows['workers'][4]
+        card['system_reserved']['vram'] = 0
+        card['status']['gpu_devices'][0]['memory'].update(total=16376 << 20, allocated=12 << 30)
+        await self.observe_for(190)
+        plan = self.f.observer.view['plan']
+        self.assertLess(plan['startup_vram']['free_after_reserve_bytes'], claim)
+        self.assertEqual(plan['pending_control'][1]['state'], 'pending_not_confirmed_resource_shortage')
+        self.assertEqual(self.f.writes, [])
+
     async def test_179_no_write_180_contracts_then_finishes_without_new_three_minutes(self):
         self.assertEqual(await self.observe_for(179), 'pending_observation')
         self.assertEqual(self.f.writes, [])
@@ -159,7 +174,7 @@ class PendingTest(unittest.IsolatedAsyncioTestCase):
         self.f.refresh_value = self.f.policy
         self.f.writer.model_caps = {1: 32}
         self.f.set_running(16, ready=4)
-        self.f.rows['workers'][4]['status']['gpu_devices'][0]['memory']['total'] = 16
+        self.f.rows['workers'][4]['status']['gpu_devices'][0]['memory']['total'] = (1 << 30) + 16
         rows = self.f.rows['model-instances']
         for row in rows.values():
             if row['state'] == 'pending':
@@ -219,7 +234,7 @@ class PendingTest(unittest.IsolatedAsyncioTestCase):
                     row.update(state='running', worker_id=4, gpu_indexes=[0], computed_resource_claim={'vram': {'0': 4}})
                     protected.add(ident)
                 self.f.rows['model-instances'][ident] = row
-        self.f.rows['workers'][4]['status']['gpu_devices'][0]['memory'].update(total=116, allocated=116)
+        self.f.rows['workers'][4]['status']['gpu_devices'][0]['memory'].update(total=(1 << 30) + 116, allocated=116)
         self.f.state.adopt(self.f.policy, self.f.rows['models'], expected_targets={1: 10, 2: 20, 3: 20})
         self.assertEqual(await self.observe_for(179), 'pending_observation')
         self.assertEqual(self.f.writes, [])

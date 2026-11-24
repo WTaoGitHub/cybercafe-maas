@@ -41,10 +41,11 @@ def model():
 
 
 def worker(ident=4):
+    # Synthetic model claims use byte-sized slots above the native reservation.
     return dict(id=ident, cluster_id=1, state='ready', unreachable=False, labels={},
-                maintenance=None, system_reserved={'vram': 0},
+                maintenance=None, system_reserved={'vram': 1 << 30},
                 status={'gpu_devices': [dict(index=0, uuid=f'gpu-{ident}', type='cuda',
-                                             memory={'total': 8, 'allocated': 0})]})
+                                             memory={'total': (1 << 30) + 8, 'allocated': 0})]})
 
 
 class ReconcileTest(unittest.IsolatedAsyncioTestCase):

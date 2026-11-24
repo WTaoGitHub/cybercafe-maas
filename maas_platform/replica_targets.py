@@ -6,6 +6,16 @@ from maas_replica_policy import solve, summarize
 from .replica_resources import resolve_resources, positive_bytes
 
 
+STARTUP_RESERVE_FLOOR = 1 << 30
+STARTUP_RESERVE_PERCENT = 10
+
+
+def startup_free_bytes(card):
+    proportional = (card.total_vram * STARTUP_RESERVE_PERCENT + 99) // 100
+    reserve = max(card.reserved_vram, STARTUP_RESERVE_FLOOR, proportional)
+    return min(card.free_vram, max(0, card.total_vram - card.allocated_vram - reserve))
+
+
 def plan_controlled_capacity(policy, devices, models, instances, *, incremental=False):
     policy = resolve_resources(policy, models)
     devices = reserve_native_claims(devices, instances)
@@ -17,7 +27,11 @@ def plan_controlled_capacity(policy, devices, models, instances, *, incremental=
         planning_models.append(row)
     # Canonical numeric text is only for the legacy pure planner comparison;
     # native model fields and the eventual write payload stay unchanged.
-    plan = plan_capacity(policy, devices, planning_models, instances,
+    # Apply headroom only to new starts. Native capacity below still governs
+    # contraction, including deployments that predate this admission rule.
+    startup_devices = {key: replace(card, free_vram=startup_free_bytes(card))
+                       for key, card in devices.items()}
+    plan = plan_capacity(policy, startup_devices, planning_models, instances,
                          parallel=policy.startup.parallel_startup, incremental=incremental)
     rules, execution = policy.effective(None)
     cards = sorted(devices.values(), key=lambda card: (card.worker_id, card.index))
@@ -102,7 +116,11 @@ def plan_controlled_capacity(policy, devices, models, instances, *, incremental=
     return {**plan, **preview, 'capacity_target': capacity,
             'capacity_kind': 'independent_upper_bound' if incremental else 'joint_inventory',
             'downscale_capacity_proof': proof, 'target_authority': 'policy_and_current_capacity',
-            'resource_claim_source': 'gpustack_model_env', 'vram_claim_bytes': policy.claims}
+            'resource_claim_source': 'gpustack_model_env', 'vram_claim_bytes': policy.claims,
+            'startup_vram': {'reserve_floor_bytes': STARTUP_RESERVE_FLOOR,
+                             'reserve_percent': STARTUP_RESERVE_PERCENT,
+                             'free_after_reserve_bytes': sum(card.free_vram for card in startup_devices.values()
+                                                             if card.kind == 'cuda')}}
 
 
 def reserve_native_claims(devices, instances):
