@@ -17,6 +17,7 @@ from maas_bootstrap.service import create_app
 from maas_bootstrap.worker import NativeDockerWorker, WORKER_CA, apply
 from test_client import Fetcher, setup
 from test_service import CODE, publish
+from test_startup import boot, ready
 
 
 GPU = 'GPU-11111111-2222-4333-8444-555555555555'
@@ -255,6 +256,42 @@ def test_running_apply_reuses_identity_and_exited_worker_requires_reprovision(di
     with pytest.raises(BootstrapError,match='HANDOFF_REPROVISION_REQUIRED'):
         apply(settings,backend=runtime,fetcher=f,permit_fetcher=p)
     assert runtime.creates==runtime.starts==p.calls==1
+
+
+def test_boot_recovers_after_io_stall_outlasts_first_window(diskless, boot, monkeypatch):
+    from maas_bootstrap import cli, startup
+
+    settings, envelope, _ = diskless
+    options, reports = boot
+    runtime = Runtime()
+    permits = PermitFetcher(permit(str(uuid4())))
+    results = []
+    def run_apply(argv, timeout):
+        assert argv[-3:] == ['apply', '--trigger', 'boot']
+        try:
+            result = apply(settings, 'boot', Fetcher(envelope), runtime, permit_fetcher=permits)
+        except BootstrapError as error:
+            return 1, json.dumps({'code': error.code})
+        results.append(result)
+        return 0, json.dumps(result)
+
+    run_window = startup.start
+    monkeypatch.setattr(cli, 'LocalSettings', lambda _: settings)
+    monkeypatch.setattr(startup, 'start', lambda settings, **kwargs:
+                        run_window(settings, timeout=25, probe=ready, runner=run_apply, **options))
+    def stalled():
+        raise BootstrapError('RUNTIME_PROBE_DOCKER_INSPECT_TIMEOUT')
+    with monkeypatch.context() as fault:
+        fault.setattr(runtime, 'inspect', stalled)
+        assert cli.main(['boot']) == 75
+    assert reports[-1]['reason'] == 'RUNTIME_PROBE_DOCKER_INSPECT_TIMEOUT'
+    assert permits.calls == runtime.creates == runtime.starts == 0
+    assert cli.main(['boot']) == 0
+    assert cli.main(['boot']) == 0
+    assert [result['code'] for result in results] == ['APPLIED', 'UNCHANGED']
+    assert all(result['native_state'] == 'ready' and result['worker_id'] == 41
+               and result['gpu_uuid'] == GPU for result in results)
+    assert permits.calls == runtime.creates == runtime.starts == 1
 
 
 def test_signed_diskless_release_requires_tls_and_omits_cluster_token(diskless):

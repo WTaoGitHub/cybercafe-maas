@@ -1,6 +1,7 @@
 """Clone-side verified configuration and private bootstrap state."""
 import base64
 import contextlib
+import errno
 import fcntl
 import hashlib
 import json
@@ -22,11 +23,13 @@ SAFE_REVISION = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,79}\Z')
 IMAGE_DIGEST = re.compile(r'[a-z0-9][a-z0-9./:_-]*@sha256:[0-9a-f]{64}\Z')
 DISKLESS_POLICY = 'gpu-external-id'
 DEFAULT_CLUSTER_ID = 1
+TRANSIENT_IO_ERRNOS = {errno.EIO, errno.ESTALE, errno.ETIMEDOUT}
 
 
 class BootstrapError(Exception):
-    def __init__(self, code):
+    def __init__(self, code, *, retry_boot=False):
         self.code = code
+        self.retry_boot = retry_boot
         super().__init__(code)
 
 
@@ -54,7 +57,9 @@ def read_file(path, secret=False):
             if len(raw) > MAX_BYTES:
                 raise BootstrapError('LOCAL_FILE_TOO_LARGE')
             return raw
-    except OSError:
+    except OSError as error:
+        if error.errno in TRANSIENT_IO_ERRNOS:
+            raise BootstrapError('LOCAL_FILE_IO_ERROR', retry_boot=True) from None
         raise BootstrapError('LOCAL_FILE_UNAVAILABLE') from None
 
 
@@ -240,6 +245,7 @@ class LocalState:
 
     @contextlib.contextmanager
     def lock(self):
+        """Yield the flock descriptor; the last inherited copy releases the lock."""
         self.root.mkdir(mode=0o700, parents=True, exist_ok=True)
         s = self.root.lstat()
         if not stat.S_ISDIR(s.st_mode) or s.st_mode & 0o077 or s.st_uid not in (0,os.geteuid()):
@@ -248,7 +254,7 @@ class LocalState:
         try:
             try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
             except BlockingIOError:raise BootstrapError('BOOTSTRAP_BUSY') from None
-            yield
+            yield fd
         finally:os.close(fd)
 
     def read(self, name):

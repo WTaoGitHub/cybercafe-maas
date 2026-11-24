@@ -12,17 +12,33 @@ WORKER_CA='/run/maas-worker-server-ca.pem'
 LAYOUT_KEYS=('GPUSTACK_CACHE_DIR','GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT',
              'GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME','GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_VOLUMES')
 
+# Only fixed probe names may enter the boot journal. Arguments can contain credentials.
+DOCKER_PROBES = {'image': 'DOCKER_IMAGE_INSPECT', 'inspect': 'DOCKER_INSPECT',
+                 'info': 'DOCKER_INFO', 'ps': 'DOCKER_PS'}
+HOST_PROBES = {'nvidia-container-cli': 'NVIDIA_CONTAINER_INFO', 'nvidia-smi': 'NVIDIA_SMI',
+               'findmnt': 'FINDMNT'}
+
 
 def run(args, optional=False):
+    probe = DOCKER_PROBES.get(args[1]) if args[0] == 'docker' else HOST_PROBES.get(args[0])
+    prefix = f'RUNTIME_PROBE_{probe}' if probe else 'RUNTIME_COMMAND'
     try:
-        p=subprocess.run(args,capture_output=True,text=True,timeout=20)
-        if p.returncode:
-            if optional:return None
-            raise BootstrapError('RUNTIME_COMMAND_FAILED')
-        return p.stdout.strip()
-    except (OSError,subprocess.TimeoutExpired):
-        if optional:return None
-        raise BootstrapError('RUNTIME_COMMAND_UNAVAILABLE') from None
+        result = subprocess.run(args, capture_output=True, text=True, timeout=20)
+    except subprocess.TimeoutExpired:
+        raise BootstrapError(prefix + '_TIMEOUT') from None
+    except OSError:
+        raise BootstrapError(prefix + '_UNAVAILABLE') from None
+    if result.returncode:
+        # A failed inspection of daemon state must not authorize a new identity.
+        if optional or probe == 'DOCKER_IMAGE_INSPECT':
+            message = result.stderr.strip().removeprefix('Error response from daemon: ').removeprefix('Error: ')
+            missing = {f'no such {kind}: {args[-1]}'.lower() for kind in ('object', 'container', 'image')}
+            if message.lower() in missing:
+                if optional:
+                    return None
+                raise BootstrapError('PINNED_WORKER_IMAGE_UNAVAILABLE')
+        raise BootstrapError(prefix + '_FAILED')
+    return result.stdout.strip()
 
 
 def guard_clone_host():

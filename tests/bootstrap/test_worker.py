@@ -1,4 +1,5 @@
 import json,os
+import subprocess
 from pathlib import Path
 import pytest
 from maas_bootstrap.client import BootstrapError,LocalState,atomic_json
@@ -139,3 +140,35 @@ def test_retired_controller_still_requires_linux_root(monkeypatch,system,euid):
     monkeypatch.setattr(w.platform,'system',lambda:system)
     monkeypatch.setattr(w.os,'geteuid',lambda:euid)
     with pytest.raises(BootstrapError,match='LINUX_ROOT_REQUIRED'):guard_clone_host()
+
+
+@pytest.mark.parametrize(('failure', 'code'), [
+    (subprocess.TimeoutExpired('private-arguments', 20), 'RUNTIME_PROBE_DOCKER_INSPECT_TIMEOUT'),
+    (FileNotFoundError(), 'RUNTIME_PROBE_DOCKER_INSPECT_UNAVAILABLE'),
+    (None, 'RUNTIME_PROBE_DOCKER_INSPECT_FAILED'),
+])
+def test_unknown_container_inspection_stops_before_enrollment(monkeypatch, failure, code):
+    from maas_bootstrap import worker
+    def inspect(args, **kwargs):
+        if failure:
+            raise failure
+        return subprocess.CompletedProcess(args, 1, '', 'daemon unavailable')
+    monkeypatch.setattr(worker.subprocess, 'run', inspect)
+    with pytest.raises(BootstrapError) as error:
+        worker.NativeDockerWorker().inspect()
+    assert error.value.code == code
+
+
+def test_confirmed_absent_worker_is_eligible_for_enrollment(monkeypatch):
+    from maas_bootstrap import worker
+    monkeypatch.setattr(worker.subprocess, 'run', lambda args, **kwargs:
+                        subprocess.CompletedProcess(args, 1, '', 'Error: No such object: ' + worker.NAME))
+    assert worker.NativeDockerWorker().inspect() is None
+
+
+def test_missing_pinned_image_requires_operator_action(monkeypatch):
+    from maas_bootstrap import worker
+    monkeypatch.setattr(worker.subprocess, 'run', lambda args, **kwargs:
+                        subprocess.CompletedProcess(args, 1, '', 'Error response from daemon: No such image: pinned'))
+    with pytest.raises(BootstrapError, match='PINNED_WORKER_IMAGE_UNAVAILABLE'):
+        worker.run(['docker', 'image', 'inspect', 'pinned'])

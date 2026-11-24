@@ -1,6 +1,6 @@
 """Local clone bootstrap commands. Never display credential payloads or raw exceptions."""
-import argparse,json,sys
-from .client import BootstrapError,LocalSettings,LocalState,MAX_BYTES,prepare,read_file
+import argparse,json,os,sys
+from .client import BootstrapError,LocalSettings,LocalState,MAX_BYTES,TRANSIENT_IO_ERRNOS,prepare,read_file
 
 
 def main(argv=None):
@@ -54,6 +54,16 @@ def main(argv=None):
             from .worker import apply
             result=apply(settings,trigger=a.trigger)
         print(json.dumps(result));return 0
-    except BootstrapError as e:print(json.dumps({'code':e.code}));return 1
+    except BootstrapError as e:
+        print(json.dumps({'code':e.code}))
+        if a.action == 'boot' and (e.retry_boot or e.code == 'BOOTSTRAP_BUSY'):
+            return os.EX_TEMPFAIL
+        return 1
+    except OSError as error:
+        if error.errno in TRANSIENT_IO_ERRNOS:
+            print(json.dumps({'code': 'BOOTSTRAP_IO_UNAVAILABLE'}))
+            return os.EX_TEMPFAIL if a.action == 'boot' else 1
+        print(json.dumps({'code': 'BOOTSTRAP_INTERNAL_ERROR'}))
+        return 1
     except Exception:print(json.dumps({'code':'BOOTSTRAP_INTERNAL_ERROR'}));return 1
 if __name__=='__main__':raise SystemExit(main())

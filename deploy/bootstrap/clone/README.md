@@ -25,9 +25,13 @@ sudo /opt/maas/bin/maas-worker-bootstrap status
 
 2026-11-11 起，普通及自动发证镜像启用 `maas-worker-bootstrap.timer`，开机满 30 秒触发一次准备任务。`maas-worker-bootstrap.service` 排在 `multi-user.target` 和供应商命名单元之后，由 timer 独立拉起；不再作为系统完成基本启动、网络或 Docker 启动的前置条件。检查主机名保护、供应商命名完成、Docker、单张 GPU UUID 和 Bootstrap HTTPS 健康入口，条件未满足时每隔 10 秒重试，整个任务最多 600 秒。系统整体为 degraded 不影响这些独立条件的判断。
 
-就绪后先应用网络边界，再执行现有 E5 `apply --trigger boot`，继续验签、自动申请许可与核对原生注册。安装网络 overlay 的环境中，drop-in 或现存策略文件会使边界成为必要条件，边界失败时不启动 worker；准备任务自身负责有限重试，不依赖失败单元的 `Restart` 恢复。每次边界执行最多 45 秒、apply 最多 150 秒，均受整个任务剩余时间限制；子进程超时终止整组执行，systemd 总超时为 620 秒。失败原因写入 journal 和 `/run/maas-worker-startup/last-result.json`，超时后停止自动尝试，人工恢复使用 `systemctl restart maas-worker-bootstrap.service`。`boot-check` 只检查就绪条件，不写身份、发放许可或更改网络。
+就绪后先应用网络边界，再执行 E5 `apply --trigger boot`，验签、申请许可并核对原生注册。边界和 apply 每次分别限时 45 秒和 150 秒，受本轮剩余时间约束。超时后向子进程组发送 SIGKILL，再等最多 2 秒。仍在退出的直接子进程持有同一把启动锁，后续引导遇到占锁会延后。
 
-非自动发证镜像仍由 `.path` 等待许可文件，但该路径触发一次性 timer；timer 触发后保持已触发状态，避免许可文件持续存在导致超时后无限重启。容器保持 `restart=no`，防止绕过开机配置核验。成功后的服务不常驻轮询，容器随后退出仍需人工恢复。已有镜像升级时必须一并更新 Python 模块、service、timer、path 和网络 drop-in，移除旧 bootstrap/boundary 的 `multi-user.target.wants` 链接；在母版只 enable timer，不使用 `--now`。
+含 [BOOTSTRAP-INC-001 修复](https://github.com/WTaoGitHub/cybercafe-maas/issues/78) 的镜像在同一次开机内支持多轮恢复。600 秒内仍遇到 Docker、GPU、本地只读运行时探测、配置服务或原生注册确认等暂时性故障时，boot 返回 75。systemd 在 2 分钟后重新执行整轮检查。systemd 自身的 620 秒启动超时也触发延迟重试。NFS 未决操作、身份冲突、验签失败等需要处理的状态保留原有保护。成功后服务保持 `active (exited)`。可用 `systemctl show maas-worker-bootstrap.service -p Result -p NRestarts -p ExecMainStatus`、journal 和 `/run/maas-worker-startup/last-result.json` 核对原因与次数。
+
+交付时同步更新引导模块和 service。已失败且正在运行的旧版节点需要在获准维护时重新加载 unit 并启动引导一次。验收新版本时，先核对同一 GPU UUID、worker ID、原生 `Ready` 及新心跳，再通过目标模型入口完成一笔推理。真实部署及推理验收进度见上述 Issue。
+
+非自动发证镜像由 `.path` 等待许可文件并触发一次性 timer。后续重试由准备服务的退出结果决定。容器保持 `restart=no`，成功后的服务不常驻轮询，容器随后退出仍需人工恢复。已有镜像升级时一并更新 Python 模块、service、timer、path 和网络 drop-in，移除旧 bootstrap/boundary 的 `multi-user.target.wants` 链接。在母版只 enable timer，不使用 `--now`。
 
 ## 离线镜像安装
 

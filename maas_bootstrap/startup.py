@@ -1,5 +1,6 @@
 """Bounded, late worker startup. Never changes hostname, VM state or Docker service."""
 import json
+from functools import partial
 import os
 from pathlib import Path
 import re
@@ -15,13 +16,21 @@ from .worker import guard_clone_host
 STATE = Path('/run/maas-worker-startup')
 BOUNDARY_POLICY = Path('/etc/maas/clone-boundary.json')
 CODE = re.compile(r'[A-Z][A-Z0-9_]{0,95}\Z')
+TRANSIENT = {
+    'BOOT_COMMAND_TIMEOUT', 'BOOT_COMMAND_UNAVAILABLE', 'BOOT_CONFIG_SERVICE_WAITING',
+    'BOOT_DOCKER_WAITING', 'BOOT_GPU_WAITING', 'BOOT_HOSTNAME_SERVICE_WAITING',
+    'BOOT_SYSTEM_WAITING', 'BOOT_START_TIMEOUT', 'BOOTSTRAP_BUSY', 'BOOTSTRAP_IO_UNAVAILABLE',
+    'CONFIG_RATE_LIMITED', 'CONFIG_SERVICE_UNAVAILABLE', 'LOCAL_FILE_IO_ERROR', 'NATIVE_SERVER_UNREACHABLE',
+    'REGISTRATION_UNCONFIRMED', 'WORKER_START_UNAVAILABLE',
+}
 
 
-def command(argv, timeout):
+def command(argv, timeout, *, lock_fd=None):
     """Kill the whole attempt on timeout; never expose child stderr or credentials."""
     try:
         process = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                   text=True, start_new_session=True)
+                                   text=True, start_new_session=True,
+                                   pass_fds=() if lock_fd is None else (lock_fd,))
     except OSError:
         raise BootstrapError('BOOT_COMMAND_UNAVAILABLE') from None
     try:
@@ -31,7 +40,11 @@ def command(argv, timeout):
             os.killpg(process.pid, signal.SIGKILL)
         except ProcessLookupError:
             pass
-        process.communicate()
+        try:
+            process.communicate(timeout=2)
+        except subprocess.TimeoutExpired:
+            process.stdout.close()
+            raise BootstrapError('BOOT_COMMAND_STILL_RUNNING', retry_boot=True) from None
         raise BootstrapError('BOOT_COMMAND_TIMEOUT') from None
     return process.returncode, stdout
 
@@ -107,7 +120,7 @@ def child_result(argv, timeout, runner):
 
 def start(settings, *, config_path='/etc/maas/bootstrap.json', timeout=600, interval=10,
           state_dir=STATE, boundary_required=None,
-          runner=command, probe=readiness, clock=time.monotonic, sleeper=time.sleep, report=None):
+          runner=None, probe=readiness, clock=time.monotonic, sleeper=time.sleep, report=None):
     if timeout <= 0 or interval <= 0:
         raise BootstrapError('BOOT_WAIT_POLICY_INVALID')
     if os.geteuid() != 0 or sys.platform != 'linux':
@@ -118,7 +131,10 @@ def start(settings, *, config_path='/etc/maas/bootstrap.json', timeout=600, inte
     boundary_required = boundary_required or BOUNDARY_POLICY.exists()
     report = report or (lambda result: print(json.dumps(result), flush=True))
     state = LocalState(state_dir)
-    with state.lock():
+    with state.lock() as lock_fd:
+        # If systemd replaces the parent, an unfinished child still owns the boot lock.
+        if runner is None:
+            runner = partial(command, lock_fd=lock_fd)
         deadline = clock() + timeout
         attempt = 0
         reason = 'BOOT_SYSTEM_WAITING'
@@ -145,10 +161,11 @@ def start(settings, *, config_path='/etc/maas/bootstrap.json', timeout=600, inte
                 return result
             except BootstrapError as error:
                 reason = error.code
-                if reason.startswith('NFS_'):
+                if reason.startswith('NFS_') or error.retry_boot:
                     record({'code': reason, 'attempt': attempt})
                     raise
                 record({'code': 'BOOT_WAITING', 'reason': reason, 'attempt': attempt})
             sleeper(max(0, min(interval, deadline - clock())))
         record({'code': 'BOOT_START_TIMEOUT', 'reason': reason, 'attempt': attempt})
-        raise BootstrapError('BOOT_START_TIMEOUT')
+        retry_boot = reason in TRANSIENT or reason.startswith('RUNTIME_PROBE_')
+        raise BootstrapError('BOOT_START_TIMEOUT', retry_boot=retry_boot)

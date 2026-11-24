@@ -1,12 +1,16 @@
 [Unit]
 Description=Wait for clone readiness and join GPUStack after basic system startup
 After=multi-user.target network-online.target docker.service swcfghostname.service
+StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
 ExecStart=/opt/maas/bin/maas-worker-bootstrap boot
 RemainAfterExit=yes
 TimeoutStartSec=620
+Restart=on-failure
+RestartPreventExitStatus=1 2
+RestartSec=2min
 UMask=0077
 StandardOutput=journal
 StandardError=journal

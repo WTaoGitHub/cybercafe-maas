@@ -1,5 +1,8 @@
 """Late startup retries do not register until prerequisites and the fence succeed."""
+import errno
 import json
+import io
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -217,3 +220,83 @@ def test_command_timeout_kills_attempt_process_group(monkeypatch):
     with pytest.raises(BootstrapError, match='BOOT_COMMAND_TIMEOUT'):
         s.command(['test'], .01)
     assert calls == [(12345, s.signal.SIGKILL)]
+
+
+def test_unreaped_child_keeps_lock_until_it_can_exit(monkeypatch, tmp_path):
+    class StalledProcess:
+        pid = 12345
+        stdout = io.StringIO()
+
+        def communicate(self, timeout):
+            assert 0 < timeout <= 2
+            raise subprocess.TimeoutExpired('test', timeout)
+
+    process = StalledProcess()
+    inherited = []
+    def spawn(argv, *, pass_fds, **kwargs):
+        inherited.append(os.dup(pass_fds[0]))
+        return process
+
+    monkeypatch.setattr(s.subprocess, 'Popen', spawn)
+    monkeypatch.setattr(s.os, 'killpg', lambda pid, sig: None)
+    state = LocalState(tmp_path/'startup')
+    try:
+        with state.lock() as lock_fd, pytest.raises(BootstrapError) as error:
+            s.command(['test'], 1, lock_fd=lock_fd)
+        assert error.value.code == 'BOOT_COMMAND_STILL_RUNNING' and error.value.retry_boot
+        assert process.stdout.closed
+        with pytest.raises(BootstrapError, match='BOOTSTRAP_BUSY'), state.lock():
+            pytest.fail('Previous attempt still owns the lock')
+    finally:
+        for descriptor in inherited:
+            os.close(descriptor)
+    with state.lock():
+        pass
+
+
+@pytest.mark.parametrize(('failure', 'status'), [
+    ('RUNTIME_PROBE_DOCKER_INSPECT_TIMEOUT', 75),
+    ('CONFIG_SERVICE_UNAVAILABLE', 75),
+    ('REGISTRATION_UNCONFIRMED', 75),
+    ('NFS_OPERATION_PENDING', 1),
+    ('LOCAL_IDENTITY_INVALID', 1),
+    ('RELEASE_VERIFICATION_FAILED', 1),
+    ('WORKER_START_BLOCKED', 1),
+])
+def test_boot_cli_exit_status_after_failure_window(boot, monkeypatch, failure, status):
+    from maas_bootstrap import cli
+    kwargs, reports = boot
+    original = s.start
+    def run_window(settings, **unused):
+        return original(settings, timeout=11, probe=ready, **kwargs,
+                        runner=lambda *_: (1, json.dumps({'code': failure})))
+    monkeypatch.setattr(cli, 'LocalSettings', lambda path: SETTINGS)
+    monkeypatch.setattr(s, 'start', run_window)
+    assert cli.main(['boot']) == status
+    assert reports[-1].get('reason', reports[-1]['code']) == failure
+
+
+@pytest.mark.parametrize(('number', 'boot_status'), [(errno.EIO, 75), (errno.EACCES, 1)])
+def test_unreadable_settings_retried_only_for_storage_errors(monkeypatch, number, boot_status):
+    from maas_bootstrap import cli
+    def fail_open(*args):
+        raise OSError(number, 'unavailable')
+    monkeypatch.setattr(os, 'open', fail_open)
+    assert cli.main(['boot']) == boot_status
+    assert cli.main(['apply']) == 1
+
+
+def test_boot_retries_after_state_sync_io_error(boot, monkeypatch):
+    from maas_bootstrap import cli
+    options, reports = boot
+    original = s.start
+    monkeypatch.setattr(cli, 'LocalSettings', lambda _: SETTINGS)
+    monkeypatch.setattr(s, 'start', lambda settings, **kwargs:
+                        original(settings, probe=ready, runner=lambda *_: (0, '{"code":"APPLIED"}'), **options))
+    def stalled_sync(fd):
+        raise OSError(errno.EIO, 'device unavailable')
+    with monkeypatch.context() as fault:
+        fault.setattr(os, 'fsync', stalled_sync)
+        assert cli.main(['boot']) == 75
+    assert cli.main(['boot']) == 0
+    assert reports[-1]['code'] == 'APPLIED'

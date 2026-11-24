@@ -99,6 +99,9 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     assert (root/'opt/maas/lib/maas_bootstrap/delivery.py').is_file()
     units=root/'etc/systemd/system'
     assert not (units/'multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
+    service = (units/'maas-worker-bootstrap.service').read_text().splitlines()
+    assert {'Type=oneshot', 'RemainAfterExit=yes', 'Restart=on-failure',
+            'RestartPreventExitStatus=1 2', 'RestartSec=2min'} <= set(service)
     timer=units/'timers.target.wants/maas-worker-bootstrap.timer'
     path=units/'multi-user.target.wants/maas-worker-bootstrap.path'
     assert timer.is_symlink()==automatic and path.is_symlink()!=automatic
