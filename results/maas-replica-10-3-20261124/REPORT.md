@@ -2,6 +2,8 @@
 
 2026-11-24，管理员关闭 7 台 worker，GPUStack 确认剩余 3 台 Ready。MaaS 派发额度随 Ready 副本从 27 降至 8。OvisOCR3、Unlimited-OCR-2 完成自动缩容，PP-OCRv4 的缩容观察计时被周期性原生重调度打断。因此本轮判定为**派发降额与健康副本保护通过，三模型期望副本完全收敛未通过**。 [REPLICA-INC-002](https://github.com/WTaoGitHub/cybercafe-maas/issues/73)
 
+**14:43 修复复测通过。** 同一组 3 台 Ready worker 上，调节器自动将 PP-OCRv4 从 4/16 收敛到 4/4。下文保留原故障记录。 [修复复测](#issue-73-修复复测)
+
 ## 现场时间轴
 
 | 北京时间 | 观察 |
@@ -49,3 +51,19 @@
 用原生实例 ID 核对缩减前后的 8 个 Ready 实例，集合完全一致。采样期间 MaaS 派发未暂停，`UNKNOWN=0`，调节器无规划超时和悬而未决的写入。此轮只做只读观测，业务请求成功率仍需用实际推理请求独立测量。
 
 GPUStack 调度器默认每 180 秒重新将符合条件的 Pending 入队，与 MaaS 要求的连续 180 秒观察窗口形成冲突。现逻辑在一次 `Analyzing` 快照中丢弃此前观察记录。修复方向是在同一缺资源情形的短暂原生复算前后保留已核实的观察时长，写入前仍用新鲜快照核对 Pending、资源和健康实例。 [原生调度周期](https://github.com/gpustack/gpustack/blob/v2.2.3/gpustack/scheduler/scheduler.py#L85) · [故障追踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/73)
+
+## Issue 73 修复复测
+
+2026-11-24，仅更新 MaaS 调节器所在容器。恢复自动调节前核对了原策略修订号 8、三模型的期望数及全部健康实例 ID。验证期间通过 GPUStack 原生读回和调节器状态取得 72 份样本，副本数量全部由调节器调整。
+
+| 北京时间 | PP-OCRv4 就绪／期望 | 验证结果 |
+| --- | --- | --- |
+| 14:36:54 | 4/16 | 新版调节器恢复 Apply，开始重新累计有效观察时间。 |
+| 14:37:31–14:37:36 | 4/16 | 首次捕获重新分析。进入时已累计 25.9 秒，12 个实例重新确认缺资源时仍为 25.9 秒。 |
+| 14:40:13 | 4/15 | 已确认资源不足 181.5 秒，首次采到期望数减少。 |
+| 14:40:34–14:40:39 | 4/14 | 缩容中再次重新分析。确认缺资源后接续 193.8 秒，继续逐个缩减。 |
+| 14:42:39–14:43:10 | 4/4 | Pending 清零，进入 holding，并在后续采样中保持。 |
+
+样本覆盖全部 12 次逐一减量。PP-OCRv4 原有的 4 个健康实例 ID 全程一致，OvisOCR3 保持 3/3，Unlimited-OCR-2 保持 1/1。14:43 的独立读回确认 3 台 worker 就绪、写入日志为空、派发开启、MaaS 有效额度为 8／2／6（总量／同步预留／异步上限），`UNKNOWN=0`。本轮验证范围为副本调节和派发状态，未产生客户推理流量。
+
+本地调节器回归 214 项通过，2 项因缺少固定版本 GPUStack 运行时跳过。新增用例回放 4/16 到 4/4，覆盖资源、实例身份、失败原因、暂停、采样中断及重新分析超时等边界，并验证最后一次原生读回中 Pending 原因变化会阻止写入。 [回归用例](../../tests/maas/test_replica_pending.py) · [计时规则](../../docs/framework/REPLICA-PENDING-IMPLEMENTATION.md) · [修复提交](https://github.com/WTaoGitHub/cybercafe-maas/commit/6d38e24)

@@ -539,6 +539,8 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 管理员随后关闭 7 台 worker。14:06:03，GPUStack 就绪副本降为 4／3／1，MaaS 同一秒读回总量 8、同步预留 2、异步上限 6，两个路径的项目额度均为 8。OvisOCR3 和 Unlimited-OCR-2 完成自动缩容，8 个健康实例均原样保留。PP-OCRv4 的 Pending 在原生周期性重调度时切回 `Analyzing`，导致 180 秒计时反复重置，期望副本仍为 16。至 14:20，有效预算保持新鲜，`UNKNOWN=0`。 [10→3 实机报告](../../results/maas-replica-10-3-20261124/REPORT.md) · [REPLICA-INC-002](https://github.com/WTaoGitHub/cybercafe-maas/issues/73)
 
+14:42:39，修复后的调节器在同一组 3 台 worker 上完成 PP-OCRv4 的 12 次自动减量，到达 4/4。原 8 个健康副本全部保留，MaaS 额度维持 8／2／6。 [Issue 73 实机复测](../../results/maas-replica-10-3-20261124/REPORT.md#issue-73-修复复测)
+
 ### 实机试点与回退
 
 1. 在当前测试环境接入 OvisOCR3 异步路径。复用已验收的上游路由，先以一笔合成图片验证输入、模型响应、终态、结果和唯一计量。与 PP-OCRv4 图片及 Unlimited-OCR-2 NFS 文档跑完三模型共库基线。同步混合流量使用已支持同步的入口。测试任务使用专有幂等键前缀，逐笔登记并回收任务、产物和用量收据。 [OvisOCR3 上游契约](../../results/ovisocr3/20261118-deploy/REPORT.md) · [模型接入 #62](https://github.com/WTaoGitHub/cybercafe-maas/issues/62)
