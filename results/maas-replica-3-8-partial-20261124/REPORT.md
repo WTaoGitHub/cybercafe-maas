@@ -58,3 +58,20 @@
 19:34:02 至 19:42:38 共 173 个有效样本，间隔约 3 秒。同一组 10 台 worker 持续 Ready，切换时的 18 个 Running 实例全程保留。四次期望数变化与四次调节器写入确认对应，在途峰值 1，未观察到未知写入。测试人员未手动修改副本数。
 
 Ovis 关闭了自动重启，其新 Error 随即退出启动名额计数。PP 开启了原生自动重启，末次读取时新实例的重启计数为 5，仍占一个启动名额。该 PP 实例由 GPUStack 调度到一张已有 Unlimited Error 的卡；MaaS 将这张卡排除在容量预算之外，写入副本数时没有指定实际落卡。现有证据不足以归因于显存或 NFS。调节器继续运行，10→3 仍待高位验收条件满足。 [Ovis 创建失败 #83](https://github.com/WTaoGitHub/cybercafe-maas/issues/83) · [PP 恢复跟踪 #77](https://github.com/WTaoGitHub/cybercafe-maas/issues/77) · [调节器验收 #39](https://github.com/WTaoGitHub/cybercafe-maas/issues/39)
+
+## 故障定位补录（2026-11-24，北京时间）
+
+本次仅查询 GPUStack v2.2.3 管理 API、其留存的实例日志以及可访问 worker 的系统日志。19:52 复核时，10 台 worker 仍 Ready，PP、Ovis、Unlimited 分别为 13/14、6/7、1/3。以下数字沿用该轮 GPUStack 的 worker ID 与实例 ID。
+
+| 实例 | 核实的现象 | 待核实事项 |
+| --- | --- | --- |
+| PP 381，worker 24 | 归档采样四次捕获 Starting 后约 3 秒转 Error。单独观测第 11 次原生重试时，20:10:03 为 Scheduled，20:10:04 为 Starting，20:10:06 为 Error。原生重试计数和启动 PID 都发生变化，模型期望数保持 14。 | 当前及上一次实例日志为空，日志索引无条目。缺容器退出码、OOMKilled、故障时显存峰值及内核记录，仍需主机取证。 |
+| Ovis 380，worker 19 | 本机镜像检查未命中，随后拉取到 95%。19:39:30 Docker 报 `panic: bolt.DB.meta(): invalid meta pages` 并退出。同一秒，worker 读取本机 Docker 拉取进度流时返回 `IncompleteRead`。 | 已定位工作负载创建中断的直接原因。无盘系统的底层存储为何损坏，需平台侧证据。 |
+| Unlimited 373，worker 24 | 日志有应用启动完成、健康检查和模型列表 HTTP 200，随后出现 `Fatal Python error: Bus error`。19:30:40 前后，SGLang 报调度子进程退出码 -7（SIGBUS）。清理期间，Python 导入代码又遇到 `[Errno 5] Input/output error`。 | -7 是子进程状态。文件映射、共享内存、根盘和 NFS 均不能仅由该条日志定因；清理时的 I/O 错误也不能倒推为第一个故障。 |
+| Unlimited 377，worker 20 | 原生状态为 Error，自动重启关闭，重启计数 0。当前和上一次日志均返回空，日志索引无条目。 | 退出码、信号及底层原因均未知。不可沿用实例 373 或已被替换的早前实例的诊断。 |
+
+**Ovis 宿主证据。** 已用实际 GPU UUID 核对 worker 身份。根目录和 Docker 数据目录位于同一 ext4 设备。本次开机的内核日志最早在 17:31:32 记录 ext4 错误，早于 Ovis 本次扩容；19:34:23 记录 inode 位图损坏，19:39:33 起多次记录目录块校验失败。Docker 随后多次启动失败，19:39:39 触发 systemd 启动频率限制。现场 `docker.service` 为 failed，`containerd` 为 active，根盘使用率约 13%，ext4 错误计数为 25。GPUStack 仍收到该 worker 的心跳。镜像传输中断有明确的本机故障时间线，尚无证据确认镜像仓库、共享权重或某个模型导致根盘损坏。
+
+**PP 显存证据。** 在 worker 24 上，两个 Error 的原生显存申报仍为 12 GiB 和 3.5 GiB。19:59 的 GPUStack 遥测显示该卡总量 16,376 MiB、已申报 15,872 MiB、实际使用 433 MiB。这是故障后的快照。GPUStack v2.2.3 的 worker 对工作负载不存在及多种异常状态共用 `Inference server exited or unhealthy.`，该文本不能区分容器退出、健康检查失败或 OOM。
+
+**下一份证据。** 已从指定跳板按用户给出的地址复核 worker 24 和 20；两台的 SSH 默认端口均在认证前返回 `Connection refused`。请通过 VPC 控制台保留现场，先取 SSH 监听、Docker/containerd 服务状态、失败容器的 ExitCode/OOMKilled/FinishedAt 和相邻内核日志，再决定修复方式。本次没有手动修改副本、触发重试、重启服务或节点。 [PP #77](https://github.com/WTaoGitHub/cybercafe-maas/issues/77) · [Unlimited #80](https://github.com/WTaoGitHub/cybercafe-maas/issues/80) · [Ovis #83](https://github.com/WTaoGitHub/cybercafe-maas/issues/83)
