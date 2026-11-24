@@ -19,6 +19,25 @@ def fields(row, keys):
     return {key: row[key] for key in keys.split() if key in row}
 
 
+def controller_evidence(status, model_ids, pending):
+    view = fields(status, 'observed_at revision snapshot_complete eligible_worker_ids '
+                  'policy_target effective_startup_limit global_inflight cluster_inflight '
+                  'startup_reservation pressure_mode execution_state writes_enabled '
+                  'state reason ownership write_attempted')
+    decisions = status.get('pending_control', {})
+    view['pending_control'] = {
+        str(i): fields(decisions[str(i)], 'state observed_for_s target qualified')
+        for i in model_ids if str(i) in decisions
+    }
+    retry = status.get('downscale_retry', {})
+    if retry.get('model_id') in model_ids:
+        view['downscale_retry'] = fields(retry, 'model_id reason failures delay_s')
+    if pending is not None and pending.model_id in model_ids:
+        view['pending_action'] = {'model_id': pending.model_id, 'before': pending.before,
+                                  'after': pending.after}
+    return view
+
+
 async def observe(args):
     cluster = int(os.environ['MAAS_REPLICA_APPLY_CLUSTER'])
     authorized = set(map(int, json.loads(os.environ['MAAS_REPLICA_APPLY_MODEL_CAPS'])))
@@ -50,9 +69,7 @@ async def observe(args):
                 models=[fields(r, 'id replicas ready_replicas updated_at') for r in selected],
                 instances=[fields(r, 'id model_id worker_id state created_at updated_at')
                            for r in instances if r['model_id'] in model_ids],
-                controller=fields(status, 'observed_at revision snapshot_complete eligible_worker_ids '
-                                  'policy_target effective_startup_limit global_inflight cluster_inflight '
-                                  'startup_reservation pressure_mode execution_state writes_enabled'),
+                controller=controller_evidence(status, model_ids, pending),
                 ownership=fields(owner, 'generation paused last_write_at'),
                 pending_write=pending is not None,
             )
