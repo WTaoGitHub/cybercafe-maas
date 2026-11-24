@@ -66,7 +66,7 @@ class ReconcileObserve:
                 self.signature, self.stable_since = signature, now
             plan = await asyncio.to_thread(plan_controlled_capacity, runtime_policy, devices,
                                            list(map(_namespace, models.values())),
-                                           list(map(_namespace, instances.values())))
+                                           list(map(_namespace, instances.values())), incremental=True)
             decisions = (self.pending_control.observe(runtime_policy, devices, selected, instances, native,
                                                       pending=pending) if self.pending_control else {})
             targets = plan['policy_target'].copy()

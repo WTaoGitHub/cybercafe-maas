@@ -232,8 +232,9 @@ class ReconcileWriter:
             if (not plan.get('parallel_safe') and any(sum(snapshot.deployments[key].healthy) < count
                                                      for key, count in plan['current'].items())):
                 return 'deployment_changed_or_waiting'
-            first = [key for key in candidates if plan['current'][key] < rules[key].min_replicas]
-            ident = min(first or candidates, key=lambda key: (rules[key].priority, key))
+            ident = next((key for key in plan['startup_order'] if key in candidates), None)
+            if ident is None:
+                return 'startup_plan_unavailable'
             model = snapshot.deployments[ident]
             total, local = inflight(snapshot.deployments, self.cluster)
             if total + 1 > global_max or local + 1 > cluster_max:

@@ -6,7 +6,7 @@ from maas_replica_policy import solve, summarize
 from .replica_resources import resolve_resources, positive_bytes
 
 
-def plan_controlled_capacity(policy, devices, models, instances):
+def plan_controlled_capacity(policy, devices, models, instances, *, incremental=False):
     policy = resolve_resources(policy, models)
     devices = reserve_native_claims(devices, instances)
     planning_models = []
@@ -18,7 +18,7 @@ def plan_controlled_capacity(policy, devices, models, instances):
     # Canonical numeric text is only for the legacy pure planner comparison;
     # native model fields and the eventual write payload stay unchanged.
     plan = plan_capacity(policy, devices, planning_models, instances,
-                         parallel=policy.startup.parallel_startup)
+                         parallel=policy.startup.parallel_startup, incremental=incremental)
     rules, execution = policy.effective(None)
     cards = sorted(devices.values(), key=lambda card: (card.worker_id, card.index))
     indexes = {(card.worker_id, card.index): i for i, card in enumerate(cards)}
@@ -73,8 +73,15 @@ def plan_controlled_capacity(policy, devices, models, instances):
         budgets = [min(max(0, card.total_vram - card.reserved_vram),
                        card.free_vram + min(card.allocated_vram, reclaimed[i]))
                    for i, card in enumerate(cards)]
-        capacity = solve(rules, budgets, eligible, plan['current'],
-                         execution.get('solve_timeout_s', 1))
+        if incremental:
+            # An independent upper bound can prove shortage even if the
+            # model had exclusive access to every compatible card.
+            capacity = {key: min(rule.max_replicas,
+                                 sum(budgets[i] // rule.vram_claim_bytes for i in eligible[key]))
+                        for key, rule in rules.items()}
+        else:
+            capacity = solve(rules, budgets, eligible, plan['current'],
+                             execution.get('solve_timeout_s', 1))
     else:
         # Unknown placement cannot justify resource-driven shrink. An explicit
         # policy cap can still correct external over-scaling, subject to health.
@@ -93,6 +100,7 @@ def plan_controlled_capacity(policy, devices, models, instances):
     preview = summarize(rules, execution, targets, plan['current'],
                         plan['global_inflight'], plan['cluster_inflight'])
     return {**plan, **preview, 'capacity_target': capacity,
+            'capacity_kind': 'independent_upper_bound' if incremental else 'joint_inventory',
             'downscale_capacity_proof': proof, 'target_authority': 'policy_and_current_capacity',
             'resource_claim_source': 'gpustack_model_env', 'vram_claim_bytes': policy.claims}
 

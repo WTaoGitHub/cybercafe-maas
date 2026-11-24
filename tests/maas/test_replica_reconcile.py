@@ -71,14 +71,14 @@ class ReconcileTest(unittest.IsolatedAsyncioTestCase):
         self.now = 106
         after = await self.tick()
         self.assertEqual(after['state'], 'observe_ready')
-        self.assertEqual(after['policy_target'], {1: 2})
+        self.assertEqual(after['policy_target'], {1: 1})
         self.assertEqual(after['trigger'], 'current_state_reconcile')
         self.assertEqual(after['subscription_state'], 'polling_fallback')
         self.assertFalse(after['writes_enabled'])
         self.assertIsNone(after['event'])
         self.assertEqual(json.loads((self.root/'state/status.json').read_text())['state'], 'observe_ready')
         self.now += 1000
-        self.assertEqual((await self.tick())['policy_target'], {1: 2})
+        self.assertEqual((await self.tick())['policy_target'], {1: 1})
 
     async def test_partial_api_failure_resets_stability_but_not_to_cached_capacity(self):
         await self.tick(); self.now += 6
@@ -100,7 +100,7 @@ class ReconcileTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_new_native_resource_claim_resets_stability_and_changes_next_plan(self):
         await self.tick(); self.now += 6
-        self.assertEqual((await self.tick())['policy_target'], {1: 2})
+        self.assertEqual((await self.tick())['vram_claim_bytes'], {1: 4})
         self.rows['models'][1]['env']['GPUSTACK_MODEL_VRAM_CLAIM'] = '8'
         changed = await self.tick()
         self.assertEqual(changed['state'], 'capacity_stabilizing')

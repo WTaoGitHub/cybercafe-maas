@@ -1,5 +1,6 @@
 """Replica planning shared by the GPUStack plugin and MaaS."""
 from dataclasses import dataclass
+from time import monotonic
 
 from maas_replica_policy import ARRIVAL_EVENTS, solve, summarize
 
@@ -61,7 +62,8 @@ def plan_snapshot(policy, event, devices, model_rows, instance_rows):
     return plan_capacity(policy, devices, model_rows, instance_rows, event=event)
 
 
-def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, parallel=False):
+def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, parallel=False,
+                  incremental=False):
     """Pure current-capacity preview; no event or execution authority is implied."""
     rules, execution = policy.effective(event)
     models = {model.id: model for model in model_rows if model.id in rules}
@@ -95,16 +97,6 @@ def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, par
     if parallel:
         budgets, reservation_reason = startup_reservations(
             policy.cluster, cards, model_rows, instance_rows)
-    # Keep all current allocations in place. Native pending replicas have
-    # first use of the new capacity before we request any additional slots.
-    if ((parallel and reservation_reason != 'reserved') or
-            (not parallel and any(running.get(key, 0) < count for key, count in current.items()))):
-        target = current.copy()
-        waiting = True
-    else:
-        target = solve(rules, budgets, eligible, current,
-                       execution.get("solve_timeout_s", 1), additive=True)
-        waiting = False
     if parallel:
         visible = {m.id: sum(row.model_id == m.id for row in instance_rows) for m in model_rows}
         healthy = {m.id: sum(row.model_id == m.id and row.state == 'running'
@@ -118,12 +110,64 @@ def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, par
         global_inflight = sum(max(0, model.replicas - model.ready_replicas) for model in model_rows)
         cluster_inflight = sum(max(0, model.replicas - running.get(model.id, 0))
                                for model in model_rows if model.cluster_id == policy.cluster)
+    # Native pending replicas get first use of capacity. Parallel starts
+    # require a known placement and withhold every card with unfinished work.
+    waiting = ((parallel and reservation_reason != 'reserved') or
+               (not parallel and any(running.get(key, 0) < count for key, count in current.items())))
+    target = current.copy()
+    details = {}
+    if incremental:
+        limit = 32 if parallel else 1
+        slots = max(0, min(execution['scale_up_batch_max'],
+                           min(limit, execution['max_inflight_global']) - global_inflight,
+                           min(limit, execution['max_inflight_per_cluster']) - cluster_inflight))
+        order, timed_out = [], False
+        if slots and not waiting:
+            target, order, timed_out = plan_startup_batch(
+                rules, budgets, eligible, current, slots, execution.get('solve_timeout_s', 1))
+        details = {'startup_order': order, 'startup_plan_timed_out': timed_out}
+    elif not waiting:
+        target = solve(rules, budgets, eligible, current,
+                       execution.get("solve_timeout_s", 1), additive=True)
     preview = summarize(rules, execution, target, current, global_inflight, cluster_inflight)
     return {"revision": policy.revision, "event": event, "cluster": policy.cluster,
             "global_inflight": global_inflight, "cluster_inflight": cluster_inflight,
             "waiting_for_managed_instances": waiting,
             "parallel_safe": parallel and reservation_reason == 'reserved',
-            "startup_reservation": reservation_reason, **preview}
+            "startup_reservation": reservation_reason, **preview, **details}
+
+
+def plan_startup_batch(rules, budgets, eligible, current, slots, timeout, *, clock=monotonic):
+    """Prove a short sequence without moving any existing replicas."""
+    deadline = clock() + timeout
+    remaining = budgets.copy()
+    counts = current.copy()
+    limits = {key: rule.max_replicas for key, rule in rules.items()}
+    weight = sum(rule.weight for rule in rules.values() if rule.max_replicas)
+    order = []
+    for _ in range(slots):
+        total = sum(counts[key] for key in rules if limits[key]) + 1
+        # Fill missing service minimums, then prefer the largest weighted
+        # quota deficit within each priority tier.
+        ranked = sorted((key for key in rules if counts[key] < limits[key]), key=lambda key: (
+            counts[key] >= rules[key].min_replicas, rules[key].priority,
+            counts[key] * weight - total * rules[key].weight, key))
+        for key in ranked:
+            cost = rules[key].vram_claim_bytes
+            slot = None
+            for card in eligible[key]:
+                if clock() >= deadline:
+                    return counts, order, True
+                if remaining[card] >= cost and (slot is None or remaining[card] < remaining[slot]):
+                    slot = card
+            if slot is not None:
+                remaining[slot] -= cost
+                counts[key] += 1
+                order.append(key)
+                break
+        else:
+            break
+    return counts, order, False
 
 
 def startup_reservations(cluster, cards, models, instances):

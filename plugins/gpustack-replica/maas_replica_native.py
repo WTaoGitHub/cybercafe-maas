@@ -1,5 +1,6 @@
 """Bounded GPUStack v2.2.3 management adapter."""
 from collections import defaultdict
+import asyncio
 import hashlib
 import json
 
@@ -41,7 +42,7 @@ class NativeAdapter:
     async def _pages(self, path):
         items = []
         ids = set()
-        for page in range(1, 11):
+        for page in range(1, 101):
             result = await self.request("GET", f"{path}?perPage=100&page={page}")
             batch = result["items"]
             for row in batch:
@@ -62,9 +63,12 @@ class NativeAdapter:
         raise ValueError("Management API inventory exceeded the supported bound")
 
     async def read(self):
-        workers = await self._pages("/v2/workers")
-        models = await self._pages("/v2/models")
-        instances = await self._pages("/v2/model-instances")
+        # Active workers and retained records can span more than ten pages.
+        # Keep the full write-side inventory read within the executor budget.
+        async with asyncio.timeout(12):
+            workers = await self._pages("/v2/workers")
+            models = await self._pages("/v2/models")
+            instances = await self._pages("/v2/model-instances")
         return self.snapshot(workers, models, instances)
 
     def snapshot(self, workers, models, instances):
