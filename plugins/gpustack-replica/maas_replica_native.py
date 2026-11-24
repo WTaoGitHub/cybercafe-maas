@@ -11,6 +11,16 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
+def resource_pending(row):
+    return row['state'] == 'pending' and str(row.get('state_message') or '').startswith(
+        ('No suitable workers', 'No available workers'))
+
+
+def unassigned(row):
+    return (row.get('worker_id') is None and not row.get('gpu_indexes')
+            and not row.get('deleted_at') and row.get('computed_resource_claim') is None)
+
+
 def model_settings(row):
     from gpustack.schemas.models import ModelUpdate
 
@@ -115,15 +125,13 @@ class NativeAdapter:
                                                    recovery_binding=binding(model, recovery=True, serializer=self.serializer),
                                                    instance_ids=tuple(r['id'] for r in sorted(rows[model['id']], key=lambda r: r['id'])),
                                                    pending_unassigned_ids=tuple(r['id'] for r in rows[model['id']]
-                                                       if r['state'] == 'pending' and r.get('worker_id') is None
-                                                       and not r.get('gpu_indexes') and not r.get('deleted_at')
-                                                       and r.get('computed_resource_claim') is None))
+                                                       if r['state'] == 'pending' and unassigned(r)))
         identity = [(i, m.cluster_id, m.owner_id, m.binding, m.replicas, m.healthy)
                     for i, m in sorted(deployments.items())]
         placement = sorted((row["id"], row["model_id"], row["state"], row["worker_id"],
                             row.get("gpu_indexes"), row.get('deleted_at'),
                             digest(row.get('distributed_servers')),
-                            digest(row.get('computed_resource_claim'))) for row in instances)
+                            digest(row.get('computed_resource_claim')), resource_pending(row)) for row in instances)
         inventory = [(key, sorted(value.items())) for key, value in gpu_inventory.items()]
         fingerprint = digest([sorted(inventory), identity, placement])
         return Snapshot(self.revision, fingerprint, deployments, gpu_inventory=dict(gpu_inventory))

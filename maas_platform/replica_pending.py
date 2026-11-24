@@ -4,13 +4,16 @@ import hashlib
 import json
 import math
 import time
+from types import SimpleNamespace
 from uuid import uuid4
 
+from maas_replica_native import resource_pending, unassigned
 from .replica_contract import private_json
 from .replica_state import atomic_private
 from .replica_targets import reserve_native_claims
 
 OBSERVATION_SECONDS = 180
+MAX_REANALYSIS_SECONDS = 60
 
 
 def digest(value):
@@ -43,12 +46,17 @@ class PendingControl:
             raise ValueError('Invalid pending control state')
         for key, row in data['models'].items():
             if (not key.isdecimal() or not isinstance(row, dict)
-                    or row.get('phase') not in ('observing', 'contracting', 'holding')
+                    or row.get('phase') not in ('observing', 'reanalyzing', 'contracting', 'holding')
                     or any(type(row.get(k)) not in (int, float) or not math.isfinite(row[k])
                            or row[k] < 0 for k in ('since', 'last'))
+                    or (row['phase'] == 'reanalyzing' and (
+                        type(row.get('last_confirmed')) not in (int, float)
+                        or not row['since'] <= row['last_confirmed'] <= row['last']))
                     or type(row.get('target')) is not int or row['target'] < 1
                     or type(row.get('expected')) is not int or row['expected'] < 0
                     or any(not isinstance(row.get(k), str) or len(row[k]) != 64 for k in ('context', 'binding'))
+                    or ('retry_context' in row and (
+                        not isinstance(row['retry_context'], str) or len(row['retry_context']) != 64))
                     or type(row.get('revision')) is not int or row['revision'] < 1
                     or not isinstance(row.get('session'), str) or len(row['session']) != 32
                     or not isinstance(row.get('healthy_ids'), list)
@@ -64,11 +72,12 @@ class PendingControl:
         if not math.isfinite(now):
             raise ValueError('Invalid observation clock')
         scope = digest([policy.cluster, policy.owner, sorted(policy.models)])
-        budgets = reserve_native_claims(devices, list(instances.values()))
+        budgets = reserve_native_claims(devices, [SimpleNamespace(**row) for row in instances.values()])
         inventory = {key: asdict(card) for key, card in budgets.items()}
         selected = {key: [row for row in instances.values() if row['model_id'] == key] for key in rules}
         result = {}
         with self.state.locked():
+            ownership = self.state.read() or {}
             data = self.read()
             if data['scope'] != scope:
                 if pending is not None:
@@ -82,6 +91,8 @@ class PendingControl:
                 context = digest([policy.revision, dep.binding, inventory, healthy])
                 row = data['models'].get(name)
                 if pending is not None:
+                    if row and row['phase'] == 'reanalyzing':
+                        data['models'].pop(name)
                     result[key] = {'state': 'pending_write_read_only', 'suppress': True}
                     continue
                 # A hold ignores our own Pending deletion/target events, but
@@ -93,19 +104,35 @@ class PendingControl:
                     row = None; data['models'].pop(name, None)
                 rows = selected[key]
                 pending_rows = [r for r in rows if r['id'] in dep.pending_unassigned_ids]
-                known_reason = bool(pending_rows) and all(
-                    str(r.get('state_message') or '').startswith(('No suitable workers', 'No available workers'))
-                    for r in pending_rows)
+                known_reasons = all(resource_pending(r) for r in pending_rows)
                 selector = model.get('worker_selector') or {}
                 slots = sum(card.free_vram // rule.vram_claim_bytes for card in budgets.values()
                             if card.kind == 'cuda' and all(dict(card.labels).get(k) == v for k, v in selector.items()))
-                eligible = (len(rows) == dep.replicas == len(dep.instance_ids)
-                            and model['ready_replicas'] == len(healthy)
-                            and len(healthy) + len(pending_rows) == len(rows)
-                            and known_reason)
+                complete = (len(rows) == dep.replicas == len(dep.instance_ids)
+                            and model['ready_replicas'] == len(healthy))
+                eligible = (complete and bool(pending_rows) and known_reasons
+                            and len(healthy) + len(pending_rows) == len(rows))
+                max_gap = max(15, 2*policy.reconcile.interval_s+10)
+                same_episode = (row and row['binding'] == dep.binding and row['revision'] == policy.revision
+                                and row['session'] == self.session and 0 <= now-row['last'] <= max_gap)
+                # This signature is only for crossing a native scheduler retry.
+                # Normal contraction may remove one Pending on each confirmed write.
+                retry_context = digest([context, dep.replicas, dep.instance_ids, ownership.get('generation')])
+                last_confirmed = row.get('last_confirmed', row['last']) if row else now
+                same_retry = (same_episode and row.get('retry_context') == retry_context
+                              and not ownership.get('paused') and not row.get('request')
+                              and now-last_confirmed <= MAX_REANALYSIS_SECONDS)
+                if same_retry and complete and known_reasons and not eligible:
+                    analyzing = [r for r in rows if r['state'] == 'analyzing' and unassigned(r)
+                                 and not (r.get('distributed_servers') or {}).get('subordinate_workers')]
+                    if analyzing and len(healthy) + len(pending_rows) + len(analyzing) == len(rows):
+                        row.update(phase='reanalyzing', last=now, last_confirmed=last_confirmed)
+                        result[key] = {'state': 'reanalyzing', 'observed_for_s': last_confirmed-row['since'],
+                                       'qualified': False, 'suppress': True}
+                        continue
                 continuing = (row and row['phase'] == 'contracting' and row['context'] == context
                               and row['expected'] == dep.replicas and row['session'] == self.session
-                              and 0 <= now-row['last'] <= max(15, 2*policy.reconcile.interval_s+10))
+                              and same_episode)
                 shortage = eligible and (len(healthy) + slots < dep.replicas or continuing)
                 if not shortage:
                     data['models'].pop(name, None)
@@ -115,18 +142,20 @@ class PendingControl:
                 base = {'phase': 'observing', 'since': now, 'last': now, 'session': self.session,
                         'target': goal, 'expected': dep.replicas, 'context': context,
                         'binding': dep.binding, 'revision': policy.revision,
-                        'healthy_ids': healthy, 'request': None}
+                        'healthy_ids': healthy, 'request': None, 'retry_context': retry_context}
                 # Already at the floor/Ready target: no native action is needed.
                 if goal >= dep.replicas:
                     base['phase'] = 'holding'; data['models'][name] = base
                     result[key] = {'state': 'holding_minimum', 'target': dep.replicas, 'suppress': True}
                     continue
-                same_episode = (row and row['binding'] == dep.binding and row['revision'] == policy.revision
-                                and row['session'] == self.session and 0 <= now-row['last'] <= max(15, 2*policy.reconcile.interval_s+10))
                 if (same_episode and row['phase'] == 'contracting' and row['context'] != context):
                     same_episode = False
                 if same_episode:
-                    base['since'] = row['since']
+                    if row['phase'] == 'reanalyzing':
+                        if same_retry:
+                            base['since'] = now - (last_confirmed - row['since'])
+                    else:
+                        base['since'] = row['since']
                     if row['phase'] == 'contracting':
                         base['phase'] = 'contracting'
                 elapsed = max(0, now-base['since'])

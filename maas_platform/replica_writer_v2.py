@@ -131,7 +131,7 @@ class ReconcileWriter:
         global_max, cluster_max = self.startup_limits(policy, plan, decision)
         if not plan.get('up_preview_limit') and not plan.get('down_preview_limit'):
             states = {row['state'] for row in plan.get('pending_control', {}).values()}
-            return ('pending_observation' if 'observing' in states else
+            return ('pending_observation' if states & {'observing', 'reanalyzing'} else
                     'pending_hold' if states & {'holding', 'holding_minimum'} else 'idle')
         version = await self.request('GET', '/version')
         if version.get('version') != 'v2.2.3':

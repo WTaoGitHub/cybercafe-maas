@@ -54,6 +54,109 @@ class PendingTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.observe_for(180), 'native_scale_down_proof_required')
         self.assertEqual(self.f.writes, [])
 
+    async def enter_native_retry(self):
+        await self.observe_for(170)
+        row = self.f.rows['model-instances'][2]
+        row['state'] = 'analyzing'
+        self.f.now += 5
+        await self.f.advance()
+        return row
+
+    async def test_native_retry_freezes_verified_seconds_until_shortage_is_confirmed_again(self):
+        row = await self.enter_native_retry()
+        self.f.now += 15
+        await self.f.advance()
+        decision = self.f.observer.view['plan']['pending_control'][1]
+        self.assertEqual((decision['state'], decision['observed_for_s']), ('reanalyzing', 170))
+        self.assertEqual(self.f.writes, [])
+        row['state'] = 'pending'
+        self.f.now += 1
+        self.assertEqual(await self.observe_for(9), 'pending_observation')
+        self.f.now += 1
+        self.assertEqual(await self.f.advance(), 'confirmed')
+        self.assertEqual(await self.f.advance(), 'confirmed')
+        self.assertEqual([r['replicas'] for r in self.f.writes], [2, 1])
+        self.assertEqual(set(self.f.rows['model-instances']), {1})
+
+    async def test_retry_credit_requires_same_capacity_ready_ids_and_unassigned_cohort(self):
+        for change in ('capacity', 'ready_id', 'pending_id', 'reason', 'assigned', 'claim', 'too_long', 'gap', 'pause'):
+            with self.subTest(change=change):
+                self.f.observer.pending_control.interrupted()
+                self.f.set_running(3, ready=1)
+                rows = self.f.rows['model-instances']
+                for i in (2, 3):
+                    rows[i]['state_message'] = 'No suitable workers.'
+                row = await self.enter_native_retry()
+                if change == 'capacity':
+                    self.f.rows['workers'][4]['status']['gpu_devices'][0]['memory']['total'] += 1
+                elif change in ('ready_id', 'pending_id'):
+                    i = 1 if change == 'ready_id' else 2
+                    rows[4] = rows.pop(i)
+                    rows[4]['id'] = 4
+                elif change == 'reason':
+                    rows[3]['state_message'] = 'Waiting for model files'
+                elif change == 'assigned':
+                    row['worker_id'] = 4
+                elif change == 'claim':
+                    row['computed_resource_claim'] = {'vram': {'0': 4}}
+                elif change == 'too_long':
+                    await self.observe_for(61)
+                elif change == 'gap':
+                    self.f.observer.pending_control.interrupted()
+                elif change == 'pause':
+                    self.f.state.pause()
+                    self.f.state.set_paused(False, pending_guard=self.f.journal.read)
+                self.f.now += 1
+                await self.f.advance()
+                row.update(state='pending', worker_id=None, computed_resource_claim=None)
+                rows[3]['state_message'] = 'No suitable workers.'
+                self.f.now += 1
+                self.assertEqual(await self.observe_for(10), 'pending_observation')
+                self.assertEqual(self.f.writes, [])
+
+    async def test_reason_change_on_final_native_read_prevents_pending_removal(self):
+        await self.observe_for(179)
+        original = self.f.writer.request
+        async def changed_reason(method, path, body=None):
+            if path.startswith('/v2/model-instances?'):
+                self.f.rows['model-instances'][2]['state_message'] = 'Waiting for model files'
+            return await original(method, path, body)
+        self.f.writer.request = changed_reason
+        self.f.now += 1
+        self.assertEqual(await self.f.advance(), 'native_snapshot_changed')
+        self.assertEqual(self.f.writes, [])
+
+    async def test_four_of_sixteen_survive_periodic_native_retry_and_twelve_write_readbacks(self):
+        raw = config(mode='apply')
+        raw['models']['1']['max_replicas'] = 32
+        raw['reconcile']['stability_s'] = 0
+        self.f.policy = ControlPolicy(raw, allow_apply=True)
+        self.f.refresh_value = self.f.policy
+        self.f.writer.model_caps = {1: 32}
+        self.f.set_running(16, ready=4)
+        self.f.rows['workers'][4]['status']['gpu_devices'][0]['memory']['total'] = 16
+        rows = self.f.rows['model-instances']
+        for row in rows.values():
+            if row['state'] == 'pending':
+                row['state_message'] = 'No suitable workers.'
+        await self.observe_for(170)
+        for row in rows.values():
+            if row['state'] == 'pending':
+                row['state'] = 'analyzing'
+        self.f.now += 10
+        await self.f.advance()
+        for row in rows.values():
+            if row['state'] == 'analyzing':
+                row['state'] = 'pending'
+        self.f.now += 10
+        self.assertEqual(await self.observe_for(10), 'confirmed')
+        for _ in range(11):
+            self.f.now += 10
+            self.assertEqual(await self.f.advance(), 'confirmed')
+        self.assertEqual([r['replicas'] for r in self.f.writes], list(range(15, 3, -1)))
+        self.assertEqual(set(rows), {1, 2, 3, 4})
+        self.assertEqual(await self.f.advance(), 'pending_hold')
+
     async def test_altered_native_sources_cannot_enable_the_relaxed_guard(self):
         data = json.loads(self.proof.read_text()); data['source_sha256'] = {}
         self.proof.write_text(json.dumps(data))
