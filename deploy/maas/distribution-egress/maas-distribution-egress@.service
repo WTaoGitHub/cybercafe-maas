@@ -1,0 +1,14 @@
+[Unit]
+Description=Shared egress limit for NFS and registry responses on %I
+BindsTo=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/maas/distribution-egress-%I.conf
+ExecStart=/usr/local/libexec/maas-distribution-egress apply %I
+ExecStop=/usr/local/libexec/maas-distribution-egress remove %I
+
+[Install]
+WantedBy=multi-user.target

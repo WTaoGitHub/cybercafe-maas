@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""Shape model distribution responses on a shared Linux server egress."""
+import argparse
+import json
+import os
+import subprocess
+from pathlib import Path
+
+
+HANDLE = "d150:"
+
+
+def tc(*args, output=False):
+    return subprocess.run(["tc", *args], check=True, text=True,
+                          stdout=subprocess.PIPE if output else None).stdout
+
+
+def root_qdisc(device):
+    rows = json.loads(tc("-j", "qdisc", "show", "dev", device, output=True))
+    return next((row for row in rows if row.get("root")), {})
+
+
+def remove(device):
+    root = root_qdisc(device)
+    if (root.get("kind"), root.get("handle")) == ("htb", HANDLE):
+        tc("qdisc", "del", "dev", device, "root", "handle", HANDLE)
+
+
+def apply(device, link, limit, registry):
+    root = root_qdisc(device)
+    if root.get("handle") != "0:" or root.get("kind") not in {"fq_codel", "noqueue"}:
+        raise ValueError("Expected a default fq_codel or noqueue root; inspect existing QoS first")
+    if not 0 < limit < link or not 0 < registry < 65536 or registry == 2049:
+        raise ValueError("Invalid link rate, distribution rate or registry port")
+
+    tc("qdisc", "add", "dev", device, "root", "handle", HANDLE, "htb", "default", "20")
+    try:
+        # One shared leaf for both services. Ordinary traffic can borrow unused bandwidth.
+        for parent, minor, rate, ceiling, priority in [
+                (HANDLE, "1", link, link, "0"),
+                (HANDLE + "1", "20", link - limit, link, "0"),
+                (HANDLE + "1", "10", limit, limit, "1")]:
+            tc("class", "add", "dev", device, "parent", parent, "classid", HANDLE + minor,
+               "htb", "rate", f"{rate}mbit", "ceil", f"{ceiling}mbit", "prio", priority,
+               "burst", "1mb", "cburst", "1mb", "quantum", "16000")
+        for minor in ("20", "10"):
+            tc("qdisc", "replace", "dev", device, "parent", HANDLE + minor, "fq_codel")
+        for proto in ("ip", "ipv6"):
+            for pref, port in enumerate((2049, registry), start=1):
+                tc("filter", "add", "dev", device, "parent", HANDLE, "protocol", proto,
+                   "pref", str(pref + (2 if proto == "ipv6" else 0)), "flower",
+                   "ip_proto", "tcp", "src_port", str(port), "classid", HANDLE + "10")
+    except BaseException:
+        remove(device)
+        raise
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("action", choices=["apply", "remove"])
+    parser.add_argument("device")
+    args = parser.parse_args()
+    if "/" in args.device or args.device.startswith(("-", ".")) or not (
+            Path("/sys/class/net") / args.device).is_dir():
+        parser.error("Expected a local interface name")
+    if args.action == "remove":
+        remove(args.device)
+    else:
+        apply(args.device, int(os.environ["LINK_MBIT"]), int(os.environ["DISTRIBUTION_MBIT"]),
+              int(os.environ["REGISTRY_PORT"]))
+
+
+if __name__ == "__main__":
+    main()
