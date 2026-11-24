@@ -533,6 +533,10 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 当天实测 7 台新 VPC 全部注册，GPUStack 达到 10 台 Ready。9 台和 10 台布局均复现调节器装箱搜索超时，未产生自动扩容写入，原 8 个副本保持就绪。此次完成了新 worker 接入观察，模型启动压力、并行档位对比和 10→3 尚待复测。 [实测记录](../../results/maas-replica-3-10-3-20261124/REPORT.md) · [REPLICA-INC-001](https://github.com/WTaoGitHub/cybercafe-maas/issues/71)
 
+### 2026-11-24 十台 worker 高峰混合压测
+
+在 16／8／3 个就绪副本上验证 27／7／20 自动预算。最终复测实际达到 27 路同时授权（16 同步＋11 异步）和 23 路 GPU 执行。两类异步任务持续积压时，执行器占满 11 个本地槽位。20 路预算和 7 路同步余量用当前线上策略做边界复核。最终 1,288 笔同步及 104 笔异步均完成可信终态和计量。试验期间临时给 Unlimited 和 Ovis 聚合路由启用空闲副本优先，结束后已撤回。10 台 Ready、自动额度 27／7／20 和零 `UNKNOWN` 已核对，10→3 实机验收待管理员安排。 [压测结果](../../results/maas-capacity-peak27-20261124/REPORT.md) · [CAPACITY-INC-010](https://github.com/WTaoGitHub/cybercafe-maas/issues/72)
+
 ### 实机试点与回退
 
 1. 在当前测试环境接入 OvisOCR3 异步路径。复用已验收的上游路由，先以一笔合成图片验证输入、模型响应、终态、结果和唯一计量。与 PP-OCRv4 图片及 Unlimited-OCR-2 NFS 文档跑完三模型共库基线。同步混合流量使用已支持同步的入口。测试任务使用专有幂等键前缀，逐笔登记并回收任务、产物和用量收据。 [OvisOCR3 上游契约](../../results/ovisocr3/20261118-deploy/REPORT.md) · [模型接入 #62](https://github.com/WTaoGitHub/cybercafe-maas/issues/62)
