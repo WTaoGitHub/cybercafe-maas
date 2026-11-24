@@ -31,6 +31,8 @@
 
 同一部署的连续临时失败依次至少等待 5、10、20、40、60 秒，此后保持 60 秒。实际尝试时间取决于下一次对账。状态 `downscale_retry_scheduled` 附带模型 ID、失败原因、次数和本次等待秒数，`downscale_retry_backoff` 表示等待新一轮观测。第 3 次连续失败输出一次警告日志。退避计数保存在调节器进程内，进程重新启动后重新评估。结果未知的写入日志保存在控制卷，跨进程重启继续只读核对。 [Issue #75](https://github.com/WTaoGitHub/cybercafe-maas/issues/75)
 
+2026-11-24 已部署自动缩容重试版本。使用三节点实况快照的隔离验证通过，验证结束时正式业务保持 4/4、3/3、1/1。真实 GPUStack 写入待下次自然缩容观察。 [发布验收与复用命令](../../results/maas-replica-retry-20261124/REPORT.md)
+
 ## 原生缩容能力确认
 
 为了既不删除唯一健康副本、又能删除多余 Pending，放宽保护仅限：固定 GPUStack v2.2.3、核验过的 controllers/scorers 源码、有效评分配置、SPREAD、所有非健康实例为无分配/无 claim Pending。该版本这些 Pending 的组合评分为 0，健康 Ready 的状态分为正数，且其他已核验项非负，因此原生先选择 Pending。
