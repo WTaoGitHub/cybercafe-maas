@@ -1,11 +1,15 @@
 """Explicitly adopted current-state writes with bounded startup reservations."""
+import asyncio
+from http.client import HTTPException, IncompleteRead
+import logging
 import math
 import os
 from pathlib import Path
 import time
 import json
+from urllib.error import HTTPError, URLError
 
-from maas_replica_apply import LocalManagement
+from maas_replica_apply import LocalManagement, ManagementConnectUnavailable
 from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent, inflight, validate_action
 from maas_replica_native import NativeAdapter
 from maas_replica_policy import integer
@@ -13,6 +17,29 @@ from maas_replica_pressure import PressureGate
 from .replica_apply import model_settings
 from .replica_state import ControlState
 from .replica_native_proof import approved as native_pending_removal_approved
+
+
+LOG = logging.getLogger(__name__)
+DOWNSCALE_RETRY_DELAYS = (5, 10, 20, 40, 60)
+
+
+async def downscale_preflight(request, path):
+    """Read the model before PUT, inside the executor's 12s dispatch deadline."""
+    try:
+        async with asyncio.timeout(6):
+            return await request('GET', path, None)
+    except HTTPError as exc:
+        if exc.code in (408, 429, 500, 502, 503, 504):
+            raise WriteNotSent('downscale_preflight_unavailable') from None
+        raise WriteNotSent('downscale_preflight_rejected') from None
+    except URLError as exc:
+        if isinstance(exc.reason, (ConnectionError, TimeoutError)):
+            raise WriteNotSent('downscale_preflight_unavailable') from None
+        raise WriteNotSent('downscale_preflight_failed') from None
+    except (ConnectionError, TimeoutError, IncompleteRead):
+        raise WriteNotSent('downscale_preflight_unavailable') from None
+    except (OSError, HTTPException):
+        raise WriteNotSent('downscale_preflight_failed') from None
 
 
 class ReconcileWriter:
@@ -26,6 +53,7 @@ class ReconcileWriter:
         self.effective_startup_limit = 1
         self.execution_profile = 'serial_pilot'
         self.native_proof = native_proof
+        self.downscale_retries = {}  # model ID -> (consecutive failures, monotonic deadline). No saved action.
 
     def startup_limits(self, policy, plan, decision):
         _, execution = policy.effective(None)
@@ -128,6 +156,13 @@ class ReconcileWriter:
         if decision not in ('allowed', 'pressure_unknown_degraded'):
             return decision
         plan = view['plan']
+        down = [key for key, count in plan['current'].items() if plan['policy_target'][key] < count]
+        for ident in self.downscale_retries.keys() - set(down):
+            model = view['models'].get(ident)
+            pending_state = plan.get('pending_control', {}).get(ident, {}).get('state')
+            if (model is None or model['ready_replicas'] == model['replicas']
+                    or pending_state in ('holding', 'holding_minimum')):
+                del self.downscale_retries[ident]
         global_max, cluster_max = self.startup_limits(policy, plan, decision)
         if not plan.get('up_preview_limit') and not plan.get('down_preview_limit'):
             states = {row['state'] for row in plan.get('pending_control', {}).values()}
@@ -138,6 +173,8 @@ class ReconcileWriter:
             raise ValueError('Unapproved GPUStack version')
 
         async def checked_request(method, path, body=None):
+            if method == 'GET' and action.after < action.before and path == f'/v2/models/{action.model_id}':
+                return await downscale_preflight(self.request, path)
             if method == 'PUT':
                 # The native API requires ModelUpdate settings. Enforce that
                 # every echoed setting is from this fresh snapshot and that
@@ -158,6 +195,10 @@ class ReconcileWriter:
                     raise WriteNotSent('snapshot_expired')
                 try:
                     latest = self.pressure_decision(policy, view)
+                except BlockingIOError:
+                    if action.after < action.before:
+                        raise WriteNotSent('downscale_control_busy') from None
+                    raise WriteNotSent('control_state_unavailable') from None
                 except (OSError, ValueError, KeyError, TypeError):
                     raise WriteNotSent('control_state_unavailable') from None
                 if latest not in ('allowed', 'pressure_unknown_degraded'):
@@ -177,14 +218,27 @@ class ReconcileWriter:
                                 raise WriteNotSent('native_scale_down_proof_changed')
                             observer.pending_control.dispatch_locked(action, snapshot)
                         self.write_attempted = True
-                        return await self.request(method, path, body)
-                except (OSError, ValueError, KeyError, TypeError):
+                        try:
+                            return await self.request(method, path, body)
+                        except ManagementConnectUnavailable:
+                            if action.after < action.before:
+                                self.write_attempted = False
+                                if pending_contraction:
+                                    observer.pending_control.unsent_locked(action)
+                                raise WriteNotSent('downscale_connect_unavailable') from None
+                            raise
+                        except (ValueError, HTTPException):
+                            if action.after < action.before:
+                                raise OSError('Unconfirmed downscale response') from None
+                            raise
+                except (OSError, ValueError, KeyError, TypeError) as exc:
                     if self.write_attempted:
                         raise  # Never classify an uncertain transport as unsent.
+                    if action.after < action.before and isinstance(exc, BlockingIOError):
+                        raise WriteNotSent('downscale_control_busy') from None
                     raise WriteNotSent('control_state_unavailable') from None
             return await self.request(method, path, body)
 
-        adapter.request = checked_request
         snapshot = await adapter.read()
         if snapshot.fingerprint != view['native_fingerprint']:
             return 'native_snapshot_changed'
@@ -202,12 +256,16 @@ class ReconcileWriter:
             return native_pending_removal_approved(self.native_proof, getattr(self.request, 'url', ''),
                     view['models'][ident], [r for r in view['instances'].values() if r['model_id'] == ident])
 
-        down = [key for key, count in plan['current'].items() if plan['policy_target'][key] < count]
         action = None; pending_contraction = False; missing_proof = False
+        waiting_for_retry = False
         if plan.get('down_preview_limit'):
             # Prefer releasing lower-priority capacity, one native deletion at
             # a time. An unsafe model must not hide another safe correction.
             for ident in sorted(down, key=lambda key: (rules[key].priority, key), reverse=True):
+                retry = self.downscale_retries.get(ident)
+                if retry and view['read_monotonic'] < retry[1]:
+                    waiting_for_retry = True
+                    continue
                 model = snapshot.deployments[ident]
                 proposed = Action(snapshot.revision, snapshot.fingerprint, ident, model.cluster_id,
                                   model.owner_id, model.binding, model.replicas, model.replicas - 1,
@@ -228,6 +286,7 @@ class ReconcileWriter:
         if action is None:
             if not candidates or not plan.get('up_preview_limit'):
                 return ('native_scale_down_proof_required' if missing_proof else
+                        'downscale_retry_backoff' if waiting_for_retry else
                         'scale_down_service_protected' if down and plan.get('down_preview_limit') else 'idle')
             if (not plan.get('parallel_safe') and any(sum(snapshot.deployments[key].healthy) < count
                                                      for key, count in plan['current'].items())):
@@ -255,9 +314,23 @@ class ReconcileWriter:
                     raise WriteNotSent('deployment_changed_before_dispatch') from None
                 raise
 
+        adapter.request = checked_request
         executor = Executor(self.journal, adapter.read, dispatch,
                             on_confirm=confirm, write_timeout=12, read_timeout=12)
-        return await executor.submit(action, floor=rules[action.model_id].auto_scale_down_min_replicas,
-                                     batch_max=1,
-                                     global_max=global_max, cluster_max=cluster_max,
-                                     pending_removal_proven=pending_contraction)
+        outcome = await executor.submit(action, floor=rules[action.model_id].auto_scale_down_min_replicas,
+                                        batch_max=1, global_max=global_max, cluster_max=cluster_max,
+                                        pending_removal_proven=pending_contraction)
+        if outcome in ('downscale_preflight_unavailable', 'downscale_connect_unavailable', 'downscale_control_busy'):
+            failures = self.downscale_retries.get(action.model_id, (0, 0))[0] + 1
+            delay = DOWNSCALE_RETRY_DELAYS[min(failures, len(DOWNSCALE_RETRY_DELAYS))-1]
+            self.downscale_retries[action.model_id] = (failures, self.clock() + delay)
+            plan['downscale_retry'] = dict(model_id=action.model_id, failures=failures,
+                                           delay_s=delay, reason=outcome)
+            if failures == 3:
+                LOG.warning('Downscale for model %s has failed before dispatch %s times (%s)',
+                            action.model_id, failures, outcome)
+            observer.view = None  # Only a new observation may authorize the next attempt.
+            return 'downscale_retry_scheduled'
+        if outcome == 'confirmed':
+            self.downscale_retries.pop(action.model_id, None)
+        return outcome

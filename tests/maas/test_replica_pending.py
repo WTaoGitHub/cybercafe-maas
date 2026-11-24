@@ -11,6 +11,7 @@ from test_replica_reconcile import model
 from maas_platform.replica_contract import ControlPolicy
 from maas_platform.replica_pending import PendingControl
 from maas_platform.replica_native_proof import SOURCES
+from maas_replica_apply import ManagementConnectUnavailable
 
 
 class PendingTest(unittest.IsolatedAsyncioTestCase):
@@ -125,6 +126,30 @@ class PendingTest(unittest.IsolatedAsyncioTestCase):
         self.f.now += 1
         self.assertEqual(await self.f.advance(), 'native_snapshot_changed')
         self.assertEqual(self.f.writes, [])
+
+    async def test_unsent_pending_contraction_releases_receipt_and_rechecks_shortage(self):
+        await self.observe_for(179)
+        original = self.f.writer.request
+        async def refused(method, path, body=None):
+            if method == 'PUT':
+                raise ManagementConnectUnavailable()
+            return await original(method, path, body)
+        self.f.writer.request = refused
+        self.f.now += 1
+        self.assertEqual(await self.f.advance(), 'downscale_retry_scheduled')
+        self.assertIsNone(self.f.journal.read())
+        self.assertIsNone(self.f.observer.pending_control.read()['models']['1']['request'])
+        self.f.writer.request = original
+        self.f.now += 1
+        self.f.rows['model-instances'][2]['state'] = 'analyzing'
+        self.assertEqual(await self.f.advance(), 'pending_observation')
+        self.assertEqual(self.f.writes, [])
+        self.f.now += 1
+        self.f.rows['model-instances'][2]['state'] = 'pending'
+        self.assertEqual(await self.f.advance(), 'downscale_retry_backoff')
+        self.f.now += 3
+        self.assertEqual(await self.f.advance(), 'confirmed')
+        self.assertEqual([r['replicas'] for r in self.f.writes], [2])
 
     async def test_four_of_sixteen_survive_periodic_native_retry_and_twelve_write_readbacks(self):
         raw = config(mode='apply')

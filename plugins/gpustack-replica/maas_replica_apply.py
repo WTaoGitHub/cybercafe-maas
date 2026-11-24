@@ -1,11 +1,14 @@
 """Opt-in single-writer bridge from arrival previews to native scale-up."""
 import asyncio
+import errno
+from http.client import HTTPConnection
 import json
 import os
 from pathlib import Path
 import stat
+from urllib.error import URLError
 from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+from urllib.request import HTTPHandler, HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from maas_replica_execution import Action, Executor, PendingWrite, WriteNotSent
 from maas_replica_native import NativeAdapter, model_settings
@@ -18,6 +21,25 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
+class ManagementConnectUnavailable(ConnectionError):
+    """The direct TCP connection failed before any HTTP request bytes were sent."""
+
+
+class ManagementConnection(HTTPConnection):
+    def connect(self):
+        try:
+            super().connect()
+        except OSError as exc:
+            if isinstance(exc, (TimeoutError, ConnectionError)) or exc.errno in (errno.EHOSTUNREACH, errno.ENETUNREACH):
+                raise ManagementConnectUnavailable() from exc
+            raise
+
+
+class ManagementHTTPHandler(HTTPHandler):
+    def http_open(self, req):
+        return self.do_open(ManagementConnection, req)
+
+
 class LocalManagement:
     def __init__(self, url, key_path):
         parsed = urlsplit(url)
@@ -27,7 +49,7 @@ class LocalManagement:
             raise ValueError("Apply requires a loopback management endpoint")
         self.url = url.rstrip("/")
         self.key_path = key_path
-        self.opener = build_opener(ProxyHandler({}), NoRedirect())
+        self.opener = build_opener(ProxyHandler({}), NoRedirect(), ManagementHTTPHandler())
 
     def _headers(self):
         fd = os.open(self.key_path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
@@ -43,7 +65,13 @@ class LocalManagement:
     def _request(self, method, path, body):
         data = json.dumps(body).encode() if body is not None else None
         req = Request(self.url + path, data, self._headers(), method=method)
-        with self.opener.open(req, timeout=4) as response:
+        try:
+            response = self.opener.open(req, timeout=4)
+        except URLError as exc:
+            if isinstance(exc.reason, ManagementConnectUnavailable):
+                raise ManagementConnectUnavailable() from exc
+            raise
+        with response:
             return json.load(response)
 
     async def __call__(self, method, path, body=None):

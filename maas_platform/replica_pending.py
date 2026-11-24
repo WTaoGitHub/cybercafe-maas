@@ -182,6 +182,14 @@ class PendingControl:
         row['request'] = digest(asdict(action))
         atomic_private(self.path, data)
 
+    def unsent_locked(self, action):
+        """Release only this contraction's receipt after a proven pre-send failure."""
+        data = self.read()
+        row = data['models'].get(str(action.model_id))
+        if row and row.get('request') == digest(asdict(action)):
+            row['request'] = None
+            atomic_private(self.path, data)
+
     def confirm(self, action, native):
         with self.state.locked():
             data = self.read(); row = data['models'].get(str(action.model_id))

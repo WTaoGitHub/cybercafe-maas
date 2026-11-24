@@ -10,6 +10,7 @@ from tempfile import TemporaryDirectory
 import time
 from types import SimpleNamespace
 import unittest
+from urllib.error import HTTPError, URLError
 from unittest.mock import patch
 
 from maas_platform.replica_observe import native_devices, run
@@ -17,6 +18,7 @@ from maas_platform.replica_reconcile import ReconcileObserve
 from maas_platform.replica_writer_v2 import ReconcileWriter
 from maas_platform.replica_control import control, targets
 from maas_replica_execution import PendingWrite
+from maas_replica_apply import LocalManagement
 from maas_replica_pressure import PressureGate
 from test_replica_reconcile import model, worker, policy
 from test_replica_contract import config
@@ -439,6 +441,178 @@ class WriterV2Test(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([row['replicas'] for row in self.writes], [3, 2])
         self.assertEqual(self.state.read()['models']['1']['target'], 2)
         self.assertEqual(self.rows['models'][1]['ready_replicas'], 2)
+
+    async def test_transient_final_get_replans_after_backoff(self):
+        self.set_running(4)
+        async def unavailable(method, path, body=None):
+            if path == '/v2/models/1' and self.journal.read() is not None:
+                raise TimeoutError()
+            return await self.request(method, path, body)
+        self.writer.request = unavailable
+        self.assertEqual(await self.advance(), 'downscale_retry_scheduled')
+        self.assertIsNone(self.journal.read())
+        self.assertFalse(self.writer.write_attempted)
+        self.writer.request = self.request
+        self.set_running(5)
+        self.now += 4
+        self.assertEqual(await self.advance(), 'downscale_retry_backoff')
+        self.assertEqual(self.writes, [])
+        self.now += 1
+        self.assertEqual(await self.writer.reconcile(
+            self.policy, self.observer, refresh=lambda: self.policy), 'downscale_retry_backoff')
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual([row['replicas'] for row in self.writes], [4])
+
+    async def test_downscale_connection_refusal_backs_off_caps_and_warns_once(self):
+        self.set_running(4)
+        key = self.root/'test-key'
+        key.write_text('test-only')
+        key.chmod(0o600)
+        transport = LocalManagement('http://127.0.0.1:8000', key)
+        # Inject at TCP connect so urllib's real exception wrapping and send boundary run.
+        self.enterContext(patch('socket.create_connection',
+                                side_effect=[ConnectionRefusedError(), TimeoutError()] * 3))
+        attempts = []
+
+        async def request(method, path, body=None):
+            if method == 'PUT':
+                attempts.append(path)
+                return await transport(method, path, body)
+            return await self.request(method, path, body)
+
+        self.writer.request = request
+        with self.assertLogs('maas_platform.replica_writer_v2', level='WARNING') as alerts:
+            for attempt, delay in enumerate((5, 10, 20, 40, 60, 60), 1):
+                self.assertEqual(await self.advance(), 'downscale_retry_scheduled')
+                self.assertFalse(self.writer.write_attempted)
+                self.assertIsNone(self.journal.read())
+                self.assertEqual(await self.writer.reconcile(
+                    self.policy, self.observer, refresh=lambda: self.policy), 'waiting_for_stable_snapshot')
+                self.now += delay-1
+                self.assertEqual(await self.advance(), 'downscale_retry_backoff')
+                self.assertEqual(len(attempts), attempt)
+                self.now += 1
+        self.assertEqual(len(alerts.records), 1)
+        self.writer.request = self.request
+        self.state.pause()
+        self.assertEqual(await self.advance(), 'controller_paused')
+        self.state.set_paused(False, pending_guard=self.journal.read)
+        self.assertEqual(await self.advance(), 'confirmed')
+        self.assertEqual([row['replicas'] for row in self.writes], [3])
+        self.assertEqual(self.writer.downscale_retries, {})
+
+    async def test_busy_final_dispatch_lock_is_known_unsent(self):
+        self.set_running(3)
+        async def contend(method, path, body=None):
+            if method == 'GET' and path == '/v2/models/1':
+                self.enterContext(self.state.locked())
+            return await self.request(method, path, body)
+        self.writer.request = contend
+        self.assertEqual(await self.advance(), 'downscale_retry_scheduled')
+        self.assertEqual(self.writes, [])
+        self.assertFalse(self.writer.write_attempted)
+        self.assertIsNone(self.journal.read())
+
+    async def test_timeout_after_tcp_connection_uses_readback_only(self):
+        self.set_running(3)
+        key = self.root/'test-key'
+        key.write_text('test-only')
+        key.chmod(0o600)
+        transport = LocalManagement('http://127.0.0.1:8000', key)
+        async def request(method, path, body=None):
+            if method == 'PUT':
+                return await transport(method, path, body)
+            return await self.request(method, path, body)
+        self.writer.request = request
+        with patch('socket.create_connection') as connect, patch(
+                'http.client.HTTPConnection.getresponse', side_effect=TimeoutError()):
+            self.assertEqual(await self.advance(), 'unresolved')
+            self.assertTrue(connect.return_value.sendall.called)
+            self.now += 120
+            self.assertEqual(await self.advance(), 'unresolved')
+            connect.assert_called_once()
+        self.assertIsNotNone(self.journal.read())
+
+    async def test_capacity_recovery_during_backoff_cancels_downscale(self):
+        self.parallel(maximum=4)
+        self.set_running(4)
+        async def unavailable(method, path, body=None):
+            if method == 'GET' and path == '/v2/models/1':
+                raise HTTPError('test', 503, 'Unavailable', {}, None)
+            return await self.request(method, path, body)
+        self.writer.request = unavailable
+        self.assertEqual(await self.advance(), 'downscale_retry_scheduled')
+        self.writer.request = self.request
+        self.rows['workers'][4]['status']['gpu_devices'][0]['memory']['total'] = 16
+        self.now += 60
+        self.assertEqual(await self.advance(), 'idle')
+        self.assertEqual(self.writes, [])
+        self.assertEqual(self.writer.downscale_retries, {})
+
+    async def test_downscale_put_errors_with_old_target_only_read_even_after_restart(self):
+        self.set_running(4)
+        for err in (HTTPError('test', 503, 'Unavailable', {}, None),
+                    HTTPError('test', 429, 'Too many requests', {}, None),
+                    URLError(ConnectionResetError()), TimeoutError(), ValueError('invalid response')):
+            with self.subTest(error=repr(err)):
+                methods = []
+                async def request(method, path, body=None):
+                    methods.append(method)
+                    if method == 'PUT':
+                        raise err
+                    return await self.request(method, path, body)
+                self.writer.request = request
+                self.assertEqual(await self.advance(), 'unresolved')
+                self.assertTrue(self.writer.write_attempted)
+                self.writer = self.make_writer()
+                self.writer.request = request
+                self.now += 120
+                self.assertEqual(await self.advance(), 'unresolved')
+                self.assertIsNotNone(self.journal.read())
+                # A later native read finally sees the update and the completed deletion.
+                self.set_running(3)
+                self.assertEqual(await self.advance(), 'confirmed')
+                self.assertEqual(methods.count('PUT'), 1)
+                self.assertIsNone(self.journal.read())
+                self.set_running(4)
+
+    async def test_permanent_final_get_rejection_does_not_schedule_write_retry(self):
+        self.set_running(4)
+        async def forbidden(method, path, body=None):
+            if method == 'GET' and path == '/v2/models/1':
+                raise HTTPError('test', 403, 'Forbidden', {}, None)
+            return await self.request(method, path, body)
+        self.writer.request = forbidden
+        self.assertEqual(await self.advance(), 'downscale_preflight_rejected')
+        self.assertEqual(self.writes, [])
+        self.assertEqual(self.writer.downscale_retries, {})
+        self.assertIsNone(self.journal.read())
+
+    async def test_one_deployments_retry_wait_allows_other_downscale(self):
+        raw = config(mode='apply')
+        raw['models']['2'] = dict(raw['models']['1'], priority=1)
+        raw['reconcile']['stability_s'] = 0
+        self.policy = ControlPolicy(raw, allow_apply=True)
+        self.refresh_value = self.policy
+        self.writer.model_caps = {1: 2, 2: 2}
+        self.set_running(3)
+        self.rows['models'][2] = dict(self.rows['models'][1], id=2, name='second')
+        rows = self.rows['model-instances']
+        for ident, row in list(rows.items()):
+            rows[ident+3] = dict(row, id=ident+3, model_id=2)
+        self.state.adopt(self.policy, self.rows['models'], expected_targets={1: 3, 2: 3})
+        failed = []
+        async def request(method, path, body=None):
+            if method == 'GET' and path.startswith('/v2/models/') and not failed:
+                failed.append(int(path.rsplit('/', 1)[1]))
+                raise ConnectionResetError()
+            return await self.request(method, path, body)
+        self.writer.request = request
+        self.assertEqual(await self.advance(), 'downscale_retry_scheduled')
+        self.assertEqual(await self.advance(), 'confirmed')
+        other = ({1, 2} - set(failed)).pop()
+        self.assertEqual(self.rows['models'][failed[0]]['replicas'], 3)
+        self.assertEqual(self.rows['models'][other]['replicas'], 2)
 
     async def test_over_scale_within_policy_cap_shrinks_when_current_gpu_capacity_is_smaller(self):
         raw = config(mode='apply'); raw['models']['1']['max_replicas'] = 8
