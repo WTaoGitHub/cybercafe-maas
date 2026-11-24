@@ -531,6 +531,8 @@ OvisOCR3 的异步单图适配器沿用原派发 token、GPU 凭据和 PostgreSQ
 
 2026-11-24 完成只读试采。控制端连续三次读取均看见 3 个可用 worker，Unlimited-OCR-2、OvisOCR3、PP-OCRv4 分别为 1/1、2/2、5/5，启动有效上限为 1，调节器未暂停，写入日志无悬而未决的请求。网卡吞吐与丢包、仓库 HTTP 状态与耗时、NFS 服务端字节计数、权重所在磁盘的读等待、参考 worker 的 NFS READ 往返计数均可读取。短窗没有 NFS READ，最近 15 分钟没有同步或异步请求，因此本轮仅验证取数，NFS 负载下的读延迟和推理耗时需在正式场次测量。 [采集手册](REPLICA-STARTUP-OBSERVATION.md)
 
+当天实测 7 台新 VPC 全部注册，GPUStack 达到 10 台 Ready。9 台和 10 台布局均复现调节器装箱搜索超时，未产生自动扩容写入，原 8 个副本保持就绪。此次完成了新 worker 接入观察，模型启动压力、并行档位对比和 10→3 尚待复测。 [实测记录](../../results/maas-replica-3-10-3-20261124/REPORT.md) · [REPLICA-INC-001](https://github.com/WTaoGitHub/cybercafe-maas/issues/71)
+
 ### 实机试点与回退
 
 1. 在当前测试环境接入 OvisOCR3 异步路径。复用已验收的上游路由，先以一笔合成图片验证输入、模型响应、终态、结果和唯一计量。与 PP-OCRv4 图片及 Unlimited-OCR-2 NFS 文档跑完三模型共库基线。同步混合流量使用已支持同步的入口。测试任务使用专有幂等键前缀，逐笔登记并回收任务、产物和用量收据。 [OvisOCR3 上游契约](../../results/ovisocr3/20261118-deploy/REPORT.md) · [模型接入 #62](https://github.com/WTaoGitHub/cybercafe-maas/issues/62)
