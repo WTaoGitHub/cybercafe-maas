@@ -1,5 +1,6 @@
 """Versioned observe-mode policy and bounded single-GPU replica placement."""
 from dataclasses import dataclass
+from itertools import product
 import json
 import os
 import stat
@@ -170,8 +171,7 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
     best_score = None
     best = None
 
-    def rank():
-        nonlocal best, best_score
+    def score(counts):
         coverage = tuple(sum(counts[k] >= models[k].min_replicas > 0
                              for k in ids if models[k].priority == tier)
                          for tier in tiers)
@@ -185,9 +185,13 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
             quota_violations += max(0, lower - counts[key], counts[key] - upper)
             deviation += abs(counts[key] * weights - ideal)
         delta = sum(abs(counts[k] - current[k]) for k in ids)
-        score = coverage, -quota_violations, total, -deviation, -delta
-        if best_score is None or score > best_score:
-            best_score, best = score, counts.copy()
+        return coverage, -quota_violations, total, -deviation, -delta
+
+    def rank():
+        nonlocal best, best_score
+        value = score(counts)
+        if best_score is None or value > best_score:
+            best_score, best = value, counts.copy()
 
     def search(i, start=0):
         if time.monotonic() >= deadline:
@@ -244,11 +248,66 @@ def solve(models, budgets, eligible, current, timeout=1, *, additive=False):
             search_counts(i + 1)
         counts[key] = initial
 
+    def rank_feasible_counts():
+        # With up to three models there are at most 33³ count vectors. Prove
+        # placement in score order instead of scoring every equivalent layout.
+        claims = {key: models[key].vram_claim_bytes for key in ids}
+        total_budget = sum(remaining)
+        options = []
+        for key in ids:
+            slots = sum(remaining[card] // claims[key] for card in placement[key])
+            options.append(range(min(additions[key], slots), -1, -1))
+        candidates = []
+        for increments in product(*options):
+            if time.monotonic() >= deadline:
+                raise TimeoutError("Placement search deadline")
+            if sum(n * claims[key] for key, n in zip(ids, increments)) <= total_budget:
+                candidate = {key: counts[key] + n for key, n in zip(ids, increments)}
+                candidates.append((score(candidate), candidate))
+        # Stable ties prefer higher counts in model priority and ID order.
+        candidates.sort(key=lambda item: item[0], reverse=True)
+        suffix_eligibility = [
+            [tuple(card in placement[key] for key in proof_order[i + 1:])
+             for card in range(len(remaining))]
+            for i in range(len(ids))
+        ]
+
+        def fits(candidate, i=0, placed=0, start=0):
+            if time.monotonic() >= deadline:
+                raise TimeoutError("Placement search deadline")
+            if i == len(ids):
+                return True
+            key = proof_order[i]
+            need = candidate[key] - counts[key] - placed
+            if need == 0:
+                return fits(candidate, i + 1)
+            cards, claim = placement[key], claims[key]
+            if sum(remaining[card] // claim for card in cards[start:]) < need:
+                return False
+            seen = set()
+            for at in range(start, len(cards)):
+                card = cards[at]
+                equivalent = remaining[card], suffix_eligibility[i][card]
+                if remaining[card] < claim or equivalent in seen:
+                    continue
+                seen.add(equivalent)
+                remaining[card] -= claim
+                found = fits(candidate, i, placed + 1, at)
+                remaining[card] += claim
+                if found:
+                    return True
+            return False
+
+        # Zero increments are always feasible, including in additive mode.
+        return next(candidate for _, candidate in candidates if fits(candidate))
+
     if caps_fit():
         search_counts(0)
     else:
         if len(budgets) > 64:
             raise ValueError("Constrained placement exceeds 64 GPU limit")
+        if len(ids) <= 3:
+            return rank_feasible_counts()
         search(0)
     return best
 

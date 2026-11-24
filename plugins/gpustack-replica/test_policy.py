@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from maas_replica_policy import Policy, PolicyFile, arrival_context, classify, solve, summarize
+from maas_replica_policy import ModelPolicy, Policy, PolicyFile, arrival_context, classify, solve, summarize
 
 
 def policy_config(revision=1):
@@ -134,6 +134,25 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(target, {1: 4, 2: 1, 3: 1, 4: 1})
         self.assertEqual(summarize(rules, execution, target, current, 0, 0)["down_preview_limit"], 0)
         self.assertEqual(solve(rules, [0, 0], eligible, current, additive=True), current)
+
+    def test_replica_inc_001_three_model_live_layout(self):
+        # Anonymized capacities from the incident snapshot. The 3- and 9-card
+        # cases retain the occupied cards and vary the number of idle cards.
+        gib = 2**30
+        full = 17171480576
+        rules = {1: ModelPolicy(7 * gib // 2, 32, weight=4),
+                 2: ModelPolicy(12 * gib, 32, weight=1),
+                 3: ModelPolicy(6 * gib, 32, weight=2)}
+        current = {1: 5, 2: 1, 3: 2}
+        for count, additional_target, total_target in (
+                (3, current, {1: 6, 2: 1, 3: 2}),
+                (9, {1: 15, 2: 3, 3: 7}, {1: 15, 2: 3, 3: 8}),
+                (10, {1: 15, 2: 4, 3: 8}, {1: 16, 2: 4, 3: 8})):
+            with self.subTest(cards=count):
+                eligible = dict.fromkeys(rules, range(count))
+                free = [528482304, 3212836864, 3212836864] + [full] * (count - 3)
+                self.assertEqual(solve(rules, free, eligible, current, additive=True), additional_target)
+                self.assertEqual(solve(rules, [full] * count, eligible, current), total_target)
 
     def test_apply_requires_explicit_authorization_and_both_limits(self):
         config = policy_config()
