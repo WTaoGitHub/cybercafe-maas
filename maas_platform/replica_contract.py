@@ -42,6 +42,7 @@ class ControlPolicy:
         self.schema_version = version
         self.reconcile = None
         self.startup = Startup()
+        self.minimum_start_priorities = {}
         base = deepcopy(raw)
         if version == 1:
             self.pressure_mode = 'required'
@@ -94,7 +95,9 @@ class ControlPolicy:
             # v2 costs are resolved from every fresh native model snapshot.
             # A placeholder satisfies the legacy pure policy schema; it never
             # authorizes planning when the live declaration is missing/invalid.
-            for value in base['models'].values():
+            for key, value in base['models'].items():
+                if 'minimum_start_priority' in value:
+                    self.minimum_start_priorities[int(key)] = integer(value.pop('minimum_start_priority'), 1)
                 if 'vram_claim_bytes' in value:
                     integer(value['vram_claim_bytes'], 1)  # Deprecated compatibility hint.
                 value['vram_claim_bytes'] = 1

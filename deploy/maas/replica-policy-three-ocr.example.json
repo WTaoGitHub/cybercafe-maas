@@ -3,9 +3,9 @@
   "revision": 1,
   "scope": {"cluster_id": 1, "owner_principal_id": 1},
   "models": {
-    "13": {"priority": 1, "weight": 1, "min_replicas": 1, "max_replicas": 32},
-    "14": {"priority": 1, "weight": 2, "min_replicas": 1, "max_replicas": 32},
-    "1": {"priority": 1, "weight": 4, "min_replicas": 1, "max_replicas": 32}
+    "13": {"priority": 1, "minimum_start_priority": 1, "weight": 1, "min_replicas": 1, "max_replicas": 32},
+    "14": {"priority": 1, "minimum_start_priority": 2, "weight": 2, "min_replicas": 1, "max_replicas": 32},
+    "1": {"priority": 1, "minimum_start_priority": 3, "weight": 4, "min_replicas": 1, "max_replicas": 32}
   },
   "execution": {
     "mode": "observe",

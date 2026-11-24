@@ -124,7 +124,8 @@ def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, par
         order, timed_out = [], False
         if slots and not waiting:
             target, order, timed_out = plan_startup_batch(
-                rules, budgets, eligible, current, slots, execution.get('solve_timeout_s', 1))
+                rules, budgets, eligible, current, slots, execution.get('solve_timeout_s', 1),
+                minimum_priorities=getattr(policy, 'minimum_start_priorities', None))
         details = {'startup_order': order, 'startup_plan_timed_out': timed_out}
     elif not waiting:
         target = solve(rules, budgets, eligible, current,
@@ -137,21 +138,26 @@ def plan_capacity(policy, devices, model_rows, instance_rows, *, event=None, par
             "startup_reservation": reservation_reason, **preview, **details}
 
 
-def plan_startup_batch(rules, budgets, eligible, current, slots, timeout, *, clock=monotonic):
+def plan_startup_batch(rules, budgets, eligible, current, slots, timeout, *, clock=monotonic,
+                       minimum_priorities=None):
     """Prove a short sequence without moving any existing replicas."""
     deadline = clock() + timeout
     remaining = budgets.copy()
     counts = current.copy()
     limits = {key: rule.max_replicas for key, rule in rules.items()}
     weight = sum(rule.weight for rule in rules.values() if rule.max_replicas)
+    minimum_priorities = minimum_priorities or {}
     order = []
     for _ in range(slots):
         total = sum(counts[key] for key in rules if limits[key]) + 1
-        # Fill missing service minimums, then prefer the largest weighted
-        # quota deficit within each priority tier.
-        ranked = sorted((key for key in rules if counts[key] < limits[key]), key=lambda key: (
-            counts[key] >= rules[key].min_replicas, rules[key].priority,
-            counts[key] * weight - total * rules[key].weight, key))
+
+        def rank(key):
+            rule = rules[key]
+            below_minimum = counts[key] < rule.min_replicas
+            priority = minimum_priorities.get(key, rule.priority) if below_minimum else rule.priority
+            return not below_minimum, priority, counts[key] * weight - total * rule.weight, key
+
+        ranked = sorted((key for key in rules if counts[key] < limits[key]), key=rank)
         for key in ranked:
             cost = rules[key].vram_claim_bytes
             slot = None

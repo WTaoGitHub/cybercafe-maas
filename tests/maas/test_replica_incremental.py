@@ -1,8 +1,11 @@
+import json
+from pathlib import Path
 import unittest
 
 from maas_platform.replica_contract import ControlPolicy
 from maas_platform.replica_observe import native_devices
 from maas_platform.replica_reconcile import ReconcileObserve
+from maas_platform.replica_resources import RuntimePolicy
 from maas_replica_native import NativeAdapter
 from maas_replica_planner import plan_startup_batch
 from maas_replica_policy import ModelPolicy
@@ -12,6 +15,46 @@ from test_replica_reconcile import model, worker
 
 
 class IncrementalPlanTest(unittest.IsolatedAsyncioTestCase):
+    async def test_minimum_priority_reaches_the_periodic_planner(self):
+        raw = json.loads((Path(__file__).resolve().parents[2] /
+                          'deploy/maas/replica-policy-three-ocr.example.json').read_text())
+        selected = [int(k) for k in raw['models']]
+        rows = {'workers': {1: worker(1)}, 'model-instances': {},
+                'models': {k: {**model(), 'id': k} for k in selected}}
+
+        async def listing(_, kind):
+            return rows[kind]
+
+        observer = ReconcileObserve(native_devices, PressureGate(None))
+        plan = await observer.tick(None, listing, ControlPolicy(raw), subscribed=False)
+        self.assertTrue(plan['snapshot_complete'])
+        self.assertEqual(plan['startup_order'], [13])
+
+    def test_three_ocr_minimum_order_then_weighted_growth(self):
+        sample = Path(__file__).resolve().parents[2] / 'deploy/maas/replica-policy-three-ocr.example.json'
+        raw = json.loads(sample.read_text())
+        policy = ControlPolicy(raw)
+        self.assertEqual(policy.minimum_start_priorities, {13: 1, 14: 2, 1: 3})
+        # As in production, resource claims come from the snapshot.
+        live = RuntimePolicy(policy, {13: 24, 14: 12, 1: 7})
+        rules, _ = live.effective(None)
+        self.assertEqual({r.priority for r in rules.values()}, {1})  # unchanged downscale tiers
+        empty = dict.fromkeys(rules, 0)
+
+        def sequence(counts, cards, slots):
+            eligible = {key: list(range(len(cards))) for key in rules}
+            return plan_startup_batch(rules, cards, eligible, counts, slots, 1,
+                                      minimum_priorities=live.minimum_start_priorities)[1]
+
+        self.assertEqual(sequence(empty, [32] * 7, 7), [13, 14, 1, 1, 1, 14, 1])
+        self.assertEqual(sequence({13: 1, 14: 0, 1: 0}, [32], 1), [14])
+        self.assertEqual(sequence(empty, [16], 1), [14])  # higher rank cannot fit
+        self.assertEqual(sequence({13: 1, 14: 2, 1: 4}, [32], 1), [1])
+        for bad in (0, -1, True, '2', None):
+            raw['models']['13']['minimum_start_priority'] = bad
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                ControlPolicy(raw)
+
     async def test_burst_arrival_loss_and_recovery_at_scale(self):
         model_ids = range(1, 14)
         policy = ControlPolicy({
