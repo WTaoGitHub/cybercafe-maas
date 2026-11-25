@@ -1,5 +1,7 @@
 # 运维人员手册
 
+新增模型或更新推理镜像时，从[第 13 节「新增模型上线与回退」](#13-新增模型上线与回退)开始。该节按测试环境的 GPUStack、多模型动态准入和 worker 本机回执流程编写。第 6、9 节记录了早期试点的全局隔离与发布流程。
+
 > **2026-11-02当前已发布ocr-metering-r2**：规范字段image_base64/image_url、旧别名兼容、异步远程URL及E16两个计量查询均已完成真实验收。4异步+3同步成功，7条唯一收据；当前tokens实际null/unavailable，不能按tokens实际收费。generation488、监控健康、UNKNOWN=0，8副本profile保持，无VM/worker/Docker引擎重启。OpenAPI已内嵌真实脱敏响应；以下待部署状态为历史。[发布报告](../../results/maas-ocr-release-20261102/REPORT.md)。
 
 
@@ -273,3 +275,115 @@ journalctl -u maas-endurance-night-20261021.service -n 50 --no-pager
 ## 2026-10-23 私有试点验收状态
 
 E6退役collector后的完整8小时复测通过：5760/5760成功，零错误，独立SQL任务/终态/计量一致；P4限定两节点私有环境通过。参见 [最终报告](../../results/maas-p4-release/REPORT.html)。无需重新启动负载；不恢复自建collector，不自动解除UNKNOWN。两台VM永久禁止重启；本轮没有重启VM或Docker/worker/容器。私有证书、同机监控、手动备份及未做E6生产回退演练的边界仍有效。下一项为E5设计调研，未部署动态身份方案。
+
+## 13. 新增模型上线与回退
+
+**现有 worker 已具备执行守卫所需的启动、挂载和补报能力时，新增模型无需重做 VPC 母版。** 母版决定新克隆的 worker 自带哪些程序。GPUStack 后端版本决定副本运行哪个推理镜像，按 `image_id` 发布的签名配置决定 worker 创建该副本时给它哪些资源、凭据和回执目录。
+
+| 本次变更 | 运维动作 |
+|---|---|
+| 给同一部署增加 MaaS 逻辑名 | 复用已验收的推理服务、守卫和镜像规则。登记目录与授权，把别名加入原容量池，并验证结果及计量。 |
+| 新增 GPUStack 部署，或更新权重、推理镜像、启动入口 | 固定权重和后端版本，核对推理协议与引擎终态。已有签名规则仍精确匹配时可复用。摘要或入口变化时发布新规则。逐个验收新副本。 |
+| 新引擎、新协议或多卡推理 | 交由模型服务开发者验证适配器、执行获权和引擎终态。当前受保护接入支持下列三类 OCR driver，守卫要求一个推理实例只看见一个 GPU UUID。其他协议或多卡身份需先实现相应支持，再进入下述上线流程。 |
+| 新增 worker VPC | 核对克隆来源的 `image_id`、bootstrap 客户端和已应用的签名 revision。旧快照克隆需要补装新版客户端并切到兼容配置。希望今后克隆开箱带有本机补报时，统一更新一次共享母版并验收新克隆。 |
+
+2026-11-25 的测试记录中，worker 31、32、34 已运行 `tower-e5-receipts-v4`，共享 VPC 母版仍是旧版。旧版兼容发布能识别当时三个推理镜像，自动补报的验收仅覆盖已升级节点。以后上线以目标节点实际应用的 revision 为准。[测试部署记录](../../results/maas-pg-finish-delivery-20261125/REPORT.md#当前测试环境常驻部署)
+
+### 13.1 确定模型契约并保存基线
+
+1. 在变更单记下客户端使用的**逻辑模型名**、MaaS `driver`、输入样本、预期结果、同步或异步入口、计量单位和最大运行时间。图片结构化 OCR 可参考 `gpustack.ocr`，OvisOCR3 单图文本使用 `gpustack.ovisocr3`，Unlimited 文档使用 `gpustack.document_ocr`。后两者通过异步任务接入。新协议还要提供维护恢复用的真实推理探针。[适配器及样本](../../deploy/maas/MODEL-ONBOARDING.md)
+2. 记录权重来源和不可变 revision、推理镜像完整 `registry/repository@sha256:…`、Docker 主容器实际 `Entrypoint` 数组、后端版本、回执写入进程映射到宿主机的 UID，以及候选 GPU 的型号和显存。外置权重按模型发布到已有只读模型目录，在每类目标 worker 的容器内核对可读性和版本。模型权重、回执和客户结果各自使用对应的存储。[模型存储约定](../../deploy/bootstrap/clone/NFS.md)
+3. 保存当前 GPUStack 部署、后端版本、路由及目标副本数，记录各类 worker 的签名 revision、MaaS 目录、绑定、容量策略和已生效的预算。通过私有 CLI 的 `status` 核对 `QUEUED`、`RETRY_WAIT` 数量，用 `drain-status` 留下在途及既有 `UNKNOWN` 的基线。为验证准备独立项目或带 `test_agent_` 标记的数据，预先登记任务、文件及临时资源的清理范围。
+
+### 13.2 准备推理服务并验证执行守卫
+
+同一受保护镜像用于新权重时，先验证新模型仍走原来的引擎调用、完成信号和结果解析。需要接入新推理代码时，由模型服务开发者在实际执行路径接入守卫，由运维验收以下行为。
+
+| 检查点 | 可接受的行为 |
+|---|---|
+| 进程身份与启动 | 每个新进程使用自己的实例身份、可见 GPU UUID 和实际派发路由，响应 `GET /maas/guard-proof` 的签名挑战。缺少必要凭据时拒绝受保护推理。 |
+| GPU 获权 | 接收 MaaS 的 `X-MaaS-Execution-Attempt`，在向引擎提交工作前取得该尝试的启动授权。缺失、无效或被拒的授权不能进入 GPU。同一路由的首次请求、网关重试和兜底目标都须经过守卫。 |
+| GPU 终态 | 只有引擎确认该请求已结束才报终态。例如 PP 等待 ONNX 返回主机结果，Ovis 观察引擎调度器的完成事件。HTTP 超时、客户端断连、worker 重新 Ready 都不足以单独结清该次执行。 |
+| TLS 断连与补报 | 守卫写入原尝试、原进程的签名结束回执，回调确认丢失时重送同一事件。回调持续不可达时由宿主机定时器补报，收到 HTTP 204 后删除回执。重送只结清后端活动，已失败的客户任务保留失败和原计量。 |
+
+可对照已接入的三种执行路径定位回执应放在哪一层。[PP 同步引擎](../../gpu-ocr/execution_guard.py) · [Ovis 调度器](../../deploy/ovisocr3/vllm_guard.py) · [Unlimited 执行路径](../../deploy/unlimited-ocr-2/uocr_execution.py)
+
+### 13.3 发布 worker 镜像匹配规则
+
+1. 在拟接单的各类 worker 上核对 bootstrap 是否支持 `receipt_uid` 和 `maas-worker-receipts.timer`。在各自当前签名 manifest 上增补 `worker_runtime.images[]`，保留其他模型条目。匹配键为**完整镜像摘要和实际 Entrypoint 数组**。已存在同一组合时复用该条规则。
+2. 每条受保护规则填写镜像实际读取的 `execution_env_prefix`，例如 `MAAS_OVIS_EXECUTION_`。启用本机回执时填写整数 `receipt_uid`，以映射后的实际 UID 为准。有 CPU、内存限额时引用 `profiles` 中已定义的 `profile`。保留 `worker_runtime.execution.origin` 的私有 HTTPS 地址和可信 `ca_pem`。在 GPUStack 模型环境中将 `<prefix>ROUTE` 设为**实际派发的上游路由名**。worker 在创建容器时注入 `ORIGIN`、`KEY_FILE`、`CA_FILE` 和 `RECEIPT_DIR`（均带该前缀），密钥和 CA 只读，回执目录单独可写。[字段与配置示例](../../deploy/bootstrap/clone/README.md#推理资源档位与执行回执)
+3. 在配置服务器的受控运维环境中为本次改动分配新 `config_revision`。下列变量分别指向已核实的发布根目录、目标客户端设置、签名密钥文件、目标 `image_id`、候选公开 manifest、私有 registration 文件。目标 manifest 的 `compatible_image_ids` 只列该 `IMAGE_ID`。按实际使用的客户端范围分别发布兼容版本，再从配置服务按同一 `image_id` 回读验签并核对 revision。[按镜像发布与回退](../../deploy/bootstrap/clone/NFS.md)
+
+```sh
+python3 -m maas_bootstrap.publisher \
+  --root "$RELEASE_ROOT" --settings "$IMAGE_SETTINGS" --signing-key "$SIGNING_KEY_FILE" \
+  publish --image-id "$IMAGE_ID" --manifest "$CANDIDATE_MANIFEST" \
+  --registration-file "$REGISTRATION_FILE"
+```
+
+4. 新克隆在首次启动时获取兼容 revision。存量 worker 需要切换规则时，先暂停并排空受影响的工作，在维护窗口按 GPU UUID 完成 worker 接续，使用新会话的启动许可。检查实际应用的 revision 及 Ready 状态，再创建或替换推理副本。已消费的许可不可复用。XZ-31-001、XZ-31-002 全程禁止整机重启。[存量 worker 接续步骤](../../deploy/bootstrap/clone/README.md#无盘-gpu-接续试点)
+
+无盘 worker 的待报回执在宿主机 `/run/maas-bootstrap/execution/receipts/` 下，绑定到推理容器的 `/run/maas-execution-receipts`。同一 VPC 内替换推理或 worker 容器后仍可补报。定时器经 MaaS 私有 HTTPS 提交，由 MaaS 写 PostgreSQL，模型无需数据库账号或额外的共享 NFS 回执卷。整台无盘 VPC 回收会丢失本机未送达的文件。控制端缺乏原终态证据时维持隔离。[回执存储与恢复边界](../../deploy/maas/INFERENCE-QUARANTINE.md#worker-本机补报与-postgresql-结清)
+
+### 13.4 创建 GPUStack 部署并核对真实副本
+
+1. 在目标集群的自定义后端中新增不可变版本，把镜像引用固定到完整摘要，保留旧版本。创建模型时指定该后端版本、固定权重来源、启动参数、资源声明和对应路由，先保持客户流量关闭。从单个候选副本开始。记录 GPUStack 返回的 cluster ID、model/deployment ID、owner principal ID、route ID 和路由名。使用目录内已有部署增加别名时，直接核对这些值。[GPUStack 常态发布](../../deploy/maas/README.md#现有测试控制端的常态发布) · [部署模板示例](../../deploy/ovisocr3/gpustack-template.json)
+2. 对每个可达副本核对实际 worker、GPU UUID、后端版本、容器镜像摘要、入口、守卫代码版本及三处挂载的读写属性。GPUStack 更新期望版本后，旧实例可能继续运行。按维护窗口替换旧实例，再将每台宿主机的核验计数与 GPUStack 的 Ready 清单逐个对照。若新引擎采用不同的入口布局，应提供能检查其实际加载代码的等价核验。
+3. 现有 PP、Ovis、Unlimited 的 Python 入口可直接使用以下只读检查。在目标 worker 运行，`VERIFY_SCRIPT` 为[核验脚本](../../scripts/maas/runtime/verify_worker_receipts.py)在该机的路径，`GUARD_SHA256` 为从**批准发布版本**的 `gpu-ocr/execution_guard.py` 算出的 SHA-256。输出的 `revision` 和按模型前缀统计的 `serving` 应与预期一致，timer 应为 enabled、active。持续出现 `rejected` 时检查凭据、路由和进程身份，`unavailable` 时检查回调连通性，保留尚未确认的文件。
+
+```sh
+PYTHONPATH=/opt/maas/lib python3 -B "$VERIFY_SCRIPT" --guard-sha256 "$GUARD_SHA256"
+systemctl list-timers maas-worker-receipts.timer
+journalctl -u maas-worker-receipts.service -n 20 --no-pager
+```
+
+### 13.5 登记 MaaS 路由、授权和容量
+
+以下用 `ocr.invoice` 举例，假设新模型已验证兼容 PP 图片协议，GPUStack 路由名为 `invoice-ocr`。这两个名字分别提供给客户端和推理网关。revision、超时和容量均须由本次发布确定。
+
+| 配置位置 | 应填写或核对的内容 |
+|---|---|
+| `MAAS_CATALOG_FILE` | 在 JSON 对象新增键 `ocr.invoice`，填写 `driver=gpustack.ocr`、`upstream_model=invoice-ocr`、`revision`、`max_runtime_s`。在确认全部可达推理目标都强制守卫后，对同一路由的所有 MaaS 别名设置 `execution_guard: true`。Unlimited 还需固定模型 revision、运行镜像摘要、后处理器、渲染 profile，并在 API 和执行器安装相应 PDFium 依赖。[图片目录](../../deploy/maas/catalog.ocr.example.json) · [文档目录](../../deploy/maas/catalog.document.example.json) · [Ovis 目录](../../deploy/maas/catalog.ovisocr3.example.json) |
+| `MAAS_BINDINGS_FILE` 与 GPUStack 路由 ACL | 在获准项目的 credential 条目中将逻辑名 `ocr.invoice` 加入 `models`，保留原 project 和 secret 引用。在 GPUStack 授予该凭据调用 `invoice-ocr` 的权限。先授权验收身份。维护探针凭据还须具备目录内全部网络模型的本地和上游权限。[绑定示例](../../deploy/maas/bindings.example.json) |
+| `MAAS_CAPACITY_POLICY_FILE` | 新部署登记池，已有部署的别名放入同一池。`routes` 写逻辑名到 GPUStack **数字 route ID** 的映射。核对 `cluster_id`、`model_id`、`owner_principal_id`、`gpu_names`、实测 `slots_per_replica`、`queue_limit` 及适用的 `hard_limit`。与其他模型同卡时，按已实测的组合或显存预算登记，覆盖目录内所有上游模型。[容量策略及完整示例](../../deploy/maas/README.md#动态容量只观测) |
+| 网关与隔离范围 | 受保护聚合路由核对 Higress 所有正权重目的实例、重试和兜底路径后，填 `gateway_verified: true`，并将 `guard_backend_version` 设为 GPUStack 的受保护后端版本名。采用固定单卡路由时改配 `replica_routes`，逐条核对路由、部署 ID 和唯一 GPU UUID，并授予上游调用权。两种配置在同一池中互斥。[聚合路由验收](../../deploy/maas/INFERENCE-QUARANTINE.md#受保护聚合路由的额度回收) · [固定路由验收](../../deploy/maas/INFERENCE-QUARANTINE.md#逐-gpu-隔离候选) |
+| 自动调节副本数（启用时） | 将新部署的 ID、最小/最大副本数、优先级、权重加入调节策略，核对写授权覆盖该 ID 和上限。先用 observe 对照实际可放置的副本数，再切换 apply。调节器决定期望副本数，MaaS 根据合格的实际副本发放并发额度。[调节策略示例与授权](../../deploy/maas/README.md#三模型副本权重准备2026-11-20) |
+
+在已挂载候选配置、凭据文件并使用发布版本依赖的 MaaS 容器内，可执行以下只读校验。它检查目录、已启用的绑定和动态策略能否一同加载，不输出凭据。API 与所有执行器使用相同版本的应用、目录和绑定，observer 与准入进程使用匹配的容量策略。
+
+```sh
+python -B - <<'PY'
+from maas_platform.auth import AuthConnector
+from maas_platform.capacity_admission import configuration
+from maas_platform.config import Settings
+
+settings = Settings.from_env()
+catalog = settings.catalog()
+bindings = AuthConnector(settings).bindings()
+policy, _, policy_hash = configuration(settings)
+print(f"models={len(catalog)} bindings={len(bindings)} pools={len(policy.pools)} policy_hash={policy_hash}")
+PY
+```
+
+已有逻辑名要换 revision 时，先在下游冻结该逻辑名的新提交，让使用旧定义的排队及在途任务完成，再暂停派发并切换。MaaS 的 `pause` 仍允许异步任务进入队列。需要两版并行时使用新逻辑名，任务会保留提交时的模型指纹。
+
+常规切换时先暂停并排空，在 observer 的 `capacity.json` 核对 `expires_at`、新策略、`ready_ids` 及各池额度。受保护聚合路由还须有 `route_gpus` 和 `guard_topology` 的进程证明。在维护窗口执行私有 CLI 的 `capacity-enforce`，完成 `resume --credential-id … --probe-image …` 的真实探针。已有历史 `UNKNOWN` 时，普通切换会被阻止。仅在满足专门流程的物理隔离证据、在途检查和新鲜预算条件时使用隔离切换，保留原账本。[常规启用流程](../../deploy/maas/README.md#隔离环境启用动态准入) · [含历史隔离的切换条件](../../deploy/maas/INFERENCE-QUARANTINE.md#受保护聚合路由的额度回收)
+
+### 13.6 验收、开放流量与回退
+
+| 顺序 | 操作与通过条件 |
+|---|---|
+| 1. 授权与业务结果 | 用验收凭据查询 `GET /maas/v1/models/{name}/capabilities`，核对逻辑名、revision、输入与参数。已登记但无该模型权限的凭据应被拒绝。对异步模型按能力声明准备输入，必要时先上传到 `POST /maas/v1/artifacts`，再用唯一幂等键调用 `POST /maas/v1/tasks`。新建返回 202，轮询到 `SUCCEEDED`，下载 `result_artifact_id` 并与预期内容比对。支持同步协议的模型再通过 `POST /gpustack/v1/chat/completions` 做一次真实推理。[API 与请求格式](../api/README.md) |
+| 2. 执行与计量 | 按任务和尝试关联原 GPU、进程、启动与终态。同一异步任务以相同键和相同请求重提应返回同一任务。核对 `GET /maas/v1/tasks/{id}/usage`，成功图片或页数符合样本，只有一份成功计量。同步成功时按响应头 `X-Usage-ID` 查询 `GET /maas/v1/usage/{id}`。同卡有其他模型时也要验证其探针与剩余额度。 |
+| 3. 异常与补报 | 新引擎或改变终态、回执链路时，在隔离测试部署执行故障验证。先让结束回调已提交 PG 后丢失 TLS 确认，验证只重送原结束事件、GPU 只获权一次。再让回调持续不可达，确认本机留下签名回执，再在同一 VPC 替换推理容器并恢复回调，核对 timer 收到 204、文件删除、原活动从 `UNKNOWN` 结清。重复回执后结束时间和成功计量均不变，已失败的客户任务仍为 `FAILED`。沿用已验收实现时，记录所复用的版本证据并核验本模型的实际路由、挂载、timer 和终态。[断连与补报复验](../../results/maas-pg-finish-delivery-20261125/REPORT.md#修复后复验) |
+| 4. 放量 | 在实测单副本并发及目标同卡布局下核对显存、结果、队列与有效额度。新副本缺少可信进程或路由证据时，相应受保护聚合池应无可派发额度。所有检查通过后再开放业务凭据、逐步放量，并记录生效版本、样本、脱敏任务 ID、结果及回退点。 |
+
+**验收失败或上线后异常时**，先停止新流量和候选模型扩容，保留原路由、执行凭据和回执目录，处理队列及在途任务。尚有未决回执时，保留其验证和补报所需的规则、密钥及目录，直到原活动结清。对于全新逻辑名，待排空后撤回新增授权、目录、容量及调节条目，再移除候选部署。对于已有模型升级，在窗口内还原已保存的后端版本、路由、目录、绑定及策略，实际替换候选副本。若需撤回签名规则，先确认旧版本的注册凭据仍有效，在同一发布环境用以下命令将上一个可用版本的内容作为**新 revision** 发布，按 13.3 让存量 worker 接续生效。
+
+```sh
+python3 -m maas_bootstrap.publisher \
+  --root "$RELEASE_ROOT" --settings "$IMAGE_SETTINGS" --signing-key "$SIGNING_KEY_FILE" \
+  rollback --image-id "$IMAGE_ID" --source "$PREVIOUS_REVISION" --new-revision "$ROLLBACK_REVISION"
+```
+
+最后核对实际副本、原模型探针、有效额度、未决回执和原任务的结果下载。保留历史任务、客户 artifact、计量和仍待查证的 `UNKNOWN`。按事前清单回收本次测试数据、临时实例和验证文件，把验收与回退结果登记到变更单。

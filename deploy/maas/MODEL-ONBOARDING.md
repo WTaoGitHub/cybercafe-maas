@@ -2,6 +2,8 @@
 
 2026-11-18 · [统一接入与迁移跟踪 #62](https://github.com/WTaoGitHub/cybercafe-maas/issues/62)
 
+实际发布从[运维手册「新增模型上线与回退」](../../docs/handbooks/OPERATIONS.md#13-新增模型上线与回退)开始。手册按顺序说明何时可复用母版、如何接入执行守卫、发布签名镜像规则、逐副本核验本机回执，以及何时开放流量或回退。下文提供适配器、目录配置与隔离测试样例。
+
 一套支持文档依赖的 MaaS API、同版本执行器和一个 PostgreSQL 任务库可以使用同一份模型目录承载图片与文档 OCR。模型在 GPUStack 部署后，优先从现有适配器中选择。输入预处理、推理协议、结果解析或计量语义有实际差异时，再为对应协议开发可复用适配器。
 
 2026-11-19 当前测试环境已在同一入口、同一执行器和同一任务库验证 PP-OCRv4、Unlimited-OCR-2 NFS 与 OvisOCR3。三笔标记任务分别取得一份收据，验证产物和记录均已清理。 [三模型实机记录](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#5-开发顺序与完成条件)
