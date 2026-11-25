@@ -1,5 +1,6 @@
 """Ask MaaS for exclusive authorization before entering the GPU engine."""
 from concurrent.futures import Future
+from http.client import IncompleteRead
 import hashlib
 import hmac
 import json
@@ -78,7 +79,9 @@ class ExecutionGuard:
             exc.close()
             if exc.code == 409:
                 raise HTTPException(409, 'Execution not granted') from None
-        except (URLError, TimeoutError):
+        # A peer that closes before response headers raises RemoteDisconnected
+        # (a ConnectionError) directly, outside urllib's URLError wrapper.
+        except (URLError, TimeoutError, ConnectionError, IncompleteRead, ssl.SSLEOFError):
             pass
         raise HTTPException(503, 'Execution authority unavailable')
 

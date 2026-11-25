@@ -3,7 +3,6 @@
 Checks finish delivery to the normal callback using real PostgreSQL and loopback TLS.
 The engine is synthetic. The separate GPU trial is recorded in issue #2.
 """
-from http.client import RemoteDisconnected
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
@@ -30,11 +29,7 @@ def activity(service, token):
         ).fetchone()
 
 
-@pytest.mark.parametrize("fault", [
-    "return_503",
-    pytest.param("close_connection", marks=pytest.mark.xfail(
-        strict=True, raises=RemoteDisconnected, reason="CAPACITY-INC-011: finish ACK lost over TLS")),
-])
+@pytest.mark.parametrize("fault", ["return_503", "close_connection"])
 def test_retry_after_committed_finish(protected, tmp_path, monkeypatch, fault):
     client, service, (owner, _), *_ = protected
     token, _ = create_attempt(protected, "task")
