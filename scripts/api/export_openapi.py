@@ -70,6 +70,7 @@ for status in ('200','202'):
  P['/maas/v1/ocr']['post']['responses'][status]['headers']['Location']=copy.deepcopy(P['/maas/v1/tasks']['post']['responses'][status]['headers']['Location'])
 S['TaskDetail']=copy.deepcopy(S['TaskView'])
 detail=S['TaskDetail']['properties']
+detail['execution_state']={'description':'最近一次领取的后台活动状态，尚无派发记录时为 null。可随迟到的完成回执更新。','anyOf':[{'type':'string','enum':['DISPATCHING','UNKNOWN','COMPLETED','RESOLVED']},{'type':'null'}]}
 detail['status']=detail.pop('state')
 del detail['error_code']
 detail.update({
