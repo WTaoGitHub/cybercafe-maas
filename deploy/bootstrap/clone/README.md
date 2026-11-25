@@ -89,6 +89,8 @@ settings示例包含试点公开地址及秘密文件路径，没有实际码。
 
 档位同时设置内存上限和等量的 Docker memory+swap 上限，对应禁用 swap。每条规则可声明档位、执行回执或者两者；只配置限额时省略 `execution_env_prefix` 和 `execution`。镜像须使用完整摘要引用，启动入口匹配 Docker 实际 entrypoint。受保护的模型沿用现有 `<prefix>ROUTE`，创建时自动设置 `ORIGIN`、`KEY_FILE`、`CA_FILE`，仅给匹配的推理主容器挂载只读文件。
 
+要启用本机结束回执，在对应的 `images[]` 项中增加整数 `receipt_uid`，填写实际写回执的容器进程映射到宿主机的 UID。该模型镜像须已支持 `<prefix>RECEIPT_DIR`。bootstrap 创建权限为 `0700` 的本机目录并单独读写挂入推理容器，自动设置 `<prefix>RECEIPT_DIR=/run/maas-execution-receipts`。密钥及 CA 继续以只读文件挂载。使用新版无盘母版时，宿主机的 `maas-worker-receipts.timer` 自动启用，每轮扫描结束约 10 秒后复查。可用 `systemctl list-timers maas-worker-receipts.timer` 和 `journalctl -u maas-worker-receipts.service` 检查运行情况。新配置按下述 revision 发布和存量 worker 维护流程生效。
+
 在启用发证的配置服务容器中设置 `MAAS_BOOTSTRAP_EXECUTION_KEYS_DIR`，指向与 MaaS API 共享的私有目录。目录权限为 `0700`，由配置服务和 MaaS API 的共同运行 UID 持有；配置服务挂读写，MaaS API 挂只读。若已有现场凭据，在启用新发布前将原映射完整迁入该目录的 `worker-keys.json`（`0600`），再将 MaaS API 的 `MAAS_PP_OCR_WORKER_KEYS_FILE` 指向容器内此文件。例如把共享目录放在现有 `MAAS_SECRET_DIR` 的 `e5-execution` 子目录，API 使用 `/run/secrets/e5-execution/worker-keys.json`。两端挂载目录，服务端才能原子替换映射并让 API 读到新文件。
 
 获批的开机会按 GPU 取回一项执行凭据。客户端写入 bootstrap 私有状态目录，推理容器通过只读 bind 读取，公布的 manifest 只携带证书和策略。现有批准流程仍负责 GPU 和开机会话接续；自动模式沿用该网络与批次认证范围。轮换既有执行凭据及硬件身份验证另行管理。

@@ -1,44 +1,28 @@
 """Reconcile authenticated engine-end receipts on a private per-GPU persistent volume."""
 import argparse
 from collections import Counter
-import hashlib
-import hmac
 import json
 import logging
 import os
 from pathlib import Path
 import re
 import signal
-import stat
 import threading
 
 import psycopg
 
 from .config import private_text
 from .db import Database
+from .finish_receipt import ATTEMPT, read_finish
 from .pp_ocr_execution import GPUEvent, TABLE, record_finish
 
 LOG = logging.getLogger('maas.receipts')
-ATTEMPT = re.compile(r'(task|sync)\.[0-9a-f]{32}')
 GPU = re.compile(r'GPU-[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}')
 
 
 def read_receipt(directory, name, gpu, key):
-    fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
-    with os.fdopen(fd, 'rb') as stream:
-        if not stat.S_ISREG(os.fstat(fd).st_mode):
-            raise ValueError('Invalid receipt file')
-        data = stream.read(2049)
-    if len(data) > 2048:
-        raise ValueError('Oversized receipt')
-    signature, payload = data.split(b'\n', 1)
-    expected = hmac.new(key.encode(), b'maas-gpu-finish-v1\0' + payload, hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(signature, expected.encode()):
-        raise ValueError('Invalid signature')
-    event = GPUEvent.model_validate_json(payload)
-    if not event.finished or (event.gpu_uuid, event.attempt) != (gpu, name):
-        raise ValueError('Receipt identity mismatch')
-    return event
+    payload, _ = read_finish(directory, name, gpu, key)
+    return GPUEvent.model_validate_json(payload)
 
 
 def reconcile(db, event, apply):

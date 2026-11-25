@@ -67,13 +67,15 @@ def atomic_json(path, value):
     atomic_bytes(path, canonical(value) + b'\n')
 
 
-def atomic_bytes(path, contents):
+def atomic_bytes(path, contents, *, uid=None):
     path = Path(path)
     path.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix='.' + path.name, dir=path.parent)
     try:
-        os.fchmod(fd, 0o600)
         with os.fdopen(fd, 'wb') as f:
+            if uid is not None:
+                os.fchown(f.fileno(), uid, -1)
+            os.fchmod(f.fileno(), 0o600)
             f.write(contents);f.flush();os.fsync(f.fileno())
         os.replace(name, path)
         directory = os.open(path.parent, os.O_RDONLY)

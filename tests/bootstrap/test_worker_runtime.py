@@ -2,6 +2,7 @@ from copy import deepcopy
 from contextlib import contextmanager
 import hashlib
 import json
+import os
 from pathlib import Path
 from textwrap import dedent
 from types import SimpleNamespace
@@ -54,7 +55,8 @@ def test_signed_policy_supports_model_changes_with_the_same_image_settings(diskl
 
 
 @pytest.mark.parametrize('change', ['unpinned', 'duplicate', 'entrypoint', 'invalid_cpu', 'untrusted_origin',
-                                        'private_pem', 'arbitrary_field', 'missing_execution'])
+                                        'private_pem', 'arbitrary_field', 'missing_execution',
+                                        'negative_uid', 'reserved_uid', 'bool_uid', 'unguarded_receipts'])
 def test_invalid_runtime_settings_are_rejected(change, diskless):
     _, envelope = release(diskless)
     manifest = deepcopy(envelope['manifest'])
@@ -74,15 +76,27 @@ def test_invalid_runtime_settings_are_rejected(change, diskless):
         config['execution']['ca_pem'] += '-----BEGIN PRIVATE KEY-----'
     elif change == 'arbitrary_field':
         image['mounts'] = ['/etc']
+    elif change in ('negative_uid', 'reserved_uid', 'bool_uid', 'unguarded_receipts'):
+        image['receipt_uid'] = {'negative_uid': -1, 'reserved_uid': 2**32 - 1,
+                                'bool_uid': True, 'unguarded_receipts': 0}[change]
+        if change == 'unguarded_receipts':
+            del image['execution_env_prefix'], config['execution']
     else:
         del config['execution']
     with pytest.raises(BootstrapError, match='WORKER_RUNTIME_POLICY_INVALID'):
         execution.configuration(manifest)
 
 
-def test_docker_options_and_readonly_mounts_are_scoped(tmp_path, diskless, monkeypatch):
+@pytest.mark.parametrize('local_receipts', [False, True])
+def test_docker_options_and_readonly_mounts_are_scoped(tmp_path, diskless, monkeypatch, local_receipts):
     _, envelope = release(diskless)
     config = execution.configuration(envelope['manifest'])
+    if local_receipts:
+        config['images'][0]['receipt_uid'] = os.geteuid()
+        for name in (execution.CA_NAME, execution.KEY_NAME):
+            (tmp_path / name).write_bytes(b'test_agent_local_material')
+            (tmp_path / name).chmod(0o600)
+        execution.prepare_receipts(tmp_path, config['images'])
     original = b'class DockerDeployer:\n    def create(self):\n        if True:\n' + worker_limits.ANCHOR + b'            pass\n'
     monkeypatch.setattr(worker_limits, 'ORIGINAL_SHA256', hashlib.sha256(original).hexdigest())
     patched = worker_limits.runtime_source(original, config=config, execution_directory=tmp_path)
@@ -110,8 +124,21 @@ def test_docker_options_and_readonly_mounts_are_scoped(tmp_path, diskless, monke
         if limit:
             assert options['mem_limit'] == options['memswap_limit'] == limit * 1024**2
             assert options['nano_cpus'] == 4_000_000_000
-            assert {Path(m['Source']).name for m in options['mounts']} == {'worker.key', 'authority.pem'}
-            assert all(m['read_only'] and m['type'] == 'bind' for m in options['mounts'])
+            assert {Path(m['Source']).name for m in options['mounts'] if m['read_only']} == {'worker.key', 'authority.pem'}
+            assert all(m['type'] == 'bind' for m in options['mounts'])
+            writable = [m for m in options['mounts'] if not m['read_only']]
+            if local_receipts and policy is config:
+                folder = execution.receipt_directory(tmp_path, config['images'][0])
+                assert folder.stat().st_mode & 0o777 == 0o700
+                for mount in options['mounts']:
+                    if mount['read_only']:
+                        source = Path(mount['Source'])
+                        assert source.read_bytes() == b'test_agent_local_material'
+                        assert source.stat().st_uid == os.geteuid() and source.stat().st_mode & 0o777 == 0o600
+                assert writable == [dict(Target=execution.RECEIPT_TARGET, Source=str(folder), type='bind', read_only=False)]
+                assert options['environment'][PREFIX + 'RECEIPT_DIR'] == execution.RECEIPT_TARGET
+            else:
+                assert not writable and PREFIX + 'RECEIPT_DIR' not in options['environment']
             assert options['environment'][PREFIX + 'KEY_FILE'] == '/run/maas-execution/worker.key'
         else:
             assert 'mounts' not in options and 'mem_limit' not in options and not options['environment']

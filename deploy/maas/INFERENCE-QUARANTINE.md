@@ -59,6 +59,14 @@ MaaS 在发送推理前记录派发 token、逻辑模型和实际配置的上游
 
 使用独立 PostgreSQL 的验收命令为 `PYTHONPATH=.:plugins/gpustack-replica python -m pytest -q tests/maas/test_execution_scope_integration.py tests/maas/test_gateway_scope.py`。`MAAS_TEST_DATABASE_URL` 必须只指向可销毁且名称以 `_test` 结尾的数据库，集成夹具会重建 schema。[故障隔离跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
+## worker 本机补报与 PostgreSQL 结清
+
+已启用执行守卫的模型可按镜像选择本机补报。常规结束回调丢失确认（包括 TLS 对端提前关闭）时，推理进程立即用原 token 再报一次。两次均失败时，已落盘的签名回执留在宿主机。独立的 worker 定时器读取原回执，用该 GPU 的凭据向签名配置中的 MaaS HTTPS 入口重送。控制端按原 GPU、路由、进程和尝试核验，在既有 PostgreSQL 事务内结清活动。worker 收到 HTTP 204 才删除相应文件。重复上报保留第一次结束时间。
+
+无盘 worker 的本机目录位于 `/run/maas-bootstrap/execution/receipts/`，可以跨推理容器及 GPUStack worker 容器替换保留。整台 VPC 关停或回收会丢失尚在 tmpfs 上的文件。若进程在生成回执之前崩溃，或文件已经丢失且控制端也未收到终态，活动继续按 `UNKNOWN` 隔离。补报只恢复并发资格，客户任务已失败时保留失败状态和原有计量。
+
+启用方法见[克隆配置说明](../bootstrap/clone/README.md)。补报服务日志按轮统计 `acknowledged`、`unavailable`、`rejected` 和 `invalid_or_unreadable` 等结果。持续拒绝时检查 GPU 密钥、路由和原进程身份。轮换凭据、变更回执目录或下线 worker 前先核对未决文件。暂停补报可停止 timer，必要时等待当前 oneshot 完成，保留文件待后续确认。该路径通过 MaaS API 写 PostgreSQL，控制端无需挂载 worker 磁盘。
+
 ## 持久结束回执与控制端主动对账
 
 PP-OCRv4 试点使用带执行守卫的镜像。将独立持久卷的每卡子目录以可写方式挂载到对应 GPU 的推理容器，设置 `MAAS_PP_OCR_EXECUTION_RECEIPT_DIR` 为该容器内的绝对路径。目录需预建，只允许原 worker 写入，由控制端读取和确认删除（例如专用组、目录 2770、回执 0640）。控制端所见布局为 `<root>/<GPU UUID>/<task 或 sync>.<token>`。worker 只挂载自己的子目录。可使用两端都能访问、支持同目录原子替换和 fsync 的私有持久卷，先在所选存储实测容器替换和断连。已有模型权重卷继续使用原有权限。

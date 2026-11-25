@@ -7,7 +7,7 @@ import io
 import subprocess
 import tarfile
 from pathlib import PurePosixPath
-from .execution import CA_NAME, KEY_NAME, SERVING_DIRECTORY
+from .execution import CA_NAME, KEY_NAME, RECEIPT_TARGET, SERVING_DIRECTORY, credential_directory, receipt_directory
 
 
 WORKER_IMAGE_ID = "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
@@ -45,6 +45,7 @@ INSERTION = BASE_INSERTION + OVIS_INSERTION.replace(
 def configured_insertion(config, execution_directory=None):
     limits = {}
     guards = {}
+    receipts = {}
     for image in config['images']:
         match = (image['digest'], tuple(image['entrypoint']))
         if 'profile' in image:
@@ -54,6 +55,8 @@ def configured_insertion(config, execution_directory=None):
                                  nano_cpus=profile['cpu_millis'] * 1_000_000)
         if 'execution_env_prefix' in image:
             guards[match] = image['execution_env_prefix']
+            if 'receipt_uid' in image and execution_directory is not None:
+                receipts[match] = str(receipt_directory(execution_directory, image))
     options = ''
     if guards:
         if execution_directory is None:
@@ -62,16 +65,33 @@ def configured_insertion(config, execution_directory=None):
             'KEY_FILE': (str(execution_directory / KEY_NAME), SERVING_DIRECTORY + '/' + KEY_NAME),
             'CA_FILE': (str(execution_directory / CA_NAME), SERVING_DIRECTORY + '/' + CA_NAME),
         }
+        by_image = {}
+        for image in config['images']:
+            if image.get('receipt_uid'):
+                reader = credential_directory(execution_directory, image['receipt_uid'])
+                match = (image['digest'], tuple(image['entrypoint']))
+                by_image[match] = {field: (str(reader / PurePosixPath(target).name), target)
+                                   for field, (_, target) in files.items()}
+        file_options = f'{by_image!r}.get(maas_image, {files!r})' if by_image else repr(files)
         options = f'''                prefix = {guards!r}.get(maas_image)
                 if prefix:
                     volumes = create_options.setdefault("mounts", [])
                     environment = create_options["environment"]
                     environment[prefix + "ORIGIN"] = {config['execution']['origin']!r}
-                    for field, (source, target) in {files!r}.items():
+                    for field, (source, target) in {file_options}.items():
                         if any(volume["Target"] == target for volume in volumes):
                             raise ValueError("MaaS execution mount target already in use")
                         volumes.append(docker.types.Mount(target, source, type="bind", read_only=True))
                         environment[prefix + field] = target
+'''
+        if receipts:
+            options += f'''                    receipt_source = {receipts!r}.get(maas_image)
+                    if receipt_source:
+                        receipt_target = {RECEIPT_TARGET!r}
+                        if any(volume["Target"] == receipt_target for volume in volumes):
+                            raise ValueError("MaaS receipt mount target already in use")
+                        volumes.append(docker.types.Mount(receipt_target, receipt_source, type="bind", read_only=False))
+                        environment[prefix + "RECEIPT_DIR"] = receipt_target
 '''
     return (f'''            if c.profile == ContainerProfileEnum.RUN and c.name == "default":
                 maas_image = (c.image.rpartition("@")[2], tuple(create_options.get("entrypoint") or ()))

@@ -19,6 +19,7 @@ PREFIX = re.compile(r'MAAS_[A-Z0-9_]{1,48}_EXECUTION_')
 CERTIFICATES = re.compile(r'(?:-----BEGIN CERTIFICATE-----\r?\n'
                           r'(?:[a-zA-Z0-9+/=]+\r?\n)+-----END CERTIFICATE-----\s*){1,8}')
 SERVING_DIRECTORY = '/run/maas-execution'
+RECEIPT_TARGET = '/run/maas-execution-receipts'
 KEY_NAME = 'worker.key'
 CA_NAME = 'authority.pem'
 KEYS_FILENAME = 'worker-keys.json'
@@ -44,7 +45,7 @@ def configuration(manifest):
             raise ValueError()
         matches = set()
         for image in images:
-            if (not isinstance(image, dict) or set(image) - {'digest', 'entrypoint', 'profile', 'execution_env_prefix'}
+            if (not isinstance(image, dict) or set(image) - {'digest', 'entrypoint', 'profile', 'execution_env_prefix', 'receipt_uid'}
                     or not DIGEST.fullmatch(image['digest'])):
                 raise ValueError()
             entrypoint = image['entrypoint']
@@ -60,6 +61,10 @@ def configuration(manifest):
                 raise ValueError()
             if 'execution_env_prefix' in image and not PREFIX.fullmatch(image['execution_env_prefix']):
                 raise ValueError()
+            if 'receipt_uid' in image:
+                uid = image['receipt_uid']
+                if 'execution_env_prefix' not in image or type(uid) is not int or not 0 <= uid < 2**32 - 1:
+                    raise ValueError()
         requires_execution = any('execution_env_prefix' in image for image in images)
         if requires_execution != ('execution' in config):
             raise ValueError()
@@ -93,6 +98,40 @@ def local_directory(settings):
     return directory
 
 
+def receipt_directory(directory, image):
+    # Image revisions with the same model prefix and writer UID share their pending files.
+    return directory / 'receipts' / (image['execution_env_prefix'] + str(image['receipt_uid']))
+
+
+def credential_directory(directory, uid):
+    return directory / f'reader-{uid}' if uid else directory
+
+
+def prepare_receipts(directory, images):
+    # Only individual files are bound read-only. The writer never mounts this private parent.
+    for uid in {image['receipt_uid'] for image in images if image.get('receipt_uid')}:
+        reader = credential_directory(directory, uid)
+        for name in (KEY_NAME, CA_NAME):
+            atomic_bytes(reader / name, read_file(directory / name, secret=True), uid=uid)
+    for image in images:
+        if 'receipt_uid' not in image:
+            continue
+        target = receipt_directory(directory, image)
+        target.parent.mkdir(mode=0o700, exist_ok=True)
+        parent = target.parent.lstat()
+        if not stat.S_ISDIR(parent.st_mode) or parent.st_uid != os.geteuid() or parent.st_mode & 0o077:
+            raise BootstrapError('EXECUTION_DIRECTORY_UNTRUSTED')
+        try:
+            target.mkdir(mode=0o700)
+        except FileExistsError:
+            pass
+        else:
+            os.chown(target, image['receipt_uid'], -1)
+        info = target.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid != image['receipt_uid'] or stat.S_IMODE(info.st_mode) != 0o700:
+            raise BootstrapError('EXECUTION_DIRECTORY_UNTRUSTED')
+
+
 def prepare(settings, manifest, permit=None):
     config = manifest.get('worker_runtime', {})
     if 'execution' not in config:
@@ -104,6 +143,7 @@ def prepare(settings, manifest, permit=None):
         current = read_file(key_path, secret=True).strip()
         if not re.fullmatch(rb'[a-f0-9]{64}', current) or read_file(ca_path, secret=True) != ca:
             raise BootstrapError('EXECUTION_MATERIAL_MISMATCH')
+        prepare_receipts(directory, config['images'])
         return
     key = permit.get('execution_key')
     if not isinstance(key, str) or not KEY.fullmatch(key):
@@ -114,6 +154,7 @@ def prepare(settings, manifest, permit=None):
     try:
         atomic_bytes(ca_path, ca)
         atomic_bytes(key_path, (key + '\n').encode())
+        prepare_receipts(directory, config['images'])
     except OSError:
         raise BootstrapError('EXECUTION_MATERIAL_WRITE_FAILED') from None
 

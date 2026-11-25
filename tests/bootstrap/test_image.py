@@ -36,6 +36,7 @@ def test_offline_image_contains_only_template_configuration(setup,tmp_path):
     assert (root/'opt/maas/lib/maas_bootstrap/storage.py').is_file()
     assert (root/'opt/maas/lib/maas_bootstrap/execution.py').is_file()
     assert (root/'opt/maas/lib/maas_bootstrap/worker_limits.py').is_file()
+    assert not (root/'etc/systemd/system/maas-worker-receipts.timer').exists()
     written=json.loads((root/'etc/maas/bootstrap.json').read_text())
     assert written['model_root'] and written['model_cache_dir'] and written['model_root']!=written['worker_data_dir']
     wrapper=(root/'opt/maas/bin/maas-worker-bootstrap').read_text()
@@ -98,6 +99,11 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     assert (root/'opt/maas/lib/maas_bootstrap/handoff.py').is_file()
     assert (root/'opt/maas/lib/maas_bootstrap/delivery.py').is_file()
     units=root/'etc/systemd/system'
+    assert (units/'timers.target.wants/maas-worker-receipts.timer').readlink() == Path('/etc/systemd/system/maas-worker-receipts.timer')
+    assert 'OnUnitInactiveSec=10s' in (units/'maas-worker-receipts.timer').read_text().splitlines()
+    assert 'ExecStart=/usr/bin/python3 -B -m maas_bootstrap.receipt_replay' in (units/'maas-worker-receipts.service').read_text().splitlines()
+    for module in ('maas_bootstrap/receipt_replay.py', 'maas_platform/finish_receipt.py'):
+        assert (root/'opt/maas/lib'/module).is_file()
     assert not (units/'multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
     service = (units/'maas-worker-bootstrap.service').read_text().splitlines()
     assert {'Type=oneshot', 'RemainAfterExit=yes', 'Restart=on-failure', 'TimeoutStartSec=620',

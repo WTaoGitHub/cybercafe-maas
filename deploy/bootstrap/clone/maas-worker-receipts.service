@@ -1,0 +1,12 @@
+[Unit]
+Description=Resubmit signed GPU finish receipts to MaaS
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=PYTHONPATH=/opt/maas/lib
+ExecStart=/usr/bin/python3 -B -m maas_bootstrap.receipt_replay
+TimeoutStartSec=infinity
+NoNewPrivileges=yes
+PrivateTmp=yes
+UMask=0077
