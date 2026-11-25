@@ -1,4 +1,5 @@
 """Ask MaaS for exclusive authorization before entering the GPU engine."""
+from concurrent.futures import Future
 import hashlib
 import hmac
 import json
@@ -9,6 +10,7 @@ import re
 import ssl
 import stat
 import tempfile
+import threading
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, ProxyHandler, Request, build_opener
@@ -35,6 +37,7 @@ class ExecutionGuard:
             raise ValueError('Guarded OCR requires exactly one visible GPU UUID')
         if not re.fullmatch('[a-f0-9]{64}', secret) or not 0 < len(route) <= 128:
             raise ValueError('Invalid worker execution credential or route')
+        self._receipt_lock = threading.Lock()
         self.receipt_dir = Path(receipt_dir) if receipt_dir else None
         if self.receipt_dir and (not self.receipt_dir.is_absolute() or not self.receipt_dir.is_dir()
                                  or self.receipt_dir.is_symlink() or self.receipt_dir.stat().st_mode & 0o007):
@@ -105,11 +108,32 @@ class ExecutionGuard:
             Path(pending).unlink(missing_ok=True)
         return path
 
+    def receipt_io(self, operation, *args, **kwargs):
+        # A stalled mount must not hold the engine lock or create an unbounded I/O queue.
+        if not self._receipt_lock.acquire(timeout=.05):
+            raise TimeoutError('Receipt storage busy')
+        result = Future()
+
+        def run():
+            try:
+                result.set_result(operation(*args, **kwargs))
+            except Exception as exc:
+                result.set_exception(exc)
+            finally:
+                self._receipt_lock.release()
+
+        try:
+            threading.Thread(target=run, name='maas-receipt-io', daemon=True).start()
+        except RuntimeError as exc:
+            self._receipt_lock.release()
+            raise OSError('Receipt writer unavailable') from exc
+        return result.result(timeout=.25)
+
     def report_finished(self, attempt):
         path = None
         if self.receipt_dir:
             try:
-                path = self.save_finish(attempt)
+                path = self.receipt_io(self.save_finish, attempt)
             except OSError:
                 # A storage outage must not suppress a working authenticated callback.
                 logging.getLogger(__name__).error('execution_receipt_storage_unavailable')
@@ -121,7 +145,7 @@ class ExecutionGuard:
             self.report(attempt, finished=True)
         if path:
             try:
-                path.unlink(missing_ok=True)
+                self.receipt_io(path.unlink, missing_ok=True)
             except OSError:
                 logging.getLogger(__name__).warning('execution_receipt_cleanup_deferred')
 

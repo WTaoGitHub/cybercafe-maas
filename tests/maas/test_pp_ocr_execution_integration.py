@@ -252,3 +252,26 @@ def test_finish_receipt_survives_lost_callbacks(guarded, tmp_path, monkeypatch):
     # A failed volume still permits the normal callback to confirm engine termination.
     replica.receipt_dir.rmdir()
     replica.report_finished(attempt)
+
+def test_stalled_receipt_volume_still_reports_termination(guarded, tmp_path, monkeypatch):
+    _, _, (replica, _) = guarded
+    replica.receipt_dir = tmp_path
+    release, exited = Event(), Event()
+    writes, callbacks = [], []
+    def slow_save(attempt):
+        writes.append(attempt)
+        try:
+            assert release.wait(5)
+        finally:
+            exited.set()
+    monkeypatch.setattr(replica, 'save_finish', slow_save)
+    monkeypatch.setattr(replica, 'report', lambda attempt, *, finished: callbacks.append((attempt, finished)))
+    tokens = ['task.' + char*32 for char in 'ab']
+    try:
+        for token in tokens:
+            replica.report_finished(token)
+        assert callbacks == [(token, True) for token in tokens]
+        assert writes == tokens[:1] and not exited.is_set()
+    finally:
+        release.set()
+        assert exited.wait(2)
