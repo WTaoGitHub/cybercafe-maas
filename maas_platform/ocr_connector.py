@@ -159,9 +159,11 @@ class OCRAdapter:
         except (httpx.HTTPError, TimeoutError):
             if guarded and await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
                 raise ServiceError('BACKEND_RESULT_UNAVAILABLE', 'GPU finished but its response was unavailable') from None
-            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined') from None
+            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined',
+                               transient_before_grant=True) from None
         if guarded and not gpu_ended and not await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
-            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'GPU completion is unconfirmed')
+            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'GPU completion is unconfirmed',
+                               transient_before_grant=status in (408, 429, 502, 503, 504))
         if status not in (200,400,401,403,404,413,415,422):
             if guarded:
                 raise ServiceError('BACKEND_RESULT_UNAVAILABLE', 'GPU finished but its response was unavailable')

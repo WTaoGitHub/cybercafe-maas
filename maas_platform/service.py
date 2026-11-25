@@ -447,12 +447,14 @@ class TaskService:
                 activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (task['token'],)).fetchone()
                 state, code, result_id = 'FAILED', error.code if error else None, None
                 if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
-                    code = self.close_uncertain(c, task['token'])
+                    state, code = self.end_uncertain_attempt(c, row, bool(error and error.transient_before_grant))
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): code = 'DEADLINE_EXCEEDED'
                 elif error:
-                    used = c.execute("SELECT count(*) n FROM task_attempts WHERE task_id=%s AND state!='DEFERRED'", (row['id'],)).fetchone()['n']
-                    if error.retryable and used < row['max_attempts']: state = 'RETRY_WAIT'
+                    if not activity and error.retryable:
+                        used = c.execute("SELECT count(*) n FROM task_attempts WHERE task_id=%s AND state!='DEFERRED'", (row['id'],)).fetchone()['n']
+                        if used < row['max_attempts']:
+                            state = 'RETRY_WAIT'
                 elif result:
                     state, result_id = 'SUCCEEDED', result['id']
                     c.execute("INSERT INTO artifacts(id,project,kind,media_type,size,sha256,expires_at) VALUES(%s,%s,'result','application/json',%s,%s,now()+%s*interval '1 second')", (result_id, row['project'], result['size'], result['sha256'], self.settings.result_ttl_seconds))
@@ -476,6 +478,28 @@ class TaskService:
             WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING state""", (token,)).fetchone()
         return 'EXECUTION_NOT_STARTED' if row['state'] == 'RESOLVED' else 'UNKNOWN_BACKEND_ACTIVITY'
 
+    def end_uncertain_attempt(self, c, row, transient):
+        code = self.close_uncertain(c, row['token'])
+        if (code != 'EXECUTION_NOT_STARTED' or not transient
+                or row['model'] not in self.settings.retry_unstarted_models):
+            return 'FAILED', code
+        if row['state'] == 'CANCEL_REQUESTED':
+            return 'CANCELLED', None
+        try:
+            model = self.model(row['model'])
+        except (OSError, ValueError, KeyError, ServiceError):
+            return 'FAILED', code
+        if fingerprint(model) != row['model_fingerprint']:
+            return 'FAILED', 'MODEL_REVISION_CHANGED'
+        budget = c.execute("""SELECT clock_timestamp() < %s AS timely, count(*) AS used
+            FROM task_attempts WHERE task_id=%s AND state!='DEFERRED'""",
+            (row['deadline'], row['id'])).fetchone()
+        if not budget['timely']:
+            return 'FAILED', 'DEADLINE_EXCEEDED'
+        if budget['used'] >= row['max_attempts']:
+            return 'FAILED', code
+        return 'RETRY_WAIT', code
+
     def recover(self):
         # Durable dispatch intent fences remote work; local pre-dispatch work may retry.
         with self.db.transaction() as c:
@@ -485,8 +509,9 @@ class TaskService:
             for row in rows:
                 activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (row['token'],)).fetchone()
                 if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
-                    state, code = 'FAILED', self.close_uncertain(c,row['token'])
+                    state, code = self.end_uncertain_attempt(c, row, transient=True)
                 elif activity and activity['state']=='COMPLETED': state, code = 'FAILED', 'RESULT_NOT_COMMITTED'
+                elif activity: state, code = 'FAILED', 'BACKEND_RESULT_UNAVAILABLE'
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): state, code = 'FAILED', 'DEADLINE_EXCEEDED'
                 elif c.execute("SELECT count(*) n FROM task_attempts WHERE task_id=%s AND state!='DEFERRED'", (row['id'],)).fetchone()['n'] >= row['max_attempts']: state, code = 'FAILED', 'ATTEMPTS_EXHAUSTED'

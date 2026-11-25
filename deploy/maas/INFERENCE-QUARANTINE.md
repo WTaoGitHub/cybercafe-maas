@@ -72,3 +72,7 @@ PP-OCRv4 试点使用带执行守卫的镜像。将独立持久卷的每卡子�
 项目级任务详情的 `execution_state` 给出最近一次领取的后台活动状态。`drain-status` 列出活动的派发年龄与证据原因。新鲜且已启用的动态预算会在 observer 的 `metrics.prom` 中发布 `maas_unknown_capacity_charged_as_occupancy`、`maas_unknown_capacity_covered_by_gpu_exclusion` 与 `maas_unknown_capacity_excluded_slots`。按采样间隔积分第一项可估算单独占用的槽秒，结合每池 `capacity.json` 的 reason、等待队列和真实派发核对业务影响。缺测时保留观测空档。
 
 独立库验收使用 `tests/maas/test_execution_scope_integration.py` 和 `tests/maas/test_pp_ocr_execution_integration.py`（数据库与启动命令见上节）。50 笔回执用例各丢弃两次完成回调，在同步和异步入口核对已获权、失联、观察、结清及重复证据。该用例使用模拟引擎、真实 PostgreSQL 和本地文件卷；打印从直接发起扫描至提交完成的时延。常驻扫描等待、现场共享卷及真实 GPU 端到端时延需在目标部署另测。
+
+### 从未获权的异步任务重试
+
+执行器可通过 `MAAS_RETRY_UNSTARTED_MODELS` 指定逗号分隔的逻辑模型名，默认为空。按模型独立于回执对账启用。网络中断、部分临时网关响应或执行器租约丢失时，须由强制守卫在原事务中证实从未获权并封闭旧 token，模型修订一致、期限和尝试预算均有效，才将原任务送入 `RETRY_WAIT`。新执行器领取同一任务并重新申请容量。关闭此开关阻止新的故障尝试被归队。已经发生的执行即使随后遇到可重试的存储故障也只结算原任务。使用 `test_transient_failure_before_grant_retries_on_new_token` 与 `test_unstarted_retry_boundaries` 验证允许重试及必须停止的分支。

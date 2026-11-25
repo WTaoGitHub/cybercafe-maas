@@ -410,3 +410,81 @@ def test_pull_reconciles_fifty_lost_gpu_finishes(protected, tmp_path, monkeypatc
     delays.sort()
     print(f'50 receipts, direct scan seconds P50={delays[24]:.3f} P95={delays[47]:.3f} max={delays[-1]:.3f}')
     assert delays[47] <= 60
+
+
+def test_transient_failure_before_grant_retries_on_new_token(protected):
+    from maas_platform.worker import Worker
+
+    client, service, (owner, _), *_ = protected
+    service.settings.retry_unstarted_models = {'ocr.default'}
+    auth = headers(idem='test_agent_retry_on_no_grant')
+    accepted = client.post('/maas/v1/tasks', headers=auth, json={'model':'ocr.default', 'max_attempts':2,
+        'input':{'image':{'image_base64':base64.b64encode(png()).decode()}}})
+    assert accepted.status_code == 202
+    attempts = []
+    def gateway(req):
+        token = req.headers['X-MaaS-Execution-Attempt']
+        attempts.append(token)
+        if len(attempts) == 1:
+            return httpx.Response(503)
+        output = owner.run(token, lambda _: {'text':'verified', 'lines':[], 'elapsed_ms':1, 'node':'fixture'}, None)
+        return httpx.Response(200, json={'choices':[{'message':{'content':json.dumps(output)}}]})
+    async def execute(task):
+        async with httpx.AsyncClient(transport=httpx.MockTransport(gateway)) as transport:
+            await Worker(service)._execute(task, transport)
+    asyncio.run(execute(service.claim()))
+    detail = client.get(accepted.headers['location'],headers=auth).json()
+    assert (detail['status'], detail['execution_state']) == ('RETRY_WAIT','RESOLVED')
+    with pytest.raises(HTTPException, match='409'):
+        owner.report(attempts[0], finished=False)
+    with service.db.transaction() as conn:
+        conn.execute('UPDATE tasks SET next_run=now() WHERE id=%s', (detail['id'],))
+    with ThreadPoolExecutor(2) as pool:
+        winners = [t for t in pool.map(lambda _:service.claim(), range(2)) if t]
+    assert len(winners) == 1
+    asyncio.run(execute(winners[0]))
+    detail = client.get(accepted.headers['location'],headers=auth).json()
+    assert (detail['status'], detail['execution_state'], detail['attempts']) == ('SUCCEEDED','COMPLETED',2)
+    assert len(set(attempts)) == 2 and service.metrics()['successful_tasks'] == 1
+
+
+@pytest.mark.parametrize('scenario,expected', [
+    ('granted', ('FAILED','UNKNOWN_BACKEND_ACTIVITY')),
+    ('cancelled', ('CANCELLED',None)),
+    ('expired', ('FAILED','DEADLINE_EXCEEDED')),
+    ('exhausted', ('FAILED','EXECUTION_NOT_STARTED')),
+    ('permanent', ('FAILED','EXECUTION_NOT_STARTED')),
+    ('post_execution_error', ('FAILED','STORAGE_QUOTA')),
+    ('lease', ('RETRY_WAIT','EXECUTION_NOT_STARTED')),
+    ('revision', ('FAILED','MODEL_REVISION_CHANGED')),
+])
+def test_unstarted_retry_boundaries(protected, scenario, expected):
+    _, service, (owner, _), *_ = protected
+    service.settings.retry_unstarted_models = {'ocr.default'}
+    token, _ = create_attempt(protected, 'task', max_attempts=1 if scenario == 'exhausted' else 2)
+    if scenario in ('granted', 'post_execution_error'):
+        owner.report('task.'+token, finished=False)
+        if scenario == 'post_execution_error':
+            owner.report_finished('task.'+token)
+    with service.db.transaction() as conn:
+        row = conn.execute('SELECT * FROM tasks WHERE token=%s',(token,)).fetchone()
+        if scenario == 'cancelled':
+            conn.execute("UPDATE tasks SET state='CANCEL_REQUESTED' WHERE token=%s",(token,))
+        if scenario == 'expired':
+            conn.execute("UPDATE tasks SET deadline=now() WHERE token=%s",(token,))
+        if scenario == 'lease':
+            conn.execute("UPDATE tasks SET lease_until=now() WHERE token=%s",(token,))
+    if scenario == 'revision':
+        catalog = service.settings.catalog()
+        catalog['ocr.default']['revision'] = 'changed'
+        service.settings.catalog_file.write_text(json.dumps(catalog))
+    if scenario == 'lease':
+        assert service.recover() == 1
+    elif scenario == 'post_execution_error':
+        assert service.finish(row, error=ServiceError('STORAGE_QUOTA', 'test_agent_quota', 429, True))
+    else:
+        assert service.finish(row, error=ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'test_agent_failure',
+                                                      transient_before_grant=scenario != 'permanent'))
+    with service.db.transaction() as conn:
+        result = conn.execute('SELECT state,error_code FROM tasks WHERE id=%s',(row['id'],)).fetchone()
+    assert (result['state'],result['error_code']) == expected

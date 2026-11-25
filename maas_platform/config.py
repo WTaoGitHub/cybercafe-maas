@@ -40,10 +40,12 @@ class Settings:
     shutdown_event_key_file: Path | None = None
     executor_slots: int = 1
     pp_ocr_worker_keys_file: Path | None = None
+    retry_unstarted_models: frozenset[str] = frozenset()
 
     @classmethod
     def from_env(cls):
-        values = {}
+        values = {'retry_unstarted_models': frozenset(name.strip() for name in
+                  os.getenv('MAAS_RETRY_UNSTARTED_MODELS', '').split(',') if name.strip())}
         if policy := os.getenv('MAAS_CAPACITY_POLICY_FILE'):
             values['capacity_policy_file'] = Path(policy)
         if key := os.getenv('MAAS_SHUTDOWN_EVENT_KEY_FILE'):
