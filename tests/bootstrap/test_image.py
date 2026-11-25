@@ -100,8 +100,12 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     units=root/'etc/systemd/system'
     assert not (units/'multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
     service = (units/'maas-worker-bootstrap.service').read_text().splitlines()
-    assert {'Type=oneshot', 'RemainAfterExit=yes', 'Restart=on-failure',
+    assert {'Type=oneshot', 'RemainAfterExit=yes', 'Restart=on-failure', 'TimeoutStartSec=620',
             'RestartPreventExitStatus=1 2', 'RestartSec=2min'} <= set(service)
+    after = {unit for line in service if line.startswith('After=') for unit in line[6:].split()}
+    assert {'network-online.target', 'docker.service', 'swcfghostname.service'} <= after
+    assert after.isdisjoint({'multi-user.target', 'start_appinstaller.service'})
+    assert 'OnBootSec=30s' in (units/'maas-worker-bootstrap.timer').read_text().splitlines()
     timer=units/'timers.target.wants/maas-worker-bootstrap.timer'
     path=units/'multi-user.target.wants/maas-worker-bootstrap.path'
     assert timer.is_symlink()==automatic and path.is_symlink()!=automatic

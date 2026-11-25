@@ -68,7 +68,6 @@ def readiness(settings, *, deadline=None, runner=command, clock=time.monotonic, 
             raise BootstrapError(reason)
         return output.strip()
 
-    check(['systemctl', 'is-active', '--quiet', 'multi-user.target'], 'BOOT_SYSTEM_WAITING')
     status, output = runner(['systemctl', 'show', 'swcfghostname.service',
                              '-p', 'LoadState', '-p', 'ActiveState', '-p', 'Result',
                              '-p', 'ExecMainStartTimestampMonotonic', '-p', 'ExecMainStatus'],

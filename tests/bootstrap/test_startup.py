@@ -1,8 +1,9 @@
 """Late startup retries do not register until prerequisites and the fence succeed."""
 import errno
-import json
 import io
+import json
 import os
+from functools import partial
 from pathlib import Path
 import subprocess
 import sys
@@ -169,18 +170,25 @@ def test_hostname_unit_must_have_completed_before_docker_probe(monkeypatch, prop
         s.readiness(SETTINGS, runner=runner)
 
 
-def test_readiness_uses_basic_target_without_requiring_globally_healthy_system(monkeypatch):
+@pytest.mark.parametrize('gpu_ready_at', [0, 10])
+def test_boot_enters_apply_while_installer_holds_multi_user_target(boot, monkeypatch, gpu_ready_at):
     monkeypatch.setattr(s, 'guard_clone_host', lambda: None)
+    options, reports = boot
     calls = []
 
     def runner(argv, timeout):
         calls.append(argv)
         if argv[0] == 'docker': return 0, '28.0.0'
-        if argv[0] == 'nvidia-smi': return 0, GPU
-        if argv[1] == 'show':
+        if argv[0] == 'nvidia-smi':
+            return (0, GPU) if options['clock']() >= gpu_ready_at else (1, '')
+        if argv[:3] == ['systemctl', 'show', 'swcfghostname.service']:
             return 0, ('LoadState=loaded\nActiveState=inactive\nResult=success\n'
                        'ExecMainStartTimestampMonotonic=123\nExecMainStatus=0')
-        return 0, ''
+        if argv == ['systemctl', 'is-active', '--quiet', 'multi-user.target']:
+            return 3, 'activating'
+        if 'maas_bootstrap.clone_boundary' in argv: return 0, ''
+        if argv[-3:] == ['apply', '--trigger', 'boot']: return 0, '{"code":"APPLIED"}'
+        pytest.fail(f'Unexpected command: {argv}')
 
     class Response:
         status = 200
@@ -192,9 +200,14 @@ def test_readiness_uses_basic_target_without_requiring_globally_healthy_system(m
             assert url == SETTINGS.base + '/healthz' and 0 < timeout <= 3
             return Response()
 
-    assert s.readiness(SETTINGS, runner=runner, opener=Opener())['gpu_uuid'] == GPU
-    assert ['systemctl', 'is-active', '--quiet', 'multi-user.target'] in calls
-    assert all('is-system-running' not in argv for argv in calls)
+    result = s.start(SETTINGS, probe=partial(s.readiness, opener=Opener()), runner=runner,
+                     boundary_required=True, **options)
+    assert result['code'] == 'APPLIED' and options['clock']() == gpu_ready_at
+    assert [argv[0] for argv in calls[:-2]] == ['systemctl', 'docker', 'nvidia-smi'] * reports[-1]['attempt']
+    if gpu_ready_at:
+        assert reports[0]['reason'] == 'BOOT_GPU_WAITING'
+    assert 'maas_bootstrap.clone_boundary' in calls[-2]
+    assert calls[-1][-3:] == ['apply', '--trigger', 'boot']
 
 
 def test_hostname_guard_runs_before_any_external_check(monkeypatch):

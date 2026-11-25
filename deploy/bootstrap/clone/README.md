@@ -23,7 +23,7 @@ sudo /opt/maas/bin/maas-worker-bootstrap status
 - OTHER_WORKER_PRESENT / NATIVE_IDENTITY_WITHOUT_LOCAL_OWNER：发现其他worker或无本地所有权标记的旧身份，拒绝接管或清除。
 - BOOTSTRAP_BUSY：已有本机引导在执行，等待后再手动检查。
 
-2026-11-11 起，普通及自动发证镜像启用 `maas-worker-bootstrap.timer`，开机满 30 秒触发一次准备任务。`maas-worker-bootstrap.service` 排在 `multi-user.target` 和供应商命名单元之后，由 timer 独立拉起；不再作为系统完成基本启动、网络或 Docker 启动的前置条件。检查主机名保护、供应商命名完成、Docker、单张 GPU UUID 和 Bootstrap HTTPS 健康入口，条件未满足时每隔 10 秒重试，整个任务最多 600 秒。系统整体为 degraded 不影响这些独立条件的判断。
+普通及自动发证镜像由 `maas-worker-bootstrap.timer` 在开机满 30 秒时触发引导。服务排在网络、Docker 和供应商命名单元之后，检查主机名保护、命名结果、Docker、单张 GPU UUID 及 Bootstrap HTTPS 健康入口。条件满足即可进入网络边界检查与注册，即使供应商应用安装器仍在等待、`multi-user.target` 尚未就绪。暂时性就绪故障按原有 10 秒间隔重试，单轮预算为 600 秒。
 
 就绪后先应用网络边界，再执行 E5 `apply --trigger boot`，验签、申请许可并核对原生注册。边界和 apply 每次分别限时 45 秒和 150 秒，受本轮剩余时间约束。超时后向子进程组发送 SIGKILL，再等最多 2 秒。仍在退出的直接子进程持有同一把启动锁，后续引导遇到占锁会延后。
 

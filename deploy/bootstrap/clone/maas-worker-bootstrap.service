@@ -1,6 +1,6 @@
 [Unit]
-Description=Wait for clone readiness and join GPUStack after basic system startup
-After=multi-user.target network-online.target docker.service swcfghostname.service
+Description=Join GPUStack when clone prerequisites are ready
+After=network-online.target docker.service swcfghostname.service
 StartLimitIntervalSec=0
 
 [Service]
