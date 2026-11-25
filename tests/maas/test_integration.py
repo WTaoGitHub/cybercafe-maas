@@ -347,12 +347,15 @@ def test_remote_uncertainty_quarantines_dispatch_and_requires_evidence(env,cance
     s.finish(attempt,error=ServiceError('TIMEOUT','Transport unavailable',503,True))
     row=client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()
     assert row['status']=='FAILED' and row['error']['code']=='UNKNOWN_BACKEND_ACTIVITY'
+    assert row['execution_state'] == 'UNKNOWN'
     assert s.metrics()['unknown_backend_activity']==1
     assert submit(client,'waiting').status_code==202
     assert s.claim() is None
     s.pause(False,'resume must not release unknown work');assert s.claim() is None
     with pytest.raises(ValueError):s.resolve_backend(attempt['token'],'trust me')
     assert s.resolve_backend(attempt['token'],'Confirmed all dedicated backend processes have terminated')
+    detail = client.get('/maas/v1/tasks/'+task['id'],headers=headers()).json()
+    assert (detail['status'], detail['execution_state']) == ('FAILED', 'RESOLVED')
     assert Worker(s).run_once()
     assert s.metrics()['successful_tasks']==1
 

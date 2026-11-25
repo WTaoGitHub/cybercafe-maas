@@ -6,6 +6,16 @@ def snapshot(service):
     result=service.metrics()
     with service.db.transaction() as c:
         storage=c.execute("SELECT coalesce(sum(size),0) bytes,count(*) files FROM artifacts WHERE deleted_at IS NULL").fetchone()
+        # Only report occupancy for the currently enforced, fresh budget.
+        from .capacity_admission import isolate_budget, read_budget
+        from .quarantine import unresolved
+        revision = c.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1').fetchone()['capacity_policy_hash']
+        budget = read_budget(c, revision) if revision else None
+        if budget:
+            before = budget['global']['total']
+            isolate_budget(budget, unresolved(c))
+            result['unknown_capacity'] = {**budget['unknown_capacity'],
+                                          'excluded_slots': before - budget['global']['total']}
         sync=c.execute("SELECT state,count(*) n FROM sync_activity GROUP BY state").fetchall()
         usage=c.execute("SELECT project,model,sum(quantity) quantity FROM sync_usage_events GROUP BY project,model").fetchall()
         tasks=c.execute("SELECT project,sum(quantity) quantity FROM task_usage_events GROUP BY project").fetchall()
@@ -46,6 +56,7 @@ def prometheus(data):
         'oldest_queue_seconds':data['oldest_queue_seconds'],
         'sync_completed_duration_seconds_sum':data['sync_completed_seconds'],
         'sync_completed_duration_seconds_count':data['sync_completed_count']}
+    values.update({'unknown_capacity_'+name: value for name, value in data.get('unknown_capacity', {}).items()})
     lines=[]
     for name,value in values.items():
         kind='counter' if name.endswith('_total') else 'gauge'

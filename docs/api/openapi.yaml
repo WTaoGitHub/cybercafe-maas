@@ -3474,6 +3474,12 @@ components:
             type: 'null'
     TaskDetail:
       properties:
+        execution_state:
+          description: 最近一次领取的后台活动状态，尚无派发记录时为 null。可随迟到的完成回执更新。
+          anyOf:
+          - type: string
+            enum: [DISPATCHING, UNKNOWN, COMPLETED, RESOLVED]
+          - type: 'null'
         id:
           title: Id
           type: string

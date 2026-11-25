@@ -162,14 +162,16 @@ class TaskService:
 
     def get(self, identity, ident):
         with self.db.transaction() as c:
-            row = c.execute("""SELECT t.*, u.receipt AS usage
+            row = c.execute("""SELECT t.*, u.receipt AS usage, b.state AS execution_state
                 FROM tasks t LEFT JOIN ocr_usage_records u
                   ON u.project=t.project AND u.source_type='task' AND u.source_id=t.id
                   AND t.state='SUCCEEDED'
+                LEFT JOIN task_attempts a ON a.task_id=t.id AND a.attempt=t.attempts
+                LEFT JOIN backend_activity b ON b.token=a.token
                 WHERE t.id=%s AND t.project=%s""",
                 (ident, identity.project)).fetchone()
             if not row: raise ServiceError('NOT_FOUND', 'Task not found', 404)
-            return {**self.public(row), 'usage': row['usage']}
+            return {**self.public(row), 'usage': row['usage'], 'execution_state': row['execution_state']}
 
     @staticmethod
     def public(row):

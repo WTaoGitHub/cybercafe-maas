@@ -41,6 +41,7 @@ class TaskError(BaseModel):
 
 
 class TaskDetail(TaskFields):
+    execution_state: Literal['DISPATCHING','UNKNOWN','COMPLETED','RESOLVED'] | None = None
     status: TaskStatus
     error: TaskError | None
     result: dict[str, Any] | None
