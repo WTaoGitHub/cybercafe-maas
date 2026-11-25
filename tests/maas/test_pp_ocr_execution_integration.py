@@ -220,3 +220,35 @@ def test_engine_exception_keeps_grant_and_expired_dispatch_cannot_start(guarded)
     with service.db.transaction() as conn:
         row = conn.execute('SELECT state,gpu_uuid,gpu_finished_at FROM sync_activity WHERE token=%s', (token,)).fetchone()
     assert row == {'state': 'UNKNOWN', 'gpu_uuid': first.identity['gpu_uuid'], 'gpu_finished_at': None}
+
+
+def test_finish_receipt_survives_lost_callbacks(guarded, tmp_path, monkeypatch):
+    import hashlib
+    import hmac
+
+    _, _, (replica, _) = guarded
+    replica.receipt_dir = tmp_path / 'test_agent_receipts'
+    replica.receipt_dir.mkdir(mode=0o700)
+    attempt = 'task.' + 'a' * 32
+    calls = []
+
+    def unavailable(request, timeout):
+        calls.append(request)
+        raise URLError('test_agent_offline')
+
+    with monkeypatch.context() as patch:
+        patch.setattr(replica, 'open', unavailable)
+        with pytest.raises(HTTPException, match='503'):
+            replica.report_finished(attempt)
+    assert len(calls) == 2
+    path = replica.receipt_dir / attempt
+    signature, payload = path.read_bytes().split(b'\n', 1)
+    assert json.loads(payload) == {**replica.identity, 'attempt': attempt, 'finished': True}
+    assert hmac.compare_digest(signature.decode(), hmac.new(
+        ('1' * 64).encode(), b'maas-gpu-finish-v1\0' + payload, hashlib.sha256).hexdigest())
+    monkeypatch.setattr(replica, 'open', lambda *_args, **_kw: nullcontext(SimpleNamespace(status=204)))
+    replica.report_finished(attempt)
+    assert not list(replica.receipt_dir.iterdir())
+    # A failed volume still permits the normal callback to confirm engine termination.
+    replica.receipt_dir.rmdir()
+    replica.report_finished(attempt)
