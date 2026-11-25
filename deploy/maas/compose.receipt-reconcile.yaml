@@ -1,0 +1,26 @@
+# Mount only per-GPU subdirectories into their corresponding guarded inference containers.
+services:
+  receipt-reconcile:
+    image: ${MAAS_TASK_IMAGE:?set reviewed controller image}
+    command:
+      - python
+      - -B
+      - -m
+      - maas_platform.receipt_reconcile
+      - --root
+      - /run/maas-receipts
+      - --route
+      - ${MAAS_RECEIPT_ROUTE:?set exact upstream pilot route}
+      - --mode
+      - ${MAAS_RECEIPT_MODE:-observe}
+    environment:
+      MAAS_DATABASE_URL: postgresql://maas:${MAAS_DB_PASSWORD:?set private environment}@127.0.0.1:18835/maas
+      MAAS_PP_OCR_WORKER_KEYS_FILE: /run/receipt-keys
+    volumes:
+      - ${MAAS_RECEIPTS_ROOT:?set private persistent root}:/run/maas-receipts
+      - ${MAAS_PP_OCR_KEYS_PATH:?set private key map}:/run/receipt-keys:ro
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped

@@ -83,14 +83,14 @@ def protected(guarded, tmp_path, monkeypatch):
     return client, service, replicas, who, observe, instances, rev
 
 
-def create_attempt(f, kind):
+def create_attempt(f, kind, idem='test_agent_scope', **task_options):
     client, service, _, who, *_ = f
     if kind == 'sync':
         ingress = client.app.state.sync_ingress
         token = ingress.begin(who, 'ocr.default', 30)
         return token, lambda: ingress.finish(token, False)
     image = base64.b64encode(png()).decode()
-    r = client.post('/maas/v1/tasks', headers=headers(idem='test_agent_scope'), json={
+    r = client.post('/maas/v1/tasks', headers=headers(idem=idem), json={**task_options,
         'model':'ocr.default','input':{'image':{'image_base64':image}}})
     assert r.status_code == 202
     task = service.claim()
@@ -347,3 +347,66 @@ def test_missing_gateway_attestation_fails_only_opted_pool(protected):
     assert proofs == {}
     assert candidates['test_agent_pool'] == {}
     assert reasons['test_agent_pool'] == 'guard_unverified'
+
+
+def test_pull_reconciles_fifty_lost_gpu_finishes(protected, tmp_path, monkeypatch):
+    """Real task DB and guard callbacks, synthetic engine; see INFERENCE-QUARANTINE.md."""
+    from collections import Counter
+    from urllib.error import URLError
+    from maas_platform.receipt_reconcile import scan
+
+    _, service, (owner, foreign), _, observe, *_ = protected
+    root = tmp_path / 'test_agent_receipts'
+    for gpu in (owner, foreign):
+        gpu.receipt_dir = root / gpu.identity['gpu_uuid']
+        gpu.receipt_dir.mkdir(mode=0o700, parents=True)
+    keys = json.loads(service.settings.pp_ocr_worker_keys_file.read_text())
+    def check(apply):
+        return Counter(scan(service.db, root, keys, ['real-ocr'], apply))
+
+    delays = []
+    for i in range(50):
+        if i % 10 == 0:
+            observe(3 + i)
+        kind = 'task' if i % 2 else 'sync'
+        token, lose = create_attempt(protected, kind, idem=f'test_agent_lost_{i}')
+        attempt = kind + '.' + token
+        sends = []
+        send = owner.open
+        def unavailable(req, timeout):
+            if json.loads(req.data)['finished']:
+                sends.append(req)
+                raise URLError('test_agent_dropped')
+            return send(req, timeout)
+        with monkeypatch.context() as patch:
+            patch.setattr(owner, 'open', unavailable)
+            with pytest.raises(HTTPException, match='503'):
+                owner.run(attempt, lambda _: 'test_agent_engine_output', None)
+        assert len(sends) == 2
+        lose()
+        start = time.monotonic()
+        path = owner.receipt_dir / attempt
+        saved = path.read_bytes()
+        if i == 0:
+            path.write_bytes(saved[:-1])
+            assert check(True) == {'invalid_or_unreadable': 1}
+            path.write_bytes(saved)
+            foreign.save_finish(attempt)
+            assert check(False) == {'verified': 1, 'mismatch': 1}
+            (foreign.receipt_dir / attempt).unlink()
+            assert check(False) == {'verified': 1} and path.exists()
+        assert check(True) == {'recovered': 1}
+        delays.append(time.monotonic() - start)
+        if i == 0:
+            path.write_bytes(saved)
+            assert check(True) == {'settled': 1}
+        assert not path.exists()
+    with service.db.transaction() as conn:
+        for table in TABLE.values():
+            assert conn.execute(f"""SELECT count(*) n FROM {table} WHERE state='COMPLETED'
+                AND resolution_reason='Recovered authenticated GPU finish receipt'""").fetchone()['n'] == 25
+        assert conn.execute("SELECT count(*) n FROM tasks WHERE state='FAILED' AND attempts=1").fetchone()['n'] == 25
+        assert conn.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n'] == 0
+    delays.sort()
+    print(f'50 receipts, direct scan seconds P50={delays[24]:.3f} P95={delays[47]:.3f} max={delays[-1]:.3f}')
+    assert delays[47] <= 60

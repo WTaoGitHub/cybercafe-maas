@@ -48,6 +48,15 @@ def check_success_headers(db, kind, token):
         return False
 
 
+def record_finish(conn, table, row, reason):
+    # Caller holds the maintenance lock and the original attempt row lock.
+    end_activity = row['state'] == 'UNKNOWN' or (table == 'backend_activity' and row['state'] == 'DISPATCHING')
+    conn.execute(f'''UPDATE {table} SET gpu_finished_at=clock_timestamp(), updated_at=now(),
+        state=CASE WHEN %s THEN 'COMPLETED' ELSE state END,
+        resolution_reason=CASE WHEN state='UNKNOWN' THEN %s ELSE resolution_reason END
+        WHERE token=%s AND gpu_finished_at IS NULL''', (end_activity, reason, row['token']))
+
+
 def router(db, settings):
     routes = APIRouter()
 
@@ -70,11 +79,7 @@ def router(db, settings):
             row = conn.execute(f'''SELECT * FROM {table} WHERE token=%s AND execution_guard
                 AND dispatch_route=%s FOR UPDATE''', (token, body.route)).fetchone()
             if row and body.finished and (row['gpu_uuid'], row['gpu_instance']) == (body.gpu_uuid, body.instance):
-                end_activity = row['state'] == 'UNKNOWN' or (kind == 'task' and row['state'] == 'DISPATCHING')
-                conn.execute(f'''UPDATE {table} SET gpu_finished_at=clock_timestamp(), updated_at=now(),
-                    state=CASE WHEN %s THEN 'COMPLETED' ELSE state END,
-                    resolution_reason=CASE WHEN state='UNKNOWN' THEN 'GPU confirmed execution ended' ELSE resolution_reason END
-                    WHERE token=%s AND gpu_finished_at IS NULL''', (end_activity, token))
+                record_finish(conn, table, row, 'GPU confirmed execution ended')
                 return Response(status_code=204)
             if (row and not body.finished and row['state'] == 'DISPATCHING' and row['gpu_uuid'] is None
                     and row['dispatch_gpu_uuid'] in (None, body.gpu_uuid)):

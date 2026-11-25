@@ -58,3 +58,17 @@ MaaS 在发送推理前记录派发 token、逻辑模型和实际配置的上游
 
 
 使用独立 PostgreSQL 的验收命令为 `PYTHONPATH=.:plugins/gpustack-replica python -m pytest -q tests/maas/test_execution_scope_integration.py tests/maas/test_gateway_scope.py`。`MAAS_TEST_DATABASE_URL` 必须只指向可销毁且名称以 `_test` 结尾的数据库，集成夹具会重建 schema。[故障隔离跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
+## 持久结束回执与控制端主动对账
+
+PP-OCRv4 试点使用带执行守卫的镜像。将独立持久卷的每卡子目录以可写方式挂载到对应 GPU 的推理容器，设置 `MAAS_PP_OCR_EXECUTION_RECEIPT_DIR` 为该容器内的绝对路径。目录需预建，只允许原 worker 写入，由控制端读取和确认删除（例如专用组、目录 2770、回执 0640）。控制端所见布局为 `<root>/<GPU UUID>/<task 或 sync>.<token>`。worker 只挂载自己的子目录。可使用两端都能访问、支持同目录原子替换和 fsync 的私有持久卷，先在所选存储实测容器替换和断连。已有模型权重卷继续使用原有权限。
+
+执行端在引擎确认结束后先写入带 GPU 签名的回执，控制端已确认常规回调后即可删除。文件只含原派发身份与终态。两次回调均丢失时保留记录。存储写入失败仍走原回调并记录告警。若两种途径的证据均丢失，继续隔离。运维可在 worker 已退出后从持久卷找回同一条记录。轮换 GPU 密钥前应处理用旧密钥签发的未决回执。
+
+在控制端基础 Compose 上叠加 `compose.receipt-reconcile.yaml`，设置 `MAAS_RECEIPTS_ROOT`、`MAAS_PP_OCR_KEYS_PATH`（现有私有 GPU 密钥映射）、`MAAS_TASK_IMAGE` 和 `MAAS_RECEIPT_ROUTE`（准确的上游路由）。启动其中的 `receipt-reconcile` 服务。默认 `observe` 模式读库、验签，日志的 `verified` 表示可结清，保留文件和数据库活动。现场对照通过后以 `MAAS_RECEIPT_MODE=apply` 重新创建该服务。单次核查可使用同一命令加 `--once`。回退时停止该服务或切回 observe，未决活动沿用既有隔离。单池试点通过后才逐个启用其他守卫模型相应前缀的 `RECEIPT_DIR`，每个上游路由需显式加入对账范围。
+
+控制端在推理进程之外串行查证，按批限速，空闲或不可达时退避至 15 秒。在事务内重查原执行范围、token、路由、GPU 和获权进程。匹配的 `UNKNOWN` 转为 `COMPLETED`，原回执提交与主动查证同时发生时仅结清一次。冲突、错误签名、其他进程上报和缺少原始范围的旧活动保留待核。运行中、查无记录、重新 Ready 均不足以释放。日志 `recovered` 统计主动结清，`mismatch`、`invalid_or_unreadable`、`unavailable` 需要核查证据、挂载或数据库连接。执行器和用户任务的成功结果仍走原提交流程。
+
+项目级任务详情的 `execution_state` 给出最近一次领取的后台活动状态。`drain-status` 列出活动的派发年龄与证据原因。新鲜且已启用的动态预算会在 observer 的 `metrics.prom` 中发布 `maas_unknown_capacity_charged_as_occupancy`、`maas_unknown_capacity_covered_by_gpu_exclusion` 与 `maas_unknown_capacity_excluded_slots`。按采样间隔积分第一项可估算单独占用的槽秒，结合每池 `capacity.json` 的 reason、等待队列和真实派发核对业务影响。缺测时保留观测空档。
+
+独立库验收使用 `tests/maas/test_execution_scope_integration.py` 和 `tests/maas/test_pp_ocr_execution_integration.py`（数据库与启动命令见上节）。50 笔回执用例各丢弃两次完成回调，在同步和异步入口核对已获权、失联、观察、结清及重复证据。该用例使用模拟引擎、真实 PostgreSQL 和本地文件卷；打印从直接发起扫描至提交完成的时延。常驻扫描等待、现场共享卷及真实 GPU 端到端时延需在目标部署另测。
