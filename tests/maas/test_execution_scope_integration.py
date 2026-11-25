@@ -26,7 +26,7 @@ from test_pp_ocr_execution_integration import env, guarded
 
 
 @pytest.fixture
-def protected(guarded, tmp_path, monkeypatch):
+def protected(guarded, tmp_path, monkeypatch, request):
     client, service, replicas = guarded
     settings = service.settings
     alias = 'ocr.default'
@@ -36,7 +36,8 @@ def protected(guarded, tmp_path, monkeypatch):
     raw.update(global_limit=None, sync_percent=25)
     pool = raw['pools'].pop('arbitrary-model-1')
     raw['pools'] = {'test_agent_pool': pool}
-    pool.update(routes={alias:1}, guard_backend_version=contract, hard_limit=None)
+    pool.update(routes={alias:1}, guard_backend_version=contract, hard_limit=None,
+                slots_per_replica=getattr(request, 'param', 1))
     catalog = settings.catalog()
     routes[1]['name'] = 'real-ocr'
     models[1]['backend_version'] = contract
@@ -75,7 +76,7 @@ def protected(guarded, tmp_path, monkeypatch):
                       (rev, Jsonb(budget)))
         return budget
     observe(1)
-    assert observe(2)['global']['total'] == 2
+    assert observe(2)['global']['total'] == 2 * pool['slots_per_replica']
     service.pause(True, 'test_agent_activate')
     service.set_capacity_mode(True)
     service.pause(False)
@@ -158,6 +159,13 @@ def test_isolated_gpu_leave_return_and_late_receipt(protected):
             assert not a.allows('ocr.default',who.project,asynchronous=True)
     assert status(service.db)['pools']['test_agent_pool']['reason']=='gateway_reaches_isolated_gpu'
     assert status(service.db)['global']['total'] == 0
+    from maas_platform.maintenance import Maintenance
+    from maas_platform.observability import prometheus, snapshot
+    data = snapshot(service)
+    assert data['unknown_capacity']['excluded_slots'] == 2
+    assert 'maas_unknown_capacity_charged_as_occupancy 0' in prometheus(data)
+    activity = Maintenance(service).status()['sync_activity'][0]
+    assert activity['pending_reason'] == 'awaiting_gpu_finish' and activity['dispatch_age_seconds'] >= 0
     old = instances.pop(1)
     observe(3)
     check()
@@ -349,13 +357,13 @@ def test_missing_gateway_attestation_fails_only_opted_pool(protected):
     assert reasons['test_agent_pool'] == 'guard_unverified'
 
 
-def test_pull_reconciles_fifty_lost_gpu_finishes(protected, tmp_path, monkeypatch):
+def test_signed_receipts_require_matching_identity_and_release_once(protected, tmp_path, monkeypatch):
     """Real task DB and guard callbacks, synthetic engine; see INFERENCE-QUARANTINE.md."""
     from collections import Counter
     from urllib.error import URLError
     from maas_platform.receipt_reconcile import scan
 
-    _, service, (owner, foreign), _, observe, *_ = protected
+    _, service, (owner, foreign), *_ = protected
     root = tmp_path / 'test_agent_receipts'
     for gpu in (owner, foreign):
         gpu.receipt_dir = root / gpu.identity['gpu_uuid']
@@ -364,10 +372,7 @@ def test_pull_reconciles_fifty_lost_gpu_finishes(protected, tmp_path, monkeypatc
     def check(apply):
         return Counter(scan(service.db, root, keys, ['real-ocr'], apply))
 
-    delays = []
-    for i in range(50):
-        if i % 10 == 0:
-            observe(3 + i)
+    for i in range(2):
         kind = 'task' if i % 2 else 'sync'
         token, lose = create_attempt(protected, kind, idem=f'test_agent_lost_{i}')
         attempt = kind + '.' + token
@@ -384,7 +389,6 @@ def test_pull_reconciles_fifty_lost_gpu_finishes(protected, tmp_path, monkeypatc
                 owner.run(attempt, lambda _: 'test_agent_engine_output', None)
         assert len(sends) == 2
         lose()
-        start = time.monotonic()
         path = owner.receipt_dir / attempt
         saved = path.read_bytes()
         if i == 0:
@@ -396,7 +400,6 @@ def test_pull_reconciles_fifty_lost_gpu_finishes(protected, tmp_path, monkeypatc
             (foreign.receipt_dir / attempt).unlink()
             assert check(False) == {'verified': 1} and path.exists()
         assert check(True) == {'recovered': 1}
-        delays.append(time.monotonic() - start)
         if i == 0:
             path.write_bytes(saved)
             assert check(True) == {'settled': 1}
@@ -404,12 +407,9 @@ def test_pull_reconciles_fifty_lost_gpu_finishes(protected, tmp_path, monkeypatc
     with service.db.transaction() as conn:
         for table in TABLE.values():
             assert conn.execute(f"""SELECT count(*) n FROM {table} WHERE state='COMPLETED'
-                AND resolution_reason='Recovered authenticated GPU finish receipt'""").fetchone()['n'] == 25
-        assert conn.execute("SELECT count(*) n FROM tasks WHERE state='FAILED' AND attempts=1").fetchone()['n'] == 25
+                AND resolution_reason='Recovered authenticated GPU finish receipt'""").fetchone()['n'] == 1
+        assert conn.execute("SELECT count(*) n FROM tasks WHERE state='FAILED' AND attempts=1").fetchone()['n'] == 1
         assert conn.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n'] == 0
-    delays.sort()
-    print(f'50 receipts, direct scan seconds P50={delays[24]:.3f} P95={delays[47]:.3f} max={delays[-1]:.3f}')
-    assert delays[47] <= 60
 
 
 def test_transient_failure_before_grant_retries_on_new_token(protected):
@@ -488,3 +488,84 @@ def test_unstarted_retry_boundaries(protected, scenario, expected):
     with service.db.transaction() as conn:
         result = conn.execute('SELECT state,error_code FROM tasks WHERE id=%s',(row['id'],)).fetchone()
     assert (result['state'],result['error_code']) == expected
+
+
+@pytest.mark.parametrize('protected', [64], indirect=True)
+def test_daemon_recovers_fifty_receipts_after_storage_reconnect(protected, tmp_path, monkeypatch):
+    """Start the actual CLI in both modes; measure first-visible committed completion."""
+    import os
+    import subprocess
+    import sys
+    from urllib.error import URLError
+
+    _, service, (owner, _), *_ = protected
+    root = tmp_path/'test_agent_control_volume'
+    root.mkdir()
+    owner.receipt_dir = tmp_path/'test_agent_disconnected_volume'
+    owner.receipt_dir.mkdir(mode=0o700)
+    close_attempts = []
+    original = owner.open
+    dropped = 0
+
+    def lose_reply(req, timeout):
+        nonlocal dropped
+        if json.loads(req.data)['finished']:
+            dropped += 1
+            raise URLError('test_agent_lost_callback')
+        return original(req, timeout)
+    monkeypatch.setattr(owner, 'open', lose_reply)
+    for i in range(50):
+        kind = 'sync' if i % 2 else 'task'
+        token, close = create_attempt(protected, kind, idem=f'test_agent_daemon_{i}')
+        with pytest.raises(HTTPException, match='503'):
+            owner.run(kind+'.'+token, lambda _: 'test_agent_output', None)
+        close_attempts.append(close)
+    for close in close_attempts:
+        close()
+    assert dropped == 100 and len(list(owner.receipt_dir.iterdir())) == 50
+    args = [sys.executable,'-B','-m','maas_platform.receipt_reconcile','--root',str(root),'--route','real-ocr']
+    env = {**os.environ, 'MAAS_DATABASE_URL': service.settings.database_url,
+           'MAAS_PP_OCR_WORKER_KEYS_FILE': str(service.settings.pp_ocr_worker_keys_file)}
+    visible = root/owner.identity['gpu_uuid']
+    owner.receipt_dir.rename(visible)
+    shadow = subprocess.run([*args,'--once'], env=env, capture_output=True, text=True, timeout=20, check=True)
+    assert "'verified': 50" in shadow.stderr and len(list(visible.iterdir())) == 50
+    visible.rename(owner.receipt_dir)
+    # Let a fresh process enter its empty-volume poll before making the records visible to it.
+    command = subprocess.Popen([*args,'--mode','apply'], env=env)
+    try:
+        time.sleep(1)
+        observed = {}
+        start = time.monotonic()
+        owner.receipt_dir.rename(visible)
+        while len(observed) < 50 and time.monotonic() - start < 60:
+            assert command.poll() is None
+            with service.db.transaction() as conn:
+                rows = conn.execute("""SELECT token FROM backend_activity WHERE state='COMPLETED'
+                    UNION ALL SELECT token FROM sync_activity WHERE state='COMPLETED'""").fetchall()
+            elapsed = time.monotonic() - start
+            for row in rows:
+                observed.setdefault(row['token'], elapsed)
+            if len(observed) < 50:
+                time.sleep(.05)
+        assert len(observed) == 50
+        # The last DB commit may be visible immediately before its acknowledged file is removed.
+        until = time.monotonic() + 5
+        while any(visible.iterdir()) and time.monotonic() < until:
+            time.sleep(.01)
+        assert not list(visible.iterdir())
+    finally:
+        command.terminate()
+        try:
+            command.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            command.kill()
+            command.wait()
+    with service.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) n FROM tasks WHERE state='FAILED' AND attempts=1").fetchone()['n'] == 25
+        assert conn.execute('SELECT count(*) n FROM task_usage_events').fetchone()['n'] == 0
+        assert conn.execute('SELECT count(*) n FROM sync_usage_events').fetchone()['n'] == 0
+        assert conn.execute('SELECT count(*) n FROM inference_slots WHERE NOT backend_finished').fetchone()['n'] == 0
+    delays = sorted(observed.values())
+    print(f'50 recovered, daemon observation seconds P50={delays[24]:.3f} P95={delays[47]:.3f} max={delays[-1]:.3f}')
+    assert delays[47] <= 60
