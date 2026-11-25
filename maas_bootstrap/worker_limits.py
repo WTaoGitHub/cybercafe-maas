@@ -7,7 +7,8 @@ import io
 import subprocess
 import tarfile
 from pathlib import PurePosixPath
-from .execution import CA_NAME, KEY_NAME, RECEIPT_TARGET, SERVING_DIRECTORY, credential_directory, receipt_directory
+from .execution import (CA_NAME, KEY_NAME, RECEIPT_TARGET, RUNTIME_SOCKET_DIRECTORY, SERVING_DIRECTORY,
+                        credential_directory, receipt_directory)
 
 
 WORKER_IMAGE_ID = "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea63203e2d26"
@@ -46,6 +47,7 @@ def configured_insertion(config, execution_directory=None):
     limits = {}
     guards = {}
     receipts = {}
+    witnesses = set()
     for image in config['images']:
         match = (image['digest'], tuple(image['entrypoint']))
         if 'profile' in image:
@@ -55,6 +57,8 @@ def configured_insertion(config, execution_directory=None):
                                  nano_cpus=profile['cpu_millis'] * 1_000_000)
         if 'execution_env_prefix' in image:
             guards[match] = image['execution_env_prefix']
+            if image.get('runtime_witness'):
+                witnesses.add(match)
             if 'receipt_uid' in image and execution_directory is not None:
                 receipts[match] = str(receipt_directory(execution_directory, image))
     options = ''
@@ -92,6 +96,14 @@ def configured_insertion(config, execution_directory=None):
                             raise ValueError("MaaS receipt mount target already in use")
                         volumes.append(docker.types.Mount(receipt_target, receipt_source, type="bind", read_only=False))
                         environment[prefix + "RECEIPT_DIR"] = receipt_target
+'''
+        if witnesses:
+            options += f'''                    if maas_image in {sorted(witnesses)!r}:
+                        runtime_directory = {RUNTIME_SOCKET_DIRECTORY!r}
+                        if any(volume["Target"] == runtime_directory for volume in volumes):
+                            raise ValueError("MaaS runtime witness mount target already in use")
+                        volumes.append(docker.types.Mount(runtime_directory, runtime_directory, type="bind", read_only=True))
+                        environment[prefix + "RUNTIME_SOCKET"] = runtime_directory + "/evidence.sock"
 '''
     return (f'''            if c.profile == ContainerProfileEnum.RUN and c.name == "default":
                 maas_image = (c.image.rpartition("@")[2], tuple(create_options.get("entrypoint") or ()))

@@ -40,12 +40,19 @@ class Settings:
     shutdown_event_key_file: Path | None = None
     executor_slots: int = 1
     pp_ocr_worker_keys_file: Path | None = None
+    runtime_proof_keys_file: Path | None = None
+    runtime_proof_apply_routes: frozenset[str] = frozenset()
     retry_unstarted_models: frozenset[str] = frozenset()
 
     @classmethod
     def from_env(cls):
         values = {'retry_unstarted_models': frozenset(name.strip() for name in
                   os.getenv('MAAS_RETRY_UNSTARTED_MODELS', '').split(',') if name.strip())}
+        if keys := os.getenv('MAAS_RUNTIME_PROOF_KEYS_FILE'):
+            values['runtime_proof_keys_file'] = Path(keys)
+            values['runtime_proof_apply_routes'] = frozenset(
+                route.strip() for route in os.getenv('MAAS_RUNTIME_PROOF_APPLY_ROUTES', '').split(',')
+                if route.strip())
         if policy := os.getenv('MAAS_CAPACITY_POLICY_FILE'):
             values['capacity_policy_file'] = Path(policy)
         if key := os.getenv('MAAS_SHUTDOWN_EVENT_KEY_FILE'):

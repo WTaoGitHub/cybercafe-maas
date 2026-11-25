@@ -1,0 +1,181 @@
+"""Challenge the original PP runtime and optionally settle proven terminations."""
+import hmac
+import json
+from secrets import token_hex
+from typing import Annotated, Literal
+
+from pydantic import BaseModel, ConfigDict, StringConstraints
+from psycopg.types.json import Jsonb
+
+from .errors import ServiceError
+from .runtime_proof import GPU, HEX, signature, valid_identity
+
+
+class Binding(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    identity: dict
+    signature: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
+
+
+class HostPoll(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    operation: Literal['runtime_poll']
+    gpu_uuid: Annotated[str, StringConstraints(pattern=f"^{GPU.pattern}$")]
+
+
+class HostReport(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    operation: Literal['runtime_report']
+    gpu_uuid: Annotated[str, StringConstraints(pattern=f"^{GPU.pattern}$")]
+    instance: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{32}$')]
+    nonce: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
+    outcome: Literal['present', 'unconfirmed', 'terminated']
+    signature: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
+
+
+def host_key(settings, gpu):
+    from .config import private_text
+
+    if settings.runtime_proof_keys_file is None:
+        return None
+    keys = json.loads(private_text(settings.runtime_proof_keys_file))
+    value = keys.get(gpu) if isinstance(keys, dict) else None
+    if not isinstance(value, str) or not HEX.fullmatch(value) or list(keys.values()).count(value) != 1:
+        return None
+    worker_keys = settings.pp_ocr_worker_keys_file
+    if worker_keys and value in json.loads(private_text(worker_keys)).values():
+        return None  # An inference container may never authenticate as a host witness.
+    return value
+
+
+def binding_payload(gpu, instance, route, identity):
+    return {'gpu_uuid': gpu, 'instance': instance, 'route': route, 'identity': identity}
+
+
+def check_binding(settings, body):
+    binding = body.runtime
+    if binding is None:
+        return None
+    key = host_key(settings, body.gpu_uuid)
+    if key is None:
+        return None  # This GPU has not enrolled in runtime evidence collection.
+    payload = binding_payload(body.gpu_uuid, body.instance, body.route, binding.identity)
+    if not valid_identity(binding.identity) or not hmac.compare_digest(
+            binding.signature, signature(key, 'bind', payload)):
+        raise ServiceError('RUNTIME_PROOF_DENIED', 'Invalid runtime binding', 403)
+    return binding.identity
+
+
+def register(conn, body, identity):
+    row = conn.execute('''INSERT INTO execution_runtime(instance,gpu_uuid,route,identity)
+        VALUES (%s,%s,%s,%s) ON CONFLICT(instance) DO UPDATE
+        SET terminal_proof=NULL,challenge=NULL,challenge_until=NULL
+        WHERE execution_runtime.gpu_uuid=excluded.gpu_uuid AND execution_runtime.route=excluded.route
+          AND execution_runtime.identity=excluded.identity
+        RETURNING instance''', (body.instance, body.gpu_uuid, body.route, Jsonb(identity))).fetchone()
+    if not row:
+        raise ServiceError('RUNTIME_PROOF_DENIED', 'Conflicting runtime identity', 409)
+    return row['instance']
+
+
+QUALIFIED_UNKNOWN = """state='UNKNOWN' AND execution_guard AND (guard_scope IS NOT NULL OR dispatch_gpu_uuid=gpu_uuid)
+    AND NOT guard_conflict AND gpu_finished_at IS NULL AND runtime_instance IS NOT NULL"""
+ACTIVITY_TABLES = ('backend_activity', 'sync_activity')
+
+
+def settle_runtime(conn, row, nonce):
+    for table in ACTIVITY_TABLES:
+        conn.execute(f"""UPDATE {table} SET state='RESOLVED', updated_at=clock_timestamp(),
+            resolution_reason='Original guarded runtime terminated (host challenge '||%s||')'
+            WHERE runtime_instance=%s AND gpu_instance=%s AND gpu_uuid=%s AND dispatch_route=%s
+              AND {QUALIFIED_UNKNOWN}""",
+                     (nonce, row['instance'], row['instance'], row['gpu_uuid'], row['route']))
+
+
+def apply_verified(db, gpu, key, apply_routes):
+    if not apply_routes:
+        return
+    with db.transaction() as conn:
+        rows = conn.execute(f"""SELECT r.* FROM execution_runtime r
+            WHERE r.gpu_uuid=%s AND r.route=ANY(%s) AND r.terminal_proof IS NOT NULL
+              AND (EXISTS(SELECT 1 FROM backend_activity WHERE runtime_instance=r.instance AND {QUALIFIED_UNKNOWN})
+                OR EXISTS(SELECT 1 FROM sync_activity WHERE runtime_instance=r.instance AND {QUALIFIED_UNKNOWN}))
+            ORDER BY r.last_checked_at,r.instance LIMIT 4""", (gpu, list(apply_routes))).fetchall()
+        if not rows:
+            return
+        conn.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+        for candidate in rows:
+            row = conn.execute('SELECT * FROM execution_runtime WHERE instance=%s FOR UPDATE',
+                               (candidate['instance'],)).fetchone()
+            if not row or not row['terminal_proof']:
+                continue  # A new grant invalidated a candidate seen before locking.
+            payload = dict(row['terminal_proof'])
+            seen = payload.pop('signature')
+            expected = {**binding_payload(gpu, row['instance'], row['route'], row['identity']),
+                        'outcome': 'terminated', 'nonce': payload.get('nonce')}
+            if payload == expected and hmac.compare_digest(seen, signature(key, 'inspect', expected)):
+                # Signed termination for this immutable process stays valid after a controller restart.
+                settle_runtime(conn, row, expected['nonce'])
+
+
+def poll(db, gpu):
+    # Lock only a bounded batch of due runtimes, even if the host polls concurrently.
+    with db.transaction() as conn:
+        acquired = conn.execute('SELECT pg_try_advisory_xact_lock(842125225) AS acquired').fetchone()
+        if not acquired['acquired']:
+            return {'checks': []}
+        in_flight = conn.execute("""SELECT count(*) AS total FROM execution_runtime
+            WHERE challenge_until>clock_timestamp()""").fetchone()['total']
+        batch = min(4, 32-in_flight)
+        if batch <= 0:
+            return {'checks': []}
+        rows = conn.execute(f"""SELECT r.instance,r.identity,r.route FROM execution_runtime r
+            WHERE r.gpu_uuid=%s AND r.next_check_at<=clock_timestamp()
+              AND r.terminal_proof IS NULL
+              AND (EXISTS(SELECT 1 FROM backend_activity WHERE runtime_instance=r.instance
+                       AND {QUALIFIED_UNKNOWN} AND unknown_since<=clock_timestamp()-interval '30 seconds')
+                OR EXISTS(SELECT 1 FROM sync_activity WHERE runtime_instance=r.instance
+                       AND {QUALIFIED_UNKNOWN} AND unknown_since<=clock_timestamp()-interval '30 seconds'))
+            ORDER BY r.next_check_at,r.instance LIMIT %s FOR UPDATE OF r SKIP LOCKED""", (gpu, batch)).fetchall()
+        for row in rows:
+            row['nonce'] = token_hex(32)
+            conn.execute("""UPDATE execution_runtime SET challenge=%s,
+                challenge_until=clock_timestamp()+interval '25 seconds',
+                next_check_at=clock_timestamp()+least(300,30*(1<<least(attempts,4)))*interval '1 second',
+                attempts=least(attempts+1,5) WHERE instance=%s""", (row['nonce'], row['instance']))
+        return {'checks': rows}
+
+
+def report(db, value, key, apply_routes):
+    with db.transaction() as conn:
+        # Same lock ordering as grants and normal GPU finish receipts.
+        conn.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+        row = conn.execute('''SELECT * FROM execution_runtime WHERE instance=%s AND gpu_uuid=%s
+            AND challenge=%s AND challenge_until>clock_timestamp() FOR UPDATE''',
+                           (value.instance, value.gpu_uuid, value.nonce)).fetchone()
+        if not row:
+            raise ServiceError('RUNTIME_CHALLENGE_EXPIRED', 'Runtime challenge is no longer active', 409)
+        payload = {**binding_payload(value.gpu_uuid, value.instance, row['route'], row['identity']),
+                   'nonce': value.nonce, 'outcome': value.outcome}
+        if not hmac.compare_digest(value.signature, signature(key, 'inspect', payload)):
+            raise ServiceError('RUNTIME_PROOF_DENIED', 'Invalid runtime evidence', 403)
+
+        if value.outcome == 'terminated':
+            proof = Jsonb({**payload, 'signature': value.signature})
+            conn.execute('''UPDATE execution_runtime SET terminal_proof=%s WHERE instance=%s''',
+                         (proof, value.instance))
+        if value.outcome == 'terminated' and row['route'] in apply_routes:
+            settle_runtime(conn, row, value.nonce)
+        conn.execute("""UPDATE execution_runtime SET challenge=NULL,challenge_until=NULL,
+            last_checked_at=clock_timestamp(),last_outcome=%s,next_check_at=clock_timestamp()+interval '30 seconds',
+            attempts=0 WHERE instance=%s""", (value.outcome, value.instance))
+
+
+def handle_host(db, settings, value, authorization):
+    key = host_key(settings, value.gpu_uuid)
+    if key is None or not authorization.isascii() or not hmac.compare_digest(authorization, 'Bearer '+key):
+        raise ServiceError('RUNTIME_PROOF_DENIED', 'Host credential rejected', 403)
+    if isinstance(value, HostPoll):
+        apply_verified(db, value.gpu_uuid, key, settings.runtime_proof_apply_routes)
+        return poll(db, value.gpu_uuid)
+    report(db, value, key, settings.runtime_proof_apply_routes)

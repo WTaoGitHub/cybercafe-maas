@@ -20,6 +20,7 @@ CERTIFICATES = re.compile(r'(?:-----BEGIN CERTIFICATE-----\r?\n'
                           r'(?:[a-zA-Z0-9+/=]+\r?\n)+-----END CERTIFICATE-----\s*){1,8}')
 SERVING_DIRECTORY = '/run/maas-execution'
 RECEIPT_TARGET = '/run/maas-execution-receipts'
+RUNTIME_SOCKET_DIRECTORY = '/run/maas-pp-runtime'
 KEY_NAME = 'worker.key'
 CA_NAME = 'authority.pem'
 KEYS_FILENAME = 'worker-keys.json'
@@ -45,7 +46,7 @@ def configuration(manifest):
             raise ValueError()
         matches = set()
         for image in images:
-            if (not isinstance(image, dict) or set(image) - {'digest', 'entrypoint', 'profile', 'execution_env_prefix', 'receipt_uid'}
+            if (not isinstance(image, dict) or set(image) - {'digest', 'entrypoint', 'profile', 'execution_env_prefix', 'receipt_uid', 'runtime_witness'}
                     or not DIGEST.fullmatch(image['digest'])):
                 raise ValueError()
             entrypoint = image['entrypoint']
@@ -60,6 +61,11 @@ def configuration(manifest):
             if 'profile' in image and image['profile'] not in profiles:
                 raise ValueError()
             if 'execution_env_prefix' in image and not PREFIX.fullmatch(image['execution_env_prefix']):
+                raise ValueError()
+            if 'runtime_witness' in image and (
+                    image['runtime_witness'] is not True
+                    or image.get('execution_env_prefix') != 'MAAS_PP_OCR_EXECUTION_'
+                    or entrypoint != ['python3', '/app/server.py']):
                 raise ValueError()
             if 'receipt_uid' in image:
                 uid = image['receipt_uid']

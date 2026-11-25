@@ -6,7 +6,8 @@ REPO=Path(__file__).resolve().parents[2]
 SOURCES=[
  'maas_bootstrap/__init__.py','maas_bootstrap/client.py','maas_bootstrap/storage.py','maas_bootstrap/nfs.py','maas_bootstrap/registry.py','maas_bootstrap/handoff.py','maas_bootstrap/worker.py','maas_bootstrap/cli.py',
  'maas_bootstrap/execution.py','maas_bootstrap/worker_limits.py','maas_bootstrap/receipt_replay.py',
- 'maas_platform/__init__.py','maas_platform/finish_receipt.py',
+ 'maas_platform/__init__.py','maas_platform/finish_receipt.py','maas_platform/runtime_proof.py',
+ 'maas_bootstrap/runtime_witness.py','deploy/bootstrap/clone/maas-pp-runtime-witness.service',
  'maas_bootstrap/delivery.py','maas_bootstrap/enrollment.py','maas_bootstrap/startup.py','maas_bootstrap/clone_boundary.py',
  'maas_bootstrap/shutdown_auth.py','maas_bootstrap/shutdown_events.py',
  'maas_bootstrap/service.py','maas_bootstrap/publisher.py',

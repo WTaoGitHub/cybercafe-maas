@@ -5,12 +5,15 @@ import re
 from typing import Annotated
 
 from fastapi import APIRouter, Header, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, StringConstraints
 
 from .errors import ServiceError
 from .quarantine import blocks, unresolved
+from .runtime_proof import AUTHORITY_PATH
+from .runtime_recovery import Binding, HostPoll, HostReport, check_binding, handle_host, register
 
-PATH = '/maas/internal/pp-ocr-execution'
+PATH = AUTHORITY_PATH
 ATTEMPT_HEADER = 'X-MaaS-Execution-Attempt'
 TABLE = {'task': 'backend_activity', 'sync': 'sync_activity'}
 HexID = Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{32}$')]
@@ -22,6 +25,7 @@ class GPUEvent(BaseModel):
     instance: HexID
     route: Annotated[str, StringConstraints(min_length=1, max_length=128)]
     finished: bool
+    runtime: Binding | None = None
 
 
 def finished(db, kind, token):
@@ -61,8 +65,12 @@ def router(db, settings):
     routes = APIRouter()
 
     @routes.post(PATH, include_in_schema=False, status_code=204)
-    def event(body: GPUEvent, authorization: str = Header(default='')):
+    def event(body: GPUEvent | HostPoll | HostReport, authorization: str = Header(default='')):
         from .config import private_text
+
+        if not isinstance(body, GPUEvent):
+            result = handle_host(db, settings, body, authorization)
+            return JSONResponse(result) if result is not None else Response(status_code=204)
 
         if settings.pp_ocr_worker_keys_file is None:
             raise ServiceError('EXECUTION_GUARD_DISABLED', 'Execution guard is disabled', 404)
@@ -72,6 +80,7 @@ def router(db, settings):
                 or not re.fullmatch('Bearer [a-f0-9]{64}', authorization)
                 or not hmac.compare_digest(authorization[7:], secret)):
             raise ServiceError('EXECUTION_WORKER_DENIED', 'GPU execution credential rejected', 403)
+        identity = check_binding(settings, body) if not body.finished else None
         kind, token = body.attempt.split('.', 1)
         table = TABLE[kind]
         with db.transaction() as conn:
@@ -105,8 +114,10 @@ def router(db, settings):
                 isolated = any(r['isolated_gpu_uuid'] == body.gpu_uuid for r in unknown)
                 if eligible and not isolated and (not must_check or not blocks(
                         unknown, eligible['model'], body.route, row['dispatch_pool_id'], body.gpu_uuid)):
-                    conn.execute(f'UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s WHERE token=%s',
-                                 (body.gpu_uuid, body.instance, token))
+                    fenced = scope is not None or row['dispatch_gpu_uuid'] == body.gpu_uuid
+                    runtime = register(conn, body, identity) if fenced and identity else None
+                    conn.execute(f'UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s,runtime_instance=%s WHERE token=%s',
+                                 (body.gpu_uuid, body.instance, runtime, token))
                     return Response(status_code=204)
         raise ServiceError('EXECUTION_NOT_GRANTED', 'Attempt unavailable or already claimed', 409)
 

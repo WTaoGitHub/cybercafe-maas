@@ -10,22 +10,35 @@ class Maintenance:
         row=c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
         self.service.expire_sync(c)
         tasks=c.execute("SELECT id,model,state FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') ORDER BY id").fetchall()
-        backend=c.execute("""SELECT b.token,b.task_id,t.model,b.state,b.dispatch_route,b.dispatch_pool_id,
-            b.dispatch_gpu_uuid,b.gpu_uuid,b.isolated_gpu_uuid,b.isolation_evidence,b.guard_scope,b.guard_conflict,b.resolution_reason,
-            extract(epoch FROM clock_timestamp()-b.created_at)::float8 AS dispatch_age_seconds
-            FROM backend_activity b JOIN tasks t ON t.id=b.task_id WHERE b.state IN ('DISPATCHING','UNKNOWN') ORDER BY b.token""").fetchall()
-        sync=c.execute("""SELECT token,model,state,dispatch_route,dispatch_pool_id,dispatch_gpu_uuid,gpu_uuid,isolated_gpu_uuid,isolation_evidence,guard_scope,guard_conflict,resolution_reason,
-            extract(epoch FROM clock_timestamp()-created_at)::float8 AS dispatch_age_seconds
-            FROM sync_activity WHERE state IN ('DISPATCHING','UNKNOWN') ORDER BY token""").fetchall()
+        runtime_columns = """extract(epoch FROM clock_timestamp()-b.created_at)::float8 AS dispatch_age_seconds,
+            extract(epoch FROM clock_timestamp()-b.unknown_since)::float8 AS unknown_age_seconds,
+            r.last_checked_at::text AS runtime_checked_at,r.last_outcome AS runtime_outcome,
+            r.terminal_proof->>'nonce' AS termination_evidence"""
+        backend = c.execute(f"""SELECT b.token,b.task_id,t.model,b.state,b.dispatch_route,b.dispatch_pool_id,
+            b.dispatch_gpu_uuid,b.gpu_uuid,b.isolated_gpu_uuid,b.isolation_evidence,b.guard_scope,b.guard_conflict,
+            b.resolution_reason,{runtime_columns}
+            FROM backend_activity b JOIN tasks t ON t.id=b.task_id
+            LEFT JOIN execution_runtime r ON r.instance=b.runtime_instance
+            WHERE b.state IN ('DISPATCHING','UNKNOWN') ORDER BY b.token""").fetchall()
+        sync = c.execute(f"""SELECT b.token,b.model,b.state,b.dispatch_route,b.dispatch_pool_id,b.dispatch_gpu_uuid,
+            b.gpu_uuid,b.isolated_gpu_uuid,b.isolation_evidence,b.guard_scope,b.guard_conflict,b.resolution_reason,
+            {runtime_columns}
+            FROM sync_activity b LEFT JOIN execution_runtime r ON r.instance=b.runtime_instance
+            WHERE b.state IN ('DISPATCHING','UNKNOWN') ORDER BY b.token""").fetchall()
         for activity in backend + sync:
-            if activity['state'] == 'UNKNOWN':
-                if activity['guard_conflict']:
-                    reason = 'guard_conflict'
-                elif activity['gpu_uuid'] and activity['guard_scope']:
-                    reason = 'awaiting_gpu_finish'
-                else:
-                    reason = 'termination_evidence_required'
-                activity['pending_reason'] = reason
+            if activity['state'] != 'UNKNOWN':
+                continue
+            if activity['guard_conflict']:
+                reason = 'guard_conflict'
+            elif activity['termination_evidence']:
+                reason = 'termination_evidence_verified'
+            elif (activity['unknown_age_seconds'] or 0) >= 900:
+                reason = 'termination_evidence_required'
+            elif activity['gpu_uuid'] and activity['guard_scope']:
+                reason = 'awaiting_gpu_finish'
+            else:
+                reason = 'termination_evidence_required'
+            activity['pending_reason'] = reason
         return {'paused':row['paused'],'generation':row['generation'],'reason':row['reason'],
                 'active_tasks':tasks,'backend_activity':backend,'sync_activity':sync,
                 'managed_requests_drained':bool(row['paused'] and not (tasks or backend or sync)),

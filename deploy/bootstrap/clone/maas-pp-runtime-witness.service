@@ -1,0 +1,20 @@
+[Unit]
+Description=MaaS PP-OCRv4 host runtime evidence
+After=docker.service network-online.target
+ConditionPathExists=/etc/maas/pp-runtime-witness.json
+
+[Service]
+Environment=PYTHONPATH=/opt/maas/lib
+ExecStartPre=/usr/bin/rm -f /run/maas-pp-runtime/evidence.sock
+ExecStart=/usr/bin/python3 -B -m maas_bootstrap.runtime_witness --config /etc/maas/pp-runtime-witness.json
+RuntimeDirectory=maas-pp-runtime
+RuntimeDirectoryMode=0711
+RuntimeDirectoryPreserve=restart
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

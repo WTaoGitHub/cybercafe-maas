@@ -104,9 +104,10 @@ def build(root,settings_path):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
     receipt_timer='etc/systemd/system/timers.target.wants/maas-worker-receipts.timer'
     if diskless:
-        for module in ('maas_bootstrap/receipt_replay.py','maas_platform/__init__.py','maas_platform/finish_receipt.py'):
+        for module in ('maas_bootstrap/receipt_replay.py','maas_bootstrap/runtime_witness.py',
+                       'maas_platform/__init__.py','maas_platform/finish_receipt.py','maas_platform/runtime_proof.py'):
             files['opt/maas/lib/'+module]=((REPO/module).read_bytes(),0o644)
-        for unit in ('maas-worker-receipts.service','maas-worker-receipts.timer'):
+        for unit in ('maas-worker-receipts.service','maas-worker-receipts.timer','maas-pp-runtime-witness.service'):
             files['etc/systemd/system/'+unit]=((REPO/'deploy/bootstrap/clone'/unit).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),

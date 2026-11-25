@@ -246,3 +246,27 @@ def test_material_written_before_start_and_kept_out_of_state(diskless):
     assert apply(settings, **arguments, permit_fetcher=provider)['code'] == 'UNCHANGED'
     assert provider.calls == runtime.creates == runtime.starts == 1
     assert all(secret not in path.read_text() for path in Path(settings.data['state_dir']).rglob('*.json'))
+
+
+def test_pp_runtime_socket_only_mounts_on_signed_pilot_image(tmp_path, diskless):
+    _, envelope = release(diskless)
+    manifest = envelope['manifest']
+    image = manifest['worker_runtime']['images'][0]
+    image.update(execution_env_prefix='MAAS_PP_OCR_EXECUTION_', entrypoint=['python3', '/app/server.py'],
+                 runtime_witness=True)
+    policy = execution.configuration(manifest)
+    marker = execution.RUNTIME_SOCKET_DIRECTORY
+    code = dedent(worker_limits.configured_insertion(policy, tmp_path).decode())
+    run = object()
+    for image_id, enabled in ((DIGEST, True), (OTHER_IMAGE, False)):
+        options = {'entrypoint': image['entrypoint'], 'environment': {}}
+        exec(code, {'c': SimpleNamespace(profile=run, name='default', image='registry.invalid/model@'+image_id),
+                    'ContainerProfileEnum': SimpleNamespace(RUN=run), 'create_options': options,
+                    'docker': SimpleNamespace(types=SimpleNamespace(
+                        Mount=lambda target, source, **opts: {'Target': target, 'Source': source, **opts}))})
+        sockets = [m for m in options.get('mounts', ()) if m['Target'] == marker]
+        assert sockets == ([dict(Target=marker, Source=marker, type='bind', read_only=True)] if enabled else [])
+        assert ('MAAS_PP_OCR_EXECUTION_RUNTIME_SOCKET' in options['environment']) is enabled
+    image['entrypoint'] = ENTRYPOINT
+    with pytest.raises(BootstrapError, match='WORKER_RUNTIME_POLICY_INVALID'):
+        execution.configuration(manifest)

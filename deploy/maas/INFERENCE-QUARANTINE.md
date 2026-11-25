@@ -84,3 +84,15 @@ PP-OCRv4 试点使用带执行守卫的镜像。将独立持久卷的每卡子�
 ### 从未获权的异步任务重试
 
 执行器可通过 `MAAS_RETRY_UNSTARTED_MODELS` 指定逗号分隔的逻辑模型名，默认为空。按模型独立于回执对账启用。网络中断、部分临时网关响应或执行器租约丢失时，须由强制守卫在原事务中证实从未获权并封闭旧 token，模型修订一致、期限和尝试预算均有效，才将原任务送入 `RETRY_WAIT`。新执行器领取同一任务并重新申请容量。关闭此开关阻止新的故障尝试被归队。已经发生的执行即使随后遇到可重试的存储故障也只结算原任务。使用 `test_transient_failure_before_grant_retries_on_new_token` 与 `test_unstarted_retry_boundaries` 验证允许重试及必须停止的分支。
+
+## 长期 UNKNOWN 的原宿主机核查
+
+PP-OCRv4 试点使用迁移 018。原结束回执仍可按既有路径结清。补报之外，MaaS 按原获权进程向 worker 下发带随机挑战的核查任务。worker 复用执行回调的私有 HTTPS 路径领取任务和提交证据。旧任务没有获权时的宿主机绑定，留给原回执或人工证据处理。
+
+1. **控制端。** 使用新版 MaaS 镜像。保持私有 TLS 回调位置允许 POST，客户入口沿用现有边界。将新的 0600 私密 JSON 密钥表放入 API 专用 secret 挂载，用 \`MAAS_RUNTIME_PROOF_KEYS_FILE\` 指向它。表键是 GPU UUID，每张卡使用独立的 32 字节随机密钥，以 64 位小写十六进制表示。这组密钥与容器执行密钥分开。先留空 \`MAAS_RUNTIME_PROOF_APPLY_ROUTES\`，核查只写入审计和调度元数据。
+2. **worker。** 在隔离的 Linux Docker worker 安装 \`maas-pp-runtime-witness.service\` 和 worker bundle，配置根用户可读的 \`/etc/maas/pp-runtime-witness.json\`，字段为 \`gpu_uuid\`、准确的上游 \`route\`、容器 \`docker inspect .Image\` 对应的 \`image_id\`、现有执行回调的 HTTPS \`origin\`、\`ca_file\`、该卡的宿主机 \`key_file\`、\`socket\`。将 \`socket\` 设为 \`/run/maas-pp-runtime/evidence.sock\`。非 root PP 容器以 \`socket_gid\` 访问，只给该进程此组权限。先安装并启动 witness，核对 socket 和 TLS 后，再启动试点 PP 容器。服务端需要原生 cgroup v2、主机 Docker CLI 和 NVIDIA 进程查询。
+3. **PP 容器。** 用新版守卫构建并固定镜像摘要。对签名运行时规则中准确匹配该镜像和 \`python3 /app/server.py\` 的试点条目加入 \`runtime_witness: true\`，由 worker 只读挂载 socket 所在目录。专用验收容器可以同样以只读方式挂载该目录，并设置 \`MAAS_PP_OCR_EXECUTION_RUNTIME_SOCKET=/run/maas-pp-runtime/evidence.sock\`。宿主凭据和 Docker socket 仅供 witness 使用。容器内应使用 PP 的进程内引擎，且保持普通容器的权限和进程隔离。
+4. **先比对证据。** \`drain-status\` 显示后台活动待核时长、最近探查结果和证据引用。进入 \`UNKNOWN\` 30 秒后按原运行实例合并核查。witness 每 5 秒向现有私有入口询问，连续未答复的挑战退避至 5 分钟。原启动会话、Docker ID、原始 cgroup 和 GPU 进程核对齐备才接受终止。只看到原进程存在、查询失败或启动会话变化时保留隔离。还在运行的 PP 进程仅报告存在，沿用原回执来证明单个请求已经结束。
+5. **启用与回退。** 先比较宿主机事件和账本，再把允许自动结清的准确上游路由写入 \`MAAS_RUNTIME_PROOF_APPLY_ROUTES\`。复用已经验证的逐卡路由，或等待实际 Higress 目标确认排除故障卡后再验证健康副本接单。回退时清空该路由开关并恢复 API 进程配置，保留审计。原始结果、历史 \`UNKNOWN\` 和旧的同步异步行为按原有契约处理。
+
+隔离 PostgreSQL 可用 \`tests/maas/test_runtime_recovery.py\`，核对同步异步各 10 笔、错配、过期、重复挑战、迟到原回执及固定 GPU 路由绕行。三台真实 GPU 验收按 E1 设计记录网关实际目标、时延和真实同步／异步请求。故障注入使用可销毁试点副本，沿用项目对 XZ-31-001、XZ-31-002 的整机限制。

@@ -8,6 +8,7 @@ import logging
 import os
 from pathlib import Path
 import re
+import socket
 import ssl
 import stat
 import tempfile
@@ -39,6 +40,7 @@ class ExecutionGuard:
         if not re.fullmatch('[a-f0-9]{64}', secret) or not 0 < len(route) <= 128:
             raise ValueError('Invalid worker execution credential or route')
         self._receipt_lock = threading.Lock()
+        self.runtime_binding = None
         self.receipt_dir = Path(receipt_dir) if receipt_dir else None
         if self.receipt_dir and (not self.receipt_dir.is_absolute() or not self.receipt_dir.is_dir()
                                  or self.receipt_dir.is_symlink() or self.receipt_dir.stat().st_mode & 0o007):
@@ -54,8 +56,25 @@ class ExecutionGuard:
         path = Path(os.environ[prefix+'KEY_FILE'])
         if not path.is_file() or stat.S_IMODE(path.stat().st_mode) & 0o077:
             raise ValueError('Worker execution credential must be a private file')
-        return cls(os.environ[prefix+'ORIGIN'], path.read_text().strip(), gpu_uuid,
-                   os.environ[prefix+'ROUTE'], os.getenv(prefix+'CA_FILE'), os.getenv(prefix+'RECEIPT_DIR'))
+        guard = cls(os.environ[prefix+'ORIGIN'], path.read_text().strip(), gpu_uuid,
+                    os.environ[prefix+'ROUTE'], os.getenv(prefix+'CA_FILE'), os.getenv(prefix+'RECEIPT_DIR'))
+        if prefix == 'MAAS_PP_OCR_EXECUTION_' and (witness := os.getenv(prefix+'RUNTIME_SOCKET')):
+            guard.bind_runtime(witness)
+        return guard
+
+    def bind_runtime(self, path):
+        with socket.socket(socket.AF_UNIX) as local:
+            local.settimeout(3)
+            local.connect(path)
+            local.sendall(self.identity['instance'].encode() + b'\n')
+            with local.makefile('rb') as stream:
+                binding = stream.readline(2049)
+        if len(binding) > 2048 or not binding.endswith(b'\n'):
+            raise ValueError('Runtime witness binding unavailable')
+        evidence = json.loads(binding)
+        if not isinstance(evidence, dict) or set(evidence) != {'identity', 'signature'}:
+            raise ValueError('Invalid runtime witness binding')
+        self.runtime_binding = evidence
 
     def proof(self, nonce):
         if not isinstance(nonce, str) or not re.fullmatch('[0-9a-f]{64}', nonce):
@@ -69,8 +88,10 @@ class ExecutionGuard:
     def report(self, attempt, *, finished):
         if not re.fullmatch(r'(task|sync)\.[0-9a-f]{32}', attempt):
             raise HTTPException(403, 'A MaaS execution attempt is required')
-        request = Request(self.url, method='POST', headers=self.headers,
-                          data=json.dumps({**self.identity, 'attempt': attempt, 'finished': finished}).encode())
+        event = {**self.identity, 'attempt': attempt, 'finished': finished}
+        if not finished and self.runtime_binding:
+            event['runtime'] = self.runtime_binding
+        request = Request(self.url, method='POST', headers=self.headers, data=json.dumps(event).encode())
         try:
             with self.open(request, timeout=3) as response:
                 if response.status == 204:
