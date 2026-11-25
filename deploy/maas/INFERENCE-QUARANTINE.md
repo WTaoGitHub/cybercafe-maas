@@ -54,5 +54,7 @@ MaaS 在发送推理前记录派发 token、逻辑模型和实际配置的上游
 5. 对已获权且有完整执行范围的 `UNKNOWN`，系统根据 GPU UUID 自动隔离。对旧账，运维核对该次请求**所有可能落点**及其物理 GPU 后，可运行 `python -m maas_platform.cli isolate-sync --token <原令牌> --gpu-uuid <原卡UUID> --reason <证据引用>`。异步对应 `isolate-backend`。该操作只记录范围；进程退出、成功和计量字段保持原有含义。找不到物理卡身份或不能排除其他落点时，保留原隔离。不得根据 worker 编号或 IP 猜测 UUID。
 6. 同步和异步准入均以健康卡重新计算预算。如果 Higress 仍可能选到故障卡，该聚合路由显示 `gateway_reaches_isolated_gpu`；已验证的独立单卡路由可以跳过故障卡。网关剔除原目的地后，使用签名确认的其余聚合目标恢复接单。故障卡重新出现时重新检查，迟到或越过观测窗口的请求还须在 GPU 获权时通过原进程集合和当前隔离检查。缺少可验证路由的其他池保守停发。原占用仅在有效预算已经排除其物理范围时从动态占用计数中扣除，显式全局、模型或项目硬限额仍约束原占用。查看 `capacity.json` 的有效预算、`isolated_gpus` 和各池原因；`unknown_capacity` 分别给出未结清总笔数、由 GPU 隔离覆盖的笔数和仍单独计入占用的笔数，`drain-status` 保留未结清活动。
 7. 常规启用继续走已有维护流程。若旧动态策略仍在服务，所有剩余活动均为落点已核实的 `UNKNOWN`，可用 `capacity-enforce-isolated` 切换到有健康容量的新策略。此入口要求没有正在准备或派发的请求，并在准入锁内复核新快照。该操作不会解除全局维护暂停，设备排空／关机仍要求原有终止证据。
+8. 为从零容量开始验证新版，先发布控制端和 worker 签名配置，保留旧活动策略到零点。在完整原生清单与新鲜预算均确认归零后，登记已查实的历史物理落点，载入强制守卫策略，运行 `capacity-enforce-isolated-zero`。该命令沿用动态模式、活动与证据校验，还要求每个配置池都启用强制守卫，其有效预算和可授权进程集合均为空。它会拒绝过期或缺失的快照，并记录零点切换事件。新 worker 的进程证明与稳定性检查通过后沿用同一策略自动升额。变更模型镜像摘要时，须先将摘要与入口对应的资源档位及执行凭据挂载规则加入该母版使用的签名 E5 配置，并通过配置服务回读验签。
+
 
 使用独立 PostgreSQL 的验收命令为 `PYTHONPATH=.:plugins/gpustack-replica python -m pytest -q tests/maas/test_execution_scope_integration.py tests/maas/test_gateway_scope.py`。`MAAS_TEST_DATABASE_URL` 必须只指向可销毁且名称以 `_test` 结尾的数据库，集成夹具会重建 schema。[故障隔离跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)

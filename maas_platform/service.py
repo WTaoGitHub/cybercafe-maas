@@ -340,7 +340,7 @@ class TaskService:
         c.execute("UPDATE tasks SET state=%s,error_code=%s,token=NULL,lease_until=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state,code,delay,row['id']))
         return True
 
-    def activate_isolated_capacity(self):
+    def activate_isolated_capacity(self, *, at_zero=False):
         """Switch only dynamic admission while proven GPU exclusions remain in force."""
         with self.db.transaction() as c:
             m = c.execute('SELECT * FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
@@ -354,13 +354,26 @@ class TaskService:
                 raise ServiceError('ISOLATION_REQUIRED','Require operating dynamic mode and only located UNKNOWNs',409)
             policy, _, revision = configuration(self.settings)
             a = Admission(c, self.settings, revision, include_preparing=True, unknown=unknown)
-            if (not a.budget or not a.budget.get('isolated_gpus') or not a.budget['global']['total']
-                    or not all(p.gateway_verified for p in policy.pools.values()) or not a.fresh(c)):
+            if (not a.budget or not a.budget.get('isolated_gpus')
+                    or not all(p.gateway_verified for p in policy.pools.values())):
+                raise unavailable()
+            total = a.budget['global']['total']
+            reason = 'Activated fresh capacity with verified physical GPU exclusions'
+            if at_zero:
+                pools = a.budget['pools']
+                if (total != 0 or set(pools) != set(policy.pools)
+                        or any(not p.guard_backend_version or pools[k]['total'] != 0
+                               or pools[k].get('processes') != {} for k, p in policy.pools.items())):
+                    raise unavailable()
+                reason = 'Activated zero capacity with verified GPU exclusions and mandatory guards on every pool'
+            elif total <= 0:
+                raise unavailable()
+            if not a.fresh(c):
                 raise unavailable()
             generation = c.execute("""UPDATE maintenance SET capacity_policy_hash=%s,generation=generation+1,
                 updated_at=now() WHERE id=1 RETURNING generation""",(revision,)).fetchone()['generation']
             c.execute("""INSERT INTO maintenance_events(generation,action,reason) VALUES
-                (%s,'capacity-isolated','Activated fresh capacity with verified physical GPU exclusions')""",(generation,))
+                (%s,'capacity-isolated',%s)""",(generation,reason))
             return a.budget['global']
 
     def set_capacity_mode(self, enforce):

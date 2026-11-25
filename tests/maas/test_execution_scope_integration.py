@@ -15,6 +15,7 @@ from psycopg.types.json import Jsonb
 from maas_platform.capacity import Capacity, catalog_routes, ready_candidates
 from maas_platform.capacity_admission import Admission, configuration, isolate_budget
 from maas_platform.capacity_observe import status
+from maas_platform.errors import ServiceError
 from maas_platform.guard_topology import verify_processes
 from maas_platform.pp_ocr_execution import TABLE
 from maas_platform.quarantine import isolate_unknown
@@ -195,6 +196,50 @@ def test_historical_scope_requires_evidence_and_does_not_backfill_grant(protecte
     with service.db.transaction() as c:
         r=c.execute('SELECT state,gpu_uuid,gpu_finished_at,guard_scope FROM sync_activity WHERE token=%s',(token,)).fetchone()
         assert r==dict(state='UNKNOWN',gpu_uuid=None,gpu_finished_at=None,guard_scope=None)
+
+
+def test_cold_cutover_requires_fresh_guarded_zero_and_recovers(protected):
+    _, service, (lost, _), who, observe, instances, rev = protected
+    token, lose = create_attempt(protected, 'sync')
+    with service.db.transaction() as c:
+        c.execute('UPDATE sync_activity SET guard_scope=NULL WHERE token=%s', (token,))
+    lose()
+    with pytest.raises(ServiceError) as denied:
+        service.activate_isolated_capacity(at_zero=True)
+    assert denied.value.code == 'ISOLATION_REQUIRED'
+    assert isolate_unknown(service.db, 'sync', token, lost.identity['gpu_uuid'], 'test_agent_original_gpu')
+    instances.pop(1)
+    observe(3)
+    with pytest.raises(ServiceError, match='unavailable'):
+        service.activate_isolated_capacity(at_zero=True)
+    healthy = instances.pop(2)
+    observe(4)
+    with service.db.transaction() as c:
+        c.execute("UPDATE maintenance SET capacity_policy_hash='previous-revision'")
+        c.execute("""UPDATE capacity_snapshot SET observed_at=now()-interval '31 seconds',
+                     expires_at=now()-interval '1 second'""")
+    with pytest.raises(ServiceError, match='unavailable'):
+        service.activate_isolated_capacity(at_zero=True)
+    observe(5)
+    with service.db.transaction() as c:
+        c.execute("UPDATE capacity_snapshot SET budget=budget #- '{pools,test_agent_pool,processes}'")
+    with pytest.raises(ServiceError, match='unavailable'):
+        service.activate_isolated_capacity(at_zero=True)
+    observe(6)
+    with pytest.raises(ServiceError, match='unavailable'):
+        service.activate_isolated_capacity()
+    assert service.activate_isolated_capacity(at_zero=True) == {'total':0, 'sync_reserved':0, 'async_limit':0}
+    with service.db.transaction() as c:
+        assert c.execute('SELECT capacity_policy_hash FROM maintenance').fetchone()['capacity_policy_hash'] == rev
+        a = Admission(c, service.settings, rev, include_preparing=True)
+        assert not any(a.allows('ocr.default', who.project, asynchronous=kind) for kind in (True, False))
+    instances[2] = healthy
+    observe(7)
+    observe(8)
+    with service.db.transaction() as c:
+        a = Admission(c, service.settings, rev, include_preparing=True)
+        assert a.allows('ocr.default', who.project, asynchronous=False)
+        assert c.execute('SELECT state FROM sync_activity WHERE token=%s', (token,)).fetchone()['state'] == 'UNKNOWN'
 
 
 def test_restart_and_missing_proof_reduce_capacity(protected, monkeypatch):
