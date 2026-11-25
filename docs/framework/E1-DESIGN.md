@@ -42,7 +42,15 @@
 
 迁移 018、PP 宿主机证明服务、签名运行时挂载、控制端查证及逐路由写入已实现。控制端复用私有执行回调通道下发核查，worker 发起 HTTPS 领取请求。控制端默认仅登记证据。实际运行的进程组、容器启动时间、同一启动会话及 GPU 上的原计算进程均可核验时，才接受原执行终止。原进程仍在时，当前提供的是进程存在证据，单次推理结束仍依赖该 token 的原回执。
 
-隔离 PostgreSQL 与模拟 Docker、cgroup、NVIDIA 证据覆盖同步、异步各 10 笔结清、已发挑战的重放、签名错配、终态回执竞态和固定 GPU 路由绕行。相关回归 141 项通过，包括独立 PostgreSQL 的真实停启验证。worker bundle 的 50 个受清单保护的文件已校验。真实 Linux Docker 及 GPU 核查、三卡同步和异步派发、P95 目标及正式启用待实验。[部署及回退说明](../../deploy/maas/INFERENCE-QUARANTINE.md#长期-unknown-的原宿主机核查) · [可复用隔离库验收](../../tests/maas/test_runtime_recovery.py)
+隔离 PostgreSQL 与模拟 Docker、cgroup、NVIDIA 证据覆盖同步、异步各 10 笔结清、已发挑战的重放、签名错配、终态回执竞态和固定 GPU 路由绕行。相关回归 141 项通过，包括独立 PostgreSQL 的真实停启验证。worker bundle 的 50 个受清单保护的文件已校验。[部署及回退说明](../../deploy/maas/INFERENCE-QUARANTINE.md#长期-unknown-的原宿主机核查) · [可复用隔离库验收](../../tests/maas/test_runtime_recovery.py)
+
+### 三卡 PP-OCRv4 实机试点（2026-11-25）
+
+在三台测试 worker VPC 上运行真实 CUDA 推理，使用独立 MaaS、PostgreSQL 和三条固定 GPU 的试验路由。A 卡完成实际推理后故意暂缓结束回执，原任务转为 `FAILED`，执行账本转为 `UNKNOWN`。只读核查确认原容器仍存在。同期 B 卡完成一笔同步 OCR，C 卡完成一笔异步 OCR，分别产生一条成功记录。
+
+停止 A 卡的临时容器后约 11 秒，MaaS 收到与原 GPU、容器及运行身份一致的签名终止证据，只读模式下活动仍为 `UNKNOWN`。仅启用 A 的试点路由后，API 就绪约 4 秒，原活动自动转为 `RESOLVED` 并释放占用的并发。原任务仍为 `FAILED`，尝试次数为 1，成功计量为 0。A 的新容器通过健康核查后回到派发池，在原 GPU 上完成一笔新任务，成功计量为 1。
+
+试点容器、证明进程、数据库和临时配置均已清理，三台 worker 收尾复核均为 Ready。共享测试服务的自动结清仍关闭。现用 Higress 聚合路由、持续流量和 P95 仍待验收。上述耗时来自本轮单次故障样本。[Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
 ## worker 关机事件通知（2026-11-18）
 
