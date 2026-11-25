@@ -17,6 +17,15 @@ class Maintenance:
         sync=c.execute("""SELECT token,model,state,dispatch_route,dispatch_pool_id,dispatch_gpu_uuid,gpu_uuid,isolated_gpu_uuid,isolation_evidence,guard_scope,guard_conflict,resolution_reason,
             extract(epoch FROM clock_timestamp()-created_at)::float8 AS dispatch_age_seconds
             FROM sync_activity WHERE state IN ('DISPATCHING','UNKNOWN') ORDER BY token""").fetchall()
+        for activity in backend + sync:
+            if activity['state'] == 'UNKNOWN':
+                if activity['guard_conflict']:
+                    reason = 'guard_conflict'
+                elif activity['gpu_uuid'] and activity['guard_scope']:
+                    reason = 'awaiting_gpu_finish'
+                else:
+                    reason = 'termination_evidence_required'
+                activity['pending_reason'] = reason
         return {'paused':row['paused'],'generation':row['generation'],'reason':row['reason'],
                 'active_tasks':tasks,'backend_activity':backend,'sync_activity':sync,
                 'managed_requests_drained':bool(row['paused'] and not (tasks or backend or sync)),

@@ -1,14 +1,16 @@
 """Private host-side metrics and actionable alerts; no customer HTTP endpoint."""
 import shutil
 
+from .capacity_admission import isolate_budget, read_budget
+from .quarantine import unresolved
+
 
 def snapshot(service):
     result=service.metrics()
     with service.db.transaction() as c:
+        c.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
         storage=c.execute("SELECT coalesce(sum(size),0) bytes,count(*) files FROM artifacts WHERE deleted_at IS NULL").fetchone()
         # Only report occupancy for the currently enforced, fresh budget.
-        from .capacity_admission import isolate_budget, read_budget
-        from .quarantine import unresolved
         revision = c.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1').fetchone()['capacity_policy_hash']
         budget = read_budget(c, revision) if revision else None
         if budget:
