@@ -106,8 +106,9 @@ def test_expired_evidence_original_finish_wins_and_legacy_untouched(protected, t
     with service.db.transaction() as conn:
         conn.execute("UPDATE execution_runtime SET challenge_until=now()-interval '1 second'")
     assert report(client, gpu, check).status_code == 409
-    age(service)
-    check, = request(client, gpu).json()['checks']
+    assert request(client, gpu).json()['checks'] == []
+    check, = request(client, gpu, reconnected=True).json()['checks']
+    assert request(client, gpu, reconnected=True).json()['checks'] == []
     owner.report_finished('task.'+token)
     assert report(client, gpu, check).status_code == 204
     with service.db.transaction() as conn:

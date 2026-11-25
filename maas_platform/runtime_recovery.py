@@ -20,6 +20,7 @@ class Binding(BaseModel):
 class HostPoll(BaseModel):
     model_config = ConfigDict(extra='forbid')
     operation: Literal['runtime_poll']
+    reconnected: bool = False
     gpu_uuid: Annotated[str, StringConstraints(pattern=f"^{GPU.pattern}$")]
 
 
@@ -118,7 +119,7 @@ def apply_verified(db, gpu, key, apply_routes):
                 settle_runtime(conn, row, expected['nonce'])
 
 
-def poll(db, gpu):
+def poll(db, gpu, reconnected):
     # Lock only a bounded batch of due runtimes, even if the host polls concurrently.
     with db.transaction() as conn:
         acquired = conn.execute('SELECT pg_try_advisory_xact_lock(842125225) AS acquired').fetchone()
@@ -130,13 +131,15 @@ def poll(db, gpu):
         if batch <= 0:
             return {'checks': []}
         rows = conn.execute(f"""SELECT r.instance,r.identity,r.route FROM execution_runtime r
-            WHERE r.gpu_uuid=%s AND r.next_check_at<=clock_timestamp()
+            WHERE r.gpu_uuid=%s
+              AND (r.challenge_until IS NULL OR r.challenge_until<=clock_timestamp())
+              AND (%s OR r.next_check_at<=clock_timestamp())
               AND r.terminal_proof IS NULL
               AND (EXISTS(SELECT 1 FROM backend_activity WHERE runtime_instance=r.instance
                        AND {QUALIFIED_UNKNOWN} AND unknown_since<=clock_timestamp()-interval '30 seconds')
                 OR EXISTS(SELECT 1 FROM sync_activity WHERE runtime_instance=r.instance
                        AND {QUALIFIED_UNKNOWN} AND unknown_since<=clock_timestamp()-interval '30 seconds'))
-            ORDER BY r.next_check_at,r.instance LIMIT %s FOR UPDATE OF r SKIP LOCKED""", (gpu, batch)).fetchall()
+            ORDER BY r.next_check_at,r.instance LIMIT %s FOR UPDATE OF r SKIP LOCKED""", (gpu, reconnected, batch)).fetchall()
         for row in rows:
             row['nonce'] = token_hex(32)
             conn.execute("""UPDATE execution_runtime SET challenge=%s,
@@ -177,5 +180,5 @@ def handle_host(db, settings, value, authorization):
         raise ServiceError('RUNTIME_PROOF_DENIED', 'Host credential rejected', 403)
     if isinstance(value, HostPoll):
         apply_verified(db, value.gpu_uuid, key, settings.runtime_proof_apply_routes)
-        return poll(db, value.gpu_uuid)
+        return poll(db, value.gpu_uuid, value.reconnected)
     report(db, value, key, settings.runtime_proof_apply_routes)

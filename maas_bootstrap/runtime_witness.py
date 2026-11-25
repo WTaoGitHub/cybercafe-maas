@@ -11,7 +11,7 @@ import struct
 import subprocess
 import sys
 import threading
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import build_opener, HTTPSHandler, ProxyHandler, Request
 
@@ -128,8 +128,9 @@ def exchange(opener, origin, key, payload):
     return json.loads(data) if data else None
 
 
-def answer(opener, origin, key, gpu, route):
-    offer = exchange(opener, origin, key, {'operation': 'runtime_poll', 'gpu_uuid': gpu})
+def answer(opener, origin, key, gpu, route, *, reconnected=False):
+    offer = exchange(opener, origin, key, {'operation': 'runtime_poll', 'gpu_uuid': gpu,
+                                          'reconnected': reconnected})
     if not isinstance(offer['checks'], list) or len(offer['checks']) > 4:
         raise ValueError('Invalid challenge batch')
     for check in offer['checks']:
@@ -141,9 +142,14 @@ def answer(opener, origin, key, gpu, route):
         except (OSError, ValueError, KeyError, subprocess.SubprocessError):
             outcome = 'unconfirmed'
         payload = {**check, 'gpu_uuid': gpu, 'outcome': outcome}
-        exchange(opener, origin, key, {'operation': 'runtime_report', 'gpu_uuid': gpu,
-                 'instance': check['instance'], 'nonce': check['nonce'], 'outcome': outcome,
-                 'signature': signature(key, 'inspect', payload)})
+        try:
+            exchange(opener, origin, key, {'operation': 'runtime_report', 'gpu_uuid': gpu,
+                     'instance': check['instance'], 'nonce': check['nonce'], 'outcome': outcome,
+                     'signature': signature(key, 'inspect', payload)})
+        except HTTPError as error:
+            error.close()
+            if error.code != 409:
+                raise
 
 
 def serve(config):
@@ -181,10 +187,13 @@ def serve(config):
             os.chown(path, -1, config['socket_gid'])
         threading.Thread(target=binding.serve_forever, daemon=True).start()
         wake = threading.Event()
+        disconnected = True
         while True:
             try:
-                answer(opener, origin, key, gpu, route)
+                answer(opener, origin, key, gpu, route, reconnected=disconnected)
+                disconnected = False
             except (OSError, ValueError, URLError, KeyError, TypeError):
+                disconnected = True
                 print('runtime_poll_unavailable', file=sys.stderr, flush=True)
             wake.wait(5)
 
