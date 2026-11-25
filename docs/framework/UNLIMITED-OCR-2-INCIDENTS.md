@@ -37,3 +37,5 @@
 `UOCR2-INC-022`（2026-11-17）：样本下载辅助脚本误用缺Pillow的系统Python，首个GPU请求前失败。主代理一次改用现成依赖环境，下载、PDF封装和渲染检查完成，未安装新依赖；随后8任务/18页服务检查通过。见[检查报告](../../results/unlimited-ocr-2/20261117-service-smoke/REPORT.md)。
 
 `UOCR2-INC-023`（2026-11-20）：无 worker/GPU 选择器的双 worker 加权试验中，部署 13 在 worker 7 上进入 ERROR，原生错误为 `Path does not exist: /srv/maas/models/unlimited-ocr-2-0480966`。串行扩容等待这个副本，OvisOCR3 未启动。现场已恢复原副本数和派发；故障未重试，目录挂载与可见性待逐层验证。 [实测报告](../../results/maas-replica-two-workers-20261120/REPORT.md) · [Issue #69](https://github.com/WTaoGitHub/cybercafe-maas/issues/69)
+
+`UOCR2-INC-024`（2026-11-24，11-25 暂缓处理）。实例 366 就绪后记录到 SIGBUS。手动缩容释放显存预留后，原卡有 12.49 GiB 可分配，满足模型声明的 12 GiB。调节器补回第 3 个副本，GPUStack 将新实例 377 分配到原卡，约 3 秒后进入 Error，启动日志与容器日志均缺失，退出原因未知。另一实例 373 的调度子进程后来也因 SIGBUS 退出。相关 worker VPC 当前无法访问，按用户决定保留记录，待同类故障复发时再取证。 [现场报告](../../results/maas-replica-3-8-partial-20261124/REPORT.md) · [Issue #80](https://github.com/WTaoGitHub/cybercafe-maas/issues/80)

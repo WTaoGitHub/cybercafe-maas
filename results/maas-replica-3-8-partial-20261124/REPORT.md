@@ -75,3 +75,10 @@ Ovis 关闭了自动重启，其新 Error 随即退出启动名额计数。PP �
 **PP 显存证据。** 在 worker 24 上，两个 Error 的原生显存申报仍为 12 GiB 和 3.5 GiB。19:59 的 GPUStack 遥测显示该卡总量 16,376 MiB、已申报 15,872 MiB、实际使用 433 MiB。这是故障后的快照。GPUStack v2.2.3 的 worker 对工作负载不存在及多种异常状态共用 `Inference server exited or unhealthy.`，该文本不能区分容器退出、健康检查失败或 OOM。
 
 **下一份证据。** 已从指定跳板按用户给出的地址复核 worker 24 和 20；两台的 SSH 默认端口均在认证前返回 `Connection refused`。请通过 VPC 控制台保留现场，先取 SSH 监听、Docker/containerd 服务状态、失败容器的 ExitCode/OOMKilled/FinishedAt 和相邻内核日志，再决定修复方式。本次没有手动修改副本、触发重试、重启服务或节点。 [PP #77](https://github.com/WTaoGitHub/cybercafe-maas/issues/77) · [Unlimited #80](https://github.com/WTaoGitHub/cybercafe-maas/issues/80) · [Ovis #83](https://github.com/WTaoGitHub/cybercafe-maas/issues/83)
+
+## 2026-11-25 处置决定
+
+用户确认目前无法访问相关 worker VPC，本轮宿主排查暂停。同类问题复发时，按新实例 ID、worker 和故障时间关联 GPUStack 状态、worker 管理日志、Docker 退出状态及内核事件。沿用以下两条 Issue 记录后续证据。
+
+- **Unlimited-OCR-2（UOCR2-INC-024）**。旧实例 366 和另一实例 373 均有 SIGBUS 记录，具体触发源未知。补建实例 377 的单卡显存预算满足声明，启动约 3 秒后进入 Error，日志接口返回 HTTP 200、0 字节。worker 的标准日志目录中缺少该实例的启动日志和容器日志。该实例的退出原因仍待取证。 [Issue #80](https://github.com/WTaoGitHub/cybercafe-maas/issues/80)
+- **PP-OCRv4（REPLICA-INC-004）**。实例 369 首次退出 Running 的原因未知。18:28 的自动重试已确认受显存调度额度限制，单卡最多可分配 2.99 GiB，模型需要 3.5 GiB。后续实例 381 进入 Starting 后快速报错，容器退出原因也待取证。 [Issue #77](https://github.com/WTaoGitHub/cybercafe-maas/issues/77)
