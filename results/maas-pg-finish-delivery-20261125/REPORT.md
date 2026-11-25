@@ -39,13 +39,26 @@
 
 已清理三笔异步任务、两笔同步验证记录、验证计量、输入及结果文件、临时许可和回执观察目录。控制端保留发布清单与停机的上一版配置服务供回退，worker 保留私有的接续记录与旧注册数据。旧启动许可只能消费一次，回退运行中的 worker 时也要走正式接续。
 
-旧快照已发布兼容配置 `e5-nfs-guard-compatible-cfde6d4`，可识别三个新版模型的守卫和资源规则。共享 VPC 母版未切换到 v4。从旧快照新建的 worker 需要安装新版客户端并选用 v4 配置，才能启用本机自动补报。
+旧快照已发布兼容配置 `e5-nfs-guard-compatible-cfde6d4`，可识别三个新版模型的守卫和资源规则。三台 worker 发布完成时，共享 VPC 母版仍为 v3。当日后续的母版更新见下节。从既有 v3 快照新建的 worker 需要安装新版客户端并选用 v4 配置，才能启用本机自动补报。
 
 在受控运维终端取已发布 `gpu-ocr/execution_guard.py` 的 SHA-256，在每台目标宿主机以 Docker 运维权限运行只读核验脚本。将输出的各模型计数与 GPUStack 的 Ready 副本数对照。脚本按签名运行配置检查本机实际容器、挂载和定时器。[常驻部署核验脚本](../../scripts/maas/runtime/verify_worker_receipts.py)
 
 ```sh
 PYTHONPATH=/opt/maas/lib python3 -B verify_worker_receipts.py --guard-sha256 "$GUARD_SHA256"
 ```
+
+## Tower 母版更新与快照交接
+
+2026-11-25 经受信 SSH 主机密钥核对后，在 Tower 安装测试 worker 已用的 `cfde6d4` 回执组件。本机配置和安装清单的逻辑镜像标识均从 `tower-e5-nfs-signed-v3` 切换到 `tower-e5-receipts-v4`。修改前已在运维机私有目录保存并校验 11 个目标路径的原始内容或缺失状态，供逐文件回退。
+
+| 检查项 | 母版实测 |
+|---|---|
+| 安装与清单 | 安装 8 个组件，含客户端、回执读写和投递模块，以及 systemd 服务和定时器。重新连接后，30 个清单文件的 SHA-256 全部匹配。原有启动程序及服务的摘要按实际已部署版本核对并登记。 |
+| 签名配置 | 在 Tower 通过 HTTPS 获取并验签 `e5-local-receipts-cfde6d4`，核对 PP-OCRv4、OvisOCR3、Unlimited-OCR-2 三条镜像、入口及回执 UID 规则。按 v3 标识读取并验签旧兼容发布也成功。 |
+| 定时器 | `maas-worker-receipts.timer` 和 service 均已加载，开机启用链接指向正式 timer。母版上的 timer 为 `enabled/inactive`。直接运行正式补报入口，在没有 worker 身份及回执的情况下正常退出。 |
+| 母版保护 | `boot-check` 返回 `PROTECTED_HOST_WORKER_FORBIDDEN`。已有的 worker 启动服务保留原失败状态，其日志记录了母版保护等待超时。核对容器数为 0，无启动许可、GPU 注册身份或模型 NFS 挂载。主机启动标识和 Docker 主进程与备份时一致。 |
+
+**平台交接。** 母版文件已就绪。管理员可将当前 Tower 保存为新快照，记录平台快照 ID，再从该快照启动一台独立测试 VPC。首启时核对实际 image ID、签名 revision、GPU UUID 注册及 Ready 状态，确认补报 timer 为 `enabled/active`。有真实副本后核对回执挂载，通过 MaaS 提交一笔隔离任务，对照原 GPU 终态及唯一成功计量。本次没有保存平台快照，也没有验证新克隆首启。[逐副本核验与验收](../../docs/handbooks/OPERATIONS.md#134-创建-gpustack-部署并核对真实副本)
 
 ## 回归入口
 
