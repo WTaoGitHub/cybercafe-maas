@@ -111,6 +111,8 @@ Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模
 
 同一 GPU 同时承载 A 与共享 PP 时，每张卡运行一个宿主机证明进程。worker 的私有配置可用 `routes` 对象逐项指定「上游路由名 → Docker 镜像 ID」，替代单路由的 `route` 和 `image_id`。原单路由配置仍可使用。签发运行身份时，证明进程从套接字对端 PID 找到容器，同时核对 Docker 记录的路由环境变量、镜像 ID 和非特权隔离条件。一次轮询可以分别回答该卡各登记路由的挑战。
 
+只读故障验收时，先记录原派发的 GPU、守卫进程身份和宿主机 Docker 完整容器 ID。在 API 环境运行 `python -B scripts/maas/runtime/inspect_pp_execution.py <任务ID> <尝试token> <上游路由> <GPU-UUID> <守卫进程实例> <原容器完整ID>`。原进程仍在时应读到 `state=UNKNOWN`、`host_outcome=present` 且无终止证明。原进程退出后，同一命令应读到 `host_outcome=terminated`、`signature_verified=true`；只读路由继续显示 `UNKNOWN`。核查器同时匹配原始派发范围、实际获权进程和宿主机绑定，可在不提交状态变更的情况下重复运行。[核查器](../../scripts/maas/runtime/inspect_pp_execution.py)
+
 ### 常驻试点的账本采样
 
 测试控制端用 systemd 每五分钟在现有 API 容器中运行一次只读采样。安装时，将仓库的 [采样脚本](../../scripts/maas/runtime/observe_pp_settlement.py) 放在 `/usr/local/libexec/maas/observe_pp_settlement.py`，将 [service](systemd/maas-pp-canary-observe.service) 和 [timer](systemd/maas-pp-canary-observe.timer) 放在 `/etc/systemd/system/`，执行 `systemctl daemon-reload` 和 `systemctl enable --now maas-pp-canary-observe.timer`。日志可用 `journalctl -u maas-pp-canary-observe.service --since '24 hours ago' -o cat` 查看。单独停采使用 `systemctl disable --now maas-pp-canary-observe.timer`。

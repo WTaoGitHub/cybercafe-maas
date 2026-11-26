@@ -121,6 +121,30 @@ def test_expired_evidence_original_finish_wins_and_legacy_untouched(protected, t
     assert service.metrics()['unknown_backend_activity'] == 1
 
 
+def test_inspect_readonly_pp_attempt_requires_original_container(protected, tmp_path, monkeypatch):
+    from scripts.maas.runtime import inspect_pp_execution as audit
+
+    client, service, owner, _ = enable(protected, tmp_path)
+    monkeypatch.setattr(audit.Settings, 'from_env', lambda: service.settings)
+    token, close = create_attempt(protected, 'task')
+    owner.report('task.' + token, finished=False)
+    close()
+    with service.db.transaction() as conn:
+        task = conn.execute('SELECT task_id FROM backend_activity WHERE token=%s', (token,)).fetchone()['task_id']
+    gpu = owner.identity['gpu_uuid']
+    args = (task, token, 'real-ocr', gpu, owner.identity['instance'])
+    for outcome in ('present', 'terminated'):
+        age(service)
+        check, = request(client, gpu).json()['checks']
+        assert report(client, gpu, check, outcome=outcome).status_code == 204
+        data = audit.inspect_attempt(*args, IDENTITY['container'])
+        assert data['state'] == 'UNKNOWN' and data['host_outcome'] == outcome
+        assert data['terminal_proof_present'] == data['signature_verified'] == (outcome == 'terminated')
+        assert not data['auto_enabled'] and not data['charged']
+    with pytest.raises(ValueError, match='No matching guarded attempt'):
+        audit.inspect_attempt(*args, 'f' * 64)
+
+
 @pytest.mark.parametrize('case,result', [
     ('live','present'), ('exited','terminated'), ('missing','terminated'), ('still_on_gpu','unconfirmed'),
     ('new_boot','unconfirmed'), ('same_id_new_run','unconfirmed'), ('new_inode','unconfirmed'),
