@@ -80,6 +80,18 @@ A 完成实际 OCR 推理后暂缓结束回执，使该次执行进入 `UNKNOWN`
 
 试验容器、路由、凭据、数据库和核查进程已清理，三台 worker 的试验运行时代码已恢复。共享 PP、Ovis、Unlimited OCR 分别恢复 5/5、2/2、1/1，三台 worker 均为 Ready，副本调节器恢复 Apply。共享 MaaS 仍使用迁移 017，自动结清仍关闭。新版 worker bundle 和签名策略的常驻发布待办。[Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
+### 常驻 PP 只读试点发布（2026-11-26）
+
+发布源为 `702eeef`。控制端镜像摘要为 `sha256:71028ec32cf467b59883a2c99283959c50945cda95abfe01ce5457b1fa5ee316`，PP 镜像的 OCI 索引摘要为 `sha256:3446e75dc88e0f4fbdabdc78ae6b2fa85b500bb1cbb576fab68356edf8989896`。worker 源码包 SHA-256 为 `29554803c723e5509b12200a9c45e4a3c3d1608b153e7754f15d28882a961cbc`。
+
+在隔离数据库恢复共享任务库备份，用新版应用迁移 018，再用原镜像连接同一份迁移后的库，核对旧 `UNKNOWN` 记录一致。共享 API、执行器和观测器随后切至新镜像，迁移 018 生效。宿主机凭据只登记试点 GPU，`MAAS_RUNTIME_PROOF_APPLY_ROUTES` 为空。
+
+试点使用独立映像配置 `e5-pp-witness-canary-v1` 和签名版本 `e5-pp-witness-canary-702eeef`。worker 34 经同机接续后仍沿用原 GPU 和 worker ID。Bootstrap 服务校验模块已同步更新。宿主机证明配置使用从签名 OCI 索引解析并由 worker 核对的 `linux/amd64` 实际镜像 ID。常驻路由 `maas-ocr-witness-canary` 为 1/1，非特权容器使用只读证明 socket，实际 Higress 端点为单个 CUDA 上游。
+
+常驻路由占用一份 PP 额度。恢复调节器后连续 9 次核对，试点 PP 1/1、共享 PP 4/4、Ovis 2/2、Unlimited OCR 1/1，三台 worker 均为 Ready。此次完成发布、CUDA 健康和真实 Higress 落点的核查。下一阶段将路由接入试点项目的任务目录和凭据后，再做有授权的 OCR 和故障注入。
+
+受控发布目录保留数据库备份、镜像与可回退 Compose 参数、Bootstrap 校验模块备份及试点回退 manifest。试点的只读核查服务常驻，故障注入和自动结清继续留在后续阶段。[Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
 ## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：

@@ -96,3 +96,11 @@ PP-OCRv4 试点使用迁移 018。原结束回执仍可按既有路径结清。�
 5. **启用与回退。** 先比较宿主机事件和账本，再把允许自动结清的准确上游路由写入 \`MAAS_RUNTIME_PROOF_APPLY_ROUTES\`。复用已经验证的逐卡路由，或等待实际 Higress 目标确认排除故障卡后再验证健康副本接单。回退时清空该路由开关并恢复 API 进程配置，保留审计。原始结果、历史 \`UNKNOWN\` 和旧的同步异步行为按原有契约处理。
 
 隔离 PostgreSQL 可用 \`tests/maas/test_runtime_recovery.py\`，核对同步异步各 10 笔、错配、过期、重复挑战、迟到原回执及固定 GPU 路由绕行。三台真实 GPU 验收按 E1 设计记录网关实际目标、时延和真实同步／异步请求。故障注入使用可销毁试点副本，沿用项目对 XZ-31-001、XZ-31-002 的整机限制。
+
+### 常驻试点的发布与回退
+
+从已提交的版本运行 `python3 scripts/maas/build_worker_bundle.py --source-only --output <发布包>`，解包后用 `scripts/maas/verify_worker_bundle.py --root <解包目录>` 校对文件。源码包沿用目标 worker 的证书和公钥。试点使用单独的签名映像配置标识和固定到一张 GPU 的原生模型部署。发布后从目标 worker 通过认证 HTTPS 回读版本和签名。当前启动许可用过的 worker 容器退出后，通过 E5 同机接续流程换发会话。
+
+Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模块。如果签名引用的是 OCI 索引，先按 worker 的操作系统和架构解析镜像配置摘要，再与 worker 上的 `docker inspect .Image` 交叉核对。宿主机证明配置的 `image_id` 使用该实际镜像 ID。
+
+控制端切换前把任务库备份恢复到隔离 PostgreSQL，分别用新镜像应用迁移 018、用原镜像重新连接并复核旧的未决活动。现场只重建参与迁移的应用服务。要回退控制端，先将试点副本归零，再按现场保存的原 Compose 参数切回原镜像，保留迁移和活动账本。要回退 worker，在专用映像配置标识下发布旧规则的新签名版本，并按相同的接续流程更新该 worker。该步骤沿用已发布的镜像和现有信任材料。
