@@ -171,6 +171,27 @@ A 路由继续自动结清。控制端每五分钟分别采样同步、异步执
 
 收尾时共享 PP 为 4/4，A 为 1/1。A 的自动结清与五分钟采样持续运行。共享路由只登记证据，四笔测试活动在签名到达后仍为 `UNKNOWN`，经逐笔核验后清理了隔离测试数据。11 月 24 日的历史未决活动仍保留。共享路由的自动结清及其时延属于下一阶段。[逐副本结果](../../results/maas-e1-shared-pp-readonly-20261126/acceptance.json) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
+### 测试环境共享 PP 自动结清验收（2026-11-26）
+
+共享 \`maas-ocr\` 与 A 的 \`maas-ocr-witness-canary\` 已在测试环境持续开启自动结清。使用只允许 \`ocr.default\` 的临时项目，交替发送 10 笔同步和 10 笔异步真实 OCR 请求，实际覆盖三台 worker、四个共享 PP 副本。每笔获权后暂停原推理容器，两次读取到无终止证明的 \`UNKNOWN\` 并确认项目占用一份并发，随后仅终止该容器，由宿主机正常上报证明。
+
+| 请求 | 笔数 | 从 \`UNKNOWN\` 到 \`RESOLVED\` 的 P95 |
+|---|---:|---:|
+| 同步 | 10 | 37.10 秒 |
+| 异步 | 10 | 33.87 秒 |
+
+时延取同一笔执行账本上的两个时间戳之差，包含等待宿主机核查的时间。每组按最近秩计算，10 笔时 P95 取该组最大值。此次两组均在 60 秒以内。20 份终止证明逐笔匹配原 GPU、派发范围、运行实例和容器。每次结清后向真实接口重送原签名报告，均返回 409。独立项目的并发依次为 0、1、0、0，账本版本与结清时间在重送前后一致。同步请求均返回 503，异步任务结清后仍可通过客户接口查到 \`FAILED\`。每笔只执行一次，成功事件与 OCR 计量均为零。
+
+另有一项共享派发限制。故障期间的只读采样记录到容量快照已有 3 或 4 个就绪副本，但 Higress 的路由仍覆盖隔离 GPU，MaaS 将共享入口的可派发并发暂时降为 0（\`gateway_reaches_isolated_gpu\`）。共享容器暂停期间也观测到 \`guard_unverified\`。该现象单独跟踪，后续健康副本能否继续接单仍需验证。收尾确认共享 PP 4/4、A 1/1，A 的五分钟采样仍开启。历史上缺少原进程身份的一笔同步 \`UNKNOWN\` 继续保留。
+
+在仓库根目录运行以下命令，可离线复核每笔账本观测和两组 P95。
+
+```sh
+python3 scripts/maas/runtime/summarize_runtime_recovery.py results/maas-e1-shared-pp-auto-20261126/samples.jsonl --verify-shared-pp
+```
+
+[逐笔脱敏样本](../../results/maas-e1-shared-pp-auto-20261126/samples.jsonl) · [验收与容量观测](../../results/maas-e1-shared-pp-auto-20261126/acceptance.json) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
 ## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：

@@ -1,0 +1,177 @@
+{
+  "environment": "test",
+  "model": "ocr.default",
+  "route": "maas-ocr",
+  "automatic_settlement_routes": [
+    "maas-ocr",
+    "maas-ocr-witness-canary"
+  ],
+  "measurement": "Ledger resolved_at minus unknown_since in seconds, nearest-rank P95. One real grant per request, no probes or healthy successes in the sample.",
+  "target_p95_seconds": 60,
+  "by_kind": {
+    "sync": {
+      "samples": 10,
+      "min_seconds": 30.404863,
+      "median_seconds": 32.603,
+      "p95_seconds": 37.097455,
+      "max_seconds": 37.097455
+    },
+    "async": {
+      "samples": 10,
+      "min_seconds": 30.349864,
+      "median_seconds": 31.776,
+      "p95_seconds": 33.866995,
+      "max_seconds": 33.866995
+    }
+  },
+  "both_p95_within_target": true,
+  "by_replica": [
+    {
+      "worker": 31,
+      "native_id": 486,
+      "samples": 1
+    },
+    {
+      "worker": 32,
+      "native_id": 488,
+      "samples": 7
+    },
+    {
+      "worker": 32,
+      "native_id": 489,
+      "samples": 7
+    },
+    {
+      "worker": 34,
+      "native_id": 485,
+      "samples": 5
+    }
+  ],
+  "slots_order": [
+    "before_request",
+    "unknown_without_proof",
+    "settled",
+    "after_repeating_host_report"
+  ],
+  "unknown_before_proof": 20,
+  "single_slot_releases": 20,
+  "authenticated_duplicate_reports_rejected": 20,
+  "extra_execution_attempts": 0,
+  "batch_end": {
+    "matched_immutable_processes": 20,
+    "same_resolution_timestamp_at_batch_end": 20,
+    "failed_async_single_attempt": 10,
+    "usage_events": 0,
+    "ocr_usage_records": 0,
+    "outstanding_project_slots": 0
+  },
+  "async_public_status": {
+    "public_failed_tasks": 10,
+    "public_null_usage": 10,
+    "public_resolved_execution": 10
+  },
+  "dispatch_observations": {
+    "read_only_samples": 88,
+    "sample_windows": [
+      {
+        "first": "2026-11-26T05:14:25.570879+00:00",
+        "last": "2026-11-26T05:16:32.733480+00:00",
+        "samples": 36
+      },
+      {
+        "first": "2026-11-26T05:28:46.140538+00:00",
+        "last": "2026-11-26T05:31:49.790755+00:00",
+        "samples": 52
+      }
+    ],
+    "samples_with_ready_replicas_and_zero_admission": 14,
+    "examples": [
+      {
+        "case": "sync-02",
+        "at": "2026-11-26T05:14:25.570879+00:00",
+        "observed": 3,
+        "observed_reason": "ready",
+        "effective": 0,
+        "effective_reason": "gateway_reaches_isolated_gpu",
+        "active_test_unknown": 1,
+        "a_total": 1
+      },
+      {
+        "case": "sync-02",
+        "at": "2026-11-26T05:14:32.744473+00:00",
+        "observed": 4,
+        "observed_reason": "ready",
+        "effective": 0,
+        "effective_reason": "gateway_reaches_isolated_gpu",
+        "active_test_unknown": 1,
+        "a_total": 1
+      }
+    ],
+    "samples_with_unverified_guards": 43,
+    "same_gpu_observation": {
+      "case": "sync-08",
+      "worker": 34,
+      "shared_reason": "gateway_reaches_isolated_gpu",
+      "shared_admission": 0,
+      "a_reason": "execution_quarantine",
+      "a_admission": 0,
+      "automatic_routes_enabled": true
+    }
+  },
+  "a_timer": {
+    "enabled": true,
+    "last_service_result": "success",
+    "count": 7,
+    "first": "2026-11-26T05:06:54.484236+00:00",
+    "last": "2026-11-26T05:35:38.537807+00:00",
+    "all_auto": true,
+    "all_unpaused": true,
+    "ready_slots_observed": [
+      0,
+      1
+    ],
+    "max_gap_seconds": 301.04,
+    "journal_failures": 0,
+    "bad_proofs": 0,
+    "timer": "active"
+  },
+  "final_ready": {
+    "shared": 4,
+    "a": 1
+  },
+  "temporary_project_cleanup": {
+    "tasks": 10,
+    "async_activities": 10,
+    "sync_activities": 10,
+    "artifacts": 10,
+    "new_unreferenced_runtime_rows_removed": 20,
+    "new_unreferenced_scopes_removed": 20,
+    "test_data_remaining": 0,
+    "legacy_unknown": 1
+  },
+  "temporary_identity_revoked": true,
+  "user_removed_and_key_rejected": {
+    "user_absent": true,
+    "revoked_native_status": 401
+  },
+  "worker_cleanup": {
+    "31": {
+      "running": 1,
+      "watchdogs": 0,
+      "manager_running": true,
+      "all_nonprivileged": true
+    },
+    "32": {
+      "running": 2,
+      "watchdogs": 0,
+      "manager_running": true,
+      "all_nonprivileged": true
+    },
+    "34": {
+      "running": 2,
+      "watchdogs": 0,
+      "manager_running": true,
+      "all_nonprivileged": true
+    }
+  }
+}
