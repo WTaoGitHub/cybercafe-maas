@@ -109,6 +109,8 @@ Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模
 
 控制端切换前把任务库备份恢复到隔离 PostgreSQL，分别用新镜像应用迁移 018、用原镜像重新连接并复核旧的未决活动。现场只重建参与迁移的应用服务。要回退控制端，先将试点副本归零，再按现场保存的原 Compose 参数切回原镜像，保留迁移和活动账本。要回退 worker，在专用映像配置标识下发布旧规则的新签名版本，并按相同的接续流程更新该 worker。该步骤沿用已发布的镜像和现有信任材料。
 
+同一 GPU 同时承载 A 与共享 PP 时，每张卡运行一个宿主机证明进程。worker 的私有配置可用 `routes` 对象逐项指定「上游路由名 → Docker 镜像 ID」，替代单路由的 `route` 和 `image_id`。原单路由配置仍可使用。签发运行身份时，证明进程从套接字对端 PID 找到容器，同时核对 Docker 记录的路由环境变量、镜像 ID 和非特权隔离条件。一次轮询可以分别回答该卡各登记路由的挑战。
+
 ### 常驻试点的账本采样
 
 测试控制端用 systemd 每五分钟在现有 API 容器中运行一次只读采样。安装时，将仓库的 [采样脚本](../../scripts/maas/runtime/observe_pp_settlement.py) 放在 `/usr/local/libexec/maas/observe_pp_settlement.py`，将 [service](systemd/maas-pp-canary-observe.service) 和 [timer](systemd/maas-pp-canary-observe.timer) 放在 `/etc/systemd/system/`，执行 `systemctl daemon-reload` 和 `systemctl enable --now maas-pp-canary-observe.timer`。日志可用 `journalctl -u maas-pp-canary-observe.service --since '24 hours ago' -o cat` 查看。单独停采使用 `systemctl disable --now maas-pp-canary-observe.timer`。

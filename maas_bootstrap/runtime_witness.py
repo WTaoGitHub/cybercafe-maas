@@ -1,4 +1,4 @@
-"""Read-only Linux host witness for one allowed PP-OCRv4 runtime."""
+"""Read-only Linux host witness for enrolled PP-OCRv4 routes on one GPU."""
 import argparse
 import json
 import os
@@ -55,7 +55,7 @@ def populated(path):
     return value == '1'
 
 
-def bind_peer(pid, allowed_image):
+def bind_peer(pid, routes):
     check_cgroup_mount()
     hierarchy, relative = (PROC / str(pid) / 'cgroup').read_text().strip().split('::')
     if hierarchy != '0':
@@ -70,7 +70,10 @@ def bind_peer(pid, allowed_image):
         raise ValueError('Container identity unavailable')
     host = row['HostConfig']
     state = row['State']
-    if (row['Image'] != allowed_image or [row['Path'], *row['Args']][:2] != ['python3', '/app/server.py']
+    route_env = 'MAAS_PP_OCR_EXECUTION_ROUTE='
+    names = [value[len(route_env):] for value in row['Config']['Env'] if value.startswith(route_env)]
+    if (len(names) != 1 or names[0] not in routes or routes[names[0]] != row['Image']
+            or [row['Path'], *row['Args']][:2] != ['python3', '/app/server.py']
             or type(state['Pid']) is not int or state['Pid'] != pid or not state['Running']
             or host['Privileged'] or host.get('CapAdd') or host.get('PidMode')
             or any(mount.get('Destination') in ('/proc', '/sys', '/sys/fs/cgroup', '/var/run/docker.sock',
@@ -81,7 +84,7 @@ def bind_peer(pid, allowed_image):
                 'inode': path.stat().st_ino, 'started': state['StartedAt'], 'pid': pid}
     if not valid_identity(identity) or not populated(path):
         raise ValueError('Runtime identity unavailable')
-    return identity
+    return names[0], identity
 
 
 def original_gpu_released(gpu, pid):
@@ -128,13 +131,13 @@ def exchange(opener, origin, key, payload):
     return json.loads(data) if data else None
 
 
-def answer(opener, origin, key, gpu, route, *, reconnected=False):
+def answer(opener, origin, key, gpu, routes, *, reconnected=False):
     offer = exchange(opener, origin, key, {'operation': 'runtime_poll', 'gpu_uuid': gpu,
                                           'reconnected': reconnected})
     if not isinstance(offer['checks'], list) or len(offer['checks']) > 4:
         raise ValueError('Invalid challenge batch')
     for check in offer['checks']:
-        if (check['route'] != route or not INSTANCE.fullmatch(check['instance']) or
+        if (check['route'] not in routes or not INSTANCE.fullmatch(check['instance']) or
                 not HEX.fullmatch(check['nonce']) or not valid_identity(check['identity'])):
             continue
         try:
@@ -152,13 +155,27 @@ def answer(opener, origin, key, gpu, route, *, reconnected=False):
                 raise
 
 
+def enrolled_routes(config):
+    if 'routes' in config:
+        if 'route' in config or 'image_id' in config:
+            raise ValueError('Conflicting route configurations')
+        routes = config['routes']
+    else:
+        routes = {config['route']: config['image_id']}
+    if (not isinstance(routes, dict) or not routes or
+            any(not isinstance(name, str) or not 1 <= len(name) <= 128 or not isinstance(image, str)
+                or not IMAGE.fullmatch(image) for name, image in routes.items())):
+        raise ValueError('Invalid witness routes')
+    return routes
+
+
 def serve(config):
-    gpu, route, origin, allowed_image = (config[k] for k in ('gpu_uuid','route','origin','image_id'))
+    gpu, origin = config['gpu_uuid'], config['origin']
+    routes = enrolled_routes(config)
     url = urlsplit(origin)
     path = Path(config['socket'])
     if (sys.platform != 'linux' or url.scheme != 'https' or not url.hostname or url.username or
-            url.path or url.query or url.fragment or not GPU.fullmatch(gpu) or not IMAGE.fullmatch(allowed_image)
-            or not isinstance(route, str) or not 1 <= len(route) <= 128 or not path.is_absolute()):
+            url.path or url.query or url.fragment or not GPU.fullmatch(gpu) or not path.is_absolute()):
         raise ValueError('Invalid witness configuration')
     key = read_file(Path(config['key_file']), secret=True).decode().strip()
     if not HEX.fullmatch(key):
@@ -174,7 +191,7 @@ def serve(config):
                 if not INSTANCE.fullmatch(instance):
                     return
                 pid, _, _ = struct.unpack('3i', self.request.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
-                identity = bind_peer(pid, allowed_image)
+                route, identity = bind_peer(pid, routes)
                 payload = {'gpu_uuid': gpu, 'instance': instance, 'route': route, 'identity': identity}
                 self.wfile.write(json.dumps({'identity': identity, 'signature': signature(key, 'bind', payload)}).encode()+b'\n')
             except (OSError, ValueError, KeyError, subprocess.SubprocessError):
@@ -190,7 +207,7 @@ def serve(config):
         disconnected = True
         while True:
             try:
-                answer(opener, origin, key, gpu, route, reconnected=disconnected)
+                answer(opener, origin, key, gpu, routes, reconnected=disconnected)
                 disconnected = False
             except (OSError, ValueError, URLError, KeyError, TypeError):
                 disconnected = True

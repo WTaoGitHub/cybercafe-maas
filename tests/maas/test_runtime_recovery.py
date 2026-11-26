@@ -169,7 +169,7 @@ def test_pinned_gpu_runtime_can_settle_and_peers_keep_dispatching(pinned, tmp_pa
 
     monkeypatch.setattr(runtime_witness, 'exchange', exchange)
     monkeypatch.setattr(runtime_witness, 'inspect_original', lambda identity,gpu: 'terminated')
-    runtime_witness.answer(None, '', HOST_KEY, owner.identity['gpu_uuid'], route)
+    runtime_witness.answer(None, '', HOST_KEY, owner.identity['gpu_uuid'], {route})
     assert service.metrics()['unknown_sync_activity'] == 0
     with service.db.transaction() as conn:
         row = conn.execute('SELECT state, runtime_instance, guard_scope FROM sync_activity WHERE token=%s',
@@ -191,11 +191,55 @@ def test_host_binding_reads_actual_peer_cgroup(tmp_path, monkeypatch):
     monkeypatch.setattr(runtime_witness, 'BOOT', boot)
     monkeypatch.setattr(runtime_witness, 'check_cgroup_mount', lambda: None)
     image = 'sha256:'+'b'*64
-    row = {'Image': image, 'Path': 'python3', 'Args': ['/app/server.py'], 'Mounts': [],
+    routes = {'test_agent_a': image, 'test_agent_shared': image}
+    row = {'Image': image, 'Path': 'python3', 'Args': ['/app/server.py'], 'Mounts': [], 'Config': {},
            'HostConfig': {'Privileged': False},
            'State': {'Pid': IDENTITY['pid'], 'Running': True, 'StartedAt': IDENTITY['started']}}
     monkeypatch.setattr(runtime_witness, 'inspect', lambda _: row)
-    assert runtime_witness.bind_peer(321, image) == {**IDENTITY, 'inode':run_group.stat().st_ino}
+    prefix = 'MAAS_PP_OCR_EXECUTION_ROUTE='
+    for route in routes:
+        row['Config']['Env'] = [prefix + route]
+        assert runtime_witness.bind_peer(321, routes) == (route, {**IDENTITY, 'inode':run_group.stat().st_ino})
+    for rejected in ([], [prefix + 'unlisted'], [prefix + name for name in routes]):
+        row['Config']['Env'] = rejected
+        with pytest.raises(ValueError, match='containment'):
+            runtime_witness.bind_peer(321, routes)
+    row['Config']['Env'] = [prefix + 'test_agent_a']
+    with pytest.raises(ValueError, match='containment'):
+        runtime_witness.bind_peer(321, {'test_agent_a': 'sha256:' + 'f' * 64})
     row['HostConfig']['Privileged'] = True
     with pytest.raises(ValueError, match='containment'):
-        runtime_witness.bind_peer(321, image)
+        runtime_witness.bind_peer(321, routes)
+
+
+def test_host_witness_accepts_legacy_or_route_map():
+    image = 'sha256:' + 'c' * 64
+    legacy = {'route': 'test_agent_a', 'image_id': image}
+    routes = {'test_agent_a': image, 'test_agent_shared': image}
+    assert runtime_witness.enrolled_routes(legacy) == {'test_agent_a': image}
+    assert runtime_witness.enrolled_routes({'routes': routes}) == routes
+    for invalid in ({'routes': {}}, {'routes': {'unknown': 'tag'}}, {**legacy, 'routes': routes}):
+        with pytest.raises(ValueError):
+            runtime_witness.enrolled_routes(invalid)
+
+
+def test_one_gpu_answers_both_routes_and_ignores_unenrolled_route(monkeypatch):
+    gpu = 'GPU-11111111-1111-4111-8111-111111111111'
+    enrolled = {'test_agent_a', 'test_agent_shared'}
+    checks = [dict(route=name, identity=IDENTITY, instance=str(i)*32, nonce=str(i)*64)
+              for i, name in enumerate(['test_agent_a', 'test_agent_shared', 'test_agent_other'], 1)]
+    reports = []
+
+    def exchange(opener, origin, key, request):
+        if request['operation'] == 'runtime_poll':
+            return {'checks': checks}
+        reports.append(request)
+
+    monkeypatch.setattr(runtime_witness, 'exchange', exchange)
+    monkeypatch.setattr(runtime_witness, 'inspect_original', lambda identity, gpu: 'present')
+    runtime_witness.answer(None, '', HOST_KEY, gpu, enrolled)
+    assert len(reports) == 2
+    for request, check in zip(reports, checks):
+        payload = dict(check, gpu_uuid=gpu, outcome='present')
+        assert request['instance'] == check['instance']
+        assert request['signature'] == signature(HOST_KEY, 'inspect', payload)
