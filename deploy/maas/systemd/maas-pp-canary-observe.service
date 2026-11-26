@@ -1,0 +1,14 @@
+[Unit]
+Description=Sample the test PP canary settlement ledger
+After=docker.service
+
+[Service]
+Type=oneshot
+StandardInput=file:/usr/local/libexec/maas/observe_pp_settlement.py
+StandardOutput=journal
+ExecStart=/usr/bin/docker exec -i maas-control-api-1 python -B - ocr.pp-witness-canary
+TimeoutStartSec=30s
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077

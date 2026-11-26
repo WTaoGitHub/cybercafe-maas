@@ -108,3 +108,9 @@ PP-OCRv4 试点使用迁移 018。原结束回执仍可按既有路径结清。�
 Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模块。如果签名引用的是 OCI 索引，先按 worker 的操作系统和架构解析镜像配置摘要，再与 worker 上的 `docker inspect .Image` 交叉核对。宿主机证明配置的 `image_id` 使用该实际镜像 ID。
 
 控制端切换前把任务库备份恢复到隔离 PostgreSQL，分别用新镜像应用迁移 018、用原镜像重新连接并复核旧的未决活动。现场只重建参与迁移的应用服务。要回退控制端，先将试点副本归零，再按现场保存的原 Compose 参数切回原镜像，保留迁移和活动账本。要回退 worker，在专用映像配置标识下发布旧规则的新签名版本，并按相同的接续流程更新该 worker。该步骤沿用已发布的镜像和现有信任材料。
+
+### 常驻试点的账本采样
+
+测试控制端用 systemd 每五分钟在现有 API 容器中运行一次只读采样。安装时，将仓库的 [采样脚本](../../scripts/maas/runtime/observe_pp_settlement.py) 放在 `/usr/local/libexec/maas/observe_pp_settlement.py`，将 [service](systemd/maas-pp-canary-observe.service) 和 [timer](systemd/maas-pp-canary-observe.timer) 放在 `/etc/systemd/system/`，执行 `systemctl daemon-reload` 和 `systemctl enable --now maas-pp-canary-observe.timer`。日志可用 `journalctl -u maas-pp-canary-observe.service --since '24 hours ago' -o cat` 查看。单独停采使用 `systemctl disable --now maas-pp-canary-observe.timer`。
+
+每条 JSON 记录包含 A 的自动结清开关、全局维护暂停标记、容量快照中的就绪并发位，以及同步和异步各自的未决笔数、最老未决时长和已持续至少 15 分钟的笔数。滚动 24 小时统计以采样时仍保留的账本为准，包括派发、新增 `UNKNOWN`、自动结清、终止签名与原活动不匹配的笔数，以及故障结清后关联了成功计量的笔数。后两项出现非零值时应核对原活动。每类至少有 10 笔通过验签的结清记录才发布 `signed_p95_seconds`。它从进入 `UNKNOWN` 算到结清，包含 worker 失联的时间。就绪并发位为 `null` 表示没有可用的新鲜快照。采样验签及 P95 的本地回归命令为 `python -m pytest -q tests/maas/test_pp_settlement_observation.py`。

@@ -1,0 +1,10 @@
+[Unit]
+Description=Observe A's PP test route every five minutes
+
+[Timer]
+OnActiveSec=3s
+OnUnitActiveSec=5min
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
