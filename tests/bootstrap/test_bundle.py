@@ -40,6 +40,18 @@ def test_bundle_manifest_rejects_path_escape_and_extra_members(tmp_path):
     with pytest.raises(ValueError,match='Unexpected'):v.verify(tmp_path)
 
 
+def test_source_bundle_omits_legacy_trust_and_scope(tmp_path):
+    builder = module('build_worker_bundle')
+    output = tmp_path / 'source-only.tgz'
+    builder.build(output, source_only=True)
+    with tarfile.open(output) as archive:
+        manifest = json.load(archive.extractfile('bundle-manifest.json'))
+        assert manifest['artifact_type'] == 'worker-source-bundle'
+        assert 'image_id' not in manifest and 'cluster_id' not in manifest
+        assert not set(builder.LEGACY_TRUST_FILES).intersection(archive.getnames())
+        assert 'maas_bootstrap/runtime_witness.py' in archive.getnames()
+
+
 def test_public_bundle_includes_notification_runtime_and_unit():
     sources=module('build_worker_bundle').SOURCES
     for path in ('maas_bootstrap/shutdown_auth.py','maas_bootstrap/shutdown_events.py',
