@@ -99,6 +99,10 @@ PP-OCRv4 试点使用迁移 018。原结束回执仍可按既有路径结清。�
 
 ### 常驻试点的发布与回退
 
+测试环境 A 试点使用常驻 Compose 覆盖文件 `compose.canary-admission.json`。API 的自动结清白名单仅含上游路由 `maas-ocr-witness-canary`。发布后同时核对 Compose 渲染值和运行中 API 的白名单。专用项目 `pp-witness-a-test` 使用逻辑模型 `ocr.pp-witness-canary`，API 和执行器从只读文件 `/run/maas-pp-witness-a/inference.key` 加载凭据。按原部署参数重新创建服务时需带上该覆盖文件。
+
+临时退回只读时，清空上述覆盖文件中 API 的 `MAAS_RUNTIME_PROOF_APPLY_ROUTES`，按当前 Compose 配置重建 API 并回读生效值。退役项目时，再撤销其专用 GPUStack 密钥、删除对应 MaaS 绑定和 A 路由对该身份的授权。[持续启用验收](../../docs/framework/E1-DESIGN.md#测试环境-a-路由持续自动结清2026-11-26)
+
 从已提交的版本运行 `python3 scripts/maas/build_worker_bundle.py --source-only --output <发布包>`，解包后用 `scripts/maas/verify_worker_bundle.py --root <解包目录>` 校对文件。源码包沿用目标 worker 的证书和公钥。试点使用单独的签名映像配置标识和固定到一张 GPU 的原生模型部署。发布后从目标 worker 通过认证 HTTPS 回读版本和签名。当前启动许可用过的 worker 容器退出后，通过 E5 同机接续流程换发会话。
 
 Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模块。如果签名引用的是 OCI 索引，先按 worker 的操作系统和架构解析镜像配置摘要，再与 worker 上的 `docker inspect .Image` 交叉核对。宿主机证明配置的 `image_id` 使用该实际镜像 ID。

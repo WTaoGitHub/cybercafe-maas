@@ -131,6 +131,14 @@ python3 scripts/maas/runtime/summarize_runtime_recovery.py results/maas-e1-runti
 
 验收完成后清理故障规则、看门狗、试验凭据及数据，试点回到只读核查。共享模型沿用执行前的副本配置，既有历史 `UNKNOWN` 保留。
 
+### 测试环境 A 路由持续自动结清（2026-11-26）
+
+共享 MaaS 的常驻 Compose 配置已将 `MAAS_RUNTIME_PROOF_APPLY_ROUTES` 设为 `maas-ocr-witness-canary`。专用项目 `pp-witness-a-test` 的凭据 `pp-witness-a-inference` 只授权逻辑模型 `ocr.pp-witness-canary`。GPUStack 使用独立非管理员身份，密钥的权限为 `inference`，上游模型白名单仅含 A 路由。密钥由控制端保管，只读挂载到 API 和执行器。
+
+从持久配置重建 API 和执行器后，项目在 A 上完成真实 OCR。用同一凭据访问共享 PP、Ovis 和 Unlimited OCR，MaaS 任务入口及上游鉴权均返回 403，GPUStack 用户和密钥管理入口也拒绝了访问。
+
+另一笔异步请求在获得 GPU 授权后中断。执行进入 `UNKNOWN`，随后凭原运行实例的签名终止证明自动转为 `RESOLVED`，耗时 31.041 秒。业务任务保持 `FAILED`，仅一次尝试，成功计量为零。替换副本在同一 GPU 完成了新的 OCR。验证任务及文件已清理，收尾复核确认 A 的写入开关、项目授权和实际 Higress 落点均已生效。[部署与回退](../../deploy/maas/INFERENCE-QUARANTINE.md#常驻试点的发布与回退) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
 ## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：
