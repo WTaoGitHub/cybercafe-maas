@@ -136,3 +136,20 @@ python -B -m scripts.maas.runtime.reconcile_pp_quarantine \
 部署时先更新容量观察器及网关证据读取器，确认候选文件持续刷新，再启动协调器。核对主路由所有路径、隔离卡的同卡副本及实际重试计数。结清后应重新观察到原生路由和健康容量恢复。回退时停止协调器，核对自有过滤器的标签和 UID 后删除该资源，确认 Envoy 已恢复原生目标并撤下候选文件输出。A 与共享 PP 的自动结清白名单独立于这个过滤器。
 
 本地回归可运行 `python -m pytest -q tests/maas/test_pp_route_quarantine.py tests/maas/test_gateway_scope.py tests/maas/test_gateway_capacity.py`。测试覆盖同卡多个副本、零权重、注册表与端口变化、候选过期、回退和 AI 代理重派。[实机验收记录](../../results/maas-e1-shared-pp-gpu-exclusion-20261126/acceptance.json)
+
+### UNKNOWN 后撤路与实测停派时间
+
+迁移 `019_quarantine_notifications.sql` 在同步或异步执行记录的隔离 GPU 发生变化时发出 PostgreSQL 通知。事务提交后，启用了 `MAAS_PP_GATEWAY_INTENT_FILE` 的容量观察器重新读取完整隔离集合。已知拓扑可立即追加撤路并保留原采样时间；恢复目的地需要新的拓扑采样。随后观察器在 30 秒内以最长一秒的采样间隔核对网关和进程。Envoy 路由读回、进程签名和原有的稳定期继续决定何时恢复准入。监听重连会主动重读，定时全量采样也会校正丢失的通知。
+
+在测试环境使用独立的 `test_agent_pp_*` 项目，同时向共享入口发送同步和异步请求。以下命令使用测试控制端的 `MAAS_DATABASE_URL`。在发流量前安装探针，在故障期间或收到原进程签名终止证明后读取窗口，并在导出全部样本后卸载。
+
+```sh
+python -m scripts.maas.runtime.pp_grant_window install "$TEST_PROJECT"
+python -m scripts.maas.runtime.pp_grant_window traffic "$TEST_PROJECT" --url "$MAAS_TEST_API_URL" --seconds 300
+python -m scripts.maas.runtime.pp_grant_window read "$TEST_PROJECT" --kind sync --token "$FAULT_TOKEN"
+python -m scripts.maas.runtime.pp_grant_window remove "$TEST_PROJECT"
+```
+
+探针在数据库写入 GPU 授权的同一事务中记录时间。每类流量分别从原任务的 `unknown_since` 计时，取故障后新派发且最先在健康卡获得授权的请求。异步排队回执不参与计算。窗口包含探针发送间隔和执行器取单延迟，因此表示这组流量实际等到新授权的时间。探针还会检查整个 UNKNOWN 期间的隔离卡授权，包括故障前已派发、随后才申请 GPU 的请求。网关重试另用 Envoy 生效路由和分集群尝试计数验证。
+
+2026-11-26 在测试环境对 worker 32 做了前后各 20 次相同故障。按上述口径，同步停派 P95 从 18.10 秒降至 10.54 秒，异步从 17.76 秒降至 10.05 秒。此结果适用于共享 PP 自身产生且带有执行范围证据的 UNKNOWN。A 专用单卡路由产生的 UNKNOWN 有独立跟踪记录。[40 次逐笔实测](../../results/maas-e1-shared-pp-grant-latency-20261126/acceptance.json) · [A 专用路由问题 #85](https://github.com/WTaoGitHub/cybercafe-maas/issues/85)

@@ -9,6 +9,7 @@ from threading import Barrier
 
 from fastapi import HTTPException
 import httpx
+import psycopg
 import pytest
 from psycopg.types.json import Jsonb
 
@@ -97,6 +98,36 @@ def create_attempt(f, kind, idem='test_agent_scope', **task_options):
     task = service.claim()
     assert service.begin_backend(task) == 'real-ocr'
     return task['token'], lambda: service.finish(task)
+
+
+@pytest.mark.parametrize('kind', ['sync', 'task'])
+def test_committed_gpu_isolation_wakes_observer_and_finish_wakes_it_again(protected, kind):
+    from maas_platform.capacity_observe import watch_quarantine
+
+    _, service, (worker, _), *_ = protected
+    token, disconnect = create_attempt(protected, kind)
+    worker.report(kind + '.' + token, finished=False)
+
+    async def check():
+        wake = asyncio.Event()
+        listener = asyncio.create_task(watch_quarantine(service.settings.database_url, wake))
+        try:
+            await asyncio.wait_for(wake.wait(), 3)
+            wake.clear()
+            with psycopg.connect(service.settings.database_url) as writer:
+                writer.execute(f"UPDATE {TABLE[kind]} SET state='UNKNOWN' WHERE token=%s", (token,))
+                writer.rollback()
+            with pytest.raises(TimeoutError):
+                await asyncio.wait_for(wake.wait(), 0.1)
+            await asyncio.to_thread(disconnect)
+            await asyncio.wait_for(wake.wait(), 3)
+            wake.clear()
+            await asyncio.to_thread(worker.report, kind + '.' + token, finished=True)
+            await asyncio.wait_for(wake.wait(), 3)
+        finally:
+            listener.cancel()
+            await asyncio.gather(listener, return_exceptions=True)
+    asyncio.run(check())
 
 
 @pytest.mark.parametrize('kind', ['task','sync'])

@@ -120,6 +120,33 @@ async def read_snapshot(client):
             await asyncio.gather(*reads, return_exceptions=True)
 
 
+async def watch_quarantine(dsn, wake):
+    while True:
+        try:
+            async with await psycopg.AsyncConnection.connect(dsn, autocommit=True, connect_timeout=5) as conn:
+                await conn.execute('LISTEN maas_gpu_quarantine')
+                wake.set()  # Re-read after LISTEN commits, including after a connection loss.
+                async for _ in conn.notifies():
+                    wake.set()
+        except psycopg.Error:
+            LOG.warning('quarantine_listener_disconnected')
+        await asyncio.sleep(INTERVAL)
+
+
+async def write_gateway_intent(conn, path, observed, routes, retain=()):
+    cursor = await conn.execute('SELECT DISTINCT isolated_gpu_uuid FROM inference_slots '
+                                'WHERE isolated_gpu_uuid IS NOT NULL ORDER BY isolated_gpu_uuid')
+    isolated = sorted(set(retain).union(r['isolated_gpu_uuid'] for r in await cursor.fetchall()))
+    intent = dict(observed=observed.timestamp(), routes=routes, isolated=isolated)
+    try:
+        draft = path.with_suffix('.new')
+        draft.write_text(json.dumps(intent))
+        draft.replace(path)
+    except OSError:
+        LOG.error('pp_gateway_intent_write_failed')
+    return isolated
+
+
 def gateway_candidates(policy, names, native, candidates):
     # Compute before gateway/guard verification: an isolated, paused process
     # cannot answer a challenge and must not prevent discovery of its peers.
@@ -147,9 +174,13 @@ async def observe(settings, path, stop, report):
     token = private_text(Path(os.environ['MAAS_CAPACITY_GPUSTACK_KEY_FILE']))
     base = settings.gpustack_url.rstrip('/') + '/v2/'
     changed = asyncio.Event()
+    quarantine = asyncio.Event()
+    intent_file = os.getenv('MAAS_PP_GATEWAY_INTENT_FILE')
     async with httpx.AsyncClient(base_url=base, headers={'Authorization': 'Bearer ' + token},
                                  timeout=READ_TIMEOUT, trust_env=False, follow_redirects=False) as client:
         streams = [asyncio.create_task(watch_changes(client, kind, changed)) for kind in RESOURCES if kind != 'models']
+        if intent_file:
+            streams.append(asyncio.create_task(watch_quarantine(settings.database_url, quarantine)))
         try:
             while not stop.is_set():
                 try:
@@ -158,7 +189,8 @@ async def observe(settings, path, stop, report):
                         cursor = await conn.execute('SELECT pg_try_advisory_lock(%s) AS acquired', (WRITER_LOCK,))
                         if (await cursor.fetchone())['acquired']:
                             # Use this same session for publishing. Losing the writer lock invalidates the session.
-                            await sample(client, conn, settings.catalog_file, base, policy, changed, stop, report, settings.pp_ocr_worker_keys_file)
+                            await sample(client, conn, settings.catalog_file, base, policy, changed, stop, report,
+                                         settings.pp_ocr_worker_keys_file, quarantine, Path(intent_file) if intent_file else None)
                 except psycopg.Error:
                     LOG.warning('capacity_database_unavailable')
                 await asyncio.sleep(1)
@@ -168,11 +200,20 @@ async def observe(settings, path, stop, report):
             await asyncio.gather(*streams, return_exceptions=True)
 
 
-async def sample(client, conn, catalog_file, source, policy, changed, stop, report, guard_keys=None):
+async def sample(client, conn, catalog_file, source, policy, changed, stop, report, guard_keys, quarantine, intent_path):
     last_hash = None
     reported = None
+    last_topology = None
+    fast_until = 0
     while not stop.is_set():
+        if quarantine.is_set():
+            quarantine.clear()
+            fast_until = time.monotonic() + TTL
+            if last_topology and not changed.is_set():
+                # A cached sample may withdraw more cards. Read fresh topology before restoring any.
+                await write_gateway_intent(conn, intent_path, *last_topology)
         changed.clear()
+        last_topology = None
         try:
             names = catalog_routes(policy, json.loads(catalog_file.read_text()))
             revision = policy_hash(policy, names, source)
@@ -183,27 +224,17 @@ async def sample(client, conn, catalog_file, source, policy, changed, stop, repo
             observed = (await cursor.fetchone())['observed_at']
             native = await read_snapshot(client)
             candidates, reasons = ready_candidates(policy, names, *native)
-            intent_path = os.getenv('MAAS_PP_GATEWAY_INTENT_FILE')
             if intent_path:
                 route_candidates = gateway_candidates(policy, names, native, candidates)
+                if not changed.is_set() and names == catalog_routes(policy, json.loads(catalog_file.read_text())):
+                    isolated = await write_gateway_intent(conn, intent_path, observed, route_candidates)
+                    last_topology = observed, route_candidates, isolated
             proofs = await verify_processes(policy, names, native, candidates, reasons, guard_keys,
                                             os.getenv('MAAS_GATEWAY_SCOPE_FILE'))
             # The native lists and catalog are not a transactional snapshot.
             if changed.is_set() or names != catalog_routes(policy, json.loads(catalog_file.read_text())):
                 raise ValueError('Bindings or topology changed during capacity observation')
             budget = capacity.update(observed.timestamp(), candidates, reasons, proofs)
-            if intent_path:
-                cursor = await conn.execute('SELECT DISTINCT isolated_gpu_uuid FROM inference_slots '
-                                            'WHERE isolated_gpu_uuid IS NOT NULL')
-                intent = dict(observed=observed.timestamp(), routes=route_candidates,
-                              isolated=[r['isolated_gpu_uuid'] for r in await cursor.fetchall()])
-                path = Path(intent_path)
-                try:
-                    draft = path.with_suffix('.new')
-                    draft.write_text(json.dumps(intent))
-                    draft.replace(path)
-                except OSError:
-                    LOG.error('pp_gateway_intent_write_failed')
         except (httpx.HTTPError, TimeoutError, OSError, ValueError, KeyError, TypeError, AttributeError):
             if last_hash is not None:
                 capacity.interrupted()
@@ -215,11 +246,15 @@ async def sample(client, conn, catalog_file, source, policy, changed, stop, repo
         reported = code
         await asyncio.to_thread(report)
         # Coalesce concurrent events and keep the stop check responsive.
-        until = time.monotonic() + INTERVAL
-        while not stop.is_set() and not changed.is_set() and time.monotonic() < until:
+        # Quickly consume gateway readback and the normal stabilization window after a withdrawal.
+        until = time.monotonic() + (min(INTERVAL, 1) if time.monotonic() < fast_until else INTERVAL)
+        while not stop.is_set() and not changed.is_set() and not quarantine.is_set() and time.monotonic() < until:
             try:
-                await asyncio.wait_for(changed.wait(), min(1, max(0, until - time.monotonic())))
+                await asyncio.wait_for(quarantine.wait(), min(0.5, max(0, until - time.monotonic())))
             except TimeoutError:
                 pass
-        if changed.is_set():
-            await asyncio.sleep(1)
+        if changed.is_set() and not quarantine.is_set():
+            try:
+                await asyncio.wait_for(quarantine.wait(), 1)
+            except TimeoutError:
+                pass

@@ -1,0 +1,1873 @@
+{
+  "environment": "test",
+  "logical_model": "ocr.default",
+  "shared_route": "maas-ocr",
+  "measurement": "Database clock from original unknown_since to the earliest healthy GPU grant on a new dispatch, before signed settlement. Includes request pacing and executor pickup.",
+  "percentile": "nearest rank, sorted value 19 of 20; maximum is value 20",
+  "fault": "Terminate one real shared PP process on worker 32 after a verified GPU grant; hold host witness outbound reporting until the two healthy traffic classes and the retry probe complete. Restore the witness and require signed settlement and the original four shared targets before the next fault.",
+  "traffic": "Same dedicated project, fixed 280x70 PNG, one synchronous loop and one asynchronous loop, each paced to at most one submission per second. Async cap of two outstanding tasks; backlog checked every 250 ms. Both use the normal MaaS HTTP endpoints. The original fault request uses the production ingress handler and Higress with a large OCR input.",
+  "workers": {
+    "quarantined": 32,
+    "excluded_replicas": [
+      488,
+      489
+    ],
+    "healthy_workers": [
+      31,
+      34
+    ],
+    "healthy_replicas": [
+      486,
+      485
+    ]
+  },
+  "versions": {
+    "baseline": "3e8bbb5",
+    "observer_sha256": "cc1dba21d04c4cc1fa574b02e0534eb698e2cdb0e8b8da34efd7e59e6ad323ad",
+    "migration": "019_quarantine_notifications.sql"
+  },
+  "auto_settlement_routes": [
+    "maas-ocr",
+    "maas-ocr-witness-canary"
+  ],
+  "summary": {
+    "before": {
+      "sync": {
+        "faults": 20,
+        "p95_seconds": 18.09542,
+        "max_seconds": 18.146301,
+        "healthy_grants": 358,
+        "successful_requests": 358,
+        "healthy_workers": [
+          31,
+          34
+        ],
+        "consecutive_observed_grant_gap_seconds": {
+          "p95": 20.000628,
+          "maximum": 21.025159
+        },
+        "grants_to_inflight_dispatches": 0
+      },
+      "async": {
+        "faults": 20,
+        "p95_seconds": 17.758234,
+        "max_seconds": 18.266351,
+        "healthy_grants": 385,
+        "successful_requests": 385,
+        "healthy_workers": [
+          31,
+          34
+        ],
+        "consecutive_observed_grant_gap_seconds": {
+          "p95": 19.431283,
+          "maximum": 20.010242
+        },
+        "grants_to_inflight_dispatches": 0
+      }
+    },
+    "after": {
+      "sync": {
+        "faults": 20,
+        "p95_seconds": 10.540273,
+        "max_seconds": 10.652589,
+        "healthy_grants": 490,
+        "successful_requests": 490,
+        "healthy_workers": [
+          31,
+          34
+        ],
+        "consecutive_observed_grant_gap_seconds": {
+          "p95": 13.079488,
+          "maximum": 19.003587
+        },
+        "grants_to_inflight_dispatches": 1
+      },
+      "async": {
+        "faults": 20,
+        "p95_seconds": 10.046485,
+        "max_seconds": 10.793252,
+        "healthy_grants": 520,
+        "successful_requests": 520,
+        "healthy_workers": [
+          31,
+          34
+        ],
+        "consecutive_observed_grant_gap_seconds": {
+          "p95": 12.189227,
+          "maximum": 12.600535
+        },
+        "grants_to_inflight_dispatches": 0
+      }
+    }
+  },
+  "checks": {
+    "independent_faults": 40,
+    "originals_with_verified_host_signature": 40,
+    "originals_charged_success": 0,
+    "grants_on_quarantined_gpu_during_entire_unknown_interval": 0,
+    "primary_route_variants_per_probe": 17,
+    "healthy_higress_retries_per_probe": 2,
+    "higress_retries_on_isolated_replicas_during_probes": 0,
+    "retry_probe": "One actual validation response per UNKNOWN window marked retriable for that request; Envoy counters on the healthy clusters increased by two retries; total and retry counters on both excluded clusters did not increase across the probe.",
+    "fallback": "Effective shared route did not offer an upstream fallback to an isolated replica.",
+    "local_regressions_passed": 113
+  },
+  "separate_pinned_route_preflight": {
+    "issue": "https://github.com/WTaoGitHub/cybercafe-maas/issues/85",
+    "excluded_from_comparison": true,
+    "observations": [
+      {
+        "phase": "A preflight",
+        "case": 1,
+        "unknown_seconds": 35.458491,
+        "new_shared_grants": {},
+        "pinned": true,
+        "scoped": false,
+        "manually_isolated": false,
+        "evidence": "terminated"
+      },
+      {
+        "phase": "A preflight",
+        "case": 2,
+        "unknown_seconds": 84.208254,
+        "new_shared_grants": {},
+        "pinned": true,
+        "scoped": false,
+        "manually_isolated": false,
+        "evidence": "terminated"
+      }
+    ]
+  },
+  "windows": [
+    {
+      "phase": "before",
+      "number": 1,
+      "start": "2026-11-26T06:31:39.063877+00:00",
+      "end": "2026-11-26T06:32:13.185820+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 17.088747,
+          "seconds_to_any_healthy_grant": 17.088747,
+          "seconds_since_previous_healthy_grant": 2.911881,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 17,
+          "isolated_grants": 0,
+          "successful_requests": 17,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 16.673132,
+          "seconds_to_any_healthy_grant": 16.673132,
+          "seconds_since_previous_healthy_grant": 0.229021,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 2,
+      "start": "2026-11-26T06:32:40.487458+00:00",
+      "end": "2026-11-26T06:33:13.487729+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 15.721327,
+          "seconds_to_any_healthy_grant": 15.721327,
+          "seconds_since_previous_healthy_grant": 2.273484,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 18,
+          "isolated_grants": 0,
+          "successful_requests": 18,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 15.392321,
+          "seconds_to_any_healthy_grant": 15.392321,
+          "seconds_since_previous_healthy_grant": 1.015382,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 3,
+      "start": "2026-11-26T06:34:03.318186+00:00",
+      "end": "2026-11-26T06:34:33.965690+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 10.924366,
+          "seconds_to_any_healthy_grant": 10.924366,
+          "seconds_since_previous_healthy_grant": 2.059325,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 10.93098,
+          "seconds_to_any_healthy_grant": 10.93098,
+          "seconds_since_previous_healthy_grant": 1.135293,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 4,
+      "start": "2026-11-26T06:35:00.124741+00:00",
+      "end": "2026-11-26T06:35:34.346391+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 15.124296,
+          "seconds_to_any_healthy_grant": 15.124296,
+          "seconds_since_previous_healthy_grant": 0.796244,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 14.338022,
+          "seconds_to_any_healthy_grant": 14.338022,
+          "seconds_since_previous_healthy_grant": 0.886035,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 5,
+      "start": "2026-11-26T06:36:00.388909+00:00",
+      "end": "2026-11-26T06:36:34.764025+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 14.874667,
+          "seconds_to_any_healthy_grant": 14.874667,
+          "seconds_since_previous_healthy_grant": 0.114797,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 14.769181,
+          "seconds_to_any_healthy_grant": 14.769181,
+          "seconds_since_previous_healthy_grant": 0.391923,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 6,
+      "start": "2026-11-26T06:37:01.441670+00:00",
+      "end": "2026-11-26T06:37:35.092806+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 13.856842,
+          "seconds_to_any_healthy_grant": 13.856842,
+          "seconds_since_previous_healthy_grant": 3.163668,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 13.919308,
+          "seconds_to_any_healthy_grant": 13.919308,
+          "seconds_since_previous_healthy_grant": 2.420645,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 22,
+          "isolated_grants": 0,
+          "successful_requests": 22,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 7,
+      "start": "2026-11-26T06:38:03.708245+00:00",
+      "end": "2026-11-26T06:38:35.477941+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 12.569589,
+          "seconds_to_any_healthy_grant": 12.569589,
+          "seconds_since_previous_healthy_grant": 0.420687,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 12.184364,
+          "seconds_to_any_healthy_grant": 12.184364,
+          "seconds_since_previous_healthy_grant": 0.413892,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 8,
+      "start": "2026-11-26T06:39:11.574547+00:00",
+      "end": "2026-11-26T06:39:45.888757+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 13.753509,
+          "seconds_to_any_healthy_grant": 13.753509,
+          "seconds_since_previous_healthy_grant": 0.216551,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 13.493911,
+          "seconds_to_any_healthy_grant": 13.493911,
+          "seconds_since_previous_healthy_grant": 1.93827,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 22,
+          "isolated_grants": 0,
+          "successful_requests": 22,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 9,
+      "start": "2026-11-26T06:40:18.375820+00:00",
+      "end": "2026-11-26T06:40:51.221474+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 15.934277,
+          "seconds_to_any_healthy_grant": 15.934277,
+          "seconds_since_previous_healthy_grant": 0.012312,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 17,
+          "isolated_grants": 0,
+          "successful_requests": 17,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 15.919144,
+          "seconds_to_any_healthy_grant": 15.919144,
+          "seconds_since_previous_healthy_grant": 1.393646,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 10,
+      "start": "2026-11-26T06:41:19.443452+00:00",
+      "end": "2026-11-26T06:41:51.642367+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 14.872254,
+          "seconds_to_any_healthy_grant": 14.872254,
+          "seconds_since_previous_healthy_grant": 1.091932,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 18,
+          "isolated_grants": 0,
+          "successful_requests": 18,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 15.063103,
+          "seconds_to_any_healthy_grant": 15.063103,
+          "seconds_since_previous_healthy_grant": 1.718389,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 11,
+      "start": "2026-11-26T06:42:27.724029+00:00",
+      "end": "2026-11-26T06:43:02.019100+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 16.657375,
+          "seconds_to_any_healthy_grant": 16.657375,
+          "seconds_since_previous_healthy_grant": 2.200803,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 18,
+          "isolated_grants": 0,
+          "successful_requests": 18,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 16.17158,
+          "seconds_to_any_healthy_grant": 16.17158,
+          "seconds_since_previous_healthy_grant": 0.564345,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 12,
+      "start": "2026-11-26T06:43:30.138250+00:00",
+      "end": "2026-11-26T06:44:02.427561+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 14.269787,
+          "seconds_to_any_healthy_grant": 14.269787,
+          "seconds_since_previous_healthy_grant": 0.801963,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 13.937014,
+          "seconds_to_any_healthy_grant": 13.937014,
+          "seconds_since_previous_healthy_grant": 0.619212,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 13,
+      "start": "2026-11-26T06:44:29.424604+00:00",
+      "end": "2026-11-26T06:45:02.735729+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 14.923048,
+          "seconds_to_any_healthy_grant": 14.923048,
+          "seconds_since_previous_healthy_grant": 0.009145,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 15.093918,
+          "seconds_to_any_healthy_grant": 15.093918,
+          "seconds_since_previous_healthy_grant": 0.719817,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 14,
+      "start": "2026-11-26T06:45:27.541580+00:00",
+      "end": "2026-11-26T06:45:58.116983+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 11.846227,
+          "seconds_to_any_healthy_grant": 11.846227,
+          "seconds_since_previous_healthy_grant": 0.139262,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 11.012535,
+          "seconds_to_any_healthy_grant": 11.012535,
+          "seconds_since_previous_healthy_grant": 0.444441,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 15,
+      "start": "2026-11-26T06:46:27.257064+00:00",
+      "end": "2026-11-26T06:46:58.424540+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 18.146301,
+          "seconds_to_any_healthy_grant": 18.146301,
+          "seconds_since_previous_healthy_grant": 0.887268,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 14,
+          "isolated_grants": 0,
+          "successful_requests": 14,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 18.266351,
+          "seconds_to_any_healthy_grant": 18.266351,
+          "seconds_since_previous_healthy_grant": 0.124655,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 15,
+          "isolated_grants": 0,
+          "successful_requests": 15,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 16,
+      "start": "2026-11-26T06:47:29.447739+00:00",
+      "end": "2026-11-26T06:48:03.857315+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 15.99615,
+          "seconds_to_any_healthy_grant": 15.99615,
+          "seconds_since_previous_healthy_grant": 0.031295,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 19,
+          "isolated_grants": 0,
+          "successful_requests": 19,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 16.282484,
+          "seconds_to_any_healthy_grant": 16.282484,
+          "seconds_since_previous_healthy_grant": 0.002792,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 17,
+      "start": "2026-11-26T06:48:28.319980+00:00",
+      "end": "2026-11-26T06:48:59.223003+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 18.09542,
+          "seconds_to_any_healthy_grant": 18.09542,
+          "seconds_since_previous_healthy_grant": 2.929739,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 13,
+          "isolated_grants": 0,
+          "successful_requests": 13,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 17.758234,
+          "seconds_to_any_healthy_grant": 17.758234,
+          "seconds_since_previous_healthy_grant": 2.252008,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 15,
+          "isolated_grants": 0,
+          "successful_requests": 15,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 18,
+      "start": "2026-11-26T06:49:29.093146+00:00",
+      "end": "2026-11-26T06:49:59.543552+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 17.399985,
+          "seconds_to_any_healthy_grant": 17.399985,
+          "seconds_since_previous_healthy_grant": 1.606878,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 14,
+          "isolated_grants": 0,
+          "successful_requests": 14,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 17.204457,
+          "seconds_to_any_healthy_grant": 17.204457,
+          "seconds_since_previous_healthy_grant": 0.712293,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 15,
+          "isolated_grants": 0,
+          "successful_requests": 15,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 19,
+      "start": "2026-11-26T06:50:29.183423+00:00",
+      "end": "2026-11-26T06:50:59.789257+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 17.227476,
+          "seconds_to_any_healthy_grant": 17.227476,
+          "seconds_since_previous_healthy_grant": 0.770705,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 14,
+          "isolated_grants": 0,
+          "successful_requests": 14,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 17.127549,
+          "seconds_to_any_healthy_grant": 17.127549,
+          "seconds_since_previous_healthy_grant": 2.303734,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 15,
+          "isolated_grants": 0,
+          "successful_requests": 15,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "before",
+      "number": 20,
+      "start": "2026-11-26T06:51:30.882404+00:00",
+      "end": "2026-11-26T06:52:05.190337+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 16.597466,
+          "seconds_to_any_healthy_grant": 16.597466,
+          "seconds_since_previous_healthy_grant": 0.381948,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 18,
+          "isolated_grants": 0,
+          "successful_requests": 18,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 16.169392,
+          "seconds_to_any_healthy_grant": 16.169392,
+          "seconds_since_previous_healthy_grant": 0.006897,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 20,
+          "isolated_grants": 0,
+          "successful_requests": 20,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 1,
+      "start": "2026-11-26T06:52:42.830880+00:00",
+      "end": "2026-11-26T06:53:15.617241+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 10.652589,
+          "seconds_to_any_healthy_grant": 10.652589,
+          "seconds_since_previous_healthy_grant": 8.350998,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 23,
+          "isolated_grants": 0,
+          "successful_requests": 23,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 10.793252,
+          "seconds_to_any_healthy_grant": 10.793252,
+          "seconds_since_previous_healthy_grant": 1.807283,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 2,
+      "start": "2026-11-26T06:53:40.754308+00:00",
+      "end": "2026-11-26T06:54:10.992514+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.70674,
+          "seconds_to_any_healthy_grant": 9.70674,
+          "seconds_since_previous_healthy_grant": 1.251534,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 9.502226,
+          "seconds_to_any_healthy_grant": 9.502226,
+          "seconds_since_previous_healthy_grant": 0.497983,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 22,
+          "isolated_grants": 0,
+          "successful_requests": 22,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 3,
+      "start": "2026-11-26T06:54:24.190560+00:00",
+      "end": "2026-11-26T06:54:56.350375+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 8.269321,
+          "seconds_to_any_healthy_grant": 8.269321,
+          "seconds_since_previous_healthy_grant": 0.726446,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.256322,
+          "seconds_to_any_healthy_grant": 8.256322,
+          "seconds_since_previous_healthy_grant": 0.19586,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 25,
+          "isolated_grants": 0,
+          "successful_requests": 25,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 4,
+      "start": "2026-11-26T06:55:07.294190+00:00",
+      "end": "2026-11-26T06:55:41.656720+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.198825,
+          "seconds_to_any_healthy_grant": 9.198825,
+          "seconds_since_previous_healthy_grant": 3.748777,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 26,
+          "isolated_grants": 0,
+          "successful_requests": 26,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.730654,
+          "seconds_to_any_healthy_grant": 8.730654,
+          "seconds_since_previous_healthy_grant": 0.149426,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 27,
+          "isolated_grants": 0,
+          "successful_requests": 27,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 5,
+      "start": "2026-11-26T06:55:52.572595+00:00",
+      "end": "2026-11-26T06:56:26.944460+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 8.021853,
+          "seconds_to_any_healthy_grant": 8.021853,
+          "seconds_since_previous_healthy_grant": 0.058718,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 27,
+          "isolated_grants": 0,
+          "successful_requests": 27,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 7.883213,
+          "seconds_to_any_healthy_grant": 7.883213,
+          "seconds_since_previous_healthy_grant": 3.252616,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 28,
+          "isolated_grants": 0,
+          "successful_requests": 28,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 6,
+      "start": "2026-11-26T06:56:37.232202+00:00",
+      "end": "2026-11-26T06:57:17.295045+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.269996,
+          "seconds_to_any_healthy_grant": 9.269996,
+          "seconds_since_previous_healthy_grant": 2.75359,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "successful_requests": 31,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 9.276775,
+          "seconds_to_any_healthy_grant": 9.276775,
+          "seconds_since_previous_healthy_grant": 0.257789,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 33,
+          "isolated_grants": 0,
+          "successful_requests": 33,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 7,
+      "start": "2026-11-26T06:57:26.546306+00:00",
+      "end": "2026-11-26T06:57:57.563988+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.005792,
+          "seconds_to_any_healthy_grant": 0.021769,
+          "seconds_since_previous_healthy_grant": 1.054225,
+          "grants_to_inflight_dispatches": 1,
+          "healthy_grants": 22,
+          "isolated_grants": 0,
+          "successful_requests": 22,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.517852,
+          "seconds_to_any_healthy_grant": 8.517852,
+          "seconds_since_previous_healthy_grant": 3.516533,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 25,
+          "isolated_grants": 0,
+          "successful_requests": 25,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 8,
+      "start": "2026-11-26T06:58:12.939217+00:00",
+      "end": "2026-11-26T06:58:47.841761+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 8.556621,
+          "seconds_to_any_healthy_grant": 8.556621,
+          "seconds_since_previous_healthy_grant": 1.422109,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 27,
+          "isolated_grants": 0,
+          "successful_requests": 27,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.9786,
+          "seconds_to_any_healthy_grant": 8.9786,
+          "seconds_since_previous_healthy_grant": 3.210627,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 28,
+          "isolated_grants": 0,
+          "successful_requests": 28,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 9,
+      "start": "2026-11-26T06:58:59.641390+00:00",
+      "end": "2026-11-26T06:59:33.058918+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 7.860327,
+          "seconds_to_any_healthy_grant": 7.860327,
+          "seconds_since_previous_healthy_grant": 0.104818,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 26,
+          "isolated_grants": 0,
+          "successful_requests": 26,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 7.483985,
+          "seconds_to_any_healthy_grant": 7.483985,
+          "seconds_since_previous_healthy_grant": 0.437789,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 28,
+          "isolated_grants": 0,
+          "successful_requests": 28,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 10,
+      "start": "2026-11-26T06:59:45.500464+00:00",
+      "end": "2026-11-26T07:00:18.344372+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.053601,
+          "seconds_to_any_healthy_grant": 9.053601,
+          "seconds_since_previous_healthy_grant": 1.954605,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.492924,
+          "seconds_to_any_healthy_grant": 8.492924,
+          "seconds_since_previous_healthy_grant": 2.878647,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 26,
+          "isolated_grants": 0,
+          "successful_requests": 26,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 11,
+      "start": "2026-11-26T07:00:29.137200+00:00",
+      "end": "2026-11-26T07:01:03.640602+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.419907,
+          "seconds_to_any_healthy_grant": 9.419907,
+          "seconds_since_previous_healthy_grant": 1.585744,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 26,
+          "isolated_grants": 0,
+          "successful_requests": 26,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.691813,
+          "seconds_to_any_healthy_grant": 8.691813,
+          "seconds_since_previous_healthy_grant": 0.668961,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 28,
+          "isolated_grants": 0,
+          "successful_requests": 28,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 12,
+      "start": "2026-11-26T07:01:16.361539+00:00",
+      "end": "2026-11-26T07:01:48.902451+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.196104,
+          "seconds_to_any_healthy_grant": 9.196104,
+          "seconds_since_previous_healthy_grant": 0.834739,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.812408,
+          "seconds_to_any_healthy_grant": 8.812408,
+          "seconds_since_previous_healthy_grant": 0.124308,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 26,
+          "isolated_grants": 0,
+          "successful_requests": 26,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 13,
+      "start": "2026-11-26T07:02:02.239745+00:00",
+      "end": "2026-11-26T07:02:34.206412+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 8.299005,
+          "seconds_to_any_healthy_grant": 8.299005,
+          "seconds_since_previous_healthy_grant": 0.693801,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.281234,
+          "seconds_to_any_healthy_grant": 8.281234,
+          "seconds_since_previous_healthy_grant": 0.142975,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 25,
+          "isolated_grants": 0,
+          "successful_requests": 25,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 14,
+      "start": "2026-11-26T07:02:48.922192+00:00",
+      "end": "2026-11-26T07:03:19.536836+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 8.7211,
+          "seconds_to_any_healthy_grant": 8.7211,
+          "seconds_since_previous_healthy_grant": 1.359839,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 22,
+          "isolated_grants": 0,
+          "successful_requests": 22,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.621039,
+          "seconds_to_any_healthy_grant": 8.621039,
+          "seconds_since_previous_healthy_grant": 2.927591,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 15,
+      "start": "2026-11-26T07:03:30.573681+00:00",
+      "end": "2026-11-26T07:04:04.777759+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.981283,
+          "seconds_to_any_healthy_grant": 9.981283,
+          "seconds_since_previous_healthy_grant": 1.021433,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 25,
+          "isolated_grants": 0,
+          "successful_requests": 25,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 9.543433,
+          "seconds_to_any_healthy_grant": 9.543433,
+          "seconds_since_previous_healthy_grant": 0.401256,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 27,
+          "isolated_grants": 0,
+          "successful_requests": 27,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 16,
+      "start": "2026-11-26T07:04:19.768849+00:00",
+      "end": "2026-11-26T07:04:50.007526+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.843657,
+          "seconds_to_any_healthy_grant": 9.843657,
+          "seconds_since_previous_healthy_grant": 2.18762,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 21,
+          "isolated_grants": 0,
+          "successful_requests": 21,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 9.926893,
+          "seconds_to_any_healthy_grant": 9.926893,
+          "seconds_since_previous_healthy_grant": 0.124077,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 22,
+          "isolated_grants": 0,
+          "successful_requests": 22,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 17,
+      "start": "2026-11-26T07:05:03.110512+00:00",
+      "end": "2026-11-26T07:05:35.306843+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 10.540273,
+          "seconds_to_any_healthy_grant": 10.540273,
+          "seconds_since_previous_healthy_grant": 2.539215,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 22,
+          "isolated_grants": 0,
+          "successful_requests": 22,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 10.046485,
+          "seconds_to_any_healthy_grant": 10.046485,
+          "seconds_since_previous_healthy_grant": 1.030584,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 18,
+      "start": "2026-11-26T07:05:53.650569+00:00",
+      "end": "2026-11-26T07:06:25.633183+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 9.96929,
+          "seconds_to_any_healthy_grant": 9.96929,
+          "seconds_since_previous_healthy_grant": 1.062735,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 23,
+          "isolated_grants": 0,
+          "successful_requests": 23,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 9.495352,
+          "seconds_to_any_healthy_grant": 9.495352,
+          "seconds_since_previous_healthy_grant": 2.6285,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 24,
+          "isolated_grants": 0,
+          "successful_requests": 24,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 19,
+      "start": "2026-11-26T07:06:40.865046+00:00",
+      "end": "2026-11-26T07:07:15.965564+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 8.719393,
+          "seconds_to_any_healthy_grant": 8.719393,
+          "seconds_since_previous_healthy_grant": 1.274335,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 27,
+          "isolated_grants": 0,
+          "successful_requests": 27,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 9.132045,
+          "seconds_to_any_healthy_grant": 9.132045,
+          "seconds_since_previous_healthy_grant": 0.863281,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 28,
+          "isolated_grants": 0,
+          "successful_requests": 28,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    },
+    {
+      "phase": "after",
+      "number": 20,
+      "start": "2026-11-26T07:07:28.743971+00:00",
+      "end": "2026-11-26T07:08:01.323635+00:00",
+      "state": "RESOLVED",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 7.854694,
+          "seconds_to_any_healthy_grant": 7.854694,
+          "seconds_since_previous_healthy_grant": 0.07096,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 25,
+          "isolated_grants": 0,
+          "successful_requests": 25,
+          "workers": [
+            31,
+            34
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 8.037531,
+          "seconds_to_any_healthy_grant": 8.037531,
+          "seconds_since_previous_healthy_grant": 1.842153,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 26,
+          "isolated_grants": 0,
+          "successful_requests": 26,
+          "workers": [
+            31,
+            34
+          ]
+        }
+      },
+      "healthy_higress_retries": 2,
+      "isolated_higress_attempts_during_retry_probe": {
+        "total": 0,
+        "retry": 0
+      },
+      "primary_variants": 17
+    }
+  ],
+  "observer_trace": {
+    "method": "Read-only 200 ms sampling of the observer intent and the gateway evidence file. Only complete optimized windows with an initially restored four-replica route are listed.",
+    "samples": [
+      {
+        "number": 8,
+        "intent_seen_seconds": 0.145,
+        "verified_gateway_scope_seen_seconds": 1.748
+      },
+      {
+        "number": 9,
+        "intent_seen_seconds": 0.128,
+        "verified_gateway_scope_seen_seconds": 1.531
+      },
+      {
+        "number": 10,
+        "intent_seen_seconds": 0.152,
+        "verified_gateway_scope_seen_seconds": 2.155
+      },
+      {
+        "number": 11,
+        "intent_seen_seconds": 0.195,
+        "verified_gateway_scope_seen_seconds": 2.999
+      },
+      {
+        "number": 12,
+        "intent_seen_seconds": 0.053,
+        "verified_gateway_scope_seen_seconds": 2.257
+      },
+      {
+        "number": 13,
+        "intent_seen_seconds": 0.061,
+        "verified_gateway_scope_seen_seconds": 2.666
+      },
+      {
+        "number": 14,
+        "intent_seen_seconds": 0.065,
+        "verified_gateway_scope_seen_seconds": 2.47
+      },
+      {
+        "number": 15,
+        "intent_seen_seconds": 0.089,
+        "verified_gateway_scope_seen_seconds": 3.296
+      },
+      {
+        "number": 16,
+        "intent_seen_seconds": 0.183,
+        "verified_gateway_scope_seen_seconds": 2.387
+      },
+      {
+        "number": 17,
+        "intent_seen_seconds": 0.121,
+        "verified_gateway_scope_seen_seconds": 3.528
+      },
+      {
+        "number": 18,
+        "intent_seen_seconds": 0.077,
+        "verified_gateway_scope_seen_seconds": 3.484
+      },
+      {
+        "number": 19,
+        "intent_seen_seconds": 0.145,
+        "verified_gateway_scope_seen_seconds": 2.75
+      },
+      {
+        "number": 20,
+        "intent_seen_seconds": 0.156,
+        "verified_gateway_scope_seen_seconds": 1.359
+      }
+    ]
+  },
+  "final_state": {
+    "auto_enabled": [
+      "maas-ocr",
+      "maas-ocr-witness-canary"
+    ],
+    "ready_replicas": {
+      "ocr.default": 4,
+      "ocr.pp-witness-canary": 1
+    },
+    "canary_observations": {
+      "samples": 12,
+      "auto_on": true,
+      "first": "2026-11-26T06:19:51.498177+00:00",
+      "last": "2026-11-26T07:15:00.474273+00:00"
+    },
+    "temporary_test_credential_revoked_http": 401,
+    "temporary_grant_instrumentation_removed": true,
+    "temporary_test_rows_removed": true,
+    "native_temporary_usage_removed": true
+  }
+}

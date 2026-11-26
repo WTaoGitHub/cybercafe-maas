@@ -1,13 +1,60 @@
 """A native shared PP filter excludes the entire GPU including its second replica."""
 from types import SimpleNamespace
+import asyncio
+from datetime import datetime, timezone
+import json
 
+import psycopg
+from psycopg.rows import dict_row
 import pytest
 
-from maas_platform.capacity_observe import gateway_candidates
+from maas_platform.capacity_observe import gateway_candidates, write_gateway_intent
 from maas_platform.gateway_scope import route_endpoints
 
 from scripts.maas.runtime.reconcile_pp_quarantine import check_provider, filter_body, selected
 from scripts.maas.runtime.reconcile_gateway_capacity import DESTINATION, MODEL_MATCH
+from scripts.maas.runtime import pp_grant_window
+from test_integration import env
+
+
+def test_cached_withdrawal_keeps_age_and_can_only_remove_more_cards(env, tmp_path):
+    _, _, settings, *_ = env
+    path = tmp_path / 'intent.json'
+    seen = datetime.now(timezone.utc)
+    async def run():
+        async with await psycopg.AsyncConnection.connect(settings.database_url, row_factory=dict_row) as conn:
+            await conn.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,isolated_gpu_uuid)
+                VALUES ('example','test_agent_pp_demo','ocr','UNKNOWN',now(),'gpu-b')""")
+            await write_gateway_intent(conn, path, seen, {}, ['gpu-a'])
+            assert json.loads(path.read_text()) == dict(observed=seen.timestamp(), routes={}, isolated=['gpu-a', 'gpu-b'])
+            await write_gateway_intent(conn, path, seen, {})
+            assert json.loads(path.read_text())['isolated'] == ['gpu-b']
+    asyncio.run(run())
+
+
+def test_grant_window_excludes_previously_dispatched_work_and_detects_late_isolated_grants(env):
+    _, service, *_ = env
+    project = 'test_agent_pp_example'
+    with service.db.transaction() as c:
+        pp_grant_window.install(c, project)
+        for token in ('origin', 'already-dispatched', 'healthy', 'unsafe'):
+            c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline)
+                VALUES (%s,%s,'ocr','DISPATCHING',clock_timestamp())""", (token, project))
+            if token == 'origin':
+                c.execute("UPDATE sync_activity SET gpu_uuid='bad',state='UNKNOWN' WHERE token=%s", (token,))
+            else:
+                if token != 'already-dispatched':
+                    c.execute('UPDATE sync_activity SET created_at=clock_timestamp() WHERE token=%s', (token,))
+                c.execute('UPDATE sync_activity SET gpu_uuid=%s WHERE token=%s',
+                          ('bad' if token == 'unsafe' else 'good', token))
+        result = pp_grant_window.read_window(c, project, 'sync', 'origin')['traffic']
+        assert result['sync']['healthy_grants'] == 1
+        assert result['sync']['seconds_to_healthy_grant'] > 0
+        assert result['sync']['grants_to_inflight_dispatches'] == 1
+        assert 0 <= result['sync']['seconds_to_any_healthy_grant'] < result['sync']['seconds_to_healthy_grant']
+        assert result['sync']['isolated_grants'] == 2
+        assert result['async']['seconds_to_healthy_grant'] is None
+        pp_grant_window.remove(c, project)
 
 
 def test_native_targets_bind_id_address_gpu_and_quarantine_all_siblings():
