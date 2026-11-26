@@ -12,6 +12,8 @@ PP、Ovis、Unlimited 以及后续 GPU 模型共用执行守卫和宿主机见�
 4. 先只读验证原进程存在、长时间失联、原进程退出。通过后，在同一上游的全部 MaaS 目录条目配置 `"execution_guard":true,"runtime_recovery":true`。此时领取 GPU 必须有宿主签名运行身份和有效派发范围。已有活动沿用原有证据。
 5. 按公开入口制造故障，逐笔核对健康卡实际授权、原任务尝试次数、释放次数、成功计量和从 UNKNOWN 到验签结清的 P95。PP 验同步和异步，Ovis 和 Unlimited 验公开的异步入口。通用规则回归位于 `tests/bootstrap/test_worker_runtime.py` 和 `tests/maas/test_runtime_recovery.py`。
 
+持续观察沿用测试控制端的 `/usr/local/libexec/maas/observe_pp_settlement.py`。安装 `deploy/maas/systemd/maas-model-recovery-observe@.{service,timer}` 后，按逻辑模型启用实例，例如 `systemctl enable --now maas-model-recovery-observe@ocr.ovisocr3.timer`。每五分钟读取一次，分别记录同步与异步 UNKNOWN 数量、成功计量、签名不匹配数及最近 24 小时的结清 P95。每类至少 10 笔验签样本才给出 P95。
+
 实际发布从[运维手册「新增模型上线与回退」](../../docs/handbooks/OPERATIONS.md#13-新增模型上线与回退)开始。手册按顺序说明何时可复用母版、如何接入执行守卫、发布签名镜像规则、逐副本核验本机回执，以及何时开放流量或回退。下文提供适配器、目录配置与隔离测试样例。
 
 一套支持文档依赖的 MaaS API、同版本执行器和一个 PostgreSQL 任务库可以使用同一份模型目录承载图片与文档 OCR。模型在 GPUStack 部署后，优先从现有适配器中选择。输入预处理、推理协议、结果解析或计量语义有实际差异时，再为对应协议开发可复用适配器。

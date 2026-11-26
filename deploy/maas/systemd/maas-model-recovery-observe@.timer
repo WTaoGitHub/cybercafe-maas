@@ -1,0 +1,10 @@
+[Unit]
+Description=Observe MaaS model %i recovery every five minutes
+
+[Timer]
+OnActiveSec=3s
+OnUnitActiveSec=5min
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
