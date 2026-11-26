@@ -1,0 +1,549 @@
+{
+  "environment": "test",
+  "logical_model": "ocr.default",
+  "upstream_route": "maas-ocr",
+  "route_id": 1,
+  "model_id": 1,
+  "healthy_requests_while_unknown": {
+    "sync": 10,
+    "async": 16
+  },
+  "scenarios": [
+    {
+      "scenario": "worker-heartbeat-paused",
+      "isolated_worker": 32,
+      "isolated_replicas": [
+        488,
+        489
+      ],
+      "native_ingress_while_unknown": null,
+      "verified_gateway_ids": [
+        485,
+        486
+      ],
+      "primary_route_variants": 17,
+      "shared_admissible_slots": 2,
+      "a_admissible_slots": 1,
+      "seconds_to_first_verified_healthy_pool_sample": 36.152,
+      "workers_completing_by_kind": {
+        "async": [
+          31,
+          34
+        ],
+        "sync": [
+          31,
+          34
+        ]
+      },
+      "healthy_requests": [
+        {
+          "case": "sync-1",
+          "kind": "sync",
+          "worker": 34,
+          "replica": 485,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-1",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "sync-2",
+          "kind": "sync",
+          "worker": 34,
+          "replica": 485,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-2",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "sync-3",
+          "kind": "sync",
+          "worker": 34,
+          "replica": 485,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-3",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "sync-4",
+          "kind": "sync",
+          "worker": 31,
+          "replica": 486,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-4",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-5",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-6",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-7",
+          "kind": "async",
+          "worker": 31,
+          "replica": 486,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        }
+      ],
+      "explicit_retry": {
+        "client_status": 400,
+        "configured_retries": 2,
+        "diagnostic_retryable_status": 400,
+        "per_replica_counter_deltas": {
+          "489": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          },
+          "488": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          },
+          "485": {
+            "upstream_rq_total": 3,
+            "upstream_rq_retry": 2
+          },
+          "486": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          }
+        },
+        "original_state": "UNKNOWN",
+        "original_termination_proof": false
+      },
+      "original": {
+        "state": "RESOLVED",
+        "verified": true,
+        "original_unknown_since": "2026-11-26 05:56:15.801457+00:00",
+        "at": "2026-11-26 05:57:20.599913+00:00",
+        "seconds": 64.798456,
+        "business": "FAILED",
+        "attempts": 1,
+        "billed": 0
+      }
+    },
+    {
+      "scenario": "termination-proof-delayed-two-replicas",
+      "isolated_worker": 32,
+      "isolated_replicas": [
+        488,
+        489
+      ],
+      "native_ingress_while_unknown": [
+        485,
+        486,
+        488,
+        489
+      ],
+      "verified_gateway_ids": [
+        485,
+        486
+      ],
+      "primary_route_variants": 17,
+      "shared_admissible_slots": 2,
+      "a_admissible_slots": 1,
+      "seconds_to_first_verified_healthy_pool_sample": 16.589,
+      "workers_completing_by_kind": {
+        "async": [
+          31,
+          34
+        ],
+        "sync": [
+          31,
+          34
+        ]
+      },
+      "healthy_requests": [
+        {
+          "case": "sync-1",
+          "kind": "sync",
+          "worker": 34,
+          "replica": 485,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-1",
+          "kind": "async",
+          "worker": 31,
+          "replica": 486,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "sync-2",
+          "kind": "sync",
+          "worker": 31,
+          "replica": 486,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-2",
+          "kind": "async",
+          "worker": 31,
+          "replica": 486,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-3",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        }
+      ],
+      "explicit_retry": {
+        "client_status": 400,
+        "configured_retries": 2,
+        "diagnostic_retryable_status": 400,
+        "per_replica_counter_deltas": {
+          "485": {
+            "upstream_rq_total": 3,
+            "upstream_rq_retry": 2
+          },
+          "488": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          },
+          "486": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          },
+          "489": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          }
+        },
+        "original_state": "UNKNOWN",
+        "original_termination_proof": false
+      },
+      "original": {
+        "state": "RESOLVED",
+        "verified": true,
+        "original_unknown_since": "2026-11-26 06:02:00.157966+00:00",
+        "at": "2026-11-26 06:02:33.093712+00:00",
+        "seconds": 32.935746,
+        "business": "FAILED",
+        "attempts": 1,
+        "billed": 0
+      }
+    },
+    {
+      "scenario": "termination-proof-delayed-one-replica",
+      "isolated_worker": 31,
+      "isolated_replicas": [
+        486
+      ],
+      "native_ingress_while_unknown": [
+        485,
+        486,
+        488,
+        489
+      ],
+      "verified_gateway_ids": [
+        485,
+        488,
+        489
+      ],
+      "primary_route_variants": 17,
+      "shared_admissible_slots": 3,
+      "a_admissible_slots": 1,
+      "seconds_to_first_verified_healthy_pool_sample": 12.128,
+      "workers_completing_by_kind": {
+        "async": [
+          32,
+          34
+        ],
+        "sync": [
+          32,
+          34
+        ]
+      },
+      "healthy_requests": [
+        {
+          "case": "sync-1",
+          "kind": "sync",
+          "worker": 34,
+          "replica": 485,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-1",
+          "kind": "async",
+          "worker": 32,
+          "replica": 488,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "sync-2",
+          "kind": "sync",
+          "worker": 34,
+          "replica": 485,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-2",
+          "kind": "async",
+          "worker": 32,
+          "replica": 489,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "sync-3",
+          "kind": "sync",
+          "worker": 32,
+          "replica": 489,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-3",
+          "kind": "async",
+          "worker": 32,
+          "replica": 489,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "sync-4",
+          "kind": "sync",
+          "worker": 32,
+          "replica": 488,
+          "http": 200,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-4",
+          "kind": "async",
+          "worker": 32,
+          "replica": 489,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-5",
+          "kind": "async",
+          "worker": 32,
+          "replica": 489,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        },
+        {
+          "case": "async-6",
+          "kind": "async",
+          "worker": 34,
+          "replica": 485,
+          "http": 202,
+          "finished": true,
+          "billed": 1,
+          "pending_before_and_after": true
+        }
+      ],
+      "explicit_retry": {
+        "client_status": 400,
+        "configured_retries": 2,
+        "diagnostic_retryable_status": 400,
+        "per_replica_counter_deltas": {
+          "486": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          },
+          "488": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          },
+          "489": {
+            "upstream_rq_total": 3,
+            "upstream_rq_retry": 2
+          },
+          "485": {
+            "upstream_rq_total": 0,
+            "upstream_rq_retry": 0
+          }
+        },
+        "original_state": "UNKNOWN",
+        "original_termination_proof": false
+      },
+      "original": {
+        "state": "RESOLVED",
+        "verified": true,
+        "original_unknown_since": "2026-11-26 06:04:06.030174+00:00",
+        "at": "2026-11-26 06:04:37.757348+00:00",
+        "seconds": 31.727174,
+        "business": "FAILED",
+        "attempts": 1,
+        "billed": 0
+      }
+    }
+  ],
+  "fallback": {
+    "status": 503,
+    "paths": 1,
+    "upstream_requests": 0,
+    "unknown_during_probe": true,
+    "authenticated": true,
+    "scope": "temporary exact-host/path fallback ingress",
+    "native_fallback_normally_enabled": false
+  },
+  "final": {
+    "hosts": {
+      "31": {
+        "running_pp": 1,
+        "manager_running": true,
+        "watchdog_or_fault_rule": false,
+        "witness": "active"
+      },
+      "32": {
+        "running_pp": 2,
+        "manager_running": true,
+        "watchdog_or_fault_rule": false,
+        "witness": "active"
+      },
+      "34": {
+        "running_pp": 2,
+        "manager_running": true,
+        "watchdog_or_fault_rule": false,
+        "witness": "active"
+      }
+    },
+    "configuration": {
+      "allow": [
+        "maas-ocr",
+        "maas-ocr-witness-canary"
+      ],
+      "a_test_scope": true,
+      "controller_restart_policy": "unless-stopped",
+      "scope_publisher_fresh": true,
+      "temporary_credential_removed": true,
+      "a_sampler": {
+        "samples": 3,
+        "all_auto": true,
+        "active": "active",
+        "enabled": "enabled",
+        "failures": 0,
+        "proof_mismatches": 0
+      }
+    },
+    "shared_slots": 4,
+    "a_slots": 1,
+    "restored_native_ids": [
+      485,
+      486,
+      488,
+      489
+    ],
+    "primary_route_variants": 17,
+    "native_fallback_ingresses": 0,
+    "fixture_absent": true,
+    "test_project_key_response": 401
+  },
+  "cleanup": {
+    "tasks_removed": 22,
+    "sync_removed": 10,
+    "artifacts_removed": 41,
+    "successful_receipts_removed": 29,
+    "failed_originals": 3,
+    "remaining_test_slots": 0,
+    "legacy_unknown": 1
+  },
+  "regression_tests_passed": 92,
+  "method": "Authenticated shared MaaS OCR through Higress. All real peer requests were bracketed by reads of the same unresolved original without a terminal proof. One diagnostic request per scenario requested retry on a documented HTTP 400 before GPU start. Counters cover first dispatch and both native retries. The exact-host fallback fixture exercised the local refusal without enabling cross-model inference.",
+  "fixture_lifecycle": "The native controller removed an initial fallback fixture when reconciling its normally disabled fallback. It was recreated after native convergence and the authenticated 503 with zero upstream requests was measured while the third original remained UNKNOWN.",
+  "measured_seconds": "Observation timestamps include polling and native/guard stabilization. They are not a dispatch latency SLA."
+}

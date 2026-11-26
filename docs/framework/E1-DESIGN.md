@@ -192,6 +192,14 @@ python3 scripts/maas/runtime/summarize_runtime_recovery.py results/maas-e1-share
 
 [逐笔脱敏样本](../../results/maas-e1-shared-pp-auto-20261126/samples.jsonl) · [验收与容量观测](../../results/maas-e1-shared-pp-auto-20261126/acceptance.json) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
+### 测试环境共享 PP 的 GPU 撤路验收（2026-11-26）
+
+共享 PP 开启按 GPU 撤路，A 和共享 PP 的签名自动结清持续开启。容量观察器从原始就绪副本及执行账本产生可选目标，Higress 协调器据此收窄共享路由。MaaS 核对实际路由和每个可达进程的守卫后，允许健康卡接单。终止证明送达并结清原活动后，恢复符合条件的目标。
+
+三轮实机故障分别覆盖 worker 心跳中断、worker 32 的两个共享副本仍在原生路由，以及 worker 31 的一个共享副本仍在原生路由。后两轮仅延迟受信宿主机回传终止证明，GPUStack 保持四个原生目标。隔离 32 时，共享路由的 17 条主路径均只到 31 和 34。隔离 31 时，17 条主路径均只到 32 和 34。每轮两张健康卡分别完成了同步和异步 OCR。26 笔请求逐笔核对了实际 GPU 授权、结束回执和一份成功计量，期间原活动均为无终止证明的 `UNKNOWN`。
+
+每轮另发一笔诊断请求，仅对该请求把输入校验的 400 列为可重试。Higress 的原生集群计数每轮均为 1 次首次派发加 2 次重试，隔离卡为零。正常共享路由的跨模型回退关闭。用临时专用主机名和精确路径激活同名回退入口，已认证请求由 Higress 本地返回 503，各模型集群计数增量为零。首次观测到健康共享池的时间距进入 `UNKNOWN` 约 12 至 36 秒，包含观察周期和拓扑收敛。三笔原任务最后均凭签名证明结清，业务状态保持失败，各尝试一次、无成功计量。收尾时共享 PP 4/4，A 1/1。[实机样本与重试计数](../../results/maas-e1-shared-pp-gpu-exclusion-20261126/acceptance.json) · [部署与回退](../../deploy/maas/INFERENCE-QUARANTINE.md#共享-pp-路由按-gpu-撤出和恢复) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
 ## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：

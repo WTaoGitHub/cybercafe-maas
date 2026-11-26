@@ -120,6 +120,28 @@ async def read_snapshot(client):
             await asyncio.gather(*reads, return_exceptions=True)
 
 
+def gateway_candidates(policy, names, native, candidates):
+    # Compute before gateway/guard verification: an isolated, paused process
+    # cannot answer a challenge and must not prevent discovery of its peers.
+    workers, models, instances, routes, _ = native
+    result = {}
+    for key, pool in policy.pools.items():
+        if not pool.guard_backend_version:
+            continue
+        model = models.get(pool.model_id, {})
+        for route_id in pool.routes.values():
+            peers = {}
+            if model.get('backend_version') == pool.guard_backend_version and not (
+                    model.get('generic_proxy') or routes.get(route_id, {}).get('generic_proxy')):
+                for ident, (worker_id, gpu, *_) in candidates[key].items():
+                    instance = instances[ident]
+                    if (instance.get('backend_version') == pool.guard_backend_version
+                            and instance.get('worker_ip') == workers[worker_id].get('ip')):
+                        peers[str(ident)] = [instance['worker_ip'], instance['port'], gpu]
+            result[str(route_id)] = dict(model=pool.model_id, name=names[route_id], peers=peers)
+    return result
+
+
 async def observe(settings, path, stop, report):
     policy = Policy.model_validate_json(private_text(path))
     token = private_text(Path(os.environ['MAAS_CAPACITY_GPUSTACK_KEY_FILE']))
@@ -161,12 +183,27 @@ async def sample(client, conn, catalog_file, source, policy, changed, stop, repo
             observed = (await cursor.fetchone())['observed_at']
             native = await read_snapshot(client)
             candidates, reasons = ready_candidates(policy, names, *native)
+            intent_path = os.getenv('MAAS_PP_GATEWAY_INTENT_FILE')
+            if intent_path:
+                route_candidates = gateway_candidates(policy, names, native, candidates)
             proofs = await verify_processes(policy, names, native, candidates, reasons, guard_keys,
                                             os.getenv('MAAS_GATEWAY_SCOPE_FILE'))
             # The native lists and catalog are not a transactional snapshot.
             if changed.is_set() or names != catalog_routes(policy, json.loads(catalog_file.read_text())):
                 raise ValueError('Bindings or topology changed during capacity observation')
             budget = capacity.update(observed.timestamp(), candidates, reasons, proofs)
+            if intent_path:
+                cursor = await conn.execute('SELECT DISTINCT isolated_gpu_uuid FROM inference_slots '
+                                            'WHERE isolated_gpu_uuid IS NOT NULL')
+                intent = dict(observed=observed.timestamp(), routes=route_candidates,
+                              isolated=[r['isolated_gpu_uuid'] for r in await cursor.fetchall()])
+                path = Path(intent_path)
+                try:
+                    draft = path.with_suffix('.new')
+                    draft.write_text(json.dumps(intent))
+                    draft.replace(path)
+                except OSError:
+                    LOG.error('pp_gateway_intent_write_failed')
         except (httpx.HTTPError, TimeoutError, OSError, ValueError, KeyError, TypeError, AttributeError):
             if last_hash is not None:
                 capacity.interrupted()

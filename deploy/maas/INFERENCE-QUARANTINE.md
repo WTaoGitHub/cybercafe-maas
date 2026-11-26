@@ -118,3 +118,21 @@ Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模
 测试控制端用 systemd 每五分钟在现有 API 容器中运行一次只读采样。安装时，将仓库的 [采样脚本](../../scripts/maas/runtime/observe_pp_settlement.py) 放在 `/usr/local/libexec/maas/observe_pp_settlement.py`，将 [service](systemd/maas-pp-canary-observe.service) 和 [timer](systemd/maas-pp-canary-observe.timer) 放在 `/etc/systemd/system/`，执行 `systemctl daemon-reload` 和 `systemctl enable --now maas-pp-canary-observe.timer`。日志可用 `journalctl -u maas-pp-canary-observe.service --since '24 hours ago' -o cat` 查看。单独停采使用 `systemctl disable --now maas-pp-canary-observe.timer`。
 
 每条 JSON 记录包含 A 的自动结清开关、全局维护暂停标记、容量快照中的就绪并发位，以及同步和异步各自的未决笔数、最老未决时长和已持续至少 15 分钟的笔数。滚动 24 小时统计以采样时仍保留的账本为准，包括派发、新增 `UNKNOWN`、自动结清、终止签名与原活动不匹配的笔数，以及故障结清后关联了成功计量的笔数。后两项出现非零值时应核对原活动。每类至少有 10 笔通过验签的结清记录才发布 `signed_p95_seconds`。它从进入 `UNKNOWN` 算到结清，包含 worker 失联的时间。就绪并发位为 `null` 表示没有可用的新鲜快照。采样验签及 P95 的本地回归命令为 `python -m pytest -q tests/maas/test_pp_settlement_observation.py`。
+
+### 共享 PP 路由按 GPU 撤出和恢复
+
+容量观察器可通过 `MAAS_PP_GATEWAY_INTENT_FILE` 发布守卫模型的候选副本。它沿用已有模型版本、GPU 身份、就绪状态和同卡显存校验，并从 PostgreSQL 的 `inference_slots` 读取正在隔离的 GPU。文件通过同目录替换发布。将文件所在的专用目录只读挂载给网关协调器，两个进程使用具有相应文件权限的 UID。
+
+在内置 Higress 的网络命名空间中，用 GPUStack 镜像自带的 Kubernetes 客户端运行以下模块。镜像或只读挂载需包含仓库的 `scripts/maas/runtime/reconcile_pp_quarantine.py` 和 `reconcile_gateway_capacity.py`。路由 ID、模型 ID 和名称取自目标环境，以下为共享 PP 的测试配置。
+
+```sh
+python -B -m scripts.maas.runtime.reconcile_pp_quarantine \
+  --route-id 1 --model-id 1 --model-name maas-ocr \
+  --intent /run/maas-pp-routing/intent.json --kubeconfig /run/pp-kubeconfig
+```
+
+协调器只维护所选路由的 `maas-pp-quarantine-<route-id>` EnvoyFilter。它逐项核对原生 ingress 的正权重、服务注册表地址和候选副本，把隔离 GPU 上的全部副本移出。剩余原生单端点集群保留相对权重和已有重试设置。当前守卫池只允许一个原生模型，出现独立回退入口时返回本地 503。AI 代理出现未经支持的重派策略、候选文件超过 30 秒或没有合格副本时，同样关闭上游派发。协调器中断时保留最近一次过滤规则。MaaS 继续独立读回 Envoy 生效配置和端点，并要求剩余进程通过签名挑战。
+
+部署时先更新容量观察器及网关证据读取器，确认候选文件持续刷新，再启动协调器。核对主路由所有路径、隔离卡的同卡副本及实际重试计数。结清后应重新观察到原生路由和健康容量恢复。回退时停止协调器，核对自有过滤器的标签和 UID 后删除该资源，确认 Envoy 已恢复原生目标并撤下候选文件输出。A 与共享 PP 的自动结清白名单独立于这个过滤器。
+
+本地回归可运行 `python -m pytest -q tests/maas/test_pp_route_quarantine.py tests/maas/test_gateway_scope.py tests/maas/test_gateway_capacity.py`。测试覆盖同卡多个副本、零权重、注册表与端口变化、候选过期、回退和 AI 代理重派。[实机验收记录](../../results/maas-e1-shared-pp-gpu-exclusion-20261126/acceptance.json)

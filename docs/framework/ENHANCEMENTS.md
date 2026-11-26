@@ -217,7 +217,7 @@ XZ-31-001与XZ-31-002现在和以后均禁止操作系统/VM级重启及等效�
 
 ### 长期 UNKNOWN 主动核查与结清
 
-MaaS 对长时间未结清的执行活动，按原 token 和获权进程主动查证。有原始结束回执时沿用完成对账。回执缺失但能证明原执行的全部运行范围已终止时，结清后台活动并归还额度。证据不足时继续隔离已知落点，让可安全绕行的健康副本接单。2026-11-26，测试环境 A 专用 PP 路由已通过长失联和同步、异步批量验收，持续自动结清。三台测试 GPU 上的四个共享 PP 副本均已通过原进程存活及签名终止的只读验收。共享路由现已在测试环境开启自动结清，20 笔实机请求均只释放一次并发。同步 P95 为 37.10 秒，异步为 33.87 秒。Higress 仍可到达隔离 GPU 时，共享入口有暂时无法派发的实测记录。[共享自动结清结果](../../results/maas-e1-shared-pp-auto-20261126/acceptance.json) · [方案与验收条件](E1-DESIGN.md#长期-unknown-主动核查与结清) · [共享副本实测](../../results/maas-e1-shared-pp-readonly-20261126/acceptance.json) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+MaaS 对长时间未结清的执行活动，按原 token 和获权进程主动查证。有原始结束回执时沿用完成对账。回执缺失但能证明原执行的全部运行范围已终止时，结清后台活动并归还额度。证据不足时继续隔离已知落点，让可安全绕行的健康副本接单。2026-11-26，测试环境 A 专用 PP 路由已通过长失联和同步、异步批量验收，持续自动结清。三台测试 GPU 上的四个共享 PP 副本均已通过原进程存活及签名终止的只读验收。共享路由现已在测试环境开启自动结清，20 笔实机请求均只释放一次并发。同步 P95 为 37.10 秒，异步为 33.87 秒。后续测试环境已启用按 GPU 撤路。在原终止证明尚未送达时，两张健康卡均能完成同步、异步请求，隔离卡的首次派发和重试均为零，回退入口本地拒绝。[共享撤路实测](../../results/maas-e1-shared-pp-gpu-exclusion-20261126/acceptance.json) · [共享自动结清结果](../../results/maas-e1-shared-pp-auto-20261126/acceptance.json) · [方案与验收条件](E1-DESIGN.md#长期-unknown-主动核查与结清) · [共享副本实测](../../results/maas-e1-shared-pp-readonly-20261126/acceptance.json) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
 ### 依赖与边界
 

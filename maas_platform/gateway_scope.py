@@ -7,7 +7,7 @@ import re
 import time
 from urllib.request import ProxyHandler, build_opener
 
-ROUTE = re.compile(r'ai-route-route-(\d+)\.internal')
+ROUTE = re.compile(r'ai-route-route-(\d+)(\.fallback)?\.internal')
 CLUSTER = re.compile(r'outbound\|80\|\|model-(\d+)-(\d+)\.static')
 
 
@@ -27,10 +27,17 @@ def route_endpoints(configs, clusters):
                 if result.get(key) == {}:
                     continue
                 try:
+                    if match[2]:
+                        # Native cross-model fallback is outside the guarded PP contract.
+                        # A local refusal has no upstream destination.
+                        if route.get('direct_response', {}).get('status') != 503 or 'route' in route:
+                            raise ValueError
+                        continue
                     action = route['route']
                     if (action.get('request_mirror_policies') or host.get('request_mirror_policies')
                             or 'internal_redirect_policy' in action or 'internal_redirect_action' in action
-                            or route.get('typed_per_filter_config')
+                            or route.get('typed_per_filter_config') or action.get('retry_policy_typed_config')
+                            or host.get('retry_policy_typed_config')
                             or 'cluster_header' in action or 'cluster_specifier_plugin' in action):
                         raise ValueError
                     if 'cluster' in action:
