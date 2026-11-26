@@ -159,3 +159,27 @@ python -m scripts.maas.runtime.pp_grant_window remove "$TEST_PROJECT"
 迁移 `020_pinned_gpu_quarantine.sql` 支持 A 与共享 PP 位于同一物理卡的情形。固定路由上的原请求进入 UNKNOWN 时，数据库核对派发 GPU、获得授权的 GPU 和进程，以及宿主机签名登记的原路由和运行身份。记录相符、执行守卫生效且无冲突时，把该卡写入原活动的隔离记录。观察器随后撤下共享入口的同卡副本。已有 UNKNOWN 使用相同条件重新核对，保留首次进入 UNKNOWN 的时间和人工隔离证据。同一卡所有相关活动都结清后，网关和容量观察器重新验证副本。缺少独占落点证据时继续保守阻断。
 
 2026-11-26 在 worker 34 的 A 专用路由上制造了同步、异步各 10 次进程退出。每次都暂缓宿主机回传终止证明，直到共享入口的两类请求在健康卡获得 GPU 授权。20 个窗口中，首次新授权的 P95 / 最大值为同步 5.32 / 5.34 秒、异步 4.56 / 4.62 秒。窗口内获得授权并最终成功的请求有同步 601 笔、异步 632 笔。隔离卡新增授权为零，40 次实测网关重试都落在健康副本。现场未配置活跃回退上游。恢复证明后 20 笔原请求全部通过验签结清，成功计量为零。另在共享路由隔离 worker 32 做了一次对照，worker 31、34 在原任务结清前均获得授权。修复前的两次 A 故障在整个 UNKNOWN 期间都未取得健康卡新授权，无法计算修复前的 P95。[逐笔结果与采样口径](../../results/maas-e1-pinned-pp-isolation-20261126/acceptance.json)
+
+### 同卡 Linux 启动交接观察
+
+给独立测试集群的 MaaS API 设置 `MAAS_BOOT_OBSERVE_CLUSTER` 后，控制端可记录已确认的启动会话，以及因同卡重启而具备结清证据的执行。这个阶段只写观察记录。原回执和原进程证明继续按原有策略处理。
+
+先在 GPUStack PostgreSQL 安装 `scripts/maas/runtime/boot_observe_native.sql`，在任务库运行迁移 022。控制端安装 `observe_boot_sessions.py`、`maas-boot-observe.service` 和同名 timer，在 `/etc/maas/boot-observe.env` 中设置目标集群和本机私有的 `MAAS_BOOT_APPROVAL_ROOT`。启用 timer 后，使用 `journalctl -u maas-boot-observe.service -o cat` 查看注册和候选计数。worker 需要能处理 `boot_check` 的宿主机 witness。它通过原私有 HTTPS 回调签署一次性挑战，未部署模型时也能作答。
+
+原生注册提交时记录顺序号。控制端用当前唯一注册的集群、卡、worker 和会话匹配 Bootstrap 已发许可、该启动的密钥承诺和见证签名，在收件后再次核对当前原生注册。首次确认建立基线。同一启动重新注册保留代次，已替代的启动不能重新推进代次。获权时只有可信启动匹配才在该笔执行上记会话。未登记启动密钥的老 worker、上线前的既有授权，以及不同 GPU 上的新启动都不足以产生候选。
+
+以下查询可用于三台新 worker 到达时逐笔核对。序号和签名存于同一条启动历史，`boot_unknown_candidates` 保留曾观察到的候选，`current_boot_unknown_candidates` 只显示仍未结清的候选。
+
+```sql
+SELECT cluster_id, gpu_uuid, generation, boot_id, worker_id, session_id, confirmed_at
+FROM boot_session_history ORDER BY cluster_id, gpu_uuid, seq;
+
+SELECT c.kind, c.token, c.gpu_uuid, o.boot_id AS old_boot, n.boot_id AS new_boot,
+       c.unknown_since, c.observed_at
+FROM boot_unknown_candidates c
+JOIN boot_session_history o ON (o.cluster_id,o.gpu_uuid,o.seq)=(c.cluster_id,c.gpu_uuid,c.old_seq)
+JOIN boot_session_history n ON (n.cluster_id,n.gpu_uuid,n.seq)=(c.cluster_id,c.gpu_uuid,c.new_seq)
+ORDER BY c.observed_at;
+```
+
+可在独立的 `*_test` PostgreSQL 设置 `MAAS_TEST_DATABASE_URL`，运行 `python -m pytest -q tests/maas/test_boot_observation.py`。用例会重建测试库的 public schema，覆盖原生注册提交、重复签名、并发观察、两种超时顺序和控制进程在提交前退出。[E1 跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)

@@ -1,0 +1,10 @@
+[Unit]
+Description=Reconcile GPU boot observations
+
+[Timer]
+OnActiveSec=2s
+OnUnitInactiveSec=10s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

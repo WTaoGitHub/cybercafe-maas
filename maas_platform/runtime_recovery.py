@@ -8,6 +8,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, StringConstraints
 from psycopg.types.json import Jsonb
 
+from . import boot_observation
 from .errors import ServiceError
 from .runtime_proof import GPU, HEX, signature, valid_identity
 
@@ -38,6 +39,15 @@ class HostReport(BaseModel):
     instance: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{32}$')]
     nonce: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
     outcome: Literal['present', 'unconfirmed', 'terminated']
+    signature: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
+
+
+class BootReport(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    operation: Literal['boot_observation']
+    boot_id: BootID
+    gpu_uuid: Annotated[str, StringConstraints(pattern=f"^{GPU.pattern}$")]
+    nonce: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
     signature: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
 
 
@@ -217,7 +227,17 @@ def handle_host(db, settings, value, authorization):
     key = host_key(settings, value.gpu_uuid, value.boot_id)
     if key is None or not authorization.isascii() or not hmac.compare_digest(authorization, 'Bearer '+key):
         raise ServiceError('RUNTIME_PROOF_DENIED', 'Host credential rejected', 403)
+    cluster = settings.boot_observe_cluster
+    if isinstance(value, BootReport):
+        if not cluster:
+            raise ServiceError('BOOT_OBSERVATION_DISABLED', 'Boot observation is disabled', 404)
+        return boot_observation.receive(db, cluster, value, key)
     if isinstance(value, HostPoll):
         apply_verified(db, settings, value.gpu_uuid, value.boot_id)
-        return poll(db, value.gpu_uuid, value.reconnected, value.boot_id)
+        response = poll(db, value.gpu_uuid, value.reconnected, value.boot_id)
+        if cluster and value.boot_id:
+            check = boot_observation.challenge(db, cluster, value.gpu_uuid, value.boot_id)
+            if check:
+                response['boot_check'] = check
+        return response
     report(db, value, key, settings.automatic_runtime_routes())

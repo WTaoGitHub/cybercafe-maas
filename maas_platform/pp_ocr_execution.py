@@ -8,10 +8,11 @@ from fastapi import APIRouter, Header, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, StringConstraints
 
+from .boot_observation import grant_session
 from .errors import ServiceError
 from .quarantine import blocks, unresolved
 from .runtime_proof import AUTHORITY_PATH
-from .runtime_recovery import Binding, HostPoll, HostReport, check_binding, handle_host, register
+from .runtime_recovery import Binding, BootReport, HostPoll, HostReport, check_binding, handle_host, register
 
 PATH = AUTHORITY_PATH
 ATTEMPT_HEADER = 'X-MaaS-Execution-Attempt'
@@ -65,7 +66,7 @@ def router(db, settings):
     routes = APIRouter()
 
     @routes.post(PATH, include_in_schema=False, status_code=204)
-    def event(body: GPUEvent | HostPoll | HostReport, authorization: str = Header(default='')):
+    def event(body: GPUEvent | HostPoll | HostReport | BootReport, authorization: str = Header(default='')):
         from .config import private_text
 
         if not isinstance(body, GPUEvent):
@@ -118,8 +119,10 @@ def router(db, settings):
                     if body.route in settings.required_runtime_routes() and not (fenced and identity):
                         raise ServiceError('EXECUTION_NOT_GRANTED', 'The original host runtime must be verified', 409)
                     runtime = register(conn, body, identity) if fenced and identity else None
-                    conn.execute(f'UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s,runtime_instance=%s WHERE token=%s',
-                                 (body.gpu_uuid, body.instance, runtime, token))
+                    session = grant_session(conn, settings.boot_observe_cluster, body.gpu_uuid,
+                                            identity[1] if runtime else None)
+                    conn.execute(f'''UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s,runtime_instance=%s,
+                         boot_observation_session=%s WHERE token=%s''',(body.gpu_uuid,body.instance,runtime,session,token))
                     return Response(status_code=204)
         raise ServiceError('EXECUTION_NOT_GRANTED', 'Attempt unavailable or already claimed', 409)
 

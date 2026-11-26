@@ -162,6 +162,15 @@ def answer(opener, origin, key, gpu, routes, *, reconnected=False, boot=None):
     scope = {'boot_id': boot} if boot is not None else {}
     offer = exchange(opener, origin, key, {**scope, 'operation': 'runtime_poll', 'gpu_uuid': gpu,
                                           'reconnected': reconnected})
+    check = offer.get('boot_check')
+    if (boot and isinstance(check, dict) and set(check) == {'cluster_id','gpu_uuid','worker_id','session_id','boot_id','nonce'}
+            and check['gpu_uuid'] == gpu and check['boot_id'] == boot == BOOT.read_text().strip()
+            and isinstance(check['nonce'], str) and HEX.fullmatch(check['nonce'])):
+        try:
+            exchange(opener, origin, key, {**scope, 'operation':'boot_observation','gpu_uuid':gpu,
+                     'nonce':check['nonce'],'signature':signature(key,'boot-observe',check)})
+        except (HTTPError, URLError, TimeoutError):
+            pass  # A later poll retries; existing process checks still run.
     if not isinstance(offer['checks'], list) or len(offer['checks']) > 4:
         raise ValueError('Invalid challenge batch')
     for check in offer['checks']:

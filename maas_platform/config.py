@@ -46,10 +46,16 @@ class Settings:
     runtime_proof_apply_routes: frozenset[str] = frozenset()
     retry_unstarted_models: frozenset[str] = frozenset()
 
+    boot_observe_cluster: int | None = None
+
     @classmethod
     def from_env(cls):
         values = {'retry_unstarted_models': frozenset(name.strip() for name in
                   os.getenv('MAAS_RETRY_UNSTARTED_MODELS', '').split(',') if name.strip())}
+        if cluster := os.getenv('MAAS_BOOT_OBSERVE_CLUSTER'):
+            if not cluster.isascii() or not cluster.isdecimal() or int(cluster) < 1:
+                raise ValueError('MAAS_BOOT_OBSERVE_CLUSTER must be a positive cluster ID')
+            values['boot_observe_cluster'] = int(cluster)
         recovery = os.getenv('MAAS_REQUIRE_MODEL_RECOVERY', '0')
         if recovery not in ('0', '1'):
             raise ValueError('MAAS_REQUIRE_MODEL_RECOVERY must be 0 or 1')
