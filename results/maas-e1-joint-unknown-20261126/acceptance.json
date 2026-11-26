@@ -1,0 +1,129 @@
+{
+  "environment": "test",
+  "workers": [
+    31,
+    32,
+    34
+  ],
+  "automatic_settlement_routes": [
+    "maas-ocr",
+    "maas-ocr-witness-canary"
+  ],
+  "dual_evidence": [
+    {
+      "order": "receipt_first",
+      "without_proof": "UNKNOWN",
+      "held_slots": 1,
+      "first_terminal": "COMPLETED",
+      "post_proofs": "COMPLETED",
+      "release_transitions": 1,
+      "charged_after": 0,
+      "both_signatures_verified": true,
+      "duplicate_host_http": 409,
+      "duplicate_receipt_acknowledged": true,
+      "same_state_and_timestamps_after_duplicates": true,
+      "client_state": "FAILED",
+      "attempts": 1,
+      "success_usage": 0,
+      "ocr_usage": 0,
+      "seconds_to_first_settlement": 31.7528
+    },
+    {
+      "order": "host_first",
+      "without_proof": "UNKNOWN",
+      "held_slots": 1,
+      "first_terminal": "RESOLVED",
+      "post_proofs": "RESOLVED",
+      "release_transitions": 1,
+      "charged_after": 0,
+      "both_signatures_verified": true,
+      "duplicate_host_http": 409,
+      "duplicate_receipt_acknowledged": true,
+      "same_state_and_timestamps_after_duplicates": true,
+      "client_state": "FAILED",
+      "attempts": 1,
+      "success_usage": 0,
+      "ocr_usage": 0,
+      "seconds_to_first_settlement": 31.1451
+    }
+  ],
+  "successful_async_tasks": [
+    {
+      "model": "ocr.default",
+      "customer_state": "SUCCEEDED",
+      "attempts": 1,
+      "confirmed_gpu_finish": true,
+      "task_usage": 1,
+      "ocr_usage": 1,
+      "result_http": 200,
+      "fixture_text_recognized": true,
+      "worker": 32
+    },
+    {
+      "model": "ocr.ovisocr3",
+      "customer_state": "SUCCEEDED",
+      "attempts": 1,
+      "confirmed_gpu_finish": true,
+      "task_usage": 1,
+      "ocr_usage": 1,
+      "result_http": 200,
+      "fixture_text_recognized": true,
+      "worker": 34
+    },
+    {
+      "model": "document.unlimited-ocr-2",
+      "customer_state": "SUCCEEDED",
+      "attempts": 1,
+      "confirmed_gpu_finish": true,
+      "task_usage": 1,
+      "ocr_usage": 1,
+      "result_http": 200,
+      "fixture_text_recognized": true,
+      "worker": 31
+    }
+  ],
+  "signature_settlement": {
+    "route": "maas-ocr-witness-canary",
+    "worker": 34,
+    "unit": "seconds",
+    "measurement": "Database commitment from original UNKNOWN timestamp to RESOLVED by verified host signature. Direct witness reporting and ordinary polling. Nearest-rank P95. Each case starts only after the previous case has regained full readiness.",
+    "by_kind": {
+      "sync": {
+        "samples": 10,
+        "min_seconds": 30.079281,
+        "median_seconds": 33.879,
+        "p95_seconds": 35.129765,
+        "max_seconds": 35.129765
+      },
+      "async": {
+        "samples": 10,
+        "min_seconds": 30.323933,
+        "median_seconds": 33.401,
+        "p95_seconds": 35.012624,
+        "max_seconds": 35.012624
+      }
+    },
+    "p95_target_seconds": 60,
+    "both_within_target": true
+  },
+  "local_database_tests": 51,
+  "cleanup": {
+    "test_tasks": 15,
+    "test_synchronous_requests": 10,
+    "test_artifacts": 18,
+    "native_request_details": 25,
+    "restored_test_configuration": true
+  },
+  "final_readiness": {
+    "ocr.default": 4,
+    "ocr.pp-witness-canary": 1,
+    "document.unlimited-ocr-2": 1,
+    "ocr.ovisocr3": 2
+  },
+  "preexisting_isolated_slots": 1,
+  "worker_receipt_timers_healthy": 3,
+  "canary_observer": [
+    "active",
+    "success"
+  ]
+}
