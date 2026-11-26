@@ -90,6 +90,51 @@ def test_observe_and_apply_terminated_runtime_twenty_attempts(protected, tmp_pat
         assert conn.execute("SELECT count(*) n FROM inference_slots WHERE NOT backend_finished").fetchone()['n'] == 0
 
 
+@pytest.mark.parametrize('kind', ['task', 'sync'])
+def test_finish_and_host_proof_delivered_together(protected, tmp_path, kind):
+    from threading import Barrier
+
+    client, service, owner, _ = enable(protected, tmp_path)
+    gpu = owner.identity['gpu_uuid']
+    service.settings.runtime_proof_apply_routes = {owner.identity['route']}
+    token, close = create_attempt(protected, kind)
+    attempt = f'{kind}.{token}'
+    owner.report(attempt, finished=False)
+    close()
+    age(service)
+    check, = request(client, gpu).json()['checks']
+    with service.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) n FROM inference_slots WHERE NOT backend_finished').fetchone()['n'] == 1
+
+    ready = Barrier(2, timeout=10)
+
+    def finish():
+        ready.wait()
+        owner.report_finished(attempt)
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pending = pool.submit(finish)
+        ready.wait()
+        assert report(client, gpu, check).status_code == 204
+        pending.result()
+
+    def snapshot():
+        with service.db.transaction() as conn:
+            assert not conn.execute('SELECT 1 FROM inference_slots WHERE NOT backend_finished').fetchone()
+            assert not conn.execute('SELECT 1 FROM task_usage_events').fetchone()
+            assert not conn.execute('SELECT 1 FROM sync_usage_events').fetchone()
+            if kind == 'task':
+                assert conn.execute('SELECT state,attempts FROM tasks').fetchone() == {'state': 'FAILED', 'attempts': 1}
+            return conn.execute(f'SELECT state,gpu_finished_at,updated_at FROM {TABLE[kind]} WHERE token=%s',
+                                (token,)).fetchone()
+
+    original = snapshot()
+    assert original['state'] in ('COMPLETED', 'RESOLVED') and original['gpu_finished_at']
+    owner.report_finished(attempt)
+    assert report(client, gpu, check).status_code == 409
+    assert snapshot() == original
+
+
 def test_expired_evidence_original_finish_wins_and_legacy_untouched(protected, tmp_path):
     client, service, owner, other = enable(protected, tmp_path)
     service.settings.runtime_proof_apply_routes = {'real-ocr'}
