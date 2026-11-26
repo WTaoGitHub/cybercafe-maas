@@ -1,0 +1,119 @@
+{
+  "observed_at": "2026-11-26T03:22:02.260570+00:00",
+  "route": "maas-ocr",
+  "logical_model": "ocr.default",
+  "active_auto_routes": [
+    "maas-ocr-witness-canary"
+  ],
+  "guard_backend_version": "1.0-maas-receipts-cfde6d4",
+  "matching_routes": 17,
+  "stable_endpoint_readback": true,
+  "retry": {
+    "retry_on": "5xx,non_idempotent,retriable-status-codes",
+    "num_retries": 2,
+    "retriable_status_codes": [
+      503,
+      502
+    ],
+    "host_selection_retry_max_attempts": "5"
+  },
+  "router_retry_scope": "one endpoint per selected cluster",
+  "ai_proxy_retry_on_failure": false,
+  "ai_proxy_failover": false,
+  "fallback_route_count": 0,
+  "native_target_count": 1,
+  "replicas": [
+    {
+      "instance": 476,
+      "worker": 32,
+      "first_dispatch_weight": 25,
+      "health": "HEALTHY",
+      "execution_guard_challenge": "verified",
+      "privileged": true,
+      "host_witness": "inactive",
+      "witness_route": null,
+      "witness_socket_configured": false,
+      "witness_socket_readonly_mount": false,
+      "host_proof_key_enrolled": false,
+      "signed_runtime_binding": false
+    },
+    {
+      "instance": 478,
+      "worker": 31,
+      "first_dispatch_weight": 25,
+      "health": "HEALTHY",
+      "execution_guard_challenge": "verified",
+      "privileged": true,
+      "host_witness": "inactive",
+      "witness_route": null,
+      "witness_socket_configured": false,
+      "witness_socket_readonly_mount": false,
+      "host_proof_key_enrolled": false,
+      "signed_runtime_binding": false
+    },
+    {
+      "instance": 479,
+      "worker": 32,
+      "first_dispatch_weight": 25,
+      "health": "HEALTHY",
+      "execution_guard_challenge": "verified",
+      "privileged": true,
+      "host_witness": "inactive",
+      "witness_route": null,
+      "witness_socket_configured": false,
+      "witness_socket_readonly_mount": false,
+      "host_proof_key_enrolled": false,
+      "signed_runtime_binding": false
+    },
+    {
+      "instance": 484,
+      "worker": 34,
+      "first_dispatch_weight": 25,
+      "health": "HEALTHY",
+      "execution_guard_challenge": "verified",
+      "privileged": true,
+      "host_witness": "active",
+      "witness_route": "maas-ocr-witness-canary",
+      "witness_socket_configured": false,
+      "witness_socket_readonly_mount": false,
+      "host_proof_key_enrolled": true,
+      "signed_runtime_binding": false
+    }
+  ],
+  "a_observation": {
+    "enabled": true,
+    "active": true,
+    "interval_seconds": 300,
+    "observations": 2,
+    "first": "2026-11-26T03:21:38.479513+00:00",
+    "latest": {
+      "model": "ocr.pp-witness-canary",
+      "auto_enabled": true,
+      "observed_at": "2026-11-26T03:26:38.156797+00:00",
+      "paused": false,
+      "snapshot_ready_slots": 1,
+      "async": {
+        "dispatched_24h": 0,
+        "new_unknown_24h": 0,
+        "pending": 0,
+        "pending_15m": 0,
+        "oldest_pending_seconds": null,
+        "auto_resolved_24h": 0,
+        "proof_mismatch": 0,
+        "successful_charges": 0,
+        "signed_p95_seconds": null
+      },
+      "sync": {
+        "dispatched_24h": 0,
+        "new_unknown_24h": 0,
+        "pending": 0,
+        "pending_15m": 0,
+        "oldest_pending_seconds": null,
+        "auto_resolved_24h": 0,
+        "proof_mismatch": 0,
+        "successful_charges": 0,
+        "signed_p95_seconds": null
+      }
+    }
+  }
+}
