@@ -62,6 +62,8 @@ class SyncIngress:
                 if not allowed:
                     raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
                 scope = save_scope(c, admission.pool(name)) if admission else None
+                if model.get('runtime_recovery') and not (gpu or scope):
+                    raise unavailable()
                 token=uuid.uuid4().hex
                 c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,is_probe,dispatch_route,dispatch_pool_id,
                     execution_guard,dispatch_gpu_uuid,guard_scope)

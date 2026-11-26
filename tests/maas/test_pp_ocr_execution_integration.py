@@ -14,9 +14,40 @@ import httpx
 import pytest
 
 from maas_platform.pp_ocr_execution import ATTEMPT_HEADER, PATH, TABLE
+from maas_platform.errors import ServiceError
 from maas_platform.worker import Worker
 from test_consumer_ocr import png
 from test_integration import env, headers, sync_setup
+
+
+def test_new_network_models_require_verified_capacity_before_sending(guarded):
+    client, service, _ = guarded
+    settings = service.settings
+    catalog = settings.catalog()
+    base = dict(catalog['ocr.default'])
+    del base['execution_guard']
+    catalog['ocr.default'] = base
+    catalog['another-network-engine'] = {**base, 'upstream_model': 'future-route'}
+    settings.catalog_file.write_text(json.dumps(catalog))
+    settings.require_model_recovery = True
+    assert settings.catalog()['another-network-engine']['execution_guard']
+    assert 'future-route' in settings.required_runtime_routes()
+    image = base64.b64encode(png()).decode()
+    task = client.post('/maas/v1/tasks', headers=headers(idem='test_agent_missing_scope'),
+                       json={'model':'ocr.default','input':{'image':{'image_base64':image}}})
+    assert task.status_code == 202
+    with pytest.raises(ServiceError) as deferred:
+        service.begin_backend(service.claim())
+    assert deferred.value.code == 'DISPATCH_DEFERRED'
+    with pytest.raises(ServiceError) as refused:
+        client.app.state.sync_ingress.begin(SimpleNamespace(project='project'), 'ocr.default', 30)
+    assert refused.value.code == 'CAPACITY_UNAVAILABLE'
+    with service.db.transaction() as c:
+        assert not c.execute('SELECT 1 FROM backend_activity UNION ALL SELECT 1 FROM sync_activity').fetchone()
+    catalog['another-network-engine']['runtime_recovery'] = False
+    settings.catalog_file.write_text(json.dumps(catalog))
+    with pytest.raises(ValueError, match='Deployment requires'):
+        settings.catalog()
 
 
 @pytest.mark.parametrize('prefix', ['MAAS_OVIS_EXECUTION_', 'MAAS_UOCR_EXECUTION_', 'MAAS_NEXT_ENGINE_EXECUTION_'])

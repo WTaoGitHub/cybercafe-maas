@@ -42,6 +42,7 @@ class Settings:
     pp_ocr_worker_keys_file: Path | None = None
     runtime_proof_keys_file: Path | None = None
     runtime_boot_keys_dir: Path | None = None
+    require_model_recovery: bool = False
     runtime_proof_apply_routes: frozenset[str] = frozenset()
     retry_unstarted_models: frozenset[str] = frozenset()
 
@@ -49,6 +50,10 @@ class Settings:
     def from_env(cls):
         values = {'retry_unstarted_models': frozenset(name.strip() for name in
                   os.getenv('MAAS_RETRY_UNSTARTED_MODELS', '').split(',') if name.strip())}
+        recovery = os.getenv('MAAS_REQUIRE_MODEL_RECOVERY', '0')
+        if recovery not in ('0', '1'):
+            raise ValueError('MAAS_REQUIRE_MODEL_RECOVERY must be 0 or 1')
+        values['require_model_recovery'] = recovery == '1'
         if directory := os.getenv('MAAS_RUNTIME_BOOT_KEYS_DIR'):
             values['runtime_boot_keys_dir'] = Path(directory)
         if keys := os.getenv('MAAS_RUNTIME_PROOF_KEYS_FILE'):
@@ -103,6 +108,10 @@ class Settings:
         recovery_routes = set()
         for name, model in data.items():
             adapter = adapter_for(model['driver'])
+            if self.require_model_recovery and adapter.requires_upstream:
+                for option in ('execution_guard', 'runtime_recovery'):
+                    if model.setdefault(option, True) is not True:
+                        raise ValueError('Deployment requires execution guard and runtime recovery for every upstream')
             if adapter.requires_upstream and any(not isinstance(model.get(key),str) or not model[key] for key in ('upstream_model',)):
                 raise ValueError('Network adapters require a registered upstream model')
             if (not isinstance(model.get('revision'), str) or not model['revision']
@@ -129,7 +138,16 @@ class Settings:
         return data
 
     def required_runtime_routes(self):
-        return {model['upstream_model'] for model in self.catalog().values() if model.get('runtime_recovery')}
+        required = {name: model['upstream_model'] for name, model in self.catalog().items()
+                    if model.get('runtime_recovery')}
+        routes = set(required.values())
+        if required and self.capacity_policy_file:
+            from .capacity import Policy
+            policy = Policy.model_validate_json(private_text(self.capacity_policy_file))
+            for pool in policy.pools.values():
+                if pool.routes.keys() <= required.keys():
+                    routes.update(pool.replica_routes)
+        return routes
 
     def automatic_runtime_routes(self):
         return self.runtime_proof_apply_routes | self.required_runtime_routes()

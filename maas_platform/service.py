@@ -295,6 +295,8 @@ class TaskService:
                     allowed = False
             if draining is not None and draining():
                 raise ServiceError('EXECUTOR_DRAINING', 'Executor is draining', 503)
+            if model.get('runtime_recovery') and not (gpu or admission and admission.pool(row['model']).get('processes')):
+                reason = reason or 'CAPACITY_REDUCED'
             if allowed and reason is None:
                 scope = save_scope(c, admission.pool(row['model'])) if admission else None
                 inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id,
