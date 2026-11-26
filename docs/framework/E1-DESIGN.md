@@ -68,6 +68,18 @@ GPUStack v2.2.3 的 Custom 后端固定以 `privileged` 启动容器，现有宿
 
 收尾删除了试验凭据、路由、模型和工作负载。共享 PP 恢复 5/5，三台 worker 均为 Ready，其他原有模型实例仍在运行，副本调节器已恢复 Apply。[Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
+### 原生非特权 PP 自动结清实机验收（2026-11-26）
+
+GPUStack 在处理指定 CUDA 设备前，对签名策略中启用 `runtime_witness` 且镜像摘要、启动入口匹配的 PP 主容器关闭特权模式。现场将该规则仅用于三条试验路由。试验实例由 GPUStack 调度并经共享 Higress 转发，试验 MaaS、凭据和 PostgreSQL 单独部署。已验证单卡真实 CUDA OCR、正常结束回执和宿主机签名绑定。
+
+A 完成实际 OCR 推理后暂缓结束回执，使该次执行进入 `UNKNOWN`。只读核查确认原容器仍存在。同期 B 完成一笔同步 OCR，C 完成一笔异步 OCR。账本确认三笔请求落在各自的 GPU。将 A 的试验副本归零后，宿主机的终止签名与原 GPU、容器和运行身份匹配，只读阶段仍保留 `UNKNOWN`。
+
+仅为 A 的试验路由启用自动结清。API 就绪约 1.6 秒后，原执行转为 `RESOLVED`，释放的槽位在后续轮询中没有重复结清。原任务仍为 `FAILED`，尝试次数 1，成功计量 0。A 在原 GPU 上启动新运行实例，完成一笔新的真实 OCR 并产生一条成功计量。上述时延是单次样本。
+
+维护中 A 的 worker 容器直接启动因旧的单次许可已消耗而被拒绝，通过 E5 受控接续恢复到同一 worker 和 GPU，VM 启动身份前后一致。后续用发布的镜像摘要匹配现场试验规则，并通过新建模型工作负载加载更新后的运行时代码。B、C 沿用原 worker 会话。Bootstrap 本地回归 336 项通过。
+
+试验容器、路由、凭据、数据库和核查进程已清理，三台 worker 的试验运行时代码已恢复。共享 PP、Ovis、Unlimited OCR 分别恢复 5/5、2/2、1/1，三台 worker 均为 Ready，副本调节器恢复 Apply。共享 MaaS 仍使用迁移 017，自动结清仍关闭。新版 worker bundle 和签名策略的常驻发布待办。[Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
 ## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：
