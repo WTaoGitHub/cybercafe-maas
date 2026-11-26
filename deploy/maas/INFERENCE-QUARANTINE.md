@@ -97,11 +97,11 @@ PP-OCRv4 试点使用迁移 018。原结束回执仍可按既有路径结清。�
 
 隔离 PostgreSQL 可用 \`tests/maas/test_runtime_recovery.py\`，核对同步异步各 10 笔、错配、过期、重复挑战、迟到原回执及固定 GPU 路由绕行。三台真实 GPU 验收按 E1 设计记录网关实际目标、时延和真实同步／异步请求。故障注入使用可销毁试点副本，沿用项目对 XZ-31-001、XZ-31-002 的整机限制。
 
-### 常驻试点的发布与回退
+### A 试点的发布与退役记录
 
-测试环境 A 试点使用常驻 Compose 覆盖文件 `compose.canary-admission.json`。API 的自动结清白名单仅含上游路由 `maas-ocr-witness-canary`。发布后同时核对 Compose 渲染值和运行中 API 的白名单。专用项目 `pp-witness-a-test` 使用逻辑模型 `ocr.pp-witness-canary`，API 和执行器从只读文件 `/run/maas-pp-witness-a/inference.key` 加载凭据。按原部署参数重新创建服务时需带上该覆盖文件。
+早期试点通过 `compose.canary-admission.json` 为 `pp-witness-a-test` 单独开放 `ocr.pp-witness-canary`。该试点已于 2026-11-26 排空下线。当前覆盖文件仍承载共享服务设置，已移除 A 的自动结清条目和专用凭据挂载。部署时沿用当前 Compose 配置。测试环境现在按模型目录和 `MAAS_REQUIRE_MODEL_RECOVERY=1` 对共享 PP、Ovis 和 Unlimited 启用自动结清。[下线实测](../../results/maas-e1-model-recovery-20261126/REPORT.md#a-下线后的现场核查)
 
-临时退回只读时，清空上述覆盖文件中 API 的 `MAAS_RUNTIME_PROOF_APPLY_ROUTES`，按当前 Compose 配置重建 API 并回读生效值。退役项目时，再撤销其专用 GPUStack 密钥、删除对应 MaaS 绑定和 A 路由对该身份的授权。[持续启用验收](../../docs/framework/E1-DESIGN.md#测试环境-a-路由持续自动结清2026-11-26)
+原试点的单路由放行与凭据范围见[持续启用验收](../../docs/framework/E1-DESIGN.md#测试环境-a-路由持续自动结清2026-11-26)。当前生效路由可在运行中的 API 通过 `Settings.from_env().automatic_runtime_routes()` 回读。
 
 从已提交的版本运行 `python3 scripts/maas/build_worker_bundle.py --source-only --output <发布包>`，解包后用 `scripts/maas/verify_worker_bundle.py --root <解包目录>` 校对文件。源码包沿用目标 worker 的证书和公钥。试点使用单独的签名映像配置标识和固定到一张 GPU 的原生模型部署。发布后从目标 worker 通过认证 HTTPS 回读版本和签名。当前启动许可用过的 worker 容器退出后，通过 E5 同机接续流程换发会话。
 
@@ -115,11 +115,11 @@ Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模
 
 同一笔已失败任务可能先后收到原进程的结束回执和宿主机的终止证明。回执先结清时，后台活动保留 `COMPLETED`。终止证明先结清时，活动保留 `RESOLVED`，迟到的有效回执可以登记 GPU 结束时间。两条路径均只释放一次并发，重复证据保留已登记的时间和原客户结果。[两种顺序与三模型联合验收](../../results/maas-e1-joint-unknown-20261126/REPORT.md)
 
-### 常驻试点的账本采样
+### 三模型的账本采样
 
-测试控制端用 systemd 每五分钟在现有 API 容器中运行一次只读采样。安装时，将仓库的 [采样脚本](../../scripts/maas/runtime/observe_pp_settlement.py) 放在 `/usr/local/libexec/maas/observe_pp_settlement.py`，将 [service](systemd/maas-pp-canary-observe.service) 和 [timer](systemd/maas-pp-canary-observe.timer) 放在 `/etc/systemd/system/`，执行 `systemctl daemon-reload` 和 `systemctl enable --now maas-pp-canary-observe.timer`。日志可用 `journalctl -u maas-pp-canary-observe.service --since '24 hours ago' -o cat` 查看。单独停采使用 `systemctl disable --now maas-pp-canary-observe.timer`。
+测试控制端每五分钟在 API 容器中按逻辑模型采样。当前启用的实例为 `ocr.default`、`ocr.ovisocr3`、`document.unlimited-ocr-2`。例如，使用 `systemctl is-active maas-model-recovery-observe@ocr.default.timer` 检查共享 PP 定时器，用 `journalctl -u maas-model-recovery-observe@ocr.default.service --since '24 hours ago' -o cat` 读取样本。A 专用定时器 `maas-pp-canary-observe.timer` 已禁用。[采样脚本](../../scripts/maas/runtime/observe_pp_settlement.py) · [service 模板](systemd/maas-model-recovery-observe@.service) · [timer 模板](systemd/maas-model-recovery-observe@.timer)
 
-每条 JSON 记录包含 A 的自动结清开关、全局维护暂停标记、容量快照中的就绪并发位，以及同步和异步各自的未决笔数、最老未决时长和已持续至少 15 分钟的笔数。滚动 24 小时统计以采样时仍保留的账本为准，包括派发、新增 `UNKNOWN`、自动结清、终止签名与原活动不匹配的笔数，以及故障结清后关联了成功计量的笔数。后两项出现非零值时应核对原活动。每类至少有 10 笔通过验签的结清记录才发布 `signed_p95_seconds`。它从进入 `UNKNOWN` 算到结清，包含 worker 失联的时间。就绪并发位为 `null` 表示没有可用的新鲜快照。采样验签及 P95 的本地回归命令为 `python -m pytest -q tests/maas/test_pp_settlement_observation.py`。
+每条 JSON 记录包含该模型的自动结清开关、全局维护暂停标记、容量快照中的就绪并发位，以及同步和异步各自的未决笔数、最老未决时长和已持续至少 15 分钟的笔数。滚动 24 小时统计以采样时仍保留的账本为准，包括派发、新增 `UNKNOWN`、自动结清、终止签名与原活动不匹配的笔数，以及故障结清后关联了成功计量的笔数。后两项出现非零值时应核对原活动。每类至少有 10 笔通过验签的结清记录才发布 `signed_p95_seconds`。它从进入 `UNKNOWN` 算到结清，包含 worker 失联的时间。就绪并发位为 `null` 表示没有可用的新鲜快照。采样验签及 P95 的本地回归命令为 `python -m pytest -q tests/maas/test_pp_settlement_observation.py`。
 
 ### 共享 PP 路由按 GPU 撤出和恢复
 
