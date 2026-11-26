@@ -61,6 +61,7 @@ def inference_client(slots=1):
 
 
 class OCRAdapter:
+    supports_execution_guard = True
     replay_safe = False
     requires_upstream = True
     input_schema = OCRInput

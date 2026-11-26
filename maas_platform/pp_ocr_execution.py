@@ -115,6 +115,8 @@ def router(db, settings):
                 if eligible and not isolated and (not must_check or not blocks(
                         unknown, eligible['model'], body.route, row['dispatch_pool_id'], body.gpu_uuid)):
                     fenced = scope is not None or row['dispatch_gpu_uuid'] == body.gpu_uuid
+                    if body.route in settings.required_runtime_routes() and not (fenced and identity):
+                        raise ServiceError('EXECUTION_NOT_GRANTED', 'The original host runtime must be verified', 409)
                     runtime = register(conn, body, identity) if fenced and identity else None
                     conn.execute(f'UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s,runtime_instance=%s WHERE token=%s',
                                  (body.gpu_uuid, body.instance, runtime, token))

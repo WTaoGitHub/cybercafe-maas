@@ -58,7 +58,7 @@ class ExecutionGuard:
             raise ValueError('Worker execution credential must be a private file')
         guard = cls(os.environ[prefix+'ORIGIN'], path.read_text().strip(), gpu_uuid,
                     os.environ[prefix+'ROUTE'], os.getenv(prefix+'CA_FILE'), os.getenv(prefix+'RECEIPT_DIR'))
-        if prefix == 'MAAS_PP_OCR_EXECUTION_' and (witness := os.getenv(prefix+'RUNTIME_SOCKET')):
+        if witness := os.getenv(prefix+'RUNTIME_SOCKET'):
             guard.bind_runtime(witness)
         return guard
 

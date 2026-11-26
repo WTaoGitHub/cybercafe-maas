@@ -2,6 +2,16 @@
 
 2026-11-18 · [统一接入与迁移跟踪 #62](https://github.com/WTaoGitHub/cybercafe-maas/issues/62)
 
+### GPU 模型故障恢复
+
+PP、Ovis、Unlimited 以及后续 GPU 模型共用执行守卫和宿主机见证协议。新模型上线时按以下条件接入。
+
+1. 在真实引擎首次 GPU 操作前取得唯一授权。完成回执覆盖整个推理过程，包括子进程和异常清理。将待投递回执写入 worker 私有目录。守卫的 `from_env` 使用模型自己的环境变量前缀。
+2. 在签名 worker release 的 `worker_runtime.images` 条目中固定 OCI 摘要、真实入口参数、`execution_env_prefix`、`receipt_uid` 和 `"runtime_witness":{"routes":["实际 GPUStack 路由名"]}`。worker 以非特权模式运行匹配的镜像。宿主机通过对端 PID、容器和 cgroup 核对真实进程。跨容器或跨机执行的模型需要覆盖所有执行进程才能使用这个结清条件。
+3. 在容量策略中绑定实际模型、路由和守卫版本。使用 `python -m scripts.maas.runtime.reconcile_pp_quarantine --all-guarded --intent <容量观察器输出文件>`，针对每条路由独立撤下隔离 GPU。核对 Higress 已生效的首次派发、重试和回退目标。单副本模型隔离后需要等待恢复或新的健康副本。
+4. 先只读验证原进程存在、长时间失联、原进程退出。通过后，在同一上游的全部 MaaS 目录条目配置 `"execution_guard":true,"runtime_recovery":true`。此时领取 GPU 必须有宿主签名运行身份和有效派发范围。已有活动沿用原有证据。
+5. 按公开入口制造故障，逐笔核对健康卡实际授权、原任务尝试次数、释放次数、成功计量和从 UNKNOWN 到验签结清的 P95。PP 验同步和异步，Ovis 和 Unlimited 验公开的异步入口。通用规则回归位于 `tests/bootstrap/test_worker_runtime.py` 和 `tests/maas/test_runtime_recovery.py`。
+
 实际发布从[运维手册「新增模型上线与回退」](../../docs/handbooks/OPERATIONS.md#13-新增模型上线与回退)开始。手册按顺序说明何时可复用母版、如何接入执行守卫、发布签名镜像规则、逐副本核验本机回执，以及何时开放流量或回退。下文提供适配器、目录配置与隔离测试样例。
 
 一套支持文档依赖的 MaaS API、同版本执行器和一个 PostgreSQL 任务库可以使用同一份模型目录承载图片与文档 OCR。模型在 GPUStack 部署后，优先从现有适配器中选择。输入预处理、推理协议、结果解析或计量语义有实际差异时，再为对应协议开发可复用适配器。

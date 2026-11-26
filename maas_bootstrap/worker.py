@@ -318,7 +318,9 @@ def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,p
                 or read_file(external,secret=True)!=gpu.encode()):
             raise BootstrapError('LOCAL_IDENTITY_INVALID')
         if current['running']:
-            execution.prepare(settings,envelope['manifest'])
+            execution.prepare(settings,envelope['manifest'],gpu=gpu)
+            if isinstance(runtime, NativeDockerWorker) and execution.witness_routes(envelope['manifest'].get('worker_runtime', {'images': []})):
+                run(['systemctl','start','maas-pp-runtime-witness.service'])
             return stored,None
         if current['status']!='created':raise BootstrapError('HANDOFF_REPROVISION_REQUIRED')
     if any(path!=external for path in data.iterdir()) or (not stored and (external.exists() or external.is_symlink())):
@@ -333,7 +335,9 @@ def start_diskless(runtime,state,settings,envelope,metadata,target,current,gpu,p
               'worker_name_policy':DISKLESS_POLICY,'session_id':result['session_id'],
               'fingerprint':metadata['fingerprint'],'permit_sha256':handoff.permit_fingerprint(token)}
     if stored is not None and stored!=identity:raise BootstrapError('LOCAL_IDENTITY_INVALID')
-    execution.prepare(settings,envelope['manifest'],result)
+    execution.prepare(settings,envelope['manifest'],result,gpu=gpu)
+    if isinstance(runtime, NativeDockerWorker) and execution.witness_routes(envelope['manifest'].get('worker_runtime', {'images': []})):
+        run(['systemctl','start','maas-pp-runtime-witness.service'])
     if not current:
         atomic_json(state.root/'identity.json',identity)
         if not external.exists():atomic_bytes(external,gpu.encode())

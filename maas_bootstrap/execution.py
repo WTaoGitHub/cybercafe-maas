@@ -8,6 +8,7 @@ import stat
 from pathlib import Path
 from secrets import token_hex
 from urllib.parse import urlsplit
+from uuid import UUID
 
 from .client import BootstrapError, DISKLESS_POLICY, LocalState, MAX_BYTES, SAFE_REVISION
 from .client import atomic_bytes, atomic_json, canonical, read_file
@@ -45,6 +46,7 @@ def configuration(manifest):
         if not isinstance(images, list) or not 1 <= len(images) <= 512:
             raise ValueError()
         matches = set()
+        routes = set()
         for image in images:
             if (not isinstance(image, dict) or set(image) - {'digest', 'entrypoint', 'profile', 'execution_env_prefix', 'receipt_uid', 'runtime_witness'}
                     or not DIGEST.fullmatch(image['digest'])):
@@ -62,11 +64,21 @@ def configuration(manifest):
                 raise ValueError()
             if 'execution_env_prefix' in image and not PREFIX.fullmatch(image['execution_env_prefix']):
                 raise ValueError()
-            if 'runtime_witness' in image and (
-                    image['runtime_witness'] is not True
-                    or image.get('execution_env_prefix') != 'MAAS_PP_OCR_EXECUTION_'
-                    or entrypoint != ['python3', '/app/server.py']):
-                raise ValueError()
+            if 'runtime_witness' in image:
+                witness = image['runtime_witness']
+                if witness is True:
+                    # Older PP releases provisioned their route map independently.
+                    if image.get('execution_env_prefix') != 'MAAS_PP_OCR_EXECUTION_' or entrypoint != ['python3', '/app/server.py']:
+                        raise ValueError()
+                elif (not isinstance(witness, dict) or set(witness) != {'routes'}
+                      or 'receipt_uid' not in image or not isinstance(witness['routes'], list)
+                      or not 1 <= len(witness['routes']) <= 128):
+                    raise ValueError()
+                else:
+                    for name in witness['routes']:
+                        if not isinstance(name, str) or not 1 <= len(name) <= 128 or not name.isprintable() or name in routes:
+                            raise ValueError()
+                        routes.add(name)
             if 'receipt_uid' in image:
                 uid = image['receipt_uid']
                 if 'execution_env_prefix' not in image or type(uid) is not int or not 0 <= uid < 2**32 - 1:
@@ -90,6 +102,12 @@ def configuration(manifest):
     except (KeyError, TypeError, ValueError, AttributeError, ssl.SSLError):
         raise BootstrapError('WORKER_RUNTIME_POLICY_INVALID') from None
     return config
+
+
+def witness_routes(runtime):
+    return {name: {k: image[k] for k in ('digest', 'execution_env_prefix', 'entrypoint')}
+            for image in runtime['images'] if isinstance(image.get('runtime_witness'), dict)
+            for name in image['runtime_witness']['routes']}
 
 
 def local_directory(settings):
@@ -138,18 +156,51 @@ def prepare_receipts(directory, images):
             raise BootstrapError('EXECUTION_DIRECTORY_UNTRUSTED')
 
 
-def prepare(settings, manifest, permit=None):
+def boot_witness_material(settings, boot, create=False):
+    if str(UUID(boot)) != boot:
+        raise BootstrapError('RUNTIME_BOOT_ID_INVALID')
+    directory = local_directory(settings)
+    directory.mkdir(parents=True, mode=0o700, exist_ok=True)
+    path = directory / ('host-' + boot + '.key')
+    if create and not path.exists() and not path.is_symlink():
+        # Worker bootstrap holds LocalState.lock() across permit fetch and start.
+        atomic_bytes(path, (token_hex(32) + '\n').encode())
+    key = read_file(path, secret=True).decode().strip()
+    if not KEY.fullmatch(key):
+        raise BootstrapError('RUNTIME_HOST_KEY_INVALID')
+    return path, key
+
+
+def prepare(settings, manifest, permit=None, *, gpu=None):
     config = manifest.get('worker_runtime', {})
     if 'execution' not in config:
+        previous = Path(settings.data['state_dir']) / 'execution' / 'witness-routes.json'
+        if previous.exists():
+            atomic_json(local_directory(settings) / previous.name, {})
         return
     directory = local_directory(settings)
     key_path, ca_path = directory / KEY_NAME, directory / CA_NAME
     ca = config['execution']['ca_pem'].encode('ascii')
+    rules = witness_routes(config)
+    route_file = directory / 'witness-routes.json'
+    if rules:
+        boot = read_file('/proc/sys/kernel/random/boot_id').decode().strip()
+        path, witness_key = boot_witness_material(settings, boot)
+        if permit is not None and (permit.get('witness_enrolled') is not True or witness_key == permit.get('execution_key')):
+            raise BootstrapError('RUNTIME_WITNESS_NOT_ENROLLED')
+        from .handoff import gpu_uuid
+        witness_config = dict(boot_id=boot, gpu_uuid=gpu_uuid(gpu), key_file=str(path), ca_file=str(ca_path),
+                              origin=config['execution']['origin'], socket=RUNTIME_SOCKET_DIRECTORY+'/evidence.sock',
+                              release_routes_file=str(route_file))
     if permit is None:
         current = read_file(key_path, secret=True).strip()
         if not re.fullmatch(rb'[a-f0-9]{64}', current) or read_file(ca_path, secret=True) != ca:
             raise BootstrapError('EXECUTION_MATERIAL_MISMATCH')
         prepare_receipts(directory, config['images'])
+        if rules or route_file.exists():
+            atomic_json(route_file, rules)
+        if rules:
+            atomic_json(directory / 'witness.json', witness_config)
         return
     key = permit.get('execution_key')
     if not isinstance(key, str) or not KEY.fullmatch(key):
@@ -161,6 +212,10 @@ def prepare(settings, manifest, permit=None):
         atomic_bytes(ca_path, ca)
         atomic_bytes(key_path, (key + '\n').encode())
         prepare_receipts(directory, config['images'])
+        if rules or route_file.exists():
+            atomic_json(route_file, rules)
+        if rules:
+            atomic_json(directory / 'witness.json', witness_config)
     except OSError:
         raise BootstrapError('EXECUTION_MATERIAL_WRITE_FAILED') from None
 

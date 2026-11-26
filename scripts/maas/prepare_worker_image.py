@@ -69,7 +69,8 @@ def build(root,settings_path):
     ssh=safe_target(root,'etc/ssh')
     if ssh.exists():
         blockers.extend(str(p.relative_to(root)) for p in ssh.glob('ssh_host_*_key*'))
-    for name in ('etc/systemd/system/cybercafe-agent.service','etc/systemd/system/gpustack.service',
+    for name in ('etc/maas/pp-runtime-witness.json','etc/maas/pp-runtime-witness.key',
+                 'etc/systemd/system/cybercafe-agent.service','etc/systemd/system/gpustack.service',
                  'etc/systemd/system/gpustack-worker.service'):
         p=safe_target(root,name)
         if p.exists():blockers.append(name)

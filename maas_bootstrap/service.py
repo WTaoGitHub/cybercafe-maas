@@ -111,7 +111,7 @@ class ReleaseStore:
             raise AccessFailure(403, 'CLUSTER_MISMATCH')
         valid_registration = ('token' not in registration if m.get('worker_name_policy') == DISKLESS_POLICY
                               else bool(registration.get('token')))
-        if ('execution_key' in registration or 'execution_key' in m or not valid_registration
+        if (not valid_registration or {'execution_key', 'witness_key'} & (registration.keys() | m.keys())
                 or envelope['manifest_signature'].get('algorithm') != 'Ed25519'):
             raise ValueError('Invalid protected registration or signature')
         if not isinstance(m.get('compatible_image_ids'), list) or not m['compatible_image_ids']:
@@ -128,7 +128,8 @@ def create_app(state_dir=None, authenticator=None, limiter=None, worker_start=No
     if worker_start is None and os.getenv('MAAS_BOOTSTRAP_WORKER_START_STATE'):
         worker_start = WorkerStartBroker(os.environ['MAAS_BOOTSTRAP_WORKER_START_STATE'], NativeEnrollment(
             os.environ['MAAS_BOOTSTRAP_NATIVE_ENROLLMENT_URL'], os.environ['MAAS_BOOTSTRAP_NATIVE_ENROLLMENT_KEY_FILE']),
-            execution_keys_dir=os.getenv('MAAS_BOOTSTRAP_EXECUTION_KEYS_DIR'))
+            execution_keys_dir=os.getenv('MAAS_BOOTSTRAP_EXECUTION_KEYS_DIR'),
+            witness_keys_dir=os.getenv('MAAS_BOOTSTRAP_WITNESS_KEYS_DIR'))
     app = FastAPI(title='MaaS bootstrap configuration', docs_url=None, redoc_url=None, openapi_url=None)
 
     def reply(status, code):

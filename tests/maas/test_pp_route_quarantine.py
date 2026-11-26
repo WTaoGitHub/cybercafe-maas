@@ -11,10 +11,18 @@ import pytest
 from maas_platform.capacity_observe import gateway_candidates, write_gateway_intent
 from maas_platform.gateway_scope import route_endpoints
 
-from scripts.maas.runtime.reconcile_pp_quarantine import check_provider, filter_body, selected
+from scripts.maas.runtime.reconcile_pp_quarantine import advertised_routes, check_provider, filter_body, selected
 from scripts.maas.runtime.reconcile_gateway_capacity import DESTINATION, MODEL_MATCH
 from scripts.maas.runtime import pp_grant_window
 from test_integration import env
+
+
+def test_guarded_models_discovered_independently():
+    routes = {'1': {'model': 1, 'name': 'pp'}, '11': None, '12': {'model': 14, 'name': 'ovis'},
+              '34': {'model': 52, 'name': 'next-engine'}}
+    assert advertised_routes({'routes': routes}) == {1: (1, 'pp'), 12: (14, 'ovis'), 34: (52, 'next-engine')}
+    with pytest.raises(ValueError):
+        advertised_routes({'routes': []})
 
 
 def test_cached_withdrawal_keeps_age_and_can_only_remove_more_cards(env, tmp_path):

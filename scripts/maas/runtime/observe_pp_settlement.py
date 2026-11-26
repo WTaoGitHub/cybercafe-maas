@@ -23,7 +23,7 @@ def settlement_metrics(rows, route, keys):
         instance = row["instance"]
         identity = row["identity"]
         proof = row["terminal_proof"]
-        key = keys.get(gpu)
+        key = keys.get((gpu, row.get('signer_boot'))) if 'signer_boot' in row else keys.get(gpu)
         if (not key or row["route"] != route or row["runtime_gpu"] != gpu or instance != row["gpu_instance"]
                 or not valid_identity(identity) or not isinstance(proof, dict) or row["unknown_since"] is None):
             continue
@@ -48,7 +48,7 @@ def settlement_metrics(rows, route, keys):
 def observe(model):
     settings = Settings.from_env()
     route = settings.catalog()[model]["upstream_model"]
-    sample = {"model": model, "auto_enabled": route in settings.runtime_proof_apply_routes}
+    sample = {"model": model, "auto_enabled": route in settings.automatic_runtime_routes()}
     keys = {}
     with Database(settings.database_url).transaction() as c:
         c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
@@ -74,14 +74,17 @@ def observe(model):
                        else "EXISTS (SELECT 1 FROM sync_usage_events u WHERE u.token=b.token)")
             rows = c.execute(f"""
                 SELECT b.gpu_instance,b.gpu_uuid,b.resolution_reason,b.updated_at,b.unknown_since,
-                       r.instance,r.identity,r.terminal_proof,r.gpu_uuid AS runtime_gpu,r.route,{billing} AS charged
+                       r.instance,r.identity,r.signer_boot,r.terminal_proof,r.gpu_uuid AS runtime_gpu,r.route,{billing} AS charged
                 FROM {table} b LEFT JOIN execution_runtime r ON r.instance=b.runtime_instance
                 WHERE b.dispatch_route=%s AND b.state='RESOLVED' AND b.updated_at>=now()-interval '24 hours'
                   AND b.resolution_reason LIKE 'Original guarded runtime terminated (host challenge %%'""",
                              (route,)).fetchall()
-            for gpu in {row["gpu_uuid"] for row in rows}:
-                if gpu not in keys:
-                    keys[gpu] = host_key(settings, gpu)
+            for row in rows:
+                gpu, identity = row["gpu_uuid"], row["identity"]
+                if isinstance(identity, dict) and valid_identity(identity):
+                    scope = (gpu, row['signer_boot'])
+                    if scope not in keys:
+                        keys[scope] = host_key(settings, *scope)
             counts.update(settlement_metrics(rows, route, keys))
             sample[kind] = counts
     return sample

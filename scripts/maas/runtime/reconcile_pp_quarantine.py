@@ -1,4 +1,4 @@
-"""Enforce a guarded native PP route's eligible GPUs on its built-in Higress gateway.
+"""Enforce guarded native routes' eligible GPUs on its built-in Higress gateway.
 
 Run beside the gateway with its Kubernetes client, the capacity observer's intent
 directory mounted read-only, and the native route ID, model ID and upstream name.
@@ -81,6 +81,19 @@ def check_provider(spec, route_id):
         raise ValueError('Unverified AI proxy redispatch')
 
 
+def advertised_routes(intent):
+    if not isinstance(intent, dict) or not isinstance(intent.get('routes'), dict):
+        raise ValueError('Invalid guarded route inventory')
+    result = {}
+    for ident, route in intent['routes'].items():
+        if (not isinstance(ident, str) or not re.fullmatch('[1-9][0-9]*', ident)
+                or not isinstance(route, dict) or type(route.get('model')) is not int or route['model'] <= 0
+                or not isinstance(route.get('name'), str) or not route['name']):
+            continue  # Previously managed routes missing a valid identity are closed independently.
+        result[int(ident)] = route['model'], route['name']
+    return result
+
+
 def reconcile(args):
     from kubernetes import client, config
     from kubernetes.client.exceptions import ApiException
@@ -89,50 +102,76 @@ def reconcile(args):
     config.load_kube_config(config_file=args.kubeconfig)
     networking, custom = client.NetworkingV1Api(), client.CustomObjectsApi()
     scope = (GROUP, VERSION, args.namespace, KIND)
+    errors = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, ApiException, HTTPError)
+    known = set() if args.all_guarded else {args.route_id}
     while True:
         try:
-            ingress = networking.read_namespaced_ingress(f'ai-route-route-{args.route_id}.internal',
-                                                         args.namespace, _request_timeout=3)
-            if (ingress.metadata.labels or {}).get(MANAGED) != 'true':
-                raise ValueError('Unexpected ingress owner')
+            intent = json.loads(args.intent.read_text())
+            requested = advertised_routes(intent)
+        except (OSError, ValueError, TypeError, KeyError):
+            requested, intent = {}, {}
+        if args.all_guarded:
+            known.update(requested)
+            try:
+                owned = custom.list_namespaced_custom_object(*scope, label_selector=OWNER, _request_timeout=3)
+                for item in owned['items']:
+                    raw = item['metadata']['labels'][OWNER]
+                    if re.fullmatch('[1-9][0-9]*', raw) and item['metadata']['name'] == f'maas-pp-quarantine-{raw}':
+                        known.add(int(raw))
+            except errors:
+                print('Unable to enumerate managed gateway filters', flush=True)
+        try:
             bridge = custom.get_namespaced_custom_object('networking.higress.io', 'v1', args.namespace,
                                                         'mcpbridges', 'default', _request_timeout=3)
             proxy = custom.get_namespaced_custom_object('extensions.higress.io', 'v1alpha1', args.namespace,
                                                        'wasmplugins', 'gpustack-ai-proxy', _request_timeout=3)
-            check_provider(proxy['spec'], args.route_id)
-            clusters = selected(json.loads(args.intent.read_text()), args.route_id, args.model_id, args.model_name,
-                                ingress.metadata.annotations, bridge['spec']['registries'], time.time())
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, ApiException, HTTPError):
-            clusters = []
-        body = filter_body(args.namespace, args.route_id, clusters)
-        name = body['metadata']['name']
-        try:
+            registries, provider = bridge['spec']['registries'], proxy['spec']
+        except errors:
+            registries, provider = [], {}
+        for route_id in sorted(known):
             try:
-                old = custom.get_namespaced_custom_object(*scope, name, _request_timeout=3)
-            except ApiException as exc:
-                if exc.status != 404:
-                    raise
-                custom.create_namespaced_custom_object(*scope, body, _request_timeout=3)
-            else:
-                if old['metadata'].get('labels', {}).get(OWNER) != str(args.route_id):
-                    raise RuntimeError('Gateway filter ownership conflict')
-                if old['spec'] != body['spec']:
-                    body['metadata']['resourceVersion'] = old['metadata']['resourceVersion']
-                    custom.replace_namespaced_custom_object(*scope, name, body, _request_timeout=3)
-        except (ApiException, HTTPError) as exc:
-            print(f'PP gateway write unavailable ({getattr(exc, "status", type(exc).__name__)})', flush=True)
+                model, name = requested[route_id] if args.all_guarded else (args.model_id, args.model_name)
+                ingress = networking.read_namespaced_ingress(f'ai-route-route-{route_id}.internal',
+                                                             args.namespace, _request_timeout=3)
+                if (ingress.metadata.labels or {}).get(MANAGED) != 'true':
+                    raise ValueError('Unexpected ingress owner')
+                check_provider(provider, route_id)
+                clusters = selected(intent, route_id, model, name, ingress.metadata.annotations, registries, time.time())
+            except errors:
+                clusters = []
+            body = filter_body(args.namespace, route_id, clusters)
+            resource = body['metadata']['name']
+            try:
+                try:
+                    old = custom.get_namespaced_custom_object(*scope, resource, _request_timeout=3)
+                except ApiException as exc:
+                    if exc.status != 404:
+                        raise
+                    custom.create_namespaced_custom_object(*scope, body, _request_timeout=3)
+                else:
+                    if old['metadata'].get('labels', {}).get(OWNER) != str(route_id):
+                        print(f'Gateway filter ownership conflict for route {route_id}', flush=True)
+                        continue
+                    if old['spec'] != body['spec']:
+                        body['metadata']['resourceVersion'] = old['metadata']['resourceVersion']
+                        custom.replace_namespaced_custom_object(*scope, resource, body, _request_timeout=3)
+            except (ApiException, HTTPError) as exc:
+                print(f'Gateway write unavailable for route {route_id} ({getattr(exc, "status", type(exc).__name__)})', flush=True)
         time.sleep(2)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--route-id', type=int, required=True)
-    parser.add_argument('--model-id', type=int, required=True)
-    parser.add_argument('--model-name', required=True)
+    parser.add_argument('--all-guarded', action='store_true', help='Reconcile every guarded route in the capacity intent')
+    parser.add_argument('--route-id', type=int)
+    parser.add_argument('--model-id', type=int)
+    parser.add_argument('--model-name')
     parser.add_argument('--intent', type=Path, required=True)
     parser.add_argument('--namespace', default='higress-system')
     parser.add_argument('--kubeconfig', default='/var/lib/gpustack/higress/kubeconfig')
     args = parser.parse_args()
-    if min(args.route_id, args.model_id) <= 0:
-        parser.error('Provide positive native IDs')
+    if args.all_guarded and any(v is not None for v in (args.route_id, args.model_id, args.model_name)):
+        parser.error('Use --all-guarded on its own')
+    if not args.all_guarded and not (args.model_name and (args.route_id or 0) > 0 and (args.model_id or 0) > 0):
+        parser.error('Supply the native route and model identity or --all-guarded')
     reconcile(args)

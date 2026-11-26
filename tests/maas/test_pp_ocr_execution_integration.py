@@ -19,6 +19,22 @@ from test_consumer_ocr import png
 from test_integration import env, headers, sync_setup
 
 
+@pytest.mark.parametrize('prefix', ['MAAS_OVIS_EXECUTION_', 'MAAS_UOCR_EXECUTION_', 'MAAS_NEXT_ENGINE_EXECUTION_'])
+def test_model_guard_binds_host_before_serving(guarded, tmp_path, monkeypatch, prefix):
+    _, _, replicas, *_ = guarded
+    guard = type(replicas[0])
+    keyfile = tmp_path / 'test_agent_guard.key'
+    keyfile.write_text('1'*64)
+    keyfile.chmod(0o600)
+    bindings = []
+    monkeypatch.setattr(guard, 'bind_runtime', lambda self, path: bindings.append((self.identity['route'], path)))
+    for suffix, value in {'ORIGIN':'https://worker.test', 'ROUTE':'next-engine',
+                          'KEY_FILE':str(keyfile), 'RUNTIME_SOCKET':'/run/test_agent_guard.sock'}.items():
+        monkeypatch.setenv(prefix + suffix, value)
+    guard.from_env(replicas[0].identity['gpu_uuid'], prefix)
+    assert bindings == [('next-engine', '/run/test_agent_guard.sock')]
+
+
 @pytest.fixture
 def guarded(env, tmp_path, monkeypatch):
     def legacy_gateway(_):

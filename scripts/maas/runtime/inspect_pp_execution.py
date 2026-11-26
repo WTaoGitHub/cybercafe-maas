@@ -19,7 +19,7 @@ def inspect_attempt(task, token, route, gpu, instance, container):
         conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
         row = conn.execute("""
             SELECT t.state AS business, t.attempts, b.state, b.unknown_since, b.gpu_finished_at,
-                   r.identity, r.last_outcome, r.last_checked_at, r.terminal_proof,
+                   r.identity, r.signer_boot, r.last_outcome, r.last_checked_at, r.terminal_proof,
                    EXISTS (SELECT 1 FROM task_usage_events u WHERE u.task_id=t.id) AS charged
             FROM tasks t JOIN backend_activity b ON b.task_id=t.id
             JOIN execution_runtime r ON r.instance=b.runtime_instance
@@ -38,7 +38,7 @@ def inspect_attempt(task, token, route, gpu, instance, container):
             mac = proof.get("signature")
             expected = {**binding_payload(gpu, instance, route, row["identity"]),
                         "nonce": nonce, "outcome": "terminated"}
-            key = host_key(settings, gpu)
+            key = host_key(settings, gpu, row["signer_boot"])
             verified = bool(key and isinstance(nonce, str) and HEX.fullmatch(nonce)
                             and isinstance(mac, str) and HEX.fullmatch(mac)
                             and proof == {**expected, "signature": mac}
@@ -47,7 +47,7 @@ def inspect_attempt(task, token, route, gpu, instance, container):
                 "unknown_since": row["unknown_since"], "last_checked": row["last_checked_at"],
                 "host_outcome": row["last_outcome"], "terminal_proof_present": proof is not None,
                 "signature_verified": verified, "gpu_finish_received": row["gpu_finished_at"] is not None,
-                "charged": row["charged"], "auto_enabled": route in settings.runtime_proof_apply_routes}
+                "charged": row["charged"], "auto_enabled": route in settings.automatic_runtime_routes()}
 
 
 if __name__ == "__main__":

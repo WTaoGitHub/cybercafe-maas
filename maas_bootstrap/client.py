@@ -203,7 +203,7 @@ class ReleaseVerifier:
                 raise BootstrapError('RELEASE_SCOPE_MISMATCH')
             if type(registration['cluster_id']) is not int or registration['cluster_id'] != m['cluster_id']:
                 raise BootstrapError('RELEASE_SCOPE_MISMATCH')
-            if 'execution_key' in registration or 'execution_key' in m:
+            if {'execution_key', 'witness_key'} & (registration.keys() | m.keys()):
                 raise BootstrapError('RELEASE_OPTIONS_UNSUPPORTED')
             if d['image_id'] not in m['compatible_image_ids']:raise BootstrapError('CONFIG_INCOMPATIBLE')
             if m['architecture'] != d['architecture'] or m['gpustack_version'] != 'v2.2.3':

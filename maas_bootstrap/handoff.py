@@ -77,6 +77,10 @@ class WorkerStartFetcher:
             session_id = match[1]
             if settings.data.get('shutdown_events'):
                 body['boot_id'] = read_file('/proc/sys/kernel/random/boot_id').decode().strip()
+        from .execution import boot_witness_material, witness_routes
+        if witness_routes(manifest.get('worker_runtime', {'images': []})):
+            body['boot_id'] = read_file('/proc/sys/kernel/random/boot_id').decode().strip()
+            _, body['witness_key'] = boot_witness_material(settings, body['boot_id'], create=True)
         request = urllib.request.Request(url, data=canonical(body), headers={
             'Authorization':'Bearer ' + grant, 'Content-Type':'application/json'}, method='POST')
         try:

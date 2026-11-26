@@ -51,6 +51,7 @@ class ExecutionContext:
 
 
 class LocalAdapter:
+    supports_execution_guard = False
     # Only deterministic local work is replayable after lease loss in P1.
     replay_safe = True
     requires_upstream = False

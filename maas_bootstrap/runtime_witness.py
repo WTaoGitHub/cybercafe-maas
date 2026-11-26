@@ -1,4 +1,4 @@
-"""Read-only Linux host witness for enrolled PP-OCRv4 routes on one GPU."""
+"""Read-only Linux host witness for enrolled execution-guard routes on one GPU."""
 import argparse
 import json
 import os
@@ -17,6 +17,7 @@ from urllib.request import build_opener, HTTPSHandler, ProxyHandler, Request
 
 from maas_platform.runtime_proof import AUTHORITY_PATH, GPU, HEX, INSTANCE, cgroup_paths, signature, valid_identity
 from .client import NoRedirect, read_file
+from .execution import PREFIX
 
 CGROUP = Path('/sys/fs/cgroup')
 PROC = Path('/proc')
@@ -36,6 +37,15 @@ def inspect(container):
     if row['Id'] != container:
         raise ValueError('Docker container identity mismatch')
     return row
+
+
+def image_has_digest(image_id, digest):
+    if not isinstance(image_id, str) or not IMAGE.fullmatch(image_id):
+        return False
+    output = subprocess.run(['docker', '--host', 'unix:///var/run/docker.sock', 'image', 'inspect', image_id],
+                            capture_output=True, check=True, timeout=2).stdout
+    image, = json.loads(output)
+    return image['Id'] == image_id and any(ref.rpartition('@')[2] == digest for ref in image.get('RepoDigests') or [])
 
 
 def check_cgroup_mount():
@@ -70,21 +80,38 @@ def bind_peer(pid, routes):
         raise ValueError('Container identity unavailable')
     host = row['HostConfig']
     state = row['State']
-    route_env = 'MAAS_PP_OCR_EXECUTION_ROUTE='
-    names = [value[len(route_env):] for value in row['Config']['Env'] if value.startswith(route_env)]
-    if (len(names) != 1 or names[0] not in routes or routes[names[0]] != row['Image']
-            or [row['Path'], *row['Args']][:2] != ['python3', '/app/server.py']
-            or type(state['Pid']) is not int or state['Pid'] != pid or not state['Running']
+    declared = [v.partition('=') for v in row['Config']['Env']
+                if v.partition('=')[0].endswith('ROUTE') and PREFIX.fullmatch(v.partition('=')[0][:-5])]
+    if len(declared) != 1 or declared[0][2] not in routes:
+        raise ValueError('Runtime does not meet the route containment policy')
+    variable, _, name = declared[0]
+    rule = routes[name]
+    init_pid = state['Pid']
+    if (type(init_pid) is not int or init_pid <= 0 or not state['Running']
             or host['Privileged'] or host.get('CapAdd') or host.get('PidMode')
             or any(mount.get('Destination') in ('/proc', '/sys', '/sys/fs/cgroup', '/var/run/docker.sock',
                                                 '/run/docker.sock') for mount in row['Mounts'])):
-        raise ValueError('Runtime does not meet the PP containment policy')
+        raise ValueError('Runtime does not meet the route containment policy')
+    command = [row['Path'], *row['Args']]
+    if isinstance(rule, str):
+        matched = (variable == 'MAAS_PP_OCR_EXECUTION_ROUTE' and rule == row['Image']
+                   and command[:2] == ['python3', '/app/server.py'] and init_pid == pid)
+    else:
+        entry = rule['entrypoint']
+        matched = (variable == rule['execution_env_prefix'] + 'ROUTE' and command[:len(entry)] == entry
+                   and row['Config']['Entrypoint'] == entry and image_has_digest(row['Image'], rule['digest']))
+        if matched and init_pid != pid:
+            # A frontend child may own the socket. Bind the whole original container,
+            # including its engine children, and never just the short-lived frontend.
+            matched = (PROC / str(init_pid) / 'cgroup').read_text().strip() == '0::' + relative
+    if not matched:
+        raise ValueError('Runtime does not meet the route containment policy')
     path = CGROUP / relative.lstrip('/')
     identity = {'boot': BOOT.read_text().strip(), 'container': container, 'cgroup': relative,
-                'inode': path.stat().st_ino, 'started': state['StartedAt'], 'pid': pid}
+                'inode': path.stat().st_ino, 'started': state['StartedAt'], 'pid': init_pid}
     if not valid_identity(identity) or not populated(path):
         raise ValueError('Runtime identity unavailable')
-    return names[0], identity
+    return name, identity
 
 
 def original_gpu_released(gpu, pid):
@@ -131,8 +158,9 @@ def exchange(opener, origin, key, payload):
     return json.loads(data) if data else None
 
 
-def answer(opener, origin, key, gpu, routes, *, reconnected=False):
-    offer = exchange(opener, origin, key, {'operation': 'runtime_poll', 'gpu_uuid': gpu,
+def answer(opener, origin, key, gpu, routes, *, reconnected=False, boot=None):
+    scope = {'boot_id': boot} if boot is not None else {}
+    offer = exchange(opener, origin, key, {**scope, 'operation': 'runtime_poll', 'gpu_uuid': gpu,
                                           'reconnected': reconnected})
     if not isinstance(offer['checks'], list) or len(offer['checks']) > 4:
         raise ValueError('Invalid challenge batch')
@@ -146,7 +174,7 @@ def answer(opener, origin, key, gpu, routes, *, reconnected=False):
             outcome = 'unconfirmed'
         payload = {**check, 'gpu_uuid': gpu, 'outcome': outcome}
         try:
-            exchange(opener, origin, key, {'operation': 'runtime_report', 'gpu_uuid': gpu,
+            exchange(opener, origin, key, {**scope, 'operation': 'runtime_report', 'gpu_uuid': gpu,
                      'instance': check['instance'], 'nonce': check['nonce'], 'outcome': outcome,
                      'signature': signature(key, 'inspect', payload)})
         except HTTPError as error:
@@ -162,16 +190,37 @@ def enrolled_routes(config):
         routes = config['routes']
     else:
         routes = {config['route']: config['image_id']}
-    if (not isinstance(routes, dict) or not routes or
-            any(not isinstance(name, str) or not 1 <= len(name) <= 128 or not isinstance(image, str)
-                or not IMAGE.fullmatch(image) for name, image in routes.items())):
+    if not isinstance(routes, dict) or not routes:
         raise ValueError('Invalid witness routes')
+    for name, rule in routes.items():
+        if not isinstance(name, str) or not 1 <= len(name) <= 128 or not name.isprintable():
+            raise ValueError('Invalid witness route name')
+        if isinstance(rule, str) and IMAGE.fullmatch(rule):
+            continue
+        if (not isinstance(rule, dict) or set(rule) != {'digest', 'entrypoint', 'execution_env_prefix'}
+                or not isinstance(rule['digest'], str) or not IMAGE.fullmatch(rule['digest'])
+                or not isinstance(rule['execution_env_prefix'], str) or not PREFIX.fullmatch(rule['execution_env_prefix'])
+                or not isinstance(rule['entrypoint'], list) or not 1 <= len(rule['entrypoint']) <= 16
+                or not all(isinstance(s, str) and 1 <= len(s) <= 256 and s.isprintable() for s in rule['entrypoint'])):
+            raise ValueError('Invalid witness image rule')
     return routes
+
+
+def current_routes(config):
+    if 'release_routes_file' not in config:
+        return enrolled_routes(config)
+    released = json.loads(read_file(Path(config['release_routes_file']), secret=True))
+    fixed = enrolled_routes(config) if any(k in config for k in ('route', 'routes', 'image_id')) else {}
+    if released == {}:
+        return fixed
+    return {**fixed, **enrolled_routes({'routes': released})}
 
 
 def serve(config):
     gpu, origin = config['gpu_uuid'], config['origin']
-    routes = enrolled_routes(config)
+    current_routes(config)
+    if config.get('boot_id') is not None and config['boot_id'] != BOOT.read_text().strip():
+        raise ValueError('Witness enrollment belongs to another boot')
     url = urlsplit(origin)
     path = Path(config['socket'])
     if (sys.platform != 'linux' or url.scheme != 'https' or not url.hostname or url.username or
@@ -191,23 +240,26 @@ def serve(config):
                 if not INSTANCE.fullmatch(instance):
                     return
                 pid, _, _ = struct.unpack('3i', self.request.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
-                route, identity = bind_peer(pid, routes)
+                route, identity = bind_peer(pid, current_routes(config))
                 payload = {'gpu_uuid': gpu, 'instance': instance, 'route': route, 'identity': identity}
                 self.wfile.write(json.dumps({'identity': identity, 'signature': signature(key, 'bind', payload)}).encode()+b'\n')
             except (OSError, ValueError, KeyError, subprocess.SubprocessError):
                 print('runtime_binding_unavailable', file=sys.stderr, flush=True)
 
-    # The root-owned RuntimeDirectory is the only host directory mounted into PP.
+    # The socket is shared with signed images. Every bind authenticates the actual peer.
     with UnixStreamServer(str(path), BindingRequest) as binding:
-        path.chmod(0o660)
+        path.chmod(0o666 if 'release_routes_file' in config else 0o660)
         if 'socket_gid' in config:
             os.chown(path, -1, config['socket_gid'])
         threading.Thread(target=binding.serve_forever, daemon=True).start()
+        if endpoint := os.getenv('NOTIFY_SOCKET'):
+            with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as ready:
+                ready.sendto(b'READY=1', '\0' + endpoint[1:] if endpoint.startswith('@') else endpoint)
         wake = threading.Event()
         disconnected = True
         while True:
             try:
-                answer(opener, origin, key, gpu, routes, reconnected=disconnected)
+                answer(opener, origin, key, gpu, current_routes(config), reconnected=disconnected, boot=config.get('boot_id'))
                 disconnected = False
             except (OSError, ValueError, URLError, KeyError, TypeError):
                 disconnected = True
@@ -218,4 +270,13 @@ def serve(config):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', required=True, type=Path)
-    serve(json.loads(read_file(parser.parse_args().config, secret=True)))
+    parser.add_argument('--bootstrap-config', type=Path)
+    args = parser.parse_args()
+    path = args.config
+    if args.bootstrap_config and args.bootstrap_config.exists():
+        from .client import LocalSettings
+        from .execution import local_directory
+        managed = local_directory(LocalSettings(args.bootstrap_config)) / 'witness.json'
+        if managed.exists():
+            path = managed
+    serve(json.loads(read_file(path, secret=True)))

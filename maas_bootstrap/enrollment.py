@@ -16,8 +16,8 @@ import urllib.request
 from uuid import UUID, uuid4
 
 from .client import BootstrapError, DISKLESS_POLICY, LocalState, MAX_BYTES, NoRedirect, SAFE_REVISION
-from .client import atomic_json, canonical, read_file
-from .execution import CredentialStore, configuration
+from .client import atomic_bytes, atomic_json, canonical, read_file
+from .execution import KEY, CredentialStore, configuration, witness_routes
 from .handoff import BOOT_GRANT, check_binding, check_permit, gpu_uuid, positive_id
 
 
@@ -66,20 +66,53 @@ def private_root(path):
 
 
 class WorkerStartBroker:
-    def __init__(self, root, native, shutdown_key_file=None, execution_keys_dir=None):
+    def __init__(self, root, native, shutdown_key_file=None, execution_keys_dir=None, witness_keys_dir=None):
         self.root = private_root(root)
         self.native = native
         self.shutdown_key_file = shutdown_key_file or os.getenv('MAAS_BOOTSTRAP_SHUTDOWN_EVENT_KEY_FILE')
         self.execution_keys = CredentialStore(execution_keys_dir) if execution_keys_dir else None
+        if witness_keys_dir is None and execution_keys_dir:
+            provisioned = Path(execution_keys_dir) / 'host-witness'
+            if provisioned.exists():
+                witness_keys_dir = provisioned
+        self.witness_keys = LocalState(private_root(witness_keys_dir)) if witness_keys_dir else None
 
-    def approved_permit(self, state, grant, session_id, manifest, boot):
+    def approved_permit(self, state, grant, session_id, manifest, boot, witness_key=None):
         runtime = configuration(manifest)
         needs_key = runtime is not None and 'execution' in runtime
         if needs_key and self.execution_keys is None:
             raise BootstrapError('EXECUTION_CREDENTIAL_STORE_UNAVAILABLE')
+        managed = bool(runtime and witness_routes(runtime))
+        if managed:
+            if self.witness_keys is None:
+                raise BootstrapError('RUNTIME_WITNESS_STORE_UNAVAILABLE')
+            if not boot or not isinstance(witness_key, str) or not KEY.fullmatch(witness_key):
+                raise StartDenied(400, 'RUNTIME_WITNESS_KEY_REQUIRED')
+            # Pin the client's commitment before obtaining the native permit. Replaying
+            # an approved startup must never replace the signer or reveal it in a reply.
+            binding = {'boot': boot, 'commitment': hashlib.sha256(witness_key.encode()).hexdigest()}
+            existing = state.read('witness-binding.json')
+            if existing is None and state.read('issue.json') is None:
+                atomic_json(state.root/'witness-binding.json', binding)
+            elif existing != binding:
+                raise StartDenied(409, 'RUNTIME_WITNESS_BINDING_CONFLICT')
+        elif witness_key is not None:
+            raise StartDenied(400, 'UNEXPECTED_RUNTIME_WITNESS_KEY')
         permit = self.issue(state, grant, session_id)
         if needs_key:
             permit = {**permit, 'execution_key': self.execution_keys.issue(permit['external_id'])}
+        if managed:
+            if hmac.compare_digest(witness_key, permit['execution_key']):
+                raise StartDenied(409, 'RUNTIME_WITNESS_BINDING_CONFLICT')
+            path = self.witness_keys.root / (gpu_uuid(permit['external_id']) + '.' + boot + '.key')
+            content = (witness_key + '\n').encode()
+            with self.witness_keys.lock():
+                if path.exists() or path.is_symlink():
+                    if not hmac.compare_digest(read_file(path, secret=True), content):
+                        raise StartDenied(409, 'RUNTIME_WITNESS_BINDING_CONFLICT')
+                else:
+                    atomic_bytes(path, content)
+            permit = {**permit, 'witness_enrolled': True}
         return self.shutdown_credential(permit, boot)
 
     def shutdown_credential(self, permit, boot_id):
@@ -96,7 +129,7 @@ class WorkerStartBroker:
             return permit
 
     def automatic(self, grant, body, releases):
-        if not isinstance(body, dict) or set(body) != {'cluster_id','gpu_uuid','image_id','config_revision','boot_id'}:
+        if not isinstance(body, dict) or set(body) - {'witness_key'} != {'cluster_id','gpu_uuid','image_id','config_revision','boot_id'}:
             raise StartDenied(400, 'WORKER_START_REQUEST_INVALID')
         try:
             gpu = gpu_uuid(body['gpu_uuid'])
@@ -122,7 +155,7 @@ class WorkerStartBroker:
         # issue() enrolls an unknown GPU under these locks before requesting a permit.
         gpu_state = LocalState(self.root / f'auto-{cluster}-{gpu}')
         state = LocalState(gpu_state.root / boot)
-        binding = dict(body, boot_id=boot, gpu_uuid=gpu, worker_id=worker_id,
+        binding = dict({k:v for k,v in body.items() if k != 'witness_key'}, boot_id=boot, gpu_uuid=gpu, worker_id=worker_id,
                        site_id=manifest['site_id'], batch_id=manifest['batch_id'], automatic=True)
         with gpu_state.lock(), state.lock():
             intent = state.read('intent.json')
@@ -131,7 +164,7 @@ class WorkerStartBroker:
                 atomic_json(state.root/'intent.json', intent)
             elif intent['binding'] != binding:
                 raise StartDenied(409, 'WORKER_START_BOOT_CONFLICT')
-            return self.approved_permit(state, binding, intent['session_id'], manifest, boot)
+            return self.approved_permit(state, binding, intent['session_id'], manifest, boot, body.get('witness_key'))
 
     def start(self, authorization, body, releases):
         token = (authorization or '').removeprefix('Bearer ')
@@ -150,7 +183,7 @@ class WorkerStartBroker:
                 raise StartDenied(403, 'WORKER_START_GRANT_EXPIRED')
             expected = {key:grant[key] for key in ('cluster_id','gpu_uuid','image_id','config_revision')}
             if (not isinstance(body, dict) or not positive_id(body.get('cluster_id'))
-                    or {k:v for k,v in body.items() if k != 'boot_id'} != expected):
+                    or {k:v for k,v in body.items() if k not in ('boot_id','witness_key')} != expected):
                 raise StartDenied(403, 'WORKER_START_SCOPE_MISMATCH')
             boot = body.get('boot_id')
             if 'boot_id' in body:
@@ -161,7 +194,7 @@ class WorkerStartBroker:
             if (manifest.get('worker_name_policy') != DISKLESS_POLICY
                     or grant['image_id'] not in manifest['compatible_image_ids']):
                 raise StartDenied(409, 'WORKER_START_RELEASE_MISMATCH')
-            return self.approved_permit(state, grant, session_id, manifest, boot)
+            return self.approved_permit(state, grant, session_id, manifest, boot, body.get('witness_key'))
 
     def issue(self, state, grant, session_id):
         cluster, gpu = grant['cluster_id'], grant['gpu_uuid']

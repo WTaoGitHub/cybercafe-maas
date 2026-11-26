@@ -1,6 +1,7 @@
-"""Challenge the original PP runtime and optionally settle proven terminations."""
+"""Challenge the original guarded runtime and optionally settle proven terminations."""
 import hmac
 import json
+import re
 from secrets import token_hex
 from typing import Annotated, Literal
 
@@ -17,7 +18,12 @@ class Binding(BaseModel):
     signature: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
 
 
+BOOT = r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}'
+BootID = Annotated[str, StringConstraints(pattern='^' + BOOT + '$')]
+
+
 class HostPoll(BaseModel):
+    boot_id: BootID | None = None
     model_config = ConfigDict(extra='forbid')
     operation: Literal['runtime_poll']
     reconnected: bool = False
@@ -25,6 +31,7 @@ class HostPoll(BaseModel):
 
 
 class HostReport(BaseModel):
+    boot_id: BootID | None = None
     model_config = ConfigDict(extra='forbid')
     operation: Literal['runtime_report']
     gpu_uuid: Annotated[str, StringConstraints(pattern=f"^{GPU.pattern}$")]
@@ -34,15 +41,25 @@ class HostReport(BaseModel):
     signature: Annotated[str, StringConstraints(pattern=r'^[a-f0-9]{64}$')]
 
 
-def host_key(settings, gpu):
+def host_key(settings, gpu, boot=None):
     from .config import private_text
 
-    if settings.runtime_proof_keys_file is None:
-        return None
-    keys = json.loads(private_text(settings.runtime_proof_keys_file))
-    value = keys.get(gpu) if isinstance(keys, dict) else None
-    if not isinstance(value, str) or not HEX.fullmatch(value) or list(keys.values()).count(value) != 1:
-        return None
+    if boot is not None:
+        if not settings.runtime_boot_keys_dir or not GPU.fullmatch(gpu) or not re.fullmatch(BOOT, boot):
+            return None
+        path = settings.runtime_boot_keys_dir / f'{gpu}.{boot}.key'
+        if path.is_symlink() or not path.exists():
+            return None
+        value = private_text(path)
+        if not HEX.fullmatch(value):
+            return None
+    else:
+        if settings.runtime_proof_keys_file is None:
+            return None
+        keys = json.loads(private_text(settings.runtime_proof_keys_file))
+        value = keys.get(gpu) if isinstance(keys, dict) else None
+        if not isinstance(value, str) or not HEX.fullmatch(value) or list(keys.values()).count(value) != 1:
+            return None
     worker_keys = settings.pp_ocr_worker_keys_file
     if worker_keys and value in json.loads(private_text(worker_keys)).values():
         return None  # An inference container may never authenticate as a host witness.
@@ -57,23 +74,30 @@ def check_binding(settings, body):
     binding = body.runtime
     if binding is None:
         return None
-    key = host_key(settings, body.gpu_uuid)
+    if not valid_identity(binding.identity):
+        raise ServiceError('RUNTIME_PROOF_DENIED', 'Invalid runtime binding', 403)
+    boot = binding.identity['boot']
+    path = settings.runtime_boot_keys_dir and settings.runtime_boot_keys_dir / f'{body.gpu_uuid}.{boot}.key'
+    signer_boot = boot if path and (path.exists() or path.is_symlink()) else None
+    key = host_key(settings, body.gpu_uuid, signer_boot)
     if key is None:
         return None  # This GPU has not enrolled in runtime evidence collection.
     payload = binding_payload(body.gpu_uuid, body.instance, body.route, binding.identity)
-    if not valid_identity(binding.identity) or not hmac.compare_digest(
+    if not hmac.compare_digest(
             binding.signature, signature(key, 'bind', payload)):
         raise ServiceError('RUNTIME_PROOF_DENIED', 'Invalid runtime binding', 403)
-    return binding.identity
+    return binding.identity, signer_boot
 
 
-def register(conn, body, identity):
-    row = conn.execute('''INSERT INTO execution_runtime(instance,gpu_uuid,route,identity)
-        VALUES (%s,%s,%s,%s) ON CONFLICT(instance) DO UPDATE
+def register(conn, body, binding):
+    identity, signer_boot = binding
+    row = conn.execute('''INSERT INTO execution_runtime(instance,gpu_uuid,route,identity,signer_boot)
+        VALUES (%s,%s,%s,%s,%s) ON CONFLICT(instance) DO UPDATE
         SET terminal_proof=NULL,challenge=NULL,challenge_until=NULL
         WHERE execution_runtime.gpu_uuid=excluded.gpu_uuid AND execution_runtime.route=excluded.route
           AND execution_runtime.identity=excluded.identity
-        RETURNING instance''', (body.instance, body.gpu_uuid, body.route, Jsonb(identity))).fetchone()
+          AND execution_runtime.signer_boot IS NOT DISTINCT FROM excluded.signer_boot
+        RETURNING instance''', (body.instance, body.gpu_uuid, body.route, Jsonb(identity), signer_boot)).fetchone()
     if not row:
         raise ServiceError('RUNTIME_PROOF_DENIED', 'Conflicting runtime identity', 409)
     return row['instance']
@@ -93,15 +117,15 @@ def settle_runtime(conn, row, nonce):
                      (nonce, row['instance'], row['instance'], row['gpu_uuid'], row['route']))
 
 
-def apply_verified(db, gpu, key, apply_routes):
+def apply_verified(db, gpu, key, apply_routes, boot=None):
     if not apply_routes:
         return
     with db.transaction() as conn:
         rows = conn.execute(f"""SELECT r.* FROM execution_runtime r
-            WHERE r.gpu_uuid=%s AND r.route=ANY(%s) AND r.terminal_proof IS NOT NULL
+            WHERE r.gpu_uuid=%s AND r.signer_boot IS NOT DISTINCT FROM %s::text AND r.route=ANY(%s) AND r.terminal_proof IS NOT NULL
               AND (EXISTS(SELECT 1 FROM backend_activity WHERE runtime_instance=r.instance AND {QUALIFIED_UNKNOWN})
                 OR EXISTS(SELECT 1 FROM sync_activity WHERE runtime_instance=r.instance AND {QUALIFIED_UNKNOWN}))
-            ORDER BY r.last_checked_at,r.instance LIMIT 4""", (gpu, list(apply_routes))).fetchall()
+            ORDER BY r.last_checked_at,r.instance LIMIT 4""", (gpu, boot, list(apply_routes))).fetchall()
         if not rows:
             return
         conn.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
@@ -119,7 +143,7 @@ def apply_verified(db, gpu, key, apply_routes):
                 settle_runtime(conn, row, expected['nonce'])
 
 
-def poll(db, gpu, reconnected):
+def poll(db, gpu, reconnected, boot=None):
     # Lock only a bounded batch of due runtimes, even if the host polls concurrently.
     with db.transaction() as conn:
         acquired = conn.execute('SELECT pg_try_advisory_xact_lock(842125225) AS acquired').fetchone()
@@ -131,7 +155,7 @@ def poll(db, gpu, reconnected):
         if batch <= 0:
             return {'checks': []}
         rows = conn.execute(f"""SELECT r.instance,r.identity,r.route FROM execution_runtime r
-            WHERE r.gpu_uuid=%s
+            WHERE r.gpu_uuid=%s AND r.signer_boot IS NOT DISTINCT FROM %s::text
               AND (r.challenge_until IS NULL OR r.challenge_until<=clock_timestamp())
               AND (%s OR r.next_check_at<=clock_timestamp())
               AND r.terminal_proof IS NULL
@@ -139,7 +163,7 @@ def poll(db, gpu, reconnected):
                        AND {QUALIFIED_UNKNOWN} AND unknown_since<=clock_timestamp()-interval '30 seconds')
                 OR EXISTS(SELECT 1 FROM sync_activity WHERE runtime_instance=r.instance
                        AND {QUALIFIED_UNKNOWN} AND unknown_since<=clock_timestamp()-interval '30 seconds'))
-            ORDER BY r.next_check_at,r.instance LIMIT %s FOR UPDATE OF r SKIP LOCKED""", (gpu, reconnected, batch)).fetchall()
+            ORDER BY r.next_check_at,r.instance LIMIT %s FOR UPDATE OF r SKIP LOCKED""", (gpu, boot, reconnected, batch)).fetchall()
         for row in rows:
             row['nonce'] = token_hex(32)
             conn.execute("""UPDATE execution_runtime SET challenge=%s,
@@ -156,8 +180,10 @@ def report(db, value, key, apply_routes):
         row = conn.execute('''SELECT * FROM execution_runtime WHERE instance=%s AND gpu_uuid=%s
             AND challenge=%s AND challenge_until>clock_timestamp() FOR UPDATE''',
                            (value.instance, value.gpu_uuid, value.nonce)).fetchone()
-        if not row:
+        if not row or (value.boot_id is not None and row['identity']['boot'] != value.boot_id):
             raise ServiceError('RUNTIME_CHALLENGE_EXPIRED', 'Runtime challenge is no longer active', 409)
+        if row['signer_boot'] != value.boot_id:
+            raise ServiceError('RUNTIME_PROOF_DENIED', 'Runtime requires its enrolled boot signer', 403)
         payload = {**binding_payload(value.gpu_uuid, value.instance, row['route'], row['identity']),
                    'nonce': value.nonce, 'outcome': value.outcome}
         if not hmac.compare_digest(value.signature, signature(key, 'inspect', payload)):
@@ -175,10 +201,10 @@ def report(db, value, key, apply_routes):
 
 
 def handle_host(db, settings, value, authorization):
-    key = host_key(settings, value.gpu_uuid)
+    key = host_key(settings, value.gpu_uuid, value.boot_id)
     if key is None or not authorization.isascii() or not hmac.compare_digest(authorization, 'Bearer '+key):
         raise ServiceError('RUNTIME_PROOF_DENIED', 'Host credential rejected', 403)
     if isinstance(value, HostPoll):
-        apply_verified(db, value.gpu_uuid, key, settings.runtime_proof_apply_routes)
-        return poll(db, value.gpu_uuid, value.reconnected)
-    report(db, value, key, settings.runtime_proof_apply_routes)
+        apply_verified(db, value.gpu_uuid, key, settings.automatic_runtime_routes(), value.boot_id)
+        return poll(db, value.gpu_uuid, value.reconnected, value.boot_id)
+    report(db, value, key, settings.automatic_runtime_routes())

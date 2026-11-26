@@ -307,3 +307,47 @@ def test_pp_witness_container_loses_privilege_before_gpu_mapping(tmp_path, monke
     assert create(DIGEST, {'gpu': '0'}, ENTRYPOINT)
     with pytest.raises(ValueError, match='isolated GPU container'):
         create(DIGEST, {'gpu': 'all'}, image['entrypoint'])
+
+
+def test_model_witness_enrollment_pins_the_first_approved_boot_key(tmp_path, diskless, monkeypatch):
+    from maas_bootstrap.enrollment import StartDenied
+    from maas_bootstrap.runtime_witness import current_routes
+
+    settings, envelope = release(diskless)
+    manifest = envelope['manifest']
+    rule, = manifest['worker_runtime']['images']
+    rule.update(receipt_uid=os.geteuid(), runtime_witness={'routes': ['test-new-engine']})
+    boot = str(uuid4())
+    real_read = execution.read_file
+    monkeypatch.setattr(execution, 'read_file', lambda path, **kw:
+                        boot.encode() if str(path) == '/proc/sys/kernel/random/boot_id' else real_read(path, **kw))
+    path, key = execution.boot_witness_material(settings, boot, create=True)
+    approvals, keys, hosts = [tmp_path / n for n in ('approvals', 'model-keys', 'host-keys')]
+    for folder in (approvals, keys, hosts):
+        folder.mkdir(mode=0o700)
+    native = Native()
+    broker = WorkerStartBroker(approvals, native, execution_keys_dir=keys, witness_keys_dir=hosts)
+    request = dict(cluster_id=3, gpu_uuid=GPU, image_id='tower-v1', config_revision='r1', boot_id=boot)
+    releases = SimpleNamespace(release=lambda *_: envelope)
+    def start(**extra):
+        return broker.automatic({'auto_enroll_gpus': True}, request | extra, releases)
+
+    with pytest.raises(StartDenied, match='RUNTIME_WITNESS_KEY_REQUIRED'):
+        start()
+    assert not native.calls
+    response = start(witness_key=key)
+    assert response['witness_enrolled'] and key != response['execution_key'] and key not in json.dumps(response)
+    assert start(witness_key=key) == response
+    with pytest.raises(StartDenied, match='RUNTIME_WITNESS_BINDING_CONFLICT'):
+        start(witness_key='b'*64)
+    assert (hosts / f'{GPU}.{boot}.key').read_text().strip() == path.read_text().strip() == key
+    assert all(key not in f.read_text() for f in approvals.rglob('*.json'))
+    execution.prepare(settings, manifest, response, gpu=GPU)
+    cfg = json.loads((execution.local_directory(settings) / 'witness.json').read_text())
+    assert cfg['boot_id'] == boot and cfg['gpu_uuid'] == GPU and cfg['key_file'] == str(path)
+    assert current_routes(cfg) == {'test-new-engine': dict(digest=DIGEST, entrypoint=ENTRYPOINT, execution_env_prefix=PREFIX)}
+    assert key not in worker_limits.configured_insertion(manifest['worker_runtime'], path.parent).decode()
+    assert str(path) not in worker_limits.configured_insertion(manifest['worker_runtime'], path.parent).decode()
+    rule['runtime_witness']['routes'].append('test-new-engine')
+    with pytest.raises(BootstrapError, match='WORKER_RUNTIME_POLICY_INVALID'):
+        execution.configuration(manifest)

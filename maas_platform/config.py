@@ -41,6 +41,7 @@ class Settings:
     executor_slots: int = 1
     pp_ocr_worker_keys_file: Path | None = None
     runtime_proof_keys_file: Path | None = None
+    runtime_boot_keys_dir: Path | None = None
     runtime_proof_apply_routes: frozenset[str] = frozenset()
     retry_unstarted_models: frozenset[str] = frozenset()
 
@@ -48,6 +49,8 @@ class Settings:
     def from_env(cls):
         values = {'retry_unstarted_models': frozenset(name.strip() for name in
                   os.getenv('MAAS_RETRY_UNSTARTED_MODELS', '').split(',') if name.strip())}
+        if directory := os.getenv('MAAS_RUNTIME_BOOT_KEYS_DIR'):
+            values['runtime_boot_keys_dir'] = Path(directory)
         if keys := os.getenv('MAAS_RUNTIME_PROOF_KEYS_FILE'):
             values['runtime_proof_keys_file'] = Path(keys)
             values['runtime_proof_apply_routes'] = frozenset(
@@ -97,6 +100,7 @@ class Settings:
     def catalog(self):
         data = json.loads(self.catalog_file.read_text())
         guarded_routes = set()
+        recovery_routes = set()
         for name, model in data.items():
             adapter = adapter_for(model['driver'])
             if adapter.requires_upstream and any(not isinstance(model.get(key),str) or not model[key] for key in ('upstream_model',)):
@@ -108,12 +112,24 @@ class Settings:
             if model['driver'] == 'gpustack.document_ocr':
                 adapter.validate_model(model)
             if 'execution_guard' in model and (type(model['execution_guard']) is not bool or
-                    (model['execution_guard'] and model['driver'] not in
-                     ('gpustack.ocr', 'gpustack.ovisocr3', 'gpustack.document_ocr'))):
-                raise ValueError('Execution guard requires a supported OCR connector')
+                    (model['execution_guard'] and not adapter.supports_execution_guard)):
+                raise ValueError('Execution guard requires a supported connector')
             if model.get('execution_guard'):
                 guarded_routes.add(model['upstream_model'])
+            if 'runtime_recovery' in model:
+                if type(model['runtime_recovery']) is not bool or (model['runtime_recovery'] and not model.get('execution_guard')):
+                    raise ValueError('Runtime recovery requires an execution guard')
+                if model['runtime_recovery']:
+                    recovery_routes.add(model['upstream_model'])
         if any(model.get('upstream_model') in guarded_routes and not model.get('execution_guard')
                for model in data.values()):
             raise ValueError('Every MaaS alias on a guarded route must use the execution guard')
+        if any(model.get('upstream_model') in recovery_routes and not model.get('runtime_recovery') for model in data.values()):
+            raise ValueError('Every alias on a recovery route must require runtime evidence')
         return data
+
+    def required_runtime_routes(self):
+        return {model['upstream_model'] for model in self.catalog().values() if model.get('runtime_recovery')}
+
+    def automatic_runtime_routes(self):
+        return self.runtime_proof_apply_routes | self.required_runtime_routes()

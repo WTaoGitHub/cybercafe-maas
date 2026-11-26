@@ -323,6 +323,22 @@ def test_host_binding_reads_actual_peer_cgroup(tmp_path, monkeypatch):
     row['Config']['Env'] = [prefix + 'test_agent_a']
     with pytest.raises(ValueError, match='containment'):
         runtime_witness.bind_peer(321, {'test_agent_a': 'sha256:' + 'f' * 64})
+    # GPUStack starts the image by local ID. Verify its registry digest and bind
+    # a frontend child to the original container init, which also owns the engine.
+    entry = ['python3', '/opt/model/server.py']
+    rule = {'digest': 'sha256:'+'d'*64, 'entrypoint': entry, 'execution_env_prefix': 'MAAS_TEST_EXECUTION_'}
+    routes = {'test-model': rule}
+    row['Config'].update(Env=['MAAS_TEST_EXECUTION_ROUTE=test-model'], Entrypoint=entry)
+    row['Args'] = [*entry[1:], '--port', '8000']
+    checked = []
+    monkeypatch.setattr(runtime_witness, 'image_has_digest', lambda ident, digest: checked.append((ident,digest)) or True)
+    (proc/'322').mkdir()
+    (proc/'322'/'cgroup').write_text('0::'+IDENTITY['cgroup'])
+    assert runtime_witness.bind_peer(322, routes)[1]['pid'] == 321
+    assert checked == [(image, rule['digest'])]
+    monkeypatch.setattr(runtime_witness, 'image_has_digest', lambda *_: False)
+    with pytest.raises(ValueError, match='containment'):
+        runtime_witness.bind_peer(322, routes)
     row['HostConfig']['Privileged'] = True
     with pytest.raises(ValueError, match='containment'):
         runtime_witness.bind_peer(321, routes)
@@ -359,3 +375,45 @@ def test_one_gpu_answers_both_routes_and_ignores_unenrolled_route(monkeypatch):
         payload = dict(check, gpu_uuid=gpu, outcome='present')
         assert request['instance'] == check['instance']
         assert request['signature'] == signature(HOST_KEY, 'inspect', payload)
+
+
+def test_catalog_recovery_requires_original_boot_and_grant(protected, tmp_path):
+    client, service, owner, _ = enable(protected, tmp_path)
+    settings = service.settings
+    catalog = settings.catalog()
+    route, gpu = owner.identity['route'], owner.identity['gpu_uuid']
+    for entry in catalog.values():
+        if entry.get('upstream_model') == route:
+            entry['runtime_recovery'] = True
+    settings.catalog_file.write_text(json.dumps(catalog))
+    assert route in settings.automatic_runtime_routes()
+    settings.runtime_boot_keys_dir = tmp_path / 'test_agent_boot_hosts'
+    settings.runtime_boot_keys_dir.mkdir(mode=0o700)
+    original, replacement = IDENTITY['boot'], '22222222-2222-4222-8222-222222222222'
+    for boot, key in ((original, '3'*64), (replacement, '4'*64)):
+        f = settings.runtime_boot_keys_dir / f'{gpu}.{boot}.key'
+        f.write_text(key);f.chmod(0o600)
+    token, close = create_attempt(protected, 'task', max_attempts=3)
+    owner.runtime_binding = None
+    with pytest.raises(HTTPException, match='409'):
+        owner.report('task.'+token, finished=False)
+    payload = {**owner.identity, 'identity':IDENTITY}
+    owner.runtime_binding = {'identity':IDENTITY, 'signature':signature('3'*64, 'bind', payload)}
+    owner.report('task.'+token, finished=False)
+    close();age(service)
+    assert request(client, gpu, key=HOST_KEY).json() == {'checks': []}
+    assert request(client, gpu, key='4'*64, boot_id=replacement).json() == {'checks': []}
+    check, = request(client, gpu, key='3'*64, boot_id=original).json()['checks']
+    def submit(boot, key):
+        proof = signature(key, 'inspect', {**check, 'gpu_uuid':gpu, 'outcome':'terminated'})
+        return request(client, gpu, 'runtime_report', key, boot_id=boot, instance=check['instance'],
+                       nonce=check['nonce'], outcome='terminated', signature=proof)
+    assert submit(replacement, '4'*64).status_code == 409
+    assert submit(None, HOST_KEY).status_code == 403
+    assert service.metrics()['unknown_backend_activity'] == 1
+    assert submit(original, '3'*64).status_code == 204
+    assert submit(original, '3'*64).status_code == 409
+    assert service.metrics()['unknown_backend_activity'] == 0
+    with service.db.transaction() as c:
+        assert c.execute('SELECT state,attempts FROM tasks').fetchone() == {'state':'FAILED','attempts':1}
+        assert not c.execute('SELECT 1 FROM task_usage_events').fetchone()

@@ -38,7 +38,8 @@ def collect():
     machine=Path('/etc/machine-id')
     machine_id_initialized=machine.exists() and machine.read_text().strip() not in ('','uninitialized')
     state=[]
-    for name in ('/var/lib/maas-bootstrap','/var/lib/gpustack','/root/.gpustack','/etc/gpustack'):
+    for name in ('/run/maas-bootstrap','/etc/maas/pp-runtime-witness.json','/etc/maas/pp-runtime-witness.key',
+                 '/var/lib/maas-bootstrap','/var/lib/gpustack','/root/.gpustack','/etc/gpustack'):
         p=Path(name)
         if p.exists() and (not p.is_dir() or any(p.iterdir())):state.append(name)
     blockers=[]
