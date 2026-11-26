@@ -112,6 +112,25 @@ A 上各完成一笔真实同步和异步 OCR，均核对了 GPU 结束回执和
 
 本轮保留执行前的共享副本配置。临时凭据、测试数据和写入开关在验收后回收，既有历史 `UNKNOWN` 保留。后续验收需要临时调减共享模型时，可以跨轮保留缩减后的副本数。长时间失联及重连、批量样本和 P95 仍待验收。[Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
+### Worker 长失联与批量结清验收（2026-11-26）
+
+在共享测试 MaaS 上，只为常驻 A 卡的 PP-OCRv4 试点路由开启自动结清。异步任务获得 GPU 授权后，暂停该 worker 的 GPUStack 管理容器、隔离宿主机证明进程的 HTTPS 出站，并终止原推理容器。GPUStack 先后观察到 `unreachable` 和 `not_ready`。从确认 worker 失联起持续观察 901.5 秒，43 次账本采样均显示同一条执行保持 `UNKNOWN`，签名终止证明为空。解除隔离后约 4.1 秒，MaaS 核验原运行实例的签名终止证明并自动结清。原任务仍为 `FAILED`，尝试一次，无成功计量。A 随后重新就绪。[失联记录](../../results/maas-e1-runtime-recovery-20261126/long-outage.json)
+
+重连后，在同一路由上交替注入同步和异步故障，每类各 10 笔。每笔在实际获得 GPU 授权后中断，确认进入 `UNKNOWN`，再核验原进程的签名终止证明及 `RESOLVED`。每轮等待 A 恢复派发后再开始下一笔。20 笔故障均结清且均无成功计量。批量结束后，A 再次完成了同步和异步真实 OCR，两笔成功请求各计量一次。
+
+| 类型 | 样本 | 中位数 | P95 |
+|---|---:|---:|---:|
+| 同步 | 10 | 31.922 秒 | 35.012 秒 |
+| 异步 | 10 | 31.147 秒 | 34.339 秒 |
+
+时延从账本记录的 `unknown_since` 算到该条执行首次转为 `RESOLVED`。P95 采用最近秩法，单组 10 笔时取该组最大值，两组均低于 60 秒目标。失联样本单独统计。以下命令从已脱敏的实测样本重算结果。[批量样本](../../results/maas-e1-runtime-recovery-20261126/samples.jsonl) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
+```sh
+python3 scripts/maas/runtime/summarize_runtime_recovery.py results/maas-e1-runtime-recovery-20261126/samples.jsonl
+```
+
+验收完成后清理故障规则、看门狗、试验凭据及数据，试点回到只读核查。共享模型沿用执行前的副本配置，既有历史 `UNKNOWN` 保留。
+
 ## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：
