@@ -16,6 +16,8 @@ PP、Ovis、Unlimited 以及后续 GPU 模型共用执行守卫和宿主机见�
 
 持续观察沿用测试控制端的 `/usr/local/libexec/maas/observe_pp_settlement.py`。安装 `deploy/maas/systemd/maas-model-recovery-observe@.{service,timer}` 后，按逻辑模型启用实例，例如 `systemctl enable --now maas-model-recovery-observe@ocr.ovisocr3.timer`。每五分钟读取一次，分别记录同步与异步 UNKNOWN 数量、成功计量、签名不匹配数及最近 24 小时的结清 P95。每类至少 10 笔验签样本才给出 P95。
 
+新快照克隆后，可将仓库中的 `scripts/maas/runtime/verify_worker_receipts.py` 通过 SSH 标准输入传给每台新 worker，执行 `PYTHONPATH=/opt/maas/lib python3 -B - --runtime-recovery`。按 worker 汇总输出的签名 revision、worker ID 和各路由实际副本数。空的 `serving` 表示该机尚无可验的推理副本。核对控制端的 GPU UUID 选卡范围与实际注册结果后，再通过 MaaS 提交故障样本。
+
 实际发布从[运维手册「新增模型上线与回退」](../../docs/handbooks/OPERATIONS.md#13-新增模型上线与回退)开始。手册按顺序说明何时可复用母版、如何接入执行守卫、发布签名镜像规则、逐副本核验本机回执，以及何时开放流量或回退。下文提供适配器、目录配置与隔离测试样例。
 
 一套支持文档依赖的 MaaS API、同版本执行器和一个 PostgreSQL 任务库可以使用同一份模型目录承载图片与文档 OCR。模型在 GPUStack 部署后，优先从现有适配器中选择。输入预处理、推理协议、结果解析或计量语义有实际差异时，再为对应协议开发可复用适配器。

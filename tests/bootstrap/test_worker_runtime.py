@@ -87,6 +87,37 @@ def test_invalid_runtime_settings_are_rejected(change, diskless):
         execution.configuration(manifest)
 
 
+def test_readonly_new_clone_verifier_checks_this_boot(diskless, tmp_path, monkeypatch):
+    from maas_bootstrap import runtime_witness
+    from maas_bootstrap.client import LocalState
+    from scripts.maas.runtime import verify_worker_receipts as check
+    settings, env = release(diskless)
+    rule, = env['manifest']['worker_runtime']['images']
+    rule.update(receipt_uid=os.geteuid(), runtime_witness={'routes':['next-engine']})
+    env = diskless[2](env['manifest'])
+    env['registration'].pop('token')
+    verified = ReleaseVerifier().verify(settings, env)
+    state = LocalState(settings.data['state_dir'])
+    state.prepare(env, verified)
+    atomic_json(state.root/'identity.json', dict(worker_id=7, gpu_uuid=GPU, fingerprint=verified['fingerprint']))
+    boot = str(uuid4())
+    bootfile = tmp_path/'boot'
+    bootfile.write_text(boot)
+    monkeypatch.setattr(runtime_witness, 'BOOT', bootfile)
+    read = execution.read_file
+    monkeypatch.setattr(execution, 'read_file', lambda p, **kw:
+                        boot.encode() if str(p) == '/proc/sys/kernel/random/boot_id' else read(p, **kw))
+    execution.boot_witness_material(settings, boot, create=True)
+    execution.prepare(settings, env['manifest'], dict(witness_enrolled=True, execution_key='c'*64), gpu=GPU)
+    monkeypatch.setattr(Path, 'is_socket', lambda p: str(p) == execution.RUNTIME_SOCKET_DIRECTORY+'/evidence.sock')
+    monkeypatch.setattr(check, 'output', lambda *a: {'is-active':'active', 'is-enabled':'enabled',
+                                                     'show':'success', 'ps':''}[a[1]])
+    assert check.verify(settings, runtime_recovery=True)['serving'] == {}
+    bootfile.write_text(str(uuid4()))
+    with pytest.raises(ValueError, match='this boot|This boot'):
+        check.verify(settings, runtime_recovery=True)
+
+
 @pytest.mark.parametrize('local_receipts', [False, True])
 def test_docker_options_and_readonly_mounts_are_scoped(tmp_path, diskless, monkeypatch, local_receipts):
     _, envelope = release(diskless)

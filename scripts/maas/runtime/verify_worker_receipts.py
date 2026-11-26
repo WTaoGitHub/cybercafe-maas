@@ -3,6 +3,8 @@
 Run as a Docker/systemd operator with PYTHONPATH=/opt/maas/lib:
     python3 -B verify_worker_receipts.py --guard-sha256 <released execution_guard.py SHA-256>
 The current PP, Ovis and Unlimited entrypoints all load the guard from their script directory.
+For a fresh clone using a signed recovery release, pass --runtime-recovery instead.
+This verifies each image by its own released digest, entrypoint and original host cgroup.
 """
 import argparse
 import json
@@ -11,14 +13,14 @@ import re
 import subprocess
 
 from maas_bootstrap import execution
-from maas_bootstrap.client import LocalSettings, LocalState, ReleaseVerifier
+from maas_bootstrap.client import LocalSettings, LocalState, ReleaseVerifier, read_file
 
 
 def output(*args):
     return subprocess.check_output(args, text=True, timeout=20).strip()
 
 
-def verify(settings, guard_sha256):
+def verify(settings, guard_sha256=None, *, runtime_recovery=False):
     state = LocalState(settings.data['state_dir'])
     identity = state.read('identity.json')
     fingerprint = identity['fingerprint']
@@ -30,6 +32,19 @@ def verify(settings, guard_sha256):
         raise ValueError('Applied release does not match the worker identity')
     rules = envelope['manifest']['worker_runtime']['images']
     root = execution.local_directory(settings)
+    routes = {}
+    if runtime_recovery:
+        from maas_bootstrap import runtime_witness as witness
+        routes = execution.witness_routes(envelope['manifest']['worker_runtime'])
+        managed = json.loads(read_file(root/'witness.json', secret=True))
+        boot = witness.BOOT.read_text().strip()
+        if (not routes or managed['gpu_uuid'] != identity['gpu_uuid'] or managed['boot_id'] != boot
+                or Path(managed['key_file']) != root/f'host-{boot}.key'
+                or not Path(managed['socket']).is_socket() or witness.current_routes(managed) != routes
+                or output('systemctl', 'is-active', 'maas-pp-runtime-witness.service') != 'active'):
+            raise ValueError('This boot does not match the released host witness')
+        if read_file(managed['key_file'], secret=True) == read_file(root/execution.KEY_NAME, secret=True):
+            raise ValueError('Host and inference signers must be independent')
     unit = 'maas-worker-receipts'
     if (output('systemctl', 'is-enabled', unit + '.timer') != 'enabled'
             or output('systemctl', 'is-active', unit + '.timer') != 'active'
@@ -48,7 +63,7 @@ def verify(settings, guard_sha256):
         rule = next((r for r in rules if r['digest'] in digests
                      and r['entrypoint'] == config['Entrypoint'] and 'execution_env_prefix' in r), None)
         if rule is None:
-            if any(key.startswith('MAAS_') and '_EXECUTION_' in key for key in env):
+            if runtime_recovery or any(key.startswith('MAAS_') and '_EXECUTION_' in key for key in env):
                 raise ValueError(f'{name} uses an execution guard outside the signed image rules')
             continue
         if 'receipt_uid' not in rule:
@@ -64,9 +79,19 @@ def verify(settings, guard_sha256):
             if (env.get(prefix + field) != target or mount.get('Type') != 'bind'
                     or mount.get('Source') != str(source) or mount.get('RW') is not writable):
                 raise ValueError(f'{name} has an unexpected {field} mount')
-        guard = PurePosixPath(rule['entrypoint'][-1]).with_name('execution_guard.py')
-        if output('docker', 'exec', name, 'sha256sum', str(guard)).split()[0] != guard_sha256:
-            raise ValueError(f'{name} has a different guard than the released source')
+        if runtime_recovery:
+            route, original = witness.bind_peer(container['State']['Pid'], routes)
+            target = execution.RUNTIME_SOCKET_DIRECTORY
+            mount = mounts.get(target, {})
+            if (env.get(prefix+'RUNTIME_SOCKET') != target+'/evidence.sock' or mount.get('RW') is not False
+                    or mount.get('Type') != 'bind' or mount.get('Source') != target
+                    or witness.inspect_original(original, identity['gpu_uuid']) != 'present'):
+                raise ValueError(f'{name} has no verified original runtime on this boot')
+            prefix = route
+        else:
+            guard = PurePosixPath(rule['entrypoint'][-1]).with_name('execution_guard.py')
+            if output('docker', 'exec', name, 'sha256sum', str(guard)).split()[0] != guard_sha256:
+                raise ValueError(f'{name} has a different guard than the released source')
         counts[prefix] = counts.get(prefix, 0) + 1
     return {'worker_id': identity['worker_id'], 'revision': metadata['revision'], 'serving': counts}
 
@@ -74,8 +99,10 @@ def verify(settings, guard_sha256):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=Path('/etc/maas/bootstrap.json'))
-    parser.add_argument('--guard-sha256', required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--guard-sha256')
+    mode.add_argument('--runtime-recovery', action='store_true')
     args = parser.parse_args()
-    if not re.fullmatch('[0-9a-f]{64}', args.guard_sha256):
+    if args.guard_sha256 and not re.fullmatch('[0-9a-f]{64}', args.guard_sha256):
         parser.error('Supply the lowercase SHA-256 of the released guard source')
-    print(json.dumps(verify(LocalSettings(args.config), args.guard_sha256), sort_keys=True))
+    print(json.dumps(verify(LocalSettings(args.config), args.guard_sha256, runtime_recovery=args.runtime_recovery), sort_keys=True))
