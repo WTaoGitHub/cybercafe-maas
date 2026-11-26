@@ -54,6 +54,10 @@ def test_grant_window_excludes_previously_dispatched_work_and_detects_late_isola
         assert 0 <= result['sync']['seconds_to_any_healthy_grant'] < result['sync']['seconds_to_healthy_grant']
         assert result['sync']['isolated_grants'] == 2
         assert result['async']['seconds_to_healthy_grant'] is None
+        c.execute("UPDATE sync_activity SET project='dedicated-pin' WHERE token='origin'")
+        with pytest.raises(ValueError, match='No matching project fault'):
+            pp_grant_window.read_window(c, project, 'sync', 'origin')
+        assert pp_grant_window.read_window(c, project, 'sync', 'origin', 'dedicated-pin')['traffic'] == result
         pp_grant_window.remove(c, project)
 
 

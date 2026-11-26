@@ -1,7 +1,8 @@
 """Measure a PP withdrawal in a test database using the GPU-start transaction clock.
 
 Set MAAS_DATABASE_URL in the test control environment. Use a dedicated test_agent_pp_*
-project for both continuous traffic and fault requests. Install before sending traffic:
+project for continuous traffic. If the fault uses an existing dedicated route
+credential, pass its project as --origin-project to read. Install before sending traffic:
 
   python -m scripts.maas.runtime.pp_grant_window install PROJECT
   python -m scripts.maas.runtime.pp_grant_window traffic PROJECT --url http://127.0.0.1:18830 --seconds 300
@@ -56,13 +57,13 @@ def install(conn, project):
             EXECUTE FUNCTION {schema}.track()''')
 
 
-def read_window(conn, project, kind, token):
+def read_window(conn, project, kind, token, origin_project=None):
     schema = project_name(project)
     source = ('sync_activity b' if kind == 'sync' else
               'backend_activity b JOIN tasks t ON t.id=b.task_id')
     row = conn.execute(f"""SELECT b.state,b.unknown_since,b.updated_at,b.gpu_uuid,b.resolution_reason,
         clock_timestamp() AS sampled FROM {source} WHERE b.token=%s AND project=%s
-        AND b.gpu_uuid IS NOT NULL AND b.unknown_since IS NOT NULL""", (token, project)).fetchone()
+        AND b.gpu_uuid IS NOT NULL AND b.unknown_since IS NOT NULL""", (token, origin_project or project)).fetchone()
     if not row:
         raise ValueError('No matching project fault with an UNKNOWN timestamp and GPU grant')
     if row['state'] == 'UNKNOWN':
@@ -166,6 +167,7 @@ if __name__ == '__main__':
         if action == 'read':
             sub.add_argument('--kind', choices=TABLES, required=True)
             sub.add_argument('--token', required=True)
+            sub.add_argument('--origin-project', help='Project owning the fault, if distinct from the traffic project')
         elif action == 'traffic':
             sub.add_argument('--url', required=True)
             sub.add_argument('--seconds', type=int, required=True)
@@ -176,7 +178,7 @@ if __name__ == '__main__':
     with psycopg.connect(os.environ['MAAS_DATABASE_URL'], row_factory=dict_row) as conn:
         if args.action == 'read':
             conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
-            print(json.dumps(read_window(conn, args.project, args.kind, args.token)))
+            print(json.dumps(read_window(conn, args.project, args.kind, args.token, args.origin_project)))
         elif args.action == 'install':
             install(conn, args.project)
         else:

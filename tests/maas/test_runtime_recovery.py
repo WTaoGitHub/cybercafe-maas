@@ -179,6 +179,10 @@ def test_pinned_gpu_runtime_can_settle_and_peers_keep_dispatching(pinned, tmp_pa
     assert target == route
     owner.report('sync.'+token, finished=False)
     ingress.finish(token, False)
+    with service.db.transaction() as conn:
+        gpu = owner.identity['gpu_uuid']
+        assert conn.execute("SELECT isolated_gpu_uuid FROM inference_slots WHERE isolated_gpu_uuid=%s",
+                            (gpu,)).fetchall() == [{'isolated_gpu_uuid': gpu}]
     age(service)
     next_token, target = ingress.begin_dispatch(who, 'ocr.default', 30)
     assert target == healthy.identity['route']
@@ -195,10 +199,53 @@ def test_pinned_gpu_runtime_can_settle_and_peers_keep_dispatching(pinned, tmp_pa
     monkeypatch.setattr(runtime_witness, 'inspect_original', lambda identity,gpu: 'terminated')
     runtime_witness.answer(None, '', HOST_KEY, owner.identity['gpu_uuid'], {route})
     assert service.metrics()['unknown_sync_activity'] == 0
+    owner.report_finished('sync.'+token)  # Original finish arriving after the signed host proof.
+    owner.report_finished('sync.'+token)
     with service.db.transaction() as conn:
         row = conn.execute('SELECT state, runtime_instance, guard_scope FROM sync_activity WHERE token=%s',
                            (token,)).fetchone()
         assert row == {'state': 'RESOLVED', 'runtime_instance': owner.identity['instance'], 'guard_scope': None}
+        assert not conn.execute('SELECT 1 FROM inference_slots').fetchone()
+        assert not conn.execute('SELECT 1 FROM sync_usage_events WHERE token=%s', (token,)).fetchone()
+
+
+def test_pinned_isolation_requires_bound_evidence_and_all_unknowns_to_finish(pinned, tmp_path):
+    from maas_platform.quarantine import unresolved
+
+    client, service, owner, _ = enable(pinned, tmp_path)
+    gpu, route, instance = (owner.identity[k] for k in ('gpu_uuid', 'route', 'instance'))
+    ingress = client.app.state.sync_ingress
+    original, _ = ingress.begin_dispatch(service.auth.authenticate('gpustack_registered_a'), 'ocr.default', 30)
+    owner.report('sync.'+original, finished=False)
+    owner.report_finished('sync.'+original)
+    ingress.finish(original, True)
+    with service.db.transaction() as c:
+        for token in ('test_agent_first', 'test_agent_second'):
+            c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,execution_guard,
+                dispatch_route,dispatch_gpu_uuid,gpu_uuid,gpu_instance,runtime_instance)
+                VALUES (%s,'test_agent_pin','ocr.default','UNKNOWN',now(),true,%s,%s,%s,%s,%s)""",
+                      (token, route, gpu, gpu, instance, instance))
+        def cards():
+            admission = [r['isolated_gpu_uuid'] for r in unresolved(c)]
+            gateway = [r['isolated_gpu_uuid'] for r in c.execute('SELECT isolated_gpu_uuid FROM inference_slots')]
+            assert sorted(admission, key=str) == sorted(gateway, key=str)
+            return sorted(admission, key=str)
+
+        assert cards() == [gpu, gpu]
+        c.execute("UPDATE sync_activity SET state='RESOLVED' WHERE token='test_agent_first'")
+        assert cards() == [gpu]
+        for column, invalid, original in [('dispatch_route', 'other', route), ('gpu_instance', 'other', instance),
+                ('dispatch_gpu_uuid', None, gpu), ('runtime_instance', None, instance),
+                ('execution_guard', False, True), ('guard_conflict', True, False)]:
+            c.execute(f"UPDATE sync_activity SET {column}=%s WHERE token='test_agent_second'", (invalid,))
+            assert cards() == [None]
+            c.execute(f"UPDATE sync_activity SET {column}=%s WHERE token='test_agent_second'", (original,))
+            assert cards() == [gpu]
+        c.execute("""UPDATE sync_activity SET isolation_evidence='Operator checked the original dispatch',
+            runtime_instance=NULL WHERE token='test_agent_second'""")
+        assert cards() == [gpu]
+        c.execute("UPDATE sync_activity SET state='COMPLETED' WHERE token='test_agent_second'")
+        assert cards() == []
 
 
 def test_host_binding_reads_actual_peer_cgroup(tmp_path, monkeypatch):

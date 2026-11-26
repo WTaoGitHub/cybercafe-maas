@@ -153,3 +153,5 @@ python -m scripts.maas.runtime.pp_grant_window remove "$TEST_PROJECT"
 探针在数据库写入 GPU 授权的同一事务中记录时间。每类流量分别从原任务的 `unknown_since` 计时，取故障后新派发且最先在健康卡获得授权的请求。异步排队回执不参与计算。窗口包含探针发送间隔和执行器取单延迟，因此表示这组流量实际等到新授权的时间。探针还会检查整个 UNKNOWN 期间的隔离卡授权，包括故障前已派发、随后才申请 GPU 的请求。网关重试另用 Envoy 生效路由和分集群尝试计数验证。
 
 2026-11-26 在测试环境对 worker 32 做了前后各 20 次相同故障。按上述口径，同步停派 P95 从 18.10 秒降至 10.54 秒，异步从 17.76 秒降至 10.05 秒。此结果适用于共享 PP 自身产生且带有执行范围证据的 UNKNOWN。A 专用单卡路由产生的 UNKNOWN 有独立跟踪记录。[40 次逐笔实测](../../results/maas-e1-shared-pp-grant-latency-20261126/acceptance.json) · [A 专用路由问题 #85](https://github.com/WTaoGitHub/cybercafe-maas/issues/85)
+
+迁移 `020_pinned_gpu_quarantine.sql` 支持 A 与共享 PP 位于同一物理卡的情形。固定路由上的原请求进入 UNKNOWN 时，数据库核对派发 GPU、获得授权的 GPU 和进程，以及宿主机签名登记的原路由和运行身份。记录相符、执行守卫生效且无冲突时，把该卡写入原活动的隔离记录。观察器随后撤下共享入口的同卡副本。已有 UNKNOWN 使用相同条件重新核对，保留首次进入 UNKNOWN 的时间和人工隔离证据。同一卡所有相关活动都结清后，网关和容量观察器重新验证副本。缺少独占落点证据时继续保守阻断。
