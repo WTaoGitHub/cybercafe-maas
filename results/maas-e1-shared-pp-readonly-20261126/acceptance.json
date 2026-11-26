@@ -1,0 +1,160 @@
+{
+  "environment": "test",
+  "logical_model": "ocr.default",
+  "upstream": "maas-ocr",
+  "backend_version": "runtime-witness-702eeef",
+  "shared_model_id": 1,
+  "allowed_worker_ids": [
+    31,
+    32,
+    34
+  ],
+  "active_auto_routes": [
+    "maas-ocr-witness-canary"
+  ],
+  "test_path": "MaaS async OCR -> Higress shared PP -> actual guard grant",
+  "replicas": [
+    {
+      "replaced_native_id": 478,
+      "native_id": 486,
+      "worker": 31,
+      "privileged": false,
+      "witness_socket_readonly": true,
+      "fault_container_sha256": "a1c4a7aab8209711ea009ae4c9995ebec8dcf9993da3fa98daf6c13df2ecdf61",
+      "unknown_since": "2026-11-26T04:18:13.947898+00:00",
+      "host_present_at": "2026-11-26T04:18:44.094708+00:00",
+      "state_when_present": "UNKNOWN",
+      "terminal_proof_when_present": false,
+      "host_terminated_at": "2026-11-26T04:19:14.391863+00:00",
+      "signed_original_termination_verified": true,
+      "state_after_verified_termination": "UNKNOWN",
+      "business_task": "FAILED",
+      "attempts": 1,
+      "successful_charges": 0,
+      "replacement_smoke": {
+        "worker": 31,
+        "guarded_ocr": "SUCCEEDED",
+        "finished_receipt": true,
+        "verified_host_binding": true,
+        "charged": 1
+      }
+    },
+    {
+      "replaced_native_id": 476,
+      "native_id": 488,
+      "worker": 32,
+      "privileged": false,
+      "witness_socket_readonly": true,
+      "fault_container_sha256": "7733fe26c2ffc0427b9733d7d91d7bde2a2cb375a44f2c212a2a8ad9fda09f92",
+      "unknown_since": "2026-11-26T04:22:06.680874+00:00",
+      "host_present_at": "2026-11-26T04:22:40.947348+00:00",
+      "state_when_present": "UNKNOWN",
+      "terminal_proof_when_present": false,
+      "host_terminated_at": "2026-11-26T04:23:11.281236+00:00",
+      "signed_original_termination_verified": true,
+      "state_after_verified_termination": "UNKNOWN",
+      "business_task": "FAILED",
+      "attempts": 1,
+      "successful_charges": 0,
+      "replacement_smoke": {
+        "worker": 32,
+        "guarded_ocr": "SUCCEEDED",
+        "finished_receipt": true,
+        "verified_host_binding": true,
+        "charged": 1
+      }
+    },
+    {
+      "replaced_native_id": 479,
+      "native_id": 489,
+      "worker": 32,
+      "privileged": false,
+      "witness_socket_readonly": true,
+      "fault_container_sha256": "c7126d19b6d3d2d4b845c87edbbbb15d56cee6fd32f46c2350967d1d3bab8801",
+      "unknown_since": "2026-11-26T04:19:59.046191+00:00",
+      "host_present_at": "2026-11-26T04:20:29.882519+00:00",
+      "state_when_present": "UNKNOWN",
+      "terminal_proof_when_present": false,
+      "host_terminated_at": "2026-11-26T04:21:00.179468+00:00",
+      "signed_original_termination_verified": true,
+      "state_after_verified_termination": "UNKNOWN",
+      "business_task": "FAILED",
+      "attempts": 1,
+      "successful_charges": 0,
+      "replacement_smoke": {
+        "worker": 32,
+        "guarded_ocr": "SUCCEEDED",
+        "finished_receipt": true,
+        "verified_host_binding": true,
+        "charged": 1
+      }
+    },
+    {
+      "replaced_native_id": 484,
+      "native_id": 485,
+      "worker": 34,
+      "privileged": false,
+      "witness_socket_readonly": true,
+      "fault_container_sha256": "635f11d8c22c5bcb2a31378dde2eed6573b5cbe5303cad7838eb18d114bb039a",
+      "unknown_since": "2026-11-26T04:23:57.616113+00:00",
+      "host_present_at": "2026-11-26T04:24:29.302812+00:00",
+      "state_when_present": "UNKNOWN",
+      "terminal_proof_when_present": false,
+      "host_terminated_at": "2026-11-26T04:24:59.609732+00:00",
+      "signed_original_termination_verified": true,
+      "state_after_verified_termination": "UNKNOWN",
+      "business_task": "FAILED",
+      "attempts": 1,
+      "successful_charges": 0,
+      "replacement_smoke": {
+        "worker": 34,
+        "guarded_ocr": "SUCCEEDED",
+        "finished_receipt": true,
+        "verified_host_binding": true,
+        "charged": 1
+      }
+    }
+  ],
+  "supplemental_first_trial": {
+    "native_id": 485,
+    "native_recovery_preceded_first_host_challenge": true,
+    "verified_termination": true,
+    "state": "UNKNOWN",
+    "counted_as_present_pair": false
+  },
+  "temporary_staging_native_id": 487,
+  "final_ready_slots": {
+    "ocr.default": 4,
+    "ocr.pp-witness-canary": 1
+  },
+  "other_native_replicas": {
+    "Ovis": [
+      2,
+      2
+    ],
+    "Unlimited OCR": [
+      1,
+      1
+    ]
+  },
+  "canary_observation": {
+    "count": 8,
+    "first": "2026-11-26T03:51:42.476651+00:00",
+    "last": "2026-11-26T04:26:48.519734+00:00",
+    "all_auto": true,
+    "all_unpaused": true,
+    "ready_slots_observed": [
+      0,
+      1
+    ],
+    "max_gap_seconds": 301.03,
+    "journal_failures": 0,
+    "bad_proofs": 0,
+    "timer": "active"
+  },
+  "cleanup": {
+    "remaining_test_tasks": [],
+    "historical_unknown": 1
+  },
+  "readback_at": "2026-11-26T04:29:00.399566+00:00"
+}

@@ -156,6 +156,21 @@ python3 scripts/maas/runtime/summarize_runtime_recovery.py results/maas-e1-runti
 
 A 路由继续自动结清。控制端每五分钟分别采样同步、异步执行账本。首个样本在 11:21 观察到 A 有一个就绪并发位，两类待结清均为零。滚动 24 小时窗口内没有留存的自动结清样本，当前 P95 无值。[采样与查看方法](../../deploy/maas/INFERENCE-QUARANTINE.md#常驻试点的账本采样) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
 
+### 共享 PP 四副本只读终止证明验收（2026-11-26）
+
+测试环境共享入口 `ocr.default` 继续使用 `maas-ocr`。四个副本逐个换到已固定镜像的 `runtime-witness-702eeef` 后端版本。新旧版本混合期间共享池停止新派发。31、32 按签名发布完成同 GPU、同 worker 编号的管理容器接续。为排空 32，原 479 的替代副本先在 31 就绪，再移回 32。34 的同一个宿主机证明服务分别核对 A 和共享容器的路由与镜像。共享部署的可调度 GPU 限定为已登记证明的三张卡。
+
+| Worker | 旧共享副本 → 验收副本 | 原进程存在 | 原进程退出 | 故障后新进程 |
+|---|---|---|---|---|
+| 31 | 478 → 486 | `present`，活动为 `UNKNOWN` | 原实例签名通过，仍为 `UNKNOWN` | OCR 成功，计量一次 |
+| 32 | 476 → 488 | `present`，活动为 `UNKNOWN` | 原实例签名通过，仍为 `UNKNOWN` | OCR 成功，计量一次 |
+| 32 | 479 → 487（暂驻 31）→ 489 | `present`，活动为 `UNKNOWN` | 原实例签名通过，仍为 `UNKNOWN` | OCR 成功，计量一次 |
+| 34 | 484 → 485 | `present`，活动为 `UNKNOWN` | 原实例签名通过，仍为 `UNKNOWN` | OCR 成功，计量一次 |
+
+故障请求通过共享 MaaS OCR 入口和 Higress 实际派发。拿到 GPU 授权后才暂停对应推理容器。首次试验中 GPUStack 提前回收了原容器，只取得退出证明，该次单独记录。随后逐个短暂停住对应的 GPUStack 管理容器，宿主机证明服务持续运行。收到 `present` 并读回同一条 `UNKNOWN` 后，终止该推理容器并恢复管理进程。控制端验证了与原尝试、GPU、守卫进程、容器和挑战匹配的宿主机签名。四笔故障任务均为 `FAILED`，各执行一次，成功计量为零。故障后的四个替换进程均核对了非特权模式、证明套接字的只读挂载和原运行身份绑定，并分别完成真实 OCR。
+
+收尾时共享 PP 为 4/4，A 为 1/1。A 的自动结清与五分钟采样持续运行。共享路由只登记证据，四笔测试活动在签名到达后仍为 `UNKNOWN`，经逐笔核验后清理了隔离测试数据。11 月 24 日的历史未决活动仍保留。共享路由的自动结清及其时延属于下一阶段。[逐副本结果](../../results/maas-e1-shared-pp-readonly-20261126/acceptance.json) · [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2)
+
 ## worker 关机事件通知（2026-11-18）
 
 本模块的独立[设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)已完成，发送、接收和清理代码及部署均待实施。只负责三项：
