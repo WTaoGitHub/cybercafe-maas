@@ -377,6 +377,35 @@ def test_one_gpu_answers_both_routes_and_ignores_unenrolled_route(monkeypatch):
         assert request['signature'] == signature(HOST_KEY, 'inspect', payload)
 
 
+@pytest.mark.parametrize('kind', ['task', 'sync'])
+def test_executor_rechecks_retained_evidence_without_any_online_host(protected, tmp_path, kind):
+    from maas_platform.runtime_recovery import apply_verified
+    client, service, owner, _ = enable(protected, tmp_path)
+    token, close = create_attempt(protected, kind)
+    gpu = owner.identity['gpu_uuid']
+    owner.report(kind+'.'+token, finished=False)
+    close()
+    age(service)
+    check, = request(client, gpu).json()['checks']
+    assert report(client, gpu, check).status_code == 204
+    settings = service.settings
+    settings.runtime_proof_apply_routes = {owner.identity['route']}
+    keyfile = settings.runtime_proof_keys_file
+    original = keyfile.read_text()
+    keyfile.write_text(json.dumps({gpu:'5'*64}))
+    apply_verified(service.db, settings)
+    def state():
+        with service.db.transaction() as c:
+            return c.execute(f'SELECT state,updated_at FROM {TABLE[kind]} WHERE token=%s',(token,)).fetchone()
+    assert state()['state'] == 'UNKNOWN'
+    keyfile.write_text(original)
+    apply_verified(service.db, settings)
+    settled = state()
+    assert settled['state'] == 'RESOLVED'
+    apply_verified(service.db, settings)
+    assert state() == settled
+
+
 def test_catalog_recovery_requires_original_boot_and_grant(protected, tmp_path):
     client, service, owner, _ = enable(protected, tmp_path)
     settings = service.settings

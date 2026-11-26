@@ -117,15 +117,19 @@ def settle_runtime(conn, row, nonce):
                      (nonce, row['instance'], row['instance'], row['gpu_uuid'], row['route']))
 
 
-def apply_verified(db, gpu, key, apply_routes, boot=None):
+def apply_verified(db, settings, gpu=None, boot=None):
+    if not (settings.runtime_boot_keys_dir or settings.runtime_proof_keys_file):
+        return
+    apply_routes = settings.automatic_runtime_routes()
     if not apply_routes:
         return
     with db.transaction() as conn:
         rows = conn.execute(f"""SELECT r.* FROM execution_runtime r
-            WHERE r.gpu_uuid=%s AND r.signer_boot IS NOT DISTINCT FROM %s::text AND r.route=ANY(%s) AND r.terminal_proof IS NOT NULL
-              AND (EXISTS(SELECT 1 FROM backend_activity WHERE runtime_instance=r.instance AND {QUALIFIED_UNKNOWN})
-                OR EXISTS(SELECT 1 FROM sync_activity WHERE runtime_instance=r.instance AND {QUALIFIED_UNKNOWN}))
-            ORDER BY r.last_checked_at,r.instance LIMIT 4""", (gpu, boot, list(apply_routes))).fetchall()
+            WHERE (%s::text IS NULL OR (r.gpu_uuid=%s AND r.signer_boot IS NOT DISTINCT FROM %s::text))
+              AND r.route=ANY(%s) AND r.terminal_proof IS NOT NULL AND r.instance IN (
+                  SELECT runtime_instance FROM backend_activity WHERE {QUALIFIED_UNKNOWN} UNION ALL
+                  SELECT runtime_instance FROM sync_activity WHERE {QUALIFIED_UNKNOWN})
+            ORDER BY r.next_check_at,r.instance LIMIT 4""", (gpu, gpu, boot, list(apply_routes))).fetchall()
         if not rows:
             return
         conn.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
@@ -134,13 +138,22 @@ def apply_verified(db, gpu, key, apply_routes, boot=None):
                                (candidate['instance'],)).fetchone()
             if not row or not row['terminal_proof']:
                 continue  # A new grant invalidated a candidate seen before locking.
-            payload = dict(row['terminal_proof'])
-            seen = payload.pop('signature')
-            expected = {**binding_payload(gpu, row['instance'], row['route'], row['identity']),
+            payload = dict(row['terminal_proof']) if isinstance(row['terminal_proof'], dict) else {}
+            seen = payload.pop('signature', None)
+            expected = {**binding_payload(row['gpu_uuid'], row['instance'], row['route'], row['identity']),
                         'outcome': 'terminated', 'nonce': payload.get('nonce')}
-            if payload == expected and hmac.compare_digest(seen, signature(key, 'inspect', expected)):
-                # Signed termination for this immutable process stays valid after a controller restart.
+            try:
+                key = host_key(settings, row['gpu_uuid'], row['signer_boot'])
+            except (OSError, ValueError):
+                key = None
+            if (key and payload == expected and isinstance(seen, str) and HEX.fullmatch(seen)
+                    and isinstance(expected['nonce'], str) and HEX.fullmatch(expected['nonce'])
+                    and hmac.compare_digest(seen, signature(key, 'inspect', expected))):
                 settle_runtime(conn, row, expected['nonce'])
+            else:
+                # Keep the quarantine and let other candidates advance past this batch.
+                conn.execute("UPDATE execution_runtime SET next_check_at=clock_timestamp()+interval '60 seconds' WHERE instance=%s",
+                             (row['instance'],))
 
 
 def poll(db, gpu, reconnected, boot=None):
@@ -205,6 +218,6 @@ def handle_host(db, settings, value, authorization):
     if key is None or not authorization.isascii() or not hmac.compare_digest(authorization, 'Bearer '+key):
         raise ServiceError('RUNTIME_PROOF_DENIED', 'Host credential rejected', 403)
     if isinstance(value, HostPoll):
-        apply_verified(db, value.gpu_uuid, key, settings.automatic_runtime_routes(), value.boot_id)
+        apply_verified(db, settings, value.gpu_uuid, value.boot_id)
         return poll(db, value.gpu_uuid, value.reconnected, value.boot_id)
     report(db, value, key, settings.automatic_runtime_routes())

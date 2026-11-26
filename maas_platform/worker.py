@@ -154,12 +154,17 @@ class Worker:
                     await asyncio.sleep(.5)
 
     async def _maintain(self, done):
+        from .runtime_recovery import apply_verified
         cleanup = PeriodicArtifactCleanup(self.service)
+        next_evidence = 0
         try:
             while not (done.is_set() or self.draining()):
                 try:
                     await asyncio.to_thread(self.service.recover)
                     await asyncio.to_thread(cleanup.tick)
+                    if time.monotonic() >= next_evidence:
+                        next_evidence = time.monotonic() + 5
+                        await asyncio.to_thread(apply_verified, self.service.db, self.service.settings)
                 except Exception:
                     log.warning('worker_maintenance_unavailable executor=%s', self.executor_id)
                 await wait_for_done(done, .5)
