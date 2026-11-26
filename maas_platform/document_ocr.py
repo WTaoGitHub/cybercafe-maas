@@ -13,6 +13,7 @@ from .ocr_connector import ImageReference, OCRAdapter
 MODEL_REVISION = '0480966938291445591f69f08a13b041c073a96a'
 RUNTIME_DIGEST = 'sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6'
 GUARDED_RUNTIME_DIGEST = 'sha256:9139bd41a0476782acee4be89363a5c1188c9910ed9211ce84d06920ac582615'
+WITNESSED_RUNTIME_DIGEST = 'sha256:a7c8520bb771fdf75248cb75ebf57fe072558960dbdf9b0a25573c6017cb156f'
 PROFILE = 'pdfium5.15.2-pages10-pixels50m-json-v1'
 MAX_RENDERED_REQUEST_BYTES = 96 * 1024**2
 
@@ -44,7 +45,7 @@ class DocumentOCRAdapter(OCRAdapter):
         required = {'model_revision': MODEL_REVISION,
                     'postprocessor_revision': POSTPROCESSOR_REVISION, 'document_profile': PROFILE}
         # Older pilots add the guard to the base image with read-only file mounts.
-        approved_runtimes = (RUNTIME_DIGEST, GUARDED_RUNTIME_DIGEST) if model.get('execution_guard') is True else (RUNTIME_DIGEST,)
+        approved_runtimes = (RUNTIME_DIGEST, GUARDED_RUNTIME_DIGEST, WITNESSED_RUNTIME_DIGEST) if model.get('execution_guard') is True else (RUNTIME_DIGEST,)
         if (any(model.get(k) != v for k, v in required.items())
                 or model.get('runtime_image_digest') not in approved_runtimes or model['max_runtime_s'] > 600):
             raise ValueError('Document catalog must pin the approved model, runtime, postprocessor and profile')

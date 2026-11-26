@@ -116,9 +116,11 @@ def test_untrusted_options_and_catalog_drift_rejected():
     adapter.validate_model(model())
 
 
-def test_guarded_catalog_accepts_guarded_image_and_legacy_mount():
+@pytest.mark.parametrize('digest', [GUARDED_RUNTIME_DIGEST,
+                                    'sha256:a7c8520bb771fdf75248cb75ebf57fe072558960dbdf9b0a25573c6017cb156f'])
+def test_guarded_catalog_accepts_guarded_image_and_legacy_mount(digest):
     adapter = DocumentOCRAdapter()
-    derived = {**model(), 'runtime_image_digest': GUARDED_RUNTIME_DIGEST}
+    derived = {**model(), 'runtime_image_digest': digest}
     with pytest.raises(ValueError):
         adapter.validate_model(derived)
     adapter.validate_model({**derived, 'execution_guard': True})
