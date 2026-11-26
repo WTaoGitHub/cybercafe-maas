@@ -270,3 +270,40 @@ def test_pp_runtime_socket_only_mounts_on_signed_pilot_image(tmp_path, diskless)
     image['entrypoint'] = ENTRYPOINT
     with pytest.raises(BootstrapError, match='WORKER_RUNTIME_POLICY_INVALID'):
         execution.configuration(manifest)
+
+
+def test_pp_witness_container_loses_privilege_before_gpu_mapping(tmp_path, monkeypatch, diskless):
+    _, envelope = release(diskless)
+    manifest = envelope['manifest']
+    image = manifest['worker_runtime']['images'][0]
+    image.update(execution_env_prefix='MAAS_PP_OCR_EXECUTION_', entrypoint=['python3', '/app/server.py'],
+                 runtime_witness=True)
+    policy = execution.configuration(manifest)
+    original = (b'class DockerDeployer:\n    def create(self):\n        if True:\n'
+                + worker_limits.RESOURCE_ANCHOR + b'            map_gpu()\n'
+                + worker_limits.ANCHOR + b'            pass\n')
+    monkeypatch.setattr(worker_limits, 'ORIGINAL_SHA256', hashlib.sha256(original).hexdigest())
+    args = dict(config=policy, execution_directory=tmp_path)
+    access = worker_limits.witness_container_access(policy)
+    old = original.replace(worker_limits.ANCHOR, worker_limits.configured_insertion(policy, tmp_path)
+                           + worker_limits.ANCHOR)
+    applied = worker_limits.runtime_source(old, **args)
+    assert access + worker_limits.RESOURCE_ANCHOR in applied
+    assert worker_limits.runtime_source(applied, **args) == applied
+    assert worker_limits.runtime_source(applied, enabled=False, **args) == original
+
+    run = object()
+    program = compile(dedent(access.decode()), '<access>', 'exec')
+
+    def create(digest, resources, entrypoint):
+        options = {'entrypoint': entrypoint, 'privileged': True}
+        exec(program, {'c': SimpleNamespace(profile=run, name='default', image='registry.invalid/model@'+digest,
+                                            resources=resources),
+                       'ContainerProfileEnum': SimpleNamespace(RUN=run), 'create_options': options})
+        return options['privileged']
+
+    assert not create(DIGEST, {'gpu': '0'}, image['entrypoint'])
+    assert create(OTHER_IMAGE, {'gpu': '0'}, image['entrypoint'])
+    assert create(DIGEST, {'gpu': '0'}, ENTRYPOINT)
+    with pytest.raises(ValueError, match='isolated GPU container'):
+        create(DIGEST, {'gpu': 'all'}, image['entrypoint'])

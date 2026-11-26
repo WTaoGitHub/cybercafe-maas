@@ -15,6 +15,7 @@ WORKER_IMAGE_ID = "sha256:3bd2f66800ecf702f6c108f5237b2a77592d73457578c9e99315ea
 SOURCE = PurePosixPath("/usr/local/lib/python3.11/dist-packages/gpustack_runtime/deployer/docker.py")
 ORIGINAL_SHA256 = "49ffc5e4b39f8956bde2ffca9543da911a4054ea6efc52f9850f577333ee997f"
 ANCHOR = b"            # Create the container.\n"
+RESOURCE_ANCHOR = b"            # Parameterize resources.\n"
 # Compatibility limits for releases without a worker_runtime declaration.
 OVIS_INSERTION = b'''            if (
                 c.profile == ContainerProfileEnum.RUN
@@ -111,16 +112,38 @@ def configured_insertion(config, execution_directory=None):
 ''' + options + '\n').encode()
 
 
+def witness_container_access(config) -> bytes:
+    images = sorted((image['digest'], tuple(image['entrypoint']))
+                    for image in config['images'] if image.get('runtime_witness'))
+    if not images:
+        return b''
+    # The native deployer uses privilege while resolving CUDA/CDI devices.
+    return f'''            if (
+                c.profile == ContainerProfileEnum.RUN and c.name == "default"
+                and (c.image.rpartition("@")[2], tuple(create_options.get("entrypoint") or ())) in {images!r}
+            ):
+                if ("all" in (c.resources or {{}}).values() or create_options.get("cap_add")
+                        or create_options.get("pid_mode")):
+                    raise ValueError("MaaS runtime witness requires an isolated GPU container")
+                create_options["privileged"] = False
+
+'''.encode()
+
+
 def runtime_source(current: bytes, *, enabled: bool = True, config=None, execution_directory=None) -> bytes:
     patch = INSERTION if config is None else configured_insertion(config, execution_directory)
-    original = current
+    access = b'' if config is None else witness_container_access(config)
+    original = current.replace(access + RESOURCE_ANCHOR, RESOURCE_ANCHOR, 1) if access else current
     for insertion in (patch, INSERTION, BASE_INSERTION, OVIS_INSERTION):
-        if insertion + ANCHOR in current:
-            original = current.replace(insertion + ANCHOR, ANCHOR, 1)
+        if insertion + ANCHOR in original:
+            original = original.replace(insertion + ANCHOR, ANCHOR, 1)
             break
-    if hashlib.sha256(original).hexdigest() != ORIGINAL_SHA256 or original.count(ANCHOR) != 1:
+    if (hashlib.sha256(original).hexdigest() != ORIGINAL_SHA256 or original.count(ANCHOR) != 1
+            or access and original.count(RESOURCE_ANCHOR) != 1):
         raise ValueError("Unrecognized GPUStack Docker runtime source")
-    return original.replace(ANCHOR, patch + ANCHOR) if enabled else original
+    if not enabled:
+        return original
+    return original.replace(ANCHOR, patch + ANCHOR).replace(RESOURCE_ANCHOR, access + RESOURCE_ANCHOR)
 
 
 def docker(*args: str, data: bytes | None = None) -> bytes:
