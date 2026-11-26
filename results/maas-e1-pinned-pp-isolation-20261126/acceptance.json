@@ -1,0 +1,1044 @@
+{
+  "environment": "test",
+  "issue": 85,
+  "fix_commit": "a597529",
+  "migration": "020_pinned_gpu_quarantine.sql",
+  "auto_routes": [
+    "maas-ocr",
+    "maas-ocr-witness-canary"
+  ],
+  "fault": "Terminate the host-bound PP process on worker 34 after a real A grant. Withhold witness connectivity until post-UNKNOWN shared sync and async grants and a real retry probe are observed. Serial faults, full native route restoration between trials.",
+  "origin": "Dedicated existing A credential. Synchronous original uses the production ingress handler and Higress. Asynchronous original uses the public HTTP task API and max_attempts=1. Shared traffic uses the normal synchronous and asynchronous HTTP endpoints.",
+  "metric": "Original UNKNOWN since timestamp to first actual healthy GPU grant on a subsequent shared dispatch. One request loop per kind at up to 1 Hz, at most two pending asynchronous tasks. Nearest-rank P95.",
+  "baseline": "Prior two pinned-origin preflights had no new healthy grants during the entire 35.46 s and 84.21 s UNKNOWN intervals; no baseline percentile is available.",
+  "isolated_worker": 34,
+  "withdrawn_shared_replica": 485,
+  "healthy_workers": [
+    31,
+    32
+  ],
+  "healthy_shared_replicas": [
+    486,
+    488,
+    489
+  ],
+  "healthy_grant_latency": {
+    "sync": {
+      "samples": 20,
+      "p95_seconds": 5.3206,
+      "max_seconds": 5.3369
+    },
+    "async": {
+      "samples": 20,
+      "p95_seconds": 4.5648,
+      "max_seconds": 4.621
+    }
+  },
+  "settlement_latency": {
+    "sync": {
+      "samples": 10,
+      "p95_seconds": 34.9077,
+      "max_seconds": 34.9077
+    },
+    "async": {
+      "samples": 10,
+      "p95_seconds": 34.212,
+      "max_seconds": 34.212
+    }
+  },
+  "original_success_charges": 0,
+  "isolated_grants": 0,
+  "diagnostic_healthy_retries": 40,
+  "native_fallback": "No active fallback upstream was present during these 20 faults.",
+  "healthy_successes": {
+    "async": 632,
+    "sync": 601
+  },
+  "shared_origin_control": {
+    "traffic": {
+      "async": {
+        "seconds": 9.194009,
+        "excluded": 0,
+        "workers": [
+          31,
+          34
+        ]
+      },
+      "sync": {
+        "seconds": 9.57232,
+        "excluded": 0,
+        "workers": [
+          31,
+          34
+        ]
+      }
+    },
+    "signed_settlement": true,
+    "billed": 0,
+    "healthy_retries": 2,
+    "excluded_attempts": 0,
+    "origin": "sync",
+    "isolated_worker": 32,
+    "healthy_workers": [
+      31,
+      34
+    ],
+    "note": "One control fault with an observed UNKNOWN window. An earlier request finished before injection and was excluded from the fault sample."
+  },
+  "settlement_metric": "Original UNKNOWN to signed settlement including the intentional withholding of witness traffic. Ten samples of each origin kind.",
+  "final_state": {
+    "auto_routes": [
+      "maas-ocr",
+      "maas-ocr-witness-canary"
+    ],
+    "canary_ready_replicas": 1,
+    "shared_ready_replicas": 4,
+    "preexisting_isolated_slots": 1,
+    "sampler_active": true,
+    "sampler_last_result": "success",
+    "test_credentials_revoked": true,
+    "test_records_removed": true
+  },
+  "cases": [
+    {
+      "trial": 1,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 5.320599,
+          "seconds_to_any_healthy_grant": 5.320599,
+          "seconds_since_previous_healthy_grant": 0.693704,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 27,
+          "isolated_grants": 0,
+          "eventually_successful": 27,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 4.564793,
+          "seconds_to_any_healthy_grant": 4.564793,
+          "seconds_since_previous_healthy_grant": 0.195648,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 29,
+          "isolated_grants": 0,
+          "eventually_successful": 29,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T07:58:22.003992+00:00",
+      "end": "2026-11-26T07:58:53.605378+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 2,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 3.778328,
+          "seconds_to_any_healthy_grant": 3.778328,
+          "seconds_since_previous_healthy_grant": 0.280046,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 30,
+          "isolated_grants": 0,
+          "eventually_successful": 30,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 3.235406,
+          "seconds_to_any_healthy_grant": 3.235406,
+          "seconds_since_previous_healthy_grant": 0.490114,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 32,
+          "isolated_grants": 0,
+          "eventually_successful": 32,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T07:59:05.605126+00:00",
+      "end": "2026-11-26T07:59:39.020170+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 3,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 4.663843,
+          "seconds_to_any_healthy_grant": 4.663843,
+          "seconds_since_previous_healthy_grant": 1.546489,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 29,
+          "isolated_grants": 0,
+          "eventually_successful": 29,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 4.394647,
+          "seconds_to_any_healthy_grant": 4.394647,
+          "seconds_since_previous_healthy_grant": 1.452418,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 30,
+          "isolated_grants": 0,
+          "eventually_successful": 30,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T07:59:51.928172+00:00",
+      "end": "2026-11-26T08:00:24.352260+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 4,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 2.818433,
+          "seconds_to_any_healthy_grant": 2.818433,
+          "seconds_since_previous_healthy_grant": 0.137426,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 3.259897,
+          "seconds_to_any_healthy_grant": 3.259897,
+          "seconds_since_previous_healthy_grant": 0.466843,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 32,
+          "isolated_grants": 0,
+          "eventually_successful": 32,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:00:36.514957+00:00",
+      "end": "2026-11-26T08:01:09.728698+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 5,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 1.634554,
+          "seconds_to_any_healthy_grant": 1.634554,
+          "seconds_since_previous_healthy_grant": 1.32372,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 33,
+          "isolated_grants": 0,
+          "eventually_successful": 33,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 1.528298,
+          "seconds_to_any_healthy_grant": 1.528298,
+          "seconds_since_previous_healthy_grant": 0.195817,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 34,
+          "isolated_grants": 0,
+          "eventually_successful": 34,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:01:20.707519+00:00",
+      "end": "2026-11-26T08:01:55.105131+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 6,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 2.20844,
+          "seconds_to_any_healthy_grant": 2.20844,
+          "seconds_since_previous_healthy_grant": 0.845011,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 29,
+          "isolated_grants": 0,
+          "eventually_successful": 29,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 1.707734,
+          "seconds_to_any_healthy_grant": 1.707734,
+          "seconds_since_previous_healthy_grant": 0.924327,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 30,
+          "isolated_grants": 0,
+          "eventually_successful": 30,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:02:05.203461+00:00",
+      "end": "2026-11-26T08:02:35.437978+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 7,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 2.946173,
+          "seconds_to_any_healthy_grant": 2.946173,
+          "seconds_since_previous_healthy_grant": 0.022949,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 29,
+          "isolated_grants": 0,
+          "eventually_successful": 29,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 2.692951,
+          "seconds_to_any_healthy_grant": 2.692951,
+          "seconds_since_previous_healthy_grant": 2.084491,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:02:44.460637+00:00",
+      "end": "2026-11-26T08:03:15.798389+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 8,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 4.217408,
+          "seconds_to_any_healthy_grant": 4.217408,
+          "seconds_since_previous_healthy_grant": 1.79207,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 30,
+          "isolated_grants": 0,
+          "eventually_successful": 30,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 3.78232,
+          "seconds_to_any_healthy_grant": 3.78232,
+          "seconds_since_previous_healthy_grant": 2.643724,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 32,
+          "isolated_grants": 0,
+          "eventually_successful": 32,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:03:27.198333+00:00",
+      "end": "2026-11-26T08:04:01.087599+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 9,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 1.354577,
+          "seconds_to_any_healthy_grant": 1.354577,
+          "seconds_since_previous_healthy_grant": 0.646158,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 33,
+          "isolated_grants": 0,
+          "eventually_successful": 33,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 1.853743,
+          "seconds_to_any_healthy_grant": 1.853743,
+          "seconds_since_previous_healthy_grant": 0.803303,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 34,
+          "isolated_grants": 0,
+          "eventually_successful": 34,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:04:12.035782+00:00",
+      "end": "2026-11-26T08:04:46.475638+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 10,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 1.224233,
+          "seconds_to_any_healthy_grant": 1.224233,
+          "seconds_since_previous_healthy_grant": 0.774211,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 33,
+          "isolated_grants": 0,
+          "eventually_successful": 33,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 1.684389,
+          "seconds_to_any_healthy_grant": 1.684389,
+          "seconds_since_previous_healthy_grant": 0.431722,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 34,
+          "isolated_grants": 0,
+          "eventually_successful": 34,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:04:58.185413+00:00",
+      "end": "2026-11-26T08:05:31.865391+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 11,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 2.950267,
+          "seconds_to_any_healthy_grant": 2.950267,
+          "seconds_since_previous_healthy_grant": 0.004823,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 2.935403,
+          "seconds_to_any_healthy_grant": 2.935403,
+          "seconds_since_previous_healthy_grant": 0.831081,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 32,
+          "isolated_grants": 0,
+          "eventually_successful": 32,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:05:43.503084+00:00",
+      "end": "2026-11-26T08:06:17.216653+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 12,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 4.079226,
+          "seconds_to_any_healthy_grant": 4.079226,
+          "seconds_since_previous_healthy_grant": 2.92462,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 3.688068,
+          "seconds_to_any_healthy_grant": 3.688068,
+          "seconds_since_previous_healthy_grant": 0.486331,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 33,
+          "isolated_grants": 0,
+          "eventually_successful": 33,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:06:28.359907+00:00",
+      "end": "2026-11-26T08:07:02.571863+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 13,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 2.595743,
+          "seconds_to_any_healthy_grant": 2.595743,
+          "seconds_since_previous_healthy_grant": 0.574466,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 33,
+          "isolated_grants": 0,
+          "eventually_successful": 33,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 2.441502,
+          "seconds_to_any_healthy_grant": 2.441502,
+          "seconds_since_previous_healthy_grant": 0.269962,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 34,
+          "isolated_grants": 0,
+          "eventually_successful": 34,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:07:12.997726+00:00",
+      "end": "2026-11-26T08:07:47.905443+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 14,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 4.285458,
+          "seconds_to_any_healthy_grant": 4.285458,
+          "seconds_since_previous_healthy_grant": 0.751772,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 30,
+          "isolated_grants": 0,
+          "eventually_successful": 30,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 3.762114,
+          "seconds_to_any_healthy_grant": 3.762114,
+          "seconds_since_previous_healthy_grant": 0.961153,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 32,
+          "isolated_grants": 0,
+          "eventually_successful": 32,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:07:59.182327+00:00",
+      "end": "2026-11-26T08:08:33.273409+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 15,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 5.336854,
+          "seconds_to_any_healthy_grant": 5.336854,
+          "seconds_since_previous_healthy_grant": 0.708921,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 26,
+          "isolated_grants": 0,
+          "eventually_successful": 26,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 4.620998,
+          "seconds_to_any_healthy_grant": 4.620998,
+          "seconds_since_previous_healthy_grant": 0.689041,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 28,
+          "isolated_grants": 0,
+          "eventually_successful": 28,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:08:43.173110+00:00",
+      "end": "2026-11-26T08:09:13.595922+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 16,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 2.701416,
+          "seconds_to_any_healthy_grant": 2.701416,
+          "seconds_since_previous_healthy_grant": 0.362057,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 2.773387,
+          "seconds_to_any_healthy_grant": 2.773387,
+          "seconds_since_previous_healthy_grant": 1.509129,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 32,
+          "isolated_grants": 0,
+          "eventually_successful": 32,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:09:25.841850+00:00",
+      "end": "2026-11-26T08:09:58.939369+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 17,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 3.65056,
+          "seconds_to_any_healthy_grant": 3.65056,
+          "seconds_since_previous_healthy_grant": 0.342426,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 29,
+          "isolated_grants": 0,
+          "eventually_successful": 29,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 3.390304,
+          "seconds_to_any_healthy_grant": 3.390304,
+          "seconds_since_previous_healthy_grant": 0.330792,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:10:11.850616+00:00",
+      "end": "2026-11-26T08:10:44.402522+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 18,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 4.843184,
+          "seconds_to_any_healthy_grant": 4.843184,
+          "seconds_since_previous_healthy_grant": 1.168138,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 28,
+          "isolated_grants": 0,
+          "eventually_successful": 28,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 4.101749,
+          "seconds_to_any_healthy_grant": 4.101749,
+          "seconds_since_previous_healthy_grant": 2.777672,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 30,
+          "isolated_grants": 0,
+          "eventually_successful": 30,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:10:57.684294+00:00",
+      "end": "2026-11-26T08:11:29.772971+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    },
+    {
+      "trial": 19,
+      "origin": "sync",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 4.586905,
+          "seconds_to_any_healthy_grant": 4.586905,
+          "seconds_since_previous_healthy_grant": 0.393567,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 29,
+          "isolated_grants": 0,
+          "eventually_successful": 29,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 4.111141,
+          "seconds_to_any_healthy_grant": 4.111141,
+          "seconds_since_previous_healthy_grant": 0.61999,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:11:41.918772+00:00",
+      "end": "2026-11-26T08:12:15.081097+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": null
+    },
+    {
+      "trial": 20,
+      "origin": "async",
+      "traffic": {
+        "sync": {
+          "seconds_to_healthy_grant": 4.362838,
+          "seconds_to_any_healthy_grant": 4.362838,
+          "seconds_since_previous_healthy_grant": 0.686833,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 29,
+          "isolated_grants": 0,
+          "eventually_successful": 29,
+          "workers": [
+            31,
+            32
+          ]
+        },
+        "async": {
+          "seconds_to_healthy_grant": 4.348443,
+          "seconds_to_any_healthy_grant": 4.348443,
+          "seconds_since_previous_healthy_grant": 0.46649,
+          "grants_to_inflight_dispatches": 0,
+          "healthy_grants": 31,
+          "isolated_grants": 0,
+          "eventually_successful": 31,
+          "workers": [
+            31,
+            32
+          ]
+        }
+      },
+      "start": "2026-11-26T08:12:27.190811+00:00",
+      "end": "2026-11-26T08:13:00.423701+00:00",
+      "signed_settlement": true,
+      "billed": 0,
+      "gateway_healthy": [
+        486,
+        488,
+        489
+      ],
+      "primary_variants": 17,
+      "fallback_variants": 0,
+      "healthy_retries": 2,
+      "excluded_attempts": 0,
+      "excluded_retries": 0,
+      "async_attempts": 1
+    }
+  ]
+}
