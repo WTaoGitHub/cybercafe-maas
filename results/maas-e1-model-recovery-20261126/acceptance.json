@@ -1,0 +1,166 @@
+{
+  "date": "2026-11-26",
+  "environment": "test",
+  "worker_ids": [
+    31,
+    32,
+    34
+  ],
+  "worker_release": "model-recovery-98adc70c1614",
+  "template_image_id": "tower-e5-model-recovery-v5",
+  "template_files_verified": 33,
+  "inference_images": {
+    "ovisocr3": "sha256:0e72ff1a33f6cc0fe2573526fd6b7baaa37301f1471b033e17dcfeed795c6928",
+    "unlimited-ocr-2-nfs": "sha256:a7c8520bb771fdf75248cb75ebf57fe072558960dbdf9b0a25573c6017cb156f"
+  },
+  "faults": [
+    {
+      "model": "ocr.ovisocr3",
+      "worker": 34,
+      "real_async": true,
+      "present_held": true,
+      "read_only_verified": true,
+      "signed_terminated": true,
+      "release_count": 1,
+      "business": "FAILED",
+      "attempts": 1,
+      "success_usage": 0,
+      "late_receipt_checked": true,
+      "unknown_seconds": 97.41
+    },
+    {
+      "model": "ocr.ovisocr3",
+      "worker": 34,
+      "real_async": true,
+      "present_held": true,
+      "auto_at_dispatch": true,
+      "signed_terminated": true,
+      "release_count": 1,
+      "business": "FAILED",
+      "attempts": 1,
+      "success_usage": 0,
+      "late_receipt_checked": true,
+      "unknown_seconds": 65.17
+    },
+    {
+      "model": "document.unlimited-ocr-2",
+      "worker": 31,
+      "real_async": true,
+      "present_held": true,
+      "read_only_verified": true,
+      "signed_terminated": true,
+      "release_count": 1,
+      "business": "FAILED",
+      "attempts": 1,
+      "success_usage": 0,
+      "late_receipt_checked": true,
+      "unknown_seconds": 128.57
+    },
+    {
+      "model": "document.unlimited-ocr-2",
+      "worker": 31,
+      "real_async": true,
+      "present_held": true,
+      "auto_at_dispatch": true,
+      "signed_terminated": true,
+      "release_count": 1,
+      "business": "FAILED",
+      "attempts": 1,
+      "success_usage": 0,
+      "late_receipt_checked": true,
+      "unknown_seconds": 61.12
+    }
+  ],
+  "healthy_ovis_during_gpu_quarantine": {
+    "model": "ocr.ovisocr3",
+    "started_after_unknown": true,
+    "healthy_gpu_granted": true,
+    "finished_before_settlement": true
+  },
+  "healthy_requests": [
+    {
+      "model": "ocr.ovisocr3",
+      "signed_binding": true,
+      "original_receipt": true,
+      "attempts": 1,
+      "success_events": 1
+    },
+    {
+      "model": "ocr.ovisocr3",
+      "signed_binding": true,
+      "original_receipt": true,
+      "attempts": 1,
+      "success_events": 1
+    },
+    {
+      "model": "document.unlimited-ocr-2",
+      "signed_binding": true,
+      "original_receipt": true,
+      "attempts": 1,
+      "success_events": 1
+    }
+  ],
+  "controller": {
+    "control": {
+      "owned": 0,
+      "schema": 0,
+      "unknown_tasks": 0,
+      "unknown_sync": 1,
+      "migration": "021_runtime_signer_boot.sql",
+      "slots": {
+        "ocr.default": 4,
+        "ocr.ovisocr3": 2,
+        "ocr.pp-witness-canary": 1,
+        "document.unlimited-ocr-2": 1
+      },
+      "strict": true,
+      "automatic": [
+        "maas-ocr",
+        "maas-ocr-witness-canary",
+        "ovisocr3",
+        "unlimited-ocr-2-nfs"
+      ]
+    },
+    "executor": {
+      "boot_keys": true,
+      "legacy": true,
+      "execution_keys": true
+    },
+    "native": {
+      "maas-ocr-witness-canary": [
+        1,
+        1
+      ],
+      "ovisocr3": [
+        2,
+        2
+      ],
+      "unlimited-ocr-2-nfs": [
+        1,
+        1
+      ],
+      "maas-ocr": [
+        4,
+        4
+      ]
+    },
+    "monitors": true
+  },
+  "cleanup": {
+    "maas": {
+      "tasks": 7,
+      "sync": 0,
+      "artifacts": 5,
+      "schema_removed": true
+    },
+    "native_usage_details": 7,
+    "owned_receipts_remaining": 0
+  },
+  "acceptance_limits": {
+    "production_deployed": false,
+    "platform_snapshot_created": false,
+    "fresh_workers_booted": 0,
+    "fault_sample_p95": null,
+    "original_process_held_until_present_report": true
+  }
+}
