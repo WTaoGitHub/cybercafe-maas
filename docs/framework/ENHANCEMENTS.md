@@ -726,13 +726,35 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 | 阶段 | 任务 | 交付/验证 |
 |---|---|---|
 | E8.1 | 兼容性清单 | 核对管理API、鉴权/key scope、注册凭据、TLS、数据库迁移、网关/运行时配置。按[交互边界清单](#e8-231-interaction-boundary)逐项登记 v2.3.1 对应接口、缺口和验证结果 |
-| E8.2 | 独立环境和基础适配 | 使用正式 v2.3.1 server 和同版 worker，适配 E5 签名配置、镜像固定、布局核对及部署维护工具 |
+| E8.2 | 独立环境和基础适配 | 使用正式 v2.3.1 server 和同版 worker，适配 E5 签名配置、镜像固定、布局核对及部署维护工具。在独立环境实现[统一路由配置](#e8-231-routing-policy)，接入模型发布流程 |
 | E8.3 | 核心业务回归 | 自动注册及重复apply、身份保持、母版拒绝；OCR同步/异步/取消/结果/配额/计量/UNKNOWN；停止和恢复 |
 | E8.4 | 原生能力复用 | 部署历史/预览/回退与MaaS版本关联、YAML往返、[同模型副本路由验收](#e8-231-routing)、fallback、鉴权缓存吊销时效；定时伸缩作为独立可选开关验证，不默认开启 |
 | E8.5 | 模型分发和隔离回归 | 私仓正确/错误鉴权、冷拉取/缓存；模型RO/缓存RW、身份目录和socket排除；复测 v2.3.1 实际配套的 runtime，记录下载/共享存储尚未覆盖项 |
 | E8.6 | 迁移、恢复与受控发布 | 在隔离副本验证数据库迁移/备份恢复；输出差异、回退和部署手册；通过后另行安排现网维护，先server后worker，再更新母版并由管理员保存快照 |
 
 独立 feature 的提交与推送遵循[项目协作约定](../../AGENTS.md)。v2.3.1 须产生独立证据。不重启001/002，不自动重放不确定推理请求，不在缺少终止证据时解除 UNKNOWN，不恢复 collector。
+
+<a id="e8-231-routing-policy"></a>
+### E8.1–E8.2 统一配置同一模型的副本路由
+
+**升级前只读基线。** 2026-11-27 北京时间 12:20:51–12:22:49，测试控制端报告 GPUStack **v2.2.3**。从 MaaS 目录确认三个客户入口，经 GPUStack 管理接口读取模型、路由详情和全部目标，再从现有网关只读核对生效路由和端点。网关路由连续两次读取一致。本次没有发送推理请求、调整副本或写入配置。
+
+| 模型及 MaaS 入口 | GPUStack 路由（ID） | 目标 ID → 部署 ID | 就绪 / 期望副本 | 路由访问策略 | 网关主派发的实例及权重 |
+|---|---|---|---|---|---|
+| 共享 PP · `ocr.default` | `maas-ocr`（1） | 1 → 1 | 4/4 | `authed` | 485、486、488、489 各 25% |
+| Ovis · `ocr.ovisocr3` | `ovisocr3`（12） | 12 → 14 | 2/2 | `allowed_principals` | 494、497 各 50% |
+| Unlimited · `document.unlimited-ocr-2` | `unlimited-ocr-2-nfs`（11） | 11 → 13 | 1/1 | `allowed_principals` | 498，唯一目的地 |
+
+- 三条路由各有一个启用的本地部署目标，**目标权重均为 100**，无外部供应商、无回退状态码。每条路由在网关匹配到的 17 条主路由规则均指向表中实例，无独立回退规则，七个端点均报告健康。表中的 25% 和 50% 是配置权重，尚未用在途数不同的流量测量实际选择。
+- 三条路由的 Envoy 主路由均配置 `num_retries=2`，重试条件含 `5xx`、`non_idempotent`、`retriable-status-codes`，显式状态码为 503、502。AI 代理的 `retryOnFailure` 和 `failover` 均为关闭。三个旧 `maas-pp-quarantine-<路由ID>` 过滤器均存在，三个 `maas-least-inflight-<路由ID>` 过滤器均未发现。v2.2.3 的路由详情没有返回新版 `plugins` 或 `lb_mode` 字段。
+- 复核入口为 `GET /version`、`GET /v2/models`、`GET /v2/model-routes/{id}`、`GET /v2/model-route-targets?route_id={id}`。升级前重新按模型、归属和目标 ID 匹配现状。旧网关配置只用于验收对照。
+
+**实施步骤（均待执行）。** 运维只需维护一份通用规则。发布流程通过 GPUStack 原生管理 API 自动将规则应用到符合条件的路由，每笔请求仍由 GPUStack 选择副本。
+
+1. **生成差异。** 分页发现现有路由，读取详情、目标、所属组织及访问策略，以一个普通本地部署承接同一模型请求为匹配条件，同时检查网关能区分实际副本。三条基线路由均需将主目标权重从 100 改为 0，启用评分和较少在途优先，并确保默认会话亲和关闭。对多部署加权、外部供应商、特殊回退、业务明确要求的会话亲和或其他显式评分规则单列冲突及原因。若网关只见一个汇总入口，须先证明下一级能按实例选路。
+2. **在独立 v2.3.1 环境应用并读回。** 用 `PUT /v2/model-routes/{id}` 提交原路由名、原目标 ID 和模型绑定，将主目标权重设为 `0`、`plugins.least-load.enabled=true`、`plugins.lb.enabled=true`、`plugins.lb.health.fail_open=false`，显式清除 `plugins.session-affinity`（值为 `null`）。合并修改涉及的插件配置，保留权限、已有健康阈值和无关设置。提交 `targets` 时带全应保留的目标，接口会删除遗漏项。保存变更前配置，写前重读，遇并发变更重新计算差异。读回 `lb_mode=scoring`、插件字段、目标集合及原授权，确认重复运行零写入。回退只恢复本次改动字段。[路由更新](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/model_routes.py#L877) · [目标列表更新语义](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/model_routes.py#L1146)
+3. **覆盖整个模型生命周期。** 存量模型在升级迁移时批量处理。新模型在创建路由后、向客户开放前应用规则，包括单副本模型。扩容沿用原路由，只在 GPUStack 中调整副本数。对于在 GPUStack 界面直接创建的路由，采用原生路由变更通知加定期全量核对，覆盖漏事件及控制端重启。这些入口要在配置核对完成后才发布给 MaaS 客户。统一配置按路由实际状态计算差异，不按模型名称维护名单。
+4. **切换与回退。** 先在独立环境使用配套版本网关插件且没有旧自建过滤器的基线，完成下述实测。核对新旧权限、路由身份及回退结果，再安排测试环境切换窗口，交接旧过滤器控制权。配置步骤和常态派发均只调用 GPUStack 接口。若故障后仍向不可用实例发出尝试，或无法证明副本级负载优先，对应场景保留未通过。
 
 <a id="e8-231-routing"></a>
 ### E8.4 同模型副本路由验收（v2.3.1，待执行）
@@ -741,12 +763,14 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 
 | 必测场景 | 验收操作 |
 |---|---|
-| 现有模型随版本升级 | 从升级前的目录和路由迁移共享 PP、Ovis、Unlimited，保留原路由身份和配置。PP 测同步与异步，Ovis、Unlimited 测公开异步入口。多副本执行下述两项判定。 |
-| 新增模型 | 按正常接入流程新增一个名称未预设的多副本测试模型，通过同一模型入口执行两项判定，验证自动继承。 |
-| 单副本扩容 | 以单副本 Unlimited 验证可用时接单、不可用时零派发，再只调副本数至至少两个。新副本就绪后沿用原路由，重新执行两项判定，全程无需手改路由。 |
+| 现有模型随版本升级 | 按[升级前基线和统一配置步骤](#e8-231-routing-policy)迁移三条路由，核对 ID、目标绑定、原有凭据的允许和拒绝行为，再验证批量应用和重复运行。PP 测同步与异步，Ovis、Unlimited 测公开异步入口。所有多副本路由执行下述两项判定。 |
+| 新增模型 | 按正常发布流程新增一个名称未预设的多副本模型。发布前读回统一配置，再验证首笔客户请求及下述两项判定。另从 GPUStack 管理入口创建测试路由，验证漏掉变更通知后全量核对能补齐。 |
+| 单副本扩容 | 在单副本 Unlimited 上预置统一配置，验证唯一副本可用时能接单、不可用时零派发并返回 503。只将期望副本数调至至少两个，核对路由 ID、目标与策略配置一致，再验证两张卡轮换承担长请求时较空闲者优先。扩容流程对路由的写入须为零。 |
 
 1. **不可用副本不接单。** 分别制造 worker 失联和模型副本未就绪。持续发送带请求 ID 的流量，分别记下故障发生、GPUStack 判为不可用、网关撤出目标的时间。自 GPUStack 不可用判定起，对该副本的首次派发、网关重试和已启用的回退尝试均须为 **0**，健康副本仍能完成请求。全部不可用时，上游尝试须为 **0**。用独立验收日志核对网关逐次尝试的目标和后端实际接收，计入连接失败的尝试。未启用回退时记录生效配置，并将该路径标为不适用。另测旧请求仍为 `UNKNOWN`、GPUStack 已恢复副本就绪，使用有可用配额的新请求验证该副本能再次接单，MaaS 中的旧记录不能屏蔽它或阻塞整条共享路由。
 2. **同一模型中正在处理请求较少的可用副本优先接单。** “正在处理”按网关已发往该副本、尚未结束的请求数计。安排恰有两个同等可用、等权的候选副本 A、B，预先固定每轮探针数。用长请求维持两种差距：一方空闲（如 1 比 0）和两方都忙（如 3 比 1）。每种差距都交换 A、B 的角色，从同一模型入口逐笔发送相同的短探针，记录派发前各副本的在途数和实际目标。每轮请求较少的一方获得的首次派发比例，其单侧 95% 置信下限须高于等权基线 50%。在途数相同时任一可用副本均可接单。报告附分轮样本数及逐请求证据。
+
+3. **验证生效与回退。** 分别用无会话标识和固定同一会话标识的请求重复负载试验。保留每次实际尝试的终点、失败时间、最后一次发往故障副本的时间和健康副本接单记录。全部目的地不可用时校验 503 和零上游尝试。基线三条路由均未配置回退，另在独立环境构造有回退的用例。保留原路由配置的回退读回结果，配置与流量两类证据均齐全才判通过。
 
 <a id="e8-231-source"></a>
 ### v2.3.1 源码核查及对验收的影响
@@ -756,7 +780,7 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 | 问题 | 正式标签中的行为 | 验收时据此核对 |
 |---|---|---|
 | 较空闲的副本会优先吗？ | 创建部署并自动创建主路由时，初始副本数大于 1 才会把目标权重设为 0，默认写入 `least-load` 和 `session-affinity` 两项策略。网关在评分模式下综合在途数和会话亲和等信号。[创建逻辑](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/models.py#L1614) · [上游测试](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/tests/routes/test_model_deploy_route_defaults.py#L101) · [策略语义](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/docs/user-guide/model-route-management.md#L27) | 分别用无会话标识和相同会话标识的流量，交换两张卡上的负载。核对实际网关看见的候选是否对应不同实例，尤其注意经集群入口汇总的情况。以实际落点判定较空闲优先。[候选展开](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/plugins/lb/reconciler.py#L164) · [集群入口分支](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/server/controllers.py#L5388) |
-| 能自动覆盖旧模型和扩容吗？ | 单副本创建时目标权重为 100，扩大副本数会保留原路由配置。已有路由无 `least-load` 策略时该插件不生效。当前核查未找到给全部存量和未来路由强制继承该策略的全局开关。[扩容语义](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/models.py#L1616) · [插件生效条件](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/plugins/least_load/plugin.py#L33) | 升级前后读取原路由 ID、目标权重和 `plugins`，再将 Unlimited 从 1 扩至 2 并核对同一组字段。若不能自动继承，记录通用策略缺口，评估用 GPUStack 的路由 API 统一应用规则，保留已有显式分流配置。逐模型手工调整不计通过。[路由更新接口](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/model_routes.py#L877) |
+| 能自动覆盖旧模型和扩容吗？ | 单副本创建时目标权重为 100，扩大副本数会保留原路由配置。已有路由无 `least-load` 策略时该插件不生效。当前核查未找到给全部存量和未来路由强制继承该策略的全局开关。[扩容语义](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/models.py#L1616) · [插件生效条件](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/plugins/least_load/plugin.py#L33) | 升级前后读取原路由 ID、目标权重和 `plugins`，再将 Unlimited 从 1 扩至 2 并核对同一组字段。记录原生创建默认值的覆盖范围，再按[统一配置步骤](#e8-231-routing-policy)验证自动应用和已有显式分流配置的处理。逐模型手工调整不计通过。[路由更新接口](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/model_routes.py#L877) |
 | 失联卡什么时候停止接单？ | GPUStack 根据心跳和可达性更新 worker 状态。直接按本地实例生成路由时筛选 `RUNNING` 实例。网关还会处理重试、回退及独立的健康策略。[worker 状态](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/schemas/workers.py#L439) · [实例筛选](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/server/controllers.py#L5391) · [重试配置](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/gateway/utils.py#L868) · [健康配置](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/plugins/lb/config.py#L23) | 记录断连、GPUStack 判不可用、网关最后一次尝试该副本及健康卡实际接单的时间。核对 `fail_open` 生效值，区分网关重试和 MaaS 重发。增加“声明了回退但回退副本全不可用、主路由返回 4xx”的用例，检查原响应和实际尝试数。此场景的修复在本地 `origin/main`（`efb58b0c`）中，晚于验收标签。[v2.3.1 回退条件](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/plugins/fallback/plugin.py#L114) · [标签后的修复](https://github.com/gpustack/gpustack/commit/b09841bdf59c60153d6b21bec64a899f53d17458) |
 | 重连后，能证明哪一笔旧推理结束吗？ | `workload-report` 和 `stop-confirmation` 是 worker 向 GPUStack 上报的接口。后者核对特定旧实例的停止令牌、worker 身份和实例重启代次。用量明细中的 `request_id` 属于网关请求，回退可能共用它。`completed` 描述用量是否完整。核查范围内未找到按客户执行尝试查询原推理已终止的通用接口。[实例报告](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/model_instances.py#L1909) · [停止确认校验](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/model_instances.py#L1700) · [用量明细](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/schemas/model_usage_details.py#L72) | MaaS 通过 GPUStack 查询原实例。先验证请求至每次实际派发、实例及代次的对应关系，再核对所有可能执行该请求的旧实例是否有终止证据。覆盖迟到证明、回退、已删除实例及仅显式退役的 worker。对应关系或证据缺失时保留 `UNKNOWN`，可用配额内的新请求继续按当前路由派发。[实例读取](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/model_instances.py#L200) · [停止与退役判定](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/utils/model_instance_workers.py#L310) |
 | 同卡重新注册，能认定旧启动已结束吗？ | 原生注册核对集群和 worker 归属。携带 `external_id` 却无对应 worker 时会拒绝。状态模型含 `uptime` 和 `boot_time`。核查范围内未找到能把旧请求绑定到同卡旧 Linux 启动会话的原生证明。[注册校验](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/routes/workers.py#L868) · [开机时间字段](https://github.com/gpustack/gpustack/blob/458030e88718ce47bd31f7cdee9cbc8994a6760b/gpustack/schemas/workers.py#L206) | 独立克隆分别测预登记、同次启动重注册及合法的新启动接续。只取得心跳、开机时间或新实例就绪时，旧尝试继续待确认。 |
