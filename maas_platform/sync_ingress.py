@@ -43,14 +43,13 @@ class SyncIngress:
                 raise ServiceError('MODEL_REVISION_CHANGED', 'Registered model configuration changed', 409)
             route = model.get('upstream_model') or ''
             revision = maintenance['capacity_policy_hash']
-            unknown = unresolved(c)
-            admission = Admission(c, self.service.settings, revision, include_preparing=False, unknown=unknown) if revision else None
+            admission = Admission(c, self.service.settings, revision, include_preparing=False) if revision else None
             pool_id = admission.pool_ids.get(name) if admission else None
             gpu = None
             if admission:
-                route, gpu, reason = admission.dispatch(name, route, unknown)
+                route, gpu, reason = admission.dispatch(name, route)
             else:
-                reason = 'BACKEND_QUARANTINED' if blocks(unknown, name, route, None) else None
+                reason = 'BACKEND_QUARANTINED' if blocks(unresolved(c), name, route, None) else None
             if reason != 'BACKEND_QUARANTINED':
                 if admission:
                     if not admission.pool(name).get('total') or not admission.fresh(c):
@@ -62,13 +61,14 @@ class SyncIngress:
                 if not allowed:
                     raise ServiceError('SYNC_CAPACITY','Synchronous admission capacity reached',429,True)
                 scope = save_scope(c, admission.pool(name)) if admission else None
-                if model.get('runtime_recovery') and not (gpu or scope):
+                routed = bool(admission and admission.gpustack_routed)
+                if model.get('runtime_recovery') and not (routed or gpu or scope):
                     raise unavailable()
                 token=uuid.uuid4().hex
                 c.execute("""INSERT INTO sync_activity(token,project,model,state,deadline,is_probe,dispatch_route,dispatch_pool_id,
-                    execution_guard,dispatch_gpu_uuid,guard_scope)
-                    VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s,%s,%s,%s,%s,%s)""",
-                    (token,who.project,name,runtime,probe,route,pool_id,model.get('execution_guard',False),gpu,scope))
+                    execution_guard,dispatch_gpu_uuid,guard_scope,gpustack_routed)
+                    VALUES(%s,%s,%s,'DISPATCHING',clock_timestamp()+%s*interval '1 second',%s,%s,%s,%s,%s,%s,%s)""",
+                    (token,who.project,name,runtime,probe,route,pool_id,model.get('execution_guard',False),gpu,scope,routed))
                 return token, route
         raise ServiceError('BACKEND_QUARANTINED','Unresolved backend activity blocks this inference scope',503)
 

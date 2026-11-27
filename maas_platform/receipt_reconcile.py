@@ -33,7 +33,7 @@ def reconcile(db, event, apply):
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
         lock = ' FOR UPDATE' if apply else ''
         row = c.execute(f'SELECT * FROM {table} WHERE token=%s' + lock, (token,)).fetchone()
-        if (not row or not row['execution_guard'] or not row['guard_scope'] or row['guard_conflict'] or
+        if (not row or not row['execution_guard'] or not (row['guard_scope'] or row['gpustack_routed']) or row['guard_conflict'] or
                 (row['dispatch_route'], row['gpu_uuid'], row['gpu_instance']) !=
                 (event.route, event.gpu_uuid, event.instance)):
             return 'mismatch'

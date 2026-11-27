@@ -222,20 +222,19 @@ class TaskService:
                 self.expire_queued(c)
             if maintenance['paused']: return None
             self.expire_sync(c)
-            unknown = unresolved(c)
-            if any(row['dispatch_route'] is None for row in unknown):
-                return None
-            catalog = self.settings.catalog() if unknown else {}
             if revision:
-                admission = Admission(c, self.settings, revision, include_preparing=True, unknown=unknown)
+                admission = Admission(c, self.settings, revision, include_preparing=True)
                 if not admission.budget or not (automatic_slot if admission.automatic else legacy_slot):
+                    return None
+                if any(r['dispatch_route'] is None for r in admission.unknown):
                     return None
                 ready = "state IN ('QUEUED','RETRY_WAIT') AND next_run<=clock_timestamp() AND deadline>clock_timestamp()"
                 pairs = c.execute(f'SELECT DISTINCT project, model FROM tasks WHERE {ready}').fetchall()
+                catalog = self.settings.catalog() if admission.unknown else {}
                 eligible = [(r['project'], r['model']) for r in pairs
                             if admission.allows(r['model'], r['project'], asynchronous=True)
-                            and admission.dispatch(r['model'],
-                                catalog.get(r['model'], {}).get('upstream_model', ''), unknown)[2] is None]
+                            and (admission.gpustack_routed or
+                                 admission.dispatch(r['model'], catalog.get(r['model'], {}).get('upstream_model', ''))[2] is None)]
                 if not eligible:
                     return None
                 projects, models = zip(*eligible)
@@ -247,6 +246,10 @@ class TaskService:
             else:
                 if not legacy_slot:
                     return None
+                unknown = unresolved(c)
+                if any(row['dispatch_route'] is None for row in unknown):
+                    return None
+                catalog = self.settings.catalog() if unknown else {}
                 self.expire_queued(c)
                 running = c.execute('SELECT count(*) AS n FROM inference_slots').fetchone()['n']
                 if running >= self.settings.max_running: return None
@@ -281,29 +284,31 @@ class TaskService:
             pool_id = gpu = admission = None
             revision = maintenance['capacity_policy_hash']
             allowed = row['timely'] and row['state'] == 'RUNNING'
-            unknown = unresolved(c)
-            reason = 'BACKEND_QUARANTINED' if blocks(unknown, row['model'], route, None) else None
+            reason = None
+            if not revision and blocks(unresolved(c), row['model'], route, None):
+                reason = 'BACKEND_QUARANTINED'
             if revision and allowed:
                 try:
-                    admission = Admission(c, self.settings, revision, include_preparing=False, unknown=unknown)
+                    admission = Admission(c, self.settings, revision, include_preparing=False)
                     pool_id = admission.pool_ids.get(row['model'])
                     allowed = admission.allows(row['model'], row['project'], asynchronous=True) and admission.fresh(c)
-                    route, gpu, reason = admission.dispatch(row['model'], route, unknown)
+                    route, gpu, reason = admission.dispatch(row['model'], route)
                 except ServiceError as exc:
                     if exc.code != 'CAPACITY_UNAVAILABLE':
                         raise
                     allowed = False
             if draining is not None and draining():
                 raise ServiceError('EXECUTOR_DRAINING', 'Executor is draining', 503)
-            if model.get('runtime_recovery') and not (gpu or admission and admission.pool(row['model']).get('processes')):
+            routed = bool(admission and admission.gpustack_routed)
+            if model.get('runtime_recovery') and not (routed or gpu or admission and admission.pool(row['model']).get('processes')):
                 reason = reason or 'CAPACITY_REDUCED'
             if allowed and reason is None:
                 scope = save_scope(c, admission.pool(row['model'])) if admission else None
                 inserted = c.execute('''INSERT INTO backend_activity(token,task_id,state,dispatch_route,dispatch_pool_id,
-                    execution_guard,dispatch_gpu_uuid,guard_scope)
-                    SELECT token,id,'DISPATCHING',%s,%s,%s,%s,%s FROM tasks WHERE id=%s
+                    execution_guard,dispatch_gpu_uuid,guard_scope,gpustack_routed)
+                    SELECT token,id,'DISPATCHING',%s,%s,%s,%s,%s,%s FROM tasks WHERE id=%s
                     AND lease_until>clock_timestamp() AND deadline>clock_timestamp()''',
-                    (route, pool_id, model.get('execution_guard', False), gpu, scope, task['id'])).rowcount
+                    (route, pool_id, model.get('execution_guard', False), gpu, scope, routed, task['id'])).rowcount
                 if inserted:
                     return route
             if not (revision or reason) or not self._defer(c, row, reason or 'CAPACITY_REDUCED'):
@@ -383,16 +388,22 @@ class TaskService:
     def set_capacity_mode(self, enforce):
         with self.db.transaction() as c:
             row = c.execute('SELECT paused FROM maintenance WHERE id=1 FOR UPDATE').fetchone()
-            if not row['paused'] or self.has_unknown(c) or c.execute('''SELECT 1 FROM tasks
+            if not row['paused'] or c.execute('''SELECT 1 FROM tasks
                 WHERE state IN ('RUNNING','CANCEL_REQUESTED') UNION ALL SELECT 1 FROM sync_activity
-                WHERE state='DISPATCHING' LIMIT 1''').fetchone():
+                WHERE state='DISPATCHING' UNION ALL SELECT 1 FROM backend_activity WHERE state='DISPATCHING' LIMIT 1''').fetchone():
                 raise ServiceError('MAINTENANCE_REQUIRED', 'Pause and drain inference before switching capacity mode', 409)
             revision = None
+            ready_source = False
             if enforce:
                 policy, _, revision = configuration(self.settings)
+                ready_source = policy.uses_ready_replicas
                 budget = read_budget(c, revision)
-                if not all(pool.gateway_verified for pool in policy.pools.values()) or not budget or not budget['global']['total']:
+                if not budget or (budget.get('source') == 'gpustack_ready') != ready_source:
                     raise unavailable()
+                if not ready_source and (not all(pool.gateway_verified for pool in policy.pools.values()) or not budget['global']['total']):
+                    raise unavailable()
+            if not ready_source and self.has_unknown(c):
+                raise ServiceError('MAINTENANCE_REQUIRED', 'Resolve outstanding attempts before enabling legacy admission', 409)
             mode = 'enforce' if enforce else 'static'
             result = c.execute('''UPDATE maintenance SET capacity_policy_hash=%s, generation=generation+1,
                 updated_at=now() WHERE id=1 RETURNING generation''', (revision,)).fetchone()

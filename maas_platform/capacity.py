@@ -2,7 +2,7 @@
 from collections import Counter, defaultdict
 from hashlib import sha256
 import json
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints, model_validator
 
@@ -27,8 +27,8 @@ class Pool(BaseModel):
     model_id: PositiveInt
     owner_principal_id: PositiveInt
     routes: dict[Name, PositiveInt] = Field(min_length=1)
-    gpu_names: list[Annotated[str, StringConstraints(min_length=1)]] = Field(min_length=1)
-    slots_per_replica: PositiveInt
+    gpu_names: list[Annotated[str, StringConstraints(min_length=1)]] = Field(default_factory=list)
+    slots_per_replica: PositiveInt = 1
     hard_limit: PositiveInt | None = None
     queue_limit: PositiveInt
     sync_percent: Percent = 0
@@ -52,6 +52,7 @@ class Pool(BaseModel):
 
 class Policy(BaseModel):
     model_config = ConfigDict(extra='forbid', strict=True)
+    replica_source: Literal['gpustack_ready', 'verified_topology'] | None = None
     global_limit: PositiveInt | None = None
     sync_percent: Percent
     pools: dict[Name, Pool] = Field(min_length=1)
@@ -59,10 +60,20 @@ class Policy(BaseModel):
     shared_gpu_layouts: dict[str, list[dict[Name, PositiveInt]]] = Field(default_factory=dict)
     shared_gpu_vram_budgets: dict[str, PositiveInt] = Field(default_factory=dict)
 
+    @property
+    def uses_ready_replicas(self):
+        if self.replica_source is None:
+            return self.global_limit is None
+        return self.replica_source == 'gpustack_ready'
+
     @model_validator(mode='after')
     def unique_bindings(self):
+        if self.uses_ready_replicas and self.global_limit is not None:
+            raise ValueError('GPUStack ready capacity follows the sum of model limits')
         aliases, routes, models, pinned_names = set(), set(), set(), set()
         for pool in self.pools.values():
+            if not self.uses_ready_replicas and not pool.gpu_names:
+                raise ValueError('Verified topology requires GPU names')
             deployments = {pool.model_id, *(pin.model_id for pin in pool.replica_routes.values())}
             route_ids = {*pool.routes.values(), *(pin.route_id for pin in pool.replica_routes.values())}
             if (models.intersection(deployments) or aliases.intersection(pool.routes) or routes.intersection(route_ids)
@@ -87,11 +98,13 @@ def catalog_routes(policy, catalog):
             name = model.get('upstream_model')
             if not isinstance(name, str) or not name or names.get(route_id, name) != name:
                 raise ValueError('Capacity route is absent or inconsistent in the model catalog')
-            if (pool.replica_routes or pool.guard_backend_version) and model.get('execution_guard') is not True:
+            if not policy.uses_ready_replicas and (pool.replica_routes or pool.guard_backend_version) and model.get('execution_guard') is not True:
                 raise ValueError('GPU isolation requires execution guards on every logical alias')
             names[route_id] = name
-        if pool.guard_backend_version and len({names[r] for r in pool.routes.values()}) != 1:
+        if not policy.uses_ready_replicas and pool.guard_backend_version and len({names[r] for r in pool.routes.values()}) != 1:
             raise ValueError('Guard-only aliases must use the same upstream route')
+    if policy.uses_ready_replicas:
+        return names
     for pool in policy.pools.values():
         for name, pin in pool.replica_routes.items():
             if names.get(pin.route_id, name) != name or any(
@@ -102,22 +115,45 @@ def catalog_routes(policy, catalog):
 
 
 def policy_hash(policy, names, source):
-    encoded = policy.model_dump()
-    if not encoded['shared_gpu_vram_budgets']:
-        del encoded['shared_gpu_vram_budgets']
-    for pool in encoded['pools'].values():
-        if pool['guard_backend_version'] is None:
-            del pool['guard_backend_version']
-        if not pool['replica_routes']:
-            del pool['replica_routes']
-        if pool['shared_gpu_vram_bytes'] is None:
-            del pool['shared_gpu_vram_bytes']
+    if policy.uses_ready_replicas:
+        fields = {'cluster_id', 'model_id', 'owner_principal_id', 'routes', 'queue_limit', 'sync_percent'}
+        encoded = {'replica_source': 'gpustack_ready', 'sync_percent': policy.sync_percent,
+                   'pools': {key: pool.model_dump(include=fields) for key, pool in policy.pools.items()}}
+    else:
+        encoded = policy.model_dump(exclude={'replica_source'})
+        if not encoded['shared_gpu_vram_budgets']:
+            del encoded['shared_gpu_vram_budgets']
+        for pool in encoded['pools'].values():
+            if pool['guard_backend_version'] is None:
+                del pool['guard_backend_version']
+            if not pool['replica_routes']:
+                del pool['replica_routes']
+            if pool['shared_gpu_vram_bytes'] is None:
+                del pool['shared_gpu_vram_bytes']
     return sha256(json.dumps([encoded, names, source], sort_keys=True).encode()).hexdigest()
 
 
 def limits(total, percent):
     reserve = (total * percent + 99) // 100
     return {'total': total, 'sync_reserved': reserve, 'async_limit': total - reserve}
+
+
+def ready_replica_budget(policy, models):
+    """One upstream call per reported ready replica, shared by all aliases of a deployment."""
+    pools = {}
+    for key, pool in policy.pools.items():
+        model = models.get(pool.model_id, {})
+        count = model.get('ready_replicas')
+        if model.get('cluster_id') != pool.cluster_id or model.get('owner_principal_id') != pool.owner_principal_id:
+            count, reason = 0, 'binding_unverified'
+        elif type(count) is not int or count < 0:
+            count, reason = 0, 'readiness_unavailable'
+        else:
+            reason = 'ready' if count else 'no_ready_replica'
+        pools[key] = dict(limits(count, pool.sync_percent), ready_replicas=count, reason=reason,
+                          model_id=pool.model_id, aliases=sorted(pool.routes), queue_limit=pool.queue_limit)
+    return {'source': 'gpustack_ready', 'pools': pools,
+            'global': limits(sum(p['total'] for p in pools.values()), policy.sync_percent)}
 
 
 def route_state(route_id, model_id, pool, names, routes, by_route):

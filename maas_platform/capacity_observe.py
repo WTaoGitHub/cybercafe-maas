@@ -11,7 +11,7 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
-from .capacity import Capacity, Policy, catalog_routes, limits, policy_hash, ready_candidates
+from .capacity import Capacity, Policy, catalog_routes, limits, policy_hash, ready_candidates, ready_replica_budget
 from .config import private_text
 from .gpu_daily_watch import listing
 from .guard_topology import verify_processes
@@ -46,9 +46,8 @@ def status(db):
             extract(epoch FROM expires_at) expires_at, clock_timestamp() < expires_at fresh, budget
             FROM capacity_snapshot WHERE id=1''').fetchone()
         if row and row['fresh']:
-            from .capacity_admission import isolate_budget
-            from .quarantine import unresolved
-            isolate_budget(row['budget'], unresolved(conn))
+            from .capacity_admission import report_unknown
+            report_unknown(conn, row['budget'])
     if row is None:
         return {'mode': 'observe', 'state': 'waiting_for_snapshot', 'global': limits(0, 0), 'pools': {}}
     budget = row.pop('budget')
@@ -56,8 +55,9 @@ def status(db):
     if not fresh:
         budget['global'].update(limits(0, 0))
         for pool in budget['pools'].values():
-            pool.update(limits(0, 0), reason='expired', ready_ids=[], pending_ids=[])
-            pool['ready_gpus'] = {}
+            pool.update(limits(0, 0), reason='expired')
+            if 'ready_gpus' in pool:
+                pool.update(ready_ids=[], pending_ids=[], ready_gpus={})
             if 'processes' in pool:
                 pool['processes'] = {}
                 pool['route_gpus'] = []
@@ -69,6 +69,8 @@ def status(db):
 
 
 def event_identity(kind, row):
+    if kind == 'models':
+        return (row.get('ready_replicas'), row.get('owner_principal_id'), row.get('cluster_id'))
     if kind == 'workers':
         devices = (row.get('status') or {}).get('gpu_devices') or []
         return (row.get('state'), row.get('unreachable'), row.get('maintenance'), row.get('cluster_id'),
@@ -175,10 +177,11 @@ async def observe(settings, path, stop, report):
     base = settings.gpustack_url.rstrip('/') + '/v2/'
     changed = asyncio.Event()
     quarantine = asyncio.Event()
-    intent_file = os.getenv('MAAS_PP_GATEWAY_INTENT_FILE')
+    intent_file = None if policy.uses_ready_replicas else os.getenv('MAAS_PP_GATEWAY_INTENT_FILE')
     async with httpx.AsyncClient(base_url=base, headers={'Authorization': 'Bearer ' + token},
                                  timeout=READ_TIMEOUT, trust_env=False, follow_redirects=False) as client:
-        streams = [asyncio.create_task(watch_changes(client, kind, changed)) for kind in RESOURCES if kind != 'models']
+        resources = ('models',) if policy.uses_ready_replicas else tuple(k for k in RESOURCES if k != 'models')
+        streams = [asyncio.create_task(watch_changes(client, kind, changed)) for kind in resources]
         if intent_file:
             streams.append(asyncio.create_task(watch_quarantine(settings.database_url, quarantine)))
         try:
@@ -202,6 +205,7 @@ async def observe(settings, path, stop, report):
 
 async def sample(client, conn, catalog_file, source, policy, changed, stop, report, guard_keys, quarantine, intent_path):
     last_hash = None
+    capacity = None
     reported = None
     last_topology = None
     fast_until = 0
@@ -218,25 +222,30 @@ async def sample(client, conn, catalog_file, source, policy, changed, stop, repo
             names = catalog_routes(policy, json.loads(catalog_file.read_text()))
             revision = policy_hash(policy, names, source)
             if revision != last_hash:
-                capacity = Capacity(policy, SETTLE, TTL)
+                if not policy.uses_ready_replicas:
+                    capacity = Capacity(policy, SETTLE, TTL)
                 last_hash = revision
             cursor = await conn.execute('SELECT clock_timestamp() AS observed_at')
             observed = (await cursor.fetchone())['observed_at']
-            native = await read_snapshot(client)
-            candidates, reasons = ready_candidates(policy, names, *native)
-            if intent_path:
-                route_candidates = gateway_candidates(policy, names, native, candidates)
-                if not changed.is_set() and names == catalog_routes(policy, json.loads(catalog_file.read_text())):
-                    isolated = await write_gateway_intent(conn, intent_path, observed, route_candidates)
-                    last_topology = observed, route_candidates, isolated
-            proofs = await verify_processes(policy, names, native, candidates, reasons, guard_keys,
-                                            os.getenv('MAAS_GATEWAY_SCOPE_FILE'))
+            if policy.uses_ready_replicas:
+                async with asyncio.timeout(READ_TIMEOUT):
+                    budget = ready_replica_budget(policy, await listing(client, 'models'))
+            else:
+                native = await read_snapshot(client)
+                candidates, reasons = ready_candidates(policy, names, *native)
+                if intent_path:
+                    route_candidates = gateway_candidates(policy, names, native, candidates)
+                    if not changed.is_set() and names == catalog_routes(policy, json.loads(catalog_file.read_text())):
+                        isolated = await write_gateway_intent(conn, intent_path, observed, route_candidates)
+                        last_topology = observed, route_candidates, isolated
+                proofs = await verify_processes(policy, names, native, candidates, reasons, guard_keys,
+                                                os.getenv('MAAS_GATEWAY_SCOPE_FILE'))
+                budget = capacity.update(observed.timestamp(), candidates, reasons, proofs)
             # The native lists and catalog are not a transactional snapshot.
             if changed.is_set() or names != catalog_routes(policy, json.loads(catalog_file.read_text())):
                 raise ValueError('Bindings or topology changed during capacity observation')
-            budget = capacity.update(observed.timestamp(), candidates, reasons, proofs)
         except (httpx.HTTPError, TimeoutError, OSError, ValueError, KeyError, TypeError, AttributeError):
-            if last_hash is not None:
+            if capacity is not None:
                 capacity.interrupted()
             code = 'capacity_observation_unavailable'
         else:

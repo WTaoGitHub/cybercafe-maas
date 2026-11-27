@@ -1,8 +1,7 @@
 """Private host-side metrics and actionable alerts; no customer HTTP endpoint."""
 import shutil
 
-from .capacity_admission import isolate_budget, read_budget
-from .quarantine import unresolved
+from .capacity_admission import read_budget, report_unknown
 
 
 def snapshot(service):
@@ -15,7 +14,7 @@ def snapshot(service):
         budget = read_budget(c, revision) if revision else None
         if budget:
             before = budget['global']['total']
-            isolate_budget(budget, unresolved(c))
+            report_unknown(c, budget)
             result['unknown_capacity'] = {**budget['unknown_capacity'],
                                           'excluded_slots': before - budget['global']['total']}
         sync=c.execute("SELECT state,count(*) n FROM sync_activity GROUP BY state").fetchall()
@@ -33,7 +32,9 @@ def snapshot(service):
 def alerts(service, data):
     out=[]
     def add(code,severity,message):out.append({'code':code,'severity':severity,'message':message})
-    if data['unknown_backend_activity'] or data['unknown_sync_activity']:
+    if data.get('unknown_capacity', {}).get('reconciliation_only'):
+        add('EXECUTION_UNCONFIRMED','warning','Unconfirmed execution retained for reconciliation')
+    elif data['unknown_backend_activity'] or data['unknown_sync_activity']:
         add('BACKEND_QUARANTINED','critical','Unconfirmed execution: inspect the affected dispatch scopes and completion evidence')
     if data['storage']['free_bytes']<service.settings.min_free_bytes+service.settings.max_output_bytes:
         add('DISK_LOW','critical','Free storage cannot safely accommodate the next maximum result')

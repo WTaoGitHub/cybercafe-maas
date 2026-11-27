@@ -40,14 +40,14 @@ def check_success_headers(db, kind, token):
     table = TABLE[kind]
     with db.transaction() as c:
         row = c.execute(f'''SELECT gpu_finished_at IS NOT NULL AS ended,
-            guard_scope IS NOT NULL AND gpu_uuid IS NULL AS conflict FROM {table} WHERE token=%s''',
+            (guard_scope IS NOT NULL OR gpustack_routed) AND gpu_uuid IS NULL AS conflict FROM {table} WHERE token=%s''',
                         (token,)).fetchone()
         if not row or not row['conflict']:
             return bool(row and row['ended'])
         c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
         c.execute(f"""UPDATE {table} SET guard_conflict=true,state='UNKNOWN',updated_at=now(),
                  resolution_reason='Upstream success without a GPU grant'
-                 WHERE token=%s AND guard_scope IS NOT NULL AND gpu_uuid IS NULL AND
+                 WHERE token=%s AND (guard_scope IS NOT NULL OR gpustack_routed) AND gpu_uuid IS NULL AND
                  (state IN ('DISPATCHING','UNKNOWN') OR
                   (state='RESOLVED' AND resolution_reason='Execution closed before any GPU grant'))""", (token,))
         return False
@@ -110,15 +110,15 @@ def router(db, settings):
                          row['dispatch_pool_id'],body.instance,body.gpu_uuid)).fetchone()
                     if not granted:
                         raise ServiceError('EXECUTION_NOT_GRANTED','Process outside verified dispatch scope',409)
-                unknown = unresolved(conn)
+                unknown = () if row['gpustack_routed'] else unresolved(conn)
                 must_check = scope is not None or row['dispatch_gpu_uuid'] is not None
                 isolated = any(r['isolated_gpu_uuid'] == body.gpu_uuid for r in unknown)
                 if eligible and not isolated and (not must_check or not blocks(
                         unknown, eligible['model'], body.route, row['dispatch_pool_id'], body.gpu_uuid)):
-                    fenced = scope is not None or row['dispatch_gpu_uuid'] == body.gpu_uuid
-                    if body.route in settings.required_runtime_routes() and not (fenced and identity):
+                    bind_runtime = row['gpustack_routed'] or scope is not None or row['dispatch_gpu_uuid'] == body.gpu_uuid
+                    if body.route in settings.required_runtime_routes() and not (bind_runtime and identity):
                         raise ServiceError('EXECUTION_NOT_GRANTED', 'The original host runtime must be verified', 409)
-                    runtime = register(conn, body, identity) if fenced and identity else None
+                    runtime = register(conn, body, identity) if bind_runtime and identity else None
                     session = grant_session(conn, settings.boot_observe_cluster, body.gpu_uuid,
                                             identity[1] if runtime else None)
                     conn.execute(f'''UPDATE {table} SET gpu_uuid=%s,gpu_instance=%s,runtime_instance=%s,

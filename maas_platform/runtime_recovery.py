@@ -113,7 +113,7 @@ def register(conn, body, binding):
     return row['instance']
 
 
-QUALIFIED_UNKNOWN = """state='UNKNOWN' AND execution_guard AND (guard_scope IS NOT NULL OR dispatch_gpu_uuid=gpu_uuid)
+QUALIFIED_UNKNOWN = """state='UNKNOWN' AND execution_guard AND (gpustack_routed OR guard_scope IS NOT NULL OR dispatch_gpu_uuid=gpu_uuid)
     AND NOT guard_conflict AND gpu_finished_at IS NULL AND runtime_instance IS NOT NULL"""
 ACTIVITY_TABLES = ('backend_activity', 'sync_activity')
 

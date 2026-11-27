@@ -1,5 +1,7 @@
 # MaaS 不确定推理的局部隔离
 
+2026-11-27 起，常态自动准入采用 GPUStack 的就绪副本数。`UNKNOWN` 保留在对账账本，可核对原 token 的签名回执和宿主机证据。下文的逐卡扣额和 Higress 隔离同步器适用于旧拓扑策略。由该策略升级时，须先停旧同步器，按标签及 UID 释放其自有过滤器，确认 GPUStack 已接管原生路由。[新准入策略与发布顺序](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#1-当前设计与实施方案2026-11-27)
+
 候选实现跟踪 [Issue #2](https://github.com/WTaoGitHub/cybercafe-maas/issues/2) 与 [Issue #62](https://github.com/WTaoGitHub/cybercafe-maas/issues/62)。
 
 MaaS 在发送推理前记录派发 token、逻辑模型和实际配置的上游路由。动态准入模式还固定记录策略中对应的 GPUStack 部署 ID。连接中断、响应结果不确定或发送后的进程丢失仍进入 `UNKNOWN`。同一库中，以下请求被隔离：

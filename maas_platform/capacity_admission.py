@@ -43,8 +43,18 @@ def read_budget(c, revision):
     return row['budget'] if row else None
 
 
+def report_unknown(c, budget):
+    if budget.get('source') == 'gpustack_ready':
+        count = c.execute("""SELECT (SELECT count(*) FROM sync_activity WHERE state='UNKNOWN')
+                                  + (SELECT count(*) FROM backend_activity WHERE state='UNKNOWN') AS n""").fetchone()['n']
+        budget['unknown_capacity'] = {'unresolved': count, 'reconciliation_only': count,
+                                      'charged_as_occupancy': 0, 'covered_by_gpu_exclusion': 0}
+    else:
+        isolate_budget(budget, unresolved(c))
+
+
 def isolate_budget(budget, unknown):
-    """Remove quarantined hardware from every pool before applying policy caps."""
+    """Remove quarantined hardware from legacy topology budgets."""
     rules = budget.get('isolation_policy')
     debts = [r for r in unknown if rules and r.get('isolated_gpu_uuid')]
     budget['unknown_capacity'] = {'unresolved': len(unknown), 'covered_by_gpu_exclusion': len(debts),
@@ -96,33 +106,41 @@ class Admission:
         self.pool_ids = {name: policy.pools[key].model_id for name, key in self.aliases.items()}
         self.pools = policy.pools
         self.automatic = policy.global_limit is None
+        self.gpustack_routed = policy.uses_ready_replicas
         self.revision = revision
         self.budget = read_budget(c, revision)
-        self.project_limit = settings.max_project_running
+        if self.budget and (self.budget.get('source') == 'gpustack_ready') != self.gpustack_routed:
+            raise unavailable()
+        self.unknown = ()
+        self.project_limit = 0 if self.automatic else settings.max_project_running
         self.claimed = Counter()
         self.asynchronous = Counter()
         self.project = Counter()
         self.gpu = Counter()
         if not self.budget:
             return
-        if unknown is None:
-            unknown = unresolved(c)
-        excluded = isolate_budget(self.budget, unknown)
-        if not self.automatic:
-            self.project.update(r['project'] for r in unknown if r.get('isolated_gpu_uuid') in excluded)
+        if self.gpustack_routed:
+            rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous FROM maas_dispatch_slots
+                                WHERE %s OR dispatched GROUP BY model,project,asynchronous''',
+                             (include_preparing,)).fetchall()
+        else:
+            self.unknown = unresolved(c) if unknown is None else unknown
+            excluded = isolate_budget(self.budget, self.unknown)
+            if not self.automatic:
+                self.project.update(r['project'] for r in self.unknown if r.get('isolated_gpu_uuid') in excluded)
+            rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous,dispatch_gpu_uuid,dispatch_pool_id
+                                FROM inference_slots
+                                WHERE NOT backend_finished AND (%s OR dispatched)
+                                  AND (isolated_gpu_uuid IS NULL OR NOT (isolated_gpu_uuid=ANY(%s::text[])))
+                                GROUP BY model,project,asynchronous,dispatch_gpu_uuid,dispatch_pool_id''',
+                             (include_preparing, list(excluded))).fetchall()
         if self.automatic:
             self.project_limit = self.budget['global']['total']
-        rows = c.execute('''SELECT model,project,count(*) AS n,asynchronous,dispatch_gpu_uuid,dispatch_pool_id
-                            FROM inference_slots
-                            WHERE NOT backend_finished AND (%s OR dispatched)
-                              AND (isolated_gpu_uuid IS NULL OR NOT (isolated_gpu_uuid=ANY(%s::text[])))
-                            GROUP BY model,project,asynchronous,dispatch_gpu_uuid,dispatch_pool_id''',
-                         (include_preparing, list(excluded))).fetchall()
         for row in rows:
             key, n = self.aliases.get(row['model']), row['n']
             self.project[row['project']] += n
             self.claimed[key] += n
-            if row['dispatch_gpu_uuid']:
+            if row.get('dispatch_gpu_uuid'):
                 self.gpu[row['dispatch_pool_id'], row['dispatch_gpu_uuid']] += n
             if row['asynchronous']:
                 self.asynchronous[key] += n
@@ -135,8 +153,12 @@ class Admission:
         return bool(self.budget and c.execute('''SELECT 1 FROM capacity_snapshot WHERE id=1
             AND policy_hash=%s AND expires_at>clock_timestamp()''', (self.revision,)).fetchone())
 
-    def dispatch(self, model, route, unknown):
+    def dispatch(self, model, route, unknown=None):
         """Pick a fresh, admissible destination. The caller persists the pair before sending."""
+        if self.gpustack_routed:
+            return route, None, None
+        if unknown is None:
+            unknown = self.unknown
         pool = self.pools.get(self.aliases.get(model))
         pool_id = self.pool_ids.get(model)
         if pool and pool.guard_backend_version:

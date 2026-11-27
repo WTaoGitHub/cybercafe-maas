@@ -171,7 +171,7 @@ def test_gpu_budget_revision_preserves_legacy_configuration_identity():
     raw, catalog, _ = topology(1)
     policy = Policy.model_validate(raw)
     names = catalog_routes(policy, catalog)
-    legacy = policy.model_dump()
+    legacy = policy.model_dump(exclude={'replica_source'})
     del legacy['shared_gpu_vram_budgets']
     for pool in legacy['pools'].values():
         del pool['replica_routes'], pool['shared_gpu_vram_bytes'], pool['guard_backend_version']

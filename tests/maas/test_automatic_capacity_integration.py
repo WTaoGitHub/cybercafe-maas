@@ -7,13 +7,13 @@ import httpx
 import psycopg
 import pytest
 
-from maas_platform.capacity import Capacity
+from maas_platform.capacity import ready_replica_budget
 from maas_platform.capacity_admission import configuration
 from maas_platform.capacity_observe import publish
 from maas_platform.controller_capacity import local_slots
 from maas_platform.sync_ingress import SyncIngress
 from maas_platform.worker import Worker
-from test_capacity import evaluate, topology
+from test_capacity import topology
 from test_integration import env, headers, submit
 
 
@@ -82,10 +82,12 @@ def test_automatic_capacity_scales_actual_dispatch_without_reconfiguration(env, 
     settings.bindings_file.write_text(json.dumps(bindings))
     identity = auth.authenticate('gpustack_registered_a')
     policy, _, revision = configuration(settings)
-    observation = Capacity(policy, settle=5, ttl=30)
 
-    async def observe(at, expected):
-        budget = evaluate(observation, policy, catalog, native, at)
+    async def observe(expected):
+        for model_id, model in models.items():
+            model['ready_replicas'] = sum(i['model_id'] == model_id and not workers[i['worker_id']]['unreachable']
+                                          for i in instances.values())
+        budget = ready_replica_budget(policy, models)
         assert budget['global']['total'] == expected
         async with await psycopg.AsyncConnection.connect(settings.database_url) as db:
             clock = await (await db.execute('SELECT clock_timestamp()')).fetchone()
@@ -93,8 +95,7 @@ def test_automatic_capacity_scales_actual_dispatch_without_reconfiguration(env, 
         return budget
 
     async def exercise():
-        await observe(1, 0)
-        low = await observe(6, 8)
+        low = await observe(8)
         assert low['global'] == {'total': 8, 'sync_reserved': 2, 'async_limit': 6}
         service.pause(True)
         assert service.set_capacity_mode(True) == 'enforce'
@@ -148,8 +149,7 @@ def test_automatic_capacity_scales_actual_dispatch_without_reconfiguration(env, 
             assert service.claim() is None
             for worker in workers.values():
                 worker['unreachable'] = False
-            await observe(7, 8)
-            high = await observe(12, 29)
+            high = await observe(29)
             assert high['global'] == {'total': 29, 'sync_reserved': 8, 'async_limit': 21}
             assert [high['pools'][name]['total'] for name in names] == [12, 9, 8]
             await asyncio.wait_for(peak.wait(), 15)
@@ -168,7 +168,7 @@ def test_automatic_capacity_scales_actual_dispatch_without_reconfiguration(env, 
 
             for num, worker in workers.items():
                 worker['unreachable'] = num not in {4, 7, 9}
-            reduced = await observe(13, 9)
+            reduced = await observe(9)
             assert reduced['global'] == {'total': 9, 'sync_reserved': 3, 'async_limit': 6}
             assert [reduced['pools'][name]['total'] for name in names] == [3, 3, 3]
             assert sync(c).status_code == 429 and service.claim() is None and len(sent) == 21

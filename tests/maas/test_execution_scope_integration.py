@@ -34,7 +34,7 @@ def protected(guarded, tmp_path, monkeypatch, request):
     raw, _, native = topology(2)
     workers, models, instances, routes, _ = native
     contract = 'test-agent-mandatory-guard'
-    raw.update(global_limit=None, sync_percent=25)
+    raw.update(global_limit=None, sync_percent=25, replica_source='verified_topology')
     pool = raw['pools'].pop('arbitrary-model-1')
     raw['pools'] = {'test_agent_pool': pool}
     pool.update(routes={alias:1}, guard_backend_version=contract, hard_limit=None,
@@ -98,6 +98,47 @@ def create_attempt(f, kind, idem='test_agent_scope', **task_options):
     task = service.claim()
     assert service.begin_backend(task) == 'real-ocr'
     return task['token'], lambda: service.finish(task)
+
+
+@pytest.mark.parametrize('kind', ['sync', 'task'])
+def test_gpustack_routed_unknown_reconciles_without_blocking_the_same_gpu(guarded, tmp_path, kind):
+    from maas_platform.capacity import ready_replica_budget
+    from maas_platform.pp_ocr_execution import GPUEvent
+    from maas_platform.receipt_reconcile import reconcile
+
+    client, service, replicas = guarded
+    settings = service.settings
+    raw, _, _ = topology(1)
+    pool = raw['pools']['arbitrary-model-1']
+    pool.update(routes={'ocr.default': 1}, gateway_verified=False)
+    settings.capacity_policy_file = tmp_path / 'test_agent_ready.json'
+    settings.capacity_policy_file.write_text(json.dumps(dict(sync_percent=0, pools={'pp': pool})))
+    settings.capacity_policy_file.chmod(0o600)
+    policy, _, revision = configuration(settings)
+    budget = ready_replica_budget(policy, {1: dict(cluster_id=1, owner_principal_id=4, ready_replicas=1)})
+    with service.db.transaction() as c:
+        c.execute("""INSERT INTO capacity_snapshot(id,policy_hash,observed_at,expires_at,budget)
+                     VALUES(1,%s,now(),now()+interval '30 seconds',%s)""",(revision,Jsonb(budget)))
+    service.pause(True)
+    service.set_capacity_mode(True)
+    service.pause(False)
+    who = service.auth.authenticate('gpustack_registered_a')
+    f = (client, service, replicas, who)
+    token, disconnect = create_attempt(f, kind)
+    attempt = kind+'.'+token
+    replica = replicas[0]
+    replica.report(attempt, finished=False)
+    disconnect()
+    assert isolate_unknown(service.db, kind, token, replica.identity['gpu_uuid'], 'test_agent_original_landing')
+    fresh, _ = create_attempt(f, kind, idem='test_agent_next')
+    replica.report(kind+'.'+fresh, finished=False)
+    with service.db.transaction() as c:
+        row = c.execute(f'SELECT state,gpustack_routed,guard_scope FROM {TABLE[kind]} WHERE token=%s',(token,)).fetchone()
+        assert row == {'state':'UNKNOWN', 'gpustack_routed': True, 'guard_scope':None}
+        assert Admission(c,settings,revision,include_preparing=True).total == 1
+    event = GPUEvent(attempt=attempt, finished=True, **replica.identity)
+    assert reconcile(service.db, event, apply=True) == 'recovered'
+    assert reconcile(service.db, event, apply=True) == 'settled'
 
 
 @pytest.mark.parametrize('kind', ['sync', 'task'])
