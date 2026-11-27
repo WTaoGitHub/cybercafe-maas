@@ -77,6 +77,7 @@ def supervise(root, control):
     code = root / 'code'
     status = {'phase': 'PREPARING'}
     report = {'run_id': run_id}
+    route_grants = []
     user = key_id = process = publisher = admin = password = None
     network = container = False
     bindings_written = False
@@ -160,6 +161,21 @@ def supervise(root, control):
             'docker', 'exec', '-i', 'maas-control-gpustack-observe', 'python', '-B', '-', str(user), project,
             input=(code / 'endurance_24h_gpu_usage.py').read_bytes()))
 
+    def route_access(opener, path, grant):
+        before = native(opener, path)
+        users = {item['id'] for item in before['items']}
+        after = users | {user} if grant else users - {user}
+        if users == after:
+            return
+        response = native(opener, path, {'users': [{'id': ident} for ident in sorted(after)]})
+        if response['access_policy'] != before['access_policy'] or {item['id'] for item in response['items']} != after:
+            raise RuntimeError('GPUStack route authorization did not converge')
+
+    def revoke_routes():
+        opener = login('admin', (control / 'operator/gpustack-admin.password').read_text().strip())
+        for path in route_grants:
+            route_access(opener, path, False)
+
     try:
         previous = audit('read')
         if any(previous.values()) or not idle():
@@ -184,9 +200,18 @@ def supervise(root, control):
         key_record = native(owner, '/v2/api-keys', {'name': project, 'scope': ['inference'],
                                                   'allowed_model_names': allowed, 'expires_in': 30 * 3600})
         key_id = key_record['id']
-        private_write(stop_file, json_bytes({'project': project, 'gpu_user': user, 'gpu_key': key_id,
-                                            'container': root.name, 'network': root.name}))
+        manifest = {'project': project, 'gpu_user': user, 'gpu_key': key_id, 'route_grants': route_grants,
+                    'container': root.name, 'network': root.name}
+        private_write(stop_file, json_bytes(manifest))
         key = key_record.get('value') or key_record['api_key']
+        routes = native(admin, '/v2/model-routes?perPage=100')['items']
+        routes_by_name = {route.get('effective_name') or route['name']: route['id'] for route in routes}
+        for model in allowed:
+            path = '/v2/model-routes/' + str(routes_by_name[model]) + '/access'
+            if native(admin, path)['access_policy'] == 'allowed_principals':
+                route_grants.append(path)
+                private_write(stop_file, json_bytes(manifest))
+                route_access(admin, path, True)
         bearer = build_opener(ProxyHandler({}))
         for route in allowed:
             native(bearer, '/token-auth', headers={'Authorization': 'Bearer ' + key, 'x-higress-llm-model': route})
@@ -263,6 +288,8 @@ def supervise(root, control):
                 cleanup_step('remove_bound_key_file', lambda: secrets_path.unlink(missing_ok=True))
             if key_id is not None:
                 cleanup_step('revoke_gpu_key', lambda: native(login(project, password), f'/v2/api-keys/{key_id}', method='DELETE'))
+            if route_grants:
+                cleanup_step('remove_route_grants', revoke_routes)
             if user is not None and (not container or cleanup_step('remove_gpu_usage', cleanup_native_usage)):
                 cleanup_step('remove_gpu_user', lambda: native(login('admin', (control / 'operator/gpustack-admin.password').read_text().strip()),
                                                                f'/v2/users/{user}', method='DELETE'))
