@@ -19,7 +19,8 @@ async def cleanup(user_id, username):
                                        database='gpustack', user='root', timeout=5, command_timeout=10)
     try:
         async with connection.transaction():
-            if not await connection.fetchval('SELECT 1 FROM users WHERE id=$1 AND username=$2', user_id, username):
+            if not await connection.fetchval('''SELECT 1 FROM principals WHERE id=$1 AND name=$2
+                    AND NOT is_admin AND deleted_at IS NULL''', user_id, username):
                 raise RuntimeError('The GPUStack user does not match the run manifest')
             entries = {table: await connection.fetchval(f'SELECT count(*) FROM {table} WHERE user_id=$1', user_id)
                        for table in TABLES}
