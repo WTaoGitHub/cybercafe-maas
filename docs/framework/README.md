@@ -13,6 +13,7 @@
 - [架构图SVG](ARCHITECTURE.svg)、[PNG](ARCHITECTURE.png)、[Mermaid源文件](ARCHITECTURE.mmd)。
 - [worker 关机事件设计与开发实施方案](WORKER-SHUTDOWN-EVENTS.md)：一次最多等待 1 秒的通知、MaaS 事件记录、48 小时自动清理；MaaS、Bootstrap 和母版已部署，新快照及真实关机验收待办，沿用 Issue #2。
 - [Unlimited-OCR-2 检查与执行计划](UNLIMITED-OCR-2-PLAN.md)：分 GPUStack/Higress 模型服务试点和 MaaS 文档异步接入两个里程碑；当前执行状态见计划，[执行故障登记](UNLIMITED-OCR-2-INCIDENTS.md)使用独立的 `UOCR2-INC-三位序号`。
+- [新 PC 三模型 24 小时耐久测试方案](ENDURANCE-24H-PLAN.md)给出 80% 并发容量的负载控制、校准及验收条件。
 
 核心决策：同步/SSE走GPUStack；异步经持久任务API、PostgreSQL、执行器，再调用GPUStack；结果持久保存于001。复用既有身份和模型路由，但新任务端点需要验证安全身份桥接。首期采用全局受控维护，不承诺普通worker精确逐节点无损drain。
 
