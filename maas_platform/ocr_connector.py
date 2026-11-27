@@ -144,7 +144,7 @@ class OCRAdapter:
         gpu_ended = False
         try:
             async with asyncio.timeout(max(0, budget)):
-                # Higress can try multiple backends. MaaS sends once and records the outcome.
+                # Send once per MaaS attempt. The task queue owns any subsequent attempt.
                 async with client.stream('POST', ctx.service.settings.gpustack_url+'/v1/chat/completions',
                                          headers=headers, content=body, timeout=timeout) as response:
                     if guarded and 200 <= response.status_code < 300:
@@ -160,7 +160,7 @@ class OCRAdapter:
         except (httpx.HTTPError, TimeoutError):
             if guarded and await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
                 raise ServiceError('BACKEND_RESULT_UNAVAILABLE', 'GPU finished but its response was unavailable') from None
-            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; dispatch quarantined',
+            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Inference transport failed; outcome is unconfirmed',
                                transient_before_grant=True) from None
         if guarded and not gpu_ended and not await asyncio.to_thread(finished, ctx.service.db, kind, ctx.task['token']):
             raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'GPU completion is unconfirmed',

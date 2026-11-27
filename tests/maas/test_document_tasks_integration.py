@@ -3,6 +3,10 @@ import json
 from pathlib import Path
 import httpx
 import pytest
+from psycopg.types.json import Jsonb
+from maas_platform.capacity import ready_replica_budget
+from maas_platform.capacity_admission import configuration
+from maas_platform.errors import ServiceError
 from maas_platform.worker import Worker
 from test_integration import env, headers
 from test_documents import pdf
@@ -29,7 +33,8 @@ def setup(env, monkeypatch, *, status=200, incomplete=False, guard=None):
             guard(request, catalog[NAME]['upstream_model'])
         count = sum(p['type'] == 'image_url' for p in body['messages'][0]['content'])
         text = ''.join(f'<PAGE><BLOCK>text[0,0,1000,500]<FORK>Reference {i+1}\n' for i in range(count))
-        return httpx.Response(status, json={'choices': [{'finish_reason': 'length' if incomplete else 'stop',
+        code = status(len(calls)) if callable(status) else status
+        return httpx.Response(code, json={'choices': [{'finish_reason': 'length' if incomplete else 'stop',
             'message': {'content': text}}], 'metadata': {'doc_split_complete': True, 'doc_split_batches': (count+2)//3},
             'usage': {'prompt_tokens': 100, 'completion_tokens': 200}})
     monkeypatch.setattr('maas_platform.ocr_connector.httpx.AsyncClient',
@@ -88,7 +93,7 @@ def test_existing_api_pdf_task_pages_idempotency_isolation_and_gc(env, monkeypat
     accepted = submit(client, artifact);assert accepted.status_code == 202
     task_id = accepted.json()['id']
     with service.db.transaction() as connection:
-        assert connection.execute('SELECT max_attempts FROM tasks WHERE id=%s', (task_id,)).fetchone()['max_attempts'] == 1
+        assert connection.execute('SELECT max_attempts FROM tasks WHERE id=%s', (task_id,)).fetchone()['max_attempts'] == 2
     assert Worker(service).run_once()
     detail = client.get('/maas/v1/tasks/'+task_id, headers=headers()).json()
     assert detail['status'] == 'SUCCEEDED' and detail['usage'] == {'successful_pages': 2}
@@ -100,7 +105,7 @@ def test_existing_api_pdf_task_pages_idempotency_isolation_and_gc(env, monkeypat
     for kind in ('images', 'tokens'):
         response = client.get('/maas/v1/tasks/'+task_id+'/usage', headers=headers(), params={'usage_type': kind})
         assert response.status_code == 422 and response.json()['error']['code'] == 'USAGE_TYPE_UNSUPPORTED'
-    assert submit(client, artifact, max_attempts=1, timeout_seconds=900).status_code == 200
+    assert submit(client, artifact, max_attempts=2, timeout_seconds=900).status_code == 200
     assert len(calls) == 1 and not Worker(service).run_once()
     for path in ('/maas/v1/tasks/'+task_id, '/maas/v1/artifacts/'+detail['result_artifact_id'], '/maas/v1/usage/'+receipt['id']):
         assert client.get(path, headers=headers('b')).status_code == 404
@@ -124,7 +129,7 @@ def test_invalid_mime_encryption_and_document_options_rejected(env, monkeypatch)
     artifact = upload(client, pdf(), 'application/octet-stream').json()['id']
     assert submit(client, artifact).status_code == 415
     artifact = upload(client).json()['id']
-    assert submit(client, artifact, max_attempts=2).json()['error']['code'] == 'DOCUMENT_REPLAY_UNSAFE'
+    assert submit(client, artifact, max_attempts=4).status_code == 422
     assert submit(client, artifact, parameters={'dpi': 301}).status_code == 422
     assert submit(client, artifact, parameters={'custom_logit_processor': 'external'}).status_code == 422
     assert not calls
@@ -149,6 +154,77 @@ def test_no_receipt_or_replay_on_ambiguous_rejected_or_partial_results(env, monk
         assert service.metrics()['unknown_backend_activity'] == 1
         assert submit(client, artifact, idem='second').status_code == 202
         assert not Worker(service).run_once() and len(calls) == 1
+
+
+@pytest.mark.parametrize('maximum,failures,recover,expected', [
+    (1, 1, False, 'FAILED'),
+    (None, 1, False, 'SUCCEEDED'),
+    (2, 2, False, 'FAILED'),
+    (3, 2, False, 'SUCCEEDED'),
+    (2, 0, True, 'SUCCEEDED'),
+])
+def test_native_document_unknown_retries_with_single_metering(env, monkeypatch, tmp_path,
+                                                             maximum, failures, recover, expected):
+    client, service, settings, calls = setup(env, monkeypatch,
+        status=lambda attempt: 503 if attempt <= failures else 200)
+    settings.capacity_policy_file = tmp_path / 'ready.json'
+    settings.capacity_policy_file.write_text(json.dumps(dict(replica_source='gpustack_ready', sync_percent=0,
+        pools={NAME: dict(cluster_id=1, model_id=1, owner_principal_id=1, routes={NAME: 1}, queue_limit=5)})))
+    settings.capacity_policy_file.chmod(0o600)
+    policy, _, revision = configuration(settings)
+    budget = ready_replica_budget(policy, {1: dict(cluster_id=1, owner_principal_id=1, ready_replicas=1)})
+    with service.db.transaction() as c:
+        c.execute("""INSERT INTO capacity_snapshot(id,policy_hash,observed_at,expires_at,budget)
+                     VALUES(1,%s,now(),now()+interval '1 minute',%s)""", (revision, Jsonb(budget)))
+    service.pause(True)
+    service.set_capacity_mode(True)
+    service.pause(False)
+    artifact = upload(client).json()['id']
+    fields = {} if maximum is None else {'max_attempts': maximum}
+    task_id = submit(client, artifact, **fields).json()['id']
+
+    def get():
+        return client.get('/maas/v1/tasks/'+task_id, headers=headers()).json()
+
+    if recover:
+        old = service.claim()
+        service.begin_backend(old)
+        with service.db.transaction() as c:
+            c.execute("UPDATE tasks SET lease_until=now()-interval '1 second' WHERE id=%s", (task_id,))
+        assert service.recover() == 1 and service.recover() == 0
+    else:
+        assert Worker(service).run_once()
+        with service.db.transaction() as c:
+            old = {'id': task_id, **c.execute("SELECT token, project FROM backend_activity WHERE task_id=%s",
+                                            (task_id,)).fetchone()}
+    assert get()['status'] == ('FAILED' if maximum == 1 else 'RETRY_WAIT')
+    with pytest.raises(ServiceError, match='already recorded as unknown'):
+        service.complete_backend(old)
+    assert not service.finish(old, output={'late': True})
+    assert get()['usage'] is None
+    while Worker(service).run_once():
+        pass
+    final = get()
+    assert final['status'] == expected
+    assert final['attempts'] == min(maximum or 2, max(2, failures+1))
+    assert all(call == calls[0] for call in calls)
+    with service.db.transaction() as c:
+        states = c.execute('''SELECT b.state FROM backend_activity b JOIN task_attempts a ON a.token=b.token
+                              WHERE b.task_id=%s ORDER BY a.attempt''', (task_id,)).fetchall()
+        successes = int(expected == 'SUCCEEDED')
+        assert [row['state'] for row in states] == ['UNKNOWN'] * (final['attempts']-successes) + ['COMPLETED'] * successes
+        for table,column in (('task_usage_events','task_id'),('ocr_usage_records','source_id')):
+            assert c.execute(f'SELECT count(*) AS n FROM {table} WHERE {column}=%s', (task_id,)).fetchone()['n'] == successes
+    assert final['usage'] == ({'successful_pages': 2} if successes else None)
+
+
+def test_omitted_attempts_replays_old_single_attempt_document(env, monkeypatch):
+    client, service, _, _ = setup(env, monkeypatch)
+    artifact = upload(client).json()['id']
+    old = submit(client, artifact, max_attempts=1).json()['id']
+    repeated = submit(client, artifact)
+    assert repeated.status_code == 200 and repeated.json()['id'] == old
+    assert submit(client, artifact, max_attempts=2).status_code == 409
 
 
 def test_ledger_failure_rolls_back_document_success(env, monkeypatch):

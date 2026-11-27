@@ -4,6 +4,7 @@ from pydantic import BaseModel,ConfigDict,Field,model_validator
 from PIL import Image,UnidentifiedImageError
 from .errors import ServiceError
 from .image_fetch import PublicImageFetcher,image_url
+from .schemas import DEFAULT_MAX_ATTEMPTS, MAX_ATTEMPTS
 
 MAX_PIXELS=20_000_000
 
@@ -22,6 +23,10 @@ class ConsumerOCRRequest(BaseModel):
         if self.language not in (None,'auto','zh','en'):raise ValueError('Supported language hints: auto, zh, en')
         if self.request_id and any(ord(c)<32 or ord(c)==127 for c in self.request_id):raise ValueError('Invalid request id')
         return self
+
+
+class AsyncConsumerOCRRequest(ConsumerOCRRequest):
+    max_attempts: int = Field(default=DEFAULT_MAX_ATTEMPTS, ge=1, le=MAX_ATTEMPTS)
 
 
 def decode_base64(value,limit):

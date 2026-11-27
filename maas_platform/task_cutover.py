@@ -6,10 +6,10 @@ from psycopg.types.json import Jsonb
 from .errors import ServiceError
 
 
-def existing_submission(c, project, model, key, request_hash):
+def existing_submission(c, project, model, key, request_hash, previous_default_hash=None):
     old = c.execute('SELECT * FROM tasks WHERE project=%s AND idempotency_key=%s', (project, key)).fetchone()
     if old:
-        if old['request_hash'] != request_hash:
+        if old['request_hash'] not in (request_hash, previous_default_hash):
             raise ServiceError('IDEMPOTENCY_CONFLICT', 'Key already used for different content', 409)
         return old
     key_hash = hashlib.sha256(key.encode()).hexdigest()

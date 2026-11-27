@@ -13,7 +13,7 @@ from .errors import ServiceError
 from .schemas import TaskCreate, TaskDetail, TaskView
 from .service import TaskService
 from .sync_ingress import SyncIngress
-from .consumer_ocr import ConsumerOCRRequest
+from .consumer_ocr import AsyncConsumerOCRRequest
 from .metering import UsageType, select_usage
 from .gpu_time_web import router as gpu_time_router
 from .gpu_daily import router as gpu_daily_router
@@ -106,12 +106,13 @@ def create_app(settings=None, auth=None):
         return submit_task(body, who, idempotency_key)
 
     @app.post('/maas/v1/ocr', status_code=202, response_model=TaskView)
-    def submit_ocr(body:ConsumerOCRRequest, request:Request, who=Depends(identity), idempotency_key:str|None=Header(default=None)):
+    def submit_ocr(body:AsyncConsumerOCRRequest, request:Request, who=Depends(identity), idempotency_key:str|None=Header(default=None)):
         if body.request_id is not None:
             logging.getLogger('uvicorn.error').info('ocr request=%s consumer_request=%r',request.state.request_id,body.request_id)
         image = {'image_url': body.image_url} if body.image_url is not None else {'image_base64': body.image_base64}
         parameters = {} if body.return_boxes else {'return_boxes': False}
-        task = TaskCreate(model=body.model, input={'image': image}, parameters=parameters)
+        attempts = body.model_dump(include={'max_attempts'}, exclude_unset=True)
+        task = TaskCreate(model=body.model, input={'image': image}, parameters=parameters, **attempts)
         key = idempotency_key
         if key is None:
             key = (request.headers.get('X-Request-ID') or '').strip() or body.request_id

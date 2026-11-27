@@ -76,16 +76,10 @@ class TaskService:
             raise ServiceError('IDEMPOTENCY_REQUIRED', 'Supply Idempotency-Key (1..128 characters)')
         model = self.model(body.model); self.auth.authorize(identity, body.model, model)
         if model['driver'] == 'gpustack.document_ocr':
-            updates = {}
-            if 'max_attempts' not in body.model_fields_set:
-                updates['max_attempts'] = 1
-            elif body.max_attempts != 1:
-                raise ServiceError('DOCUMENT_REPLAY_UNSAFE', 'Document tasks require max_attempts=1', 422)
             if 'timeout_seconds' not in body.model_fields_set:
-                updates['timeout_seconds'] = 900
+                body = body.model_copy(update={'timeout_seconds': 900})
             elif body.timeout_seconds > 900:
                 raise ServiceError('INPUT_INVALID', 'Document task deadline cannot exceed 900 seconds', 422)
-            body = body.model_copy(update=updates)
         try:
             inp, params, art_id = adapter_for(model['driver']).validate(body.input, body.parameters)
         except ValidationError:
@@ -102,12 +96,21 @@ class TaskService:
             inline = (raw, media)
         return self._accept(identity,body,idem,model,inp,params,art_id,inline)
 
+    @staticmethod
+    def submission_hashes(body, model):
+        data = body.model_dump()
+        # Replaying an old request with the field omitted must find the same task.
+        previous = None
+        if 'max_attempts' not in body.model_fields_set:
+            previous = fingerprint({**data, 'max_attempts': 1 if model['driver'] == 'gpustack.document_ocr' else 3})
+        return fingerprint(data), previous
+
     def _accept(self, identity, body, idem, model, inp, params, art_id, inline):
-        request_hash = fingerprint(body.model_dump())
+        request_hash, previous = self.submission_hashes(body, model)
         with lifecycle_lock(self.store) if inline is not None else nullcontext():
             with self.db.transaction() as c:
                 revision = c.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1 FOR UPDATE').fetchone()['capacity_policy_hash']
-                old = existing_submission(c, identity.project, body.model, idem, request_hash)
+                old = existing_submission(c, identity.project, body.model, idem, request_hash, previous)
                 if old:
                     return self.public(old), False
                 self.store.ensure_space()
@@ -463,10 +466,10 @@ class TaskService:
                 if (not row or row['token'] != task['token'] or row['state'] not in ('RUNNING','CANCEL_REQUESTED')
                         or row['lease_until'] <= datetime.now(timezone.utc)):
                     return False
-                activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (task['token'],)).fetchone()
+                activity = c.execute("SELECT state,gpustack_routed FROM backend_activity WHERE token=%s FOR UPDATE", (task['token'],)).fetchone()
                 state, code, result_id = 'FAILED', error.code if error else None, None
                 if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
-                    state, code = self.end_uncertain_attempt(c, row, bool(error and error.transient_before_grant))
+                    state, code = self.end_uncertain_attempt(c, row, activity, bool(error and error.transient_before_grant))
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None
                 elif row['deadline'] <= datetime.now(timezone.utc): code = 'DEADLINE_EXCEEDED'
                 elif error:
@@ -479,7 +482,10 @@ class TaskService:
                     c.execute("INSERT INTO artifacts(id,project,kind,media_type,size,sha256,expires_at) VALUES(%s,%s,'result','application/json',%s,%s,now()+%s*interval '1 second')", (result_id, row['project'], result['size'], result['sha256'], self.settings.result_ttl_seconds))
                     c.execute('INSERT INTO task_usage_events(task_id,project,quantity) VALUES(%s,%s,1)', (row['id'], row['project']))
                 else: code = 'NO_RESULT'
-                c.execute("UPDATE tasks SET state=%s,error_code=%s,result_artifact_id=%s,lease_until=NULL,token=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state, code, result_id, min(2**row['attempts'],30), row['id']))
+                delay = 0
+                if state == 'RETRY_WAIT' and code != 'UNKNOWN_BACKEND_ACTIVITY':
+                    delay = min(2 ** min(row['attempts'], 5), 30)
+                c.execute("UPDATE tasks SET state=%s,error_code=%s,result_artifact_id=%s,lease_until=NULL,token=NULL,next_run=now()+%s*interval '1 second',updated_at=now() WHERE id=%s", (state, code, result_id, delay, row['id']))
                 if state=='SUCCEEDED' and metering is not None:
                     from .metering import persist
                     if metering['source_type']!='task' or metering['source_id']!=row['id']:
@@ -497,10 +503,12 @@ class TaskService:
             WHERE token=%s AND state='DISPATCHING' RETURNING state""", (token,)).fetchone()
         return 'EXECUTION_NOT_STARTED' if row and row['state'] == 'RESOLVED' else 'UNKNOWN_BACKEND_ACTIVITY'
 
-    def end_uncertain_attempt(self, c, row, transient):
+    def end_uncertain_attempt(self, c, row, activity, transient):
         code = self.close_uncertain(c, row['token'])
-        if (code != 'EXECUTION_NOT_STARTED' or not transient
-                or row['model'] not in self.settings.retry_unstarted_models):
+        native_unknown = activity['gpustack_routed'] and code == 'UNKNOWN_BACKEND_ACTIVITY'
+        unstarted = (code == 'EXECUTION_NOT_STARTED' and transient
+                     and row['model'] in self.settings.retry_unstarted_models)
+        if not (native_unknown or unstarted):
             return 'FAILED', code
         if row['state'] == 'CANCEL_REQUESTED':
             return 'CANCELLED', None
@@ -520,15 +528,15 @@ class TaskService:
         return 'RETRY_WAIT', code
 
     def recover(self):
-        # Durable dispatch intent fences remote work; local pre-dispatch work may retry.
+        # The previous token stays fenced while an eligible task returns to the queue.
         with self.db.transaction() as c:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
             self.expire_sync(c)
             rows = c.execute("SELECT * FROM tasks WHERE state IN ('RUNNING','CANCEL_REQUESTED') AND lease_until<=now() FOR UPDATE SKIP LOCKED").fetchall()
             for row in rows:
-                activity = c.execute("SELECT state FROM backend_activity WHERE token=%s FOR UPDATE", (row['token'],)).fetchone()
+                activity = c.execute("SELECT state,gpustack_routed FROM backend_activity WHERE token=%s FOR UPDATE", (row['token'],)).fetchone()
                 if activity and activity['state'] in ('DISPATCHING','UNKNOWN'):
-                    state, code = self.end_uncertain_attempt(c, row, transient=True)
+                    state, code = self.end_uncertain_attempt(c, row, activity, transient=True)
                 elif activity and activity['state']=='COMPLETED': state, code = 'FAILED', 'RESULT_NOT_COMMITTED'
                 elif activity: state, code = 'FAILED', 'BACKEND_RESULT_UNAVAILABLE'
                 elif row['state'] == 'CANCEL_REQUESTED': state, code = 'CANCELLED', None

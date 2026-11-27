@@ -8,7 +8,7 @@ PDF解析/渲染在独立进程执行：Linux地址空间512 MiB、CPU时间15�
 
 本机测试：安装 `requirements-maas.txt` 和 `requirements-document.txt` 后执行 `python -m pytest tests/maas/test_documents.py -q`。测试覆盖真实PDF渲染、损坏/加密/超页数/像素预算、取消清理及图片方向；本机测试不替代Linux、GPU及实际下游验收。本次固定配置的实测范围见M2报告。
 
-新逻辑模型为 `document.unlimited-ocr-2`，登记模板见 [catalog.document.example.json](catalog.document.example.json)。模型、SGLang运行镜像、上游后处理器和PDF渲染profile固定版本，并纳入既有任务模型指纹。任务省略重试次数和期限时，分别使用1次和900秒；显式重试次数必须为1，总期限不得超过900秒。模型执行600秒预算包括本地预处理、网络和后处理；心跳与任务租约沿用公共执行链。
+新逻辑模型为 `document.unlimited-ocr-2`，登记模板见 [catalog.document.example.json](catalog.document.example.json)。模型、SGLang运行镜像、上游后处理器和PDF渲染profile固定版本，并纳入既有任务模型指纹。文档任务沿用异步 API 的 `max_attempts`，范围为 1–3，默认 2（包含首次尝试）。文档任务总期限默认 900 秒，最多 900 秒。模型执行600秒预算包括本地预处理、网络和后处理；心跳与任务租约沿用公共执行链。
 
 文档只支持异步artifact引用，不增加公共同步、内嵌、URL或多文件接口。请求示例（先上传PDF取得实际ID，入口使用运维提供的文档试点URL）：
 
@@ -18,11 +18,11 @@ PDF解析/渲染在独立进程执行：Linux地址空间512 MiB、CPU时间15�
   "input": {"document": {"artifact_id": "art_REPLACE_WITH_UPLOADED_ID"}},
   "parameters": {"dpi": 150},
   "timeout_seconds": 900,
-  "max_attempts": 1
+  "max_attempts": 2
 }
 ```
 
-上传 `POST /maas/v1/artifacts` 使用 `Content-Type: application/pdf` 和原始PDF字节；新任务 `POST /maas/v1/tasks` 必须提供稳定的 `Idempotency-Key`。原键及原请求重发仅返回原任务，不自动重跑推理。沿用查询、取消与结果下载路径。自动校验脚本 [verify_document_task.sh](../../examples/verify_document_task.sh) 需要Python3和curl；无Python的实际下游容器使用[纯curl步骤及请求文件](../../examples/verify_document_task.curl.md)。
+上传 `POST /maas/v1/artifacts` 使用 `Content-Type: application/pdf` 和原始PDF字节；新任务 `POST /maas/v1/tasks` 必须提供稳定的 `Idempotency-Key`。同键重提交返回已登记的任务。GPUStack 原生调度模式下，执行结果进入 UNKNOWN 时，仍有次数且未取消或到期的任务会用新尝试重新进入队列，继续使用原任务 ID。每次重试仍由 GPUStack 选择副本。沿用查询、取消与结果下载路径。自动校验脚本 [verify_document_task.sh](../../examples/verify_document_task.sh) 需要Python3和curl；无Python的实际下游容器使用[纯curl步骤及请求文件](../../examples/verify_document_task.curl.md)。
 
 结果JSON的 `outputs.schema_version` 为 `unlimited-ocr-2.document.v1`，包含输入顺序的页面、渲染尺寸和源尺寸、版面块、原始标记与Markdown。块的bbox在方向归一化后的渲染页面中使用0–1000坐标，未提供行置信度。首版不生成裁剪图，转换器的悬空图片链接替换为 `[image omitted]`，只登记一个结果artifact。下游显示原文或Markdown时应按不可信文档内容处理。
 

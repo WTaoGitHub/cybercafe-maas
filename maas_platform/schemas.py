@@ -2,13 +2,17 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
+DEFAULT_MAX_ATTEMPTS = 2
+MAX_ATTEMPTS = 3
+
+
 class TaskCreate(BaseModel):
     model_config = ConfigDict(extra='forbid')
     model: str = Field(min_length=1, max_length=128)
     input: dict[str, Any]
     parameters: dict[str, Any] = Field(default_factory=dict)
     timeout_seconds: int = Field(default=120, ge=1, le=3600)
-    max_attempts: int = Field(default=3, ge=1, le=3)
+    max_attempts: int = Field(default=DEFAULT_MAX_ATTEMPTS, ge=1, le=MAX_ATTEMPTS)
 
 
 # Public task envelope is independent from each model's payload schema.

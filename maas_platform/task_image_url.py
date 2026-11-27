@@ -45,10 +45,10 @@ async def fetch_image(url, limit):
 def submit_url(service, identity, body, idem, model, inp, params):
     from .service import fingerprint
     url=inp['image']['image_url']; image_url(url)
-    digest=fingerprint(body.model_dump())
+    digest,previous=service.submission_hashes(body,model)
     def preflight():
         with service.db.transaction() as conn:
-            old=existing_submission(conn,identity.project,body.model,idem,digest)
+            old=existing_submission(conn,identity.project,body.model,idem,digest,previous)
             if old:
                 return service.public(old),False
             revision=conn.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1').fetchone()['capacity_policy_hash']

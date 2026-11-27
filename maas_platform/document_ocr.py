@@ -1,4 +1,4 @@
-"""Single-send Unlimited-OCR-2 document adapter using the existing task lifecycle."""
+"""Unlimited-OCR-2 document adapter using the existing task lifecycle."""
 import base64
 import importlib.metadata
 import hashlib
@@ -9,6 +9,7 @@ from .document_output import POSTPROCESSOR_REVISION, POSTPROCESSOR_SHA256
 from .documents import prepare_document, parse_document
 from .errors import ServiceError
 from .ocr_connector import ImageReference, OCRAdapter
+from .schemas import DEFAULT_MAX_ATTEMPTS, MAX_ATTEMPTS
 
 MODEL_REVISION = '0480966938291445591f69f08a13b041c073a96a'
 RUNTIME_DIGEST = 'sha256:0a4ee2f9351225fe2ff91fe1d7f638b86972b9b2f704ab848325f2d0bc0d2fa6'
@@ -34,7 +35,8 @@ class DocumentOCRAdapter(OCRAdapter):
     input_limits = {'max_bytes': 10 * 1024**2, 'max_pdf_pages': 10,
         'default_dpi': 150, 'max_dpi': 300, 'max_pdf_page_pixels': 10_000_000,
         'max_total_pixels': 50_000_000, 'max_image_pixels': 20_000_000,
-        'default_timeout_seconds': 900, 'max_attempts': 1, 'max_running_documents': 1}
+        'default_timeout_seconds': 900, 'default_max_attempts': DEFAULT_MAX_ATTEMPTS,
+        'max_attempts': MAX_ATTEMPTS, 'max_running_documents': 1}
 
     def validate(self, payload, parameters):
         inp = self.input_schema.model_validate(payload).model_dump()

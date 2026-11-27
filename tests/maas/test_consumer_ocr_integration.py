@@ -11,26 +11,27 @@ def test_legacy_ocr_route_is_removed(env, monkeypatch):
     assert client.post('/ocr', headers=headers(), json=body()).status_code == 404
 
 
-@pytest.mark.parametrize('field,value', [
-    ('image_base64', base64.b64encode(png()).decode()),
-    ('image_url', 'https://example.org/image.png'),
+@pytest.mark.parametrize('field,value,options', [
+    ('image_base64', base64.b64encode(png()).decode(), {}),
+    ('image_url', 'https://example.org/image.png', {'max_attempts': 1}),
 ])
-def test_v1_ocr_shares_task_submission_and_idempotency(env, monkeypatch, field, value):
+def test_v1_ocr_shares_task_submission_and_idempotency(env, monkeypatch, field, value, options):
     client, service, _ = sync_setup(env, monkeypatch, lambda _: pytest.fail('Submission must not run OCR'))
     async def fetch(*args):
         return png()
     monkeypatch.setattr('maas_platform.task_image_url.fetch_image', fetch)
-    payload = {'model': 'ocr.default', field: value}
+    payload = {'model': 'ocr.default', field: value, **options}
     key = headers(idem='ocr-alias')
     created = client.post('/maas/v1/ocr', headers=key, json=payload)
     assert created.status_code == 202
     assert created.headers['location'] == '/maas/v1/tasks/' + created.json()['id']
     replay = client.post('/maas/v1/tasks', headers=key, json={
-        'model': 'ocr.default', 'input': {'image': {field: value}},
+        'model': 'ocr.default', 'input': {'image': {field: value}}, **options,
     })
     assert replay.status_code == 200 and replay.json() == created.json()
     with service.db.transaction() as conn:
-        assert conn.execute('SELECT count(*) n FROM tasks').fetchone()['n'] == 1
+        assert conn.execute('SELECT max_attempts FROM tasks').fetchall() == [
+            {'max_attempts': options.get('max_attempts', 2)}]
 
 
 @pytest.mark.parametrize('return_boxes', [False, True])
