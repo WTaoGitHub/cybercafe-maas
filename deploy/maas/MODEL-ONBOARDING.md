@@ -4,6 +4,8 @@
 
 ### GPU 模型故障恢复
 
+以下步骤描述 v2.2.3 的接入方式。v2.3.1 的目标是让现有及新增模型经 GPUStack 统一暴露执行状态，迁移前须验证替代接口和原有故障恢复行为。[升级验收计划](../../docs/framework/ENHANCEMENTS.md#e8-231-interaction-boundary)
+
 在完成存量模型迁移的部署中设置 `MAAS_REQUIRE_MODEL_RECOVERY=1`。此配置让所有上游模型（包括今后新增的目录条目）默认强制执行守卫和宿主证明，显式关闭任一项会使候选目录校验失败。上线前用候选目录运行 `Settings.from_env().catalog()`。缺少已验证派发范围的路由无法开始同步或异步推理。
 
 PP、Ovis、Unlimited 以及后续 GPU 模型共用执行守卫和宿主机见证协议。新模型上线时按以下条件接入。

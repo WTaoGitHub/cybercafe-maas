@@ -10,7 +10,9 @@
 
 ## 优先复用 GPUStack 原生能力
 
-设计和实现功能时，优先使用当前部署版本的 GPUStack 原生能力。原生能力只能满足部分需求时，MaaS 只补足缺口。升级 GPUStack 时，重新评估哪些自建逻辑可以由新版原生能力接替。
+**MaaS 只通过 GPUStack 与 worker 和推理引擎交互。** 这条边界适用于现有和以后新增的所有模型，覆盖推理、状态查询、事件回传和运维控制。MaaS 向 GPUStack 的逻辑模型入口提交请求，经其受支持的接口获取状态或发起管理操作。worker、副本的可用性、选择、隔离与恢复接单由 GPUStack 统一决定。
+
+MaaS 负责客户任务、权限、配额、结果和计量。推理结束情况无法确认时，MaaS 记录 `UNKNOWN`，不据此自行隔离整张卡或改写网关。优先验证当前版本的 GPUStack 原生能力。MaaS 在自己的业务职责内补足缺口。涉及 worker 或引擎的缺口，记录所需的 GPUStack 接口及验收条件。不得以直连引擎、worker 回调 MaaS、读取宿主机私有状态或改写 GPUStack 内部组件来补足。升级时逐项复核已有路径，迁移与验证安排见 [v2.3.1 升级计划](docs/framework/ENHANCEMENTS.md#e8-231-interaction-boundary)。
 
 ## 两台云网吧VM的运行约束
 

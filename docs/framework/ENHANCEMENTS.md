@@ -710,7 +710,7 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 
 ### 背景与收益
 
-当前系统以v2.2.3固定镜像运行。2.3.0增加部署配置revision/回退、YAML导入导出、least-inflight等路由能力、网关鉴权优化和定时副本伸缩，并修复注册与管理权限问题。优先复用这些能力，减少自建部署管理；MaaS继续负责客户任务、文件、配额和业务计量，E5继续负责克隆启动引导。
+当前系统以v2.2.3固定镜像运行。2.3.0增加部署配置revision/回退、YAML导入导出、least-inflight等路由能力、网关鉴权优化和定时副本伸缩，并修复注册与管理权限问题。优先复用这些能力，减少自建部署管理；MaaS继续负责客户任务、文件、配额和业务计量，E5 的克隆启动引导纳入本次注册边界核查。
 
 2026-11-27 将升级验收目标更新为正式 v2.3.1。已有[调研报告](GPUSTACK-V2.3-RESEARCH.md)和[版本证据](GPUSTACK-V2.3-RESEARCH-EVIDENCE.json)针对 v2.3.0 标签 63a03ba 与其后的本地 main 47bd0c13。v2.3.1 的路由行为待独立实测。[E8 跟踪](https://github.com/WTaoGitHub/cybercafe-maas/issues/9)
 
@@ -725,19 +725,19 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 
 | 阶段 | 任务 | 交付/验证 |
 |---|---|---|
-| E8.1 | 兼容性清单 | 核对管理API、鉴权/key scope、注册凭据、TLS、数据库迁移、网关/运行时配置；标注每个受影响脚本与配置 |
+| E8.1 | 兼容性清单 | 核对管理API、鉴权/key scope、注册凭据、TLS、数据库迁移、网关/运行时配置。按[交互边界清单](#e8-231-interaction-boundary)逐项登记 v2.3.1 对应接口、缺口和验证结果 |
 | E8.2 | 独立环境和基础适配 | 使用正式 v2.3.1 server 和同版 worker，适配 E5 签名配置、镜像固定、布局核对及部署维护工具 |
 | E8.3 | 核心业务回归 | 自动注册及重复apply、身份保持、母版拒绝；OCR同步/异步/取消/结果/配额/计量/UNKNOWN；停止和恢复 |
 | E8.4 | 原生能力复用 | 部署历史/预览/回退与MaaS版本关联、YAML往返、[同模型副本路由验收](#e8-231-routing)、fallback、鉴权缓存吊销时效；定时伸缩作为独立可选开关验证，不默认开启 |
 | E8.5 | 模型分发和隔离回归 | 私仓正确/错误鉴权、冷拉取/缓存；模型RO/缓存RW、身份目录和socket排除；复测 v2.3.1 实际配套的 runtime，记录下载/共享存储尚未覆盖项 |
 | E8.6 | 迁移、恢复与受控发布 | 在隔离副本验证数据库迁移/备份恢复；输出差异、回退和部署手册；通过后另行安排现网维护，先server后worker，再更新母版并由管理员保存快照 |
 
-独立 feature 的提交与推送遵循[项目协作约定](../../AGENTS.md)。可复用已有测试，但 v2.3.1 须产生独立证据；不重启001/002，不自动重放不确定推理请求，不解除UNKNOWN，不恢复collector。
+独立 feature 的提交与推送遵循[项目协作约定](../../AGENTS.md)。v2.3.1 须产生独立证据。不重启001/002，不自动重放不确定推理请求，不在缺少终止证据时解除 UNKNOWN，不恢复 collector。
 
 <a id="e8-231-routing"></a>
 ### E8.4 同模型副本路由验收（v2.3.1，待执行）
 
-先在 E8 独立升级环境使用 GPUStack v2.3.1 原生路由，记录实际生效的策略、候选副本和派发结果，再核对与 MaaS 隔离规则组合后的行为。逐项区分原生已满足、由 MaaS 补足和仍有缺口。若需逐个模型手工调权或启用插件，通用策略的自动覆盖验收仍待完成。
+先在 E8 独立升级环境使用 GPUStack v2.3.1 原生路由，记录实际生效的策略、候选副本和派发结果。再从 MaaS 的逻辑模型入口复测，两轮均由 GPUStack 选副本。原生未覆盖项记录为缺口，任何 GPUStack 扩展单列验证。若需逐个模型手工调权或启用插件，通用策略的自动覆盖验收仍待完成。
 
 | 必测场景 | 验收操作 |
 |---|---|
@@ -745,8 +745,30 @@ E5优先复用GPUStack身份、注册与资源上报，仅补无盘还原/克隆
 | 新增模型 | 按正常接入流程新增一个名称未预设的多副本测试模型，通过同一模型入口执行两项判定，验证自动继承。 |
 | 单副本扩容 | 以单副本 Unlimited 验证可用时接单、不可用时零派发，再只调副本数至至少两个。新副本就绪后沿用原路由，重新执行两项判定，全程无需手改路由。 |
 
-1. **不可用副本不接单。** 分别制造 worker 失联和模型副本未就绪，并在 MaaS 联调中覆盖“GPUStack 就绪但 GPU 已被隔离”。持续发送带请求 ID 的流量，分别记下故障发生、被判不可用或隔离、网关撤出目标的时间。自不可用或隔离判定起，对该副本的首次派发、网关重试和已启用的回退尝试均须为 **0**，健康副本仍能完成请求；全部不可用时，上游尝试须为 **0**。用网关逐次尝试的目标实例和后端接收或 GPU 授权记录交叉核对，包含连接失败的尝试。没有启用回退时，记录生效配置并将该路径标为不适用。
+1. **不可用副本不接单。** 分别制造 worker 失联和模型副本未就绪。持续发送带请求 ID 的流量，分别记下故障发生、GPUStack 判为不可用、网关撤出目标的时间。自 GPUStack 不可用判定起，对该副本的首次派发、网关重试和已启用的回退尝试均须为 **0**，健康副本仍能完成请求。全部不可用时，上游尝试须为 **0**。用独立验收日志核对网关逐次尝试的目标和后端实际接收，计入连接失败的尝试。未启用回退时记录生效配置，并将该路径标为不适用。另测旧请求仍为 `UNKNOWN`、GPUStack 已恢复副本就绪，使用有可用配额的新请求验证该副本能再次接单，MaaS 中的旧记录不能屏蔽它或阻塞整条共享路由。
 2. **同一模型中正在处理请求较少的可用副本优先接单。** “正在处理”按网关已发往该副本、尚未结束的请求数计。安排恰有两个同等可用、等权的候选副本 A、B，预先固定每轮探针数。用长请求维持两种差距：一方空闲（如 1 比 0）和两方都忙（如 3 比 1）。每种差距都交换 A、B 的角色，从同一模型入口逐笔发送相同的短探针，记录派发前各副本的在途数和实际目标。每轮请求较少的一方获得的首次派发比例，其单侧 95% 置信下限须高于等权基线 50%。在途数相同时任一可用副本均可接单。报告附分轮样本数及逐请求证据。
+
+<a id="e8-231-interaction-boundary"></a>
+### E8.1–E8.6 交互边界迁移与验收（v2.3.1，待执行）
+
+共享 PP 的同步入口和三个模型的异步推理都把请求发给 GPUStack 的 `/v1/chat/completions`。Ovis 和 Unlimited 复用同一传输实现。MaaS 经 GPUStack `/v2/` 读取 worker、模型及实例状态也符合边界。保留这些路径和客户任务账本。下表按仓库代码及部署手册梳理，标出可选路径和历史工具，现场启用情况尚未盘点。[同步入口](../../maas_platform/sync_ingress.py) · [异步传输](../../maas_platform/ocr_connector.py) · [Ovis](../../maas_platform/ovis_ocr.py) · [Unlimited](../../maas_platform/document_ocr.py) · [原生状态读取](../../maas_platform/capacity_observe.py)
+
+| 现有实现与入口 | v2.3.1 需要调整和验证的内容 |
+|---|---|
+| **引擎向 MaaS 申请执行和报告结束。** 三个模型的守卫使用 MaaS 尝试标识和每卡凭据回调 `/maas/internal/pp-ocr-execution`。同步和异步入口还用本地授权记录核对成功响应。[引擎守卫](../../gpu-ocr/execution_guard.py) · [MaaS 接收端](../../maas_platform/pp_ocr_execution.py) · [模型接入手册](../../deploy/maas/MODEL-ONBOARDING.md) | 核对 GPUStack 对请求接收、内部重试、执行结束或取消完成能提供哪些可关联的结果。用三个模型及一个新模型复测，替换目录准入对 `MAAS_REQUIRE_MODEL_RECOVERY` 旧守卫的依赖，验证新模型无需集成 MaaS 回调或领取每卡密钥。模型自身的输入校验、资源限制另行保留。 |
+| **MaaS 直探模型进程并参与选卡。** 容量观察器从 GPUStack 找到地址后直连副本的 `/maas/guard-proof`。准入逻辑按未结清活动过滤卡或整池，可选的固定副本路由还会挑选 GPU 别名。[探针](../../maas_platform/guard_topology.py) · [准入与选路](../../maas_platform/capacity_admission.py) | 用 GPUStack 的可用状态和逻辑模型路由替代探针、按卡封锁和别名选择。MaaS 保留项目配额及排队。测单卡失联、健康卡接单及重连，分别核对旧任务状态、新请求配额和 GPUStack 实际目标。 |
+| **控制脚本直接读取和修改 Higress。** MaaS 读取 Envoy 管理口的路由和端点，发布需撤出的 GPU 清单。两个同步器分别通过内部 Kubernetes 资源限制可达目标（含重试路径）和设置按路由的负载均衡。[管理口读取](../../maas_platform/gateway_scope.py) · [撤路](../../scripts/maas/runtime/reconcile_pp_quarantine.py) · [负载均衡](../../scripts/maas/runtime/reconcile_gateway_capacity.py) | 在无自建同步器、无自建同步器遗留的 EnvoyFilter、MaaS 无网关管理权限的独立环境执行 E8.4。记录原生策略对首次派发、重试、回退及扩容新副本的实际效果，旧过滤器及运行配置列入切换和回退清单。 |
+| **终止证据绕过 GPUStack。** 宿主机见证程序检查 Docker、cgroup 和 GPU 进程，直接向 MaaS 回传签名。另有 worker 补发完成回执、控制端扫描共享回执目录两条路径。[宿主机见证](../../maas_bootstrap/runtime_witness.py) · [回执补发](../../maas_bootstrap/receipt_replay.py) · [共享目录对账](../../maas_platform/receipt_reconcile.py) | 验证能否仅经 GPUStack 取得指向原执行的终止证据。失联、超时、重连或副本就绪单独出现时保留 `UNKNOWN`。有充分证据时按原尝试结清一次，迟到或重复事件不再次释放并发、不重跑、不补记成功。按公开入口分别统计同步和异步从 UNKNOWN 到结清的 P95，对照 60 秒目标，单列仍缺证据的笔数和等待时长。 |
+| **启动会话观察依赖 GPUStack 私库和宿主机。** 现有观察程序在 GPUStack PostgreSQL 安装触发器，经 `docker exec` 读注册视图，再与 Bootstrap 私有记录及启动签名关联。该路径只记录候选。[数据库触发器](../../scripts/maas/runtime/boot_observe_native.sql) · [采集器](../../scripts/maas/runtime/observe_boot_sessions.py) · [候选判断](../../maas_platform/boot_observation.py) | 核对 GPUStack 能否提供已完成的注册交接、同卡启动身份及原执行归属。验证同启动重注册、新启动、乱序、重复、跨卡与控制端中断续办。证据不足时保持未知，观察模式不释放额度。不得要求安装旧触发器才能运行新版。 |
+| **启动注册和关机通知存在 worker 直连 MaaS 的一段。** 克隆机从 MaaS Bootstrap 拉配置、申请启动许可，关机钩子直接上报 MaaS。Broker 到 GPUStack 的 enrollment/handoff 则已走服务端扩展。Bootstrap 还可通过 SSH 交付许可，并改写固定版本的 worker Docker runtime 源码。[启动服务](../../maas_bootstrap/service.py) · [注册扩展调用](../../maas_bootstrap/enrollment.py) · [交付](../../maas_bootstrap/delivery.py) · [runtime 补丁](../../maas_bootstrap/worker_limits.py) · [关机通知](../../maas_bootstrap/shutdown_events.py) | E8.2 单列安装制镜与上线后的交互。核对 GPUStack 原生注册、接续、事件及部署配置能否接管，核验已有扩展的接口、鉴权与版本兼容。用独立克隆验证首次注册、同卡接续、防冒领、母版拒绝及非特权模型启动。关机意向不能代替终止证明。 |
+| **维护和自动扩容含 SSH 旁路。** 集群维护中，经 GPUStack 调维护标志、调副本数之外，还经 SSH 在节点检查 GPU 进程、停止及恢复 worker 容器。副本调节器有经 SSH 取网络和磁盘压力样本的流程。[维护执行端](../../scripts/maas/runtime/maintenance_control.py) · [节点动作](../../maas_bootstrap/node_control.py) · [压力采样](../../plugins/gpustack-replica/maas_replica_collect.py) | 保留经 GPUStack 提交的管理操作。分开验证停止派发、排空、实际停止与恢复，以及原生指标能否支撑扩容。无法确认排空时维护保持待确认，缺必要指标时暂缓相应自动调整。独立验收不重启 XZ-31-001/002。 |
+| **历史工具与验收脚本。** 旧 collector 经 SSH/Docker 盘点。调试脚本可直发引擎，预热工具可直发指定副本。早期 E1 候选通过 GPUStack 别名固定 worker。[旧 collector](../../maas_platform/collector.py) · [分层调试](../../scripts/maas/runtime/debug_gateway_layers.py) · [预热](../../service-validation/warm_workers.py) · [E1 候选](../../maas_platform/e1/gateway.py) | 清点部署入口、定时器和手册，避免上线流程继续依赖这些工具。故障注入及独立观测只作验收取证。验证负载须经正式模型入口，直发副本的成功不能计作路由验收。 |
+
+**执行顺序与通过条件**
+
+1. **先查接口。** 对每一行记录正式 v2.3.1 接口或事件、提供方、权限、语义和证据，分别标为「原生实测通过」「需 GPUStack 侧扩展」「缺口待解决」。后两类注明受影响的能力。扩展须由 GPUStack 对外提供有鉴权、可按版本验证的接口。将脚本移进 GPUStack 容器仍须检查实际调用链。
+2. **再验证断开旁路后的行为。** 在独立升级环境将 MaaS 与 worker、引擎之间的双向直连禁用，撤掉 MaaS 的节点 SSH、网关管理、GPUStack 私库权限及共享回执挂载。通过 GPUStack 的正式入口运行 E8.3 和 E8.4 的用例，结合连接日志和组件配置确认业务链路没有旁路调用。另由验收方核对 GPUStack 实际选中的副本及执行结果，保存每次网关尝试与客户请求的对应记录。
+3. **分别判断接单和结清。** GPUStack 恢复某副本接单后，MaaS 仍可保留旧尝试的 `UNKNOWN`。覆盖同卡多模型、同步和异步、迟到结果、重复结束通知及控制端重启，核对每笔额度和客户计量。切换前盘点尚未结清的旧尝试与可验证证据，为缺乏证明的记录保留账本和处置清单。必需能力有缺口则暂缓相应切换，待独立回归及回退演练通过后再安排发布。
 
 ### 验收条件与边界
 
