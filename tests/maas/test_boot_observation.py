@@ -108,7 +108,7 @@ with Database(os.environ['MAAS_TEST_DATABASE_URL']).transaction() as c:
 def test_native_journal_repeats_conflicts_and_uncommitted_handoffs(env):
     _,service,*_=env
     db=service.db
-    sql=(Path(__file__).resolve().parents[2]/'scripts/maas/runtime/boot_observe_native.sql').read_text()
+    sql=(Path(__file__).parent/'fixtures/legacy_boot_observe_native.sql').read_text()
     with db.transaction() as c:
         c.execute('CREATE TABLE workers(id int,cluster_id int,external_id text,name text,deleted_at timestamptz)')
         c.execute('CREATE TABLE maas_worker_handoffs(worker_id int,session_id text,phase text)')
@@ -126,6 +126,17 @@ def test_native_journal_repeats_conflicts_and_uncommitted_handoffs(env):
         assert len(c.execute('SELECT * FROM maas_current_boot_registrations').fetchall())==1
         c.execute("INSERT INTO workers VALUES(2,1,'test_agent_gpu','test_agent_gpu',NULL)")
         assert not c.execute('SELECT * FROM maas_current_boot_registrations').fetchone()
+
+    retire = (Path(__file__).resolve().parents[2]/'scripts/maas/runtime/retire_boot_observe_native.sql').read_text()
+    for _ in range(2):
+        with db.transaction() as c:
+            c.execute(retire)
+    with db.transaction() as c:
+        c.execute("DELETE FROM workers WHERE id=2")
+        c.execute("UPDATE maas_worker_handoffs SET phase='registering', session_id=%s", (str(uuid4()),))
+        c.execute("UPDATE maas_worker_handoffs SET phase='active'")
+        assert c.execute("SELECT phase FROM maas_worker_handoffs").fetchone()['phase'] == 'active'
+        assert c.execute("SELECT count(*) AS n FROM maas_boot_registrations").fetchone()['n'] == 1
 
 
 def test_legacy_signer_cannot_attribute_a_grant_or_answer_a_boot_challenge(protected,tmp_path):

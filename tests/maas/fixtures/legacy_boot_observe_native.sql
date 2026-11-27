@@ -1,4 +1,4 @@
--- Install in the GPUStack PostgreSQL database after the enrollment plugin.
+-- Reproduce the former observer objects in an isolated PostgreSQL test.
 -- The sequence orders successful registrations. The worker handoff row lock
 -- serializes registrations for one worker; duplicate physical owners are excluded.
 BEGIN;

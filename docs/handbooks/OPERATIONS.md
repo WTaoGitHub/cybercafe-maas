@@ -278,6 +278,10 @@ E6退役collector后的完整8小时复测通过：5760/5760成功，零错误�
 
 ## 13. 新增模型上线与回退
 
+现役模型经 GPUStack 注册模型、选择副本并提供路由。MaaS 绑定该模型及路由，使用 GPUStack 就绪副本数计算容量。新 worker 快照按[无盘发布清理记录](../framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#无盘-worker-发布清理)验收。上线时从现有 MaaS 入口核对模型输出和成功计量，并通过 GPUStack 重建副本再测一次。
+
+以下是旧执行守卫试点的运维记录。
+
 **现有 worker 已具备执行守卫所需的启动、挂载和补报能力时，新增模型无需重做 VPC 母版。** 母版决定新克隆的 worker 自带哪些程序。GPUStack 后端版本决定副本运行哪个推理镜像，按 `image_id` 发布的签名配置决定 worker 创建该副本时给它哪些资源、凭据和回执目录。
 
 | 本次变更 | 运维动作 |

@@ -119,9 +119,7 @@ Bootstrap 发证服务也需使用能识别 `runtime_witness` 的配置校验模
 
 ### 三模型的账本采样
 
-测试控制端每五分钟在 API 容器中按逻辑模型采样。当前启用的实例为 `ocr.default`、`ocr.ovisocr3`、`document.unlimited-ocr-2`。例如，使用 `systemctl is-active maas-model-recovery-observe@ocr.default.timer` 检查共享 PP 定时器，用 `journalctl -u maas-model-recovery-observe@ocr.default.service --since '24 hours ago' -o cat` 读取样本。A 专用定时器 `maas-pp-canary-observe.timer` 已禁用。[采样脚本](../../scripts/maas/runtime/observe_pp_settlement.py) · [service 模板](systemd/maas-model-recovery-observe@.service) · [timer 模板](systemd/maas-model-recovery-observe@.timer)
-
-每条 JSON 记录包含该模型的自动结清开关、全局维护暂停标记、容量快照中的就绪并发位，以及同步和异步各自的未决笔数、最老未决时长和已持续至少 15 分钟的笔数。滚动 24 小时统计以采样时仍保留的账本为准，包括派发、新增 `UNKNOWN`、自动结清、终止签名与原活动不匹配的笔数，以及故障结清后关联了成功计量的笔数。后两项出现非零值时应核对原活动。每类至少有 10 笔通过验签的结清记录才发布 `signed_p95_seconds`。它从进入 `UNKNOWN` 算到结清，包含 worker 失联的时间。就绪并发位为 `null` 表示没有可用的新鲜快照。采样验签及 P95 的本地回归命令为 `python -m pytest -q tests/maas/test_pp_settlement_observation.py`。
+旧账本采样曾每五分钟统计签名结清及 P95，现已撤下脚本和 systemd 单元。测试环境通过现役 MaaS 观测查看就绪副本、当前额度和 UNKNOWN 留档数量。
 
 ### 共享 PP 路由按 GPU 撤出和恢复
 
@@ -166,7 +164,7 @@ python -m scripts.maas.runtime.pp_grant_window remove "$TEST_PROJECT"
 
 给独立测试集群的 MaaS API 设置 `MAAS_BOOT_OBSERVE_CLUSTER` 后，控制端可记录已确认的启动会话，以及因同卡重启而具备结清证据的执行。这个阶段只写观察记录。原回执和原进程证明继续按原有策略处理。
 
-先在 GPUStack PostgreSQL 安装 `scripts/maas/runtime/boot_observe_native.sql`，在任务库运行迁移 022。控制端安装 `observe_boot_sessions.py`、`maas-boot-observe.service` 和同名 timer，在 `/etc/maas/boot-observe.env` 中设置目标集群和本机私有的 `MAAS_BOOT_APPROVAL_ROOT`。启用 timer 后，使用 `journalctl -u maas-boot-observe.service -o cat` 查看注册和候选计数。worker 需要能处理 `boot_check` 的宿主机 witness。它通过原私有 HTTPS 回调签署一次性挑战，未部署模型时也能作答。
+测试环境已执行 [旧观察触发器退役 SQL](../../scripts/maas/runtime/retire_boot_observe_native.sql)。触发器停用后，正常 worker 接续继续经原路径处理，既有观察记录保留供历史查询。
 
 原生注册提交时记录顺序号。控制端用当前唯一注册的集群、卡、worker 和会话匹配 Bootstrap 已发许可、该启动的密钥承诺和见证签名，在收件后再次核对当前原生注册。首次确认建立基线。同一启动重新注册保留代次，已替代的启动不能重新推进代次。获权时只有可信启动匹配才在该笔执行上记会话。未登记启动密钥的老 worker、上线前的既有授权，以及不同 GPU 上的新启动都不足以产生候选。
 
