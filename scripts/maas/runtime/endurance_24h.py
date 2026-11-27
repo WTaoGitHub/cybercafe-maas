@@ -21,7 +21,7 @@ PP = 'ocr.default'
 OVIS = 'ocr.ovisocr3'
 DOCUMENT = 'document.unlimited-ocr-2'
 MODELS = (PP, OVIS, DOCUMENT)
-CAPS = (4, 2, 1)
+CAPS = (5, 2, 1)
 CADENCE = 300
 DAY = 86400
 
@@ -47,6 +47,8 @@ def lanes(level, elapsed, extra_fraction):
     if level == 75:
         return (4, 1, 1)
     cycle = elapsed % 30 / 30
+    if extra_fraction > 1:
+        return (5 if cycle < extra_fraction - 1 else 4, 2, 1)
     remainder = (1 - extra_fraction) / 3
     return (4, 1, 1) if cycle < 2 * remainder else (4, 2, 0 if cycle < 3 * remainder else 1)
 
@@ -124,8 +126,31 @@ class Consumer:
             finished = time.monotonic()
             usage = response.headers.get('X-Usage-ID')
             require(bool(usage), 'SYNC_USAGE_MISSING')
+            return model, request_id, begin, finished, usage, response, None
+        headers['Idempotency-Key'] = request_id
+        attachment = 'document' if model == DOCUMENT else 'image'
+        body = {'model': model, 'input': {attachment: {'artifact_id': self.artifacts[model]}},
+                'timeout_seconds': 900 if model == DOCUMENT else 120, 'max_attempts': 1}
+        reply = self.call('POST', '/maas/v1/tasks', 202, headers=headers, json=body).json()
+        task = reply['id']
+        self.record('accepted', request_id=request_id, task=task, model=model)
+        endpoint = '/maas/v1/tasks/' + task
+        while True:
+            row = self.call('GET', endpoint).json()
+            if row['status'] == 'SUCCEEDED':
+                finished = time.monotonic()
+                break
+            require(row['status'] not in ('FAILED', 'CANCELLED'), 'TASK_' + row['status'])
+            require(time.monotonic() - begin < body['timeout_seconds'] + 30, 'TASK_DEADLINE')
+            time.sleep(.12 if model != DOCUMENT else .5)
+        require(row['model'] == model and row['attempts'] == 1, 'TASK_IDENTITY_OR_ATTEMPTS')
+        return model, request_id, begin, finished, None, task, row['result_artifact_id']
+
+    def verify_result(self, response_data):
+        model, request_id, begin, finished, usage, payload, artifact = response_data
+        if usage:
             receipt = self.call('GET', '/maas/v1/usage/' + usage).json()
-            content = json.loads(response.json()['choices'][0]['message']['content'])
+            content = json.loads(payload.json()['choices'][0]['message']['content'])
             text = ' '.join(line['text'] for line in content['lines'])
             require(receipt['id'] == usage and receipt['successful_images'] == 1 and
                     self.verify['words_in_order'](text, ('quarterly', 'service', 'report', 'qsr', '2026', '0410',
@@ -133,24 +158,9 @@ class Consumer:
             self.record('verified', request_id=request_id, usage=usage, model=model, synchronous=True)
             size = 0
         else:
-            headers['Idempotency-Key'] = request_id
-            attachment = 'document' if model == DOCUMENT else 'image'
-            body = {'model': model, 'input': {attachment: {'artifact_id': self.artifacts[model]}},
-                    'timeout_seconds': 900 if model == DOCUMENT else 120, 'max_attempts': 1}
-            reply = self.call('POST', '/maas/v1/tasks', 202, headers=headers, json=body).json()
-            task = reply['id']
-            self.record('accepted', request_id=request_id, task=task, model=model)
+            task = payload
             endpoint = '/maas/v1/tasks/' + task
-            while True:
-                row = self.call('GET', endpoint).json()
-                if row['status'] == 'SUCCEEDED':
-                    finished = time.monotonic()
-                    break
-                require(row['status'] not in ('FAILED', 'CANCELLED'), 'TASK_' + row['status'])
-                require(time.monotonic() - begin < body['timeout_seconds'] + 30, 'TASK_DEADLINE')
-                time.sleep(.25 if model != DOCUMENT else 1)
-            require(row['model'] == model and row['attempts'] == 1, 'TASK_IDENTITY_OR_ATTEMPTS')
-            result = self.call('GET', '/maas/v1/artifacts/' + row['result_artifact_id'])
+            result = self.call('GET', '/maas/v1/artifacts/' + artifact)
             receipt = self.call('GET', endpoint + '/usage').json()
             self.verify['verify'](model, result.json(), receipt)
             self.record('verified', request_id=request_id, usage=receipt['id'], model=model, task=task,
@@ -158,7 +168,7 @@ class Consumer:
             size = len(result.content)
         elapsed = finished - begin
         with self.lock:
-            self.verified['sync' if synchronous else 'async'] += 1
+            self.verified['sync' if usage else 'async'] += 1
             self.events.append((finished, model, elapsed, size))
 
     def metrics(self, after):
@@ -193,21 +203,35 @@ def run(config, output, samples):
     require(baseline['capacity'] == 8 and budget == [5, 2, 1, 6], 'BASELINE_CAPACITY')
     extra = .4
     pending = {}
+    checking = set()
+    ready = threading.Event()
 
-    def poll(stage, level, length, pool):
+    def poll(stage, level, length, pool, verifier):
         nonlocal latest, extra
         started = time.monotonic()
         window = Meter()
         recent = deque()
         adjusted = started
+        sample = latest
+        next_read = started
         while time.monotonic() - started < length:
             require(not stop.is_set(), 'STOPPED')
+            ready.clear()
+            for future in tuple(checking):
+                if future.done():
+                    checking.remove(future)
+                    future.result()
             for future in tuple(pending):
                 if future.done():
                     pending.pop(future)
-                    future.result()
-            sample = json.loads(samples.read_text())
+                    check = verifier.submit(client.verify_result, future.result())
+                    checking.add(check)
+                    check.add_done_callback(lambda _: ready.set())
             now = time.monotonic()
+            if now >= next_read:
+                sample = json.loads(samples.read_text())
+                now = time.monotonic()
+                next_read = now + .2
             require(0 <= now - sample['mono'] < 10 and sample['fresh'], 'CAPACITY_STALE')
             require(sample['budget'] == budget and sample['maintenance'] == baseline['maintenance'], 'CAPACITY_OR_MAINTENANCE_CHANGED')
             require(sample['unknown'] == baseline['unknown'], 'UNKNOWN_CHANGED')
@@ -227,19 +251,21 @@ def run(config, output, samples):
             if level == 80 and now - adjusted >= 60 and len(recent) > 30:
                 share = sum(s['used'] / s['capacity'] for s in recent) / len(recent)
                 if abs(share - .8) > .01:
-                    extra = min(.95, max(.05, extra * (1.1 if share < .8 else .9)))
+                    extra = min(2, max(.05, extra + (.12 if share < .8 else -.12)))
                 adjusted = now
             if now - client.uploaded >= 12 * 3600:
                 client.refresh()
             own = Counter(pending.values())
             limits = lanes(level, now - started, extra)
-            if level:
+            if level and len(checking) < 32:
                 for model, limit in zip(MODELS, limits):
                     background = sample['by_pool'][model] - sample['own_by_pool'][model]
-                    while own[model] < max(0, limit - background) and sum(own.values()) < 7 - (sample['used'] - sample['own']):
-                        pending[pool.submit(client.request, model, model == PP)] = model
+                    while own[model] < max(0, limit - background) and sum(own.values()) < 8 - (sample['used'] - sample['own']):
+                        request = pool.submit(client.request, model, model == PP)
+                        pending[request] = model
+                        request.add_done_callback(lambda _: ready.set())
                         own[model] += 1
-            time.sleep(.05)
+            ready.wait(.05)
         return {**window.result(), **client.metrics(started), 'extra_fraction': extra, 'time': time.time()}
 
     try:
@@ -249,18 +275,20 @@ def run(config, output, samples):
                     'CAPABILITY_MODEL')
         client.refresh()
         for model, sync in ((PP, True), (PP, False), (OVIS, False), (DOCUMENT, False)):
-            client.request(model, sync)
+            client.verify_result(client.request(model, sync))
         write_status(output, phase='SMOKE_PASSED', verified=dict(client.verified))
-        with ThreadPoolExecutor(max_workers=sum(CAPS)) as pool:
+        with ThreadPoolExecutor(max_workers=sum(CAPS)) as pool, ThreadPoolExecutor(max_workers=4) as verifier:
             write_status(output, phase='CALIBRATION', target=0)
-            poll('CALIBRATION', 0, 600, pool)
+            poll('CALIBRATION', 0, 600, pool, verifier)
             for level in (40, 60, 75):
                 write_status(output, phase='CALIBRATION', target=level)
-                result = poll('CALIBRATION', level, CADENCE, pool)
+                result = poll('CALIBRATION', level, CADENCE, pool, verifier)
                 write_status(output, phase='CALIBRATION_POINT', target=level, result=result)
+            require(result['occupancy'] > 0, 'MISSING_CALIBRATION_LOAD')
+            extra = min(2, max(.05, .8 * 6 / result['occupancy'] - 6))
             consecutive = []
             for _ in range(6):
-                result = poll('CALIBRATION', 80, CADENCE, pool)
+                result = poll('CALIBRATION', 80, CADENCE, pool, verifier)
                 write_status(output, phase='CALIBRATION_POINT', target=80, result=result)
                 if .78 <= result['occupancy'] <= .82:
                     consecutive.append(result)
@@ -276,13 +304,15 @@ def run(config, output, samples):
             write_status(output, phase='FORMAL', t0=t0, end_at=t0 + DAY, calibration=consecutive)
             for hour in range(24):
                 duration = start + (hour + 1) * 3600 - time.monotonic()
-                result = poll('FORMAL', 80, duration, pool)
+                result = poll('FORMAL', 80, duration, pool, verifier)
                 require(.75 <= result['occupancy'] <= .85, 'FORMAL_HOUR_OCCUPANCY')
                 require(all(result['p95'][m] is not None and result['p95'][m] <=
                             1.25 * max(r['p95'][m] or 0 for r in consecutive) for m in MODELS), 'FORMAL_HOUR_LATENCY')
                 require_storage(latest, result['bytes'] / 3600, (23 - hour) * 3600)
                 write_status(output, phase='FORMAL', t0=t0, end_at=t0 + DAY, hours_complete=hour + 1, result=result)
             for future in pending:
+                checking.add(verifier.submit(client.verify_result, future.result()))
+            for future in checking:
                 future.result()
         stats = meter.result()
         require(.78 <= stats['occupancy'] <= .82 and stats['own'] >= .75, 'FORMAL_FINAL_OCCUPANCY')

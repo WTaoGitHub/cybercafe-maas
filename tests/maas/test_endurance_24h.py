@@ -6,6 +6,9 @@ from scripts.maas.runtime.endurance_24h import Interrupted, Meter, lanes, requir
 def test_nominal_cycle_and_weighted_occupancy():
     schedule = [lanes(80, index / 100, .4) for index in range(3000)]
     assert [sum(component) / len(schedule) for component in zip(*schedule)] == [4, 1.6, .8]
+    compensated = [lanes(80, index / 100, 1.6) for index in range(3000)]
+    assert [sum(component) / len(compensated) for component in zip(*compensated)] == pytest.approx([4.6, 2, 1], abs=.001)
+    assert max(map(sum, compensated)) == 8
     meter = Meter()
     for mono, used in ((10, 6), (16, 7), (20, 7)):
         meter.push(dict(mono=mono, capacity=8, used=used, own=used))
