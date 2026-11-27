@@ -1,5 +1,7 @@
 # Unlimited-OCR-2 候选镜像
 
+共享测试服务已使用 `Unlimited-OCR-2-SGLang-engine-custom` 的 `native-entry-r1` 版本。GPUStack 用 `python3 -m sglang.launch_server` 启动引擎，沿用原模型参数和 M1 固定镜像。下文的资源守卫入口属于早期试点。[现役配置及切换验收](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#三个现役模型切换)
+
 此目录是隔离试点候选，尚不是生产部署。模型和 wheel 来源固定在 [执行计划](../../docs/framework/UNLIMITED-OCR-2-PLAN.md)及阶段报告中；不能复用旧 OCR driver。
 
 [M1受控JSON试点已验收](../../results/unlimited-ocr-2/20261116-m1/REPORT.md)，最终镜像digest、运行参数、16GB单文档实测及边界见该报告。[GPUStack配置模板](gpustack-m1-template.json)需将数字/对象占位符替换为现场值并重新校验schema；先以零副本准备，单独设置路由ACL后才激活，不能把模板整个对象直接POST为一个资源。

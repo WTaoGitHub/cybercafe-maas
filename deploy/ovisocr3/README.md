@@ -1,5 +1,7 @@
 # OvisOCR3 on GPUStack with NFS weights
 
+The shared test service uses the `OvisOCR3-vLLM-engine-custom` backend, version `native-entry-r1`. GPUStack runs `vllm serve` with the existing model arguments. The historical guard entrypoint below belongs to the earlier pilot. See the [active configuration and acceptance results](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#三个现役模型切换).
+
 Model revision: `5b252386ba615bd464a5a26597560eaba87dae5c`. Runtime base: official Linux amd64 `vllm/vllm-openai:v0.22.1`, manifest `sha256:55c9bcee9fc66644b139fddae8a7a03e4c0c8a25ab5c64b0ce614554a8abf5d5` (CUDA 13.0.2). Publish both the fixed base and the small derived runtime to the existing private Registry before deployment. Deploy the derived image by its verified manifest digest.
 
 The model package includes all 37 upstream files, including 18 task prompts. Download outside the NFS export, verify sizes and LFS SHA-256 or Git blob IDs against the official fixed revision, then atomically publish `/root/maas/data/modelsWeights/ovisocr3-5b252386`. Do not overwrite a published version. Workers load `/srv/maas/models/ovisocr3-5b252386`; do not copy weights into their local model cache.
