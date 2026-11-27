@@ -14,7 +14,7 @@ Issue正文包含当前状态、既有优先级/排期、待办、验收条件�
 | E5 | [#6 [E5] 克隆自动接入收尾与异常矩阵](https://github.com/WTaoGitHub/cybercafe-maas/issues/6) | OPEN |
 | E6 | [#7 [E6] 退役自建 collector（已完成归档）](https://github.com/WTaoGitHub/cybercafe-maas/issues/7) | CLOSED |
 | E7 | [#8 [E7] GPUStack 1000 worker 部署策略与规模验证](https://github.com/WTaoGitHub/cybercafe-maas/issues/8) | OPEN |
-| E8 | [#9 [E8] GPUStack v2.3.0 适配和升级验证](https://github.com/WTaoGitHub/cybercafe-maas/issues/9) | OPEN |
+| E8 | [#9 [E8] GPUStack v2.3.1 适配和升级验证](https://github.com/WTaoGitHub/cybercafe-maas/issues/9) | OPEN |
 | E9 | [#10 [E9] 生产组件编排优化和 MaaS 入口收敛](https://github.com/WTaoGitHub/cybercafe-maas/issues/10) | OPEN |
 | E10 | [#11 [E10] OCR选型、PDF文档解析与大图片优化](https://github.com/WTaoGitHub/cybercafe-maas/issues/11) | OPEN |
 | E11 | [#12 [E11] CPU OCR 纳入 GPUStack 统一管理](https://github.com/WTaoGitHub/cybercafe-maas/issues/12) | OPEN |
