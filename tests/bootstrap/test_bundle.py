@@ -49,7 +49,12 @@ def test_source_bundle_omits_legacy_trust_and_scope(tmp_path):
         assert manifest['artifact_type'] == 'worker-source-bundle'
         assert 'image_id' not in manifest and 'cluster_id' not in manifest
         assert not set(builder.LEGACY_TRUST_FILES).intersection(archive.getnames())
-        assert 'maas_bootstrap/runtime_witness.py' in archive.getnames()
+        retired = {'maas_bootstrap/runtime_witness.py', 'maas_bootstrap/receipt_replay.py',
+                   'maas_platform/finish_receipt.py', 'maas_platform/runtime_proof.py',
+                   'deploy/bootstrap/clone/maas-pp-runtime-witness.service',
+                   'deploy/bootstrap/clone/maas-worker-receipts.service',
+                   'deploy/bootstrap/clone/maas-worker-receipts.timer'}
+        assert retired.isdisjoint(archive.getnames())
 
 
 def test_public_bundle_includes_notification_runtime_and_unit():
