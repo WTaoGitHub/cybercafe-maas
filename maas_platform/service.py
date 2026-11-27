@@ -397,6 +397,8 @@ class TaskService:
             if enforce:
                 policy, _, revision = configuration(self.settings)
                 ready_source = policy.uses_ready_replicas
+                if ready_source:
+                    self.settings.catalog()
                 budget = read_budget(c, revision)
                 if not budget or (budget.get('source') == 'gpustack_ready') != ready_source:
                     raise unavailable()

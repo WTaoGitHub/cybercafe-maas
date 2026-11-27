@@ -128,7 +128,7 @@ def settle_runtime(conn, row, nonce):
 
 
 def apply_verified(db, settings, gpu=None, boot=None):
-    if not (settings.runtime_boot_keys_dir or settings.runtime_proof_keys_file):
+    if not (settings.runtime_boot_keys_dir or settings.runtime_proof_keys_file) or settings.uses_gpustack_ready():
         return
     apply_routes = settings.automatic_runtime_routes()
     if not apply_routes:

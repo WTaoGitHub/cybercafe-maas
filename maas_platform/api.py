@@ -40,7 +40,10 @@ def create_app(settings=None, auth=None):
     app.include_router(gpu_daily_router(service.db))
     app.include_router(replica_control_router(), include_in_schema=False)
     app.include_router(shutdown_router(service.db, settings.shutdown_event_key_file))
-    app.include_router(pp_ocr_execution_router(service.db, settings))
+    if settings.uses_gpustack_ready():
+        settings.catalog()  # Reject a mismatched backend contract before serving traffic.
+    else:
+        app.include_router(pp_ocr_execution_router(service.db, settings))
     app.state.service = service
     app.state.sync_ingress=SyncIngress(service)
     app.add_middleware(JsonBodyLimit,sync_limit=settings.max_input_bytes*2,task_limit=max(65536,settings.max_input_bytes*2))

@@ -69,6 +69,8 @@ def router(db, settings):
     def event(body: GPUEvent | HostPoll | HostReport | BootReport, authorization: str = Header(default='')):
         from .config import private_text
 
+        if settings.uses_gpustack_ready():
+            raise ServiceError('EXECUTION_GUARD_DISABLED', 'GPUStack handles model execution', 404)
         if not isinstance(body, GPUEvent):
             result = handle_host(db, settings, body, authorization)
             return JSONResponse(result) if result is not None else Response(status_code=204)

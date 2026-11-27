@@ -169,7 +169,7 @@ class SyncIngress:
         except (httpx.HTTPError,TimeoutError):
             if guarded and await run_in_threadpool(finished,self.service.db,'sync',token):
                 raise ServiceError('BACKEND_RESULT_UNAVAILABLE','GPU finished but its response was unavailable',502) from None
-            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY','Inference transport failed; admission quarantined',503) from None
+            raise ServiceError('UNKNOWN_BACKEND_ACTIVITY','GPUStack did not confirm the inference outcome',503) from None
         finally:
             # A crashed process may not reach this write. Its expired DISPATCHING
             # record becomes UNKNOWN on the next admission/status inspection.

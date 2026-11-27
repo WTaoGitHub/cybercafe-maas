@@ -85,6 +85,8 @@ def test_historical_unknown_seven_upstream_calls_then_zero(env, tmp_path, monkey
     sent, changed, release = Counter(), Condition(), Event()
 
     async def upstream(request):
+        assert request.url.path == "/v1/chat/completions"
+        assert "X-MaaS-Execution-Attempt" not in request.headers
         with changed:
             sent[json.loads(request.content)['model']] += 1
             changed.notify_all()

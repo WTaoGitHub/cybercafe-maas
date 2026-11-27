@@ -108,12 +108,23 @@ class Settings:
         if self.min_free_bytes<0:
             raise ValueError('Minimum free storage cannot be negative')
 
+    def uses_gpustack_ready(self):
+        if self.capacity_policy_file is None:
+            return False
+        from .capacity import Policy
+        return Policy.model_validate_json(private_text(self.capacity_policy_file)).uses_ready_replicas
+
     def catalog(self):
         data = json.loads(self.catalog_file.read_text())
         guarded_routes = set()
         recovery_routes = set()
+        native = self.uses_gpustack_ready()
+        if native and self.require_model_recovery:
+            raise ValueError('GPUStack ready-replica admission requires callback-free model deployments')
         for name, model in data.items():
             adapter = adapter_for(model['driver'])
+            if native and (model.get('execution_guard') or model.get('runtime_recovery')):
+                raise ValueError(f'{name}: migrate the GPUStack backend and remove worker callback settings')
             if self.require_model_recovery and adapter.requires_upstream:
                 for option in ('execution_guard', 'runtime_recovery'):
                     if model.setdefault(option, True) is not True:
