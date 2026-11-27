@@ -35,11 +35,50 @@
 
 理想情况下三个池平均分别占用 4、1.6、0.8 个槽位。关闭某个补量通道时让已接任务自然完成。发生器用各模型实测派发时长估算初始发包率 `目标占用槽位 / 平均派发时长`，再按最近 5 分钟的实际占用调整。每分钟至多调整一次，发包率单步变化不超过 10%。按模型限制尚未确认和已受理的请求，PP 同步最多 4 路，Ovis 和 Unlimited 最多分别保留 2 和 1 个未终态请求，发生器不囤积队列。预算变化或背景流量出现时，先停止补量或扣减剩余槽位，再按停测门槛判定本轮是否有效。
 
+## 部署与启动
+
+2026-11-27 现场核对确认，现有下游 Docker 容器通过 `http://maas-service:18831` 访问模型能力接口时，无凭据返回 `401`。新 PC 宿主机直接访问该入口超时，回环 TLS `18832` 对同一路径返回 `404`。将发生器部署在新 PC 上受现有策略覆盖的普通 Docker 网桥内，按消费者部署约定映射 `maas-service`，复用 `18831`。发生器使用非特权容器，预先登记网络和容器名，无需发布端口或经 SSH 隧道持续转发流量。[新 PC 消费者入口](../../deploy/maas/NEW-PC-ROLLOUT.md#方案-c-固定-http-消费者入口)
+
+1. **开通短期测试身份。** 当前 API、执行器、观察器没有启用的耐久测试专用绑定。为本次窗口签发只允许三个实际模型路由的短期 GPUStack 推理 key，给 `test_agent_endurance_<run_id>` 增量登记三个 MaaS 逻辑模型。三个常驻容器使用相同的只读单文件 bind mount。通过当前活动发布配置、在维护窗口完成候选绑定验证和重新挂载，分别确认三个容器读到同一份新绑定。宿主机原子替换文件后，已运行的单文件挂载仍可能读旧文件。开跑前完成恢复检查。测试 key 以私有文件挂载，覆盖校准、全天和排空后撤销。[授权、绑定和轮换手册](../handbooks/ADMIN.md#3-为下游服务开通ocr)
+2. **布置观察与发生器。** 观察进程在新 PC 上通过 PostgreSQL 本地入口使用只读连接，读取容量、派发、UNKNOWN、队列及配额，每秒原子替换一份无凭据的观测快照，并核对宿主机资源。发生器只读挂载快照目录、测试配置及推理 key，另以可写目录保存状态和证据。将运行 ID、输入摘要、测试身份、采样时间和最大允许数据年龄纳入开跑检查。MaaS 管理凭据和数据库 DSN 留在控制端。
+3. **先跑冒烟，再跑校准。** 从发生器网桥读取三个 `/maas/v1/models/{model}/capabilities`，授权后均应返回 `200`。按下节完成四条单请求冒烟，随后以仅校准模式运行，验收随负载变化的占用采样、停止、排空及清理。校准完成后复核配额预测和既有 UNKNOWN 基线。
+4. **启动正式容器。** 连续驱动镜像交付并通过短跑后，用新运行 ID 部署正式配置。启动前校验数据面和观测时间，并复核当前 80% 占用窗口。驱动达到稳态才写入 `T0`，随后连续投递 86,400 秒，超时或失联按停测条件处理。容器由 Docker 持续运行，重启策略设为 `no`。通过 `docker logs` 看运行摘要，通过 `docker stop --time 960 <发生器容器名>` 发送停止信号并留出最长任务排空时间。
+
+可在新 PC 先执行这组现场只读预检，确认 MaaS API 健康、消费者路由有效、容量新鲜。`CONSUMER_CONTAINER` 为已经获准访问消费者入口且有 `curl` 的容器。做只读预检时，能力接口返回 `401` 属预期。
+
+```sh
+curl -fsS http://127.0.0.1:18830/healthz
+docker exec "$CONSUMER_CONTAINER" curl -sS -o /dev/null -w '%{http_code}\n' \
+  http://maas-service:18831/maas/v1/models/ocr.default/capabilities
+docker exec -i maas-control-api-1 python -B - <<'PY'
+import json
+import os
+
+from maas_platform.capacity_observe import status
+from maas_platform.db import Database
+
+data = status(Database(os.environ['MAAS_DATABASE_URL']))
+print(json.dumps({key: data.get(key) for key in ('state', 'source', 'global', 'unknown_capacity')}))
+PY
+```
+
+发生器镜像交付后可用下列容器启动模板。`RUN_DIR` 是已登记的私有运行目录，`MAAS_SERVICE_IP` 取自新 PC 的现行消费者配置，`RUN_NET` 是获准的普通网桥，`RUNNER_IMAGE` 使用已验证的镜像摘要。校准与正式运行分别准备配置和运行 ID，镜像入口读取挂载的配置来确定模式。
+
+```sh
+: "${RUN_ID:?}" "${RUN_DIR:?}" "${RUN_NET:?}" "${MAAS_SERVICE_IP:?}" "${RUNNER_IMAGE:?}"
+docker run -d --name "tmp_agent_endurance_${RUN_ID}" --restart=no --stop-timeout 960 \
+  --network "$RUN_NET" --add-host "maas-service:$MAAS_SERVICE_IP" \
+  --mount "type=bind,src=$RUN_DIR/config,dst=/run/maas-test,readonly" \
+  --mount "type=bind,src=$RUN_DIR/observe,dst=/run/maas-observe,readonly" \
+  --mount "type=bind,src=$RUN_DIR/evidence,dst=/var/log/maas-endurance" \
+  "$RUNNER_IMAGE"
+```
+
 ## 从校准到正式窗口
 
-1. **开测准备。** 从持续在线的内网发生器访问现有私有 TLS 入口。以 `test_agent_endurance_<run_id>` 注册短期测试项目及仅限三个模型的凭据，登记资源 ID。用仓库的固定图片和两页合成 PDF，逐条验证 PP 同步、PP 异步、Ovis 异步、Unlimited 异步请求，检查任务状态、文本或页序、结果下载和计量。同步发送到 `POST /gpustack/v1/chat/completions`。异步先上传 artifact，再调用 `POST /maas/v1/tasks`，使用稳定幂等键和 `max_attempts=1`。提交响应不明时停发并用原请求记录核对受理情况。冻结请求体、fixture 摘要、模型版本和运行预算。[固定样本与结果校验](../../tests/maas/fixtures/README.md) · [API 契约](../api/OPENAPI.md)
+1. **开测准备。** 登记本轮资源 ID。用仓库的固定图片和两页合成 PDF，逐条验证 PP 同步、PP 异步、Ovis 异步、Unlimited 异步请求，检查任务状态、文本或页序、结果下载和计量。同步发送到 `POST /gpustack/v1/chat/completions`。异步先上传 artifact，再调用 `POST /maas/v1/tasks`，使用稳定幂等键和 `max_attempts=1`。提交响应不明时停发并用原请求记录核对受理情况。冻结请求体、fixture 摘要、模型版本和运行预算。[固定样本与结果校验](../../tests/maas/fixtures/README.md) · [API 契约](../api/OPENAPI.md)
 2. **校准。** 取 10 分钟空载基线。依次用 40%、60%、75% 各跑 5 分钟，随后用 80% 配比跑至少两个连续 5 分钟窗口。两窗均达到 78%–82%，三个正式负载通道分别至少取得 20 个成功样本，队列无持续增长，才冻结每通道 P95、完成率和产物增长率。80% 校准段最多延长至 30 分钟。预算或门槛无法满足时记录瓶颈并结束本次校准。
-3. **连续运行。** 在负载稳定时记下 `T0`，使用同一个发生器进程、同一个运行 ID 连续投递 86,400 秒。每秒读取一次准入占用和队列，每分钟写一次健康与资源摘要，每小时固化统计和对账结果。使用单调时钟控制结束时间。异步槽位在任务终态时释放，状态查询、下载和对账用独立有界通道。同步测试按 `X-Usage-ID` 对账。数据库观察使用复用的只读连接和查询超时。发生器由内网主机进程管理器运行，配绝对停止时间、单实例锁及中断检查点，SSH 只用于查看状态。
+3. **连续运行。** 在负载稳定时记下 `T0`，使用同一个发生器进程、同一个运行 ID 连续投递 86,400 秒。每秒读取一次准入占用和队列，每分钟写一次健康与资源摘要，每小时固化统计和对账结果。使用单调时钟控制结束时间。异步槽位在任务终态时释放，状态查询、下载和对账用独立有界通道。同步测试按 `X-Usage-ID` 对账。数据库观察使用复用的只读连接和查询超时。发生器配绝对停止时间、单实例锁及中断检查点，SSH 只用于查看状态。
 4. **结束排空。** 到 `T0+24h` 立即停发，让在途请求在原截止时间内完成。记录未确认受理、队列、在途和失败请求，逐笔核对同步用量 ID、异步 task ID、attempt、结果与成功用量。最后重复低负载三模型业务验证和健康检查。排空以及校准的成功数和时长独立统计。
 
 复用 [独立到达时钟](../../maas_bench/arrivals.py)、[三模型短时混合请求样例](../../tests/maas/benchmark_peak_gateway.py)和固定结果校验。正式长跑需要一个连续、有界且能按小时滚动证据的驱动，先用短跑验证占用反馈、停发、排空、证据轮转及清理。原单客户端脚本和 5 分钟点位适用于各自的历史测试窗口。[旧耐久脚本](../../scripts/maas/runtime/endurance.py) · [独立到达点位](../../maas_bench/arrival_point.py)
