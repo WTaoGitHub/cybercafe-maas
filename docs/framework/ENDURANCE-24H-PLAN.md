@@ -44,6 +44,8 @@
 3. **先跑冒烟，再跑校准。** 从发生器网桥读取三个 `/maas/v1/models/{model}/capabilities`，授权后均应返回 `200`。按下节完成四条单请求冒烟，随后以仅校准模式运行，验收随负载变化的占用采样、停止、排空及清理。校准完成后复核配额预测和既有 UNKNOWN 基线。
 4. **启动正式容器。** 连续驱动镜像交付并通过短跑后，用新运行 ID 部署正式配置。启动前校验数据面和观测时间，并复核当前 80% 占用窗口。驱动达到稳态才写入 `T0`，随后连续投递 86,400 秒，超时或失联按停测条件处理。容器由 Docker 持续运行，重启策略设为 `no`。通过 `docker logs` 看运行摘要，通过 `docker stop --time 960 <发生器容器名>` 发送停止信号并留出最长任务排空时间。
 
+当前新 PC 可用 [控制端监督程序](../../scripts/maas/runtime/endurance_24h_control.py)运行这一流程。将 `endurance_24h*.py`、固定图片、两页 PDF 及 `verify_ocr_result.py` 放入独立运行目录的 `code/`，用 Python 3.12 从新 PC 启动监督程序，传入运行目录和控制目录。监督程序复用当前应用镜像中的 Python 依赖，通过新建的消费者网桥完成冒烟和校准，校准条件达标才写入正式 `T0`。在途排空后自动清理测试项目、GPUStack 测试用量、凭据、网桥和容器，并保存匿名摘要。状态以发生器的 `evidence/status.json` 为准，`CALIBRATION` 表示已开始验证，`FORMAL` 表示正式计时。仅运行本地校验可执行 `python -m pytest -q tests/maas/test_endurance_24h.py`。
+
 可在新 PC 先执行这组现场只读预检，确认 MaaS API 健康、消费者路由有效、容量新鲜。`CONSUMER_CONTAINER` 为已经获准访问消费者入口且有 `curl` 的容器。做只读预检时，能力接口返回 `401` 属预期。
 
 ```sh
