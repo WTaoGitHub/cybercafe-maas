@@ -65,6 +65,10 @@ def test_bootstrap_applies_patch_before_start_and_stops_on_install_failure(monke
     worker.NativeDockerWorker().start()
     assert calls == [("install", worker.NAME), ("docker", "start", worker.NAME)]
 
+    calls.clear()
+    worker.start_worker(worker.NativeDockerWorker(), None, {"worker_name_policy": worker.DISKLESS_POLICY})
+    assert calls == [("docker", "start", worker.NAME)]
+
     def broken(_name):
         raise ValueError("Unrecognized runtime")
 

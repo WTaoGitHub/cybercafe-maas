@@ -67,7 +67,9 @@ settings示例包含试点公开地址及秘密文件路径，没有实际码。
 
 ### 推理资源档位与执行回执
 
-新母版安装 `execution.py`、`worker_limits.py` 和当前启动程序。新模型、固定镜像版本、限额和回执服务公钥证书由签名 manifest 的 `worker_runtime` 发布。使用新版母版的 `image_id` 独立发布，旧客户端继续读取其兼容版本。下面的 JSON 是 manifest 的一个字段，示例摘要和入口需替换为部署实际值，证书需填完整 PEM。
+测试环境的无盘母版使用没有 `worker_runtime` 的签名发布，依靠 GPUStack 原生调度。母版构建不安装旧回执定时器或见证服务，原生无盘 worker 启动时也跳过旧容器限额补丁。存量快照的复用和迁移记录见[清理验收](../../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#无盘-worker-发布清理)。
+
+以下配置属于历史试点，供核对已有签名发布。执行环境和限额由 manifest 的 `worker_runtime` 声明。
 
 ```json
 {

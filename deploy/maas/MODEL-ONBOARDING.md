@@ -2,7 +2,11 @@
 
 2026-11-18 · [统一接入与迁移跟踪 #62](https://github.com/WTaoGitHub/cybercafe-maas/issues/62)
 
-### GPU 模型故障恢复
+### GPU 模型接入
+
+共用测试环境的新 GPU 模型使用 GPUStack 原生路由和就绪副本。MaaS 目录和容量池绑定其模型与路由，按现有入口验证推理、成功计量和副本重建。UNKNOWN 按现行策略留档并释放额度。[现役接入及验收](../../docs/framework/DYNAMIC-CONCURRENCY-IMPLEMENTATION.md#三个现役模型切换)
+
+### 历史故障恢复试点
 
 以下步骤描述 v2.2.3 的接入方式。v2.3.1 的目标是让现有及新增模型经 GPUStack 统一暴露执行状态，迁移前须验证替代接口和原有故障恢复行为。[升级验收计划](../../docs/framework/ENHANCEMENTS.md#e8-231-interaction-boundary)
 

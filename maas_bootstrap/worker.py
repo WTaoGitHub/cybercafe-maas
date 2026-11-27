@@ -176,9 +176,9 @@ class NativeDockerWorker:
     def start(self, settings=None, manifest=None):
         try:
             config = manifest.get('worker_runtime') if manifest else None
-            if config is None:
+            if config is None and (manifest or {}).get('worker_name_policy') != DISKLESS_POLICY:
                 worker_limits.install_before_start(NAME)
-            else:
+            elif config is not None:
                 directory = execution.local_directory(settings) if 'execution' in config else None
                 worker_limits.install_before_start(NAME, config=config, execution_directory=directory)
         except (ValueError, OSError, subprocess.SubprocessError) as error:
@@ -294,7 +294,7 @@ def private_native_directory(settings):
 
 
 def start_worker(runtime, settings, manifest):
-    if 'worker_runtime' in manifest:
+    if 'worker_runtime' in manifest or isinstance(runtime, NativeDockerWorker):
         runtime.start(settings, manifest)
     else:
         runtime.start()

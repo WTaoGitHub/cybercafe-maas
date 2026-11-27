@@ -231,7 +231,8 @@ def test_approved_boots_issue_private_keys_consumable_by_existing_maas_map(tmp_p
 
     receipts = FastAPI()
     receipts.add_exception_handler(ServiceError, lambda _, error: JSONResponse({'code': error.code}, status_code=error.status))
-    receipts.include_router(router(EmptyActivities(), SimpleNamespace(pp_ocr_worker_keys_file=path)))
+    legacy_settings = SimpleNamespace(pp_ocr_worker_keys_file=path, uses_gpustack_ready=lambda: False)
+    receipts.include_router(router(EmptyActivities(), legacy_settings))
     test_receipt = {'attempt': 'sync.' + '0' * 32, 'gpu_uuid': OTHER_GPU, 'instance': '1' * 32,
                     'route': 'test_agent_ocr', 'finished': False}
     receiver = TestClient(receipts)

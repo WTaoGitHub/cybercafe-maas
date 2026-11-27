@@ -99,11 +99,11 @@ def test_diskless_template_copies_only_grant_path_and_rejects_dirty_runtime(setu
     assert (root/'opt/maas/lib/maas_bootstrap/handoff.py').is_file()
     assert (root/'opt/maas/lib/maas_bootstrap/delivery.py').is_file()
     units=root/'etc/systemd/system'
-    assert (units/'timers.target.wants/maas-worker-receipts.timer').readlink() == Path('/etc/systemd/system/maas-worker-receipts.timer')
-    assert 'OnUnitInactiveSec=10s' in (units/'maas-worker-receipts.timer').read_text().splitlines()
-    assert 'ExecStart=/usr/bin/python3 -B -m maas_bootstrap.receipt_replay' in (units/'maas-worker-receipts.service').read_text().splitlines()
-    for module in ('maas_bootstrap/receipt_replay.py', 'maas_platform/finish_receipt.py'):
-        assert (root/'opt/maas/lib'/module).is_file()
+    for unit in ('maas-worker-receipts.timer', 'maas-worker-receipts.service', 'maas-pp-runtime-witness.service'):
+        assert not (units/unit).exists()
+    assert not (units/'timers.target.wants/maas-worker-receipts.timer').is_symlink()
+    for module in ('maas_bootstrap/receipt_replay.py', 'maas_bootstrap/runtime_witness.py', 'maas_platform/finish_receipt.py'):
+        assert not (root/'opt/maas/lib'/module).exists()
     assert not (units/'multi-user.target.wants/maas-worker-bootstrap.service').is_symlink()
     service = (units/'maas-worker-bootstrap.service').read_text().splitlines()
     assert {'Type=oneshot', 'RemainAfterExit=yes', 'Restart=on-failure', 'TimeoutStartSec=620',

@@ -103,13 +103,6 @@ def build(root,settings_path):
     for name in ('__init__.py','client.py','storage.py','nfs.py','registry.py','handoff.py','execution.py',
                  'worker.py','worker_limits.py','cli.py','startup.py','clone_boundary.py','shutdown_auth.py','shutdown_events.py'):
         files['opt/maas/lib/maas_bootstrap/'+name]=((REPO/'maas_bootstrap'/name).read_bytes(),0o644)
-    receipt_timer='etc/systemd/system/timers.target.wants/maas-worker-receipts.timer'
-    if diskless:
-        for module in ('maas_bootstrap/receipt_replay.py','maas_bootstrap/runtime_witness.py',
-                       'maas_platform/__init__.py','maas_platform/finish_receipt.py','maas_platform/runtime_proof.py'):
-            files['opt/maas/lib/'+module]=((REPO/module).read_bytes(),0o644)
-        for unit in ('maas-worker-receipts.service','maas-worker-receipts.timer','maas-pp-runtime-witness.service'):
-            files['etc/systemd/system/'+unit]=((REPO/'deploy/bootstrap/clone'/unit).read_bytes(),0o644)
     for name,dest,mode in (
         ('maas-worker-bootstrap','opt/maas/bin/maas-worker-bootstrap',0o755),
         ('maas-worker-bootstrap.service','etc/systemd/system/maas-worker-bootstrap.service',0o644),
@@ -126,7 +119,7 @@ def build(root,settings_path):
     link=enable_dir+boot_unit
     manifest='opt/maas/image-manifest.json'
     # Full preflight before writing; never overwrite existing image files or links.
-    for name in [*files,*([receipt_timer] if diskless else []),'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service',
+    for name in [*files,'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.service',
                  'etc/systemd/system/multi-user.target.wants/maas-worker-bootstrap.path',
                  'etc/systemd/system/timers.target.wants/maas-worker-bootstrap.timer',
                  'etc/systemd/system/multi-user.target.wants/maas-worker-shutdown-notify.service',manifest]:
@@ -139,10 +132,6 @@ def build(root,settings_path):
     safe_target(root,'etc/maas').chmod(0o700)
     p=safe_target(root,link);p.parent.mkdir(parents=True,exist_ok=True)
     p.symlink_to('/etc/systemd/system/'+boot_unit)
-    if diskless:
-        p=safe_target(root,receipt_timer)
-        p.parent.mkdir(parents=True,exist_ok=True)
-        p.symlink_to('/etc/systemd/system/maas-worker-receipts.timer')
     if shutdown is not None:
         p=safe_target(root,'etc/systemd/system/multi-user.target.wants/maas-worker-shutdown-notify.service')
         p.parent.mkdir(parents=True,exist_ok=True)
