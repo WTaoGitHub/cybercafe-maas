@@ -60,7 +60,7 @@ def login(username, password):
     return opener
 
 
-def supervise(root, control):
+def supervise(root, control, dense_pp=False):
     run_id = root.name.removeprefix('tmp_agent_endurance_')
     if root.name != 'tmp_agent_endurance_' + run_id or not re.fullmatch(r'[a-z0-9]{8,24}', run_id):
         raise ValueError('Dedicated run directory required')
@@ -224,7 +224,7 @@ def supervise(root, control):
         private_write(bindings_path, json_bytes(binding_data), ownership.st_uid, ownership.st_gid)
         bindings_written = True
         reload_bindings()
-        config = {'project': project, 'fixtures': '/run/maas-code', 'key_file': '/run/maas-test/key'}
+        config = {'project': project, 'fixtures': '/run/maas-code', 'key_file': '/run/maas-test/key', 'pp_dense': dense_pp}
         private_write(config_dir / 'workload.json', json_bytes(config), uid, gid)
         with (code / 'endurance_24h_observe.py').open('rb') as sampler:
             process = subprocess.Popen(['docker', 'exec', '-i', api, 'python', '-B', '-', project],
@@ -302,4 +302,4 @@ def supervise(root, control):
 
 
 if __name__ == '__main__':
-    raise SystemExit(supervise(Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve()))
+    raise SystemExit(supervise(Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve(), '--dense-pp' in sys.argv[3:]))

@@ -5,6 +5,7 @@ import base64
 from collections import Counter, deque
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
+from io import BytesIO
 import json
 import math
 from pathlib import Path
@@ -21,6 +22,8 @@ PP = 'ocr.default'
 OVIS = 'ocr.ovisocr3'
 DOCUMENT = 'document.unlimited-ocr-2'
 MODELS = (PP, OVIS, DOCUMENT)
+PP_WORDS = ('quarterly', 'service', 'report', 'qsr', '2026', '0410', '128', '12', 'minutes', 'complete')
+DENSE_PP_WORDS = ('synthetic', 'invoice', 'reconciliation', 'inventory', 'reconciliation', 'warehouse')
 CAPS = (5, 2, 1)
 CADENCE = 300
 DAY = 86400
@@ -89,13 +92,27 @@ class Consumer:
         require(key_path.stat().st_mode & 0o077 == 0, 'KEY_PERMISSIONS')
         key = key_path.read_text().strip()
         require(bool(key) and '\n' not in key, 'KEY_FORMAT')
-        self.sync_body = {'model': PP, 'stream': False, 'messages': [{'role': 'user', 'content': [
-            {'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(self.png).decode()}}
-        ]}]}
+        self.sync_fixture = (self.sync_body(self.png), PP_WORDS)
+        self.pressure_fixture = self.sync_fixture
+        if workload.get('pp_dense'):
+            generator = run_path(str(root / 'make_peak_capacity_fixture.py'))
+            image = generator['ledger'](3200, 4400, 62, 'Synthetic invoice reconciliation')
+            data = BytesIO()
+            image.save(data, format='PNG')
+            raw = data.getvalue()
+            self.pressure_fixture = (self.sync_body(raw), DENSE_PP_WORDS)
+            self.record('fixture', model=PP, bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
         self.artifacts = {}
         self.uploaded = 0.0
         self.client = httpx.Client(base_url='http://maas-service:18831', trust_env=False, follow_redirects=False,
                                    headers={'Authorization': 'Bearer ' + key}, timeout=httpx.Timeout(45, connect=3))
+
+    @staticmethod
+    def sync_body(image):
+        encoded = 'data:image/png;base64,' + base64.b64encode(image).decode()
+        return {'model': PP, 'stream': False, 'messages': [{'role': 'user', 'content': [
+            {'type': 'image_url', 'image_url': {'url': encoded}}
+        ]}]}
 
     def call(self, method, path, status=200, **options):
         response = self.client.request(method, path, **options)
@@ -114,7 +131,7 @@ class Consumer:
         self.artifacts[PP] = self.artifacts[OVIS]
         self.uploaded = time.monotonic()
 
-    def request(self, model, synchronous):
+    def request(self, model, synchronous, pressure=True):
         with self.lock:
             self.sequence += 1
             request_id = f'{self.project}-{self.sequence}'
@@ -122,11 +139,12 @@ class Consumer:
         self.record('intent', request_id=request_id, model=model, synchronous=synchronous)
         headers = {'X-Request-ID': request_id}
         if synchronous:
-            response = self.call('POST', '/gpustack/v1/chat/completions', json=self.sync_body, headers=headers)
+            body, words = self.pressure_fixture if pressure else self.sync_fixture
+            response = self.call('POST', '/gpustack/v1/chat/completions', json=body, headers=headers)
             finished = time.monotonic()
             usage = response.headers.get('X-Usage-ID')
             require(bool(usage), 'SYNC_USAGE_MISSING')
-            return model, request_id, begin, finished, usage, response, None
+            return model, request_id, begin, finished, usage, response, words
         headers['Idempotency-Key'] = request_id
         attachment = 'document' if model == DOCUMENT else 'image'
         body = {'model': model, 'input': {attachment: {'artifact_id': self.artifacts[model]}},
@@ -147,20 +165,19 @@ class Consumer:
         return model, request_id, begin, finished, None, task, row['result_artifact_id']
 
     def verify_result(self, response_data):
-        model, request_id, begin, finished, usage, payload, artifact = response_data
+        model, request_id, begin, finished, usage, payload, reference = response_data
         if usage:
             receipt = self.call('GET', '/maas/v1/usage/' + usage).json()
             content = json.loads(payload.json()['choices'][0]['message']['content'])
             text = ' '.join(line['text'] for line in content['lines'])
             require(receipt['id'] == usage and receipt['successful_images'] == 1 and
-                    self.verify['words_in_order'](text, ('quarterly', 'service', 'report', 'qsr', '2026', '0410',
-                                                        '128', '12', 'minutes', 'complete')), 'SYNC_TEXT_OR_USAGE')
+                    self.verify['words_in_order'](text, reference), 'SYNC_TEXT_OR_USAGE')
             self.record('verified', request_id=request_id, usage=usage, model=model, synchronous=True)
             size = 0
         else:
             task = payload
             endpoint = '/maas/v1/tasks/' + task
-            result = self.call('GET', '/maas/v1/artifacts/' + artifact)
+            result = self.call('GET', '/maas/v1/artifacts/' + reference)
             receipt = self.call('GET', endpoint + '/usage').json()
             self.verify['verify'](model, result.json(), receipt)
             self.record('verified', request_id=request_id, usage=receipt['id'], model=model, task=task,
@@ -205,6 +222,8 @@ def run(config, output, samples):
     pending = {}
     checking = set()
     ready = threading.Event()
+    cpu_history = deque()
+    retest = bool(config.get('pp_dense'))
 
     def poll(stage, level, length, pool, verifier):
         nonlocal latest, extra
@@ -244,10 +263,13 @@ def run(config, output, samples):
                     meter.push(sample)
                 latest = sample
                 recent.append(sample)
+                cpu_history.append(sample)
                 while recent and sample['mono'] - recent[0]['mono'] > 300:
                     recent.popleft()
-                if recent and sample['mono'] - recent[0]['mono'] > 290:
-                    require(sum(s['cpu'] for s in recent) / len(recent) <= .8, 'CONTROL_CPU')
+                while cpu_history and sample['mono'] - cpu_history[0]['mono'] > 300:
+                    cpu_history.popleft()
+                if cpu_history and sample['mono'] - cpu_history[0]['mono'] > 290:
+                    require(sum(s['cpu'] for s in cpu_history) / len(cpu_history) <= .8, 'CONTROL_CPU')
             if level == 80 and now - adjusted >= 60 and len(recent) > 30:
                 share = sum(s['used'] / s['capacity'] for s in recent) / len(recent)
                 if abs(share - .8) > .01:
@@ -275,14 +297,16 @@ def run(config, output, samples):
                     'CAPABILITY_MODEL')
         client.refresh()
         for model, sync in ((PP, True), (PP, False), (OVIS, False), (DOCUMENT, False)):
-            client.verify_result(client.request(model, sync))
+            client.verify_result(client.request(model, sync, pressure=False))
+        if config.get('pp_dense'):
+            client.verify_result(client.request(PP, True))
         write_status(output, phase='SMOKE_PASSED', verified=dict(client.verified))
         with ThreadPoolExecutor(max_workers=sum(CAPS)) as pool, ThreadPoolExecutor(max_workers=4) as verifier:
-            write_status(output, phase='CALIBRATION', target=0)
-            poll('CALIBRATION', 0, 600, pool, verifier)
+            write_status(output, phase='CALIBRATION', target=0, seconds=120 if retest else 600)
+            poll('CALIBRATION', 0, 120 if retest else 600, pool, verifier)
             for level in (40, 60, 75):
                 write_status(output, phase='CALIBRATION', target=level)
-                result = poll('CALIBRATION', level, CADENCE, pool, verifier)
+                result = poll('CALIBRATION', level, 120 if retest else CADENCE, pool, verifier)
                 write_status(output, phase='CALIBRATION_POINT', target=level, result=result)
             require(result['occupancy'] > 0, 'MISSING_CALIBRATION_LOAD')
             extra = min(2, max(.05, .8 * 6 / result['occupancy'] - 6))
