@@ -29,7 +29,9 @@ class Maintenance:
         for activity in backend + sync:
             if activity['state'] != 'UNKNOWN':
                 continue
-            if activity['guard_conflict']:
+            if row['record_unknown_only'] or activity['gpustack_routed']:
+                reason = 'record_only'
+            elif activity['guard_conflict']:
                 reason = 'guard_conflict'
             elif activity['termination_evidence']:
                 reason = 'termination_evidence_verified'

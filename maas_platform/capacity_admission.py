@@ -47,7 +47,7 @@ def report_unknown(c, budget):
     if budget.get('source') == 'gpustack_ready':
         count = c.execute("""SELECT (SELECT count(*) FROM sync_activity WHERE state='UNKNOWN')
                                   + (SELECT count(*) FROM backend_activity WHERE state='UNKNOWN') AS n""").fetchone()['n']
-        budget['unknown_capacity'] = {'unresolved': count, 'reconciliation_only': count,
+        budget['unknown_capacity'] = {'unresolved': count, 'record_only': count, 'reconciliation_only': count,
                                       'charged_as_occupancy': 0, 'covered_by_gpu_exclusion': 0}
     else:
         isolate_budget(budget, unresolved(c))

@@ -10,7 +10,9 @@ def snapshot(service):
         c.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
         storage=c.execute("SELECT coalesce(sum(size),0) bytes,count(*) files FROM artifacts WHERE deleted_at IS NULL").fetchone()
         # Only report occupancy for the currently enforced, fresh budget.
-        revision = c.execute('SELECT capacity_policy_hash FROM maintenance WHERE id=1').fetchone()['capacity_policy_hash']
+        mode = c.execute('SELECT capacity_policy_hash,record_unknown_only FROM maintenance WHERE id=1').fetchone()
+        revision = mode['capacity_policy_hash']
+        result['record_unknown_only'] = mode['record_unknown_only']
         budget = read_budget(c, revision) if revision else None
         if budget:
             before = budget['global']['total']
@@ -32,9 +34,7 @@ def snapshot(service):
 def alerts(service, data):
     out=[]
     def add(code,severity,message):out.append({'code':code,'severity':severity,'message':message})
-    if data.get('unknown_capacity', {}).get('reconciliation_only'):
-        add('EXECUTION_UNCONFIRMED','warning','Unconfirmed execution retained for reconciliation')
-    elif data['unknown_backend_activity'] or data['unknown_sync_activity']:
+    if not data.get('record_unknown_only') and (data['unknown_backend_activity'] or data['unknown_sync_activity']):
         add('BACKEND_QUARANTINED','critical','Unconfirmed execution: inspect the affected dispatch scopes and completion evidence')
     if data['storage']['free_bytes']<service.settings.min_free_bytes+service.settings.max_output_bytes:
         add('DISK_LOW','critical','Free storage cannot safely accommodate the next maximum result')

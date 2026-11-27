@@ -76,7 +76,7 @@ def test_historical_unknown_seven_upstream_calls_then_zero(env, tmp_path, monkey
     positive = asyncio.run(observe())
     assert positive['global'] == {'total': 7, 'sync_reserved': 2, 'async_limit': 5}
     assert {k: p['total'] for k, p in positive['pools'].items()} == counts
-    assert positive['unknown_capacity']['reconciliation_only'] == 1
+    assert positive['unknown_capacity']['record_only'] == positive['unknown_capacity']['reconciliation_only'] == 1
     service.pause(True)
     assert service.set_capacity_mode(True) == 'enforce'
     probes = []

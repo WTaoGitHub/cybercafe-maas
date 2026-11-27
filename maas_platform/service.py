@@ -324,9 +324,13 @@ class TaskService:
         # The owning request proved completion for this exact transport attempt.
         with self.db.transaction() as c:
             c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
-            c.execute("""UPDATE backend_activity SET state='COMPLETED',updated_at=now(),
+            completed = c.execute("""UPDATE backend_activity SET state='COMPLETED',updated_at=now(),
                       resolution_reason=CASE WHEN state='UNKNOWN' THEN 'Transport confirmed completion' ELSE resolution_reason END
                       WHERE token=%s AND task_id=%s AND NOT execution_guard AND state IN ('DISPATCHING','UNKNOWN')""", (task['token'], task['id']))
+            if not completed.rowcount and c.execute("""SELECT 1 FROM backend_activity b, maintenance m
+                    WHERE b.token=%s AND b.task_id=%s AND b.state='UNKNOWN' AND m.id=1
+                    AND (b.gpustack_routed OR m.record_unknown_only)""", (task['token'], task['id'])).fetchone():
+                raise ServiceError('UNKNOWN_BACKEND_ACTIVITY', 'Request already recorded as unknown', 503)
 
     def defer_dispatch(self, task, reason='MAINTENANCE_PAUSED'):
         """Return an unsent attempt to the queue without spending an execution retry."""
@@ -379,7 +383,7 @@ class TaskService:
                 raise unavailable()
             if not a.fresh(c):
                 raise unavailable()
-            generation = c.execute("""UPDATE maintenance SET capacity_policy_hash=%s,generation=generation+1,
+            generation = c.execute("""UPDATE maintenance SET capacity_policy_hash=%s,record_unknown_only=false,generation=generation+1,
                 updated_at=now() WHERE id=1 RETURNING generation""",(revision,)).fetchone()['generation']
             c.execute("""INSERT INTO maintenance_events(generation,action,reason) VALUES
                 (%s,'capacity-isolated',%s)""",(generation,reason))
@@ -407,8 +411,8 @@ class TaskService:
             if not ready_source and self.has_unknown(c):
                 raise ServiceError('MAINTENANCE_REQUIRED', 'Resolve outstanding attempts before enabling legacy admission', 409)
             mode = 'enforce' if enforce else 'static'
-            result = c.execute('''UPDATE maintenance SET capacity_policy_hash=%s, generation=generation+1,
-                updated_at=now() WHERE id=1 RETURNING generation''', (revision,)).fetchone()
+            result = c.execute('''UPDATE maintenance SET capacity_policy_hash=%s, record_unknown_only=%s,
+                generation=generation+1,updated_at=now() WHERE id=1 RETURNING generation''', (revision,ready_source)).fetchone()
             c.execute("INSERT INTO maintenance_events(generation,action,reason) VALUES(%s,%s,%s)",
                       (result['generation'], 'capacity-'+mode, 'Capacity admission mode changed'))
             return mode
@@ -490,8 +494,8 @@ class TaskService:
     @staticmethod
     def close_uncertain(c, token):
         row = c.execute("""UPDATE backend_activity SET state='UNKNOWN',updated_at=now()
-            WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING state""", (token,)).fetchone()
-        return 'EXECUTION_NOT_STARTED' if row['state'] == 'RESOLVED' else 'UNKNOWN_BACKEND_ACTIVITY'
+            WHERE token=%s AND state='DISPATCHING' RETURNING state""", (token,)).fetchone()
+        return 'EXECUTION_NOT_STARTED' if row and row['state'] == 'RESOLVED' else 'UNKNOWN_BACKEND_ACTIVITY'
 
     def end_uncertain_attempt(self, c, row, transient):
         code = self.close_uncertain(c, row['token'])

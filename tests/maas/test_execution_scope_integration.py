@@ -135,7 +135,7 @@ def test_old_guarded_unknown_survives_callback_free_cutover(guarded, tmp_path, k
     service.pause(True)
     service.set_capacity_mode(True)
     service.pause(False)
-    fresh, _ = create_attempt(context, kind, idem='test_agent_next')
+    fresh, disconnect_fresh = create_attempt(context, kind, idem='test_agent_next')
     event = dict(attempt=attempt, finished=True, **replica.identity)
     assert client.post(PATH, json=event).status_code == 404
     with service.db.transaction() as c:
@@ -144,6 +144,42 @@ def test_old_guarded_unknown_survives_callback_free_cutover(guarded, tmp_path, k
         new = c.execute(f'SELECT gpustack_routed,execution_guard FROM {TABLE[kind]} WHERE token=%s', (fresh,)).fetchone()
         assert new == {'gpustack_routed': True, 'execution_guard': False}
         assert Admission(c, settings, revision, include_preparing=True).total == 1
+    disconnect_fresh()
+    from maas_platform.maintenance import Maintenance
+    from maas_platform.observability import alerts, snapshot
+    from maas_platform.pp_ocr_execution import GPUEvent
+    from maas_platform.receipt_reconcile import reconcile
+    maintenance = Maintenance(service)
+    with service.db.transaction() as c:
+        assert Admission(c, settings, revision, include_preparing=True).total == 0
+        before = c.execute(f'SELECT * FROM {TABLE[kind]} ORDER BY token').fetchall()
+        assert len(before) == 2 and all(r['state'] == 'UNKNOWN' for r in before)
+        c.execute("UPDATE capacity_snapshot SET expires_at=clock_timestamp()")
+        assert not c.execute('SELECT 1 FROM boot_observation_pending').fetchone()
+    assert reconcile(service.db, GPUEvent(**event), apply=True) == 'record_only'
+    assert 'BACKEND_QUARANTINED' not in {a['code'] for a in alerts(service, snapshot(service))}
+    for attempt_row in before:
+        evidence = 'test_agent_late_termination_report'
+        if kind == 'sync':
+            with pytest.raises(ServiceError) as error:
+                client.app.state.sync_ingress.finish(attempt_row['token'], True, True)
+            assert error.value.code == 'UNKNOWN_BACKEND_ACTIVITY'
+            assert not maintenance.resolve_sync(attempt_row['token'], evidence)
+        else:
+            task = {'id': attempt_row['task_id'], 'token': attempt_row['token'], 'project': who.project}
+            with pytest.raises(ServiceError) as error:
+                service.complete_backend(task)
+            assert error.value.code == 'UNKNOWN_BACKEND_ACTIVITY'
+            files = set(service.store.root.rglob('*'))
+            assert not service.finish(task, output={'test_agent_late': True})
+            assert set(service.store.root.rglob('*')) == files
+            assert not service.resolve_backend(attempt_row['token'], evidence)
+    with service.db.transaction() as c:
+        assert c.execute(f'SELECT * FROM {TABLE[kind]} ORDER BY token').fetchall() == before
+        assert not c.execute('SELECT 1 FROM sync_usage_events UNION ALL SELECT 1 FROM task_usage_events').fetchone()
+        assert not c.execute("SELECT 1 FROM artifacts WHERE kind='result'").fetchone()
+    activity = maintenance.status()['sync_activity' if kind == 'sync' else 'backend_activity']
+    assert all(a['pending_reason'] == 'record_only' for a in activity)
 
 
 @pytest.mark.parametrize('kind', ['sync', 'task'])

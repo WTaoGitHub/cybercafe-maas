@@ -80,6 +80,9 @@ class SyncIngress:
                 resolution_reason=CASE WHEN state='UNKNOWN' AND %s THEN 'Transport confirmed completion' ELSE resolution_reason END
                 WHERE token=%s AND state IN ('DISPATCHING','UNKNOWN') RETURNING *""",
                 ('COMPLETED' if confirmed else 'UNKNOWN','SUCCEEDED' if confirmed and successful else ('REJECTED' if confirmed else 'UNKNOWN'),confirmed,token)).fetchone()
+            if not row and confirmed and c.execute(
+                    "SELECT 1 FROM sync_activity WHERE token=%s AND state='UNKNOWN'", (token,)).fetchone():
+                raise ServiceError('UNKNOWN_BACKEND_ACTIVITY','Request already recorded as unknown',503)
             if row and confirmed and successful and not row['is_probe']:
                 c.execute('INSERT INTO sync_usage_events(token,project,model) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING',(token,row['project'],row['model']))
                 if metering is not None:

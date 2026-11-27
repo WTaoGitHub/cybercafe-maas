@@ -29,10 +29,14 @@ def reconcile(db, event, apply):
     kind, token = event.attempt.split('.')
     table = TABLE[kind]
     with db.transaction() as c:
-        if apply:
-            c.execute('SELECT id FROM maintenance WHERE id=1 FOR UPDATE')
+        mode = c.execute('SELECT record_unknown_only FROM maintenance WHERE id=1'
+                         + (' FOR UPDATE' if apply else '')).fetchone()
+        if mode['record_unknown_only']:
+            return 'record_only'
         lock = ' FOR UPDATE' if apply else ''
         row = c.execute(f'SELECT * FROM {table} WHERE token=%s' + lock, (token,)).fetchone()
+        if row and row['gpustack_routed'] and row['state'] == 'UNKNOWN':
+            return 'record_only'
         if (not row or not row['execution_guard'] or not (row['guard_scope'] or row['gpustack_routed']) or row['guard_conflict'] or
                 (row['dispatch_route'], row['gpu_uuid'], row['gpu_instance']) !=
                 (event.route, event.gpu_uuid, event.instance)):
